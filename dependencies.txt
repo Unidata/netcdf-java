@@ -1,0 +1,691 @@
+
+------------------------------------------------------------
+Project ':cdm-core' - The CDM core packages.
+------------------------------------------------------------
+
+annotationProcessor - Annotation processors and their dependencies for source set 'main'.
+\--- com.google.auto.value:auto-value:1.7.4
+
+api - API dependencies for source set 'main'. (n)
+\--- project netcdf-java-platform (n)
+
+apiElements - API elements for main. (n)
+No dependencies
+
+archives - Configuration for archive artifacts. (n)
+No dependencies
+
+compileClasspath - Compile classpath for source set 'main'.
++--- project :netcdf-java-platform
+|    +--- com.google.protobuf:protobuf-java:3.17.2 (c)
+|    +--- com.google.guava:guava:31.0.1-jre (c)
+|    +--- com.google.re2j:re2j:1.6 (c)
+|    +--- org.jdom:jdom2:2.0.6 (c)
+|    +--- com.google.auto.value:auto-value-annotations:1.8.2 (c)
+|    +--- com.google.code.findbugs:jsr305:3.0.2 (c)
+|    +--- com.beust:jcommander:1.81 (c)
+|    \--- org.slf4j:slf4j-api:1.7.32 (c)
++--- project :udunits
+|    \--- project :netcdf-java-platform (*)
++--- com.beust:jcommander -> 1.81
++--- com.google.guava:guava -> 31.0.1-jre
+|    +--- com.google.guava:failureaccess:1.0.1
+|    +--- com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava
+|    +--- com.google.code.findbugs:jsr305:3.0.2
+|    +--- org.checkerframework:checker-qual:3.12.0
+|    +--- com.google.errorprone:error_prone_annotations:2.7.1
+|    \--- com.google.j2objc:j2objc-annotations:1.3
++--- com.google.protobuf:protobuf-java -> 3.17.2
++--- com.google.re2j:re2j -> 1.6
++--- org.jdom:jdom2 -> 2.0.6
++--- org.slf4j:slf4j-api -> 1.7.32
++--- com.google.auto.value:auto-value-annotations -> 1.8.2
+\--- com.google.code.findbugs:jsr305 -> 3.0.2
+
+compileOnly - Compile only dependencies for source set 'main'. (n)
+No dependencies
+
+compileOnlyApi - Compile only API dependencies for source set 'main'. (n)
+No dependencies
+
+compileProtoPath
++--- project :netcdf-java-platform
+|    +--- com.google.protobuf:protobuf-java:3.17.2 (c)
+|    +--- com.google.guava:guava:31.0.1-jre (c)
+|    +--- com.google.re2j:re2j:1.6 (c)
+|    +--- org.jdom:jdom2:2.0.6 (c)
+|    +--- com.google.auto.value:auto-value-annotations:1.8.2 (c)
+|    +--- com.google.code.findbugs:jsr305:3.0.2 (c)
+|    +--- com.beust:jcommander:1.81 (c)
+|    \--- org.slf4j:slf4j-api:1.7.32 (c)
++--- project :udunits
+|    +--- project :netcdf-java-platform (*)
+|    \--- com.google.code.findbugs:jsr305 -> 3.0.2
++--- com.beust:jcommander -> 1.81
++--- com.google.guava:guava -> 31.0.1-jre
+|    +--- com.google.guava:failureaccess:1.0.1
+|    +--- com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava
+|    +--- com.google.code.findbugs:jsr305:3.0.2
+|    +--- org.checkerframework:checker-qual:3.12.0
+|    +--- com.google.errorprone:error_prone_annotations:2.7.1
+|    \--- com.google.j2objc:j2objc-annotations:1.3
++--- com.google.protobuf:protobuf-java -> 3.17.2
++--- com.google.re2j:re2j -> 1.6
++--- org.jdom:jdom2 -> 2.0.6
++--- org.slf4j:slf4j-api -> 1.7.32
++--- com.google.auto.value:auto-value-annotations -> 1.8.2
+\--- com.google.code.findbugs:jsr305 -> 3.0.2
+
+default - Configuration for default artifacts. (n)
+No dependencies
+
+implementation - Implementation only dependencies for source set 'main'. (n)
+\--- com.google.code.findbugs:jsr305 (n)
+
+jacocoAgent - The Jacoco agent to use to get coverage data.
+\--- org.jacoco:org.jacoco.agent:0.8.6
+
+jacocoAnt - The Jacoco ant tasks to use to get execute Gradle tasks.
+\--- org.jacoco:org.jacoco.ant:0.8.6
+     +--- org.jacoco:org.jacoco.core:0.8.6
+     |    +--- org.ow2.asm:asm:8.0.1
+     |    +--- org.ow2.asm:asm-commons:8.0.1
+     |    |    +--- org.ow2.asm:asm:8.0.1
+     |    |    +--- org.ow2.asm:asm-tree:8.0.1
+     |    |    |    \--- org.ow2.asm:asm:8.0.1
+     |    |    \--- org.ow2.asm:asm-analysis:8.0.1
+     |    |         \--- org.ow2.asm:asm-tree:8.0.1 (*)
+     |    \--- org.ow2.asm:asm-tree:8.0.1 (*)
+     +--- org.jacoco:org.jacoco.report:0.8.6
+     |    \--- org.jacoco:org.jacoco.core:0.8.6 (*)
+     \--- org.jacoco:org.jacoco.agent:0.8.6
+
+protobuf
+No dependencies
+
+protobufToolsLocator_protoc
+\--- com.google.protobuf:protoc:3.17.2
+
+runtimeClasspath - Runtime classpath of source set 'main'.
++--- project :netcdf-java-platform
+|    +--- com.google.protobuf:protobuf-java:3.17.2 (c)
+|    +--- com.google.guava:guava:31.0.1-jre (c)
+|    +--- com.google.re2j:re2j:1.6 (c)
+|    +--- org.jdom:jdom2:2.0.6 (c)
+|    +--- com.google.auto.value:auto-value-annotations:1.8.2 (c)
+|    +--- com.google.code.findbugs:jsr305:3.0.2 (c)
+|    +--- com.beust:jcommander:1.81 (c)
+|    \--- org.slf4j:slf4j-api:1.7.32 (c)
++--- project :udunits
+|    +--- project :netcdf-java-platform (*)
+|    \--- com.google.code.findbugs:jsr305 -> 3.0.2
++--- com.beust:jcommander -> 1.81
++--- com.google.guava:guava -> 31.0.1-jre
+|    +--- com.google.guava:failureaccess:1.0.1
+|    +--- com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava
+|    +--- com.google.code.findbugs:jsr305:3.0.2
+|    +--- org.checkerframework:checker-qual:3.12.0
+|    +--- com.google.errorprone:error_prone_annotations:2.7.1
+|    \--- com.google.j2objc:j2objc-annotations:1.3
++--- com.google.protobuf:protobuf-java -> 3.17.2
++--- com.google.re2j:re2j -> 1.6
++--- org.jdom:jdom2 -> 2.0.6
++--- org.slf4j:slf4j-api -> 1.7.32
++--- com.google.auto.value:auto-value-annotations -> 1.8.2
+\--- com.google.code.findbugs:jsr305 -> 3.0.2
+
+runtimeElements - Elements of runtime for main. (n)
+No dependencies
+
+runtimeOnly - Runtime only dependencies for source set 'main'. (n)
+No dependencies
+
+testAnnotationProcessor - Annotation processors and their dependencies for source set 'test'.
+No dependencies
+
+testCompileClasspath - Compile classpath for source set 'test'.
++--- project :netcdf-java-platform
+|    +--- com.google.protobuf:protobuf-java:3.17.2 (c)
+|    +--- com.google.guava:guava:31.0.1-jre (c)
+|    +--- com.google.re2j:re2j:1.6 (c)
+|    +--- org.jdom:jdom2:2.0.6 (c)
+|    +--- com.google.auto.value:auto-value-annotations:1.8.2 (c)
+|    +--- com.google.code.findbugs:jsr305:3.0.2 (c)
+|    +--- com.beust:jcommander:1.81 (c)
+|    +--- org.slf4j:slf4j-api:1.7.32 (c)
+|    \--- edu.ucar:jj2000:5.4 (c)
++--- project :udunits
+|    \--- project :netcdf-java-platform (*)
++--- com.beust:jcommander -> 1.81
++--- com.google.guava:guava -> 31.0.1-jre
+|    +--- com.google.guava:failureaccess:1.0.1
+|    +--- com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava
+|    +--- com.google.code.findbugs:jsr305:3.0.2
+|    +--- org.checkerframework:checker-qual:3.12.0
+|    +--- com.google.errorprone:error_prone_annotations:2.7.1
+|    \--- com.google.j2objc:j2objc-annotations:1.3
++--- com.google.protobuf:protobuf-java -> 3.17.2
++--- com.google.re2j:re2j -> 1.6
++--- org.jdom:jdom2 -> 2.0.6
++--- org.slf4j:slf4j-api -> 1.7.32
++--- com.google.auto.value:auto-value-annotations -> 1.8.2
++--- com.google.code.findbugs:jsr305 -> 3.0.2
++--- project :netcdf-java-testing-platform
+|    +--- junit:junit:4.13 (c)
+|    +--- commons-io:commons-io:2.5 (c)
+|    +--- com.google.truth:truth:1.1 (c)
+|    +--- com.google.truth.extensions:truth-java8-extension:1.1 (c)
+|    +--- org.spockframework:spock-core:1.3-groovy-2.5 (c)
+|    +--- org.codehaus.groovy:groovy-all:2.5.12 (c)
+|    \--- org.mockito:mockito-core:2.28.2 (c)
++--- project :cdm-test-utils
+|    +--- project :netcdf-java-platform (*)
+|    \--- project :cdm-core (*)
++--- project :bufr
+|    +--- project :netcdf-java-platform (*)
+|    +--- project :cdm-core (*)
+|    +--- org.jdom:jdom2 -> 2.0.6
+|    +--- com.google.code.findbugs:jsr305 -> 3.0.2
+|    +--- com.beust:jcommander -> 1.81
+|    +--- com.google.protobuf:protobuf-java -> 3.17.2
+|    +--- com.google.re2j:re2j -> 1.6
+|    +--- org.slf4j:slf4j-api -> 1.7.32
+|    \--- com.google.guava:guava -> 31.0.1-jre (*)
++--- project :grib
+|    +--- project :netcdf-java-platform (*)
+|    +--- project :cdm-core (*)
+|    +--- com.google.protobuf:protobuf-java -> 3.17.2
+|    +--- org.jdom:jdom2 -> 2.0.6
+|    +--- com.google.code.findbugs:jsr305 -> 3.0.2
+|    +--- edu.ucar:jj2000 -> 5.4
+|    +--- com.google.guava:guava -> 31.0.1-jre (*)
+|    +--- com.beust:jcommander -> 1.81
+|    +--- com.google.re2j:re2j -> 1.6
+|    \--- org.slf4j:slf4j-api -> 1.7.32
++--- com.google.truth:truth -> 1.1
+|    +--- com.google.guava:guava:30.0-android -> 31.0.1-jre (*)
+|    +--- org.checkerframework:checker-qual:3.7.0 -> 3.12.0
+|    +--- junit:junit:4.13.1 -> 4.13
+|    |    \--- org.hamcrest:hamcrest-core:1.3
+|    +--- com.google.auto.value:auto-value-annotations:1.7.4 -> 1.8.2
+|    +--- com.google.errorprone:error_prone_annotations:2.4.0 -> 2.7.1
+|    \--- org.ow2.asm:asm:9.0
++--- com.google.truth.extensions:truth-java8-extension -> 1.1
+|    +--- com.google.truth:truth:1.1 (*)
+|    \--- org.checkerframework:checker-qual:3.7.0 -> 3.12.0
++--- commons-io:commons-io -> 2.5
++--- junit:junit -> 4.13 (*)
++--- org.codehaus.groovy:groovy-all -> 2.5.12
+|    +--- org.codehaus.groovy:groovy:2.5.12
+|    +--- org.codehaus.groovy:groovy-ant:2.5.12
+|    |    +--- org.codehaus.groovy:groovy:2.5.12
+|    |    +--- org.apache.ant:ant:1.9.15
+|    |    |    \--- org.apache.ant:ant-launcher:1.9.15
+|    |    \--- org.codehaus.groovy:groovy-groovydoc:2.5.12
+|    |         +--- org.codehaus.groovy:groovy-templates:2.5.12
+|    |         |    +--- org.codehaus.groovy:groovy:2.5.12
+|    |         |    \--- org.codehaus.groovy:groovy-xml:2.5.12
+|    |         |         \--- org.codehaus.groovy:groovy:2.5.12
+|    |         +--- org.codehaus.groovy:groovy:2.5.12
+|    |         \--- org.codehaus.groovy:groovy-cli-picocli:2.5.12
+|    |              +--- org.codehaus.groovy:groovy:2.5.12
+|    |              \--- info.picocli:picocli:4.3.2
+|    +--- org.codehaus.groovy:groovy-cli-commons:2.5.12
+|    |    +--- org.codehaus.groovy:groovy:2.5.12
+|    |    \--- commons-cli:commons-cli:1.4
+|    +--- org.codehaus.groovy:groovy-cli-picocli:2.5.12 (*)
+|    +--- org.codehaus.groovy:groovy-console:2.5.12
+|    |    +--- org.codehaus.groovy:groovy-templates:2.5.12 (*)
+|    |    +--- org.codehaus.groovy:groovy:2.5.12
+|    |    +--- org.codehaus.groovy:groovy-cli-picocli:2.5.12 (*)
+|    |    \--- org.codehaus.groovy:groovy-swing:2.5.12
+|    |         \--- org.codehaus.groovy:groovy:2.5.12
+|    +--- org.codehaus.groovy:groovy-datetime:2.5.12
+|    |    \--- org.codehaus.groovy:groovy:2.5.12
+|    +--- org.codehaus.groovy:groovy-docgenerator:2.5.12
+|    |    +--- org.codehaus.groovy:groovy-templates:2.5.12 (*)
+|    |    +--- org.codehaus.groovy:groovy:2.5.12
+|    |    +--- org.codehaus.groovy:groovy-cli-picocli:2.5.12 (*)
+|    |    \--- com.thoughtworks.qdox:qdox:1.12.1
+|    +--- org.codehaus.groovy:groovy-groovydoc:2.5.12 (*)
+|    +--- org.codehaus.groovy:groovy-groovysh:2.5.12
+|    |    +--- org.codehaus.groovy:groovy:2.5.12
+|    |    +--- org.codehaus.groovy:groovy-cli-picocli:2.5.12 (*)
+|    |    +--- org.codehaus.groovy:groovy-console:2.5.12 (*)
+|    |    \--- jline:jline:2.14.6
+|    +--- org.codehaus.groovy:groovy-jmx:2.5.12
+|    |    \--- org.codehaus.groovy:groovy:2.5.12
+|    +--- org.codehaus.groovy:groovy-json:2.5.12
+|    |    \--- org.codehaus.groovy:groovy:2.5.12
+|    +--- org.codehaus.groovy:groovy-jsr223:2.5.12
+|    |    \--- org.codehaus.groovy:groovy:2.5.12
+|    +--- org.codehaus.groovy:groovy-macro:2.5.12
+|    |    \--- org.codehaus.groovy:groovy:2.5.12
+|    +--- org.codehaus.groovy:groovy-nio:2.5.12
+|    |    \--- org.codehaus.groovy:groovy:2.5.12
+|    +--- org.codehaus.groovy:groovy-servlet:2.5.12
+|    |    +--- org.codehaus.groovy:groovy-templates:2.5.12 (*)
+|    |    +--- org.codehaus.groovy:groovy:2.5.12
+|    |    \--- org.codehaus.groovy:groovy-xml:2.5.12 (*)
+|    +--- org.codehaus.groovy:groovy-sql:2.5.12
+|    |    \--- org.codehaus.groovy:groovy:2.5.12
+|    +--- org.codehaus.groovy:groovy-swing:2.5.12 (*)
+|    +--- org.codehaus.groovy:groovy-templates:2.5.12 (*)
+|    +--- org.codehaus.groovy:groovy-test:2.5.12
+|    |    +--- org.codehaus.groovy:groovy:2.5.12
+|    |    \--- junit:junit:4.12 -> 4.13 (*)
+|    +--- org.codehaus.groovy:groovy-test-junit5:2.5.12
+|    |    +--- org.codehaus.groovy:groovy:2.5.12
+|    |    \--- org.junit.platform:junit-platform-launcher:1.4.0
+|    |         +--- org.apiguardian:apiguardian-api:1.0.0
+|    |         \--- org.junit.platform:junit-platform-engine:1.4.0
+|    |              +--- org.apiguardian:apiguardian-api:1.0.0
+|    |              +--- org.opentest4j:opentest4j:1.1.1
+|    |              \--- org.junit.platform:junit-platform-commons:1.4.0
+|    |                   \--- org.apiguardian:apiguardian-api:1.0.0
+|    +--- org.codehaus.groovy:groovy-testng:2.5.12
+|    |    \--- org.codehaus.groovy:groovy:2.5.12
+|    \--- org.codehaus.groovy:groovy-xml:2.5.12 (*)
++--- org.mockito:mockito-core -> 2.28.2
+|    +--- net.bytebuddy:byte-buddy:1.9.10
+|    +--- net.bytebuddy:byte-buddy-agent:1.9.10
+|    \--- org.objenesis:objenesis:2.6
+\--- org.spockframework:spock-core -> 1.3-groovy-2.5
+     +--- org.codehaus.groovy:groovy:2.5.4 -> 2.5.12
+     +--- org.codehaus.groovy:groovy-json:2.5.4 -> 2.5.12 (*)
+     +--- org.codehaus.groovy:groovy-nio:2.5.4 -> 2.5.12 (*)
+     +--- org.codehaus.groovy:groovy-macro:2.5.4 -> 2.5.12 (*)
+     +--- org.codehaus.groovy:groovy-templates:2.5.4 -> 2.5.12 (*)
+     +--- org.codehaus.groovy:groovy-test:2.5.4 -> 2.5.12 (*)
+     +--- org.codehaus.groovy:groovy-sql:2.5.4 -> 2.5.12 (*)
+     +--- org.codehaus.groovy:groovy-xml:2.5.4 -> 2.5.12 (*)
+     \--- junit:junit:4.12 -> 4.13 (*)
+
+testCompileOnly - Compile only dependencies for source set 'test'. (n)
+No dependencies
+
+testCompileProtoPath
++--- project :netcdf-java-platform
+|    +--- com.google.protobuf:protobuf-java:3.17.2 (c)
+|    +--- com.google.guava:guava:31.0.1-jre (c)
+|    +--- com.google.re2j:re2j:1.6 (c)
+|    +--- org.jdom:jdom2:2.0.6 (c)
+|    +--- com.google.auto.value:auto-value-annotations:1.8.2 (c)
+|    +--- com.google.code.findbugs:jsr305:3.0.2 (c)
+|    +--- com.beust:jcommander:1.81 (c)
+|    +--- org.slf4j:slf4j-api:1.7.32 (c)
+|    \--- edu.ucar:jj2000:5.4 (c)
++--- project :udunits
+|    +--- project :netcdf-java-platform (*)
+|    \--- com.google.code.findbugs:jsr305 -> 3.0.2
++--- com.beust:jcommander -> 1.81
++--- com.google.guava:guava -> 31.0.1-jre
+|    +--- com.google.guava:failureaccess:1.0.1
+|    +--- com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava
+|    +--- com.google.code.findbugs:jsr305:3.0.2
+|    +--- org.checkerframework:checker-qual:3.12.0
+|    +--- com.google.errorprone:error_prone_annotations:2.7.1
+|    \--- com.google.j2objc:j2objc-annotations:1.3
++--- com.google.protobuf:protobuf-java -> 3.17.2
++--- com.google.re2j:re2j -> 1.6
++--- org.jdom:jdom2 -> 2.0.6
++--- org.slf4j:slf4j-api -> 1.7.32
++--- com.google.auto.value:auto-value-annotations -> 1.8.2
++--- com.google.code.findbugs:jsr305 -> 3.0.2
++--- project :netcdf-java-testing-platform
+|    +--- junit:junit:4.13 (c)
+|    +--- commons-io:commons-io:2.5 (c)
+|    +--- com.google.truth:truth:1.1 (c)
+|    +--- com.google.truth.extensions:truth-java8-extension:1.1 (c)
+|    +--- org.spockframework:spock-core:1.3-groovy-2.5 (c)
+|    +--- org.codehaus.groovy:groovy-all:2.5.12 (c)
+|    \--- org.mockito:mockito-core:2.28.2 (c)
++--- project :cdm-test-utils
+|    +--- project :netcdf-java-platform (*)
+|    +--- project :cdm-core (*)
+|    +--- project :netcdf-java-testing-platform (*)
+|    +--- junit:junit:4.13
+|    |    \--- org.hamcrest:hamcrest-core:1.3
+|    +--- org.slf4j:slf4j-api -> 1.7.32
+|    +--- com.google.re2j:re2j -> 1.6
+|    \--- com.google.truth:truth:1.1
+|         +--- com.google.guava:guava:30.0-android -> 31.0.1-jre (*)
+|         +--- org.checkerframework:checker-qual:3.7.0 -> 3.12.0
+|         +--- junit:junit:4.13.1 -> 4.13 (*)
+|         +--- com.google.auto.value:auto-value-annotations:1.7.4 -> 1.8.2
+|         +--- com.google.errorprone:error_prone_annotations:2.4.0 -> 2.7.1
+|         \--- org.ow2.asm:asm:9.0
++--- project :bufr
+|    +--- project :netcdf-java-platform (*)
+|    +--- project :cdm-core (*)
+|    +--- org.jdom:jdom2 -> 2.0.6
+|    +--- com.google.code.findbugs:jsr305 -> 3.0.2
+|    +--- com.beust:jcommander -> 1.81
+|    +--- com.google.protobuf:protobuf-java -> 3.17.2
+|    +--- com.google.re2j:re2j -> 1.6
+|    +--- org.slf4j:slf4j-api -> 1.7.32
+|    \--- com.google.guava:guava -> 31.0.1-jre (*)
++--- project :grib
+|    +--- project :netcdf-java-platform (*)
+|    +--- project :cdm-core (*)
+|    +--- com.google.protobuf:protobuf-java -> 3.17.2
+|    +--- org.jdom:jdom2 -> 2.0.6
+|    +--- com.google.code.findbugs:jsr305 -> 3.0.2
+|    +--- edu.ucar:jj2000 -> 5.4
+|    +--- com.google.guava:guava -> 31.0.1-jre (*)
+|    +--- com.beust:jcommander -> 1.81
+|    +--- com.google.re2j:re2j -> 1.6
+|    \--- org.slf4j:slf4j-api -> 1.7.32
++--- com.google.truth:truth -> 1.1 (*)
++--- com.google.truth.extensions:truth-java8-extension -> 1.1
+|    +--- com.google.truth:truth:1.1 (*)
+|    \--- org.checkerframework:checker-qual:3.7.0 -> 3.12.0
++--- commons-io:commons-io -> 2.5
++--- junit:junit -> 4.13 (*)
++--- org.codehaus.groovy:groovy-all -> 2.5.12
+|    +--- org.codehaus.groovy:groovy:2.5.12
+|    +--- org.codehaus.groovy:groovy-ant:2.5.12
+|    |    +--- org.codehaus.groovy:groovy:2.5.12
+|    |    +--- org.apache.ant:ant:1.9.15
+|    |    |    \--- org.apache.ant:ant-launcher:1.9.15
+|    |    +--- org.codehaus.groovy:groovy-groovydoc:2.5.12
+|    |    |    +--- org.codehaus.groovy:groovy-templates:2.5.12
+|    |    |    |    +--- org.codehaus.groovy:groovy:2.5.12
+|    |    |    |    \--- org.codehaus.groovy:groovy-xml:2.5.12
+|    |    |    |         \--- org.codehaus.groovy:groovy:2.5.12
+|    |    |    +--- org.codehaus.groovy:groovy:2.5.12
+|    |    |    +--- org.codehaus.groovy:groovy-cli-picocli:2.5.12
+|    |    |    |    +--- org.codehaus.groovy:groovy:2.5.12
+|    |    |    |    \--- info.picocli:picocli:4.3.2
+|    |    |    \--- org.codehaus.groovy:groovy-docgenerator:2.5.12
+|    |    |         +--- org.codehaus.groovy:groovy-templates:2.5.12 (*)
+|    |    |         +--- org.codehaus.groovy:groovy:2.5.12
+|    |    |         +--- org.codehaus.groovy:groovy-cli-picocli:2.5.12 (*)
+|    |    |         \--- com.thoughtworks.qdox:qdox:1.12.1
+|    |    +--- org.apache.ant:ant-junit:1.9.15
+|    |    |    \--- org.apache.ant:ant:1.9.15 (*)
+|    |    +--- org.apache.ant:ant-launcher:1.9.15
+|    |    \--- org.apache.ant:ant-antlr:1.9.15
+|    +--- org.codehaus.groovy:groovy-cli-commons:2.5.12
+|    |    +--- org.codehaus.groovy:groovy:2.5.12
+|    |    \--- commons-cli:commons-cli:1.4
+|    +--- org.codehaus.groovy:groovy-cli-picocli:2.5.12 (*)
+|    +--- org.codehaus.groovy:groovy-console:2.5.12
+|    |    +--- org.codehaus.groovy:groovy-templates:2.5.12 (*)
+|    |    +--- org.codehaus.groovy:groovy:2.5.12
+|    |    +--- org.codehaus.groovy:groovy-cli-picocli:2.5.12 (*)
+|    |    \--- org.codehaus.groovy:groovy-swing:2.5.12
+|    |         \--- org.codehaus.groovy:groovy:2.5.12
+|    +--- org.codehaus.groovy:groovy-datetime:2.5.12
+|    |    \--- org.codehaus.groovy:groovy:2.5.12
+|    +--- org.codehaus.groovy:groovy-docgenerator:2.5.12 (*)
+|    +--- org.codehaus.groovy:groovy-groovydoc:2.5.12 (*)
+|    +--- org.codehaus.groovy:groovy-groovysh:2.5.12
+|    |    +--- org.codehaus.groovy:groovy:2.5.12
+|    |    +--- org.codehaus.groovy:groovy-cli-picocli:2.5.12 (*)
+|    |    +--- org.codehaus.groovy:groovy-console:2.5.12 (*)
+|    |    \--- jline:jline:2.14.6
+|    +--- org.codehaus.groovy:groovy-jmx:2.5.12
+|    |    \--- org.codehaus.groovy:groovy:2.5.12
+|    +--- org.codehaus.groovy:groovy-json:2.5.12
+|    |    \--- org.codehaus.groovy:groovy:2.5.12
+|    +--- org.codehaus.groovy:groovy-jsr223:2.5.12
+|    |    \--- org.codehaus.groovy:groovy:2.5.12
+|    +--- org.codehaus.groovy:groovy-macro:2.5.12
+|    |    \--- org.codehaus.groovy:groovy:2.5.12
+|    +--- org.codehaus.groovy:groovy-nio:2.5.12
+|    |    \--- org.codehaus.groovy:groovy:2.5.12
+|    +--- org.codehaus.groovy:groovy-servlet:2.5.12
+|    |    +--- org.codehaus.groovy:groovy-templates:2.5.12 (*)
+|    |    +--- org.codehaus.groovy:groovy:2.5.12
+|    |    \--- org.codehaus.groovy:groovy-xml:2.5.12 (*)
+|    +--- org.codehaus.groovy:groovy-sql:2.5.12
+|    |    \--- org.codehaus.groovy:groovy:2.5.12
+|    +--- org.codehaus.groovy:groovy-swing:2.5.12 (*)
+|    +--- org.codehaus.groovy:groovy-templates:2.5.12 (*)
+|    +--- org.codehaus.groovy:groovy-test:2.5.12
+|    |    +--- org.codehaus.groovy:groovy:2.5.12
+|    |    \--- junit:junit:4.12 -> 4.13 (*)
+|    +--- org.codehaus.groovy:groovy-test-junit5:2.5.12
+|    |    +--- org.codehaus.groovy:groovy:2.5.12
+|    |    +--- org.junit.platform:junit-platform-launcher:1.4.0
+|    |    |    +--- org.apiguardian:apiguardian-api:1.0.0
+|    |    |    \--- org.junit.platform:junit-platform-engine:1.4.0
+|    |    |         +--- org.apiguardian:apiguardian-api:1.0.0
+|    |    |         +--- org.opentest4j:opentest4j:1.1.1
+|    |    |         \--- org.junit.platform:junit-platform-commons:1.4.0
+|    |    |              \--- org.apiguardian:apiguardian-api:1.0.0
+|    |    \--- org.junit.jupiter:junit-jupiter-engine:5.4.0
+|    |         +--- org.apiguardian:apiguardian-api:1.0.0
+|    |         +--- org.junit.platform:junit-platform-engine:1.4.0 (*)
+|    |         \--- org.junit.jupiter:junit-jupiter-api:5.4.0
+|    |              +--- org.apiguardian:apiguardian-api:1.0.0
+|    |              +--- org.opentest4j:opentest4j:1.1.1
+|    |              \--- org.junit.platform:junit-platform-commons:1.4.0 (*)
+|    +--- org.codehaus.groovy:groovy-testng:2.5.12
+|    |    +--- org.codehaus.groovy:groovy:2.5.12
+|    |    \--- org.testng:testng:6.13.1
+|    |         \--- com.beust:jcommander:1.72 -> 1.81
+|    \--- org.codehaus.groovy:groovy-xml:2.5.12 (*)
++--- org.mockito:mockito-core -> 2.28.2
+|    +--- net.bytebuddy:byte-buddy:1.9.10
+|    +--- net.bytebuddy:byte-buddy-agent:1.9.10
+|    \--- org.objenesis:objenesis:2.6
+\--- org.spockframework:spock-core -> 1.3-groovy-2.5
+     +--- org.codehaus.groovy:groovy:2.5.4 -> 2.5.12
+     +--- org.codehaus.groovy:groovy-json:2.5.4 -> 2.5.12 (*)
+     +--- org.codehaus.groovy:groovy-nio:2.5.4 -> 2.5.12 (*)
+     +--- org.codehaus.groovy:groovy-macro:2.5.4 -> 2.5.12 (*)
+     +--- org.codehaus.groovy:groovy-templates:2.5.4 -> 2.5.12 (*)
+     +--- org.codehaus.groovy:groovy-test:2.5.4 -> 2.5.12 (*)
+     +--- org.codehaus.groovy:groovy-sql:2.5.4 -> 2.5.12 (*)
+     +--- org.codehaus.groovy:groovy-xml:2.5.4 -> 2.5.12 (*)
+     \--- junit:junit:4.12 -> 4.13 (*)
+
+testImplementation - Implementation only dependencies for source set 'test'. (n)
++--- project netcdf-java-testing-platform (n)
++--- project cdm-test-utils (n)
++--- project bufr (n)
++--- project grib (n)
++--- com.google.truth:truth (n)
++--- com.google.truth.extensions:truth-java8-extension (n)
++--- commons-io:commons-io (n)
++--- junit:junit (n)
++--- org.codehaus.groovy:groovy-all (n)
++--- org.mockito:mockito-core (n)
+\--- org.spockframework:spock-core (n)
+
+testProtobuf
+No dependencies
+
+testRuntimeClasspath - Runtime classpath of source set 'test'.
++--- project :netcdf-java-platform
+|    +--- com.google.protobuf:protobuf-java:3.17.2 (c)
+|    +--- com.google.guava:guava:31.0.1-jre (c)
+|    +--- com.google.re2j:re2j:1.6 (c)
+|    +--- org.jdom:jdom2:2.0.6 (c)
+|    +--- com.google.auto.value:auto-value-annotations:1.8.2 (c)
+|    +--- com.google.code.findbugs:jsr305:3.0.2 (c)
+|    +--- com.beust:jcommander:1.81 (c)
+|    +--- org.slf4j:slf4j-api:1.7.32 (c)
+|    +--- ch.qos.logback:logback-classic:1.2.3 (c)
+|    \--- edu.ucar:jj2000:5.4 (c)
++--- project :udunits
+|    +--- project :netcdf-java-platform (*)
+|    \--- com.google.code.findbugs:jsr305 -> 3.0.2
++--- com.beust:jcommander -> 1.81
++--- com.google.guava:guava -> 31.0.1-jre
+|    +--- com.google.guava:failureaccess:1.0.1
+|    +--- com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava
+|    +--- com.google.code.findbugs:jsr305:3.0.2
+|    +--- org.checkerframework:checker-qual:3.12.0
+|    +--- com.google.errorprone:error_prone_annotations:2.7.1
+|    \--- com.google.j2objc:j2objc-annotations:1.3
++--- com.google.protobuf:protobuf-java -> 3.17.2
++--- com.google.re2j:re2j -> 1.6
++--- org.jdom:jdom2 -> 2.0.6
++--- org.slf4j:slf4j-api -> 1.7.32
++--- com.google.auto.value:auto-value-annotations -> 1.8.2
++--- com.google.code.findbugs:jsr305 -> 3.0.2
++--- project :netcdf-java-testing-platform
+|    +--- junit:junit:4.13 (c)
+|    +--- commons-io:commons-io:2.5 (c)
+|    +--- com.google.truth:truth:1.1 (c)
+|    +--- com.google.truth.extensions:truth-java8-extension:1.1 (c)
+|    +--- org.spockframework:spock-core:1.3-groovy-2.5 (c)
+|    +--- org.codehaus.groovy:groovy-all:2.5.12 (c)
+|    \--- org.mockito:mockito-core:2.28.2 (c)
++--- project :cdm-test-utils
+|    +--- project :netcdf-java-platform (*)
+|    +--- project :cdm-core (*)
+|    +--- project :netcdf-java-testing-platform (*)
+|    +--- junit:junit:4.13
+|    |    \--- org.hamcrest:hamcrest-core:1.3
+|    +--- org.slf4j:slf4j-api -> 1.7.32
+|    +--- com.google.re2j:re2j -> 1.6
+|    \--- com.google.truth:truth:1.1
+|         +--- com.google.guava:guava:30.0-android -> 31.0.1-jre (*)
+|         +--- org.checkerframework:checker-qual:3.7.0 -> 3.12.0
+|         +--- junit:junit:4.13.1 -> 4.13 (*)
+|         +--- com.google.auto.value:auto-value-annotations:1.7.4 -> 1.8.2
+|         +--- com.google.errorprone:error_prone_annotations:2.4.0 -> 2.7.1
+|         \--- org.ow2.asm:asm:9.0
++--- project :bufr
+|    +--- project :netcdf-java-platform (*)
+|    +--- project :cdm-core (*)
+|    +--- org.jdom:jdom2 -> 2.0.6
+|    +--- com.google.code.findbugs:jsr305 -> 3.0.2
+|    +--- com.beust:jcommander -> 1.81
+|    +--- com.google.protobuf:protobuf-java -> 3.17.2
+|    +--- com.google.re2j:re2j -> 1.6
+|    +--- org.slf4j:slf4j-api -> 1.7.32
+|    \--- com.google.guava:guava -> 31.0.1-jre (*)
++--- project :grib
+|    +--- project :netcdf-java-platform (*)
+|    +--- project :cdm-core (*)
+|    +--- com.google.protobuf:protobuf-java -> 3.17.2
+|    +--- org.jdom:jdom2 -> 2.0.6
+|    +--- com.google.code.findbugs:jsr305 -> 3.0.2
+|    +--- edu.ucar:jj2000 -> 5.4
+|    +--- com.google.guava:guava -> 31.0.1-jre (*)
+|    +--- com.beust:jcommander -> 1.81
+|    +--- com.google.re2j:re2j -> 1.6
+|    \--- org.slf4j:slf4j-api -> 1.7.32
++--- com.google.truth:truth -> 1.1 (*)
++--- com.google.truth.extensions:truth-java8-extension -> 1.1
+|    +--- com.google.truth:truth:1.1 (*)
+|    \--- org.checkerframework:checker-qual:3.7.0 -> 3.12.0
++--- commons-io:commons-io -> 2.5
++--- junit:junit -> 4.13 (*)
++--- org.codehaus.groovy:groovy-all -> 2.5.12
+|    +--- org.codehaus.groovy:groovy:2.5.12
+|    +--- org.codehaus.groovy:groovy-ant:2.5.12
+|    |    +--- org.codehaus.groovy:groovy:2.5.12
+|    |    +--- org.apache.ant:ant:1.9.15
+|    |    |    \--- org.apache.ant:ant-launcher:1.9.15
+|    |    +--- org.codehaus.groovy:groovy-groovydoc:2.5.12
+|    |    |    +--- org.codehaus.groovy:groovy-templates:2.5.12
+|    |    |    |    +--- org.codehaus.groovy:groovy:2.5.12
+|    |    |    |    \--- org.codehaus.groovy:groovy-xml:2.5.12
+|    |    |    |         \--- org.codehaus.groovy:groovy:2.5.12
+|    |    |    +--- org.codehaus.groovy:groovy:2.5.12
+|    |    |    +--- org.codehaus.groovy:groovy-cli-picocli:2.5.12
+|    |    |    |    +--- org.codehaus.groovy:groovy:2.5.12
+|    |    |    |    \--- info.picocli:picocli:4.3.2
+|    |    |    \--- org.codehaus.groovy:groovy-docgenerator:2.5.12
+|    |    |         +--- org.codehaus.groovy:groovy-templates:2.5.12 (*)
+|    |    |         +--- org.codehaus.groovy:groovy:2.5.12
+|    |    |         +--- org.codehaus.groovy:groovy-cli-picocli:2.5.12 (*)
+|    |    |         \--- com.thoughtworks.qdox:qdox:1.12.1
+|    |    +--- org.apache.ant:ant-junit:1.9.15
+|    |    |    \--- org.apache.ant:ant:1.9.15 (*)
+|    |    +--- org.apache.ant:ant-launcher:1.9.15
+|    |    \--- org.apache.ant:ant-antlr:1.9.15
+|    +--- org.codehaus.groovy:groovy-cli-commons:2.5.12
+|    |    +--- org.codehaus.groovy:groovy:2.5.12
+|    |    \--- commons-cli:commons-cli:1.4
+|    +--- org.codehaus.groovy:groovy-cli-picocli:2.5.12 (*)
+|    +--- org.codehaus.groovy:groovy-console:2.5.12
+|    |    +--- org.codehaus.groovy:groovy-templates:2.5.12 (*)
+|    |    +--- org.codehaus.groovy:groovy:2.5.12
+|    |    +--- org.codehaus.groovy:groovy-cli-picocli:2.5.12 (*)
+|    |    \--- org.codehaus.groovy:groovy-swing:2.5.12
+|    |         \--- org.codehaus.groovy:groovy:2.5.12
+|    +--- org.codehaus.groovy:groovy-datetime:2.5.12
+|    |    \--- org.codehaus.groovy:groovy:2.5.12
+|    +--- org.codehaus.groovy:groovy-docgenerator:2.5.12 (*)
+|    +--- org.codehaus.groovy:groovy-groovydoc:2.5.12 (*)
+|    +--- org.codehaus.groovy:groovy-groovysh:2.5.12
+|    |    +--- org.codehaus.groovy:groovy:2.5.12
+|    |    +--- org.codehaus.groovy:groovy-cli-picocli:2.5.12 (*)
+|    |    +--- org.codehaus.groovy:groovy-console:2.5.12 (*)
+|    |    \--- jline:jline:2.14.6
+|    +--- org.codehaus.groovy:groovy-jmx:2.5.12
+|    |    \--- org.codehaus.groovy:groovy:2.5.12
+|    +--- org.codehaus.groovy:groovy-json:2.5.12
+|    |    \--- org.codehaus.groovy:groovy:2.5.12
+|    +--- org.codehaus.groovy:groovy-jsr223:2.5.12
+|    |    \--- org.codehaus.groovy:groovy:2.5.12
+|    +--- org.codehaus.groovy:groovy-macro:2.5.12
+|    |    \--- org.codehaus.groovy:groovy:2.5.12
+|    +--- org.codehaus.groovy:groovy-nio:2.5.12
+|    |    \--- org.codehaus.groovy:groovy:2.5.12
+|    +--- org.codehaus.groovy:groovy-servlet:2.5.12
+|    |    +--- org.codehaus.groovy:groovy-templates:2.5.12 (*)
+|    |    +--- org.codehaus.groovy:groovy:2.5.12
+|    |    \--- org.codehaus.groovy:groovy-xml:2.5.12 (*)
+|    +--- org.codehaus.groovy:groovy-sql:2.5.12
+|    |    \--- org.codehaus.groovy:groovy:2.5.12
+|    +--- org.codehaus.groovy:groovy-swing:2.5.12 (*)
+|    +--- org.codehaus.groovy:groovy-templates:2.5.12 (*)
+|    +--- org.codehaus.groovy:groovy-test:2.5.12
+|    |    +--- org.codehaus.groovy:groovy:2.5.12
+|    |    \--- junit:junit:4.12 -> 4.13 (*)
+|    +--- org.codehaus.groovy:groovy-test-junit5:2.5.12
+|    |    +--- org.codehaus.groovy:groovy:2.5.12
+|    |    +--- org.junit.platform:junit-platform-launcher:1.4.0
+|    |    |    +--- org.apiguardian:apiguardian-api:1.0.0
+|    |    |    \--- org.junit.platform:junit-platform-engine:1.4.0
+|    |    |         +--- org.apiguardian:apiguardian-api:1.0.0
+|    |    |         +--- org.opentest4j:opentest4j:1.1.1
+|    |    |         \--- org.junit.platform:junit-platform-commons:1.4.0
+|    |    |              \--- org.apiguardian:apiguardian-api:1.0.0
+|    |    \--- org.junit.jupiter:junit-jupiter-engine:5.4.0
+|    |         +--- org.apiguardian:apiguardian-api:1.0.0
+|    |         +--- org.junit.platform:junit-platform-engine:1.4.0 (*)
+|    |         \--- org.junit.jupiter:junit-jupiter-api:5.4.0
+|    |              +--- org.apiguardian:apiguardian-api:1.0.0
+|    |              +--- org.opentest4j:opentest4j:1.1.1
+|    |              \--- org.junit.platform:junit-platform-commons:1.4.0 (*)
+|    +--- org.codehaus.groovy:groovy-testng:2.5.12
+|    |    +--- org.codehaus.groovy:groovy:2.5.12
+|    |    \--- org.testng:testng:6.13.1
+|    |         \--- com.beust:jcommander:1.72 -> 1.81
+|    \--- org.codehaus.groovy:groovy-xml:2.5.12 (*)
++--- org.mockito:mockito-core -> 2.28.2
+|    +--- net.bytebuddy:byte-buddy:1.9.10
+|    +--- net.bytebuddy:byte-buddy-agent:1.9.10
+|    \--- org.objenesis:objenesis:2.6
++--- org.spockframework:spock-core -> 1.3-groovy-2.5
+|    +--- org.codehaus.groovy:groovy:2.5.4 -> 2.5.12
+|    +--- org.codehaus.groovy:groovy-json:2.5.4 -> 2.5.12 (*)
+|    +--- org.codehaus.groovy:groovy-nio:2.5.4 -> 2.5.12 (*)
+|    +--- org.codehaus.groovy:groovy-macro:2.5.4 -> 2.5.12 (*)
+|    +--- org.codehaus.groovy:groovy-templates:2.5.4 -> 2.5.12 (*)
+|    +--- org.codehaus.groovy:groovy-test:2.5.4 -> 2.5.12 (*)
+|    +--- org.codehaus.groovy:groovy-sql:2.5.4 -> 2.5.12 (*)
+|    +--- org.codehaus.groovy:groovy-xml:2.5.4 -> 2.5.12 (*)
+|    \--- junit:junit:4.12 -> 4.13 (*)
+\--- ch.qos.logback:logback-classic -> 1.2.3
+     +--- ch.qos.logback:logback-core:1.2.3
+     \--- org.slf4j:slf4j-api:1.7.25 -> 1.7.32
+
+testRuntimeOnly - Runtime only dependencies for source set 'test'. (n)
+\--- ch.qos.logback:logback-classic (n)
+
+(c) - dependency constraint
+(*) - dependencies omitted (listed previously)
+
+(n) - Not resolved (configuration is not meant to be resolved)
+
+A web-based, searchable dependency report is available by adding the --scan option.
