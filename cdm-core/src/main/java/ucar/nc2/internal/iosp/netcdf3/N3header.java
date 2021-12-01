@@ -40,11 +40,11 @@ public class N3header {
 
   // variable info for reading/writing
   static class Vinfo {
-    String name;
+    final String name;
     long vsize; // size of array in bytes. if isRecord, size per record.
     long begin; // offset of start of data from start of file
-    boolean isRecord; // is it a record variable?
-    long attsPos; // attributes start here - used for update
+    final boolean isRecord; // is it a record variable?
+    final long attsPos; // attributes start here - used for update
 
     Vinfo(String name, long vsize, long begin, boolean isRecord, long attsPos) {
       this.name = name;

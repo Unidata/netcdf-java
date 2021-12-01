@@ -287,10 +287,8 @@ public class CF1Convention extends CSMConvention {
               for (int i = dimNames.size() - 1; i >= 0; i--) {
                 String dimName = dimNames.get(i);
                 if (!dimName.equals("time")) {
-                  rootGroup.findVariableLocal(dimName).ifPresent(coordvar -> {
-                    coordvar.getAttributeContainer()
-                        .addAttribute(new Attribute(_Coordinate.AxisType, AxisType.SimpleGeometryID.toString()));
-                  });
+                  rootGroup.findVariableLocal(dimName).ifPresent(coordvar -> coordvar.getAttributeContainer()
+                      .addAttribute(new Attribute(_Coordinate.AxisType, AxisType.SimpleGeometryID.toString())));
                   // handle else case as malformed CF NetCDF
                 }
 

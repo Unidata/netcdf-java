@@ -434,7 +434,7 @@ public class CoordSysTable extends JPanel {
     List<CoordinateSystemBean> csList = getCoordinateSystemBeans(ds);
     List<VariableBean> beanList = new ArrayList<>();
     List<AxisBean> axisList = new ArrayList<>();
-    setVariables(ds.getVariables(), axisList, beanList, csList);
+    setVariables(ds.getAllVariables(), axisList, beanList, csList);
 
     varTable.setBeans(beanList);
     axisTable.setBeans(axisList);

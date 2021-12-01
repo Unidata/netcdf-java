@@ -88,8 +88,8 @@ public class GridDatasetFactory {
 
   private static class GribOpenAttempt {
     @Nullable
-    public GridDataset coverage;
-    public boolean isGrib; // We know if its grib or not
+    public final GridDataset coverage;
+    public final boolean isGrib; // We know if its grib or not
 
     GribOpenAttempt(@Nullable GridDataset coverage, boolean isGrib) {
       this.coverage = coverage;

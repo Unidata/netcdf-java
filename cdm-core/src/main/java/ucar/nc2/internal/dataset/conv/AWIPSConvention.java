@@ -72,7 +72,7 @@ public class AWIPSConvention extends CoordSystemBuilder {
   double startx, starty, dx, dy;
 
   @Override
-  public void augmentDataset(CancelTask cancelTask) throws IOException {
+  public void augmentDataset(CancelTask cancelTask) {
     if (rootGroup.findVariableLocal("x").isPresent()) {
       return; // check if its already been done - aggregating enhanced datasets.
     }

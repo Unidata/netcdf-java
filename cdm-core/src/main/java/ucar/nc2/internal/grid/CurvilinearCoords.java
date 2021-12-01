@@ -156,7 +156,7 @@ public class CurvilinearCoords {
     }
 
     public String toStringShort() {
-      return String.format("[%f,%f]", latindex, lonindex);
+      return String.format("[%d,%d]", latindex, lonindex);
     }
 
     @Override
@@ -325,10 +325,9 @@ public class CurvilinearCoords {
 
     // must all have same determinate sign
     boolean sign = detIsPositive(x1, y1, x2, y2, wantLon, wantLat);
-    boolean result = (sign == detIsPositive(x2, y2, x3, y3, wantLon, wantLat))
+    return (sign == detIsPositive(x2, y2, x3, y3, wantLon, wantLat))
         && (sign == detIsPositive(x3, y3, x4, y4, wantLon, wantLat))
         && (sign == detIsPositive(x4, y4, x1, y1, wantLon, wantLat));
-    return result;
   }
 
   private boolean detIsPositive(double x0, double y0, double x1, double y1, double x2, double y2) {

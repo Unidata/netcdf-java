@@ -232,7 +232,7 @@ recordsGroup/recordsStruct = UNREADABLE
 
         NcmlWriter ncmlWriterO = new NcmlWriter(null, null, compoundPred);
 
-        for (Variable v : ncFile.variables) {
+        for (Variable v : ncFile.allVariables) {
             printf "%s == %s isCoord = %s%n", v.getShortName(), compoundPred.test(v), NcmlWriter.writeCoordinateVariablesPredicate.test(v)
         }
 
@@ -240,7 +240,7 @@ recordsGroup/recordsStruct = UNREADABLE
         ncmlWriterO.getWriteValuesPredicate() == compoundPred  // Exercise getter.
 
         and: "compoundPred applies to every Variable in ncFile"
-        ncFile.variables.every { compoundPred.test(it) }
+        ncFile.allVariables.every { compoundPred.test(it) }
 
         and: "generated NcML string will match expectedNcmlResult"
         Element netcdfElem = ncmlWriterO.makeExplicitNetcdfElement(ncFile, null)

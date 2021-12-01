@@ -109,7 +109,7 @@ public class N3iospWriter extends N3iosp implements IospFileWriter {
     this.fill = fill;
   }
 
-  public boolean rewriteHeader(boolean largeFile) throws IOException {
+  public boolean rewriteHeader(boolean largeFile) {
     return ((N3headerWriter) header).rewriteHeader(largeFile);
   }
 
@@ -260,8 +260,7 @@ public class N3iospWriter extends N3iosp implements IospFileWriter {
   }
 
   @Override
-  public int appendStructureData(Structure s, ucar.array.StructureData sdata)
-      throws IOException, InvalidRangeException {
+  public int appendStructureData(Structure s, ucar.array.StructureData sdata) {
     return 0;
   }
 
@@ -326,7 +325,7 @@ public class N3iospWriter extends N3iosp implements IospFileWriter {
   // fill buffer with fill value
   private void fillNonRecordVariables() throws IOException {
     // run through each variable
-    for (Variable v : ncfile.getVariables()) {
+    for (Variable v : ncfile.getAllVariables()) {
       if (v.isUnlimited())
         continue;
       try {
@@ -344,7 +343,7 @@ public class N3iospWriter extends N3iosp implements IospFileWriter {
       Range r = new Range(i, i);
 
       // run through each variable
-      for (Variable v : ncfile.getVariables()) {
+      for (Variable v : ncfile.getAllVariables()) {
         if (!v.isUnlimited() || (v instanceof Structure))
           continue;
         Section.Builder recordSection = v.getSection().toBuilder();

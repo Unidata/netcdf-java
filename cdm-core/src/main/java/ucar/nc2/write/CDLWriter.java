@@ -28,10 +28,8 @@ import ucar.nc2.util.Indent;
 import ucar.unidata.util.StringUtil2;
 
 /**
- * Common Data Language (CDL) writer.
- *
- * @see "https://www.unidata.ucar.edu/software/netcdf/docs/index.html"
- *      TODO strict mode for valid CDL
+ * Netcdf Common Data Language (CDL) writer.
+ * TODO strict mode for valid CDL
  */
 public class CDLWriter {
   /**
@@ -146,9 +144,6 @@ public class CDLWriter {
       indent.decr();
       out.format("%s}%n%n", indent);
     }
-
-    // if (hasA && (hasE || hasD || hasV || hasG))
-    // out.format("%n");
 
     if (hasA) {
       if (group.isRoot())

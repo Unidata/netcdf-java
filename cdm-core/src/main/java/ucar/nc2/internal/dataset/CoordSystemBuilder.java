@@ -159,20 +159,20 @@ public class CoordSystemBuilder {
 
   //////////////////////////////////////////////////////////////////////////////////////////////
 
-  protected NetcdfDataset.Builder<?> datasetBuilder;
-  protected Group.Builder rootGroup;
-  protected CoordinatesHelper.Builder coords;
+  protected final NetcdfDataset.Builder<?> datasetBuilder;
+  protected final Group.Builder rootGroup;
+  protected final CoordinatesHelper.Builder coords;
 
-  protected List<VarProcess> varList = new ArrayList<>();
+  protected final List<VarProcess> varList = new ArrayList<>();
   // TODO Not processing coordinates attribute on Structures. See problem/kunicki.structs.nc4
-  protected List<StructureDS.Builder<?>> structList = new ArrayList<>();
+  protected final List<StructureDS.Builder<?>> structList = new ArrayList<>();
 
   // coordinate variables for Dimension (name)
-  protected Multimap<DimensionWithGroup, VarProcess> coordVarsForDimension = ArrayListMultimap.create();
+  protected final Multimap<DimensionWithGroup, VarProcess> coordVarsForDimension = ArrayListMultimap.create();
   // default name of Convention, override in subclass
   protected String conventionName = _Coordinate.Convention;
-  protected Formatter parseInfo = new Formatter();
-  protected Formatter userAdvice = new Formatter();
+  protected final Formatter parseInfo = new Formatter();
+  protected final Formatter userAdvice = new Formatter();
   protected boolean debug;
 
   // Used when using NcML to provide convention attributes.
@@ -759,23 +759,23 @@ public class CoordSystemBuilder {
 
   /** Classifications of Variables into axis, systems and transforms */
   protected class VarProcess {
-    public Group.Builder gb;
+    public final Group.Builder gb;
     public VariableDS.Builder<?> vb;
-    public ArrayList<String> coordSysNames = new ArrayList<>();
+    public final ArrayList<String> coordSysNames = new ArrayList<>();
 
     // attributes
     public String coordVarAlias; // _Coordinate.AliasForDimension
     public String positive; // _Coordinate.ZisPositive or CF.POSITIVE
-    public String coordinateAxes; // _Coordinate.Axes
-    public String coordinateSystems; // _Coordinate.Systems
-    public String coordinateSystemsFor; // _Coordinate.SystemsFor
-    public String coordinateTransforms; // _Coordinate.Transforms
-    public String coordAxisTypes; // _Coordinate.AxisTypes
-    public String coordTransformType; // _Coordinate.TransformType
+    public final String coordinateAxes; // _Coordinate.Axes
+    public final String coordinateSystems; // _Coordinate.Systems
+    public final String coordinateSystemsFor; // _Coordinate.SystemsFor
+    public final String coordinateTransforms; // _Coordinate.Transforms
+    public final String coordAxisTypes; // _Coordinate.AxisTypes
+    public final String coordTransformType; // _Coordinate.TransformType
     public String coordinates; // CF coordinates (set by subclasses)
 
     // coord axes
-    public boolean isCoordinateVariable; // classic coordinate variable
+    public final boolean isCoordinateVariable; // classic coordinate variable
     public boolean isCoordinateAxis;
     public AxisType axisType;
     public CoordinateAxis.Builder<?> axis; // if its made into a Coordinate Axis, this is not null

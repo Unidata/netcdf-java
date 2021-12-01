@@ -5,7 +5,6 @@
 package ucar.nc2.iosp;
 
 import java.io.IOException;
-import javax.annotation.Nullable;
 
 /*
  * From https://www.unidata.ucar.edu/software/netcdf/docs/netcdf_8h_source.html on 3/26/2020

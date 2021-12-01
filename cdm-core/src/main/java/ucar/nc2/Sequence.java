@@ -12,7 +12,6 @@ import javax.annotation.concurrent.Immutable;
 
 import com.google.common.base.Preconditions;
 import ucar.array.ArrayType;
-import ucar.array.InvalidRangeException;
 import ucar.array.Section;
 import ucar.array.StructureData;
 import ucar.array.StructureDataArray;
@@ -44,7 +43,7 @@ public class Sequence extends Structure implements Iterable<StructureData> {
 
   /** Read all data into memory. */
   @Override
-  public StructureDataArray readArray() throws IOException {
+  public StructureDataArray readArray() {
     List<StructureData> list = new ArrayList<>();
     for (StructureData sdata : this) {
       list.add(sdata);
@@ -57,7 +56,7 @@ public class Sequence extends Structure implements Iterable<StructureData> {
 
   /** @throws UnsupportedOperationException always */
   @Override
-  public Variable section(Section subsection) throws InvalidRangeException {
+  public Variable section(Section subsection) {
     throw new UnsupportedOperationException();
   }
 
@@ -69,7 +68,7 @@ public class Sequence extends Structure implements Iterable<StructureData> {
 
   /** @throws UnsupportedOperationException always */
   @Override
-  public StructureData readRecord(int recno) throws IOException, InvalidRangeException {
+  public StructureData readRecord(int recno) {
     throw new UnsupportedOperationException();
   }
 

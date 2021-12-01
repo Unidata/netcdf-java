@@ -54,7 +54,6 @@ public class GribCdmIndex implements IndexReader {
 
   private static final Logger classLogger = LoggerFactory.getLogger(GribCdmIndex.class);
 
-
   // object cache for ncx files - these are opened only as GribCollection
   public static FileCacheIF gribCollectionCache;
 
@@ -746,7 +745,7 @@ public class GribCdmIndex implements IndexReader {
     // At this point, there isn't a good way of invalidating the gribColectionCache entries associated with the
     // particular collection being updated, so we have to clear the whole cache. Will revisit this in
     // 5.0 if performance is an issue
-    if ((updateType == CollectionUpdateType.never) || changed) {
+    if ((null != gribCollectionCache) && (updateType == CollectionUpdateType.never || changed)) {
       gribCollectionCache.clearCache(true);
     }
 

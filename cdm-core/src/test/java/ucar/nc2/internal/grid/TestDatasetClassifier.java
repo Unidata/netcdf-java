@@ -186,13 +186,13 @@ public class TestDatasetClassifier {
       assertThat((Object) tcs.getRunTimeAxis()).isNotNull();
       assertThat((Object) tcs.getTimeOffsetAxis(0)).isNotNull();
       assertThat(tcs.getTimeOffsetAxis(0).getDependenceType()).isEqualTo(GridAxisDependenceType.independent);
-      assertThat(tcs.getRunTimeAxis().getDependenceType()).isEqualTo(GridAxisDependenceType.independent);
+      assertThat(tcs.getRunTimeAxis().getDependenceType()).isEqualTo(GridAxisDependenceType.dependent);
       assertThat((Object) gcs.getEnsembleAxis()).isNull();
       assertThat((Object) gcs.getVerticalAxis()).isNull();
       assertThat((Object) gcs.getYHorizAxis()).isNotNull();
       assertThat((Object) gcs.getXHorizAxis()).isNotNull();
 
-      assertThat(gcs.getNominalShape()).isEqualTo(ImmutableList.of(124, 7, 576, 1152));
+      assertThat(gcs.getNominalShape()).isEqualTo(ImmutableList.of(868, 576, 1152));
     }
   }
 

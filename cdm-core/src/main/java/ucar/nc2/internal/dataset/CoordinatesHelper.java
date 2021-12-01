@@ -132,9 +132,9 @@ public class CoordinatesHelper {
   }
 
   public static class Builder {
-    public List<CoordinateAxis.Builder<?>> coordAxes = new ArrayList<>();
-    public List<CoordinateSystem.Builder<?>> coordSys = new ArrayList<>();
-    public List<ProjectionCTV> coordTransforms = new ArrayList<>();
+    public final List<CoordinateAxis.Builder<?>> coordAxes = new ArrayList<>();
+    public final List<CoordinateSystem.Builder<?>> coordSys = new ArrayList<>();
+    public final List<ProjectionCTV> coordTransforms = new ArrayList<>();
     private boolean built;
 
     public Builder addCoordinateAxis(CoordinateAxis.Builder<?> axis) {

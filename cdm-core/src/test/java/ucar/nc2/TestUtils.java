@@ -17,7 +17,7 @@ public class TestUtils {
   /** read all data, make sure variable metadata matches the array */
   public static void testReadData(NetcdfFile ncfile, boolean showStatus) {
     try {
-      for (Variable v : ncfile.getVariables()) {
+      for (Variable v : ncfile.getAllVariables()) {
         testVarMatchesData(v, showStatus);
       }
     } catch (IOException ioe) {

@@ -178,7 +178,7 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
 
   ////////////////////////////////////////////////////////////////////////////////////////////
   private final CoordinateAxisTimeHelper helper;
-  private List<CalendarDate> cdates;
+  private final List<CalendarDate> cdates;
 
   protected CoordinateAxis1DTime(Builder<?> builder, Group parentGroup) {
     super(builder, parentGroup);

@@ -110,7 +110,7 @@ public class TestCoordSystemBuilder {
     // This has Best and TwoD, and the coordSys are mixing them up
     String filename = TestDir.cdmUnitTestDir + "gribCollections/gdsHashChange/noaaport/NDFD-CONUS_noaaport.ncx4";
     try (NetcdfDataset ds = NetcdfDatasets.openDataset(filename)) {
-      for (Variable v : ds.getVariables()) {
+      for (Variable v : ds.getAllVariables()) {
         System.out.printf(" Check variable %s%n", v.getFullName());
         VariableDS vds = (VariableDS) v;
         Group parent = v.getParentGroup();

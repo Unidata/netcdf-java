@@ -48,11 +48,11 @@ abstract class AggregationOuter extends Aggregation implements ProxyReader {
   protected static boolean debugCache, debugInvocation, debugStride;
   public static int invocation; // debugging
 
-  protected List<String> aggVarNames = new ArrayList<>(); // explicitly specified in the NcML
-  protected List<VariableDS.Builder<?>> aggVars = new ArrayList<>(); // actual vars that will be aggregated
+  protected final List<String> aggVarNames = new ArrayList<>(); // explicitly specified in the NcML
+  protected final List<VariableDS.Builder<?>> aggVars = new ArrayList<>(); // actual vars that will be aggregated
   private int totalCoords; // the aggregation dimension size
 
-  protected List<CacheVar> cacheList = new ArrayList<>(); // promote global attribute to variable
+  protected final List<CacheVar> cacheList = new ArrayList<>(); // promote global attribute to variable
   protected boolean timeUnitsChange;
 
   /**
@@ -281,10 +281,10 @@ abstract class AggregationOuter extends Aggregation implements ProxyReader {
   /////////////////////////////////////////////////////////////////////////////////////
 
   private static class ReaderTask implements Callable<Result> {
-    AggDataset ds;
-    Variable mainv;
-    CancelTask cancelTask;
-    int index;
+    final AggDataset ds;
+    final Variable mainv;
+    final CancelTask cancelTask;
+    final int index;
 
     ReaderTask(AggDataset ds, Variable mainv, CancelTask cancelTask, int index) {
       this.ds = ds;
@@ -300,8 +300,8 @@ abstract class AggregationOuter extends Aggregation implements ProxyReader {
   }
 
   private static class Result {
-    Array<?> data;
-    int index;
+    final Array<?> data;
+    final int index;
 
     Result(Array<?> data, int index) {
       this.data = data;
@@ -323,7 +323,7 @@ abstract class AggregationOuter extends Aggregation implements ProxyReader {
   /////////////////////////////////////////////
   // vars that should be cached across the agg for efficiency
   class CacheVar {
-    String varName;
+    final String varName;
     ArrayType dtype;
     private Map<String, Array<?>> dataMap = new HashMap<>();
 
@@ -448,9 +448,9 @@ abstract class AggregationOuter extends Aggregation implements ProxyReader {
   /////////////////////////////////////////////
   // data values might be specified by Dataset.coordValue
   class CoordValueVar extends CacheVar {
-    String units;
+    final String units;
     @Nullable
-    CalendarDateUnit du;
+    final CalendarDateUnit du;
 
     CoordValueVar(String varName, ArrayType dtype, String units) {
       super(varName, dtype);
@@ -593,8 +593,8 @@ abstract class AggregationOuter extends Aggregation implements ProxyReader {
   /////////////////////////////////////////////
   // global attributes promoted to variables
   class PromoteVarCompose extends PromoteVar {
-    String format;
-    Iterable<String> gattNames;
+    final String format;
+    final Iterable<String> gattNames;
 
     /**
      * @param varName name of agg variable
@@ -710,7 +710,7 @@ abstract class AggregationOuter extends Aggregation implements ProxyReader {
 
     List<Range> ranges = section.getRanges();
     Range joinRange = section.getRange(0);
-    List<Range> nestedRanges = new ArrayList(ranges);
+    List<Range> nestedRanges = new ArrayList<>(ranges);
     Section innerSection = new Section(ranges.subList(1, ranges.size()));
 
     List<Array<?>> arrayData = new ArrayList<>();
@@ -735,8 +735,7 @@ abstract class AggregationOuter extends Aggregation implements ProxyReader {
       arrayData.add(varData);
     }
 
-    Array<?> sectionData = Arrays.combine(dtype, section.getShape(), arrayData);
-    return sectionData;
+    return Arrays.combine(dtype, section.getShape(), arrayData);
   }
 
   /**

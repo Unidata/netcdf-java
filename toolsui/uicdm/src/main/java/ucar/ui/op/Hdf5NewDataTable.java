@@ -10,7 +10,7 @@ import ucar.array.ArrayVlen;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFiles;
 import ucar.nc2.Variable;
-import ucar.nc2.internal.iosp.hdf5.H5diagNew;
+import ucar.nc2.internal.iosp.hdf5.H5diagnostic;
 import ucar.nc2.internal.iosp.hdf5.H5header;
 import ucar.nc2.internal.iosp.hdf5.H5iosp;
 import ucar.ui.widget.BAMutil;
@@ -150,7 +150,7 @@ public class Hdf5NewDataTable extends Hdf5DataTable {
       infoTA.setText(sw.toString());
     }
 
-    for (Variable v : ncfile.getVariables()) {
+    for (Variable v : ncfile.getAllVariables()) {
       beanList.add(new VarBean(v));
     }
 
@@ -161,12 +161,12 @@ public class Hdf5NewDataTable extends Hdf5DataTable {
     if (iosp == null) {
       return;
     }
-    H5diagNew header = new H5diagNew(ncfile, iosp);
+    H5diagnostic header = new H5diagnostic(ncfile, iosp);
     header.showCompress(f);
   }
 
   void deflate(Formatter f, VarBean bean) {
-    H5diagNew diag = new H5diagNew(ncfile, iosp);
+    H5diagnostic diag = new H5diagnostic(ncfile, iosp);
     try {
       diag.showCompress(f);
     } catch (IOException e) {

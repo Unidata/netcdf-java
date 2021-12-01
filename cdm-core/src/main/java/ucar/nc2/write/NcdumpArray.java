@@ -239,13 +239,13 @@ public class NcdumpArray {
         indent.incr();
 
         if (wantValues == WantValues.all) { // dump all data
-          for (Variable v : ncfile.getVariables()) {
+          for (Variable v : ncfile.getAllVariables()) {
             printArray(out, v.readArray(), v.getFullName(), indent, cancelTask);
             if (cancelTask != null && cancelTask.isCancel())
               return out.toString();
           }
         } else if (wantValues == WantValues.coordsOnly) { // dump coordVars
-          for (Variable v : ncfile.getVariables()) {
+          for (Variable v : ncfile.getAllVariables()) {
             if (v.isCoordinateVariable())
               printArray(out, v.readArray(), v.getFullName(), indent, cancelTask);
             if (cancelTask != null && cancelTask.isCancel())

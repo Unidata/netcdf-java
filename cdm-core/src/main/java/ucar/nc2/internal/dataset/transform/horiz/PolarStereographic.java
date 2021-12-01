@@ -31,7 +31,7 @@ public class PolarStereographic extends AbstractProjectionCT implements Projecti
     if (Double.isNaN(scale)) {
       double stdpar = ctv.findAttributeDouble(CF.STANDARD_PARALLEL, Double.NaN);
       if (!Double.isNaN(stdpar)) {
-        // caclulate scale snyder (21-7)
+        // calculate scale from snyder (21-7)
         // k = 2 * k0/(1 +/- sin stdpar)
         // then to make scale = 1 at stdpar, k0 = (1 +/- sin(stdpar))/2
         // double sin = Math.sin( Math.toRadians( stdpar));

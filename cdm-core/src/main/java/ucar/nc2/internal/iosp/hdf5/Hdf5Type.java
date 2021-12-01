@@ -13,9 +13,9 @@ class Hdf5Type {
   private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Hdf5Type.class);
   private static final boolean warnings = true;
 
-  int hdfType;
-  int byteSize;
-  byte[] flags;
+  final int hdfType;
+  final int byteSize;
+  final byte[] flags;
   ArrayType dataType;
   ByteOrder endian;
   boolean unsigned;

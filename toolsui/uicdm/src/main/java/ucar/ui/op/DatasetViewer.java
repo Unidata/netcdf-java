@@ -261,7 +261,7 @@ public class DatasetViewer extends JPanel {
 
   private List<String> getVariableNames(NetcdfFile nc) {
     List<String> result = new ArrayList<>();
-    for (Variable v : nc.getVariables())
+    for (Variable v : nc.getAllVariables())
       result.add(v.getFullName());
     return result;
   }
@@ -659,7 +659,7 @@ public class DatasetViewer extends JPanel {
 
   private List<VariableBean> getVariableBeans(NetcdfFile ds) {
     List<VariableBean> vlist = new ArrayList<>();
-    for (Variable v : ds.getVariables()) {
+    for (Variable v : ds.getAllVariables()) {
       vlist.add(new VariableBean(v));
     }
     return vlist;

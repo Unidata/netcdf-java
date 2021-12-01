@@ -5,7 +5,6 @@
 
 package ucar.nc2.internal.dataset.conv;
 
-import java.io.IOException;
 import ucar.nc2.Attribute;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
@@ -56,7 +55,7 @@ public class Suomi extends CoordSystemBuilder {
   }
 
   @Override
-  public void augmentDataset(CancelTask cancelTask) throws IOException {
+  public void augmentDataset(CancelTask cancelTask) {
     String start_date = rootGroup.getAttributeContainer().findAttributeString("start_date", null);
     if (start_date == null)
       return;

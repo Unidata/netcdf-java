@@ -64,7 +64,7 @@ public class NUWGConvention extends CoordSystemBuilder {
   }
 
   @Override
-  protected void augmentDataset(CancelTask cancelTask) throws IOException {
+  protected void augmentDataset(CancelTask cancelTask) {
     if (null != rootGroup.getAttributeContainer().findAttribute("_enhanced"))
       return; // check if its already been done - aggregating enhanced datasets.
     rootGroup.getAttributeContainer().addAttribute("_enhanced", "");
@@ -381,9 +381,9 @@ public class NUWGConvention extends CoordSystemBuilder {
   }
 
   private class NavInfo {
-    VariableDS.Builder<?> vb;
-    Variable orgVar;
-    ArrayType valueType;
+    final VariableDS.Builder<?> vb;
+    final Variable orgVar;
+    final ArrayType valueType;
     String svalue;
     byte bvalue;
     int ivalue;

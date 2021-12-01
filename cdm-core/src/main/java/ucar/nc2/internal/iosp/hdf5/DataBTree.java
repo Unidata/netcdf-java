@@ -220,7 +220,6 @@ public class DataBTree {
       if (debugChunkOrder && wantOrigin != null)
         System.out.printf("Level %d: Tile want %d%n", level, tiling.order(wantOrigin));
       if (level == 0) {
-        currentEntry = 0;
         // note nentries-1 - assume dont skip the last one
         for (currentEntry = 0; currentEntry < nentries - 1; currentEntry++) {
           DataChunk entry = myEntries.get(currentEntry + 1); // look at the next one

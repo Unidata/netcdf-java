@@ -256,7 +256,7 @@ public class GridCoordinateSystem {
       return "";
 
     Formatter f2 = new Formatter();
-    f2.format("%s(", featureType.toString());
+    f2.format("%s(", featureType);
 
     ArrayList<GridAxis<?>> otherAxes = new ArrayList<>();
     int count = 0;

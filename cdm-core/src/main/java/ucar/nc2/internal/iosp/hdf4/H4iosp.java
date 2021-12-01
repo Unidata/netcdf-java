@@ -302,7 +302,7 @@ public class H4iosp extends AbstractIOServiceProvider {
   }
 
   private static class H4ChunkIterator implements LayoutTiled.DataChunkIterator {
-    List<H4header.DataChunk> chunks;
+    final List<H4header.DataChunk> chunks;
     int chunkNo;
 
     H4ChunkIterator(H4header.Vinfo vinfo) {
@@ -324,7 +324,7 @@ public class H4iosp extends AbstractIOServiceProvider {
   }
 
   private class H4CompressedChunkIterator implements LayoutBBTiled.DataChunkIterator {
-    List<H4header.DataChunk> chunks;
+    final List<H4header.DataChunk> chunks;
     int chunkNo;
 
     H4CompressedChunkIterator(H4header.Vinfo vinfo) {

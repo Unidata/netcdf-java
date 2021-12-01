@@ -833,7 +833,7 @@ public class Variable implements ProxyReader, Comparable<Variable> {
    * @return size at which caching happens
    */
   public int getSizeToCache() {
-    if (cache.sizeToCacheBytes != null) { // it was set
+    if (cache.sizeToCacheBytes != null) { // it was already set
       return cache.sizeToCacheBytes;
     }
     // default

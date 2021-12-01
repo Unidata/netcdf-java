@@ -5,23 +5,18 @@
 package ucar.nc2.util;
 
 import com.google.common.io.CharStreams;
+
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.security.AccessControlException;
 import javax.annotation.Nullable;
-import ucar.nc2.constants.CDM;
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 
-/**
- * Input/Output static utilities.
- *
- * @author John Caron
- * @see "http://stackoverflow.com/questions/12552863/correct-idiom-for-managing-multiple-chained-resources-in-try-with-resources-bloc"
- */
+/** Input/Output static utilities. */
 public class IO {
   public static final int default_file_buffersize = 9200;
-  public static final int default_socket_buffersize = 64000;
   private static final boolean showCopy = false;
 
   /**
@@ -194,7 +189,7 @@ public class IO {
    * @throws java.io.IOException on io error
    */
   public static String readContents(InputStream is) throws IOException {
-    return readContents(is, CDM.UTF8);
+    return readContents(is, StandardCharsets.UTF_8);
   }
 
   /**
@@ -205,7 +200,7 @@ public class IO {
    * @return String holding the contents, or an error message.
    * @throws java.io.IOException on io error
    */
-  public static String readContents(InputStream is, String charset) throws IOException {
+  public static String readContents(InputStream is, Charset charset) throws IOException {
     ByteArrayOutputStream bout = new ByteArrayOutputStream(10 * default_file_buffersize);
     IO.copy(is, bout);
     return bout.toString(charset);

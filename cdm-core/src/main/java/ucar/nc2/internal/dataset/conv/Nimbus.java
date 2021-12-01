@@ -4,7 +4,6 @@
  */
 package ucar.nc2.internal.dataset.conv;
 
-import java.io.IOException;
 import ucar.nc2.Attribute;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.CDM;
@@ -46,7 +45,7 @@ public class Nimbus extends CoardsConventions {
   }
 
   @Override
-  protected void augmentDataset(CancelTask cancelTask) throws IOException {
+  protected void augmentDataset(CancelTask cancelTask) {
     rootGroup.addAttribute(new Attribute("cdm_data_type", ucar.nc2.constants.FeatureType.TRAJECTORY.name()));
     rootGroup.addAttribute(new Attribute(CF.FEATURE_TYPE, ucar.nc2.constants.FeatureType.TRAJECTORY.name()));
 
@@ -98,7 +97,7 @@ public class Nimbus extends CoardsConventions {
   }
 
   private boolean setAxisType(String varName, AxisType atype) {
-    if (!rootGroup.findVariableLocal(varName).isPresent()) {
+    if (rootGroup.findVariableLocal(varName).isEmpty()) {
       return false;
     }
     rootGroup.findVariableLocal(varName)

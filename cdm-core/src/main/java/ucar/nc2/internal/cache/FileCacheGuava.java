@@ -28,13 +28,11 @@ public class FileCacheGuava implements FileCacheIF {
 
   public FileCacheGuava(String name, int maxSize) {
     this.name = name;
-    this.cache = CacheBuilder.newBuilder().maximumSize(maxSize).recordStats()
-        // .removalListener(MY_LISTENER)
-        .build(new CacheLoader<String, FileCacheable>() {
-          public FileCacheable load(String key) {
-            throw new IllegalStateException();
-          }
-        });
+    this.cache = CacheBuilder.newBuilder().maximumSize(maxSize).recordStats().build(new CacheLoader<>() {
+      public FileCacheable load(String key) {
+        throw new IllegalStateException();
+      }
+    });
   }
 
 

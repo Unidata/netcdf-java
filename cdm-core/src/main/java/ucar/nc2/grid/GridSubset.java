@@ -69,11 +69,7 @@ public class GridSubset {
   }
 
   public static GridSubset fromStringMap(Map<String, String> stringMap) {
-    Map<String, Object> req = new HashMap<>();
-    for (Map.Entry<String, String> entry : stringMap.entrySet()) {
-      req.put(entry.getKey(), entry.getValue());
-    }
-    return new GridSubset(req);
+    return new GridSubset(new HashMap<>(stringMap));
   }
 
   public GridSubset(Map<String, Object> req) {

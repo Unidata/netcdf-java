@@ -120,7 +120,7 @@ public class GridNetcdfDataset implements GridDataset {
     coordsys.sort((o1, o2) -> o2.getGridAxes().size() - o1.getGridAxes().size());
 
     // Assign coordsys to grids
-    for (Variable v : ncd.getVariables()) {
+    for (Variable v : ncd.getAllVariables()) {
       if (v.getFullName().startsWith("Best/")) { // TODO remove Best from grib generation code
         continue;
       }
@@ -162,9 +162,9 @@ public class GridNetcdfDataset implements GridDataset {
   }
 
   private static class VerticalTransformFinder {
-    NetcdfDataset ncd;
-    Formatter errlog;
-    Set<TrackVerticalTransform> result;
+    final NetcdfDataset ncd;
+    final Formatter errlog;
+    final Set<TrackVerticalTransform> result;
 
     VerticalTransformFinder(NetcdfDataset ncd, Formatter errlog) {
       this.ncd = ncd;
@@ -173,7 +173,7 @@ public class GridNetcdfDataset implements GridDataset {
     }
 
     Set<TrackVerticalTransform> findVerticalTransforms() {
-      for (Variable v : ncd.getVariables()) {
+      for (Variable v : ncd.getAllVariables()) {
         Optional<String> transformNameOpt = VerticalTransformFactory.hasVerticalTransformFor(v.attributes());
         if (transformNameOpt.isPresent()) {
           String transformName = transformNameOpt.get();
@@ -202,8 +202,8 @@ public class GridNetcdfDataset implements GridDataset {
   }
 
   private static class TrackGridCS {
-    DatasetClassifier.CoordSysClassifier csc;
-    GridCoordinateSystem gridCS;
+    final DatasetClassifier.CoordSysClassifier csc;
+    final GridCoordinateSystem gridCS;
 
     public TrackGridCS(DatasetClassifier.CoordSysClassifier csc, GridCoordinateSystem gridCS) {
       this.csc = csc;

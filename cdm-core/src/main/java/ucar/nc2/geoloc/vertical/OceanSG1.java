@@ -131,7 +131,7 @@ public class OceanSG1 extends AbstractVerticalTransform {
     Array<Number> etaArray = (etaRank == 3) ? readArray(ds, etaName, timeIndex) : readArray(ds, etaName);
     Array<Number> depthArray = readArray(ds, depthName);
 
-    /**
+    /*
      * Make height from the given data.
      * height(x,y,z) = S(x,y,z) + eta(x,y) * (1 + S(x,y,z) / depth([n],x,y) )
      * where,

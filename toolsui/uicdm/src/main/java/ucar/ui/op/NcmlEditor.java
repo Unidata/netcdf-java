@@ -342,7 +342,7 @@ public class NcmlEditor extends JPanel {
       return;
     }
     try (NetcdfDataset ncd = NetcdfDatasets.openDataset(ncmlLocation)) {
-      for (Variable v : ncd.getVariables()) {
+      for (Variable v : ncd.getAllVariables()) {
         VariableDS vds = (VariableDS) v;
         if (vds.getOriginalArrayType() != vds.getArrayType()) {
           f.format("Variable %s has type %s, org = %s%n", vds.getFullName(), vds.getOriginalArrayType(),

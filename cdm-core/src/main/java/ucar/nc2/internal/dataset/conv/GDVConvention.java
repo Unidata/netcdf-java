@@ -4,7 +4,6 @@
  */
 package ucar.nc2.internal.dataset.conv;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.StringTokenizer;
 
@@ -48,7 +47,7 @@ public class GDVConvention extends CSMConvention {
   }
 
   @Override
-  protected void augmentDataset(CancelTask cancelTask) throws IOException {
+  protected void augmentDataset(CancelTask cancelTask) {
     projCT = makeProjectionCT();
     if (projCT != null) {
       VariableDS.Builder<?> vb = makeCoordinateTransformVariable(projCT);

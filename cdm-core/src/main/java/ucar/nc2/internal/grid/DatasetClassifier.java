@@ -121,14 +121,14 @@ public class DatasetClassifier {
     }
 
     //////////////////////////////////////////////////////////////////////
-    NetcdfDataset ds;
-    CoordinateSystem cs;
+    final NetcdfDataset ds;
+    final CoordinateSystem cs;
     FeatureType featureType;
     boolean standardGeoXY, standardLatLon, curvilinear, curvilinearWith1D;
     CoordinateAxis xaxis, yaxis, lataxis, lonaxis, timeAxis, timeOffsetAxis; // may be 1 or 2 dimensional
     CoordinateAxis vertAxis, ensAxis, rtAxis; // must be 1 dimensional
-    List<CoordinateAxis> indAxes = new ArrayList<>();
-    List<CoordinateAxis> depAxes = new ArrayList<>();
+    final List<CoordinateAxis> indAxes = new ArrayList<>();
+    final List<CoordinateAxis> depAxes = new ArrayList<>();
     @Nullable
     Projection orgProj;
 

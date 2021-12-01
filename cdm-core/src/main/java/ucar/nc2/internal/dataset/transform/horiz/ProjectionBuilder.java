@@ -24,7 +24,4 @@ public interface ProjectionBuilder {
   /** Get the Transform name. */
   String getTransformName();
 
-  /*** Pass in a Formatter where error messages can be appended. */
-  void setErrorBuffer(Formatter sb);
-
 }

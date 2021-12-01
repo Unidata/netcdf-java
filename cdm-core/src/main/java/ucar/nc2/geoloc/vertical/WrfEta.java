@@ -77,12 +77,7 @@ public class WrfEta extends AbstractVerticalTransform {
       return Optional.empty();
     }
 
-    try {
-      return Optional.of(new WrfEta(ds, params.getName(), units, pertVar, baseVar, isXStag, isYStag, isZStag));
-    } catch (IOException e) {
-      errlog.format("WrfEta %s: failed err = %s%n", params.getName(), e.getMessage());
-      return Optional.empty();
-    }
+    return Optional.of(new WrfEta(ds, params.getName(), units, pertVar, baseVar, isXStag, isYStag, isZStag));
   }
 
   private static boolean isStaggered(CoordinateSystem coords, AxisType type1, @Nullable AxisType type2, int dimIndex) {
@@ -107,7 +102,7 @@ public class WrfEta extends AbstractVerticalTransform {
   private final boolean isXStag, isYStag, isZStag;
 
   private WrfEta(NetcdfDataset ds, String ctvName, String units, String pertVar, String baseVar, boolean isXStag,
-      boolean isYStag, boolean isZStag) throws IOException {
+      boolean isYStag, boolean isZStag) {
     super(ds, WRF_ETA_COORDINATE, ctvName, units);
 
     this.pertVar = pertVar;

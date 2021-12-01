@@ -9,7 +9,6 @@ import javax.annotation.Nullable;
 import ucar.array.StructureData;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Sequence;
-import ucar.nc2.util.CancelTask;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.Format;
 import java.io.File;
@@ -23,7 +22,7 @@ public abstract class AbstractIOServiceProvider implements IOServiceProvider {
   protected int rafOrder = RandomAccessFile.BIG_ENDIAN;
   protected NetcdfFile ncfile;
 
-  public void setRaf(RandomAccessFile raf) throws IOException {
+  public void setRaf(RandomAccessFile raf) {
     this.raf = raf;
     this.location = raf.getLocation();
   }

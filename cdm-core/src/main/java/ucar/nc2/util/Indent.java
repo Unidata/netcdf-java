@@ -52,7 +52,6 @@ public class Indent {
   }
 
   private void makeBlanks(int len) {
-    for (int i = 0; i < len * nspaces; i++)
-      blanks.append(" ");
+    blanks.append(" ".repeat(Math.max(0, len * nspaces)));
   }
 }

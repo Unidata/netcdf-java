@@ -9,7 +9,6 @@ import ucar.array.Array;
 import ucar.array.Arrays;
 import ucar.array.Index;
 import ucar.nc2.Group;
-import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.CF;
 import ucar.unidata.util.Format;
 import java.io.IOException;
@@ -703,7 +702,6 @@ public class CoordinateAxis1D extends CoordinateAxis {
     }
   }
 
-  @Deprecated
   public static abstract class Builder<T extends Builder<T>> extends CoordinateAxis.Builder<T> {
     private boolean built;
     protected boolean isContiguous = true;

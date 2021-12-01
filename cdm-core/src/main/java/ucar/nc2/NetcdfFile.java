@@ -91,7 +91,6 @@ import ucar.nc2.write.NcmlWriter;
 @Immutable
 public class NetcdfFile implements FileCacheable, Closeable {
 
-  @Deprecated
   public static final String IOSP_MESSAGE_ADD_RECORD_STRUCTURE = "AddRecordStructure";
   public static final String IOSP_MESSAGE_RANDOM_ACCESS_FILE = "RandomAccessFile";
   public static final String IOSP_MESSAGE_GET_IOSP = "IOSP";
@@ -338,11 +337,20 @@ public class NetcdfFile implements FileCacheable, Closeable {
     return v;
   }
 
-  /**
-   * Get all shared Dimensions used in this file.
-   */
-  public ImmutableList<Dimension> getDimensions() {
+
+  /** Get all of the group attributes in the file, in all groups. Alternatively, use groups. */
+  public ImmutableList<Attribute> getAllAttributes() {
+    return allAttributes;
+  }
+
+  /** Get all shared Dimensions used in this file, in all groups. Alternatively, use groups. */
+  public ImmutableList<Dimension> getAllDimensions() {
     return allDimensions;
+  }
+
+  /** Get all of the variables in the file, in all groups. Alternatively, use groups. */
+  public ImmutableList<Variable> getAllVariables() {
+    return allVariables;
   }
 
   /**
@@ -419,11 +427,6 @@ public class NetcdfFile implements FileCacheable, Closeable {
   @Nullable
   public String getTitle() {
     return title;
-  }
-
-  /** Get all of the variables in the file, in all groups. Alternatively, use groups. */
-  public ImmutableList<Variable> getVariables() {
-    return allVariables;
   }
 
   /**
@@ -526,7 +529,6 @@ public class NetcdfFile implements FileCacheable, Closeable {
    *
    * @return true if it has a Nectdf-3 record structure
    */
-  @Deprecated
   private boolean makeRecordStructure() {
     Boolean didit = false;
     if ((iosp != null) && (iosp instanceof N3iosp) && hasUnlimitedDimension()) {

@@ -511,10 +511,9 @@ public class DiskCache2 {
 
   @Override
   public String toString() {
-    String sb = "DiskCache2" + "{cachePathPolicy=" + cachePathPolicy + ", alwaysUseCache=" + alwaysUseCache
+    return "DiskCache2" + "{cachePathPolicy=" + cachePathPolicy + ", alwaysUseCache=" + alwaysUseCache
         + ", cachePathPolicyParam='" + cachePathPolicyParam + '\'' + ", root='" + root + '\'' + ", scourEveryMinutes="
         + scourEveryMinutes + ", persistMinutes=" + persistMinutes + ", fail=" + fail + '}';
-    return sb;
   }
 
 }

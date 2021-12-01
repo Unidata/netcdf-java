@@ -105,7 +105,7 @@ public class HdfEos {
     parser.parseFromString(smeta); // now we have the ODL as JDOM elements
     StringWriter sw = new StringWriter(5000);
     parser.showDoc(new PrintWriter(sw));
-    f.format("parsed = %n%s%n", sw.toString());
+    f.format("parsed = %n%s%n", sw);
     return true;
   }
 
@@ -167,8 +167,6 @@ public class HdfEos {
         }
         String swathName = NetcdfFiles.makeValidCdmObjectName(swathNameElem.getText().trim());
         Group.Builder swathGroup = findGroupNested(rootg, swathName);
-        // if (swathGroup == null)
-        // swathGroup = findGroupNested(rootg, HdfHeaderIF.createValidObjectName(swathName));
 
         if (swathGroup != null) {
           featureType = amendSwath(elemSwath, swathGroup);
@@ -190,8 +188,6 @@ public class HdfEos {
         }
         String gridName = NetcdfFiles.makeValidCdmObjectName(gridNameElem.getText().trim());
         Group.Builder gridGroup = findGroupNested(rootg, gridName);
-        // if (gridGroup == null)
-        // gridGroup = findGroupNested(rootg, HdfHeaderIF.createValidObjectName(gridName));
         if (gridGroup != null) {
           featureType = amendGrid(elemGrid, gridGroup, location);
         } else {
@@ -212,8 +208,6 @@ public class HdfEos {
         }
         String name = nameElem.getText().trim();
         Group.Builder ptGroup = findGroupNested(rootg, name);
-        // if (ptGroup == null)
-        // ptGroup = findGroupNested(rootg, HdfHeaderIF.createValidObjectName(name));
         if (ptGroup != null) {
           featureType = FeatureType.POINT;
         } else {

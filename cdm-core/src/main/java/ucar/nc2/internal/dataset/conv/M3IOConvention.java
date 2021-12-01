@@ -6,7 +6,7 @@
 package ucar.nc2.internal.dataset.conv;
 
 import com.google.common.base.Preconditions;
-import java.io.IOException;
+
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.SimpleTimeZone;
@@ -80,7 +80,7 @@ public class M3IOConvention extends CoordSystemBuilder {
   }
 
   @Override
-  public void augmentDataset(CancelTask cancelTask) throws IOException {
+  public void augmentDataset(CancelTask cancelTask) {
     if (rootGroup.findVariableLocal("x").isPresent() || rootGroup.findVariableLocal("lon").isPresent())
       return; // check if its already been done - aggregating enhanced datasets.
 

@@ -117,11 +117,9 @@ public class TableParser {
   public static List<Record> readTable(InputStream ios, String format, int maxLines)
       throws IOException, NumberFormatException {
     List<Record> result;
-    try {
+    try (ios) {
       TableParser parser = new TableParser(format);
       result = parser.readAllRecords(ios, maxLines);
-    } finally {
-      ios.close();
     }
     return result;
   }
@@ -137,7 +135,7 @@ public class TableParser {
     while (stoker.hasMoreTokens()) {
       String tok = stoker.nextToken();
       // see what type
-      Class type = String.class;
+      Class<?> type = String.class;
       char last = tok.charAt(tok.length() - 1);
       if (last == 'i')
         type = int.class;
@@ -195,12 +193,12 @@ public class TableParser {
 
   public static class Field {
     int start, end;
-    Class type;
+    Class<?> type;
 
     boolean hasScale;
     float scale;
 
-    Field(int start, int end, Class type) {
+    Field(int start, int end, Class<?> type) {
       this.start = start;
       this.end = end;
       this.type = type;
@@ -232,7 +230,7 @@ public class TableParser {
         svalue = StringUtil2.remove(svalue, ' ');
         boolean isBlank = (svalue.trim().isEmpty());
         if (type == double.class)
-          return isBlank ? 0.0 : new Double(svalue);
+          return isBlank ? 0.0 : Double.parseDouble(svalue);
         if (type == int.class) {
           int result = isBlank ? 0 : Integer.parseInt(svalue);
           if (hasScale)
@@ -258,17 +256,17 @@ public class TableParser {
 
   }
 
-  public DerivedField addDerivedField(Field from, Transform transform, Class type) {
+  public DerivedField addDerivedField(Field from, Transform transform, Class<?> type) {
     DerivedField fld = new DerivedField(from, transform, type);
     fields.add(fld);
     return fld;
   }
 
   public static class DerivedField extends Field {
-    Field from;
-    Transform transform;
+    final Field from;
+    final Transform transform;
 
-    DerivedField(Field from, Transform transform, Class type) {
+    DerivedField(Field from, Transform transform, Class<?> type) {
       this.from = from;
       this.transform = transform;
       this.type = type;
@@ -285,9 +283,9 @@ public class TableParser {
   }
 
   public static class Record {
-    List<Object> values = new ArrayList<>();
+    final List<Object> values = new ArrayList<>();
 
-    static Record make(String line, List fields) {
+    static Record make(String line, List<?> fields) {
       try {
         Record r = new Record();
         for (Object field : fields) {

@@ -4,7 +4,6 @@
  */
 package ucar.nc2.internal.dataset.conv;
 
-import java.io.IOException;
 import ucar.nc2.Attribute;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
@@ -43,7 +42,7 @@ public class FslWindProfiler extends CoordSystemBuilder {
   }
 
   @Override
-  public void augmentDataset(CancelTask cancelTask) throws IOException {
+  public void augmentDataset(CancelTask cancelTask) {
     for (Variable.Builder<?> v : rootGroup.vbuilders) {
       switch (v.shortName) {
         case "staName":

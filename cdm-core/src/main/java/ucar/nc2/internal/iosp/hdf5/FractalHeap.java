@@ -216,8 +216,7 @@ public class FractalHeap {
   }
 
   public class DHeapId {
-
-    int type;
+    final int type;
     int subtype; // 1 = indirect no filter, 2 = indirect, filter 3 = direct, no filter, 4 = direct, filter
     int n; // the offset field size
     int m;
@@ -306,10 +305,9 @@ public class FractalHeap {
   }
 
   private class DoublingTable {
-    int tableWidth;
-    long startingBlockSize, managedSpace, maxDirectBlockSize;
-    // int nrows, nDirectRows, nIndirectRows;
-    List<DataBlock> blockList;
+    final int tableWidth;
+    final long startingBlockSize, managedSpace, maxDirectBlockSize;
+    final List<DataBlock> blockList;
 
     DoublingTable(int tableWidth, long startingBlockSize, long managedSpace, long maxDirectBlockSize) {
       this.tableWidth = tableWidth;
@@ -372,8 +370,8 @@ public class FractalHeap {
   }
 
   private class IndirectBlock {
-    long size;
-    int nrows, directRows, indirectRows;
+    final long size;
+    final int nrows, directRows, indirectRows;
     List<DataBlock> directBlocks;
     List<IndirectBlock> indirectBlocks;
 

@@ -41,20 +41,15 @@ public class ExistingFieldVerticalTransform extends AbstractVerticalTransform {
     }
     String units = getUnits(ds, existingField);
 
-    try {
-      return Optional.of(new ExistingFieldVerticalTransform(ds, params.getName(), units, existingField, rank));
-    } catch (IOException e) {
-      errlog.format("OceanSigma %s: failed err = %s%n", params.getName(), e.getMessage());
-      return Optional.empty();
-    }
+    return Optional.of(new ExistingFieldVerticalTransform(ds, params.getName(), units, existingField, rank));
   }
 
   /////////////////////////////////////////////////////////////////////////////////////////////////////
   private final String existingField;
   private final int rank;
 
-  private ExistingFieldVerticalTransform(NetcdfDataset ds, String ctvName, String units, String existingField, int rank)
-      throws IOException {
+  private ExistingFieldVerticalTransform(NetcdfDataset ds, String ctvName, String units, String existingField,
+      int rank) {
     super(ds, CF.ocean_sigma_coordinate, ctvName, units);
 
     this.existingField = existingField;

@@ -336,7 +336,7 @@ public class TestDir {
   public static int readAllData(NetcdfFile ncfile) throws IOException {
     logger.debug("------Reading ncfile {}", ncfile.getLocation());
     try {
-      for (Variable v : ncfile.getVariables()) {
+      for (Variable v : ncfile.getAllVariables()) {
         if (v instanceof Sequence) {
           Sequence seq = (Sequence) v;
           int count = 0;

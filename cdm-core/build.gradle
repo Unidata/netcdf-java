@@ -17,7 +17,6 @@ dependencies {
   compile 'com.google.guava:guava'
   compile 'com.google.protobuf:protobuf-java'
   compile 'com.google.re2j:re2j'
-  compile 'joda-time:joda-time'
   compile 'org.jdom:jdom2'
   compile 'org.slf4j:slf4j-api'
 

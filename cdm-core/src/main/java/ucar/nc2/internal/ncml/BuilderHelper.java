@@ -46,7 +46,7 @@ class BuilderHelper {
 
     // dimensions
     for (Dimension d : src.getDimensions()) {
-      if (!targetGroup.findDimensionLocal(d.getShortName()).isPresent()) {
+      if (targetGroup.findDimensionLocal(d.getShortName()).isEmpty()) {
         Dimension newd = Dimension.builder().setName(d.getShortName()).setIsShared(d.isShared())
             .setIsUnlimited(unlimitedOK && d.isUnlimited()).setIsVariableLength(d.isVariableLength())
             .setLength(d.getLength()).build();
@@ -58,7 +58,7 @@ class BuilderHelper {
     for (Variable v : src.getVariables()) {
       Optional<Variable.Builder<?>> targetV = targetGroup.findVariableLocal(v.getShortName());
       boolean replace = (replaceCheck != null) && replaceCheck.replace(v); // replaceCheck not currently used
-      if (replace || !targetV.isPresent()) { // replace it
+      if (replace || targetV.isEmpty()) { // replace it
         VariableDS.Builder<?> vb;
         if (!(v instanceof VariableDS)) {
           vb = VariableDS.builder().copyFrom(v);
@@ -72,7 +72,7 @@ class BuilderHelper {
     // nested groups - check if target already has it
     for (Group srcNested : src.getGroups()) {
       Optional<Builder> existing = targetGroup.findGroupLocal(srcNested.getShortName());
-      if (!existing.isPresent()) {
+      if (existing.isEmpty()) {
         Group.Builder nested = Group.builder().setName(srcNested.getShortName());
         targetGroup.addGroup(nested);
         transferGroup(ds, targetDs, srcNested, nested, replaceCheck);

@@ -5,7 +5,6 @@
 package ucar.nc2.grid;
 
 import com.google.auto.value.AutoValue;
-import com.google.common.base.Preconditions;
 import com.google.re2j.Matcher;
 import com.google.re2j.Pattern;
 import ucar.nc2.util.Misc;

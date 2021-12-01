@@ -18,7 +18,7 @@ public class TestStructureDSBuilder {
 
   @Test
   public void testBuilder() {
-    Variable.Builder var = Variable.builder().setName("member").setArrayType(ArrayType.FLOAT);
+    Variable.Builder<?> var = Variable.builder().setName("member").setArrayType(ArrayType.FLOAT);
     StructureDS struct = StructureDS.builder().setName("name").setArrayType(ArrayType.FLOAT).addMemberVariable(var)
         .build(makeDummyGroup());
     assertThat(struct.getArrayType()).isEqualTo(ArrayType.STRUCTURE);
@@ -52,7 +52,7 @@ public class TestStructureDSBuilder {
 
   @Test
   public void testToBuilderChain() {
-    Variable.Builder var = Variable.builder().setName("member").setArrayType(ArrayType.FLOAT);
+    Variable.Builder<?> var = Variable.builder().setName("member").setArrayType(ArrayType.FLOAT);
     StructureDS struct =
         StructureDS.builder().setName("name").setUnits("units").addMemberVariable(var).build(makeDummyGroup());
 
@@ -73,7 +73,6 @@ public class TestStructureDSBuilder {
     Structure orgVar = Structure.builder().setName("orgName").setArrayType(ArrayType.INT).build(makeDummyGroup());
     StructureDS var = StructureDS.builder().setName("name").setOriginalName("orgName").setOriginalVariable(orgVar)
         .build(makeDummyGroup());
-    assertThat(var.getOriginalArrayType()).isEqualTo(ArrayType.STRUCTURE);
     assertThat(var.getOriginalName()).isEqualTo("orgName");
     assertThat((Object) var.getOriginalVariable()).isEqualTo(orgVar);
   }

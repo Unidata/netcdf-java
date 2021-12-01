@@ -472,8 +472,8 @@ public class NcmlWriter {
         double incr = ndata.get(ima.set(1)).doubleValue() - start;
         boolean isRegular = true;
         for (int i = 2; i < ndata.getSize(); i++) {
-          double v1 = ndata.get(ima.set(i)).doubleValue();;
-          double v0 = ndata.get(ima.set(i - 1)).doubleValue();;
+          double v1 = ndata.get(ima.set(i)).doubleValue();
+          double v0 = ndata.get(ima.set(i - 1)).doubleValue();
           if (!Misc.nearlyEquals(v1 - v0, incr, 2.e-7)) {
             isRegular = false;
           }

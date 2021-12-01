@@ -151,8 +151,8 @@ public class LayoutTiled implements Layout {
 
   /** The chunks of a tiled layout. */
   public static class DataChunk {
-    public int[] offset; // offset index of this chunk, relative to entire array
-    public long filePos; // filePos of a single raw data chunk
+    public final int[] offset; // offset index of this chunk, relative to entire array
+    public final long filePos; // filePos of a single raw data chunk
 
     public DataChunk(int[] offset, long filePos) {
       this.offset = offset;
