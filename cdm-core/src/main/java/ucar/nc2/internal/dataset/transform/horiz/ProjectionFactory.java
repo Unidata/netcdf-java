@@ -213,7 +213,6 @@ public class ProjectionFactory {
     }
 
     ProjectionBuilder horizBuilder = (ProjectionBuilder) builderObject;
-    horizBuilder.setErrorBuffer(parseInfo);
     Projection proj = horizBuilder.makeProjection(ctv, projCtv.getGeounits());
 
     if (proj != null) {
