@@ -6,6 +6,8 @@ package ucar.nc2.grib.coord;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+
+import com.google.common.base.Preconditions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.nc2.grib.collection.Grib;
@@ -322,7 +324,7 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
 
     } else {
       for (int i = 0; i < offsets.size() - 1; i++) {
-        int diff = (Integer) offsets.get(i + 1) - (Integer) offsets.get(i);
+        long diff = (Long) offsets.get(i + 1) - (Long) offsets.get(i);
         counters.count("resol", diff);
       }
     }
@@ -681,7 +683,7 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
     return new CoordinateTime(getCode(), getTimeUnit(), getRefDate(), offsetSorted, time2runtime);
   }
 
-  // can we make into a MRUTC ?
+  // If there are no overlapping times, then we can we make it into an MRUTC.
   public boolean hasUniqueTimes() {
     if (isTimeInterval) {
       // make unique set of coordinates
@@ -700,11 +702,11 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
       }
     } else {
       Set<Long> values = new HashSet<>(); // complete set of values
-      for (int runIdx = 0; runIdx < nruns; runIdx++) { // use times array, passed into constructor, with original
-                                                       // inventory, if possible
+      // use times array, passed into constructor, with original inventory, if possible
+      for (int runIdx = 0; runIdx < nruns; runIdx++) {
         CoordinateTime timeCoord =
             (times == null) ? (CoordinateTime) getTimeCoordinate(runIdx) : (CoordinateTime) times.get(runIdx);
-        assert timeCoord != null;
+        Preconditions.checkNotNull(timeCoord);
         for (Long offset : timeCoord.getOffsetSorted()) {
           long offsetAbs = (offset + getOffset(runIdx)); // convert to absolute offset
           if (values.contains(offsetAbs)) {

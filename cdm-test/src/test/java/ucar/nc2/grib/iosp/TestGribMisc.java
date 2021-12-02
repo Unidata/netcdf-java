@@ -128,8 +128,7 @@ public class TestGribMisc {
      * You might think that if scanmode = 64, one should just invert the grids. As it turns out, on all projections
      * except for latlon (that i have sample of),
      * the right thing to do is to ignore the flipping, because the coordinate system (the assignment of lat,lon values
-     * to each grid point) correctly adjusts
-     * for it. So its just on latlon grids that this issue arises.
+     * to each grid point) correctly adjusts for it. So its just on latlon grids that this issue arises.
      * 
      * So on your file:
      * 
@@ -147,14 +146,13 @@ public class TestGribMisc {
      * consistent with scan mode 64.
      * 
      * Im loath to generalize from a sample size of 2. Do you have a sample of GRIB2 files with various encodings?
-     * Perhaps I could test them to see if we
-     * can guess when to flip or not.
+     * Perhaps I could test them to see if we can guess when to flip or not.
      * 
      * thanks,
      * John
      */
     String filename = TestDir.cdmUnitTestDir + "formats/grib2/grid174_scanmode_64_example.grb2";
-
+    System.out.printf("testScanMode %s%n", filename);
     try (NetcdfFile ncfile = NetcdfFiles.open(filename, null)) {
       Variable v = ncfile.getRootGroup().findVariableByAttribute(Grib.VARIABLE_ID_ATTNAME, "VAR_0-0-0_L1");
       assert v != null : ncfile.getLocation();

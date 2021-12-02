@@ -73,9 +73,8 @@ public class GribGridAxis {
             return create(type, time2d.getOrthogonalTimes(), iosp).withTime2d(time2d);
 
           case MRUTP:
-          case MRUTC: // the time coordinate is a time2D (nruns X 1) orthogonal
+          case MRUTC: // the time coordinate is a time2D orthogonal with no overlapping times
             Preconditions.checkArgument(time2d.isOrthogonal());
-            Preconditions.checkArgument(time2d.getNtimes() == 1);
             Preconditions.checkNotNull(time2d.getOrthogonalTimes());
             return create(type, time2d.getOffsetTimes(), iosp).withTime2d(time2d);
 

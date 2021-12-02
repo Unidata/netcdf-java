@@ -27,12 +27,7 @@ import java.util.Collections;
 import java.util.Formatter;
 import java.util.List;
 
-/**
- * Time coordinates that are offsets from the reference date (not intervals).
- *
- * @author caron
- * @since 11/24/13
- */
+/** Time coordinates that are offsets from the reference date (not intervals). */
 @Immutable
 public class CoordinateTime extends CoordinateTimeAbstract implements Coordinate {
   private static final Logger logger = LoggerFactory.getLogger(CoordinateTime.class);

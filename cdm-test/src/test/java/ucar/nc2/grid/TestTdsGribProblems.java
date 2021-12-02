@@ -26,11 +26,10 @@ public class TestTdsGribProblems {
   private static final String indexDir = TestDir.cdmUnitTestDir + "tds_index/";
 
   @Test
-  @Ignore("this is classified as MRUTC but most time coordinates are not")
   public void checkGEFSensemble() throws Exception {
     String filename =
         TestDir.cdmUnitTestDir + "ncss/GEFS/Global_1p0deg_Ensemble/member/GEFS-Global_1p0deg_Ensemble-members.ncx4";
-    checkGridDataset(filename, 35, 11, 17, 17);
+    checkGridDataset(filename, 35, 11, 14, 17);
   }
 
   // TODO: this has two groups
@@ -172,10 +171,9 @@ public class TestTdsGribProblems {
   }
 
   @Test
-  @Ignore("doesnt work")
   public void testHrrrConusWrfprs() throws Exception {
     String filename = indexDir + "NOAA_GSD/HRRR/CONUS_3km/wrfprs/GSD_HRRR_CONUS_3km_wrfprs.ncx4";
-    TestReadandCount.doOne(filename, -1, -1, -1, -1);
+    TestReadandCount.doOne(filename, 16, 2, 8, 2);
   }
 
   @Test
