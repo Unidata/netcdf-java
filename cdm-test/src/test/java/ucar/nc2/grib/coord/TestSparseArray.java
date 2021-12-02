@@ -1,7 +1,6 @@
 package ucar.nc2.grib.coord;
 
 import com.google.common.collect.Iterables;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,18 +22,16 @@ public class TestSparseArray {
   private static final FeatureCollectionConfig config = new FeatureCollectionConfig();
 
   @Test
-  @Ignore("failing")
   public void testShowFromPartition() throws IOException {
     String filename = TestDir.cdmUnitTestDir + "tds_index/NCEP/NBM/Alaska/NCEP_ALASKA_MODEL_BLEND.ncx4";
     String vname = "Maximum_relative_humidity_height_above_ground_12_Hour_Maximum";
     String sa = testShowSparseArray(filename, vname);
     assertThat(sa).isNotNull();
-    // TODO should start with 10 XXXXXXXXXX instead of 36.
+    // TODO should start with 10 XXXXXXXXXX instead of 36. ??
     assertThat(sa).contains("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
   }
 
   @Test
-  @Ignore("failing")
   public void testShowFromFirstCollection() throws IOException {
     String filename =
         TestDir.cdmUnitTestDir + "tds_index/NCEP/NBM/Alaska/National_Blend_Alaska_20201027_0100.grib2.ncx4";

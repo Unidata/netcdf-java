@@ -839,8 +839,8 @@ public class CdmIndexPanel extends JPanel {
           resol = (n > 1) ? (end - start) / (n - 1) : 0.0;
 
         } else {
-          start = (Integer) offsets.get(0); // + offsetFromMaster;
-          end = (Integer) offsets.get(n - 1); // + offsetFromMaster;
+          start = (Long) offsets.get(0); // + offsetFromMaster;
+          end = (Long) offsets.get(n - 1); // + offsetFromMaster;
           resol = (n > 1) ? (end - start) / (n - 1) : 0.0;
         }
 
