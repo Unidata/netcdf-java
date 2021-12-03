@@ -31,7 +31,7 @@ topnav_dropdowns:
           - title: GitHub
             external_url: https://github.com/Unidata/tds
           - title: Documentation
-            external_url: https://docs.unidata.ucar.edu/tds/5.0/userguide/index.html
+            external_url: https://docs.unidata.ucar.edu/tds/current/userguide/index.html
 
       - title: Rosetta
         folderitems:
