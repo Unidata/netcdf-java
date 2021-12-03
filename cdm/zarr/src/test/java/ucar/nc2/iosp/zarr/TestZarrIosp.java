@@ -30,12 +30,15 @@ public class TestZarrIosp {
 
   // file names
   private static final String ZARR_FILENAME = "zarr_test_data.zarr/";
+  private static final String ZARR_ZIP_NAME = "zarr_test_data.zip";
   private static final String INVALID_ZARR_FILENAME = "zarr_invalid_data.zarr";
 
   // test store paths
   private static final String OBJECT_STORE_ZARR_URI = ZarrTestsCommon.S3_PREFIX + ZarrTestsCommon.AWS_BUCKET_NAME + "?"
       + ZARR_FILENAME + "#" + ZarrTestsCommon.S3_FRAGMENT;
   private static final String DIRECTORY_STORE_URI = ZarrTestsCommon.LOCAL_TEST_DATA_PATH + ZARR_FILENAME;
+  private static final String ZIP_STORE_URI = ZarrTestsCommon.LOCAL_TEST_DATA_PATH + ZARR_ZIP_NAME;
+
   // invalid zarr file
   private static final String INVALID_ZARR_DATA = ZarrTestsCommon.LOCAL_TEST_DATA_PATH + INVALID_ZARR_FILENAME;
 
@@ -45,6 +48,7 @@ public class TestZarrIosp {
   public static void setUpTests() {
     stores = new ArrayList<>();
     stores.add(DIRECTORY_STORE_URI);
+    stores.add(ZIP_STORE_URI);
     stores.add(OBJECT_STORE_ZARR_URI);
   }
 
