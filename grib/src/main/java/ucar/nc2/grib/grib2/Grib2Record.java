@@ -15,15 +15,8 @@ import ucar.unidata.util.StringUtil2;
 import java.io.IOException;
 import java.util.Formatter;
 
-/**
- * Read one Record from a GRIB-2 files
- *
- * @author caron
- * @since 3/28/11
- */
+/** Read one Record from a GRIB-2 files */
 public class Grib2Record {
-
-  //////////////////////////////////////////////////////////////
   private final Grib2SectionIndicator is;
   private final Grib2SectionIdentification id;
   private Grib2SectionLocalUse lus; // local use section
@@ -32,7 +25,6 @@ public class Grib2Record {
   private Grib2SectionDataRepresentation drss;
   private Grib2SectionBitMap bms;
   private Grib2SectionData dataSection;
-
   private Grib2Pds pds2;
 
   private final byte[] header; // anything in between the records - eg idd header

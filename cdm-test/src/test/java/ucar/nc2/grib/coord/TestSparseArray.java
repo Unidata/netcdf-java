@@ -1,8 +1,8 @@
 package ucar.nc2.grib.coord;
 
 import com.google.common.collect.Iterables;
-import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import thredds.featurecollection.FeatureCollectionConfig;
@@ -10,6 +10,7 @@ import ucar.nc2.grib.collection.GribCdmIndex;
 import ucar.nc2.grib.collection.GribCollectionImmutable;
 import ucar.nc2.grib.collection.PartitionCollectionImmutable;
 import ucar.unidata.util.test.TestDir;
+import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
@@ -23,18 +24,18 @@ public class TestSparseArray {
   private static final FeatureCollectionConfig config = new FeatureCollectionConfig();
 
   @Test
-  @Ignore("failing")
+  @Category(NeedsCdmUnitTest.class)
   public void testShowFromPartition() throws IOException {
     String filename = TestDir.cdmUnitTestDir + "tds_index/NCEP/NBM/Alaska/NCEP_ALASKA_MODEL_BLEND.ncx4";
     String vname = "Maximum_relative_humidity_height_above_ground_12_Hour_Maximum";
     String sa = testShowSparseArray(filename, vname);
     assertThat(sa).isNotNull();
-    // TODO should start with 10 XXXXXXXXXX instead of 36.
+    // TODO should start with 10 XXXXXXXXXX instead of 36. ??
     assertThat(sa).contains("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
   }
 
   @Test
-  @Ignore("failing")
+  @Category(NeedsCdmUnitTest.class)
   public void testShowFromFirstCollection() throws IOException {
     String filename =
         TestDir.cdmUnitTestDir + "tds_index/NCEP/NBM/Alaska/National_Blend_Alaska_20201027_0100.grib2.ncx4";
@@ -62,7 +63,6 @@ public class TestSparseArray {
   }
 
   private String showSparseArray(GribCollectionImmutable.VariableIndex v) {
-    SparseArray<GribCollectionImmutable.Record> sa = null;
     Formatter f = new Formatter();
     try {
       if (v instanceof PartitionCollectionImmutable.VariableIndexPartitioned) {
@@ -75,7 +75,7 @@ public class TestSparseArray {
       } else {
         v.readRecords();
         if (v.getSparseArray() != null) {
-          sa = v.getSparseArray();
+          SparseArray<GribCollectionImmutable.Record> sa = v.getSparseArray();
           sa.showMissing(f);
         }
       }

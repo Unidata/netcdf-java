@@ -19,7 +19,11 @@ import java.util.Formatter;
 
 import static com.google.common.truth.Truth.assertThat;
 
-/** Open Grib files through GribGrid, and NetcdfDataset, and compare. */
+/**
+ * Open Grib files directly through GribGrid, and indirectly through NetcdfDataset which ises GribIosp.
+ * A number of these tests are withdrawn; its not surprising that the direct GRIB reading is not the same
+ * as opening it through the GRIB IOSP. Generally, the direct GRIB should be correct.
+ */
 @Category(NeedsCdmUnitTest.class)
 public class TestGribGridVsIosp {
 

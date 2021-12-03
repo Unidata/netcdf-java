@@ -136,7 +136,6 @@ abstract class GribCollectionBuilder {
 
     // Create the master runtimes, classify the result
     CalendarDateRange calendarDateRangeAll = null;
-    // boolean allTimesAreOne = true;
     boolean allTimesAreUnique = true;
     Set<Long> allRuntimes = new HashSet<>();
     for (Group g : groups) {
@@ -150,35 +149,30 @@ abstract class GribCollectionBuilder {
         }
         if (coord instanceof CoordinateTimeAbstract) {
           CalendarDateRange calendarDateRange = ((CoordinateTimeAbstract) coord).makeCalendarDateRange();
-          if (calendarDateRangeAll == null)
+          if (calendarDateRangeAll == null) {
             calendarDateRangeAll = calendarDateRange;
-          else
+          } else {
             calendarDateRangeAll = calendarDateRangeAll.extend(calendarDateRange);
+          }
         }
       }
     }
     List<Long> sortedList = new ArrayList<>(allRuntimes);
     Collections.sort(sortedList);
-    if (sortedList.isEmpty())
+    if (sortedList.isEmpty()) {
       throw new IllegalArgumentException("No runtimes in this collection =" + name);
-
-    else if (sortedList.size() == 1)
+    } else if (sortedList.size() == 1) {
       this.type = GribCollectionImmutable.Type.SRC;
-    else if (allTimesAreUnique)
+    } else if (allTimesAreUnique) {
       this.type = GribCollectionImmutable.Type.MRUTC;
-    else
+    } else {
       this.type = GribCollectionImmutable.Type.MRC;
+    }
 
     CoordinateRuntime masterRuntimes = new CoordinateRuntime(sortedList, null);
     MFile indexFileForRuntime = GribCollectionMutable.makeIndexMFile(this.name, directory);
     boolean ok =
         writeIndex(this.name, indexFileForRuntime.getPath(), masterRuntimes, groups, allFiles, calendarDateRangeAll);
-
-    /*
-     * if (this.type == GribCollectionImmutable.Type.MRC) {
-     * GribBestDatasetBuilder.makeDatasetBest();
-     * }
-     */
 
     long took = System.currentTimeMillis() - start;
     logger.debug("That took {} msecs", took);

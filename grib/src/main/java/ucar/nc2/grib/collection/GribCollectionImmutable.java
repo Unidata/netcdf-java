@@ -47,11 +47,6 @@ import java.util.*;
  * An Immutable GribCollection, corresponds to one index (ncx) file.
  * The index file has already been read; it is opened and the closed when a variable is first accessed to read in the
  * record array (sa).
- * <p>
- * Could use the Proto equivalents, and eliminate GribCollectionMutable ?
- *
- * @author caron
- * @since 11/10/2014
  */
 @Immutable
 public abstract class GribCollectionImmutable implements Closeable, FileCacheable {
@@ -62,7 +57,7 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
     SRC, // GC: Single Runtime Collection [ntimes]
     MRC, // GC: Multiple Runtime Collection [nruns, ntimes]
     // MRSTC, // GC: Multiple Runtime Single Time Collection [nruns, 1]
-    MRUTC, // GC: Multiple Runtime Unique Time Collection [ntimes]
+    MRUTC, // GC: Multiple Runtime, Unique Time Collection [ntimes] (there are no overlapping times)
 
     // MRSTP, // PC: Multiple Runtime Single Time Partition [nruns, 1]
     TwoD, // PC: TwoD time partition [nruns, ntimes]
