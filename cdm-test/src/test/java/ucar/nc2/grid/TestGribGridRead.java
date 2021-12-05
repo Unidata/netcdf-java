@@ -32,7 +32,7 @@ public class TestGribGridRead {
   CalendarDate useDate = CalendarDate.fromUdunitIsoDate(null, "2014-10-27T06:00:00Z").orElseThrow();
 
   @Test
-  public void TestTwoDRead() throws IOException, ucar.array.InvalidRangeException {
+  public void TestTwoDRead() throws Exception {
     String filename = TestDir.cdmUnitTestDir + "gribCollections/gfs_conus80/gfsConus80_file.ncx4";
     String gridName = "Temperature_isobaric";
     System.out.printf("TestTwoDRead %s%n", filename);
@@ -70,7 +70,7 @@ public class TestGribGridRead {
   }
 
   @Test
-  public void TestSRCRead() throws IOException, ucar.array.InvalidRangeException {
+  public void TestSRCRead() throws Exception {
     String filename =
         TestDir.cdmUnitTestDir + "gribCollections/gfs_conus80/20141025/GFS_CONUS_80km_20141025_0000.grib1.ncx4";
     String gridName = "Temperature_isobaric";
@@ -108,7 +108,7 @@ public class TestGribGridRead {
   }
 
   @Test
-  public void TestMRUTCRead() throws IOException, ucar.array.InvalidRangeException {
+  public void TestMRUTCRead() throws Exception {
     String filename = TestDir.cdmUnitTestDir + "gribCollections/anal/HRRRanalysis.ncx4";
     String gridName = "Temperature_isobaric";
     System.out.printf("TestSRCRead %s%n", filename);
@@ -143,7 +143,7 @@ public class TestGribGridRead {
   }
 
   @Test
-  public void TestMRUTPRead() throws IOException, ucar.array.InvalidRangeException {
+  public void TestMRUTPRead() throws Exception {
     String filename = TestDir.cdmUnitTestDir + "gribCollections/tp/GFSonedega.ncx4";
     String gridName = "Relative_humidity_sigma";
     System.out.printf("TestSRCRead %s%n", filename);
@@ -178,7 +178,7 @@ public class TestGribGridRead {
   }
 
   @Test
-  public void TestPofPRead() throws IOException, ucar.array.InvalidRangeException {
+  public void TestPofPRead() throws Exception {
     String filename = TestDir.cdmUnitTestDir + "gribCollections/gfs_conus80/gfsConus80_file.ncx4";
     String gridName = "Vertical_velocity_pressure_isobaric";
     System.out.printf("TestSRCRead %s%n", filename);

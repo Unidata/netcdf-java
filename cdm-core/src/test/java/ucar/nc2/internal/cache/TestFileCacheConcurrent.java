@@ -8,8 +8,6 @@ import static com.google.common.truth.Truth.assertThat;
 import static org.junit.Assert.fail;
 
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import ucar.nc2.dataset.DatasetUrl;
 import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.util.CancelTask;
@@ -18,19 +16,16 @@ import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.StringUtil2;
 import java.io.IOException;
 import java.io.File;
-import java.lang.invoke.MethodHandles;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /** Test concurrent use of FileCache */
 public class TestFileCacheConcurrent {
-  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   private static void makeFileList(File dir, String suffix, List<String> result) {
     File[] files = dir.listFiles();
     if (files == null) {
-      assert false;
       return;
     }
     for (File f : files) {
@@ -122,7 +117,6 @@ public class TestFileCacheConcurrent {
         DatasetUrl durl = DatasetUrl.create(null, location);
         FileCacheable fc = cache.acquire(factory, durl);
         NetcdfFile ncfile = (NetcdfFile) fc;
-        // assert ncfile.isLocked();
         assertThat(ncfile.sendIospMessage(NetcdfFile.IOSP_MESSAGE_GET_IOSP)).isNotNull();
         Thread.sleep(wait);
         ncfile.close();

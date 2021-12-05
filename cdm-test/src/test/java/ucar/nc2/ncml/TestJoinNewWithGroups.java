@@ -35,7 +35,7 @@ public class TestJoinNewWithGroups {
   // test case from joleenf@ssec.wisc.edu 03/22/2012
 
   @Test
-  public void testJoinNewWithGroups() throws IOException, InvalidRangeException {
+  public void testJoinNewWithGroups() throws Exception {
     String location = TestDir.cdmUnitTestDir + "agg/groups/groupsJoinNew.ncml";
     Formatter errlog = new Formatter();
     try (GridDataset ncd = GridDatasetFactory.openGridDataset(location, errlog)) {

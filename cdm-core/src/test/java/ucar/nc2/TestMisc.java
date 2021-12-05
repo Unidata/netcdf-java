@@ -4,11 +4,9 @@
  */
 package ucar.nc2;
 
-import junit.framework.TestCase;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.junit.Test;
 import ucar.nc2.internal.util.EscapeStrings;
-import java.lang.invoke.MethodHandles;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -17,13 +15,10 @@ import java.util.List;
 
 /**
  * misc testing
- *
- * @author caron
- * @since May 13, 2009
  */
-public class TestMisc extends TestCase {
-  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+public class TestMisc {
 
+  @Test
   public void testBackslashTokens() {
     testBackslashTokens("group/name.member.mom");
     testBackslashTokens("var\\.name.member.mom");
@@ -41,29 +36,19 @@ public class TestMisc extends TestCase {
     System.out.printf("%n");
   }
 
-  public void testCompareLongs() {
+  @Test
+  public void testCompareLongs() throws ParseException {
+    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+    Date[] dateList = new Date[] {sdf.parse("2002-01-01"), sdf.parse("2002-01-02"), sdf.parse("2002-01-03"),
+        sdf.parse("2002-01-04"), sdf.parse("2002-02-05"), sdf.parse("2002-03-06")};
 
-    try {
+    Arrays.sort(dateList, new DateComparator1());
+    System.out.println("sort error: " + Arrays.toString(dateList));
 
-      SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-      Date[] dateList = new Date[] {sdf.parse("2002-01-01"), sdf.parse("2002-01-02"), sdf.parse("2002-01-03"),
-          sdf.parse("2002-01-04"), sdf.parse("2002-02-05"), sdf.parse("2002-03-06")};
-
-      Arrays.sort(dateList, new DateComparator1());
-
-      System.out.println("sort error: " + Arrays.toString(dateList));
-
-      Arrays.sort(dateList, new DateComparator2());
-
-      System.out.println("sort fix:   " + Arrays.toString(dateList));
-
-
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
+    Arrays.sort(dateList, new DateComparator2());
+    System.out.println("sort fix:   " + Arrays.toString(dateList));
 
     Long.toString(0);
-
   }
 
 

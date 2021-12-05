@@ -5,7 +5,6 @@
 package ucar.nc2.dataset;
 
 import java.util.HashSet;
-import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -26,12 +25,10 @@ import ucar.nc2.internal.util.CompareNetcdf2;
 import ucar.nc2.util.Misc;
 import ucar.nc2.write.NcdumpArray;
 import ucar.nc2.write.NetcdfFormatWriter;
-import ucar.unidata.util.test.Assert2;
 import ucar.nc2.dataset.NetcdfDataset.Enhance;
 import java.io.File;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
-import java.net.URISyntaxException;
 import java.util.EnumSet;
 import java.util.Iterator;
 import java.util.Set;
@@ -49,7 +46,7 @@ public class TestScaleOffsetMissingUnsigned {
     String filename = tempFolder.newFile().getAbsolutePath();
     ScaleOffset so;
 
-    NetcdfFormatWriter.Builder writerb = NetcdfFormatWriter.createNewNetcdf3(filename);
+    NetcdfFormatWriter.Builder<?> writerb = NetcdfFormatWriter.createNewNetcdf3(filename);
 
     // define dimensions
     Dimension latDim = writerb.addDimension("lat", 200);
@@ -121,7 +118,7 @@ public class TestScaleOffsetMissingUnsigned {
       double v1 = iter1.next().doubleValue();
       double v2 = iter2.next().doubleValue();
       double diff = Math.abs(v1 - v2);
-      assert (diff < close) : v1 + " != " + v2 + " index=" + iter1 + " packed=" + p;
+      assertThat(diff).isLessThan(close);
     }
   }
 
@@ -130,180 +127,184 @@ public class TestScaleOffsetMissingUnsigned {
     // read the packed form, enhance using scale/offset, compare to original
     try (NetcdfDataset ncd = NetcdfDatasets.openDataset(filename)) {
       Variable vs = ncd.findVariable("packed");
-      assert vs != null;
+      assertThat(vs).isNotNull();
 
       Section s = Section.builder().appendRange(1, 1).appendRange(1, 1).build();
-      Array readEnhanced = vs.readArray(s);
+      Array<?> readEnhanced = vs.readArray(s);
       logger.debug(NcdumpArray.printArray(readEnhanced));
 
       Variable sec = vs.section(s);
-      Array readSection = sec.readArray();
+      Array<?> readSection = sec.readArray();
       logger.debug(NcdumpArray.printArray(readSection));
       CompareArrayToArray.compareData(vs.getShortName(), readEnhanced, readSection);
     }
   }
 
-
   // Asserts that "scale_factor" is applied to "_FillValue".
   // This test demonstrated the bug in https://github.com/Unidata/thredds/issues/1065.
   @Test
-  public void testScaledFillValue() throws URISyntaxException, IOException {
+  public void testScaledFillValue() throws Exception {
     File testResource = new File(getClass().getResource("testScaledFillValue.ncml").toURI());
 
     try (NetcdfDataset ncd = NetcdfDatasets.openDataset(testResource.getAbsolutePath(), true, null)) {
       VariableDS fooVar = (VariableDS) ncd.findVariable("foo");
+      assertThat(fooVar).isNotNull();
       EnhanceScaleMissingUnsigned proxy = fooVar.scaleMissingUnsignedProxy();
 
       double expectedFillValue = .99999;
       double actualFillValue = proxy.getFillValue();
 
       // Scale factor of "1.e-05" has been applied to original "99999".
-      Assert2.assertNearlyEquals(expectedFillValue, actualFillValue);
+      assertThat(Misc.nearlyEquals(expectedFillValue, actualFillValue)).isTrue();
 
       double fooValWithNaNs = (Double) fooVar.readArray().getScalar();
 
       // "foo" value was converted to NaN because it was equal to _FillValue.
-      Assert.assertTrue(Double.isNaN(fooValWithNaNs));
+      assertThat(Double.isNaN(fooValWithNaNs)).isTrue();
 
       // Note that we can't use isFillValue() because we've applied the ConvertMissing enhancement.
       // See the EnhanceScaleMissingUnsignedImpl Javadoc.
-      Assert.assertTrue(fooVar.isMissing(fooValWithNaNs));
+      assertThat(fooVar.isMissing(fooValWithNaNs)).isTrue();
     }
 
     Set<Enhance> enhance = new HashSet<>(NetcdfDataset.getDefaultEnhanceMode());
     enhance.remove(Enhance.ConvertMissing);
     try (NetcdfDataset ncd = NetcdfDatasets.openDataset(testResource.getAbsolutePath(), enhance, null)) {
       VariableDS fooVar = (VariableDS) ncd.findVariable("foo");
+      assertThat(fooVar).isNotNull();
       double fooValWithoutNaNs = (Double) fooVar.readArray().getScalar();
       EnhanceScaleMissingUnsigned proxy = fooVar.scaleMissingUnsignedProxy();
 
       // "foo" value is equals to fill value. Scale factor has been applied to both.
       double actualFillValue = proxy.getFillValue();
-      Assert2.assertNearlyEquals(actualFillValue, fooValWithoutNaNs);
+      assertThat(Misc.nearlyEquals(actualFillValue, fooValWithoutNaNs)).isTrue();
 
       // "foo" value is considered a fill.
-      Assert.assertTrue(proxy.isFillValue(fooValWithoutNaNs));
+      assertThat(proxy.isFillValue(fooValWithoutNaNs)).isTrue();
     }
   }
 
   // Asserts that EnhanceScaleMissingUnsignedImplImpl compares floating-point values in a "fuzzy" manner.
   // This test demonstrated the bug in https://github.com/Unidata/thredds/issues/1068.
   @Test
-  public void testScaleMissingFloatingPointComparisons() throws IOException, URISyntaxException {
+  public void testScaleMissingFloatingPointComparisons() throws Exception {
     File testResource = new File(getClass().getResource("testScaleMissingFloatingPointComparisons.ncml").toURI());
 
     try (NetcdfDataset ncd = NetcdfDatasets.openDataset(testResource.getAbsolutePath(), true, null)) {
       VariableDS fooVar = (VariableDS) ncd.findVariable("foo");
+      assertThat(fooVar).isNotNull();
       EnhanceScaleMissingUnsigned proxy = fooVar.scaleMissingUnsignedProxy();
 
       // Values have been multiplied by scale_factor == 0.01f. scale_factor is a float, meaning that we can't compare
       // its products with nearlyEquals() using the default Misc.defaultMaxRelativeDiffDouble.
-      Assert2.assertNearlyEquals(0, proxy.getValidMin(), Misc.defaultMaxRelativeDiffFloat);
-      Assert2.assertNearlyEquals(1, proxy.getValidMax(), Misc.defaultMaxRelativeDiffFloat);
+      assertThat(Misc.nearlyEquals(0, proxy.getValidMin(), Misc.defaultMaxRelativeDiffFloat)).isTrue();
+      assertThat(Misc.nearlyEquals(1, proxy.getValidMax(), Misc.defaultMaxRelativeDiffFloat)).isTrue();
 
       // Argument is a double, which has higher precision that our scaled _FillValue (float).
       // This assertion failed before the bug was fixed.
-      Assert.assertTrue(proxy.isFillValue(-0.01));
+      assertThat(proxy.isFillValue(-0.01)).isTrue();
 
       Array<Float> fooVals = (Array<Float>) fooVar.readArray();
-      Assert.assertEquals(4, fooVals.getSize());
+      assertThat(4).isEqualTo(fooVals.getSize());
 
       // foo[0] == -1 (raw); Double.NaN (scaled). It is equal to fill value and outside of valid_range.
       assertThat(fooVals.get(0)).isNaN();
-      Assert.assertTrue(proxy.isFillValue(-0.01));
-      Assert.assertTrue(proxy.isMissingValue(-0.01));
-      Assert.assertTrue(proxy.isInvalidData(-0.01));
-      Assert.assertTrue(proxy.isMissing(-0.01));
+      assertThat(proxy.isFillValue(-0.01)).isTrue();
+      assertThat(proxy.isMissingValue(-0.01)).isTrue();
+      assertThat(proxy.isInvalidData(-0.01)).isTrue();
+      assertThat(proxy.isMissing(-0.01)).isTrue();
 
       // foo[1] == 0 (raw); 0.00 (scaled). It is within valid_range.
-      Assert2.assertNearlyEquals(0.00, fooVals.get(1), Misc.defaultMaxRelativeDiffFloat);
-      Assert.assertFalse(proxy.isInvalidData(0.00));
-      Assert.assertFalse(fooVar.isMissing(0.00));
+      assertThat(Misc.nearlyEquals(0.00, fooVals.get(1), Misc.defaultMaxRelativeDiffFloat)).isTrue();
+      assertThat(proxy.isInvalidData(0.00)).isFalse();
+      assertThat(fooVar.isMissing(0.00)).isFalse();
 
       // foo[2] == 100 (raw); 1.00 (scaled). It is within valid_range.
-      Assert2.assertNearlyEquals(1.00, fooVals.get(2), Misc.defaultMaxRelativeDiffFloat);
+      assertThat(Misc.nearlyEquals(1.00, fooVals.get(2), Misc.defaultMaxRelativeDiffFloat)).isTrue();
       // These assertions failed before the bug was fixed.
-      Assert.assertFalse(proxy.isInvalidData(1.00));
-      Assert.assertFalse(fooVar.isMissing(1.00));
+      assertThat(proxy.isInvalidData(1.00)).isFalse();
+      assertThat(fooVar.isMissing(1.00)).isFalse();
 
       // foo[3] == 101 (raw); Double.NaN, (scaled). It is outside of valid_range.
-      Assert2.assertNearlyEquals(Double.NaN, fooVals.get(3), Misc.defaultMaxRelativeDiffFloat);
-      Assert.assertTrue(proxy.isMissingValue(1.01));
-      Assert.assertTrue(proxy.isInvalidData(1.01));
-      Assert.assertTrue(fooVar.isMissing(1.01));
+      assertThat(Misc.nearlyEquals(Double.NaN, fooVals.get(3), Misc.defaultMaxRelativeDiffFloat)).isTrue();
+      assertThat(proxy.isMissingValue(1.01)).isTrue();
+      assertThat(proxy.isInvalidData(1.01)).isTrue();
+      assertThat(fooVar.isMissing(1.01)).isTrue();
     }
   }
 
   // Asserts that EnhanceScaleMissingUnsignedImplImpl compares floating-point values in a "fuzzy" manner.
   // This test demonstrated the bug in https://github.com/Unidata/thredds/issues/1068.
   @Test
-  public void testScaleMissingFloatingPointComparisonsNoConvertMissing() throws IOException, URISyntaxException {
+  public void testScaleMissingFloatingPointComparisonsNoConvertMissing() throws Exception {
     File testResource = new File(getClass().getResource("testScaleMissingFloatingPointComparisons.ncml").toURI());
 
     Set<Enhance> enhance = new HashSet<>(NetcdfDataset.getDefaultEnhanceMode());
     enhance.remove(Enhance.ConvertMissing);
     try (NetcdfDataset ncd = NetcdfDatasets.openDataset(testResource.getAbsolutePath(), enhance, null)) {
       VariableDS fooVar = (VariableDS) ncd.findVariable("foo");
+      assertThat(fooVar).isNotNull();
       EnhanceScaleMissingUnsigned proxy = fooVar.scaleMissingUnsignedProxy();
 
       // Values have been multiplied by scale_factor == 0.01f. scale_factor is a float, meaning that we can't compare
       // its products with nearlyEquals() using the default Misc.defaultMaxRelativeDiffDouble.
-      Assert2.assertNearlyEquals(0, proxy.getValidMin(), Misc.defaultMaxRelativeDiffFloat);
-      Assert2.assertNearlyEquals(1, proxy.getValidMax(), Misc.defaultMaxRelativeDiffFloat);
+      assertThat(Misc.nearlyEquals(0, proxy.getValidMin(), Misc.defaultMaxRelativeDiffFloat)).isTrue();
+      assertThat(Misc.nearlyEquals(1, proxy.getValidMax(), Misc.defaultMaxRelativeDiffFloat)).isTrue();
 
       // Argument is a double, which has higher precision that our scaled _FillValue (float).
       // This assertion failed before the bug was fixed.
-      Assert.assertTrue(proxy.isFillValue(-0.01));
+      assertThat(proxy.isFillValue(-0.01)).isTrue();
 
       Array<Float> fooVals = (Array<Float>) fooVar.readArray();
-      Assert.assertEquals(4, fooVals.getSize());
+      assertThat(4).isEqualTo(fooVals.getSize());
 
       // foo[0] == -1 (raw); -0.01 (scaled). It is equal to fill value and outside of valid_range.
       assertThat(fooVals.get(0)).isWithin(Misc.defaultMaxRelativeDiffFloat).of(-0.01f);
-      Assert.assertTrue(proxy.isFillValue(-0.01));
-      Assert.assertTrue(proxy.isMissingValue(-0.01));
-      Assert.assertTrue(proxy.isInvalidData(-0.01));
-      Assert.assertTrue(proxy.isMissing(-0.01));
+      assertThat(proxy.isFillValue(-0.01)).isTrue();
+      assertThat(proxy.isMissingValue(-0.01)).isTrue();
+      assertThat(proxy.isInvalidData(-0.01)).isTrue();
+      assertThat(proxy.isMissing(-0.01)).isTrue();
 
       // foo[1] == 0 (raw); 0.00 (scaled). It is within valid_range.
-      Assert2.assertNearlyEquals(0.00, fooVals.get(1), Misc.defaultMaxRelativeDiffFloat);
-      Assert.assertFalse(proxy.isInvalidData(0.00));
-      Assert.assertFalse(fooVar.isMissing(0.00));
+      assertThat(Misc.nearlyEquals(0.00, fooVals.get(1), Misc.defaultMaxRelativeDiffFloat)).isTrue();
+      assertThat(proxy.isInvalidData(0.00)).isFalse();
+      assertThat(fooVar.isMissing(0.00)).isFalse();
 
       // foo[2] == 100 (raw); 1.00 (scaled). It is within valid_range.
-      Assert2.assertNearlyEquals(1.00, fooVals.get(2), Misc.defaultMaxRelativeDiffFloat);
+      assertThat(Misc.nearlyEquals(1.00, fooVals.get(2), Misc.defaultMaxRelativeDiffFloat)).isTrue();
       // These assertions failed before the bug was fixed.
-      Assert.assertFalse(proxy.isInvalidData(1.00));
-      Assert.assertFalse(fooVar.isMissing(1.00));
+      assertThat(proxy.isInvalidData(1.00)).isFalse();
+      assertThat(fooVar.isMissing(1.00)).isFalse();
 
       // foo[3] == 101 (raw); 1.01 (scaled). It is outside of valid_range.
-      Assert2.assertNearlyEquals(1.01, fooVals.get(3), Misc.defaultMaxRelativeDiffFloat);
-      Assert.assertTrue(proxy.isMissingValue(1.01));
-      Assert.assertTrue(proxy.isInvalidData(1.01));
-      Assert.assertTrue(fooVar.isMissing(1.01));
+      assertThat(Misc.nearlyEquals(1.01, fooVals.get(3), Misc.defaultMaxRelativeDiffFloat)).isTrue();
+      assertThat(proxy.isMissingValue(1.01)).isTrue();
+      assertThat(proxy.isInvalidData(1.01)).isTrue();
+      assertThat(fooVar.isMissing(1.01)).isTrue();
     }
   }
 
   @Test
-  public void testMissingUnsigned() throws URISyntaxException, IOException {
+  public void testMissingUnsigned() throws Exception {
     File testResource = new File(getClass().getResource("testScaleOffsetMissingUnsigned.ncml").toURI());
 
     try (NetcdfDataset ncd = NetcdfDatasets.openDataset(testResource.getAbsolutePath(), true, null)) {
       VariableDS var = (VariableDS) ncd.findVariable("missingUnsigned");
+      assertThat(var).isNotNull();
       EnhanceScaleMissingUnsigned proxy = var.scaleMissingUnsignedProxy();
 
       // Packed valid_min == -106. Interpreting bit pattern as unsigned, we get 150.
-      Assert2.assertNearlyEquals(150, proxy.getValidMin());
+      assertThat(Misc.nearlyEquals(150, proxy.getValidMin())).isTrue();
 
       // Packed valid_min == -6. Interpreting bit pattern as unsigned, we get 250.
-      Assert2.assertNearlyEquals(250, proxy.getValidMax());
+      assertThat(Misc.nearlyEquals(250, proxy.getValidMax())).isTrue();
 
       // Packed _FillValue and missing_value are -1. Interpreting bit pattern as unsigned, we get 255.
-      Assert2.assertNearlyEquals(255, proxy.getFillValue());
-      Assert2.assertNearlyEquals(255, proxy.getMissingValues()[0]);
+      assertThat(Misc.nearlyEquals(255, proxy.getFillValue())).isTrue();
+      assertThat(Misc.nearlyEquals(255, proxy.getMissingValues()[0])).isTrue();
 
       // "missingUnsigned" was originally UBYTE, but was widened to accommodate unsigned conversion.
-      Assert.assertEquals(ArrayType.USHORT, var.getArrayType());
+      assertThat(ArrayType.USHORT).isEqualTo(var.getArrayType());
 
       // Packed values are: -107, -106, -6, -5, -1, 80. Interpreting them as unsigned yields:
       Array<Number> expecteds =
@@ -314,19 +315,20 @@ public class TestScaleOffsetMissingUnsigned {
   }
 
   @Test
-  public void testScaleOffsetMissingUnsigned() throws URISyntaxException, IOException {
+  public void testScaleOffsetMissingUnsigned() throws Exception {
     File testResource = new File(getClass().getResource("testScaleOffsetMissingUnsigned.ncml").toURI());
 
     try (NetcdfDataset ncd = NetcdfDatasets.openDataset(testResource.getAbsolutePath(), true, null)) {
       VariableDS var = (VariableDS) ncd.findVariable("scaleOffsetMissingUnsigned");
+      assertThat(var).isNotNull();
       EnhanceScaleMissingUnsigned proxy = var.scaleMissingUnsignedProxy();
 
       // These vals are the same as ones from "missingUnsigned", but with a scale_factor of 100 and offset of 1 applied.
-      Assert.assertEquals(15001, proxy.getValidMin(), 0);
-      Assert.assertEquals(25001, proxy.getValidMax(), 0);
+      assertThat(15001.0).isEqualTo(proxy.getValidMin());
+      assertThat(25001.0).isEqualTo(proxy.getValidMax());
 
-      Assert.assertEquals(25501, proxy.getFillValue(), 0);
-      Assert.assertEquals(25501, proxy.getMissingValues()[0], 0);
+      assertThat(25501.0).isEqualTo(proxy.getFillValue());
+      assertThat(25501.0).isEqualTo(proxy.getMissingValues()[0]);
 
       // "scaleOffsetMissingUnsigned" was originally UBYTE, but scale_factor (SHORT) and add_offset (INT) caused it to
       // be UINT due to:
@@ -343,7 +345,7 @@ public class TestScaleOffsetMissingUnsigned {
        * unsigned, then {@link #getScaledOffsetMissingType()} will be unsigned as well.
        * </li>
        */
-      Assert.assertEquals(ArrayType.UINT, var.getArrayType());
+      assertThat(ArrayType.UINT).isEqualTo(var.getArrayType());
 
       // These vals are the same as ones from "missingUnsigned", but with a scale_factor of 100 and offset of 1 applied.
       Array<Number> expecteds =
@@ -355,21 +357,23 @@ public class TestScaleOffsetMissingUnsigned {
 
   // This test demonstrated the bug in https://github.com/Unidata/netcdf-java/issues/572, but for unsigned variables.
   @Test
-  public void testNegativeScaleOffsetValidRangeUnsigned() throws URISyntaxException, IOException {
+  public void testNegativeScaleOffsetValidRangeUnsigned() throws Exception {
     File testResource = new File(getClass().getResource("testScaleOffsetMissingUnsigned.ncml").toURI());
     float fpTol = Misc.defaultMaxRelativeDiffFloat;
 
     try (NetcdfDataset ncd = NetcdfDatasets.openDataset(testResource.getAbsolutePath(), true, null)) {
       VariableDS var = (VariableDS) ncd.findVariable("scaleOffsetMissingUnsignedValidRange");
+      assertThat(var).isNotNull();
       EnhanceScaleMissingUnsigned proxy = var.scaleMissingUnsignedProxy();
 
-      Assert.assertEquals(-25001, proxy.getValidMin(), fpTol);
-      Assert.assertEquals(-15001, proxy.getValidMax(), fpTol);
+      assertThat(proxy.getValidMin()).isWithin(fpTol).of(-25001);
+      assertThat(proxy.getValidMax()).isWithin(fpTol).of(-15001);
 
-      Assert.assertEquals(-25501, proxy.getFillValue(), fpTol);
-      Assert.assertEquals(-25501, proxy.getMissingValues()[0], fpTol);
+      assertThat(proxy.getFillValue()).isWithin(fpTol).of(-25501);
+      assertThat(proxy.getMissingValues()[0]).isWithin(fpTol).of(-25501);
+
       // Because scale and offset are now float (to preserve negative values), var is float
-      Assert.assertEquals(ArrayType.FLOAT, var.getArrayType());
+      assertThat(ArrayType.FLOAT).isEqualTo(var.getArrayType());
 
       // These vals are the same as ones from "missingUnsigned", but with a scale_factor of -100 and offset of -1
       Array<Float> expecteds = Arrays.factory(ArrayType.FLOAT, new int[] {6},
@@ -380,17 +384,18 @@ public class TestScaleOffsetMissingUnsigned {
   }
 
   @Test
-  public void testScaleValidRange() throws IOException, URISyntaxException {
+  public void testScaleValidRange() throws Exception {
     File testResource = new File(getClass().getResource("testScaleOffsetMissingUnsigned.ncml").toURI());
 
     try (NetcdfDataset ncd = NetcdfDatasets.openDataset(testResource.getAbsolutePath(), true, null)) {
       VariableDS var = (VariableDS) ncd.findVariable("scaleValidRange");
+      assertThat(var).isNotNull();
       EnhanceScaleMissingUnsigned proxy = var.scaleMissingUnsignedProxy();
 
-      Assert2.assertNearlyEquals(9.9f, (float) proxy.getValidMin());
-      Assert2.assertNearlyEquals(10.1f, (float) proxy.getValidMax());
+      assertThat(Misc.nearlyEquals(9.9f, (float) proxy.getValidMin())).isTrue();
+      assertThat(Misc.nearlyEquals(10.1f, (float) proxy.getValidMax())).isTrue();
 
-      Assert.assertEquals(ArrayType.FLOAT, var.getArrayType()); // scale_factor is float.
+      assertThat(ArrayType.FLOAT).isEqualTo(var.getArrayType()); // scale_factor is float.
 
       Array<Float> expecteds =
           Arrays.factory(ArrayType.FLOAT, new int[] {5}, new float[] {Float.NaN, 9.9f, 10.0f, 10.1f, Float.NaN});
@@ -400,13 +405,14 @@ public class TestScaleOffsetMissingUnsigned {
   }
 
   @Test
-  public void testUnpackedValidRange() throws IOException, URISyntaxException {
+  public void testUnpackedValidRange() throws Exception {
     File testResource = new File(getClass().getResource("testScaleOffsetMissingUnsigned.ncml").toURI());
     DatasetUrl location = DatasetUrl.findDatasetUrl(testResource.getAbsolutePath());
     Set<Enhance> enhanceMode = EnumSet.of(Enhance.ConvertUnsigned, Enhance.ApplyScaleOffset); // No ConvertMissing!
 
     try (NetcdfDataset ncd = NetcdfDatasets.openDataset(location, enhanceMode, -1, null, null)) {
       VariableDS var = (VariableDS) ncd.findVariable("unpackedValidRange");
+      assertThat(var).isNotNull();
       EnhanceScaleMissingUnsigned proxy = var.scaleMissingUnsignedProxy();
 
       // valid_range will be interpreted as unpacked because of:
@@ -416,10 +422,10 @@ public class TestScaleOffsetMissingUnsigned {
        * data. Otherwise it is in the units of the external (packed) data.</li>
        */
       // As a result, scale_factor will not be applied to it.
-      Assert2.assertNearlyEquals(9.9f, (float) proxy.getValidMin());
-      Assert2.assertNearlyEquals(10.1f, (float) proxy.getValidMax());
+      assertThat(Misc.nearlyEquals(9.9f, (float) proxy.getValidMin())).isTrue();
+      assertThat(Misc.nearlyEquals(10.1f, (float) proxy.getValidMax())).isTrue();
 
-      Assert.assertEquals(ArrayType.FLOAT, var.getArrayType()); // scale_factor is float.
+      assertThat(ArrayType.FLOAT).isEqualTo(var.getArrayType()); // scale_factor is float.
 
       Array<Float> expecteds =
           Arrays.factory(ArrayType.FLOAT, new int[] {5}, new float[] {9.8f, 9.9f, 10.0f, 10.1f, 10.2f});
@@ -429,17 +435,18 @@ public class TestScaleOffsetMissingUnsigned {
   }
 
   @Test
-  public void testUnsignedOffsetAttribute() throws IOException, URISyntaxException {
+  public void testUnsignedOffsetAttribute() throws Exception {
     File testResource = new File(getClass().getResource("testScaleOffsetMissingUnsigned.ncml").toURI());
 
     try (NetcdfDataset ncd = NetcdfDatasets.openDataset(testResource.getAbsolutePath(), true, null)) {
       VariableDS var = (VariableDS) ncd.findVariable("unsignedOffsetAttribute");
+      assertThat(var).isNotNull();
       EnhanceScaleMissingUnsigned proxy = var.scaleMissingUnsignedProxy();
 
-      Assert.assertEquals(156, proxy.getOffset(), 0);
-      Assert.assertEquals(ArrayType.BYTE, var.getArrayType()); // No change to data type.
+      assertThat(156.0).isEqualTo(proxy.getOffset());
+      assertThat(ArrayType.BYTE).isEqualTo(var.getArrayType()); // No change to data type.
 
-      Assert.assertEquals((byte) 106, var.readArray().getScalar()); // -50 + 156 == 106
+      assertThat((byte) 106).isEqualTo(var.readArray().getScalar()); // -50 + 156 == 106
     }
   }
 

@@ -11,6 +11,8 @@ import ucar.unidata.util.Format;
 import java.lang.invoke.MethodHandles;
 import java.util.Random;
 
+import static com.google.common.truth.Truth.assertThat;
+
 /** Test basic projection methods */
 public class TestBasic {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
@@ -29,9 +31,9 @@ public class TestBasic {
       if (debug1)
         showLatLonNormal(lon, center);
       double result = LatLonPoints.lonNormal(lon, center);
-      assert (result >= center - 180.);
-      assert (result <= center + 180.);
-      assert ((result == lon) || (Math.abs(result - lon) == 360) || (Math.abs(result - lon) == 720));
+      assertThat(result).isAtLeast(center - 180.);
+      assertThat(result).isAtMost(center + 180.);
+      assertThat((result == lon) || (Math.abs(result - lon) == 360) || (Math.abs(result - lon) == 720)).isTrue();
     }
   }
 

@@ -22,7 +22,7 @@ import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.calendar.CalendarDateUnit;
-import ucar.unidata.util.test.Assert2;
+import ucar.nc2.util.Misc;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
@@ -58,7 +58,7 @@ public class TestOffAggExistingTimeUnitsChange extends TestCase {
       Array<Number> data = (Array<Number>) v.readArray();
 
       for (Number val : data) {
-        Assert2.assertNearlyEquals(val.intValue(), (count + 1) * 3);
+        assertThat(Misc.nearlyEquals(val.intValue(), (count + 1) * 3)).isTrue();
         count++;
       }
     }

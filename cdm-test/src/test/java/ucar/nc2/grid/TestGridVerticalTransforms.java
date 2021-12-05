@@ -96,7 +96,7 @@ public class TestGridVerticalTransforms {
    * z is of shape 20x2x87, it should be 20x87x193.
    */
   @Test
-  public void testErie() throws IOException, InvalidRangeException {
+  public void testErie() throws Exception {
     String filename = TestDir.cdmUnitTestDir + "transforms/erie_test.ncml";
     String gridName = "temp";
     System.out.printf("testErie %s%n", filename);

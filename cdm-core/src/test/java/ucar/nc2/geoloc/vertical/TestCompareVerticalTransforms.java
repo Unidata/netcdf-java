@@ -17,6 +17,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.google.common.truth.Truth.assertThat;
+
 /**
  * Open VerticalTransforms.
  * These are all the test files I can find with a vertical transform.
@@ -108,8 +110,8 @@ public class TestCompareVerticalTransforms {
   }
 
   @Test
-  public void compare() throws IOException, InvalidRangeException {
-    TestVertical.open(filename, gridName, vtClass, vunit);
+  public void compare() throws Exception {
+    assertThat(TestVertical.open(filename, gridName, vtClass, vunit)).isTrue();
   }
 
 }

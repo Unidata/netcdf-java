@@ -7,7 +7,6 @@ package ucar.nc2.internal.util;
 
 import static com.google.common.truth.Truth.assertThat;
 
-import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,20 +31,20 @@ public class TestTableParser {
     List<TableParser.Record> recs = TableParser.readTable(is, "3,15,54,60d,67d,73d", 50000);
 
     TableParser.Record rec = recs.get(0);
-    Assert.assertEquals("TLX", rec.get(0));
-    Assert.assertEquals("      000001", rec.get(1));
-    Assert.assertEquals(" OKLAHOMA_CITY/Norman             OK US", rec.get(2));
-    Assert.assertEquals(3532.0, (Double) rec.get(3), 0.1);
-    Assert.assertEquals(-9727.0, (Double) rec.get(4), 0.1);
-    Assert.assertEquals(370.0, (Double) rec.get(5), 0.1);
+    assertThat("TLX").isEqualTo(rec.get(0));
+    assertThat("      000001").isEqualTo(rec.get(1));
+    assertThat(" OKLAHOMA_CITY/Norman             OK US").isEqualTo(rec.get(2));
+    assertThat(3532.0).isEqualTo((Double) rec.get(3));
+    assertThat(-9727.0).isEqualTo((Double) rec.get(4));
+    assertThat(370.0).isEqualTo((Double) rec.get(5));
 
     rec = recs.get(20);
-    Assert.assertEquals("TWX", rec.get(0));
-    Assert.assertEquals("      000554", rec.get(1));
-    Assert.assertEquals(" TOPEKA/Alma                      KS US", rec.get(2));
-    Assert.assertEquals(3898.0, (Double) rec.get(3), 0.1);
-    Assert.assertEquals(-9622.0, (Double) rec.get(4), 0.1);
-    Assert.assertEquals(417.0, (Double) rec.get(5), 0.1);
+    assertThat("TWX").isEqualTo(rec.get(0));
+    assertThat("      000554").isEqualTo(rec.get(1));
+    assertThat(" TOPEKA/Alma                      KS US").isEqualTo(rec.get(2));
+    assertThat(3898.0).isEqualTo((Double) rec.get(3));
+    assertThat(-9622.0).isEqualTo((Double) rec.get(4));
+    assertThat(417.0).isEqualTo((Double) rec.get(5));
   }
 
   @Test

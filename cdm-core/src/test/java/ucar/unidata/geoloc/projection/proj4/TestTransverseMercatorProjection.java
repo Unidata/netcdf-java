@@ -8,7 +8,6 @@ import ucar.unidata.geoloc.ProjectionPoint;
 
 public class TestTransverseMercatorProjection {
 
-
   static private void test(Projection proj, double[] lat, double[] lon) {
     double[] x = new double[lat.length];
     double[] y = new double[lat.length];
@@ -30,9 +29,7 @@ public class TestTransverseMercatorProjection {
         }
       }
       System.out.println("reverse:" + p.getX() + ", " + p.getY() + ": " + lp.getLatitude() + ", " + lp.getLongitude());
-
     }
-
   }
 
   @Test

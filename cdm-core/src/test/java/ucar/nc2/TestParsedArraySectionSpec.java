@@ -16,12 +16,11 @@ import ucar.array.Section;
 import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
-import java.io.IOException;
 
 /** Test {@link ucar.nc2.ParsedArraySectionSpec} */
 public class TestParsedArraySectionSpec {
   @Test
-  public void testVariableSection() throws InvalidRangeException, IOException {
+  public void testVariableSection() throws Exception {
     try (NetcdfFile ncfile = NetcdfFiles.open(TestDir.cdmLocalTestDataDir + "testWrite.nc")) {
       Variable v = ncfile.findVariable("temperature");
       assertThat(v).isNotNull();
@@ -48,85 +47,84 @@ public class TestParsedArraySectionSpec {
 
   @Test
   @Category(NeedsCdmUnitTest.class)
-  public void testGroupAndMembers() throws InvalidRangeException, IOException {
+  public void testGroupAndMembers() throws Exception {
     try (NetcdfFile ncfile = NetcdfFiles.open(TestDir.cdmUnitTestDir + "formats/netcdf4/compound/simple_nc4.nc4")) {
       Variable v = ncfile.findVariable("grp1/data");
-      assert v != null;
+      assertThat(v).isNotNull();
 
       ParsedArraySectionSpec spec = ParsedArraySectionSpec.parseVariableSection(ncfile, "grp1/data");
       System.out.printf("%s%n", spec);
-      assert spec.getSection().equals(v.getSection());
+      assertThat(spec.getSection()).isEqualTo(v.getSection());
 
       spec = ParsedArraySectionSpec.parseVariableSection(ncfile, "grp2/data.i1");
       System.out.printf("%s%n", spec);
 
       Variable s = ncfile.findVariable("grp2/data");
-      assert spec.getSection().equals(s.getSection());
+      assertThat(spec.getSection()).isEqualTo(s.getSection());
 
       v = ncfile.findVariable("grp2/data.i1");
-      assert spec.getChild().getSection().equals(v.getSection());
+      assertThat(spec.getChild().getSection()).isEqualTo(v.getSection());
     }
   }
 
   @Test
   @Category(NeedsCdmUnitTest.class)
-  public void testEscaping() throws InvalidRangeException, IOException {
+  public void testEscaping() throws Exception {
     try (NetcdfFile ncfile = NetcdfDatasets.openDataset(TestDir.cdmUnitTestDir + "ncml/escapeNames.ncml")) {
       Group g = ncfile.findGroup("group.name");
-      assert g != null;
+      assertThat(g).isNotNull();
 
       Variable v = g.findVariableLocal("var.name");
-      assert v != null;
-
+      assertThat(v).isNotNull();
       Variable v2 = ncfile.findVariable("group.name/var.name");
-      assert v2 == null;
+      assertThat(v2).isNull();
 
       v2 = ncfile.findVariable("group\\.name/var\\.name");
-      assert v2 != null;
-      assert v2.equals(v);
+      assertThat(v2).isNotNull();
+      assertThat(v2).isEqualTo(v);
 
       ParsedArraySectionSpec spec = ParsedArraySectionSpec.parseVariableSection(ncfile, "group\\.name/var\\.name");
       System.out.printf("%s%n", spec);
-      assert spec.getSection().equals(v2.getSection());
+      assertThat(spec.getSection()).isEqualTo(v2.getSection());
 
       spec = ParsedArraySectionSpec.parseVariableSection(ncfile, "group\\.name/var\\.name(1,0:0)");
       System.out.printf("%s%n", spec);
       Section s = new Section("1,0");
-      assert spec.getSection().equals(s);
+      assertThat(spec.getSection()).isEqualTo(s);
     }
   }
 
   @Test
   @Category(NeedsCdmUnitTest.class)
-  public void testEscaping2() throws InvalidRangeException, IOException {
+  public void testEscaping2() throws Exception {
     try (NetcdfFile ncfile = NetcdfDatasets.openDataset(TestDir.cdmUnitTestDir + "ncml/escapeNames.ncml")) {
       Group g = ncfile.findGroup("group(name");
-      assert g != null;
+      assertThat(g).isNotNull();
 
       Variable v = g.findVariableLocal("var(name");
-      assert v != null;
+      assertThat(v).isNotNull();
 
       Variable v2 = ncfile.findVariable("group(name/var(name");
-      assert v2 != null;
-      assert v2.equals(v);
+      assertThat(v2).isNotNull();
+      assertThat(v2).isEqualTo(v);
 
       v2 = ncfile.findVariable("group\\(name/var\\(name");
-      assert v2 != null;
-      assert v2.equals(v);
+      assertThat(v2).isNotNull();
+      assertThat(v2).isEqualTo(v);
 
       ParsedArraySectionSpec spec = ParsedArraySectionSpec.parseVariableSection(ncfile, "group\\(name/var\\(name");
       System.out.printf("%s%n", spec);
-      assert spec.getSection().equals(v2.getSection());
+      assertThat(spec.getSection()).isEqualTo(v2.getSection());
 
       spec = ParsedArraySectionSpec.parseVariableSection(ncfile, "group\\(name/var\\(name(1,0:0)");
       System.out.printf("%s%n", spec);
       Section s = new Section("1,0");
-      assert spec.getSection().equals(s);
+      assertThat(spec.getSection()).isEqualTo(s);
     }
   }
 
   @Test
-  public void testVlen() throws InvalidRangeException, IOException {
+  public void testVlen() throws Exception {
     try (NetcdfFile ncfile = NetcdfDatasets
         .openDataset(TestDir.cdmLocalTestDataDir + "dataset/SimpleGeos/hru_soil_moist_vlen_3hru_5timestep.nc")) {
       Variable v2 = ncfile.findVariable("catchments_x");

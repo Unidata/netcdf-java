@@ -165,7 +165,7 @@ public class TestH5ReadBasic {
   }
 
   @org.junit.Test
-  public void testReadH5ShortArray() throws IOException, InvalidRangeException {
+  public void testReadH5ShortArray() throws Exception {
     try (NetcdfFile ncfile = TestH5.openH5("support/short.h5")) {
 
       Variable dset = null;

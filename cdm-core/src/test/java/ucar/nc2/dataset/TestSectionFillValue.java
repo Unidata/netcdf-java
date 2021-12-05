@@ -5,7 +5,6 @@
 package ucar.nc2.dataset;
 
 import com.google.common.collect.Lists;
-import org.junit.Assert;
 import org.junit.Test;
 import ucar.array.Array;
 import ucar.array.IndexFn;
@@ -33,10 +32,10 @@ public class TestSectionFillValue {
     String filename = TestDir.cdmLocalTestDataDir + "standardVar.nc";
     try (NetcdfDataset ncfile = NetcdfDatasets.openDataset(filename)) {
       VariableDS v = (VariableDS) ncfile.findVariable("t3");
-      Assert.assertNotNull("t3", v);
+      assertThat(v).isNotNull();
       EnhanceScaleMissingUnsigned proxy = v.scaleMissingUnsignedProxy();
-      Assert.assertTrue(proxy.hasFillValue());
-      Assert.assertNotNull(v.findAttribute("_FillValue"));
+      assertThat(proxy.hasFillValue()).isTrue();
+      assertThat(v.findAttribute("_FillValue")).isNotNull();
 
       int rank = v.getRank();
       List<Range> ranges = new ArrayList<>();
@@ -46,9 +45,9 @@ public class TestSectionFillValue {
       }
 
       VariableDS v_section = (VariableDS) v.section(new Section(ranges));
-      Assert.assertNotNull(v_section.findAttribute("_FillValue"));
+      assertThat(v_section.findAttribute("_FillValue")).isNotNull();
       System.out.println(v_section.findAttribute("_FillValue"));
-      Assert.assertTrue(v_section.scaleMissingUnsignedProxy().hasFillValue());
+      assertThat(v_section.scaleMissingUnsignedProxy().hasFillValue()).isTrue();
     }
   }
 
@@ -65,9 +64,10 @@ public class TestSectionFillValue {
         System.out.printf("testImplicitFillValue for %s type=%s%n", v.getShortName(), v.getArrayType());
 
         VariableDS ve = (VariableDS) ncd.findVariable(v.getFullName());
+        assertThat(ve).isNotNull();
         if (varWithFill.contains(v.getShortName())) {
-          Assert.assertNotNull(v.findAttribute("_FillValue"));
-          Assert.assertTrue(ve.scaleMissingUnsignedProxy().hasFillValue());
+          assertThat(v.findAttribute("_FillValue")).isNotNull();
+          assertThat(ve.scaleMissingUnsignedProxy().hasFillValue()).isTrue();
           Number fillValue = v.findAttribute("_FillValue").getNumericValue();
 
           Array<Number> data = (Array<Number>) v.readArray();
@@ -86,10 +86,10 @@ public class TestSectionFillValue {
             }
           }
         } else {
-          Assert.assertNull(v.findAttribute("_FillValue"));
-          Assert.assertTrue(ve.scaleMissingUnsignedProxy().hasFillValue());
+          assertThat(v.findAttribute("_FillValue")).isNull();
+          assertThat(ve.scaleMissingUnsignedProxy().hasFillValue()).isTrue();
           Number fillValue = NetcdfFormatUtils.getFillValueDefault(v.getArrayType());
-          Assert.assertNotNull(v.getArrayType().toString(), fillValue);
+          assertThat(fillValue).isNotNull();
 
           Array<Number> data = (Array<Number>) v.readArray();
           Array<Number> dataE = (Array<Number>) ve.readArray();

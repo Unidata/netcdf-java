@@ -104,7 +104,7 @@ public class TestUnicode {
 
   }
 
-  // @Test
+  @Test
   public void testStuff() throws IOException {
     // String helloGreek = new TestUnicode("dumm").makeString(helloGreekCode, true);
 

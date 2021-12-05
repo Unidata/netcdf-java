@@ -295,7 +295,7 @@ public class TestGridSubsetCurvilinear {
   }
 
   @Test
-  public void testSetLatLonPoint() throws IOException, ucar.array.InvalidRangeException {
+  public void testSetLatLonPoint() throws Exception {
     Variable var = ncf.findVariable(covVarName);
     assertThat(var).isNotNull();
     String varName = var.getFullName();
@@ -317,7 +317,7 @@ public class TestGridSubsetCurvilinear {
   }
 
   @Test
-  public void testSetLatLonPointWithTimeRange() throws IOException, InvalidRangeException {
+  public void testSetLatLonPointWithTimeRange() throws Exception {
     Variable var = ncf.findVariable(covVarName);
     assertThat(var).isNotNull();
 
@@ -342,7 +342,7 @@ public class TestGridSubsetCurvilinear {
   }
 
   @Test
-  public void testSetLatLonBB() throws IOException, InvalidRangeException {
+  public void testSetLatLonBB() throws Exception {
     Variable var = ncf.findVariable(covVarName);
     assertThat(var).isNotNull();
     String varName = var.getFullName();
@@ -367,7 +367,7 @@ public class TestGridSubsetCurvilinear {
   }
 
   @Test
-  public void testSetLatLonBBWithTimeRange() throws IOException, InvalidRangeException {
+  public void testSetLatLonBBWithTimeRange() throws Exception {
     Variable var = ncf.findVariable(covVarName);
     assertThat(var).isNotNull();
     String varName = var.getFullName();

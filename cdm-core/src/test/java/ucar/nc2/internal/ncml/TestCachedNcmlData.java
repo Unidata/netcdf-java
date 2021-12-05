@@ -5,52 +5,47 @@
 package ucar.nc2.internal.ncml;
 
 import java.io.IOException;
+
+import com.google.common.truth.Truth;
+import org.junit.Ignore;
 import org.junit.Test;
 import ucar.array.Array;
 import ucar.nc2.NetcdfFile;
+import ucar.nc2.NetcdfFiles;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
+import ucar.nc2.dataset.DatasetUrl;
 import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.unidata.util.test.TestDir;
+
+import static com.google.common.truth.Truth.assertThat;
 
 public class TestCachedNcmlData {
 
   @Test
   public void testCachedData() throws IOException {
 
-    NetcdfFile ncd = null;
-    try {
-      ncd = NetcdfDatasets.openFile(TestDir.cdmLocalTestDataDir + "point/profileMultidim.ncml", null);
+    try (NetcdfFile ncd = NetcdfDatasets.openFile(TestDir.cdmLocalTestDataDir + "point/profileMultidim.ncml", null)) {
       Variable v = ncd.findVariable("data");
-      assert v != null;
-      Array data = v.readArray();
-      assert data.getSize() == 50 : data.getSize();
-    } finally {
-      if (ncd != null)
-        ncd.close();
+      assertThat(v).isNotNull();
+      Array<?> data = v.readArray();
+      assertThat(data.getSize()).isEqualTo(50);
     }
   }
 
-  // doesnt work
+  @Test
+  @Ignore("doesnt work because NetcdfFileProvider cant pass in IospMessage")
   public void testCachedDataWithStructure() throws IOException {
+    DatasetUrl durl = DatasetUrl.findDatasetUrl(TestDir.cdmLocalTestDataDir + "point/profileMultidim.ncml");
 
-    NetcdfFile ncd = null;
-    try {
-      ncd = NetcdfDatasets.openFile(TestDir.cdmLocalTestDataDir + "point/profileMultidim.ncml", null);
-      boolean ok = (Boolean) ncd.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
-      assert ok;
-
+    try (NetcdfFile ncd = NetcdfDatasets.openFile(durl, -1, null, NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE)) {
       Variable s = ncd.findVariable("record");
-      assert s != null;
-      assert s instanceof Structure;
-      assert s.getSize() == 5 : s.getSize();
+      assertThat(s).isNotNull();
+      assertThat(s).isInstanceOf(Structure.class);
+      assertThat(s.getSize()).isEqualTo(5);
 
-      Array data = s.readArray();
-      assert data.getSize() == 5 : data.getSize();
-
-    } finally {
-      if (ncd != null)
-        ncd.close();
+      Array<?> data = s.readArray();
+      assertThat(data.getSize()).isEqualTo(5);
     }
   }
 

@@ -11,10 +11,8 @@ import org.junit.Before;
 import org.junit.Test;
 import ucar.array.Array;
 import ucar.array.ArrayType;
-import ucar.array.InvalidRangeException;
 import ucar.array.Section;
 import ucar.unidata.util.test.TestDir;
-import java.io.*;
 
 /** Test reading record data */
 public class TestStructureArray {
@@ -36,7 +34,7 @@ public class TestStructureArray {
   @Test
   public void testNames() {
     for (Variable v : ncfile.getAllVariables()) {
-      System.out.println(" " + v.getShortName() + " == " + v.getFullName());
+      System.out.println(" " + v.getShortName() + " =" + v.getFullName());
     }
 
     Structure record = (Structure) ncfile.findVariable("record");
@@ -48,18 +46,18 @@ public class TestStructureArray {
   }
 
   @Test
-  public void testReadTop() throws IOException, InvalidRangeException {
+  public void testReadTop() throws Exception {
     Variable v = ncfile.findVariable("record");
-    assert v != null;
+    assertThat(v).isNotNull();
 
-    assert (v.getArrayType() == ArrayType.STRUCTURE);
-    assert (v instanceof Structure);
-    assert (v.getRank() == 1);
-    assert (v.getSize() == 1000);
+    assertThat(v.getArrayType()).isEqualTo(ArrayType.STRUCTURE);
+    assertThat(v instanceof Structure);
+    assertThat(v.getRank()).isEqualTo(1);
+    assertThat(v.getSize()).isEqualTo(1000);
 
     Array<?> data = v.readArray(new Section(new int[] {4}, new int[] {3}));
-    assert (data.getArrayType() == ArrayType.STRUCTURE);
-    assert (data.getSize() == 3) : data.getSize();
-    assert (data.getRank() == 1);
+    assertThat(data.getArrayType()).isEqualTo(ArrayType.STRUCTURE);
+    assertThat(data.getSize()).isEqualTo(3);
+    assertThat(data.getRank()).isEqualTo(1);
   }
 }

@@ -11,17 +11,15 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import ucar.unidata.util.test.Assert2;
+import ucar.nc2.util.Misc;
 import java.io.IOException;
-import java.lang.invoke.MethodHandles;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
+import static com.google.common.truth.Truth.assertThat;
+
 @RunWith(JUnit4.class)
 public class TestXMLStore {
-  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @Rule
   public TemporaryFolder tempFolder = new TemporaryFolder();
@@ -74,10 +72,10 @@ public class TestXMLStore {
     PreferencesExt prefs = store.getPreferences();
 
     double d = prefs.getDouble("testD", 0.0);
-    Assert2.assertNearlyEquals(d, 3.14157);
+    assertThat(Misc.nearlyEquals(d, 3.14157)).isTrue();
 
     float f = prefs.getFloat("testF", 0.0F);
-    Assert2.assertNearlyEquals(f, 1.23456F);
+    assertThat(Misc.nearlyEquals(f, 1.23456F)).isTrue();
 
     long ll = prefs.getLong("testL", 0);
     assert ll == 12345678900L : "long failed";
@@ -107,10 +105,10 @@ public class TestXMLStore {
     Preferences prefs = store.getPreferences().node("SemperUbi");
 
     double d = prefs.getDouble("testD", 0.0);
-    Assert2.assertNearlyEquals(d, 3.14158);
+    assertThat(Misc.nearlyEquals(d, 3.14158)).isTrue();
 
     float f = prefs.getFloat("testF", 0.0F);
-    Assert2.assertNearlyEquals(f, 1.23457F);
+    assertThat(Misc.nearlyEquals(f, 1.23457F)).isTrue();
 
     long ll = prefs.getLong("testL", 0);
     assert ll == 12345678901L : "long failed";

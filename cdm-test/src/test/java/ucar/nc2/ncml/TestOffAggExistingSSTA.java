@@ -31,7 +31,7 @@ public class TestOffAggExistingSSTA {
       + TestDir.cdmUnitTestDir + "ncml/nc/pfeg/' suffix='.nc' />\n" + "    </aggregation>\n" + "</netcdf>";
 
   @Test
-  public void testSSTA() throws IOException, InvalidRangeException {
+  public void testSSTA() throws Exception {
     String filename = "file:" + TestDir.cdmUnitTestDir + "ncml/offsite/aggExistingSSTA.xml";
 
     RandomAccessFile.setDebugLeaks(true);

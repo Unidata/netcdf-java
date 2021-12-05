@@ -4,8 +4,7 @@
  */
 package ucar.nc2;
 
-import static ucar.nc2.internal.util.DiskCache.cleanCache;
-import static ucar.nc2.internal.util.DiskCache.showCache;
+import static com.google.common.truth.Truth.assertThat;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -22,7 +21,7 @@ public class TestDiskCache {
     System.out.println("make=" + want.getPath() + "; exists = " + want.exists());
     if (!want.exists()) {
       boolean ret = want.createNewFile();
-      assert ret;
+      assertThat(ret).isTrue();
     }
     System.out.println(" canRead= " + want.canRead() + " canWrite = " + want.canWrite() + " lastMod = "
         + CalendarDate.of(want.lastModified()));
@@ -37,10 +36,11 @@ public class TestDiskCache {
     make("C:/some/enchanted/evening/joots+3478.txt");
     make("http://www.unidata.ucar.edu/some/enc hanted/eve'ning/nowrite.gibberish");
 
-    showCache(System.out);
+    DiskCache.showCache(System.out);
     StringBuilder sbuff = new StringBuilder();
-    cleanCache(1000 * 1000 * 10, sbuff);
+    DiskCache.cleanCache(1000 * 1000 * 10, sbuff);
     System.out.println(sbuff);
+    assertThat(DiskCache.getCacheFile("any")).isNotNull();
   }
 
 }

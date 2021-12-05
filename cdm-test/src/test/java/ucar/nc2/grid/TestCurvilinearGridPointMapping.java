@@ -31,7 +31,7 @@ import static com.google.common.truth.Truth.assertThat;
 public class TestCurvilinearGridPointMapping {
 
   @Test
-  public void testUtmArtabro() throws IOException, InvalidRangeException {
+  public void testUtmArtabro() throws Exception {
     final String datasetLocation = TestDir.cdmUnitTestDir + "transforms/UTM/artabro_20120425.nc";
     final String covName = "hs";
     final int lonIndex = 170;
@@ -99,7 +99,7 @@ public class TestCurvilinearGridPointMapping {
   }
 
   @Test
-  public void testRtofsGrib() throws IOException, InvalidRangeException {
+  public void testRtofsGrib() throws Exception {
     String filename = TestDir.cdmUnitTestDir + "ft/fmrc/rtofs/ofs.20091122/ofs_atl.t00z.F024.grb.grib2";
     final String gridName = "Sea_Surface_Height_Relative_to_Geoid_surface";
 

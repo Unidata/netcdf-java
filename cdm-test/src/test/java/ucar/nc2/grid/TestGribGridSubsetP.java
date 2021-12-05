@@ -85,7 +85,7 @@ public class TestGribGridSubsetP {
   }
 
   @Test
-  public void testGridCoverageDatasetFmrc() throws IOException, ucar.array.InvalidRangeException {
+  public void testGridCoverageDatasetFmrc() throws Exception {
     Formatter errlog = new Formatter();
     try (GridDataset gds = GridDatasetFactory.openGridDataset(endpoint, errlog)) {
       assertThat(gds).isNotNull();
@@ -178,7 +178,7 @@ public class TestGribGridSubsetP {
 
 
   @Test
-  public void testFmrcStride() throws IOException, ucar.array.InvalidRangeException {
+  public void testFmrcStride() throws Exception {
     Formatter errlog = new Formatter();
     try (GridDataset gds = GridDatasetFactory.openGridDataset(endpoint, errlog)) {
       assertThat(gds).isNotNull();

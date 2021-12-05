@@ -27,7 +27,7 @@ public class TestGridCurvilinear {
   private static final double TOL = Misc.defaultDiffFLoat;
 
   @Test
-  public void TestNetcdfCurvilinear() throws IOException, InvalidRangeException {
+  public void TestNetcdfCurvilinear() throws Exception {
     String endpoint = TestDir.cdmUnitTestDir + "ft/coverage/Run_20091025_0000.nc"; // NetCDF has 2D and 1D
     String gridName = "u";
     System.out.printf("open %s %s%n", endpoint, gridName);
@@ -73,7 +73,7 @@ public class TestGridCurvilinear {
   }
 
   @Test
-  public void TestNetcdfCurvilinear2D() throws IOException, InvalidRangeException {
+  public void TestNetcdfCurvilinear2D() throws Exception {
     String endpoint = TestDir.cdmUnitTestDir + "transforms/UTM/artabro_20120425.nc"; // NetCDF Curvilinear 2D only
     String gridName = "hs";
     System.out.printf("open %s %s%n", endpoint, gridName);
@@ -101,7 +101,7 @@ public class TestGridCurvilinear {
   }
 
   @Test
-  public void TestNetcdfCurvilinear2Dsubset() throws IOException, InvalidRangeException {
+  public void TestNetcdfCurvilinear2Dsubset() throws Exception {
     String endpoint = TestDir.cdmUnitTestDir + "transforms/UTM/artabro_20120425.nc"; // NetCDF Curvilinear 2D only
     String gridName = "hs";
     System.out.printf("open %s %s%n", endpoint, gridName);
@@ -165,7 +165,7 @@ public class TestGridCurvilinear {
   }
 
   @Test
-  public void TestGribCurvilinear() throws IOException, InvalidRangeException {
+  public void TestGribCurvilinear() throws Exception {
     String endpoint = TestDir.cdmUnitTestDir + "ft/fmrc/rtofs/ofs.20091122/ofs_atl.t00z.F024.grb.grib2";
     String gridName = "Mixed_layer_depth_surface";
     System.out.printf("open %s %s%n", endpoint, gridName);
@@ -191,7 +191,7 @@ public class TestGridCurvilinear {
   }
 
   @Test
-  public void TestGribCurvilinearSubset() throws IOException, InvalidRangeException {
+  public void TestGribCurvilinearSubset() throws Exception {
     String endpoint = TestDir.cdmUnitTestDir + "ft/fmrc/rtofs/ofs.20091122/ofs_atl.t00z.F024.grb.grib2";
     String gridName = "Mixed_layer_depth_surface";
     System.out.printf("open %s %s%n", endpoint, gridName);
@@ -219,7 +219,7 @@ public class TestGridCurvilinear {
   }
 
   @Test
-  public void TestGribCurvilinearHorizStride() throws IOException, InvalidRangeException {
+  public void TestGribCurvilinearHorizStride() throws Exception {
     // GRIB Curvilinear
     String endpoint = TestDir.cdmUnitTestDir + "ft/fmrc/rtofs/ofs.20091122/ofs_atl.t00z.F024.grb.grib2";
     String gridName = "Mixed_layer_depth_surface";

@@ -5,9 +5,11 @@
 
 package ucar.unidata.util;
 
-import static org.junit.Assert.assertEquals;
+import static com.google.common.truth.Truth.assertThat;
+import static com.google.common.truth.Truth.assertWithMessage;
 import com.google.re2j.Matcher;
 import com.google.re2j.Pattern;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /** Tests on re2j package. */
@@ -75,8 +77,9 @@ public class TestRegexp {
   public void testSplit() {
     String[] split = "what is  it".split("[ ]+");
     String[] res = {"what", "is", "it"};
-    for (int i = 0; i < res.length; ++i)
-      assertEquals("split wrong", res[i], split[i]);
+    for (int i = 0; i < res.length; ++i) {
+      assertThat(res[i]).isEqualTo(split[i]);
+    }
   }
 
   @Test
@@ -91,7 +94,7 @@ public class TestRegexp {
   public static void testOne(String ps, String match, boolean expect) {
     Pattern pattern = Pattern.compile(ps);
     Matcher matcher = pattern.matcher(match);
-    assertEquals("match " + ps + " against: " + match, expect, matcher.matches());
+    assertThat(expect).isEqualTo(matcher.matches());
   }
 
   @Test
@@ -283,7 +286,8 @@ public class TestRegexp {
     testMatch(p, m, true, new String[] {"", "hours", "1900-1-1 0:0:0"});
   }
 
-  // @Test
+  @Test
+  @Ignore("fails")
   public void testCalendarDate() {
     String udunitPatternString = "(\\w*)\\s*since\\s*" + "([\\+\\-?\\d]+)([ t]([\\.\\:?\\d]*)([ \\+\\-]\\S*)?z?)?$";
     String m = "sec since 1970-1-1 00:00:00Z";
@@ -307,11 +311,11 @@ public class TestRegexp {
     Pattern pattern = Pattern.compile(ps);
     Matcher matcher = pattern.matcher(match);
 
-    assertEquals("Match " + ps + " against " + match, expect, matcher.matches());
+    assertWithMessage("Match " + ps + " against " + match).that(expect).isEqualTo(matcher.matches());
 
     if (groups != null) {
       for (int i = 1; i <= matcher.groupCount(); ++i)
-        assertEquals("Wrong group " + i, groups[i - 1], matcher.group(i));
+        assertWithMessage("Wrong group " + i).that(groups[i - 1]).isEqualTo(matcher.group(i));
     }
   }
 

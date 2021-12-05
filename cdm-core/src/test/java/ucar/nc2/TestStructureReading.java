@@ -5,18 +5,15 @@
 package ucar.nc2;
 
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import ucar.array.Array;
 import ucar.array.ArrayType;
-import ucar.array.InvalidRangeException;
 import ucar.array.Range;
 import ucar.array.Section;
 import ucar.array.StructureData;
 import ucar.array.StructureMembers;
 import ucar.unidata.util.test.TestDir;
-import java.io.*;
 import java.util.*;
 
 import static com.google.common.truth.Truth.assertThat;
@@ -44,29 +41,29 @@ public class TestStructureReading {
     List<Variable> vars = ncfile.getAllVariables();
     String[] trueNames = {"rh", "T", "lat", "lon", "time", "recordvarTest", "record"};
     for (int i = 0; i < vars.size(); i++) {
-      Assert.assertEquals("Checking names", trueNames[i], vars.get(i).getFullName());
+      assertThat(trueNames[i]).isEqualTo(vars.get(i).getFullName());
     }
 
     Structure record = (Structure) ncfile.findVariable("record");
-    assert record != null;
+    assertThat(record).isNotNull();
 
     vars = record.getVariables();
     String[] trueRecordNames = {"record.rh", "record.T", "record.time", "record.recordvarTest"};
     for (int i = 0; i < vars.size(); i++) {
-      Assert.assertEquals("Checking record names", trueRecordNames[i], vars.get(i).getFullName());
+      assertThat(trueRecordNames[i]).isEqualTo(vars.get(i).getFullName());
     }
 
     Variable time = ncfile.findVariable("record.time");
-    assert time != null;
+    assertThat(time).isNotNull();
 
     Variable time2 = record.findVariable("time");
-    assert time2 != null;
+    assertThat(time2).isNotNull();
 
-    Assert.assertEquals(time, time2);
+    assertThat(time).isEqualTo(time2);
   }
 
   @Test
-  public void testReadStructureCountBytesRead() throws IOException, InvalidRangeException {
+  public void testReadStructureCountBytesRead() throws Exception {
     Structure record = (Structure) ncfile.findVariable("record");
     assertThat(record).isNotNull();
     assertThat(record.getArrayType()).isEqualTo(ArrayType.STRUCTURE);
@@ -90,7 +87,7 @@ public class TestStructureReading {
       StructureData sd = (StructureData) arr.get(0);
 
       for (StructureMembers.Member m : sd.getStructureMembers()) {
-        Array mdata = sd.getMemberData(m);
+        Array<?> mdata = sd.getMemberData(m);
         totalOne += m.getStorageSizeBytes();
       }
     }
@@ -98,7 +95,7 @@ public class TestStructureReading {
   }
 
   @Test
-  public void testN3ReadStructureCheckValues() throws IOException, InvalidRangeException {
+  public void testN3ReadStructureCheckValues() throws Exception {
     Structure record = (Structure) ncfile.findVariable("record");
     assertThat(record).isNotNull();
     assertThat(record.getArrayType()).isEqualTo(ArrayType.STRUCTURE);
@@ -133,25 +130,5 @@ public class TestStructureReading {
         assertThat(val).isEqualTo(want);
       }
     }
-  }
-
-  @Test
-  public void testReadBothWaysV3mode() throws IOException {
-    // readBothWays(TestAll.testdataDir+"grid/netcdf/mm5/n040.nc");
-    readBothWays(TestDir.cdmLocalTestDataDir + "testWriteRecord.nc");
-    // readBothWays(TestAll.testdataDir+"station/ldm-old/2004061915_metar.nc");
-
-    // System.out.println("*** testReadBothWaysV3mode ok");
-  }
-
-  private void readBothWays(String filename) throws IOException {
-    NetcdfFile ncfile = NetcdfFiles.open(filename);
-    ncfile.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
-    // System.out.println(ncfile);
-    ncfile.close();
-
-    ncfile = NetcdfFiles.open(filename);
-    // System.out.println(ncfile);
-    ncfile.close();
   }
 }

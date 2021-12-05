@@ -21,7 +21,7 @@ import static com.google.common.truth.Truth.assertThat;
 public class TestGridReadHorizStride {
 
   @Test
-  public void testHorizStride() throws IOException, ucar.array.InvalidRangeException {
+  public void testHorizStride() throws Exception {
     String endpoint = TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx4";
     String gridName = "Ozone_Mixing_Ratio_isobaric";
     System.out.printf("Test Dataset %s%n", endpoint);

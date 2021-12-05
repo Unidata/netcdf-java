@@ -6,20 +6,12 @@
 package ucar.nc2.internal;
 
 import java.io.File;
-import java.lang.invoke.MethodHandles;
-import java.net.MalformedURLException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import ucar.unidata.util.test.TestDir;
 
 /** Examine how java.net.URI breaks up a uri string */
 public class TestUriCreate {
-
-  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @Test
   public void testMisc() {
@@ -36,7 +28,7 @@ public class TestUriCreate {
   }
 
   @Test
-  public void testReletiveFile() throws MalformedURLException, URISyntaxException {
+  public void testReletiveFile() throws Exception {
     new URL("file:src/test/data/ncml/nc/");
 
     showUri("src/test/data/ncml/nc/");
@@ -50,28 +42,17 @@ public class TestUriCreate {
     uri = new URI("file:src/test/data/ncml/nc/");
   }
 
-  @Test
-  public void testDods() throws URISyntaxException {
-    String uriString = "http://" + TestDir.dap2TestServer + "/dts/test.53.dods?types[0:1:9]";
-    showUri(uriString);
-  }
-
   private void showUri(String uriS) {
     System.out.println(uriS);
-    try {
-      URI uri = URI.create(uriS);
-      System.out.println(" scheme=" + uri.getScheme());
-      System.out.println(" getSchemeSpecificPart=" + uri.getSchemeSpecificPart());
-      System.out.println(" getAuthority=" + uri.getAuthority());
-      System.out.println(" getPath=" + uri.getPath());
-      System.out.println(" getQuery=" + uri.getQuery());
-      System.out.println(" isAbsolute=" + uri.isAbsolute());
-      System.out.println(" isOpaque=" + uri.isOpaque());
-      System.out.println();
-    } catch (Exception e) {
-      e.printStackTrace();
-      assert false;
-    }
+    URI uri = URI.create(uriS);
+    System.out.println(" scheme=" + uri.getScheme());
+    System.out.println(" getSchemeSpecificPart=" + uri.getSchemeSpecificPart());
+    System.out.println(" getAuthority=" + uri.getAuthority());
+    System.out.println(" getPath=" + uri.getPath());
+    System.out.println(" getQuery=" + uri.getQuery());
+    System.out.println(" isAbsolute=" + uri.isAbsolute());
+    System.out.println(" isOpaque=" + uri.isOpaque());
+    System.out.println();
   }
 
 }

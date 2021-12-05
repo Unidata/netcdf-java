@@ -24,7 +24,7 @@ public class TestH4misc {
   static public String testDir = TestDir.cdmUnitTestDir + "formats/hdf4/";
 
   @Test
-  public void testUnsigned() throws IOException, InvalidRangeException {
+  public void testUnsigned() throws Exception {
     String filename = testDir + "MOD021KM.A2004328.1735.004.2004329164007.hdf";
     try (NetcdfFile ncfile = NetcdfFiles.open(filename)) {
       String vname = "MODIS_SWATH_Type_L1B/Data_Fields/EV_250_Aggr1km_RefSB";

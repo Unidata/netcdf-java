@@ -13,7 +13,6 @@ import org.junit.rules.TemporaryFolder;
 import ucar.array.Array;
 import ucar.array.ArrayType;
 import ucar.array.Arrays;
-import ucar.array.InvalidRangeException;
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFile;
@@ -51,10 +50,10 @@ public class TestWriteMiscProblems {
   }
 
   @Test
-  public void testCharMultidim() throws IOException, InvalidRangeException {
+  public void testCharMultidim() throws Exception {
     String filename = tempFolder.newFile().getAbsolutePath();
 
-    NetcdfFormatWriter.Builder writerb = NetcdfFormatWriter.createNewNetcdf3(filename);
+    NetcdfFormatWriter.Builder<?> writerb = NetcdfFormatWriter.createNewNetcdf3(filename);
     Dimension Time_dim = writerb.addUnlimitedDimension("Time");
     Dimension DateStrLen_dim = writerb.addDimension("DateStrLen", 19);
 

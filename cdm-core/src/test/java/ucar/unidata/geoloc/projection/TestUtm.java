@@ -5,15 +5,13 @@
 package ucar.unidata.geoloc.projection;
 
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import ucar.nc2.util.Misc;
 import ucar.unidata.geoloc.*;
-import java.lang.invoke.MethodHandles;
+
+import static com.google.common.truth.Truth.assertThat;
 
 /** Test basic projection methods */
 public class TestUtm {
-  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   static double maxx_all = 0.0;
 
@@ -25,7 +23,6 @@ public class TestUtm {
   double tolm = 10.0; // tolerence in meters
 
   long sumNormal = 0;
-  long sumArray = 0;
 
   java.util.Random r = new java.util.Random(System.currentTimeMillis());
 
@@ -134,8 +131,8 @@ public class TestUtm {
     UtmProjection utm = new UtmProjection(17, true);
     LatLonPoint ll = utm.projToLatLon(577.8000000000001, 2951.8);
     System.out.printf("%15.12f %15.12f%n", ll.getLatitude(), ll.getLongitude());
-    assert Misc.nearlyEquals(ll.getLongitude(), -80.21802662821469, 1.0e-8);
-    assert Misc.nearlyEquals(ll.getLatitude(), 26.685132668190793, 1.0e-8);
+    assertThat(Misc.nearlyEquals(ll.getLongitude(), -80.21802662821469, 1.0e-8)).isTrue();
+    assertThat(Misc.nearlyEquals(ll.getLatitude(), 26.685132668190793, 1.0e-8)).isTrue();
   }
 
 }

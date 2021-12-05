@@ -17,6 +17,8 @@ import ucar.nc2.internal.util.CompareArrayToArray;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
+import static com.google.common.truth.Truth.assertThat;
+
 /** Compare reading netcdf with Array */
 @RunWith(Parameterized.class)
 @Category(NeedsCdmUnitTest.class)
@@ -46,12 +48,12 @@ public class TestReadSequenceProblem {
 
   @Test
   public void compareSequence() throws IOException {
-    CompareArrayToArray.compareSequence(filename);
+    assertThat(CompareArrayToArray.compareSequence(filename)).isTrue();
   }
 
   @Test
   public void compareDataset() throws IOException {
-    CompareArrayToArray.compareSequenceDataset(filename);
+    assertThat(CompareArrayToArray.compareSequenceDataset(filename)).isTrue();
   }
 
 }

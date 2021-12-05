@@ -13,24 +13,26 @@ import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.UtilsTestStructureArray;
 import java.io.IOException;
 
+import static com.google.common.truth.Truth.assertThat;
+
 /** Test reading record data */
 
 public class TestStructureArray2 {
   private UtilsTestStructureArray test = new UtilsTestStructureArray();
 
   @Test
-  public void testBB() throws IOException, InvalidRangeException {
+  public void testBB() throws Exception {
     // testWriteRecord is 1 dimensional (nc2 record dimension)
     try (NetcdfFile ncfile = NetcdfFiles.open(TestDir.cdmLocalTestDataDir + "testWriteRecord.nc", -1, null,
         NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE)) {
 
       Structure v = (Structure) ncfile.findVariable("record");
-      assert v != null;
+      assertThat(v).isNotNull();
 
-      assert (v.getArrayType() == ArrayType.STRUCTURE);
+      assertThat(v.getArrayType()).isEqualTo(ArrayType.STRUCTURE);
 
       Array<?> data = v.readArray();
-      assert (data.getArrayType() == ArrayType.STRUCTURE);
+      assertThat(data.getArrayType()).isEqualTo(ArrayType.STRUCTURE);
 
       test.testArrayStructure((StructureDataArray) data);
     }

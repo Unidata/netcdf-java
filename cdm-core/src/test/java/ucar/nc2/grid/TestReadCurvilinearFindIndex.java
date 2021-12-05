@@ -38,7 +38,7 @@ public class TestReadCurvilinearFindIndex {
   //
   // axes=(time, lat, lon, )
   @Test
-  public void testNetcdfCurvilinear2D() throws IOException, InvalidRangeException {
+  public void testNetcdfCurvilinear2D() throws Exception {
     String filename = TestDir.cdmUnitTestDir + "transforms/UTM/artabro_20120425.nc";
     String gridName = "dirm";
 
@@ -100,7 +100,7 @@ public class TestReadCurvilinearFindIndex {
   }
 
   @Test
-  public void TestGribCurvilinear() throws IOException, InvalidRangeException {
+  public void TestGribCurvilinear() throws Exception {
     String endpoint = TestDir.cdmUnitTestDir + "ft/fmrc/rtofs/ofs.20091122/ofs_atl.t00z.F024.grb.grib2";
     String gridName = "Mixed_layer_depth_surface";
     System.out.printf("open %s %s%n", endpoint, gridName);

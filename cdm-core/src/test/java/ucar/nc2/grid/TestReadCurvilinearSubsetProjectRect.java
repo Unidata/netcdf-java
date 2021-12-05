@@ -39,7 +39,7 @@ public class TestReadCurvilinearSubsetProjectRect {
   //
   // axes=(time, lat, lon, )
   @Test
-  public void testNetcdfCurvilinear2D() throws IOException, InvalidRangeException {
+  public void testNetcdfCurvilinear2D() throws Exception {
     String filename = TestDir.cdmUnitTestDir + "transforms/UTM/artabro_20120425.nc";
     String gridName = "dirm";
     String subset = "-8.541168, 43.409361, 0.123220, 0.105206"; // -> [49, 31] [39, 91]";

@@ -33,63 +33,63 @@ import static com.google.common.truth.Truth.assertWithMessage;
 public class TestVertical {
 
   @Test
-  public void testOceanSG2() throws java.io.IOException, InvalidRangeException {
+  public void testOceanSG2() throws Exception {
     open(TestDir.cdmUnitTestDir + "transforms/ocean_his_g2.nc", "u", OceanSG2.class, SimpleUnit.meterUnit);
   }
 
   @Test
-  public void testExistingFieldVerticalTransform() throws java.io.IOException, InvalidRangeException {
+  public void testExistingFieldVerticalTransform() throws Exception {
     open(TestDir.cdmUnitTestDir + "transforms/VExisting3D_NUWG.nc", "rhu_hybr", ExistingFieldVerticalTransform.class,
         SimpleUnit.factory("gp m"));
   }
 
   @Test
   @Ignore("fails because not correctly slicing vertical dimension out")
-  public void testHIRLAMhybrid() throws java.io.IOException, InvalidRangeException {
+  public void testHIRLAMhybrid() throws Exception {
     open(TestDir.cdmUnitTestDir + "transforms/HIRLAMhybrid.ncml", "Relative_humidity_hybrid",
         AtmosHybridSigmaPressure.class, SimpleUnit.pressureUnit);
   }
 
   @Test
-  public void testOceanS() throws java.io.IOException, InvalidRangeException {
+  public void testOceanS() throws Exception {
     open(TestDir.cdmUnitTestDir + "transforms/roms_ocean_s_coordinate.nc", "temp", OceanS.class, SimpleUnit.meterUnit);
   }
 
   @Test
-  public void testOceanSigma() throws java.io.IOException, InvalidRangeException {
+  public void testOceanSigma() throws Exception {
     open(TestDir.cdmUnitTestDir + "conventions/cf/gomoos_cf.nc", "temp", OceanSigma.class, SimpleUnit.meterUnit);
   }
 
   @Test
-  public void testAtmSigma() throws java.io.IOException, InvalidRangeException {
+  public void testAtmSigma() throws Exception {
     open(TestDir.cdmUnitTestDir + "transforms/temperature.nc", "Temperature", AtmosSigma.class,
         SimpleUnit.pressureUnit);
   }
 
   @Test
-  public void testAtmHybrid() throws java.io.IOException, InvalidRangeException {
+  public void testAtmHybrid() throws Exception {
     open(TestDir.cdmUnitTestDir + "conventions/cf/ccsm2.nc", "T", AtmosHybridSigmaPressure.class,
         SimpleUnit.pressureUnit);
   }
 
   @Test
-  public void testHybridSigmaPressure() throws IOException, InvalidRangeException {
+  public void testHybridSigmaPressure() throws Exception {
     String filename = TestDir.cdmUnitTestDir + "transforms/HybridSigmaPressure.nc";
     open(filename, "T", AtmosHybridSigmaPressure.class, SimpleUnit.pressureUnit);
   }
 
   @Test
-  public void testWrfEta() throws java.io.IOException, InvalidRangeException {
+  public void testWrfEta() throws Exception {
     open(TestDir.cdmUnitTestDir + "conventions/wrf/wrfout_v2_Lambert.nc", "T", WrfEta.class, SimpleUnit.pressureUnit);
   }
 
   @Test
-  public void testWrfEta2() throws java.io.IOException, InvalidRangeException {
+  public void testWrfEta2() throws Exception {
     open(TestDir.cdmUnitTestDir + "/conventions/wrf/wrfout_d01_2006-03-08_21-00-00", "T", WrfEta.class,
         SimpleUnit.pressureUnit);
   }
 
-  static void open(String filename, String gridName, Class<?> vtClass, SimpleUnit vunit)
+  static boolean open(String filename, String gridName, Class<?> vtClass, SimpleUnit vunit)
       throws IOException, InvalidRangeException {
     System.out.printf("compare %s %s%n", filename, gridName);
 
@@ -131,6 +131,7 @@ public class TestVertical {
         Array<Number> zt = vt.getCoordinateArray1D(timeIndex, xindex, yindex);
       }
     }
+    return true;
   }
 
 }

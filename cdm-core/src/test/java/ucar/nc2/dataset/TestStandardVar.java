@@ -136,15 +136,15 @@ public class TestStandardVar {
 
   private void readDouble() throws Exception {
     Variable t1 = ncfileRead.findVariable("t1");
-    assert (null != t1);
-    assert (t1.getArrayType() == ArrayType.DOUBLE);
+    assertThat(t1).isNotNull();
+    assertThat(t1.getArrayType()).isEqualTo(ArrayType.DOUBLE);
 
     Attribute att = t1.findAttribute(CDM.SCALE_FACTOR);
-    assert (null != att);
-    assert (!att.isArray());
-    assert (1 == att.getLength());
-    assert (2.0 == att.getNumericValue().doubleValue());
-    assert (ArrayType.DOUBLE == att.getArrayType());
+    assertThat(att).isNotNull();
+    assertThat(!att.isArray()).isTrue();
+    assertThat(1).isEqualTo(att.getLength());
+    assertThat(2.0).isEqualTo(att.getNumericValue().doubleValue());
+    assertThat(ArrayType.DOUBLE).isEqualTo(att.getArrayType());
 
     // read
     Array<Double> A = (Array<Double>) t1.readArray();
@@ -157,9 +157,9 @@ public class TestStandardVar {
     }
 
     t1 = dsRead.findVariable("t1");
-    assert (null != t1);
-    assert t1 instanceof VariableEnhanced;
-    assert (t1.getArrayType() == ArrayType.DOUBLE);
+    assertThat(t1).isNotNull();
+    assertThat(t1).isInstanceOf(VariableEnhanced.class);
+    assertThat(t1.getArrayType()).isEqualTo(ArrayType.DOUBLE);
 
     A = (Array<Double>) t1.readArray();
     ima = A.getIndex();
@@ -174,22 +174,22 @@ public class TestStandardVar {
 
   private void readByte2Short() throws Exception {
     Variable t2 = ncfileRead.findVariable("t2");
-    assert (null != t2);
-    assert (t2.getArrayType() == ArrayType.BYTE);
+    assertThat(t2).isNotNull();
+    assertThat(t2.getArrayType()).isEqualTo(ArrayType.BYTE);
 
     Attribute att = t2.findAttribute(CDM.SCALE_FACTOR);
-    assert (null != att);
-    assert (!att.isArray());
-    assert (1 == att.getLength());
-    assert (2 == att.getNumericValue().doubleValue());
-    assert (ArrayType.SHORT == att.getArrayType());
+    assertThat(att).isNotNull();
+    assertThat(!att.isArray()).isTrue();
+    assertThat(1).isEqualTo(att.getLength());
+    assertThat(att.getNumericValue().doubleValue()).isEqualTo(2.0);
+    assertThat(ArrayType.SHORT).isEqualTo(att.getArrayType());
 
     t2 = dsRead.findVariable("t2");
-    assert (null != t2);
-    assert t2 instanceof VariableEnhanced;
+    assertThat(t2).isNotNull();
+    assertThat(t2).isInstanceOf(VariableDS.class);
     VariableDS vs = (VariableDS) t2;
-    assert (vs.getArrayType() == ArrayType.SHORT) : vs.getArrayType();
-    assert (vs.hasMissing());
+    assertThat(vs.getArrayType()).isEqualTo(ArrayType.SHORT);
+    assertThat(vs.hasMissing());
 
     Array<Short> A = (Array<Short>) vs.readArray();
     Index ima = A.getIndex();
@@ -203,28 +203,28 @@ public class TestStandardVar {
 
   private void readByte() throws Exception {
     Variable v = ncfileRead.findVariable("t3");
-    assert (v != null);
-    assert (v.getArrayType() == ArrayType.BYTE);
+    assertThat(v).isNotNull();
+    assertThat(v.getArrayType()).isEqualTo(ArrayType.BYTE);
 
     v = dsRead.findVariable("t3");
-    assert (v != null);
-    assert v instanceof VariableEnhanced;
-    assert v instanceof VariableDS;
+    assertThat(v).isNotNull();
+    assertThat(v).isInstanceOf(VariableEnhanced.class);
+    assertThat(v).isInstanceOf(VariableDS.class);
     VariableDS vs = (VariableDS) v;
-    assert (vs.getArrayType() == ArrayType.BYTE);
+    assertThat(vs.getArrayType()).isEqualTo(ArrayType.BYTE);
 
     Attribute att = vs.findAttribute("_FillValue");
-    assert (null != att);
-    assert (!att.isArray());
-    assert (1 == att.getLength());
+    assertThat(att).isNotNull();
+    assertThat(!att.isArray()).isTrue();;
+    assertThat(1).isEqualTo(att.getLength());
     logger.debug("_FillValue = {}", att.getNumericValue().byteValue());
-    assert (((byte) 255) == att.getNumericValue().byteValue());
-    assert (ArrayType.BYTE == att.getArrayType());
+    assertThat(((byte) 255)).isEqualTo(att.getNumericValue().byteValue());
+    assertThat(ArrayType.BYTE).isEqualTo(att.getArrayType());
 
-    assert (vs.hasMissing());
-    assert (vs.scaleMissingUnsignedProxy().hasFillValue());
-    assert (vs.isMissing((double) ((byte) 255)));
-    assert (vs.scaleMissingUnsignedProxy().isFillValue((double) ((byte) 255)));
+    assertThat(vs.hasMissing());
+    assertThat(vs.scaleMissingUnsignedProxy().hasFillValue());
+    assertThat(vs.isMissing((byte) 255));
+    assertThat(vs.scaleMissingUnsignedProxy().isFillValue((double) ((byte) 255)));
 
     Array<Byte> A = (Array<Byte>) vs.readArray();
     Index ima = A.getIndex();
@@ -238,29 +238,29 @@ public class TestStandardVar {
 
   private void readShortMissing() throws Exception {
     Variable v = ncfileRead.findVariable("t4");
-    assert (v != null);
-    assert (v.getArrayType() == ArrayType.SHORT);
+    assertThat(v).isNotNull();
+    assertThat(v.getArrayType()).isEqualTo(ArrayType.SHORT);
 
     // default use of missing_value
     v = dsRead.findVariable("t4");
-    assert (v != null);
-    assert v instanceof VariableEnhanced;
-    assert v instanceof VariableDS;
+    assertThat(v).isNotNull();
+    assertThat(v).isInstanceOf(VariableEnhanced.class);
+    assertThat(v).isInstanceOf(VariableDS.class);
     VariableDS vs = (VariableDS) v;
-    assert (vs.getArrayType() == ArrayType.SHORT);
+    assertThat(vs.getArrayType()).isEqualTo(ArrayType.SHORT);
 
     Attribute att = vs.findAttribute(CDM.MISSING_VALUE);
-    assert (null != att);
-    assert (!att.isArray());
-    assert (1 == att.getLength());
+    assertThat(att).isNotNull();
+    assertThat(!att.isArray()).isTrue();;
+    assertThat(1).isEqualTo(att.getLength());
     logger.debug("missing_value = {}", att.getNumericValue().shortValue());
-    assert (((short) -9999) == att.getNumericValue().shortValue());
-    assert (ArrayType.SHORT == att.getArrayType());
+    assertThat(((short) -9999)).isEqualTo(att.getNumericValue().shortValue());
+    assertThat(ArrayType.SHORT).isEqualTo(att.getArrayType());
 
-    assert (vs.hasMissing());
-    assert (vs.scaleMissingUnsignedProxy().hasMissingValue());
-    assert (vs.isMissing((double) ((short) -9999)));
-    assert (vs.scaleMissingUnsignedProxy().isMissingValue((double) ((short) -9999)));
+    assertThat(vs.hasMissing());
+    assertThat(vs.scaleMissingUnsignedProxy().hasMissingValue());
+    assertThat(vs.isMissing((double) ((short) -9999)));
+    assertThat(vs.scaleMissingUnsignedProxy().isMissingValue((double) ((short) -9999)));
 
     Array<Short> A = (Array<Short>) vs.readArray();
     Index ima = A.getIndex();
@@ -275,22 +275,22 @@ public class TestStandardVar {
 
   private void readShort2FloatMissing() throws Exception {
     Variable v = ncfileRead.findVariable("t5");
-    assert (v != null);
-    assert (v.getArrayType() == ArrayType.SHORT);
+    assertThat(v).isNotNull();
+    assertThat(v.getArrayType()).isEqualTo(ArrayType.SHORT);
 
     // standard convert with missing data
     v = dsRead.findVariable("t5");
-    assert (v != null);
-    assert v instanceof VariableEnhanced;
-    assert v instanceof VariableDS;
+    assertThat(v).isNotNull();
+    assertThat(v).isInstanceOf(VariableEnhanced.class);
+    assertThat(v).isInstanceOf(VariableDS.class);
     VariableDS vs = (VariableDS) v;
-    assert (vs.getArrayType() == ArrayType.SHORT);
+    assertThat(vs.getArrayType()).isEqualTo(ArrayType.SHORT);
 
-    assert (vs.hasMissing());
-    assert (vs.scaleMissingUnsignedProxy().hasMissingValue());
+    assertThat(vs.hasMissing());
+    assertThat(vs.scaleMissingUnsignedProxy().hasMissingValue());
     double mv = 2 * (-9999) + 77;
-    assert (vs.isMissing(mv));
-    assert (vs.scaleMissingUnsignedProxy().isMissingValue(mv));
+    assertThat(vs.isMissing(mv));
+    assertThat(vs.scaleMissingUnsignedProxy().isMissingValue(mv));
 
     Array<Short> A = (Array<Short>) vs.readArray();
     Index ima = A.getIndex();
@@ -306,8 +306,8 @@ public class TestStandardVar {
 
   private void readDoubleMissing() throws Exception {
     VariableDS v = (VariableDS) dsRead.findVariable("m1");
-    assert (v != null);
-    assert (v.getArrayType() == ArrayType.DOUBLE);
+    assertThat(v).isNotNull();
+    assertThat(v.getArrayType()).isEqualTo(ArrayType.DOUBLE);
 
     Array<Double> A = (Array<Double>) v.readArray();
     Index ima = A.getIndex();

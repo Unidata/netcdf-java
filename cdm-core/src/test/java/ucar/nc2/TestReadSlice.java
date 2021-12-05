@@ -7,9 +7,7 @@ package ucar.nc2;
 import junit.framework.*;
 import ucar.array.Array;
 import ucar.array.Arrays;
-import ucar.array.InvalidRangeException;
 import ucar.unidata.util.test.TestDir;
-import java.io.*;
 
 import static com.google.common.truth.Truth.assertThat;
 
@@ -17,7 +15,7 @@ import static com.google.common.truth.Truth.assertThat;
 
 public class TestReadSlice extends TestCase {
 
-  public void testReadSlice1() throws InvalidRangeException, IOException {
+  public void testReadSlice1() throws Exception {
     try (NetcdfFile ncfile = TestDir.openFileLocal("testWrite.nc")) {
       Variable temp = ncfile.findVariable("temperature");
       assertThat(temp).isNotNull();
@@ -43,7 +41,7 @@ public class TestReadSlice extends TestCase {
     System.out.println("*** testReadSlice1 done");
   }
 
-  public void testReadSlice2() throws InvalidRangeException, IOException {
+  public void testReadSlice2() throws Exception {
     try (NetcdfFile ncfile = TestDir.openFileLocal("testWrite.nc")) {
       Variable temp = ncfile.findVariable("temperature");
       assertThat(temp).isNotNull();
@@ -69,31 +67,31 @@ public class TestReadSlice extends TestCase {
     System.out.println("*** testReadSlice2 done");
   }
 
-  public void testReadSliceCompose() throws InvalidRangeException, IOException {
+  public void testReadSliceCompose() throws Exception {
     try (NetcdfFile ncfile = TestDir.openFileLocal("testWrite.nc")) {
       System.out.printf("Open %s%n", ncfile.getLocation());
 
       Variable temp = ncfile.findVariable("temperature");
       assertThat(temp).isNotNull();
       int[] shape = temp.getShape();
-      assert shape[0] == 64;
-      assert shape[1] == 128;
+      assertThat(shape[0]).isEqualTo(64);
+      assertThat(shape[1]).isEqualTo(128);
 
       Variable tempSlice = temp.slice(1, 55); // fix dimension 1, eg temp(*,55)
       Variable slice2 = tempSlice.slice(0, 12); // fix dimension 0, eg temp(12,55)
-      assert slice2.getRank() == 0; // contract is that rank is reduced by one for each slice
+      assertThat(slice2.getRank()).isEqualTo(0); // contract is that rank is reduced by one for each slice
 
       // read array section
       Array<?> Asection = slice2.readArray();
 
       // read entire array
       Array<?> A = temp.readArray();
-      assert (A.getRank() == 2);
+      assertThat(A.getRank()).isEqualTo(2);
 
       // compare
       Array<?> data = Arrays.slice(A, 1, 55);
       data = Arrays.slice(data, 0, 12);
-      assert (data.getRank() == 0);
+      assertThat(data.getRank()).isEqualTo(0);
 
       Arrays.equalNumbers((Array<Number>) Asection, (Array<Number>) data);
     }

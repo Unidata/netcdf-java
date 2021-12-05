@@ -10,6 +10,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.array.Array;
 
+import static com.google.common.truth.Truth.assertThat;
+import static org.junit.Assert.fail;
+
 /** Static utilities for testing */
 public class TestUtils {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
@@ -22,7 +25,7 @@ public class TestUtils {
       }
     } catch (IOException ioe) {
       ioe.printStackTrace();
-      assert (false);
+      fail();
     }
 
     if (showStatus)
@@ -31,13 +34,14 @@ public class TestUtils {
 
   public static void testVarMatchesData(Variable v, boolean showStatus) throws IOException {
     Array<?> data = v.readArray();
-    assert data.getSize() == v.getSize();
+    assertThat(data.getSize()).isEqualTo(v.getSize());
 
-    assert data.getRank() == v.getRank();
+    assertThat(data.getRank()).isEqualTo(v.getRank());
     int[] dataShape = data.getShape();
     int[] varShape = v.getShape();
-    for (int i = 0; i < data.getRank(); i++)
-      assert dataShape[i] == varShape[i];
+    for (int i = 0; i < data.getRank(); i++) {
+      assertThat(dataShape[i]).isEqualTo(varShape[i]);
+    }
 
     if (showStatus)
       logger.debug("**** testReadData done on {}", v.getFullName());

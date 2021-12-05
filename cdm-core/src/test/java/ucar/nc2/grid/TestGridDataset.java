@@ -22,7 +22,7 @@ import static com.google.common.truth.Truth8.assertThat;
 public class TestGridDataset {
 
   @Test
-  public void testBasics() throws IOException, InvalidRangeException {
+  public void testBasics() throws Exception {
     String filename = TestDir.cdmLocalTestDataDir + "ncml/fmrc/GFS_Puerto_Rico_191km_20090729_0000.nc";
     Formatter errlog = new Formatter();
 

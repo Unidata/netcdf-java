@@ -15,6 +15,8 @@ import java.io.File;
 import java.lang.invoke.MethodHandles;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
+import static com.google.common.truth.Truth.assertThat;
+
 /** Test {@link ucar.nc2.internal.util.DiskCache2} */
 public class TestDiskCache2 {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
@@ -25,7 +27,7 @@ public class TestDiskCache2 {
     System.out.printf("cache.getRootDirectory = %s%n", cache.getRootDirectory());
     File file = cache.getFile("gfs.t00z.master.grbf00.10m.uv.grib2"); // not exist
     System.out.printf("canWrite= %s%n", file.canWrite());
-    assert !file.canWrite();
+    assertThat(file.canWrite()).isFalse();
 
     Formatter f = new Formatter();
     cache.showCache(f);
@@ -44,8 +46,8 @@ public class TestDiskCache2 {
       String filename = "transforms/albers.ncml";
       File rel2 = new File(pwd, filename);
       System.out.printf("abs = %s%n", rel2.getCanonicalFile());
-      assert rel2.exists();
-      assert rel2.canWrite();
+      assertThat(rel2.exists()).isTrue();
+      assertThat(rel2.canWrite()).isTrue();
     } finally {
       System.setProperty("user.dir", org);
     }

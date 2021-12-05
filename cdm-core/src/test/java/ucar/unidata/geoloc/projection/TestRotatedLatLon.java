@@ -2,11 +2,12 @@ package ucar.unidata.geoloc.projection;
 
 import java.io.PrintStream;
 import java.util.Arrays;
-import org.junit.Assert;
 import org.junit.Test;
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.Projection;
 import ucar.unidata.geoloc.ProjectionPoint;
+
+import static com.google.common.truth.Truth.assertThat;
 
 /**
  * Tests for {@link RotatedLatLon}.
@@ -26,8 +27,8 @@ public class TestRotatedLatLon {
   public void testLatLonToProj() {
     LatLonPoint latlon = LatLonPoint.create(54, 254);
     ProjectionPoint result = proj.latLonToProj(latlon);
-    Assert.assertEquals("Unexpected rotated longitude", 0, result.getX(), TOLERANCE);
-    Assert.assertEquals("Unexpected rotated latitude", 0, result.getY(), TOLERANCE);
+    assertThat(result.getX()).isWithin(TOLERANCE).of(0);
+    assertThat(result.getY()).isWithin(TOLERANCE).of(0);
   }
 
   /** Test that the origin of the rotated projection is the unrotated centre lat/lon. */
@@ -35,8 +36,8 @@ public class TestRotatedLatLon {
   public void testProjToLatLon() {
     ProjectionPoint p = ProjectionPoint.create(0, 0);
     LatLonPoint latlonResult = proj.projToLatLon(p);
-    Assert.assertEquals("Unexpected longitude", 254 - 360, latlonResult.getLongitude(), TOLERANCE);
-    Assert.assertEquals("Unexpected latitude", 54, latlonResult.getLatitude(), TOLERANCE);
+    assertThat(latlonResult.getLongitude()).isWithin(TOLERANCE).of(254 - 360);
+    assertThat(latlonResult.getLatitude()).isWithin(TOLERANCE).of(54);
   }
 
   private static class Testing {
@@ -59,8 +60,8 @@ public class TestRotatedLatLon {
       double[] p = {lon, lat};
       double[] p2 = rll.rotate(p, rll.getLonPole(), rll.getPoleRotate(), rll.getSinDlat());
       double[] p3 = rll.rotate(p2, -rll.getPoleRotate(), -rll.getLonPole(), -rll.getSinDlat());
-      assert Math.abs(p[0] - p3[0]) < err;
-      assert Math.abs(p[1] - p3[1]) < err;
+      assertThat(Math.abs(p[0] - p3[0])).isLessThan(err);
+      assertThat(Math.abs(p[1] - p3[1])).isLessThan(err);
       pr(p, p2, p3);
       return p2;
     }

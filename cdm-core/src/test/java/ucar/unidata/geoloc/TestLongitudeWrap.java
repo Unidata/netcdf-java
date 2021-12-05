@@ -1,16 +1,17 @@
 /* Copyright Unidata */
 package ucar.unidata.geoloc;
 
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.unidata.util.test.Assert2;
+import ucar.nc2.util.Misc;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.google.common.truth.Truth.assertThat;
 
 /** Test that the algorithm for longitude wrapping works */
 @RunWith(Parameterized.class)
@@ -38,8 +39,8 @@ public class TestLongitudeWrap {
   public void doit() {
     double compute = lonDiff(lat1, lat2);
     logger.debug("({} - {}) = {}, expect {}", lat1, lat2, compute, expected);
-    Assert2.assertNearlyEquals(expected, compute);
-    Assert.assertTrue(Math.abs(compute) < 360.0);
+    assertThat(Misc.nearlyEquals(expected, compute)).isTrue();
+    assertThat(Math.abs(compute)).isLessThan(360.0);
   }
 
   /**

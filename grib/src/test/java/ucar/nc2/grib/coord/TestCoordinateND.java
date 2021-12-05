@@ -3,11 +3,13 @@ package ucar.nc2.grib.coord;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.unidata.util.test.Assert2;
+import ucar.nc2.util.Misc;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.List;
+
+import static com.google.common.truth.Truth.assertThat;
 
 /**
  * Test CoordinateND class.
@@ -41,8 +43,8 @@ public class TestCoordinateND {
     logger.debug("{}", f);
     logger.debug("reindexed {}", counter.show());
 
-    Assert2.assertNearlyEquals(curr.getSparseArray().getDensity(), 1.0f);
-    Assert2.assertNearlyEquals(reindexed.getSparseArray().getDensity(), .826446f);
+    assertThat(Misc.nearlyEquals(curr.getSparseArray().getDensity(), 1.0f)).isTrue();
+    assertThat(Misc.nearlyEquals(reindexed.getSparseArray().getDensity(), .826446f)).isTrue();
   }
 
   public static CoordinateND<Short> makeCoordinateND(int rank, int size) {

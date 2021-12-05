@@ -180,7 +180,7 @@ public class TestH5ReadStructure2 {
    * type = Layout(8); type= 2 (chunked) storageSize = (1,600) dataSize=0 dataAddress=2548046
    */
   @Test
-  public void testReadOneAtATime() throws java.io.IOException, InvalidRangeException {
+  public void testReadOneAtATime() throws Exception {
     try (NetcdfFile ncfile = TestH5.openH5("IASI/IASI.h5")) {
 
       Variable dset = ncfile.findVariable("U-MARF/EPS/IASI_xxx_1C/DATA/IMAGE_LAT_ARRAY");
@@ -217,7 +217,7 @@ public class TestH5ReadStructure2 {
    * type = Layout(8); type= 2 (chunked) storageSize = (1,3136) dataSize=0 dataAddress=684294
    */
   @Test
-  public void testReadManyAtATime() throws java.io.IOException, InvalidRangeException {
+  public void testReadManyAtATime() throws Exception {
     try (NetcdfFile ncfile = TestH5.openH5("IASI/IASI.h5")) {
 
       Variable dset = ncfile.findVariable("U-MARF/EPS/IASI_xxx_1C/DATA/TIME_DESCR");

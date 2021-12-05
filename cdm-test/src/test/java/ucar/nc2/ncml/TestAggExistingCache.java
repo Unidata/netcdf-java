@@ -39,7 +39,7 @@ public class TestAggExistingCache {
       + TestDir.cdmUnitTestDir + "ncml/nc/pfeg/' suffix='.nc' />\n" + "    </aggregation>\n" + "</netcdf>";
 
   @Test
-  public void testCacheIsUsed() throws IOException, InvalidRangeException {
+  public void testCacheIsUsed() throws Exception {
     String filename = "file:TestAggExistingCache.xml";
     System.out.printf("%s%n", filename);
 

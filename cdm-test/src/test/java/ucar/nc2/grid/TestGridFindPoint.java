@@ -15,7 +15,7 @@ import static com.google.common.truth.Truth.assertThat;
 @Category(NeedsCdmUnitTest.class)
 public class TestGridFindPoint {
   @Test
-  public void testFindPoint() throws IOException, InvalidRangeException {
+  public void testFindPoint() throws Exception {
     String filename = TestDir.cdmUnitTestDir + "transforms/Eumetsat.VerticalPerspective.grb";
     Formatter errlog = new Formatter();
     try (ucar.nc2.grid.GridDataset gds = GridDatasetFactory.openGridDataset(filename, errlog)) {

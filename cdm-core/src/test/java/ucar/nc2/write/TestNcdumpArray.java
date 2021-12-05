@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.nio.charset.StandardCharsets;
 
-import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,7 +50,7 @@ public class TestNcdumpArray {
       File expectedOutputFile = new File(TestDir.cdmLocalTestDataDir, "testNestedGroups.dump");
       String expectedOutput = Files.toString(expectedOutputFile, StandardCharsets.UTF_8);
 
-      Assert.assertEquals(toUnixEOLs(expectedOutput), toUnixEOLs(ncdumpOut));
+      assertThat(toUnixEOLs(expectedOutput)).isEqualTo(toUnixEOLs(ncdumpOut));
     }
   }
 

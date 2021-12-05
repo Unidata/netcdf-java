@@ -21,7 +21,7 @@ import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.NetcdfDatasets;
-import ucar.unidata.util.test.Assert2;
+import ucar.nc2.util.Misc;
 
 import static com.google.common.truth.Truth.assertThat;
 
@@ -30,7 +30,7 @@ public class TestAggSynthetic {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @Test
-  public void test1() throws IOException, InvalidRangeException {
+  public void test1() throws Exception {
     String filename = "file:./" + TestNcmlRead.topDir + "aggSynthetic.xml";
     NetcdfDataset ncfile = NetcdfDatasets.openDataset(filename, false, null);
 
@@ -50,7 +50,7 @@ public class TestAggSynthetic {
   }
 
   @Test
-  public void test2() throws IOException, InvalidRangeException {
+  public void test2() throws Exception {
     String filename = "file:./" + TestNcmlRead.topDir + "aggSynthetic2.xml";
     NetcdfDataset ncfile = NetcdfDatasets.openDataset(filename, false, null);
 
@@ -64,7 +64,7 @@ public class TestAggSynthetic {
   }
 
   @Test
-  public void test3() throws IOException, InvalidRangeException {
+  public void test3() throws Exception {
     String filename = "file:./" + TestNcmlRead.topDir + "aggSynthetic3.xml";
     NetcdfDataset ncfile = NetcdfDatasets.openDataset(filename, false, null);
 
@@ -78,7 +78,7 @@ public class TestAggSynthetic {
   }
 
   @Test
-  public void testNoCoord() throws IOException, InvalidRangeException {
+  public void testNoCoord() throws Exception {
     String filename = "file:./" + TestNcmlRead.topDir + "aggSynNoCoord.xml";
     NetcdfDataset ncfile = NetcdfDatasets.openDataset(filename, false, null);
 
@@ -92,7 +92,7 @@ public class TestAggSynthetic {
   }
 
   @Test
-  public void testNoCoordDir() throws IOException, InvalidRangeException {
+  public void testNoCoordDir() throws Exception {
     String filename = "file:./" + TestNcmlRead.topDir + "aggSynNoCoordsDir.xml";
     NetcdfDataset ncfile = NetcdfDatasets.openDataset(filename, false, null);
 
@@ -106,7 +106,7 @@ public class TestAggSynthetic {
   }
 
   @Test
-  public void testJoinNewScalarCoord() throws IOException, InvalidRangeException {
+  public void testJoinNewScalarCoord() throws Exception {
     String filename = "file:./" + TestNcmlRead.topDir + "aggJoinNewScalarCoord.xml";
     NetcdfDataset ncfile = NetcdfDatasets.openDataset(filename, false, null);
 
@@ -126,7 +126,7 @@ public class TestAggSynthetic {
   }
 
   @Test
-  public void testRename() throws IOException, InvalidRangeException {
+  public void testRename() throws Exception {
     String xml = "<?xml version='1.0' encoding='UTF-8'?>\n" // leavit
         + "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2'>\n" // leavit
         + "  <variable name='Temperature' orgName='T' />\n" // leavit
@@ -148,7 +148,7 @@ public class TestAggSynthetic {
   }
 
   @Test
-  public void testScan() throws IOException, InvalidRangeException {
+  public void testScan() throws Exception {
     String xml = "<?xml version='1.0' encoding='UTF-8'?>\n"
         + "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2'>\n" //
         + "  <variable name='time' type='int' shape='time'>\n" //
@@ -219,9 +219,9 @@ public class TestAggSynthetic {
     assert data.getSize() == 3;
     assert data.getShape()[0] == 3;
 
-    Assert2.assertNearlyEquals(data.get(0).doubleValue(), 41.0);
-    Assert2.assertNearlyEquals(data.get(1).doubleValue(), 40.0);
-    Assert2.assertNearlyEquals(data.get(2).doubleValue(), 39.0);
+    assertThat(Misc.nearlyEquals(data.get(0).doubleValue(), 41.0)).isTrue();
+    assertThat(Misc.nearlyEquals(data.get(1).doubleValue(), 40.0)).isTrue();
+    assertThat(Misc.nearlyEquals(data.get(2).doubleValue(), 39.0)).isTrue();
   }
 
   private void testAggCoordVar(NetcdfFile ncfile) throws IOException {
@@ -268,9 +268,9 @@ public class TestAggSynthetic {
     assert time.getDimension(0) == ncfile.findDimension("time");
 
     Array<Number> data = (Array<Number>) time.readArray();
-    Assert2.assertNearlyEquals(data.get(0).doubleValue(), 0.0);
-    Assert2.assertNearlyEquals(data.get(1).doubleValue(), 10.0);
-    Assert2.assertNearlyEquals(data.get(2).doubleValue(), 99.0);
+    assertThat(Misc.nearlyEquals(data.get(0).doubleValue(), 0.0)).isTrue();
+    assertThat(Misc.nearlyEquals(data.get(1).doubleValue(), 10.0)).isTrue();
+    assertThat(Misc.nearlyEquals(data.get(2).doubleValue(), 99.0)).isTrue();
   }
 
   private void testAggCoordVarScan(NetcdfFile ncfile) throws IOException {
@@ -379,7 +379,7 @@ public class TestAggSynthetic {
       for (int j = 0; j < shape[1]; j++)
         for (int k = 0; k < shape[2]; k++) {
           double val = data.get(tIndex.set(i, j, k)).doubleValue();
-          Assert2.assertNearlyEquals(val, 100 * i + 10 * j + k);
+          assertThat(Misc.nearlyEquals(val, 100 * i + 10 * j + k)).isTrue();
         }
 
   }
@@ -401,7 +401,7 @@ public class TestAggSynthetic {
       for (int j = 0; j < shape[1]; j++)
         for (int k = 0; k < shape[2]; k++) {
           double val = data.get(tIndex.set(i, j, k)).doubleValue();
-          Assert2.assertNearlyEquals(val, 100 * (i + origin[0]) + 10 * j + k);
+          assertThat(Misc.nearlyEquals(val, 100 * (i + origin[0]) + 10 * j + k)).isTrue();
         }
   }
 

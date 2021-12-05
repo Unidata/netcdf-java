@@ -7,22 +7,19 @@ package ucar.nc2.grib.iosp;
 
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import ucar.nc2.Dimension;
-import ucar.nc2.Group;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFiles;
 import ucar.nc2.Variable;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
 import java.io.IOException;
-import java.lang.invoke.MethodHandles;
+
+import static com.google.common.truth.Truth.assertThat;
 
 /** Test Grib Coordinates. */
 @Category(NeedsCdmUnitTest.class)
 public class TestGribMiscCoordinates {
-  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   // 4.2 used to add the vert coord transform, for GRIB 1 when the getVerticalPressureLevels() was set.
   // But how do we associate it with a surface pressure variable ???
@@ -34,26 +31,18 @@ public class TestGribMiscCoordinates {
    * maybe incorrect parameter name (taken from WMO) for 99 (center 99/0) .
    * looks better with level > 3
    */
-  // @Test
+  @Test
   public void testHybrid1() throws IOException {
     String filename = TestDir.cdmUnitTestDir + "formats/grib1/HIRLAMhybrid.grib";
     System.out.println("\n\nReading File " + filename);
     NetcdfFile ncfile = NetcdfFiles.open(filename);
-    Group best = ncfile.findGroup("Best");
-    assert best != null;
-    Variable hybrid = best.findVariableLocal("hybrid");
-    assert hybrid != null;
-    assert (hybrid.getNameAndDimensions().equals("hybrid(hybrid=91)"));
-    Variable hybrida = best.findVariableLocal("hybrida");
-    assert hybrida != null;
-    assert (hybrida.getNameAndDimensions().equals("hybrida(hybrid=91)"));
-    Variable hybridb = best.findVariableLocal("hybridb");
-    assert hybridb != null;
-    assert (hybridb.getNameAndDimensions().equals("hybridb(hybrid=91)"));
+    Variable hybrid = ncfile.findVariable("hybrid");
+    assertThat(hybrid).isNotNull();
+    assertThat(hybrid.getNameAndDimensions()).isEqualTo("hybrid(hybrid=40)");
 
     int idx = hybrid.findDimensionIndex("hybrid");
     Dimension dim = hybrid.getDimension(idx);
-    assert dim.getShortName().equals("hybrid");
+    assertThat(dim.getShortName()).isEqualTo("hybrid");
 
     ncfile.close();
   }
@@ -63,13 +52,11 @@ public class TestGribMiscCoordinates {
     String filename = TestDir.cdmUnitTestDir + "formats/grib1/07010418_arw_d01.GrbF01500";
     System.out.println("\n\nReading File " + filename);
     NetcdfFile ncfile = NetcdfFiles.open(filename);
-    Group best = ncfile.findGroup("Best");
-    assert best == null;
     Variable hybrid = ncfile.findVariable("hybrid1");
-    assert hybrid != null;
-    assert (hybrid.getDimensions().size() == 1);
+    assertThat(hybrid).isNotNull();
+    assertThat(hybrid.getDimensions()).hasSize(1);
     Dimension d = hybrid.getDimension(0);
-    assert (d.getLength() == 2);
+    assertThat(d.getLength()).isEqualTo(2);
 
     ncfile.close();
   }
@@ -80,11 +67,9 @@ public class TestGribMiscCoordinates {
     System.out.println("\n\nReading File " + filename);
 
     NetcdfFile ncfile = NetcdfFiles.open(filename);
-    Group best = ncfile.findGroup("Best");
-    assert best == null;
     Variable lat = ncfile.findVariable("lat");
-    assert lat != null;
-    assert lat.getSize() == 48;
+    assertThat(lat).isNotNull();
+    assertThat(lat.getSize()).isEqualTo(48);
     ncfile.close();
   }
 }

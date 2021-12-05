@@ -34,7 +34,7 @@ public class TestGribCollectionReadingIosp {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @Test
-  public void testReadBest() throws IOException, InvalidRangeException {
+  public void testReadBest() throws Exception {
     String endpoint = TestDir.cdmUnitTestDir + "gribCollections/gfs_conus80/gfsConus80_file.ncx4";
     String covName = "Best/Temperature_height_above_ground";
     logger.debug("open {} var={}", endpoint, covName);
@@ -62,7 +62,7 @@ public class TestGribCollectionReadingIosp {
   }
 
   @Test
-  public void testReadMrutpTimeRange() throws IOException, InvalidRangeException {
+  public void testReadMrutpTimeRange() throws Exception {
     // read more than one time coordinate at a time in a MRUTP, no vertical
     try (NetcdfDataset ds = NetcdfDatasets.openDataset(TestDir.cdmUnitTestDir + "gribCollections/tp/GFSonedega.ncx4")) {
       Variable v = ds.getRootGroup().findVariableLocal("Pressure_surface");
@@ -81,7 +81,7 @@ public class TestGribCollectionReadingIosp {
   }
 
   @Test
-  public void testReadMrutpTimeRangeWithSingleVerticalLevel() throws IOException, InvalidRangeException {
+  public void testReadMrutpTimeRangeWithSingleVerticalLevel() throws Exception {
     // read more than one time coordinate at a time in a MRUTP, with vertical
     try (NetcdfDataset ds = NetcdfDatasets.openDataset(TestDir.cdmUnitTestDir + "gribCollections/tp/GFSonedega.ncx4")) {
       Variable v = ds.getRootGroup().findVariableLocal("Relative_humidity_sigma");
@@ -102,7 +102,7 @@ public class TestGribCollectionReadingIosp {
   }
 
   @Test
-  public void testReadMrutpTimeRangeWithMultipleVerticalLevel() throws IOException, InvalidRangeException {
+  public void testReadMrutpTimeRangeWithMultipleVerticalLevel() throws Exception {
     // read more than one time coordinate at a time in a MRUTP. multiple verticals
     try (NetcdfDataset ds = NetcdfDatasets.openDataset(TestDir.cdmUnitTestDir + "gribCollections/tp/GFSonedega.ncx4")) {
       Variable v = ds.getRootGroup().findVariableLocal("Relative_humidity_isobaric");

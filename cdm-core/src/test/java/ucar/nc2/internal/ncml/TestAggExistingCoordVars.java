@@ -15,7 +15,9 @@ import ucar.array.ArrayType;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.NetcdfDatasets;
-import ucar.unidata.util.test.Assert2;
+import ucar.nc2.util.Misc;
+
+import static com.google.common.truth.Truth.assertThat;
 
 /** Test NcML AggExisting ways to define coordinate variable values */
 public class TestAggExistingCoordVars {
@@ -95,7 +97,7 @@ public class TestAggExistingCoordVars {
     int count = 0;
     for (Number val : data) {
       double vald = val.doubleValue();
-      Assert2.assertNearlyEquals(vald, result[count]);
+      assertThat(Misc.nearlyEquals(vald, result[count])).isTrue();
       count++;
     }
 
@@ -165,7 +167,7 @@ public class TestAggExistingCoordVars {
     int count = 0;
     for (Number val : data) {
       double vald = val.doubleValue();
-      Assert2.assertNearlyEquals(vald, result[count]);
+      assertThat(Misc.nearlyEquals(vald, result[count])).isTrue();
       count++;
     }
 

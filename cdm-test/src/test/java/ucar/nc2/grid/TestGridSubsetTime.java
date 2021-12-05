@@ -39,7 +39,7 @@ public class TestGridSubsetTime {
   }
 
   @Test // there is no interval with offset value = 51
-  public void testNoIntervalFound() throws IOException, InvalidRangeException {
+  public void testNoIntervalFound() throws Exception {
     String endpoint = TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx4";
     String covName = "Momentum_flux_u-component_surface_Mixed_intervals_Average";
 

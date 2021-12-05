@@ -11,6 +11,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.nc2.internal.util.URLnaming;
 
+import static com.google.common.truth.Truth.assertThat;
+
 /** Test URLnaming.resolve() */
 public class TestURLnaming {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
@@ -38,8 +40,9 @@ public class TestURLnaming {
     System.out.println("reletiveUri      = " + rel);
     System.out.println("URLnaming.resolve= " + URLnaming.resolve(base, rel));
     System.out.println();
-    if (result != null)
-      assert URLnaming.resolve(base, rel).equals(result);
+    if (result != null) {
+      assertThat(URLnaming.resolve(base, rel)).isEqualTo(result);
+    }
   }
 
 }

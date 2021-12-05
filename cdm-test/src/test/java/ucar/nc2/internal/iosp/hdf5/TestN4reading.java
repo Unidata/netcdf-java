@@ -23,8 +23,8 @@ import ucar.array.StructureDataArray;
 import ucar.array.StructureMembers;
 import ucar.nc2.*;
 import ucar.nc2.iosp.NetcdfFormatUtils;
+import ucar.nc2.util.Misc;
 import ucar.nc2.write.NcdumpArray;
-import ucar.unidata.util.test.Assert2;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import java.io.IOException;
@@ -43,7 +43,7 @@ public class TestN4reading {
   public static String testDir = TestDir.cdmUnitTestDir + "formats/netcdf4/";
 
   @Test
-  public void testGodivaFindsDataHole() throws IOException, InvalidRangeException {
+  public void testGodivaFindsDataHole() throws Exception {
     // this pattern of reads from godiva is finding a data hole - missing data where there shouldn't be any
     Section[] sections = {new Section("14:14,0:0,13:170,0:20"), new Section("14:14,0:0,170:194,21:167"),
         new Section("14:14,0:0,170:194,168:294"), new Section("14:14,0:0,13:170,21:167"),
@@ -133,7 +133,7 @@ public class TestN4reading {
   }
 
   @Test
-  public void testVlen() throws IOException, InvalidRangeException {
+  public void testVlen() throws Exception {
     String filename = testDir + "vlen/fpcs_1dwave_2.nc";
     try (NetcdfFile ncfile = NetcdfFiles.open(filename)) {
       logger.debug("**** testVlen open\n{}", ncfile);
@@ -164,7 +164,7 @@ public class TestN4reading {
   }
 
   @Test
-  public void testVlen2() throws IOException, InvalidRangeException {
+  public void testVlen2() throws Exception {
     String filename = testDir + "vlen/tst_vlen_data.nc4";
     try (NetcdfFile ncfile = NetcdfFiles.open(filename)) {
       logger.debug("**** testVlen2 open\n{}", ncfile);
@@ -204,7 +204,7 @@ public class TestN4reading {
    * }
    */
   @Test
-  public void testNestedStructure() throws java.io.IOException, InvalidRangeException {
+  public void testNestedStructure() throws Exception {
     String filename = testDir + "testNestedStructure.nc";
     try (NetcdfFile ncfile = NetcdfFiles.open(filename)) {
 
@@ -309,7 +309,7 @@ public class TestN4reading {
       Array<Float> vdata = (Array<Float>) sdata.getMemberData(memberName);
       assertThat(vdata.getSize()).isEqualTo(3);
       Index ii = vdata.getIndex();
-      Assert2.assertNearlyEquals(vdata.get(ii.set(2)), 21.5f);
+      assertThat(Misc.nearlyEquals(vdata.get(ii.set(2)), 21.5f)).isTrue();
 
       int count = 0;
       Structure s = (Structure) v;

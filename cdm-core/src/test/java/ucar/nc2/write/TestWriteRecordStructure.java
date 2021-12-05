@@ -27,7 +27,7 @@ public class TestWriteRecordStructure {
   public TemporaryFolder tempFolder = new TemporaryFolder();
 
   @Test
-  public void testWriteRecordStructure() throws IOException, InvalidRangeException {
+  public void testWriteRecordStructure() throws Exception {
     String fileName = tempFolder.newFile().getAbsolutePath();
 
     NetcdfFormatWriter.Builder<?> writerb = NetcdfFormatWriter.createNewNetcdf3(fileName).setFill(false);

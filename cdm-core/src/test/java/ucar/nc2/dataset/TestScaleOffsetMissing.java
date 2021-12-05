@@ -30,7 +30,7 @@ public class TestScaleOffsetMissing {
   public TemporaryFolder tempFolder = new TemporaryFolder();
 
   @Test
-  public void testScaleOffsetValidMaxMin() throws URISyntaxException, IOException {
+  public void testScaleOffsetValidMaxMin() throws Exception {
     File testResource = new File(getClass().getResource("testScaleOffsetMissing.ncml").toURI());
 
     try (NetcdfDataset ncd = NetcdfDatasets.openDataset(testResource.getAbsolutePath(), true, null)) {
@@ -55,7 +55,7 @@ public class TestScaleOffsetMissing {
   }
 
   @Test
-  public void testScaleOffsetValidRange() throws URISyntaxException, IOException {
+  public void testScaleOffsetValidRange() throws Exception {
     File testResource = new File(getClass().getResource("testScaleOffsetMissing.ncml").toURI());
 
     try (NetcdfDataset ncd = NetcdfDatasets.openDataset(testResource.getAbsolutePath(), true, null)) {
@@ -82,7 +82,7 @@ public class TestScaleOffsetMissing {
 
   // This test demonstrated the bug in https://github.com/Unidata/netcdf-java/issues/572.
   @Test
-  public void testNegScaleOffsetValidRange() throws URISyntaxException, IOException {
+  public void testNegScaleOffsetValidRange() throws Exception {
     File testResource = new File(getClass().getResource("testScaleOffsetMissing.ncml").toURI());
 
     try (NetcdfDataset ncd = NetcdfDatasets.openDataset(testResource.getAbsolutePath(), true, null)) {

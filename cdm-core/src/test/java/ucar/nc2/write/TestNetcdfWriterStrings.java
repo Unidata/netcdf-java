@@ -40,7 +40,7 @@ public class TestNetcdfWriterStrings {
   public TemporaryFolder tempFolder = new TemporaryFolder();
 
   @Test
-  public void writeNetCDFchar() throws IOException, InvalidRangeException {
+  public void writeNetCDFchar() throws Exception {
     String helloGreek = makeString(helloGreekCode, true);
     System.out.printf("writeNetCDFchar= %s%n", showBoth(helloGreek));
     String helloGreek2 = Normalizer.normalize(helloGreek, Normalizer.Form.NFC);
@@ -82,7 +82,7 @@ public class TestNetcdfWriterStrings {
   }
 
   @Test
-  public void writeNetCDFcharArray() throws IOException, InvalidRangeException {
+  public void writeNetCDFcharArray() throws Exception {
     String helloGreek = makeString(helloGreekCode, true);
     // helloGreek = Normalizer.normalize(helloGreek, Normalizer.Form.NFC);
     System.out.printf("writeNetCDFcharArray=%s%n", showBoth(helloGreek));
@@ -125,7 +125,7 @@ public class TestNetcdfWriterStrings {
   }
 
   @Test
-  public void writeNetCDFstring() throws IOException, InvalidRangeException {
+  public void writeNetCDFstring() throws Exception {
     String helloGreek = makeString(helloGreekCode, true);
     helloGreek = Normalizer.normalize(helloGreek, Normalizer.Form.NFC);
     System.out.printf("writeNetCDFstring=%s%n", showBoth(helloGreek));
@@ -159,7 +159,7 @@ public class TestNetcdfWriterStrings {
   }
 
   @Test
-  public void testWriteStringData() throws IOException, InvalidRangeException {
+  public void testWriteStringData() throws Exception {
     String helloGreek = makeString(helloGreekCode, false);
     helloGreek = Normalizer.normalize(helloGreek, Normalizer.Form.NFC);
     System.out.printf("testWriteStringData=%s%n", showBoth(helloGreek));

@@ -5,31 +5,25 @@
 package ucar.nc2.internal.ncml;
 
 import java.io.IOException;
-import java.lang.invoke.MethodHandles;
 import java.util.Iterator;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import ucar.array.ArrayType;
 import ucar.array.Array;
 import ucar.array.Arrays;
-import ucar.array.InvalidRangeException;
 import ucar.array.Section;
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.CDM;
-import ucar.unidata.util.test.Assert2;
+import ucar.nc2.util.Misc;
 
 import static com.google.common.truth.Truth.assertThat;
 
 public class TestNcmlModifyAtts {
-  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-
   private static NetcdfFile ncfile = null;
 
   @BeforeClass
@@ -124,9 +118,9 @@ public class TestNcmlModifyAtts {
     assert data.getShape()[0] == 3;
     Iterator<Float> dataI = data.iterator();
 
-    Assert2.assertNearlyEquals(dataI.next(), 41.0);
-    Assert2.assertNearlyEquals(dataI.next(), 40.0);
-    Assert2.assertNearlyEquals(dataI.next(), 39.0);
+    assertThat(Misc.nearlyEquals(dataI.next(), 41.0)).isTrue();
+    assertThat(Misc.nearlyEquals(dataI.next(), 40.0)).isTrue();
+    assertThat(Misc.nearlyEquals(dataI.next(), 39.0)).isTrue();
   }
 
   @Test
@@ -164,7 +158,7 @@ public class TestNcmlModifyAtts {
   }
 
   @Test
-  public void testReadSlice() throws IOException, InvalidRangeException {
+  public void testReadSlice() throws Exception {
     Variable v = ncfile.findVariable("rh");
     int[] origin = new int[3];
     int[] shape = {2, 3, 1};
@@ -186,7 +180,7 @@ public class TestNcmlModifyAtts {
   }
 
   @Test
-  public void testReadSlice2() throws IOException, InvalidRangeException {
+  public void testReadSlice2() throws Exception {
     Variable v = ncfile.findVariable("rh");
     int[] origin = new int[3];
     int[] shape = {2, 1, 3};
@@ -245,10 +239,10 @@ public class TestNcmlModifyAtts {
     assert data.getShape()[2] == 4;
     Iterator<Double> dataI = data.iterator();
 
-    Assert2.assertNearlyEquals(dataI.next(), 1.0);
-    Assert2.assertNearlyEquals(dataI.next(), 2.0);
-    Assert2.assertNearlyEquals(dataI.next(), 3.0);
-    Assert2.assertNearlyEquals(dataI.next(), 4.0);
-    Assert2.assertNearlyEquals(dataI.next(), 2.0);
+    assertThat(Misc.nearlyEquals(dataI.next(), 1.0)).isTrue();
+    assertThat(Misc.nearlyEquals(dataI.next(), 2.0)).isTrue();
+    assertThat(Misc.nearlyEquals(dataI.next(), 3.0)).isTrue();
+    assertThat(Misc.nearlyEquals(dataI.next(), 4.0)).isTrue();
+    assertThat(Misc.nearlyEquals(dataI.next(), 2.0)).isTrue();
   }
 }

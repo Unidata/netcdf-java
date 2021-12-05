@@ -38,7 +38,7 @@ public class TestH5OddTypes {
 
   @Test
   @Category(NeedsCdmUnitTest.class)
-  public void testOpaque() throws InvalidRangeException, IOException {
+  public void testOpaque() throws Exception {
     H5header.setDebugFlags(DebugFlags.create("H5header/header"));
     try (NetcdfFile ncfile = TestH5.openH5("samples/opaque.h5")) {
       System.out.println("\n" + ncfile);
@@ -58,7 +58,7 @@ public class TestH5OddTypes {
 
   @Test
   @Category(NeedsCdmUnitTest.class)
-  public void testEnum() throws InvalidRangeException, IOException {
+  public void testEnum() throws Exception {
     try (NetcdfFile ncfile = TestH5.openH5("support/enum.h5")) {
       Assert.assertNotNull(ncfile);
       Variable v2 = ncfile.findVariable("enum");

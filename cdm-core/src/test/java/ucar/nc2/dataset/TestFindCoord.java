@@ -4,17 +4,14 @@
  */
 package ucar.nc2.dataset;
 
-import org.junit.Assert;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.io.StringReader;
-import java.lang.invoke.MethodHandles;
+
+import static com.google.common.truth.Truth.assertWithMessage;
 
 /** Test CoordinateAxis1D.findCoord() */
 public class TestFindCoord {
-  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @Test
   public void testRegular() throws IOException {
@@ -221,7 +218,7 @@ public class TestFindCoord {
           if (expect[i] != index)
             index = bounded ? axis1D.findCoordElementBounded(v) : axis1D.findCoordElement(v);
 
-          Assert.assertEquals(varName + " bounded=" + bounded, expect[i], index);
+          assertWithMessage(varName + " bounded=" + bounded).that(expect[i]).isEqualTo(index);
         }
       }
 

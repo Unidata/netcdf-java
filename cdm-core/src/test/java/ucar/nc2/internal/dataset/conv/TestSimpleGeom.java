@@ -5,7 +5,6 @@
 
 package ucar.nc2.internal.dataset.conv;
 
-import org.junit.Assert;
 import org.junit.Test;
 import ucar.array.Array;
 import ucar.nc2.Variable;
@@ -17,6 +16,9 @@ import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.unidata.util.test.TestDir;
 import java.io.IOException;
 import java.util.List;
+
+import static com.google.common.truth.Truth.assertThat;
+import static com.google.common.truth.Truth.assertWithMessage;
 import static java.lang.String.format;
 
 public class TestSimpleGeom {
@@ -35,14 +37,14 @@ public class TestSimpleGeom {
       testCond = found.equals(expected);
       failMessage =
           format("This dataset used the %s convention, but should have used the %s convention.", found, expected);
-      Assert.assertTrue(failMessage, testCond);
+      assertWithMessage(failMessage).that(testCond).isTrue();
 
       // check that attributes were filled in correctly
       List<Variable> vars = ncd.getAllVariables();
       for (Variable v : vars) {
         if (v.findAttribute(CF.GEOMETRY) != null) {
-          Assert.assertNotNull(v.findAttribute(CF.NODE_COORDINATES));
-          Assert.assertNotNull(v.findAttribute(_Coordinate.Axes));
+          assertThat(v.findAttribute(CF.NODE_COORDINATES));
+          assertThat(v.findAttribute(_Coordinate.Axes));
         }
       }
     }
@@ -64,14 +66,14 @@ public class TestSimpleGeom {
     testCond = found.equals(expected);
     failMessage =
         format("This dataset used the %s convention, but should have used the %s convention.", found, expected);
-    Assert.assertTrue(failMessage, testCond);
+    assertWithMessage(failMessage).that(testCond).isTrue();
 
     // check that attributes were filled in correctly
     List<Variable> vars = ncd.getAllVariables();
     for (Variable v : vars) {
       if (v.findAttribute(CF.GEOMETRY) != null) {
-        Assert.assertNotNull(v.findAttribute(CF.NODE_COORDINATES));
-        Assert.assertNotNull(v.findAttribute(_Coordinate.Axes));
+        assertThat(v.findAttribute(CF.NODE_COORDINATES)).isNotNull();
+        assertThat(v.findAttribute(_Coordinate.Axes)).isNotNull();
       }
     }
     ncd.close();

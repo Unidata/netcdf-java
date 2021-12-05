@@ -497,7 +497,6 @@ public class NetcdfFile implements FileCacheable, Closeable {
    * Generic way to send a "message" to the underlying IOSP.
    * This message is sent after the file is open. To affect the creation of the file,
    * use a factory method like NetcdfFile.open().
-   * In ver6, IOSP_MESSAGE_ADD_RECORD_STRUCTURE, IOSP_MESSAGE_REMOVE_RECORD_STRUCTURE will not work here.
    *
    * @param message iosp specific message
    * @return iosp specific return, may be null
@@ -513,7 +512,7 @@ public class NetcdfFile implements FileCacheable, Closeable {
     if (message == IOSP_MESSAGE_ADD_RECORD_STRUCTURE) {
       Variable v = rootGroup.findVariableLocal("record");
       boolean gotit = (v instanceof Structure);
-      return gotit || makeRecordStructure();
+      return gotit || makeRecordStructure(); // TODO
     }
 
     if (iosp != null) {

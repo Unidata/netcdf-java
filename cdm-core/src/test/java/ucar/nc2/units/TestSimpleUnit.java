@@ -20,7 +20,7 @@ public class TestSimpleUnit {
     SimpleUnit t2 = SimpleUnit.factory("1 hour");
     double v = t1.convertTo(1.0, t2);
     System.out.println(t1 + " convertTo " + t2 + " = " + v);
-    assert v == 24.0;
+    assertThat(v).isEqualTo(24.0);
   }
 
   @Test
@@ -33,14 +33,14 @@ public class TestSimpleUnit {
   @Test
   public void testUnits() {
     SimpleUnit su = SimpleUnit.factory("11 hPa");
-    assert !(su instanceof TimeUnit);
-    assert su.getValue() == 1100.0 : su;
-    assert su.getUnitString().equals("Pa") : su;
+    assertThat(su).isNotInstanceOf(TimeUnit.class);
+    assertThat(su.getValue()).isEqualTo(1100.0);
+    assertThat(su.getUnitString()).isEqualTo("Pa");
 
     su = SimpleUnit.factory("11 km");
-    assert !(su instanceof TimeUnit);
-    assert su.getValue() == 11000.0 : su;
-    assert su.getUnitString().equals("m") : su;
+    assertThat(su).isNotInstanceOf(TimeUnit.class);
+    assertThat(su.getValue()).isEqualTo(11000.0);
+    assertThat(su.getUnitString()).isEqualTo("m");
   }
 
   @Test
@@ -53,19 +53,19 @@ public class TestSimpleUnit {
 
     String text = "3 days since 1930-07-27 12:00:00-05:00";
     SimpleUnit du = SimpleUnit.factory(text);
-    System.out.println(text + " == standard format " + du);
+    System.out.println(text + ").isEqualTo(standard format " + du);
     assertThat(du).isNotInstanceOf(TimeUnit.class);
     assertThat(SimpleUnit.isDateUnit(text)).isTrue();
 
     text = "hours since 1930-07-29T01:00:00-08:00";
     du = SimpleUnit.factory(text);
-    System.out.println(text + " == standard format " + du);
+    System.out.println(text + ").isEqualTo(standard format " + du);
     assertThat(du).isNotInstanceOf(TimeUnit.class);
     assertThat(SimpleUnit.isDateUnit(text)).isTrue();
 
     text = "1 hours since 1930-07-29T01:00:00-08:00";
     du = SimpleUnit.factory(text);
-    System.out.println(text + " == standard format " + du);
+    System.out.println(text + ").isEqualTo(standard format " + du);
     assertThat(du).isNotInstanceOf(TimeUnit.class);
     assertThat(SimpleUnit.isDateUnit(text)).isTrue();
 

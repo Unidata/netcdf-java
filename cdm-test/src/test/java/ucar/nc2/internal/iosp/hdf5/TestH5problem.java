@@ -47,7 +47,7 @@ public class TestH5problem {
   }
 
   @Test
-  public void sectionStringsWithFilter() throws IOException, InvalidRangeException {
+  public void sectionStringsWithFilter() throws Exception {
     String filename = TestH5.testDir + "StringsWFilter.h5";
     try (NetcdfFile ncfile = NetcdfFiles.open(filename)) {
       Variable v = ncfile.findVariable("/sample/ids");

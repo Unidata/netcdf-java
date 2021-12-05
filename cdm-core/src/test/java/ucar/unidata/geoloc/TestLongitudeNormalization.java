@@ -1,16 +1,18 @@
 /* Copyright Unidata */
 package ucar.unidata.geoloc;
 
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.unidata.util.test.Assert2;
+import ucar.nc2.util.Misc;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.google.common.truth.Truth.assertThat;
+import static com.google.common.truth.Truth.assertWithMessage;
 
 /** Test that the algorithm for longitude normalization works */
 @RunWith(Parameterized.class)
@@ -49,14 +51,14 @@ public class TestLongitudeNormalization {
 
     if (expectedDiff != null) {
       logger.debug("({} from {}) = {}, diff = {} expectedDiff {}", lon, from, compute, compute - lon, expectedDiff);
-      Assert2.assertNearlyEquals(expectedDiff, compute - lon);
+      assertThat(Misc.nearlyEquals(expectedDiff, compute - lon)).isTrue();
     } else {
       logger.debug("({} from {}) = {}, diff = {}", lon, from, compute, compute - lon);
     }
 
     String msg = String.format("(%f from %f) = %f%n", lon, from, compute);
-    Assert.assertTrue(msg, compute >= from);
-    Assert.assertTrue(msg, compute < from + 360);
+    assertWithMessage(msg).that(compute).isAtLeast(from);
+    assertWithMessage(msg).that(compute).isAtMost(from + 360);
   }
 
   /**
