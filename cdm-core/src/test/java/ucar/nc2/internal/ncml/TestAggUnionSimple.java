@@ -10,7 +10,6 @@ import java.util.Formatter;
 import java.util.Iterator;
 
 import org.junit.AfterClass;
-import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -18,7 +17,6 @@ import org.slf4j.LoggerFactory;
 import ucar.array.Array;
 import ucar.array.ArrayType;
 import ucar.array.Arrays;
-import ucar.array.InvalidRangeException;
 import ucar.array.Section;
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
@@ -29,7 +27,9 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.internal.util.CompareNetcdf2;
-import ucar.unidata.util.test.Assert2;
+import ucar.nc2.util.Misc;
+
+import static com.google.common.truth.Truth.assertThat;
 
 /** Test agg union */
 
@@ -220,9 +220,9 @@ public class TestAggUnionSimple {
     assert data.getRank() == 1;
     assert data.getSize() == 21;
     assert data.getShape()[0] == 21;
-    Assert2.assertNearlyEquals(data.get(0).doubleValue(), 10.0);
-    Assert2.assertNearlyEquals(data.get(1).doubleValue(), 9.0);
-    Assert2.assertNearlyEquals(data.get(2).doubleValue(), 8.0);
+    assertThat(Misc.nearlyEquals(data.get(0).doubleValue(), 10.0)).isTrue();
+    assertThat(Misc.nearlyEquals(data.get(1).doubleValue(), 9.0)).isTrue();
+    assertThat(Misc.nearlyEquals(data.get(2).doubleValue(), 8.0)).isTrue();
   }
 
   @Test
@@ -268,7 +268,7 @@ public class TestAggUnionSimple {
   }
 
   @Test
-  public void testReadSlice() throws IOException, InvalidRangeException {
+  public void testReadSlice() throws Exception {
     Variable v = ncfile.findVariable("lflx");
     int[] origin = {0, 6, 5};
     int[] shape = {1, 2, 3};
@@ -303,7 +303,7 @@ public class TestAggUnionSimple {
       if (!ok) {
         System.out.printf("%s%n", errlog);
       }
-      Assert.assertTrue(ok);
+      assertThat(ok).isTrue();
     }
   }
 

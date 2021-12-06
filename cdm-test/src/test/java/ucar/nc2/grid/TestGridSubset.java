@@ -27,7 +27,7 @@ import static com.google.common.truth.Truth.assertThat;
 public class TestGridSubset {
 
   @Test
-  public void testRegular() throws IOException, ucar.array.InvalidRangeException {
+  public void testRegular() throws Exception {
     String filename = TestDir.cdmUnitTestDir + "conventions/nuwg/03061219_ruc.nc";
     String gridName = "T";
     System.out.printf("testRegular %s%n", filename);
@@ -66,7 +66,7 @@ public class TestGridSubset {
   }
 
   @Test
-  public void testGrib() throws IOException, ucar.array.InvalidRangeException {
+  public void testGrib() throws Exception {
     String filename = TestDir.cdmUnitTestDir + "formats/grib1/AVN.wmo";
     String gridName = "Temperature_isobaric";
     System.out.printf("testGrib %s%n", filename);
@@ -98,7 +98,7 @@ public class TestGridSubset {
   }
 
   @Test
-  public void testWRF() throws IOException, ucar.array.InvalidRangeException {
+  public void testWRF() throws Exception {
     String filename = TestDir.cdmUnitTestDir + "conventions/wrf/wrfout_v2_Lambert.nc";
     String gridName = "T";
     System.out.printf("testWRF %s%n", filename);
@@ -137,7 +137,7 @@ public class TestGridSubset {
   }
 
   @Test
-  public void testMSG() throws IOException, ucar.array.InvalidRangeException {
+  public void testMSG() throws Exception {
     String filename = TestDir.cdmUnitTestDir + "transforms/Eumetsat.VerticalPerspective.grb";
     String gridName = "Pixel_scene_type";
     System.out.printf("testMSG %s%n", filename);
@@ -168,7 +168,7 @@ public class TestGridSubset {
   }
 
   @Test
-  public void test2D() throws IOException, ucar.array.InvalidRangeException {
+  public void test2D() throws Exception {
     String filename = TestDir.cdmUnitTestDir + "conventions/cf/mississippi.nc";
     String gridName = "salt";
     System.out.printf("test2D %s%n", filename);
@@ -207,7 +207,7 @@ public class TestGridSubset {
 
   // longitude subsetting (CoordAxis1D regular)
   @Test
-  public void testLatLonSubset() throws IOException, ucar.array.InvalidRangeException {
+  public void testLatLonSubset() throws Exception {
     String filename = TestDir.cdmUnitTestDir + "conventions/cf/fcst_int.20030424.i1502.f0058.nc";
     String gridName = "Z_ceil";
     System.out.printf("testLatLonSubset %s%n", filename);
@@ -246,7 +246,7 @@ public class TestGridSubset {
   }
 
   @Test
-  public void testVerticalAxis() throws IOException, ucar.array.InvalidRangeException {
+  public void testVerticalAxis() throws Exception {
     String filename = TestDir.cdmUnitTestDir + "ncml/nc/cg/CG2006158_120000h_usfc.nc";
     String gridName = "CGusfc";
     System.out.printf("testVerticalAxis %s%n", filename);
@@ -285,7 +285,7 @@ public class TestGridSubset {
   }
 
   @Test
-  public void testBBSubsetVP() throws IOException, ucar.array.InvalidRangeException {
+  public void testBBSubsetVP() throws Exception {
     String filename = TestDir.cdmUnitTestDir + "transforms/Eumetsat.VerticalPerspective.grb";
     String gridName = "Pixel_scene_type";
     System.out.printf("testBBSubsetVP %s%n", filename);
@@ -316,7 +316,7 @@ public class TestGridSubset {
   // x,y in meters
   @Test
   @Ignore("false easting in meters")
-  public void testBBSubsetUnits() throws IOException, ucar.array.InvalidRangeException {
+  public void testBBSubsetUnits() throws Exception {
     String filename = TestDir.cdmUnitTestDir + "ncml/testBBSubsetUnits.ncml";
     String gridName = "pr";
     System.out.printf("testBBSubsetUnits %s%n", filename);
@@ -351,7 +351,7 @@ public class TestGridSubset {
 
   // this one has the coordinate bounds set in the file
   @Test
-  public void testSubsetCoordEdges() throws IOException, ucar.array.InvalidRangeException {
+  public void testSubsetCoordEdges() throws Exception {
     String filename = TestDir.cdmLocalTestDataDir + "ncml/subsetCoordEdges.ncml";
     String gridName = "foo";
     System.out.printf("testSubsetCoordEdges %s%n", filename);

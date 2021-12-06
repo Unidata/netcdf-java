@@ -4,21 +4,17 @@
  */
 package thredds.client.catalog;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import thredds.client.catalog.builder.CatalogBuilder;
 import ucar.nc2.constants.FeatureType;
 import ucar.unidata.util.test.TestDir;
-import java.lang.invoke.MethodHandles;
 import java.util.List;
+
+import static com.google.common.truth.Truth.assertThat;
 
 /** Test ClientCatalog inheritence. */
 public class TestClientCatalogInherit {
-  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-
   private static final String urlString = "file:" + TestDir.cdmLocalTestDataDir + "thredds/catalog/TestInherit.1.0.xml";
   private Catalog cat;
 
@@ -51,7 +47,7 @@ public class TestClientCatalogInherit {
     assert val.equals("Where have you gone?") : val;
 
     Dataset nest12 = cat.findDatasetByID("nest12");
-    Assert.assertTrue(nest12.hasProperty(new Property("GoodThing", "override")));
+    assertThat(nest12.hasProperty(new Property("GoodThing", "override"))).isTrue();
   }
 
   @Test

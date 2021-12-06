@@ -19,7 +19,7 @@ import ucar.unidata.util.test.TestDir;
 public class TestAggMisc {
 
   @Test
-  public void testNestedValues() throws IOException, InvalidRangeException, InterruptedException {
+  public void testNestedValues() throws Exception {
     String ncml = "<?xml version='1.0' encoding='UTF-8'?>\n" // leavit
         + "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2' >\n" // leavit
         + "  <aggregation dimName='time' type='joinExisting'>\n" // leavit
@@ -50,7 +50,7 @@ public class TestAggMisc {
   }
 
   @Test
-  public void testNestedAgg() throws IOException, InvalidRangeException, InterruptedException {
+  public void testNestedAgg() throws Exception {
     String filename = "file:./" + TestDir.cdmLocalTestDataDir + "testNested.ncml";
 
     try (NetcdfFile ncfile = NetcdfDatasets.openFile(filename, null)) {
@@ -63,7 +63,7 @@ public class TestAggMisc {
   }
 
   @Test
-  public void testNestedScan() throws IOException, InvalidRangeException, InterruptedException {
+  public void testNestedScan() throws Exception {
     String filename = "file:./" + TestNcmlRead.topDir + "nested/TestNestedDirs.ncml";
 
     try (NetcdfFile ncfile = NetcdfDatasets.openFile(filename, null)) {

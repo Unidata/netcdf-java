@@ -19,7 +19,7 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.grid.GridDataset;
 import ucar.nc2.grid.GridDatasetFactory;
-import ucar.unidata.util.test.Assert2;
+import ucar.nc2.util.Misc;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
 import java.io.IOException;
@@ -109,9 +109,9 @@ public class TestOffAggDirectory {
     assert data.getShape()[0] == 630;
     Iterator<Float> dataI = data.iterator();
 
-    Assert2.assertNearlyEquals(dataI.next(), 43.0f);
-    Assert2.assertNearlyEquals(dataI.next(), 43.01045f);
-    Assert2.assertNearlyEquals(dataI.next(), 43.020893f);
+    assertThat(Misc.nearlyEquals(dataI.next(), 43.0f)).isTrue();
+    assertThat(Misc.nearlyEquals(dataI.next(), 43.01045f)).isTrue();
+    assertThat(Misc.nearlyEquals(dataI.next(), 43.020893f)).isTrue();
   }
 
   private void testAggCoordVar(NetcdfFile ncfile) throws IOException {
@@ -134,7 +134,7 @@ public class TestOffAggDirectory {
     float vals[] = {890184.0f, 890232.0f, 890256.0f, 890304.0f, 890352.0f, 890376.0f};
     int count = 0;
     while (dataI.hasNext()) {
-      Assert2.assertNearlyEquals(dataI.next(), vals[count++]);
+      assertThat(Misc.nearlyEquals(dataI.next(), vals[count++])).isTrue();
     }
   }
 
@@ -165,7 +165,7 @@ public class TestOffAggDirectory {
     Index tIndex = data.getIndex();
     for (int i = 0; i < shape[0]; i++) {
       short val = data.get(tIndex.set(i, 133, 133));
-      Assert2.assertNearlyEquals(vals[i], val);
+      assertThat(Misc.nearlyEquals(vals[i], val)).isTrue();
     }
   }
 
@@ -199,7 +199,7 @@ public class TestOffAggDirectory {
       if (Double.isNaN(val))
         assert Double.isNaN(vals[i]);
       else
-        Assert2.assertNearlyEquals(vals[i], val);
+        assertThat(Misc.nearlyEquals(vals[i], val)).isTrue();
     }
   }
 

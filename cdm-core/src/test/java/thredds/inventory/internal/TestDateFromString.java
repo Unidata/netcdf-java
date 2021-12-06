@@ -5,8 +5,8 @@
 package thredds.inventory.internal;
 
 import static com.google.common.truth.Truth.assertThat;
+import static com.google.common.truth.Truth.assertWithMessage;
 
-import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 import ucar.nc2.calendar.CalendarDate;
@@ -48,9 +48,9 @@ public class TestDateFromString {
 
     Date date = DateFromString.getDateUsingCompleteDateFormat(fileName, dateFormatString);
     System.out.printf("date = %s%n", date);
-    Assert.assertEquals("Calculated date <" + date.toString() + " [" + date.getTime() + "]> not as expected <"
+    assertWithMessage("Calculated date <" + date.toString() + " [" + date.getTime() + "]> not as expected <"
         + dateAsISOString + "[" + dateAsLong + "]>." + "\nUsing fileName <" + fileName + "> and dateFormatString <"
-        + dateFormatString + ">", date.getTime(), dateAsLong);
+        + dateFormatString + ">").that(date.getTime()).isEqualTo(dateAsLong);
   }
 
   @Test
@@ -58,9 +58,10 @@ public class TestDateFromString {
     String matchPattern = ".*([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2})([0-9]{2}).*grib";
     String substitutionPattern = "$1-$2-$3T$4:$5";
     Date date = DateFromString.getDateUsingRegExp(fileName, matchPattern, substitutionPattern);
-    Assert.assertEquals("Calculated date <" + date.toString() + " [" + date.getTime() + "]> not as expected <"
+    assertWithMessage("Calculated date <" + date.toString() + " [" + date.getTime() + "]> not as expected <"
         + dateAsISOString + "[" + dateAsLong + "]>." + "\nUsing fileName <" + fileName + ">, matchPattern <"
-        + matchPattern + ">, and substitutionPattern <" + substitutionPattern + ">", date.getTime(), dateAsLong);
+        + matchPattern + ">, and substitutionPattern <" + substitutionPattern + ">").that(date.getTime())
+            .isEqualTo(dateAsLong);
   }
 
   @Test
@@ -71,11 +72,11 @@ public class TestDateFromString {
 
     Date date =
         DateFromString.getDateUsingRegExpAndDateFormat(fileName, matchPattern, substitutionPattern, dateFormatString);
-    Assert.assertEquals(
+    assertWithMessage(
         "Calculated date <" + date.toString() + " [" + date.getTime() + "]> not as expected <" + dateAsISOString + "["
             + dateAsLong + "]>." + "\nUsing fileName <" + fileName + ">, matchPattern <" + matchPattern
-            + ">, substitutionPattern <" + substitutionPattern + ">, and dateFormatString <" + dateFormatString + ">",
-        date.getTime(), dateAsLong);
+            + ">, substitutionPattern <" + substitutionPattern + ">, and dateFormatString <" + dateFormatString + ">")
+                .that(date.getTime()).isEqualTo(dateAsLong);
   }
 
   @Test

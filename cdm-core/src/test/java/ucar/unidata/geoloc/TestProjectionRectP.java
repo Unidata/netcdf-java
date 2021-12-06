@@ -4,8 +4,7 @@
  */
 package ucar.unidata.geoloc;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
+import static com.google.common.truth.Truth.assertThat;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -46,8 +45,8 @@ public class TestProjectionRectP {
     double getMinX = projectionRect.getMinX();
     double getMaxX = projectionRect.getMaxX();
 
-    assertEquals(getX, getMinX, 0);
-    assertNotEquals(getX, getMaxX);
+    assertThat(getX).isEqualTo(getMinX);
+    assertThat(getX).isNotEqualTo(getMaxX);
   }
 
   @Test
@@ -57,8 +56,8 @@ public class TestProjectionRectP {
     double getMinY = projectionRect.getMinY();
     double getMaxY = projectionRect.getMaxY();
 
-    assertNotEquals(getY, getMaxY);
-    assertEquals(getY, getMinY, 0);
+    assertThat(getY).isNotEqualTo(getMaxY);
+    assertThat(getY).isEqualTo(getMinY);
   }
 
   @Test
@@ -68,7 +67,7 @@ public class TestProjectionRectP {
     double maxX = projectionRect.getMaxX();
     double testWidth = maxX - minX;
     double width = projectionRect.getWidth();
-    assertEquals(testWidth, width, 0);
+    assertThat(testWidth).isEqualTo(width);
   }
 
   @Test
@@ -78,7 +77,7 @@ public class TestProjectionRectP {
     double maxY = projectionRect.getMaxY();
     double testHeight = maxY - minY;
     double height = projectionRect.getHeight();
-    assertEquals(testHeight, height, 0);
+    assertThat(testHeight).isEqualTo(height);
   }
 
   @Test
@@ -88,7 +87,7 @@ public class TestProjectionRectP {
     double maxX = projectionRect.getMaxX();
     double testWidth = maxX - minX;
     double width = projectionRect.getWidth();
-    assertEquals(testWidth, width, 0);
+    assertThat(testWidth).isEqualTo(width);
 
   }
 
@@ -99,7 +98,7 @@ public class TestProjectionRectP {
     double maxY = projectionRect.getMaxY();
     double testHeight = maxY - minY;
     double height = projectionRect.getHeight();
-    assertEquals(testHeight, height, 0);
+    assertThat(testHeight).isEqualTo(height);
   }
 
   @Test
@@ -110,10 +109,10 @@ public class TestProjectionRectP {
     double urx = projectionRect.getMaxX();
     double ury = projectionRect.getMaxY();
 
-    assertEquals(llx, getllp.getX(), 0);
-    assertEquals(lly, getllp.getY(), 0);
-    assertNotEquals(urx, getllp.getX());
-    assertNotEquals(ury, getllp.getY());
+    assertThat(llx).isEqualTo(getllp.getX());
+    assertThat(lly).isEqualTo(getllp.getY());
+    assertThat(urx).isNotEqualTo(getllp.getX());
+    assertThat(ury).isNotEqualTo(getllp.getY());
   }
 
   @Test
@@ -125,10 +124,10 @@ public class TestProjectionRectP {
     double urx = projectionRect.getMaxX();
     double ury = projectionRect.getMaxY();
 
-    assertEquals(urx, geturp.getX(), 0);
-    assertEquals(ury, geturp.getY(), 0);
-    assertNotEquals(llx, geturp.getX());
-    assertNotEquals(lly, geturp.getY());
+    assertThat(urx).isEqualTo(geturp.getX());
+    assertThat(ury).isEqualTo(geturp.getY());
+    assertThat(llx).isNotEqualTo(geturp.getX());
+    assertThat(lly).isNotEqualTo(geturp.getY());
   }
 
   @Test
@@ -137,9 +136,8 @@ public class TestProjectionRectP {
     double x2 = x * x + 1d;
     ProjectionRect test = projectionRect.toBuilder().setX(x2).build();
 
-    assertEquals(x2, test.getMinX(), 0);
-    assertEquals(x2, test.getMinX(), 0);
-    assertNotEquals(x, x2);
+    assertThat(x2).isEqualTo(test.getMinX());
+    assertThat(x).isNotEqualTo(x2);
   }
 
   @Test
@@ -148,9 +146,8 @@ public class TestProjectionRectP {
     double y2 = y * y + 1d;
     ProjectionRect test = projectionRect.toBuilder().setY(y2).build();
 
-    assertEquals(y2, test.getMinY(), 0);
-    assertEquals(y2, test.getMinY(), 0);
-    assertNotEquals(y, y2);
+    assertThat(y2).isEqualTo(test.getMinY());
+    assertThat(y).isNotEqualTo(y2);
   }
 
   @Test
@@ -159,32 +156,32 @@ public class TestProjectionRectP {
     double width2 = width + 10d;
     ProjectionRect test = projectionRect.toBuilder().setWidth(width2).build();
 
-    assertEquals(width2, test.getWidth(), 0);
-    assertNotEquals(width, width2);
+    assertThat(width2).isEqualTo(test.getWidth());
+    assertThat(width).isNotEqualTo(width2);
   }
 
   @Test
   public void testSetHeight() {
-
     double height = projectionRect.getHeight();
     double height2 = height + 10d;
     ProjectionRect test = projectionRect.toBuilder().setHeight(height2).build();
 
-    assertEquals(height2, test.getHeight(), 0);
-    assertNotEquals(height, height2);
+    assertThat(height2).isEqualTo(test.getHeight());
+    assertThat(height).isNotEqualTo(height2);
   }
 
   @Test
   public void testContainsPoint() {
     // contains the center point? -> YES
-    assert (projectionRect.contains(ProjectionPoint.create(projectionRect.getCenterX(), projectionRect.getCenterY())));
+    assertThat(
+        projectionRect.contains(ProjectionPoint.create(projectionRect.getCenterX(), projectionRect.getCenterY())));
     // contains a point outside the rectangle? -> NO
-    assert (!projectionRect.contains(ProjectionPoint.create((projectionRect.getMinX() - projectionRect.getWidth()),
+    assertThat(!projectionRect.contains(ProjectionPoint.create((projectionRect.getMinX() - projectionRect.getWidth()),
         (projectionRect.getMinY() - projectionRect.getHeight()))));
-    assert (!projectionRect.contains(ProjectionPoint.create((projectionRect.getMaxX() + projectionRect.getWidth()),
+    assertThat(!projectionRect.contains(ProjectionPoint.create((projectionRect.getMaxX() + projectionRect.getWidth()),
         (projectionRect.getMaxY() + projectionRect.getHeight()))));
     // contains a point on the rectangle border -> YES
-    assert (projectionRect.contains(projectionRect.getMinPoint()));
+    assertThat(projectionRect.contains(projectionRect.getMinPoint()));
   }
 
   private ProjectionRect scaleShiftRect(double scaleFactor, double deltaX, double deltaY) {
@@ -203,18 +200,18 @@ public class TestProjectionRectP {
   @Test
   public void testContainsRect() {
     // contains a bigger rect? -> NO
-    assert (!projectionRect.contains(scaleShiftRect(2.0, 0, 0)));
+    assertThat(!projectionRect.contains(scaleShiftRect(2.0, 0, 0)));
     // contains a smaller rect? -> YES
-    assert (projectionRect.contains(scaleShiftRect(0.5, 0, 0)));
+    assertThat(projectionRect.contains(scaleShiftRect(0.5, 0, 0)));
     // contains the same rect? -> YES
-    assert (projectionRect.contains(scaleShiftRect(1.0, 0, 0)));
+    assertThat(projectionRect.contains(scaleShiftRect(1.0, 0, 0)));
 
     // contains a bigger rect, offset by 0.1? -> NO
-    assert (!projectionRect.contains(scaleShiftRect(2.0, 0.1, 0.1)));
+    assertThat(!projectionRect.contains(scaleShiftRect(2.0, 0.1, 0.1)));
     // contains a smaller rect, offset by 0.1? -> YES
-    assert (projectionRect.contains(scaleShiftRect(0.5, 0.1, 0.1)));
+    assertThat(projectionRect.contains(scaleShiftRect(0.5, 0.1, 0.1)));
     // contain the same rect, offset by 0.1? -> NO
-    assert (!projectionRect.contains(scaleShiftRect(1.0, 0.1, 0.1)));
+    assertThat(!projectionRect.contains(scaleShiftRect(1.0, 0.1, 0.1)));
   }
 
 }

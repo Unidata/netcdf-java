@@ -25,7 +25,7 @@ public class TestH5ReadArray {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @org.junit.Test
-  public void testReadArrayType() throws IOException, InvalidRangeException {
+  public void testReadArrayType() throws Exception {
     try (NetcdfFile ncfile = TestH5.openH5("support/SDS_array_type.h5")) {
 
       Variable dset = null;

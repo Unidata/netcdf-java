@@ -41,7 +41,7 @@ public class TestNetcdfFormatWithWriter {
    * > Band2:valid_range = 0s, 254s; // short
    */
   @Test
-  public void testUnsignedAttribute() throws IOException, InvalidRangeException {
+  public void testUnsignedAttribute() throws Exception {
     String filename = tempFolder.newFile().getAbsolutePath();
 
     NetcdfFormatWriter.Builder<?> writerb = NetcdfFormatWriter.createNewNetcdf3(filename);
@@ -92,7 +92,7 @@ public class TestNetcdfFormatWithWriter {
   }
 
   @Test
-  public void testWriteUnlimited() throws IOException, InvalidRangeException {
+  public void testWriteUnlimited() throws Exception {
     String filename = tempFolder.newFile().getAbsolutePath();
 
     NetcdfFormatWriter.Builder<?> writerb = NetcdfFormatWriter.createNewNetcdf3(filename);
@@ -123,7 +123,7 @@ public class TestNetcdfFormatWithWriter {
   }
 
   @Test
-  public void testWriteRecordOneAtaTime() throws IOException, InvalidRangeException {
+  public void testWriteRecordOneAtaTime() throws Exception {
     String filename = tempFolder.newFile().getAbsolutePath();
 
     NetcdfFormatWriter.Builder<?> writerb = NetcdfFormatWriter.createNewNetcdf3(filename);
@@ -184,7 +184,7 @@ public class TestNetcdfFormatWithWriter {
 
   // fix for bug introduced 2/9/10, reported by Christian Ward-Garrison cwardgar@usgs.gov
   @Test
-  public void testRecordSizeBug() throws IOException, InvalidRangeException {
+  public void testRecordSizeBug() throws Exception {
     String filename = tempFolder.newFile().getAbsolutePath();
     int size = 10;
 
@@ -209,7 +209,7 @@ public class TestNetcdfFormatWithWriter {
   }
 
   @Test
-  public void testStringWriting() throws IOException, InvalidRangeException {
+  public void testStringWriting() throws Exception {
     String filename = tempFolder.newFile().getAbsolutePath();
     int strlen = 25;
 

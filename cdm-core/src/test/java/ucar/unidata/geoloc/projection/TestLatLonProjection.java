@@ -4,7 +4,6 @@
  */
 package ucar.unidata.geoloc.projection;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import ucar.unidata.geoloc.Earth;
@@ -15,6 +14,7 @@ import ucar.unidata.geoloc.Projection;
 import ucar.unidata.geoloc.ProjectionRect;
 
 import static com.google.common.truth.Truth.assertThat;
+import static com.google.common.truth.Truth.assertWithMessage;
 
 /** Test {@link ucar.unidata.geoloc.projection.LatLonProjection} */
 public class TestLatLonProjection {
@@ -73,7 +73,7 @@ public class TestLatLonProjection {
       ProjectionRect ma2 = p.latLonToProjBB(llbb);
       LatLonRect p2 = p.projToLatLonBB(ma2);
 
-      Assert.assertTrue(llbb + " => " + ma2 + " => " + p2, llbb.nearlyEquals(p2));
+      assertThat(llbb.nearlyEquals(p2)).isTrue();
     }
   }
 
@@ -87,15 +87,17 @@ public class TestLatLonProjection {
       ProjectionRect ma2 = p.latLonToProjBB(llbb);
       LatLonRect p2 = p.projToLatLonBB(ma2);
 
-      Assert.assertTrue(llbb + " => " + ma2 + " => " + p2, llbb.nearlyEquals(p2));
+      assertThat(llbb.nearlyEquals(p2)).isTrue();
     }
   }
 
   public LatLonRect testIntersection(LatLonRect bbox, LatLonRect bbox2) {
     LatLonRect result = bbox.intersect(bbox2);
-    if (result != null)
-      Assert.assertEquals("bbox= " + bbox.toString2() + "\nbbox2= " + bbox2.toString2() + "\nintersect= "
-          + (result == null ? "null" : result.toString2()), bbox.intersect(bbox2), bbox2.intersect(bbox));
+    if (result != null) {
+      assertWithMessage("bbox= " + bbox.toString2() + "\nbbox2= " + bbox2.toString2() + "\nintersect= "
+          + (result == null ? "null" : result.toString2())).that(bbox.intersect(bbox2))
+              .isEqualTo(bbox2.intersect(bbox));
+    }
     return result;
   }
 
@@ -103,22 +105,22 @@ public class TestLatLonProjection {
   public void testIntersection() {
     LatLonRect bbox = LatLonRect.builder(LatLonPoint.create(40.0, -100.0), 10.0, 20.0).build();
     LatLonRect bbox2 = LatLonRect.builder(LatLonPoint.create(-40.0, -180.0), 120.0, 300.0).build();
-    assert testIntersection(bbox, bbox2) != null;
+    assertThat(testIntersection(bbox, bbox2)).isNotNull();
 
     bbox = LatLonRect.builder(LatLonPoint.create(-90.0, -100.0), 90.0, 300.0).build();
     bbox2 = LatLonRect.builder(LatLonPoint.create(-40.0, -180.0), 120.0, 300.0).build();
-    assert testIntersection(bbox, bbox2) != null;
+    assertThat(testIntersection(bbox, bbox2)).isNotNull();
 
     bbox2 = LatLonRect.builder(LatLonPoint.create(10, -180.0), 120.0, 300.0).build();
-    assert testIntersection(bbox, bbox2) == null;
+    assertThat(testIntersection(bbox, bbox2)).isNull();
 
     bbox = LatLonRect.builder(LatLonPoint.create(-90.0, -100.0), 90.0, 200.0).build();
     bbox2 = LatLonRect.builder(LatLonPoint.create(-40.0, 120.0), 120.0, 300.0).build();
-    assert testIntersection(bbox, bbox2) != null;
+    assertThat(testIntersection(bbox, bbox2)).isNotNull();
 
     bbox = LatLonRect.builder(LatLonPoint.create(-90.0, -100.0), 90.0, 200.0).build();
     bbox2 = LatLonRect.builder(LatLonPoint.create(-40.0, -220.0), 120.0, 140.0).build();
-    assert testIntersection(bbox, bbox2) != null;
+    assertThat(testIntersection(bbox, bbox2)).isNotNull();
   }
 
   private LatLonRect testExtend(LatLonRect.Builder bbox, LatLonRect bbox2) {
@@ -132,48 +134,48 @@ public class TestLatLonProjection {
 
     bbox = testExtend(LatLonRect.builder(LatLonPoint.create(-81.0, 30.0), LatLonPoint.create(-60.0, 120.0)),
         LatLonRect.builder(LatLonPoint.create(-81.0, -10.0), LatLonPoint.create(-60.0, 55.0)).build());
-    Assert.assertEquals(bbox.toString2(), 130.0, bbox.getWidth(), 0.01);
-    Assert.assertFalse(bbox.toString2(), bbox.crossDateline());
+    assertThat(bbox.getWidth()).isWithin(0.01).of(130.0);
+    assertThat(bbox.crossDateline()).isFalse();
 
     bbox = testExtend(LatLonRect.builder(LatLonPoint.create(-81.0, -200.0), LatLonPoint.create(-60.0, -100.0)),
         LatLonRect.builder(LatLonPoint.create(-81.0, 177.0), LatLonPoint.create(-60.0, 200.0)).build());
-    Assert.assertEquals(bbox.toString2(), 100.0, bbox.getWidth(), 0.01);
-    Assert.assertTrue(bbox.toString2(), bbox.crossDateline());
+    assertThat(bbox.getWidth()).isWithin(0.01).of(100.0);
+    assertThat(bbox.crossDateline()).isTrue();
 
     // ---------
     // --------------
     bbox = testExtend(LatLonRect.builder(LatLonPoint.create(-81.0, -200.0), LatLonPoint.create(-60.0, -100.0)),
         LatLonRect.builder(LatLonPoint.create(-81.0, -150.0), LatLonPoint.create(-60.0, 200.0)).build());
-    Assert.assertEquals(bbox.toString2(), 360.0, bbox.getWidth(), 0.01);
-    Assert.assertFalse(bbox.toString2(), bbox.crossDateline());
+    assertThat(bbox.getWidth()).isWithin(0.01).of(360.0);
+    assertThat(bbox.crossDateline()).isFalse();
 
     // -------
     // ---------
     bbox = testExtend(LatLonRect.builder(LatLonPoint.create(-81.0, -180.0), LatLonPoint.create(-60.0, 135.0)),
         LatLonRect.builder(LatLonPoint.create(-81.0, 135.0), LatLonPoint.create(-60.0, 180.0)).build());
-    Assert.assertEquals(bbox.toString2(), 360.0, bbox.getWidth(), 0.01);
-    Assert.assertFalse(bbox.toString2(), bbox.crossDateline());
+    assertThat(bbox.getWidth()).isWithin(0.01).of(360.0);
+    assertThat(bbox.crossDateline()).isFalse();
 
     // ------
     // ------
     bbox = testExtend(LatLonRect.builder(LatLonPoint.create(-81.0, -180.0), LatLonPoint.create(-60.0, 0.0)),
         LatLonRect.builder(LatLonPoint.create(-81.0, 135.0), LatLonPoint.create(-60.0, 160.0)).build());
-    Assert.assertEquals(bbox.toString2(), 225.0, bbox.getWidth(), 0.01);
-    Assert.assertTrue(bbox.toString2(), bbox.crossDateline());
+    assertThat(bbox.getWidth()).isWithin(0.01).of(225.0);
+    assertThat(bbox.crossDateline()).isTrue();;
 
     // ---------
     // ------
     bbox = testExtend(LatLonRect.builder(LatLonPoint.create(-81.0, -180.0), LatLonPoint.create(-60.0, 0.0)),
         LatLonRect.builder(LatLonPoint.create(-81.0, 135.0), LatLonPoint.create(-60.0, 180.0)).build());
-    Assert.assertEquals(bbox.toString2(), 225.0, bbox.getWidth(), 0.01);
-    Assert.assertTrue(bbox.toString2(), bbox.crossDateline());
+    assertThat(bbox.getWidth()).isWithin(0.01).of(225.0);
+    assertThat(bbox.crossDateline()).isTrue();
 
     // ---------
     // ------
     bbox = testExtend(LatLonRect.builder(LatLonPoint.create(-81.0, 135.0), LatLonPoint.create(-60.0, 180.0)),
         LatLonRect.builder(LatLonPoint.create(-81.0, -180.0), LatLonPoint.create(-60.0, 0.0)).build());
-    Assert.assertEquals(bbox.toString2(), 225.0, bbox.getWidth(), 0.01);
-    Assert.assertTrue(bbox.toString2(), bbox.crossDateline());
+    assertThat(bbox.getWidth()).isWithin(0.01).of(225.0);
+    assertThat(bbox.crossDateline()).isTrue();
   }
 
   @Test

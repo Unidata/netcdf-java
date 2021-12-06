@@ -11,7 +11,6 @@ import java.nio.charset.Charset;
 import java.util.Formatter;
 import java.util.List;
 import java.util.Map;
-import org.junit.Assert;
 import org.junit.Test;
 import ucar.array.ArrayType;
 import ucar.array.ArrayVlen;
@@ -266,8 +265,7 @@ public class TestAttribute {
   public void testLargeLongValue() {
     Attribute att = new Attribute("name", NetcdfFormatUtils.NC_FILL_INT64); // which is -9223372036854775806L
     long result = att.getNumericValue().longValue(); // returned -9223372036854775808L, before bug fix.
-
-    Assert.assertEquals(NetcdfFormatUtils.NC_FILL_INT64, result);
+    assertThat(result).isEqualTo(NetcdfFormatUtils.NC_FILL_INT64);
   }
 
   @Test
@@ -291,7 +289,7 @@ public class TestAttribute {
     // Attribute atts2 = Attribute.builder().setName("name").setValues(vals2).build();
     // wont compile
     // Attribute atts21 = Attribute.builder().setName("name").setValues((List<Object>) vals2).build();
-    Attribute atts22 = Attribute.builder().setName("name").setValues((List) vals2, false).build();
+    Attribute atts22 = Attribute.builder().setName("name").setValues(vals2, false).build();
     assertThat(atts22.getArrayType()).isEqualTo(ArrayType.STRING);
 
     Array<?> array = Arrays.factory(ArrayType.SHORT, new int[] {4}, new short[] {1, 2, 3, 4});

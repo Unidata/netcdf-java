@@ -5,10 +5,8 @@
 
 package ucar.nc2.internal.dataset.conv;
 
-import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import ucar.array.Array;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.CF;
@@ -20,14 +18,12 @@ import ucar.nc2.calendar.Calendar;
 import ucar.nc2.calendar.CalendarDate;
 import ucar.unidata.util.test.TestDir;
 import java.io.IOException;
-import java.lang.invoke.MethodHandles;
 
 import static com.google.common.truth.Truth.assertThat;
+import static com.google.common.truth.Truth.assertWithMessage;
 import static java.lang.String.format;
 
 public class TestDefaultCalendars {
-  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-
   private final Calendar defaultCoardsCalendar = Calendar.gregorian;
   private final Calendar defaultCFCalendar = Calendar.gregorian;
 
@@ -51,7 +47,7 @@ public class TestDefaultCalendars {
       testCond = found.equals(expected);
       failMessage =
           format("This dataset used the %s convention, but should have used the %s convention.", found, expected);
-      Assert.assertTrue(failMessage, testCond);
+      assertWithMessage(failMessage).that(testCond).isTrue();
 
       // get the Time Coordinate Axis and read the values
       CoordinateAxis tca = ncd.findCoordinateAxis(AxisType.Time);
@@ -63,7 +59,7 @@ public class TestDefaultCalendars {
       found = Integer.toString(times.getScalar().intValue());
       testCond = found.equals(expected);
       failMessage = format("The first value in the times array should be %s. I got %s instead.", expected, found);
-      Assert.assertTrue(failMessage, testCond);
+      assertWithMessage(failMessage).that(testCond).isTrue();
 
       // look for the calendar attached to the time variable...if there isn't one,
       // then a default was not set and the assert will fail.
@@ -73,7 +69,7 @@ public class TestDefaultCalendars {
       testCond = found.equals(expected);
       failMessage = format("The calendar should equal %s, but got %s instead. Failed to set a default calendar.",
           expected, found);
-      Assert.assertTrue(failMessage, testCond);
+      assertWithMessage(failMessage).that(testCond).isTrue();
 
       // convert the time value to a CalendarDate
       CoordinateAxisTimeHelper coordAxisTimeHelper =
@@ -90,12 +86,13 @@ public class TestDefaultCalendars {
       found = date.toString();
       testCond = date.equals(correctDate);
       failMessage = format("The correct date is %s, but I got %s instead.", expected, found);
-      Assert.assertTrue(failMessage, testCond);
+      assertWithMessage(failMessage).that(testCond).isTrue();
     }
   }
 
   // TODO rewrite this
-  // @Test
+  @Test
+  @Ignore("fails")
   public void testCoardsDefaultCalendar() throws IOException {
     String failMessage, found, expected;
     boolean testCond;
@@ -104,13 +101,14 @@ public class TestDefaultCalendars {
 
     // open the test file
     try (NetcdfDataset ncd = NetcdfDatasets.openDataset(tstFile)) {
+      System.out.printf("testCoardsDefaultCalendar %s%n", ncd.getLocation());
       // make sure this dataset used the coardsConvention
       found = ncd.getConventionUsed();
       expected = coardsConvention;
       testCond = found.equals(expected);
       failMessage =
           format("This dataset used the %s convention, but should have used the %s convention.", found, expected);
-      Assert.assertTrue(failMessage, testCond);
+      assertWithMessage(failMessage).that(testCond).isTrue();
 
       // get the Time Coordinate Axis and read the values
       CoordinateAxis tca = ncd.findCoordinateAxis(AxisType.Time);
@@ -122,7 +120,7 @@ public class TestDefaultCalendars {
       expected = "17662920";
       testCond = found.equals(expected);
       failMessage = format("The first value in the times array should be %s. I got %s instead.", expected, found);
-      Assert.assertTrue(failMessage, testCond);
+      assertWithMessage(failMessage).that(testCond).isTrue();
 
       // look for the calendar attached to the time variable...if there isn't one,
       // then a default was not set and the assert will fail.
@@ -132,7 +130,7 @@ public class TestDefaultCalendars {
       testCond = found.equals(expected);
       failMessage = format("The calendar should equal %s, but got %s instead. Failed to add a default calendar.",
           expected, found);
-      Assert.assertTrue(failMessage, testCond);
+      assertWithMessage(failMessage).that(testCond).isTrue();
 
       // convert the time value to a CalendarDate
       CoordinateAxisTimeHelper coordAxisTimeHelper =
@@ -151,7 +149,7 @@ public class TestDefaultCalendars {
       expected = correctDate.toString();
       testCond = found.equals(expected);
       failMessage = format("The correct date is %s, but I got %s instead.", expected, found);
-      Assert.assertTrue(failMessage, testCond);
+      assertWithMessage(failMessage).that(testCond).isTrue();
     }
   }
 }

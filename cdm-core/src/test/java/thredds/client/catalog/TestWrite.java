@@ -4,20 +4,17 @@
  */
 package thredds.client.catalog;
 
-import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import thredds.client.catalog.tools.CatalogXmlWriter;
 import java.io.*;
-import java.lang.invoke.MethodHandles;
 import java.util.Iterator;
 import java.util.List;
 
+import static com.google.common.truth.Truth.assertThat;
+
 public class TestWrite {
-  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @Rule
   public TemporaryFolder tempFolder = new TemporaryFolder();
@@ -53,7 +50,7 @@ public class TestWrite {
     List<Dataset> datasets = cat.getDatasetsLocal();
     List<Dataset> datasetsR = catR.getDatasetsLocal();
 
-    Assert.assertEquals("different number of datasets", datasets.size(), datasetsR.size());
+    assertThat(datasets.size()).isEqualTo(datasetsR.size());
 
     int n = Math.min(datasets.size(), datasetsR.size());
     for (int i = 0; i < n; i++) {

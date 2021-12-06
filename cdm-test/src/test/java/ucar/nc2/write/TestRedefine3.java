@@ -26,7 +26,7 @@ public class TestRedefine3 {
   public final TemporaryFolder tempFolder = new TemporaryFolder();
 
   @Test
-  public void testRedefine3() throws IOException, InvalidRangeException {
+  public void testRedefine3() throws Exception {
     String filename = tempFolder.newFile().getAbsolutePath();
     NetcdfFormatWriter.Builder writerb =
         NetcdfFormatWriter.createNewNetcdf3(filename).setFill(false).setExtraHeader(64 * 1000);

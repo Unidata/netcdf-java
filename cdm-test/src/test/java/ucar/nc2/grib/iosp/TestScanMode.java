@@ -25,7 +25,7 @@ import static com.google.common.truth.Truth.assertThat;
 public class TestScanMode {
 
   @Test
-  public void testScanMode0() throws IOException, InvalidRangeException {
+  public void testScanMode0() throws Exception {
     String filename = TestDir.cdmUnitTestDir + "formats/grib2/S-HSAF-h03_20131214_1312_rom.grb";
     System.out.printf("testScanMode0 openGrid %s%n", filename);
 
@@ -52,7 +52,7 @@ public class TestScanMode {
   }
 
   @Test
-  public void testEcmwf() throws IOException, InvalidRangeException {
+  public void testEcmwf() throws Exception {
     String filename =
         TestDir.cdmUnitTestDir + "formats/grib2/MSG1-SEVI-MSGCLMK-0100-0100-20060102111500.000000000Z-12774.grb.grb";
     System.out.printf("testEcmwf openGrid %s%n", filename);

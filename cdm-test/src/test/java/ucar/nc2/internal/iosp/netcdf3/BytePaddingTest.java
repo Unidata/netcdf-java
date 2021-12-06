@@ -69,7 +69,7 @@ public class BytePaddingTest {
   }
 
   @Test
-  public void checkPaddingOnWriteReadOneDimByteArrayOnlyRecordVar() throws IOException, InvalidRangeException {
+  public void checkPaddingOnWriteReadOneDimByteArrayOnlyRecordVar() throws Exception {
     File tmpDataDir = tempFolder.newFolder();
     File testFile = new File(tmpDataDir, "file.nc");
 
@@ -101,7 +101,7 @@ public class BytePaddingTest {
   }
 
   @Test
-  public void checkPaddingOnWriteReadOneDimByteArrayOneOfTwoRecordVars() throws IOException, InvalidRangeException {
+  public void checkPaddingOnWriteReadOneDimByteArrayOneOfTwoRecordVars() throws Exception {
     File tmpDataDir = tempFolder.newFolder();
     File testFile = new File(tmpDataDir, "file.nc");
 
@@ -139,7 +139,7 @@ public class BytePaddingTest {
   }
 
   @Test
-  public void checkPaddingOnWriteReadTwoDimByteArrayOnlyRecordVar() throws IOException, InvalidRangeException {
+  public void checkPaddingOnWriteReadTwoDimByteArrayOnlyRecordVar() throws Exception {
     File tmpDataDir = tempFolder.newFolder();
     File testFile = new File(tmpDataDir, "file.nc");
 
@@ -170,7 +170,7 @@ public class BytePaddingTest {
   }
 
   @Test
-  public void checkPaddingOnWriteReadTwoDimByteArrayOneOfTwoRecordVars() throws IOException, InvalidRangeException {
+  public void checkPaddingOnWriteReadTwoDimByteArrayOneOfTwoRecordVars() throws Exception {
     File tmpDataDir = tempFolder.newFolder();
     File testFile = new File(tmpDataDir, "file.nc");
 
@@ -204,7 +204,7 @@ public class BytePaddingTest {
   }
 
   @Test
-  public void checkPaddingOnWriteReadOneDimCharArrayOnlyRecordVar() throws IOException, InvalidRangeException {
+  public void checkPaddingOnWriteReadOneDimCharArrayOnlyRecordVar() throws Exception {
     File tmpDataDir = tempFolder.newFolder();
     File testFile = new File(tmpDataDir, "file.nc");
 
@@ -233,7 +233,7 @@ public class BytePaddingTest {
   }
 
   @Test
-  public void checkPaddingOnWriteReadOneDimCharArrayOneOfTwoRecordVars() throws IOException, InvalidRangeException {
+  public void checkPaddingOnWriteReadOneDimCharArrayOneOfTwoRecordVars() throws Exception {
     File tmpDataDir = tempFolder.newFolder();
     File testFile = new File(tmpDataDir, "file.nc");
 
@@ -268,7 +268,7 @@ public class BytePaddingTest {
   }
 
   @Test
-  public void checkPaddingOnWriteReadOneDimShortArrayOnlyRecordVar() throws IOException, InvalidRangeException {
+  public void checkPaddingOnWriteReadOneDimShortArrayOnlyRecordVar() throws Exception {
     File tmpDataDir = tempFolder.newFolder();
     File testFile = new File(tmpDataDir, "file.nc");
 
@@ -296,7 +296,7 @@ public class BytePaddingTest {
   }
 
   @Test
-  public void checkPaddingOnWriteReadOneDimShortArrayOneOfTwoRecordVars() throws IOException, InvalidRangeException {
+  public void checkPaddingOnWriteReadOneDimShortArrayOneOfTwoRecordVars() throws Exception {
     File tmpDataDir = tempFolder.newFolder();
     File testFile = new File(tmpDataDir, "file.nc");
 
@@ -330,7 +330,7 @@ public class BytePaddingTest {
   }
 
   @Test
-  public void checkPaddingOnWriteReadOriginalByteArrayPaddingTest() throws IOException, InvalidRangeException {
+  public void checkPaddingOnWriteReadOriginalByteArrayPaddingTest() throws Exception {
     File tmpDataDir = tempFolder.newFolder();
     File testFile = new File(tmpDataDir, "file.nc");
 

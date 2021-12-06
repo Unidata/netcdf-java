@@ -4,7 +4,6 @@
  */
 package thredds.client.catalog;
 
-import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,8 +30,7 @@ public class TestClientCatalog {
   @Test
   public void testResolve() throws IOException {
     Catalog cat = ClientCatalogUtil.open("testCatref.xml");
-    Assert.assertEquals("catrefURI", ClientCatalogUtil.makeFilepath("test2.xml"),
-        getCatrefURI(cat.getDatasets(), "catref"));
+    assertThat(ClientCatalogUtil.makeFilepath("test2.xml")).isEqualTo(getCatrefURI(cat.getDatasets(), "catref"));
 
     String catrefURIn = getCatrefNestedURI(cat, "top", "catref-nested");
     assertThat(catrefURIn).isEqualTo((ClientCatalogUtil.makeFilepath("test0.xml")));

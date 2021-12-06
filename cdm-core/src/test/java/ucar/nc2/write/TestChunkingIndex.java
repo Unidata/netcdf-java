@@ -11,6 +11,8 @@ import ucar.nc2.Dimension;
 import java.util.Arrays;
 import java.util.List;
 
+import static com.google.common.truth.Truth.assertThat;
+
 /** Test {@link ChunkingIndex} */
 public class TestChunkingIndex {
 
@@ -32,7 +34,7 @@ public class TestChunkingIndex {
     show("chunk", result);
     long shapeSize = new Section(result).computeSize();
     System.out.printf(" size = %d%n%n", shapeSize);
-    assert shapeSize <= maxChunkElems;
+    assertThat(shapeSize).isAtMost(maxChunkElems);
   }
 
   private void show(String what, int[] result) {
@@ -73,15 +75,16 @@ public class TestChunkingIndex {
     show("chunk", result);
     long shapeSize = new Section(result).computeSize();
     System.out.printf(" size = %d%n%n", shapeSize);
-    assert shapeSize <= maxChunkElems;
-    assert shapeSize >= maxChunkElems / 2;
-    assert shapeSize == expectSize : shapeSize + " != " + expectSize;
+    assertThat(shapeSize).isAtMost(maxChunkElems);
+    assertThat(shapeSize).isAtLeast(maxChunkElems / 2);
+    assertThat(shapeSize).isEqualTo(expectSize);
   }
 
   private void show(String what, List<Dimension> dims) {
     System.out.printf("%s= (", what);
-    for (Dimension r : dims)
+    for (Dimension r : dims) {
       System.out.printf("%d,", r.getLength());
+    }
     System.out.printf(")%n");
   }
 
@@ -106,7 +109,7 @@ public class TestChunkingIndex {
     long shapeSize = new Section(result).computeSize();
     System.out.printf(" size = %d%n%n", shapeSize);
     int expectSize = chunker.getMinChunksize() / elemSize;
-    assert shapeSize == expectSize : shapeSize + " != " + expectSize;
+    assertThat(shapeSize).isEqualTo(expectSize);
   }
 
 

@@ -4,6 +4,7 @@
  */
 package ucar.nc2.calendar;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import ucar.nc2.calendar.chrono.Uniform30DayDate;
 
@@ -245,7 +246,8 @@ public class TestUniform30DayCalendar {
     assertThat(cdate.toString()).isEqualTo("2012-04-27T14:00Z");
   }
 
-  // @Test
+  @Test
+  @Ignore("fails")
   public void testInstant() {
     String isoMST = "2012-04-27T08:00:00-0600";
     CalendarDate cdate = CalendarDate.fromUdunitIsoDate(calendarName, isoMST).orElseThrow();

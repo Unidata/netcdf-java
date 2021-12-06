@@ -43,7 +43,7 @@ public class TestN4problems {
   }
 
   @Test
-  public void testTilingNetcdfFile() throws IOException, ucar.array.InvalidRangeException {
+  public void testTilingNetcdfFile() throws Exception {
     // java.lang.AssertionError: shape[2] (385) >= pt[2] (390)
     String filename = TestN4reading.testDir + "UpperDeschutes_t4p10_swemelt.nc";
     try (NetcdfFile ncfile = NetcdfFiles.open(filename)) {
@@ -57,7 +57,7 @@ public class TestN4problems {
   // I really don't think this is a problem with your code
   // may be bug in HDF5 1.8.4-patch1
   @Test
-  public void testTilingGridDataset() throws IOException, ucar.array.InvalidRangeException {
+  public void testTilingGridDataset() throws Exception {
     // Global Heap 1t 13059 runs out with no heap id = 0
     String filename = TestN4reading.testDir + "tiling.nc4";
     String vname = "Turbulence_SIGMET_AIRMET";

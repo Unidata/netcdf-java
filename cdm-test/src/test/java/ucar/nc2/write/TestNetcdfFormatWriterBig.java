@@ -49,7 +49,7 @@ public class TestNetcdfFormatWriterBig {
 
   /** test writing > 2G with unlimited dimension */
   @Test
-  public void testBigUnlimited() throws IOException, InvalidRangeException, ucar.array.InvalidRangeException {
+  public void testBigUnlimited() throws Exception {
     long approxSize = (long) timeSize * latSize * lonSize * 4 + 4000;
     System.out.println("File size  (B)  = " + approxSize);
     System.out.println("File size~ (MB) = " + Math.round(approxSize / Math.pow(2, 20)));
@@ -77,7 +77,7 @@ public class TestNetcdfFormatWriterBig {
 
   /** test writing > 2G not unlimited dimension, setLargeFile */
   @Test
-  public void testBigFormat() throws IOException, InvalidRangeException, ucar.array.InvalidRangeException {
+  public void testBigFormat() throws Exception {
     long approxSize = (long) timeSize * latSize * lonSize * 4 + 4000;
     System.out.println("File size  (B)  = " + approxSize);
     System.out.println("File size~ (MB) = " + Math.round(approxSize / Math.pow(2, 20)));
@@ -136,7 +136,7 @@ public class TestNetcdfFormatWriterBig {
    * This is ok, because its just the int32 header offset that has a problem. Who would ever need more than 640K?
    */
   @Test
-  public void testBigFormatAtEnd() throws IOException, InvalidRangeException, ucar.array.InvalidRangeException {
+  public void testBigFormatAtEnd() throws Exception {
     long approxSize = (long) timeSize * latSize * lonSize * 4 + 4000;
     System.out.println("File size  (B)  = " + approxSize);
     System.out.println("File size~ (MB) = " + Math.round(approxSize / Math.pow(2, 20)));

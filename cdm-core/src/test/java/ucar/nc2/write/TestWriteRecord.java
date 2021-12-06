@@ -10,7 +10,6 @@ import org.junit.rules.TemporaryFolder;
 import ucar.array.ArrayType;
 import ucar.array.Arrays;
 import ucar.array.Index;
-import ucar.array.InvalidRangeException;
 import ucar.array.Array;
 import ucar.array.Section;
 import ucar.nc2.Attribute;
@@ -19,8 +18,7 @@ import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFiles;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.CDM;
-import ucar.unidata.util.test.Assert2;
-import java.io.IOException;
+import ucar.nc2.util.Misc;
 
 import static com.google.common.truth.Truth.assertThat;
 
@@ -75,7 +73,7 @@ public class TestWriteRecord {
   public TemporaryFolder tempFolder = new TemporaryFolder();
 
   @Test
-  public void testNC3WriteWithRecordVariables() throws IOException, InvalidRangeException {
+  public void testNC3WriteWithRecordVariables() throws Exception {
     String filename = tempFolder.newFile().getAbsolutePath();
 
     NetcdfFormatWriter.Builder writerb = NetcdfFormatWriter.createNewNetcdf3(filename).setFill(false);
@@ -170,18 +168,18 @@ public class TestWriteRecord {
       }
       /* Read units attribute of lat variable */
       Attribute latUnits = lat.findAttribute("units");
-      assert latUnits != null;
-      assert latUnits.getStringValue().equals("degrees_north");
+      assertThat(latUnits).isNotNull();
+      assertThat(latUnits.getStringValue()).isEqualTo("degrees_north");
 
       /* Read the longitudes. */
       Variable lon = ncfile.findVariable("lon");
       assertThat(lon).isNotNull();
       Array<Float> fa = (Array<Float>) lon.readArray();
       assertThat(values.getArrayType()).isEqualTo(ArrayType.FLOAT);
-      Assert2.assertNearlyEquals(fa.get(0), -109.0f);
-      Assert2.assertNearlyEquals(fa.get(1), -107.0f);
-      Assert2.assertNearlyEquals(fa.get(2), -105.0f);
-      Assert2.assertNearlyEquals(fa.get(3), -103.0f);
+      assertThat(Misc.nearlyEquals(fa.get(0), -109.0f)).isTrue();
+      assertThat(Misc.nearlyEquals(fa.get(1), -107.0f)).isTrue();
+      assertThat(Misc.nearlyEquals(fa.get(2), -105.0f)).isTrue();
+      assertThat(Misc.nearlyEquals(fa.get(3), -103.0f)).isTrue();
 
       /*
        * Now we can just use the MultiArray to access values, or
@@ -238,7 +236,7 @@ public class TestWriteRecord {
 
   // make an example writing records
   @Test
-  public void testNC3WriteWithRecord() throws IOException, InvalidRangeException {
+  public void testNC3WriteWithRecord() throws Exception {
     String filename = tempFolder.newFile().getAbsolutePath();
 
     NetcdfFormatWriter.Builder writerb = NetcdfFormatWriter.createNewNetcdf3(filename).setFill(false);

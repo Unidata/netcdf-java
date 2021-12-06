@@ -11,7 +11,6 @@ import ucar.array.Array;
 import ucar.array.ArrayType;
 import ucar.array.Arrays;
 import ucar.array.Index;
-import ucar.array.InvalidRangeException;
 import ucar.array.Section;
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
@@ -19,7 +18,6 @@ import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFiles;
 import ucar.nc2.Variable;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,7 +32,7 @@ public class TestNetcdfWriteAndUpdate {
   private String writerLocation;
 
   @Test
-  public void testWriteAndUpdate() throws IOException, InvalidRangeException {
+  public void testWriteAndUpdate() throws Exception {
     writerLocation = tempFolder.newFile().getAbsolutePath();
 
     NetcdfFormatWriter.Builder<?> writerb = NetcdfFormatWriter.createNewNetcdf3(writerLocation);

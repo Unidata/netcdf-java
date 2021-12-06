@@ -11,6 +11,8 @@ import ucar.nc2.util.Misc;
 import ucar.unidata.util.test.TestDir;
 import java.io.IOException;
 
+import static com.google.common.truth.Truth.assertThat;
+
 /** Test reading attributes */
 public class TestAttributeReading {
 
@@ -19,86 +21,86 @@ public class TestAttributeReading {
     NetcdfFile ncfile = TestDir.openFileLocal("testWrite.nc");
 
     // global attributes
-    assert ("face".equals(ncfile.getRootGroup().findAttributeString("yo", "barf")));
+    assertThat(ncfile.getRootGroup().findAttributeString("yo", "barf")).isEqualTo("face");
 
-    Variable temp = null;
-    assert (null != (temp = ncfile.findVariable("temperature")));
-    assert ("K".equals(temp.findAttributeString("units", "barf")));
+    Variable temp = ncfile.findVariable("temperature");
+    assertThat(temp).isNotNull();
+    assertThat(temp.findAttributeString("units", "barf")).isEqualTo("K");
 
     Attribute att = temp.findAttribute("scale");
-    assert (null != att);
-    assert (att.isArray());
-    assert (3 == att.getLength());
-    assert (3 == att.getNumericValue(2).intValue());
+    assertThat(att).isNotNull();
+    assertThat(att.isArray()).isTrue();
+    assertThat(att.getLength()).isEqualTo(3);
+    assertThat(att.getNumericValue(2).intValue()).isEqualTo(3);
 
     Array<?> aa = att.getArrayValues();
-    assert (att.getArrayType() == ArrayType.INT);
-    assert (aa.getSize() == 3);
+    assertThat(att.getArrayType()).isEqualTo(ArrayType.INT);
+    assertThat(aa.getSize()).isEqualTo(3);
 
     att = temp.findAttribute("versionD");
-    assert (null != att);
-    assert (!att.isArray());
-    assert (1 == att.getLength());
-    assert (1.2 == att.getNumericValue().doubleValue());
-    assert (ArrayType.DOUBLE == att.getArrayType());
+    assertThat(att).isNotNull();
+    assertThat(!att.isArray()).isTrue();;
+    assertThat(att.getLength()).isEqualTo(1);
+    assertThat(att.getNumericValue().doubleValue()).isEqualTo(1.2);
+    assertThat(ArrayType.DOUBLE).isEqualTo(att.getArrayType());
 
     aa = att.getArrayValues();
-    assert (att.getArrayType() == ArrayType.DOUBLE);
-    assert (aa.getSize() == 1);
+    assertThat(att.getArrayType()).isEqualTo(ArrayType.DOUBLE);
+    assertThat(aa.getSize()).isEqualTo(1);
 
     att = temp.findAttribute("versionF");
-    assert (null != att);
-    assert (!att.isArray());
-    assert (1 == att.getLength());
-    assert (1.2f == att.getNumericValue().floatValue());
-    assert (Misc.nearlyEquals(1.2, att.getNumericValue().doubleValue(), 1.0e-5));
-    assert (ArrayType.FLOAT == att.getArrayType());
+    assertThat(att).isNotNull();
+    assertThat(!att.isArray()).isTrue();;
+    assertThat(att.getLength()).isEqualTo(1);
+    assertThat(att.getNumericValue().floatValue()).isEqualTo(1.2f);
+    assertThat(Misc.nearlyEquals(1.2, att.getNumericValue().doubleValue(), 1.0e-5));
+    assertThat(ArrayType.FLOAT).isEqualTo(att.getArrayType());
 
     aa = att.getArrayValues();
-    assert (att.getArrayType() == ArrayType.FLOAT);
-    assert (aa.getSize() == 1);
+    assertThat(att.getArrayType()).isEqualTo(ArrayType.FLOAT);
+    assertThat(aa.getSize()).isEqualTo(1);
 
     att = temp.findAttribute("versionI");
-    assert (null != att);
-    assert (!att.isArray());
-    assert (1 == att.getLength());
-    assert (1 == att.getNumericValue().intValue());
-    assert (ArrayType.INT == att.getArrayType());
+    assertThat(att).isNotNull();
+    assertThat(!att.isArray()).isTrue();;
+    assertThat(att.getLength()).isEqualTo(1);
+    assertThat(att.getNumericValue().intValue()).isEqualTo(1);
+    assertThat(ArrayType.INT).isEqualTo(att.getArrayType());
 
     aa = att.getArrayValues();
-    assert (att.getArrayType() == ArrayType.INT);
-    assert (aa.getSize() == 1);
+    assertThat(att.getArrayType()).isEqualTo(ArrayType.INT);
+    assertThat(aa.getSize()).isEqualTo(1);
 
     att = temp.findAttribute("versionS");
-    assert (null != att);
-    assert (!att.isArray());
-    assert (1 == att.getLength());
-    assert (2 == att.getNumericValue().shortValue());
-    assert (ArrayType.SHORT == att.getArrayType());
+    assertThat(att).isNotNull();
+    assertThat(!att.isArray()).isTrue();;
+    assertThat(1 == att.getLength());
+    assertThat(2 == att.getNumericValue().shortValue());
+    assertThat(ArrayType.SHORT).isEqualTo(att.getArrayType());
 
     aa = att.getArrayValues();
-    assert (att.getArrayType() == ArrayType.SHORT);
-    assert (aa.getSize() == 1);
+    assertThat(att.getArrayType()).isEqualTo(ArrayType.SHORT);
+    assertThat(aa.getSize()).isEqualTo(1);
 
     att = temp.findAttribute("versionB");
-    assert (null != att);
-    assert (!att.isArray());
-    assert (1 == att.getLength());
-    assert (3 == att.getNumericValue().byteValue());
-    assert (ArrayType.BYTE == att.getArrayType());
+    assertThat(att).isNotNull();
+    assertThat(!att.isArray()).isTrue();;
+    assertThat(1).isEqualTo(att.getLength());
+    assertThat(3).isEqualTo(att.getNumericValue().byteValue());
+    assertThat(ArrayType.BYTE).isEqualTo(att.getArrayType());
 
     aa = att.getArrayValues();
-    assert (att.getArrayType() == ArrayType.BYTE);
-    assert (aa.getSize() == 1);
+    assertThat(att.getArrayType()).isEqualTo(ArrayType.BYTE);
+    assertThat(aa.getSize()).isEqualTo(1);
 
     att = temp.findAttribute("versionString");
-    assert (null != att);
-    assert (!att.isArray());
-    assert (1 == att.getLength());
-    assert (ArrayType.STRING == att.getArrayType());
+    assertThat(att).isNotNull();
+    assertThat(!att.isArray()).isTrue();;
+    assertThat(1).isEqualTo(att.getLength());
+    assertThat(ArrayType.STRING).isEqualTo(att.getArrayType());
 
     Number n = att.getNumericValue();
-    assert (n != null);
+    assertThat(n).isNotNull();
 
     ncfile.close();
   }

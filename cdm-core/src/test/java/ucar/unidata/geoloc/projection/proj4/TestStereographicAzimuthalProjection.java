@@ -29,7 +29,6 @@ public class TestStereographicAzimuthalProjection {
         }
       }
       System.out.println("reverse:" + p.getX() + ", " + p.getY() + ": " + lp.getLatitude() + ", " + lp.getLongitude());
-
     }
 
   }
@@ -53,8 +52,6 @@ public class TestStereographicAzimuthalProjection {
     double[] latS = {-60., -90., -60.};
     double[] lonS = {0., 0., 10.};
     test(proj, latS, lonS);
-
-
   }
 
 }

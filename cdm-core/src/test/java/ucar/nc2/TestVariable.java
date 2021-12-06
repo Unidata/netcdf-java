@@ -307,7 +307,7 @@ public class TestVariable {
   }
 
   @Test
-  public void testReadByIndex() throws IOException, InvalidRangeException {
+  public void testReadByIndex() throws Exception {
     Dimension x = new Dimension("x", 27);
     Variable.Builder<?> var = Variable.builder().setName("x").setArrayType(ArrayType.INT)
         .setDimensions(ImmutableList.of(x)).addAttribute(new Attribute("name", "value")).setAutoGen(0, 10);
@@ -321,7 +321,7 @@ public class TestVariable {
   }
 
   @Test
-  public void testReadByRanges() throws IOException, InvalidRangeException {
+  public void testReadByRanges() throws Exception {
     Dimension x = new Dimension("x", 27);
     Variable.Builder<?> var = Variable.builder().setName("x").setArrayType(ArrayType.INT)
         .setDimensions(ImmutableList.of(x)).addAttribute(new Attribute("name", "value")).setAutoGen(100, 10);
@@ -336,7 +336,7 @@ public class TestVariable {
   }
 
   @Test
-  public void testReadBySection() throws IOException, InvalidRangeException {
+  public void testReadBySection() throws Exception {
     Dimension x = new Dimension("x", 99);
     Variable.Builder<?> var = Variable.builder().setName("x").setArrayType(ArrayType.INT)
         .setDimensions(ImmutableList.of(x)).addAttribute(new Attribute("name", "value")).setAutoGen(0, 10);
@@ -350,7 +350,7 @@ public class TestVariable {
   }
 
   @Test
-  public void testReadBySectionSpec() throws IOException, InvalidRangeException {
+  public void testReadBySectionSpec() throws Exception {
     Dimension x = new Dimension("x", 27);
     Variable.Builder<?> var = Variable.builder().setName("x").setArrayType(ArrayType.INT)
         .setDimensions(ImmutableList.of(x)).addAttribute(new Attribute("name", "value")).setAutoGen(100, 10);
@@ -365,7 +365,7 @@ public class TestVariable {
   }
 
   @Test
-  public void testSection() throws IOException, InvalidRangeException {
+  public void testSection() throws Exception {
     Dimension x = new Dimension("x", 27);
     Variable.Builder<?> var = Variable.builder().setName("x").setArrayType(ArrayType.INT)
         .setDimensions(ImmutableList.of(x)).addAttribute(new Attribute("name", "value")).setAutoGen(100, 10);
@@ -384,7 +384,7 @@ public class TestVariable {
   }
 
   @Test
-  public void testSliceRowMajor() throws IOException, InvalidRangeException {
+  public void testSliceRowMajor() throws Exception {
     Dimension x = new Dimension("x", 20);
     Dimension y = new Dimension("y", 2);
     Variable.Builder<?> var = Variable.builder().setName("x").setArrayType(ArrayType.INT)
@@ -400,7 +400,7 @@ public class TestVariable {
   }
 
   @Test
-  public void testSliceColMajor() throws IOException, InvalidRangeException {
+  public void testSliceColMajor() throws Exception {
     Dimension x = new Dimension("x", 20);
     Dimension y = new Dimension("y", 2);
     Variable.Builder<?> var = Variable.builder().setName("x").setArrayType(ArrayType.INT)
@@ -415,7 +415,7 @@ public class TestVariable {
   }
 
   @Test
-  public void testReduce() throws IOException, InvalidRangeException {
+  public void testReduce() throws Exception {
     Dimension x = new Dimension("x", 20);
     Dimension y = new Dimension("y", 1);
     Variable.Builder<?> var = Variable.builder().setName("x").setArrayType(ArrayType.INT)

@@ -7,6 +7,8 @@ package ucar.nc2.internal.ncml;
 import static com.google.common.truth.Truth.assertThat;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
+
+import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,14 +28,14 @@ import ucar.nc2.calendar.Calendar;
 import ucar.nc2.calendar.CalendarDate;
 import ucar.nc2.calendar.CalendarDateUnit;
 import ucar.nc2.calendar.CalendarPeriod.Field;
-import ucar.unidata.util.test.Assert2;
+import ucar.nc2.util.Misc;
 
 /** Test TestNcml - AggExisting in the JUnit framework. */
 public class TestAggExisting {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @Test
-  public void testNcmlDataset() throws IOException, InvalidRangeException {
+  public void testNcmlDataset() throws Exception {
     String filename = "file:./" + TestNcmlRead.topDir + "aggExisting.xml";
 
     NetcdfFile ncfile = NetcdfDatasets.openDataset(filename, true, null);
@@ -48,7 +50,7 @@ public class TestAggExisting {
   }
 
   @Test
-  public void testNcmlDatasetNoProtocolInFilename() throws IOException, InvalidRangeException {
+  public void testNcmlDatasetNoProtocolInFilename() throws Exception {
     String filename = "./" + TestNcmlRead.topDir + "aggExisting.xml";
 
     NetcdfFile ncfile = NetcdfDatasets.openDataset(filename, true, null);
@@ -63,7 +65,7 @@ public class TestAggExisting {
   }
 
   @Test(expected = IOException.class)
-  public void testNcmlDatasetNoProtocolInNcmlAbsPath() throws IOException, InvalidRangeException {
+  public void testNcmlDatasetNoProtocolInNcmlAbsPath() throws Exception {
     // if using an absolute path in the NcML file location attr of the element netcdf, then
     // you must prepend file:
     // this should fail with an IOException
@@ -81,7 +83,7 @@ public class TestAggExisting {
   }
 
   @Test(expected = IOException.class)
-  public void testNcmlDatasetNoProtocolInFilenameOrNcmlAbsPath() throws IOException, InvalidRangeException {
+  public void testNcmlDatasetNoProtocolInFilenameOrNcmlAbsPath() throws Exception {
     // if using an absolute path in the NcML file location attr of the element netcdf, then
     // you must prepend file:
     // this should fail with an IOException
@@ -99,7 +101,7 @@ public class TestAggExisting {
   }
 
   @Test
-  public void testNcmlDatasetNoProtocolInNcmlRelPath() throws IOException, InvalidRangeException {
+  public void testNcmlDatasetNoProtocolInNcmlRelPath() throws Exception {
     String filename = "file:./" + TestNcmlRead.topDir + "aggExisting7.xml";
 
     NetcdfFile ncfile = NetcdfDatasets.openDataset(filename, true, null);
@@ -114,7 +116,7 @@ public class TestAggExisting {
   }
 
   @Test
-  public void testNcmlDatasetNoProtocolInFilenameOrNcmlRelPath() throws IOException, InvalidRangeException {
+  public void testNcmlDatasetNoProtocolInFilenameOrNcmlRelPath() throws Exception {
     String filename = "./" + TestNcmlRead.topDir + "aggExisting7.xml";
 
     NetcdfFile ncfile = NetcdfDatasets.openDataset(filename, true, null);
@@ -129,7 +131,7 @@ public class TestAggExisting {
   }
 
   @Test
-  public void testNcmlDatasetWcoords() throws IOException, InvalidRangeException {
+  public void testNcmlDatasetWcoords() throws Exception {
     String filename = "file:./" + TestNcmlRead.topDir + "aggExistingWcoords.xml";
 
     NetcdfFile ncfile = NetcdfDatasets.openDataset(filename, true, null);
@@ -142,27 +144,6 @@ public class TestAggExisting {
     testReadSlice(ncfile);
     ncfile.close();
     logger.debug(" testNcmlDatasetWcoords.closed ");
-  }
-
-  // remove test - now we get a coordinate initialized to missing data, but at least testCoordsAdded works!
-  // @Test
-  public void testNoCoords() throws IOException {
-    String filename = "file:./" + TestNcmlRead.topDir + "exclude/aggExistingNoCoords.xml";
-    logger.debug("{}", filename);
-    NetcdfDataset ncd = null;
-
-    try {
-      ncd = NetcdfDatasets.openDataset(filename, true, null);
-      Variable time = ncd.getRootGroup().findVariableLocal("time");
-      Array data = time.readArray();
-      // all missing
-      // assert data.getInt(0) ==
-    } finally {
-      if (ncd != null)
-        ncd.close();
-    }
-    // logger.debug("{}", ncd);
-    // assert false;
   }
 
   @Test
@@ -378,8 +359,8 @@ public class TestAggExisting {
     ncfile.close();
   }
 
-  // TODO not supporting mixed Gregorian
-  // @Test
+  @Test
+  @Ignore("not supporting mixed Gregorian")
   public void testNcmlAggExistingGregorianCal() throws IOException {
     // with calendar = gregorian, 4 October 1582 was followed by 15 October 1582
     String filename = "file:./" + TestNcmlRead.topDir + "agg_with_calendar/aggExistingGregorianCal.xml";
@@ -570,9 +551,9 @@ public class TestAggExisting {
     assert data.getSize() == 3;
     assert data.getShape()[0] == 3;
 
-    Assert2.assertNearlyEquals(data.get(0).floatValue(), 41.0);
-    Assert2.assertNearlyEquals(data.get(1).floatValue(), 40.0);
-    Assert2.assertNearlyEquals(data.get(2).floatValue(), 39.0);
+    assertThat(Misc.nearlyEquals(data.get(0).floatValue(), 41.0)).isTrue();
+    assertThat(Misc.nearlyEquals(data.get(1).floatValue(), 40.0)).isTrue();
+    assertThat(Misc.nearlyEquals(data.get(2).floatValue(), 39.0)).isTrue();
   }
 
   public void testAggCoordVar(NetcdfFile ncfile) {
@@ -639,7 +620,7 @@ public class TestAggExisting {
         for (int j = 0; j < shape[1]; j++)
           for (int k = 0; k < shape[2]; k++) {
             double val = data.get(tIndex.set(i, j, k)).doubleValue();
-            Assert2.assertNearlyEquals(val, 100 * i + 10 * j + k);
+            assertThat(Misc.nearlyEquals(val, 100 * i + 10 * j + k)).isTrue();
           }
 
     } catch (IOException io) {
@@ -664,7 +645,7 @@ public class TestAggExisting {
       for (int j = 0; j < shape[1]; j++)
         for (int k = 0; k < shape[2]; k++) {
           double val = data.get(tIndex.set(i, j, k)).doubleValue();
-          Assert2.assertNearlyEquals(val, 100 * (i + origin[0]) + 10 * j + k);
+          assertThat(Misc.nearlyEquals(val, 100 * (i + origin[0]) + 10 * j + k)).isTrue();
         }
 
   }

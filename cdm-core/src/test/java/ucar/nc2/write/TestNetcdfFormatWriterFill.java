@@ -31,7 +31,7 @@ public class TestNetcdfFormatWriterFill {
   public TemporaryFolder tempFolder = new TemporaryFolder();
 
   @Test
-  public void testCreateWithFill() throws IOException, InvalidRangeException {
+  public void testCreateWithFill() throws Exception {
     String filename = tempFolder.newFile().getAbsolutePath();
 
     NetcdfFormatWriter.Builder writerb = NetcdfFormatWriter.createNewNetcdf3(filename);

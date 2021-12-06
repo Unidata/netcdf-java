@@ -31,7 +31,7 @@ public class TestH5npoess {
 
   // FIXME: This is a crappy test; it doesn't fail when the file can't be read.
   @Test
-  public void test1() throws InvalidRangeException, IOException {
+  public void test1() throws Exception {
     H5header.setDebugFlags(DebugFlags.create("H5header/header"));
     TestDir.readAll(TestDir.cdmUnitTestDir
         + "formats/hdf5/npoess/ExampleFiles/AVAFO_NPP_d2003125_t10109_e101038_b9_c2005829155458_devl_Tst.h5");
@@ -39,7 +39,7 @@ public class TestH5npoess {
   }
 
   @Test
-  public void test2() throws InvalidRangeException, IOException {
+  public void test2() throws Exception {
     // H5header.setDebugFlags( DebugFlags.create("H5header/header"));
     try (NetcdfFile ncfile =
         TestH5.openH5("npoess/ExampleFiles/AVAFO_NPP_d2003125_t10109_e101038_b9_c2005829155458_devl_Tst.h5")) {
@@ -49,7 +49,7 @@ public class TestH5npoess {
   }
 
   @Test
-  public void test3() throws InvalidRangeException, IOException {
+  public void test3() throws Exception {
     H5header.setDebugFlags(DebugFlags.create("H5header/reference"));
     try (NetcdfFile ncfile =
         TestH5.openH5("npoess/ExampleFiles/GDNBF-VNCCO_NPP_d2003125_t101038_e10116_b9_c2005829162517_dev.h5")) {

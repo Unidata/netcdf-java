@@ -222,7 +222,7 @@ public class TestNcmlModifyVars {
   }
 
   @Test
-  public void testReadSlice2() throws InvalidRangeException, IOException {
+  public void testReadSlice2() throws Exception {
     Variable v = ncfile.findVariable("ReletiveHumidity");
     assert v != null;
 

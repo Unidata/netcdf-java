@@ -25,12 +25,12 @@ public class TestWRFTime {
     System.out.println(tstFile);
     try (NetcdfDataset ncd = NetcdfDatasets.openDataset(tstFile)) {
       // make sure this file went through the WrfConvention
-      assert ncd.getConventionUsed().equals("WRF");
+      assertThat(ncd.getConventionUsed()).isEqualTo("WRF");
       CoordinateAxis tca = ncd.findCoordinateAxis(AxisType.Time);
       Array<Number> times = (Array<Number>) tca.readArray();
       // first date in this file is 1214524800 [seconds since 1970-01-01T00:00:00],
       // which is 2008-06-27 00:00:00
-      assert times.get(0).intValue() == 1214524800;
+      assertThat(times.get(0).intValue()).isEqualTo(1214524800);
     }
   }
 

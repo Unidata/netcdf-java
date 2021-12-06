@@ -8,25 +8,18 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.jdom2.Element;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import ucar.array.Array;
 import ucar.array.ArrayType;
 import ucar.array.Index;
-import ucar.array.InvalidRangeException;
 import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.write.NcmlWriter;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.OutputStream;
-import java.lang.invoke.MethodHandles;
 import ucar.nc2.write.NetcdfFormatWriter;
 
 import static com.google.common.truth.Truth.assertThat;
 
 /** Test writing and reading some special characters. */
 public class TestSpecialChars {
-  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @Rule
   public TemporaryFolder tempFolder = new TemporaryFolder();
@@ -34,7 +27,7 @@ public class TestSpecialChars {
   String trouble = "here is a &, <, >, \', \", \n, \r, \t, to handle";
 
   @Test
-  public void testWriteAndRead() throws IOException, InvalidRangeException {
+  public void testWriteAndRead() throws Exception {
     String filename = tempFolder.newFile().getAbsolutePath();
 
     NetcdfFormatWriter.Builder<?> writerb = NetcdfFormatWriter.createNewNetcdf3(filename);
@@ -55,14 +48,15 @@ public class TestSpecialChars {
     String ncmlFilePath = tempFolder.newFile().getAbsolutePath();
     try (NetcdfFile ncfile = NetcdfFiles.open(filename, null)) {
       String val = ncfile.getRootGroup().findAttributeString("omy", null);
-      assert val != null;
-      assert val.equals(trouble);
+      assertThat(val).isNotNull();
+      assertThat(val).isEqualTo(trouble);
 
       Variable v = ncfile.findVariable("t");
+      assertThat(v).isNotNull();
 
       val = v.findAttributeString("yow", null);
-      assert val != null;
-      assert val.equals(trouble);
+      assertThat(val).isNotNull();
+      assertThat(val).isEqualTo(trouble);
 
       try (OutputStream out = new FileOutputStream(ncmlFilePath)) {
         NcmlWriter ncmlWriter = new NcmlWriter();
@@ -72,14 +66,15 @@ public class TestSpecialChars {
 
       try (NetcdfFile ncfile2 = NetcdfDatasets.openFile(ncmlFilePath, null)) {
         String val2 = ncfile2.getRootGroup().findAttributeString("omy", null);
-        assert val2 != null;
-        assert val2.equals(trouble);
+        assertThat(val2).isNotNull();
+        assertThat(val2).isEqualTo(trouble);
 
         Variable v2 = ncfile2.findVariable("t");
+        assertThat(v2).isNotNull();
 
         val2 = v2.findAttributeString("yow", null);
-        assert val2 != null;
-        assert val2.equals(trouble);
+        assertThat(val2).isNotNull();
+        assertThat(val2).isEqualTo(trouble);
       }
     }
 
@@ -87,14 +82,15 @@ public class TestSpecialChars {
       System.out.println("ncml= " + ncfile.getLocation());
 
       String val = ncfile.getRootGroup().findAttributeString("omy", null);
-      assert val != null;
-      assert val.equals(trouble);
+      assertThat(val).isNotNull();
+      assertThat(val).isEqualTo(trouble);
 
       Variable v = ncfile.findVariable("t");
+      assertThat(v).isNotNull();
 
       val = v.findAttributeString("yow", null);
-      assert val != null;
-      assert val.equals(trouble);
+      assertThat(val).isNotNull();
+      assertThat(val).isEqualTo(trouble);
     }
   }
 }

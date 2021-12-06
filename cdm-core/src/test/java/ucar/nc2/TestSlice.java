@@ -8,22 +8,19 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import ucar.array.Array;
 import ucar.array.ArrayType;
 import ucar.array.Arrays;
 import ucar.array.InvalidRangeException;
 import java.io.IOException;
-import java.lang.invoke.MethodHandles;
 import ucar.nc2.internal.util.CompareNetcdf2;
 import ucar.nc2.write.NetcdfFormatWriter;
 import ucar.nc2.write.NetcdfFormatWriter.Builder;
-import static org.junit.Assert.assertEquals;
+
+import static com.google.common.truth.Truth.assertThat;
 
 /** Test writing data and reading slices of it. */
 public class TestSlice {
-  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   private static final String DATA_VARIABLE = "data";
   private static final int DIM_T = 10;
@@ -71,52 +68,55 @@ public class TestSlice {
   }
 
   @Test
-  public void testSlice1() throws IOException, InvalidRangeException {
+  public void testSlice1() throws Exception {
     try (NetcdfFile file = NetcdfFiles.open(filePath)) {
       Variable var = file.findVariable(DATA_VARIABLE);
+      assertThat(var).isNotNull();
       Variable sliced = var.slice(0, 3);
       sliced.readArray();
 
       int[] shape = sliced.getShape();
-      assertEquals(3, shape.length);
-      assertEquals(DIM_ALT, shape[0]);
-      assertEquals(DIM_LAT, shape[1]);
-      assertEquals(DIM_LON, shape[2]);
+      assertThat(3).isEqualTo(shape.length);
+      assertThat(DIM_ALT).isEqualTo(shape[0]);
+      assertThat(DIM_LAT).isEqualTo(shape[1]);
+      assertThat(DIM_LON).isEqualTo(shape[2]);
 
-      assertEquals("alt lat lon", sliced.getDimensionsString());
+      assertThat("alt lat lon").isEqualTo(sliced.getDimensionsString());
     }
   }
 
   @Test
-  public void testSlice2() throws IOException, InvalidRangeException {
+  public void testSlice2() throws Exception {
     try (NetcdfFile file = NetcdfFiles.open(filePath)) {
       Variable var = file.findVariable(DATA_VARIABLE);
+      assertThat(var).isNotNull();
       Variable sliced = var.slice(1, 3);
       sliced.readArray();
 
       int[] shape = sliced.getShape();
-      assertEquals(3, shape.length);
-      assertEquals(DIM_T, shape[0]);
-      assertEquals(DIM_LAT, shape[1]);
-      assertEquals(DIM_LON, shape[2]);
+      assertThat(3).isEqualTo(shape.length);
+      assertThat(DIM_T).isEqualTo(shape[0]);
+      assertThat(DIM_LAT).isEqualTo(shape[1]);
+      assertThat(DIM_LON).isEqualTo(shape[2]);
 
-      assertEquals("t lat lon", sliced.getDimensionsString());
+      assertThat("t lat lon").isEqualTo(sliced.getDimensionsString());
     }
   }
 
   @Test
-  public void testSlice3() throws IOException, InvalidRangeException, ucar.array.InvalidRangeException {
+  public void testSlice3() throws Exception {
     try (NetcdfFile file = NetcdfFiles.open(filePath)) {
       Variable var = file.findVariable(DATA_VARIABLE);
+      assertThat(var).isNotNull();
       Variable sliced1 = var.slice(0, 3);
       Variable sliced2 = sliced1.slice(0, 3);
 
       int[] shape = sliced2.getShape();
-      assertEquals(2, shape.length);
-      assertEquals(DIM_LAT, shape[0]);
-      assertEquals(DIM_LON, shape[1]);
+      assertThat(2).isEqualTo(shape.length);
+      assertThat(DIM_LAT).isEqualTo(shape[0]);
+      assertThat(DIM_LON).isEqualTo(shape[1]);
 
-      assertEquals("lat lon", sliced2.getDimensionsString());
+      assertThat("lat lon").isEqualTo(sliced2.getDimensionsString());
 
       ucar.array.Array<?> org = var.readArray(new ucar.array.Section("3,3,:,:"));
       ucar.array.Array<?> data = sliced2.readArray();

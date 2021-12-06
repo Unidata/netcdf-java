@@ -6,23 +6,19 @@
 package ucar.util.prefs;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import ucar.unidata.util.test.Assert2;
+import ucar.nc2.util.Misc;
 import java.io.*;
-import java.lang.invoke.MethodHandles;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.InvalidPreferencesFormatException;
 import java.util.prefs.Preferences;
 
+import static com.google.common.truth.Truth.assertThat;
+
 @RunWith(JUnit4.class)
 public class TestJavaUtilPreferences {
-  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-
   // only works if System.setProperty called before anything else
   @Before
   public void testWho() {
@@ -41,11 +37,11 @@ public class TestJavaUtilPreferences {
 
     userRoot.putDouble("testD", 3.14157);
     double d = userRoot.getDouble("testD", 0.0);
-    Assert2.assertNearlyEquals(d, 3.14157);
+    assertThat(Misc.nearlyEquals(d, 3.14157)).isTrue();
 
     userRoot.putFloat("testF", 1.23456F);
     float f = userRoot.getFloat("testF", 0.0F);
-    Assert2.assertNearlyEquals(f, 1.23456F);
+    assertThat(Misc.nearlyEquals(f, 1.23456F)).isTrue();
 
     userRoot.putLong("testL", 12345678900L);
     long ll = userRoot.getLong("testL", 0);
@@ -87,7 +83,7 @@ public class TestJavaUtilPreferences {
     }
 
     float f = subNode.getFloat("testF", 0.0F);
-    Assert2.assertNearlyEquals(f, 1.23456F);
+    assertThat(Misc.nearlyEquals(f, 1.23456F)).isTrue();
 
     long ll = subNode.getLong("testL", 0);
     assert ll == 12345678900L : "long failed";

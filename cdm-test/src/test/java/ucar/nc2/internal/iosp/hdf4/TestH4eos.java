@@ -32,14 +32,14 @@ public class TestH4eos {
 
   // test the coordSysBuilder - check if grid exists
   @Test
-  public void testModisGeo() throws IOException, InvalidRangeException {
+  public void testModisGeo() throws Exception {
     // GEO (lat//lon)
     testGridExists(testDir + "modis/MOD17A3.C5.1.GEO.2000.hdf", "MOD_Grid_MOD17A3/Data_Fields/Npp_0\\.05deg",
         "Npp_0.05deg");
   }
 
   @Test
-  public void testModisSinusoidal() throws IOException, InvalidRangeException {
+  public void testModisSinusoidal() throws Exception {
     // SINUSOIDAL
     testGridExists(testDir + "modis/MOD13Q1.A2012321.h00v08.005.2012339011757.hdf",
         "MODIS_Grid_16DAY_250m_500m_VI/Data_Fields/250m_16_days_NIR_reflectance", "250m_16_days_NIR_reflectance");
@@ -61,7 +61,7 @@ public class TestH4eos {
   }
 
   @Test
-  public void testSpecificVariableSection() throws InvalidRangeException, IOException {
+  public void testSpecificVariableSection() throws Exception {
     try (NetcdfFile ncfile = NetcdfFiles.open(TestDir.cdmUnitTestDir + "formats/hdf4/96108_08.hdf")) {
 
       Variable v = ncfile.findVariable("CalibratedData");

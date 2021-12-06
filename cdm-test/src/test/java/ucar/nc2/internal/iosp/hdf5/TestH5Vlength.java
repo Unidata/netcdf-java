@@ -57,7 +57,7 @@ public class TestH5Vlength {
   }
 
   @Test
-  public void testVlengthVariableChunked() throws IOException, InvalidRangeException {
+  public void testVlengthVariableChunked() throws Exception {
     try (NetcdfFile ncfile = TestH5.openH5("support/uvlstr.h5")) {
 
       Variable v = ncfile.findVariable("Space1");
@@ -82,7 +82,7 @@ public class TestH5Vlength {
   }
 
   @Test
-  public void testVlengthVariable() throws IOException, InvalidRangeException {
+  public void testVlengthVariable() throws Exception {
     try (NetcdfFile ncfile = TestH5.openH5("support/vlslab.h5")) {
 
       Variable v = ncfile.findVariable("Space1");

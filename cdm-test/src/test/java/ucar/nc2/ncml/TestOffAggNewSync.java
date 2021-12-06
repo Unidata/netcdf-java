@@ -32,7 +32,7 @@ public class TestOffAggNewSync {
 
   @Test
   @Ignore("file in use - testing artifact")
-  public void testMove() throws IOException, InterruptedException {
+  public void testMove() throws Exception {
     String fname = dataDir + "WEST-CONUS_4km_3.9_20050912_2130.gini";
     if (!TestOffAggUpdating.move(fname))
       System.out.printf("Move failed on %s%n", fname);
@@ -54,7 +54,7 @@ public class TestOffAggNewSync {
 
   @Test
   @Ignore("file in use - testing artifact")
-  public void testRemove() throws IOException, InterruptedException {
+  public void testRemove() throws Exception {
     try (NetcdfDataset ncfile =
         NetcdfDatasets.openNcmlDataset(new StringReader(aggExistingSync), "aggExistingSync", null)) {
       testAggCoordVar(ncfile, ntimes);

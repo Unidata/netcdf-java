@@ -6,7 +6,6 @@ package ucar.nc2;
 
 import org.junit.Test;
 import ucar.array.Index;
-import ucar.array.InvalidRangeException;
 import ucar.array.Array;
 import ucar.array.Section;
 import ucar.array.StructureData;
@@ -14,7 +13,7 @@ import ucar.nc2.dataset.DatasetUrl;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.dataset.StructureDS;
-import ucar.unidata.util.test.Assert2;
+import ucar.nc2.util.Misc;
 import ucar.unidata.util.test.TestDir;
 import java.io.IOException;
 
@@ -23,7 +22,7 @@ import static com.google.common.truth.Truth.assertThat;
 public class TestReadRecord {
   @Test
   // Normal reading of Nc3 record variables
-  public void testNC3ReadRecordVariables() throws IOException, InvalidRangeException {
+  public void testNC3ReadRecordVariables() throws Exception {
     try (NetcdfFile nc = TestDir.openFileLocal("testWriteRecord.nc")) {
 
       /* Get the value of the global attribute named "title" */
@@ -47,16 +46,16 @@ public class TestReadRecord {
       }
       /* Read units attribute of lat variable */
       String latUnits = lat.findAttributeString("units", "N/A");
-      assert (latUnits.equals("degrees_north"));
+      assertThat(latUnits).isEqualTo("degrees_north");
 
       /* Read the longitudes. */
       Variable lon = nc.findVariable("lon");
       assertThat(lon).isNotNull();
       Array<Number> fa = (Array<Number>) lon.readArray();
-      Assert2.assertNearlyEquals(fa.get(0).floatValue(), -109.0f);
-      Assert2.assertNearlyEquals(fa.get(1).floatValue(), -107.0f);
-      Assert2.assertNearlyEquals(fa.get(2).floatValue(), -105.0f);
-      Assert2.assertNearlyEquals(fa.get(3).floatValue(), -103.0f);
+      assertThat(Misc.nearlyEquals(fa.get(0).floatValue(), -109.0f)).isTrue();
+      assertThat(Misc.nearlyEquals(fa.get(1).floatValue(), -107.0f)).isTrue();
+      assertThat(Misc.nearlyEquals(fa.get(2).floatValue(), -105.0f)).isTrue();
+      assertThat(Misc.nearlyEquals(fa.get(3).floatValue(), -103.0f)).isTrue();
 
       /*
        * Now we can just use the MultiArray to access values, or
@@ -70,8 +69,8 @@ public class TestReadRecord {
       Variable time = nc.findVariable("time");
       assertThat(time).isNotNull();
       Array<Integer> ta = (Array<Integer>) time.readArray();
-      assert (ta.get(0) == 6) : ta.get(0);
-      assert (ta.get(1) == 18) : ta.get(1);
+      assertThat(ta.get(0)).isEqualTo(6);
+      assertThat(ta.get(1)).isEqualTo(18);
 
       /* Read the relative humidity data */
       Variable rh = nc.findVariable("rh");
@@ -83,7 +82,7 @@ public class TestReadRecord {
           for (int k = 0; k < shape[2]; k++) {
             int want = 20 * i + 4 * j + k + 1;
             int val = rha.get(i, j, k);
-            assert (want == val) : val;
+            assertThat(want).isEqualTo(val);
           }
         }
       }
@@ -92,13 +91,13 @@ public class TestReadRecord {
       Variable t = nc.findVariable("T");
       assertThat(t).isNotNull();
       Array<Double> Ta = (Array<Double>) t.readArray();
-      Assert2.assertNearlyEquals(Ta.get(0, 0, 0), 1.0f);
-      Assert2.assertNearlyEquals(Ta.get(1, 1, 1), 10.0f);
+      assertThat(Misc.nearlyEquals(Ta.get(0, 0, 0), 1.0f)).isTrue();
+      assertThat(Misc.nearlyEquals(Ta.get(1, 1, 1), 10.0f)).isTrue();
 
       /* Read subset of the temperature data */
       Ta = (Array<Double>) t.readArray(new Section(new int[3], new int[] {2, 2, 2}));
-      Assert2.assertNearlyEquals(Ta.get(0, 0, 0), 1.0f);
-      Assert2.assertNearlyEquals(Ta.get(1, 1, 1), 10.0f);
+      assertThat(Misc.nearlyEquals(Ta.get(0, 0, 0), 1.0f)).isTrue();
+      assertThat(Misc.nearlyEquals(Ta.get(1, 1, 1), 10.0f)).isTrue();
     }
   }
 
@@ -109,21 +108,21 @@ public class TestReadRecord {
         NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE)) {
       Variable record = ncfile.findVariable("record");
       assertThat(record).isNotNull();
-      assert record instanceof Structure;
+      assertThat(record).isInstanceOf(Structure.class);
       Structure rs = (Structure) record;
-      assert rs.getRank() == 1;
-      assert rs.getDimension(0).getLength() == 2;
+      assertThat(rs.getRank()).isEqualTo(1);
+      assertThat(rs.getDimension(0).getLength()).isEqualTo(2);
 
       /* Read the records */
-      Array rsValues = rs.readArray();
-      assert rsValues.getRank() == 1;
-      assert rsValues.getShape()[0] == 2;
+      Array<?> rsValues = rs.readArray();
+      assertThat(rsValues.getRank()).isEqualTo(1);
+      assertThat(rsValues.getShape()[0]).isEqualTo(2);
 
       /* Read the times: unlimited dimension */
       Variable time = rs.findVariable("time");
       assertThat(time).isNotNull();
       Array<Integer> timeValues = (Array<Integer>) time.readArray();
-      assert (timeValues.get(0) == 6) : timeValues.get(0);
+      assertThat(timeValues.get(0)).isEqualTo(6);
 
       /* Read the relative humidity data */
       Variable rh = rs.findVariable("rh");
@@ -135,7 +134,7 @@ public class TestReadRecord {
         for (int k = 0; k < shape[1]; k++) {
           int want = 4 * j + k + 1;
           int val = rha.get(j, k);
-          assert (want == val) : val;
+          assertThat(want).isEqualTo(val);
         }
       }
     }
@@ -143,26 +142,26 @@ public class TestReadRecord {
 
 
   @Test
-  public void testNC3ReadRecordStrided() throws InvalidRangeException, IOException {
+  public void testNC3ReadRecordStrided() throws Exception {
     // record variable
     try (NetcdfFile ncfile = NetcdfFiles.open(TestDir.cdmLocalTestDataDir + "testWriteRecord.nc", -1, null,
         NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE)) {
       Variable record = ncfile.findVariable("record");
       assertThat(record).isNotNull();
-      assert record instanceof Structure;
+      assertThat(record).isInstanceOf(Structure.class);
       Structure rs = (Structure) record;
-      assert rs.getRank() == 1;
-      assert rs.getDimension(0).getLength() == 2;
+      assertThat(rs.getRank()).isEqualTo(1);
+      assertThat(rs.getDimension(0).getLength()).isEqualTo(2);
 
       /* Read a record */
       Array<StructureData> rsValues = (Array<StructureData>) rs.readArray(new Section("1:1:2"));
-      assert rsValues.getRank() == 1;
-      assert rsValues.getShape()[0] == 1;
+      assertThat(rsValues.getRank()).isEqualTo(1);
+      assertThat(rsValues.getShape()[0]).isEqualTo(1);
 
       StructureData sdata = rsValues.get(0);
       Array<Integer> tdata = (Array<Integer>) sdata.getMemberData("time");
       int t = tdata.get(0);
-      assert t == 18;
+      assertThat(t).isEqualTo(18);
 
       Number t2 = (Number) sdata.getMemberData("time").getScalar();
       assertThat(t2.intValue()).isEqualTo(18);
@@ -170,7 +169,7 @@ public class TestReadRecord {
   }
 
   @Test
-  public void testDatasetAddRecord() throws InvalidRangeException, IOException {
+  public void testDatasetAddRecord() throws Exception {
     String location = TestDir.cdmLocalTestDataDir + "testWriteRecord.nc";
     DatasetUrl durl = DatasetUrl.create(null, location);
     try (NetcdfDataset ncd = NetcdfDatasets.openDataset(durl, NetcdfDataset.getDefaultEnhanceMode(), -1, null,
@@ -179,24 +178,24 @@ public class TestReadRecord {
       // record variable
       Variable record = ncd.findVariable("record");
       assertThat(record).isNotNull();
-      assert record instanceof StructureDS;
+      assertThat(record).isInstanceOf(StructureDS.class);
       StructureDS rs = (StructureDS) record;
-      assert rs.getRank() == 1;
-      assert rs.getDimension(0).getLength() == 2;
+      assertThat(rs.getRank()).isEqualTo(1);
+      assertThat(rs.getDimension(0).getLength()).isEqualTo(2);
 
       /* Read a record */
       Array<StructureData> rsValues = (Array<StructureData>) rs.readArray(new Section("1:1:2"));
-      assert rsValues.getRank() == 1;
-      assert rsValues.getShape()[0] == 1;
+      assertThat(rsValues.getRank()).isEqualTo(1);
+      assertThat(rsValues.getShape()[0]).isEqualTo(1);
 
       StructureData sdata = rsValues.get(0);
       Array<Integer> tdata = (Array<Integer>) sdata.getMemberData("time");
       int t = tdata.getScalar();
-      assert t == 18;
+      assertThat(t).isEqualTo(18);
 
       /* Read the times: unlimited dimension */
       Variable time = rs.findVariable("time");
-      assert time != null;
+      assertThat(time).isNotNull();
       Array<Integer> timeValues = (Array<Integer>) time.readArray();
       int t2 = timeValues.getScalar();
       assertThat(t2).isEqualTo(6);
@@ -205,28 +204,28 @@ public class TestReadRecord {
 
   // This only works on old iosp
   @Test
-  public void testDatasetAddRecordAfter() throws InvalidRangeException, IOException {
+  public void testDatasetAddRecordAfter() throws Exception {
     try (NetcdfDataset ncd = NetcdfDatasets.openDataset(TestDir.cdmLocalTestDataDir + "testWriteRecord.nc", true, null,
         NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE)) {
-      assert (Boolean) ncd.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
+      assertThat((Boolean) ncd.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE)).isTrue();
 
       // record variable
       Variable record = ncd.findVariable("record");
       assertThat(record).isNotNull();
-      assert record instanceof StructureDS;
+      assertThat(record).isInstanceOf(StructureDS.class);
       StructureDS rs = (StructureDS) record;
-      assert rs.getRank() == 1;
-      assert rs.getDimension(0).getLength() == 2;
+      assertThat(rs.getRank()).isEqualTo(1);
+      assertThat(rs.getDimension(0).getLength()).isEqualTo(2);
 
       /* Read a record */
-      Array rsValues = rs.readArray(new Section("1:1:2"));
-      assert rsValues.getRank() == 1;
-      assert rsValues.getShape()[0] == 1;
+      Array<?> rsValues = rs.readArray(new Section("1:1:2"));
+      assertThat(rsValues.getRank()).isEqualTo(1);
+      assertThat(rsValues.getShape()[0]).isEqualTo(1);
 
       StructureData sdata = (StructureData) rsValues.get(rsValues.getIndex());
       Array<Integer> tdata = (Array<Integer>) sdata.getMemberData("time");
       int t = tdata.getScalar();
-      assert t == 18;
+      assertThat(t).isEqualTo(18);
 
       /* Read the times: unlimited dimension */
       Variable time = rs.findVariable("time");

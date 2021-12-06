@@ -8,7 +8,6 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import ucar.array.Array;
 import ucar.array.ArrayType;
-import ucar.array.InvalidRangeException;
 import ucar.array.StructureData;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
@@ -21,7 +20,7 @@ import static com.google.common.truth.Truth.assertThat;
 public class TestStructureIterator {
 
   @Test
-  public void testStructureIterator() throws IOException, InvalidRangeException {
+  public void testStructureIterator() throws IOException {
     try (NetcdfFile ncfile = NetcdfFiles.open(TestDir.cdmUnitTestDir + "ft/station/Surface_METAR_20080205_0000.nc", -1,
         null, NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE)) {
 

@@ -21,6 +21,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Formatter;
 
+import static com.google.common.truth.Truth.assertThat;
+
 @Category(NeedsCdmUnitTest.class)
 public class TestMCollection {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
@@ -46,7 +48,7 @@ public class TestMCollection {
       int count = 0;
       for (MFile mfile : dcm.getFilesSorted()) {
         System.out.printf("%s%n", mfile);
-        assert mfile.getName().equals("pwat.gdas.199612.grb2");
+        assertThat(mfile.getName()).isEqualTo("pwat.gdas.199612.grb2");
         count++;
       }
       assert count == 1;
@@ -76,9 +78,9 @@ public class TestMCollection {
           System.out.printf("  %s%n", mfile);
           count++;
         }
-        assert count == 12 : count;
+        assertThat(count).isEqualTo(12);
       }
-      assert countP == 34 : countP;
+      assertThat(countP).isEqualTo(34);
     }
 
   }

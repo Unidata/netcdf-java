@@ -57,7 +57,7 @@ public class TestAggUnsignedByte {
    * @throws InvalidRangeException
    */
   @Test
-  public void testIsUnsignedReadSection() throws IOException, InvalidRangeException {
+  public void testIsUnsignedReadSection() throws Exception {
     // this worked as of 4.6.7, so no bug here...
     // assert v.isUnsigned();
 

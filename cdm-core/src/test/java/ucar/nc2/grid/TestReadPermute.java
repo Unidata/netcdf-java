@@ -19,7 +19,7 @@ import static com.google.common.truth.Truth.assertThat;
 public class TestReadPermute {
 
   @Test
-  public void testReadPermute() throws InvalidRangeException {
+  public void testReadPermute() throws Exception {
     Formatter errlog = new Formatter();
     try (GridDataset dataset =
         GridDatasetFactory.openGridDataset(TestDir.cdmLocalTestDataDir + "permuteTest.nc", errlog)) {
@@ -51,9 +51,6 @@ public class TestReadPermute {
       // doRead2(dataset, "xt");
       // doRead2(dataset, "ty");
       // doRead2(dataset, "tx");
-
-    } catch (IOException e) {
-      assert false : e.getMessage();
     }
 
     System.out.println("*****************Test Read done");

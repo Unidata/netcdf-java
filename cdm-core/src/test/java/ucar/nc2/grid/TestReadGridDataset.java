@@ -19,14 +19,13 @@ import java.util.List;
 
 import static com.google.common.truth.Truth.assertThat;
 import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.fail;
 
 /** Test reading {@link GridDataset} */
 public class TestReadGridDataset {
 
   @Category(NeedsCdmUnitTest.class)
   @Test
-  public void readGridOneVertCoord() throws IOException, InvalidRangeException {
+  public void readGridOneVertCoord() throws Exception {
     String filename = TestDir.cdmUnitTestDir + "ft/grid/namExtract/20060926_0000.nc";
     readGrid(filename, "Relative_humidity_height_above_ground", ImmutableList.of(2, 1, 103, 108),
         "time height_above_ground2 y x", false, 2, "hours since 2006-09-26T00:00Z", "2006-09-26T03:00Z",
@@ -34,7 +33,7 @@ public class TestReadGridDataset {
   }
 
   @Test
-  public void readGridRegularTime() throws IOException, InvalidRangeException {
+  public void readGridRegularTime() throws Exception {
     String filename = TestDir.cdmLocalTestDataDir + "ncml/fmrc/GFS_Puerto_Rico_191km_20090729_0000.nc";
     readGrid(filename, "Temperature_isobaric", ImmutableList.of(20, 6, 39, 45), "time isobaric1 y x", false, 20,
         "hours since 2009-07-29T00:00Z", "2009-07-29T12:00Z", "2009-08-08T00:00Z", "2009-08-02T12:00:00Z", 700.0, 700.0,
@@ -42,7 +41,7 @@ public class TestReadGridDataset {
   }
 
   @Test
-  public void readGridIrregularTime() throws IOException, InvalidRangeException {
+  public void readGridIrregularTime() throws Exception {
     // TODO "1960-01-01T00:00:00Z" in mixed gregorian is now "1960-01-03T00:00Z" in iso, so, lost 3 days ??
     String filename = TestDir.cdmLocalTestDataDir + "ncml/nc/cldc.mean.nc";
     readGrid(filename, "cldc", ImmutableList.of(456, 21, 360), "time lat lon", true, 456,
@@ -52,7 +51,7 @@ public class TestReadGridDataset {
 
   @Category(NeedsCdmUnitTest.class)
   @Test
-  public void testNoTimeAxis() throws IOException, InvalidRangeException {
+  public void testNoTimeAxis() throws Exception {
     String filename = TestDir.cdmUnitTestDir + "conventions/coards/inittest24.QRIDV07200.ncml";
     readGrid(filename, "QR", ImmutableList.of(150, 50, 50), "SLVL SLAT SLON", true, 0, "", "", "", null, 725.0, 725.0,
         new int[] {1, 50, 50});
@@ -61,7 +60,7 @@ public class TestReadGridDataset {
   @Category(NeedsCdmUnitTest.class)
   @Test
   @Ignore("valtime not monotonic")
-  public void testDependentAxis() throws IOException, InvalidRangeException {
+  public void testDependentAxis() throws Exception {
     String filename = TestDir.cdmUnitTestDir + "conventions/nuwg/2003021212_avn-x.nc";
     readGrid(filename, "T", ImmutableList.of(15, 12, 73, 73), "valtime level lat lon", true, 15,
         "hours since 1992-01-01T00:00Z", "2003-02-13T18:00Z", "2003-02-14T18:00Z", "2003-02-14T06:00:00Z", 725.0, 700.0,
@@ -71,7 +70,7 @@ public class TestReadGridDataset {
   @Test
   @Category(NeedsCdmUnitTest.class)
   @Ignore("Cant read swath")
-  public void testSwath() throws IOException, InvalidRangeException {
+  public void testSwath() throws Exception {
     String filename =
         TestDir.cdmUnitTestDir + "formats/hdf4/AIRS.2003.01.24.116.L2.RetStd_H.v5.0.14.0.G07295101113.hdf";
     readGrid(filename, "T", ImmutableList.of(15, 12, 73, 73), "valtime level lat lon", true, 15,

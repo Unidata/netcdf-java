@@ -45,7 +45,7 @@ public class TestNcMLStrides extends TestCase {
     ncfile.close();
   }
 
-  public void testStride() throws IOException, InvalidRangeException {
+  public void testStride() throws Exception {
     System.out.println("ncfile opened = " + location + "\n" + ncfile);
     Variable time = ncfile.findVariable("time");
 

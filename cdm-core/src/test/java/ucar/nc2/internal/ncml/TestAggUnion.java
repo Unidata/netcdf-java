@@ -14,15 +14,14 @@ import org.slf4j.LoggerFactory;
 import ucar.array.Array;
 import ucar.array.ArrayType;
 import ucar.array.Arrays;
-import ucar.array.InvalidRangeException;
 import ucar.array.Section;
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.VariableDS;
+import ucar.nc2.util.Misc;
 import ucar.nc2.write.NcdumpArray;
-import ucar.unidata.util.test.Assert2;
 
 import static com.google.common.truth.Truth.assertThat;
 
@@ -209,9 +208,9 @@ public class TestAggUnion {
     assert data.getRank() == 1;
     assert data.getSize() == 3;
     assert data.getShape()[0] == 3;
-    Assert2.assertNearlyEquals(data.get(0).doubleValue(), 41.0);
-    Assert2.assertNearlyEquals(data.get(1).doubleValue(), 40.0);
-    Assert2.assertNearlyEquals(data.get(2).doubleValue(), 39.0);
+    assertThat(Misc.nearlyEquals(data.get(0).doubleValue(), 41.0)).isTrue();
+    assertThat(Misc.nearlyEquals(data.get(1).doubleValue(), 40.0)).isTrue();
+    assertThat(Misc.nearlyEquals(data.get(2).doubleValue(), 39.0)).isTrue();
   }
 
   @Test
@@ -259,7 +258,7 @@ public class TestAggUnion {
   }
 
   @Test
-  public void testReadSlice() throws IOException, InvalidRangeException {
+  public void testReadSlice() throws Exception {
     Variable v = ncfile.findVariable("ReletiveHumidity");
     int[] origin = new int[3];
     int[] shape = {2, 3, 1};
@@ -279,7 +278,7 @@ public class TestAggUnion {
   }
 
   @Test
-  public void testReadSlice2() throws IOException, InvalidRangeException {
+  public void testReadSlice2() throws Exception {
     Variable v = ncfile.findVariable("ReletiveHumidity");
     int[] origin = new int[3];
     int[] shape = {2, 1, 3};

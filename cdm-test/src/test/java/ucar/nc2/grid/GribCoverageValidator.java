@@ -21,11 +21,13 @@ import ucar.nc2.grib.grib2.Grib2Record;
 import ucar.nc2.grib.grib2.Grib2RecordScanner;
 import ucar.nc2.grib.grib2.Grib2Utils;
 import ucar.nc2.grib.grib2.table.Grib2Tables;
+import ucar.nc2.util.Misc;
 import ucar.unidata.io.RandomAccessFile;
-import ucar.unidata.util.test.Assert2;
 
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
+
+import static com.google.common.truth.Truth.assertThat;
 
 /** internal class for debugging. */
 public class GribCoverageValidator implements GribDataValidator {
@@ -63,7 +65,7 @@ public class GribCoverageValidator implements GribDataValidator {
       Assert.assertTrue("time coord lower", tinv[0] <= timeOffset); // lower <= time
       Assert.assertTrue("time coord lower", tinv[1] >= timeOffset); // upper >= time
     } else {
-      Assert2.assertNearlyEquals(timeOffset, ptime.getForecastTime());
+      assertThat(Misc.nearlyEquals(timeOffset, ptime.getForecastTime())).isTrue();
     }
 
     // vert
@@ -79,14 +81,14 @@ public class GribCoverageValidator implements GribDataValidator {
         Assert.assertTrue("vert coord upper", upper >= wantVert); // upper >= vert
 
       } else {
-        Assert2.assertNearlyEquals(lev1, wantVert);
+        assertThat(Misc.nearlyEquals(lev1, wantVert)).isTrue();
       }
     }
 
     // ens
     Number wantEns = coords.getEnsCoord();
     if (wantEns != null) {
-      Assert2.assertNearlyEquals(pds.getPerturbationNumber(), wantEns.doubleValue());
+      assertThat(Misc.nearlyEquals(pds.getPerturbationNumber(), wantEns.doubleValue())).isTrue();
     }
 
   }
@@ -136,18 +138,18 @@ public class GribCoverageValidator implements GribDataValidator {
       // double upper = Math.max(level1val, level2val);
       // Assert.assertTrue("vert coord lower", lower <= wantVert); // lower <= vert
       // Assert.assertTrue("vert coord upper", upper >= wantVert); // upper >= vert
-      Assert2.assertNearlyEquals(vertCoordIntv.start(), level1val, 1e-6);
-      Assert2.assertNearlyEquals(vertCoordIntv.end(), level2val, 1e-6);
+      assertThat(Misc.nearlyEquals(vertCoordIntv.start(), level1val, 1e-6)).isTrue();
+      assertThat(Misc.nearlyEquals(vertCoordIntv.end(), level2val, 1e-6)).isTrue();
 
     } else if (vertCoord != null) {
-      Assert2.assertNearlyEquals(vertCoord, level1val, 1e-6);
+      assertThat(Misc.nearlyEquals(vertCoord, level1val, 1e-6)).isTrue();
     }
 
     // ens
     Number wantEns = coords.getEnsCoord();
     if (wantEns != null) {
       Grib2Pds.PdsEnsemble pdse = (Grib2Pds.PdsEnsemble) pds;
-      Assert2.assertNearlyEquals(wantEns.doubleValue(), pdse.getPerturbationNumber());
+      assertThat(Misc.nearlyEquals(wantEns.doubleValue(), pdse.getPerturbationNumber())).isTrue();
     }
   }
 }

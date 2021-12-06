@@ -40,7 +40,7 @@ public class TestNetcdfFormatUpdater {
   public TemporaryFolder tempFolder = new TemporaryFolder();
 
   @Test
-  public void testOpenExisting() throws IOException, InvalidRangeException {
+  public void testOpenExisting() throws Exception {
     String filename = tempFolder.newFile().getAbsolutePath();
 
     NetcdfFormatWriter.Builder<?> writerb = NetcdfFormatWriter.createNewNetcdf3(filename).setFill(false);

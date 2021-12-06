@@ -12,12 +12,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.array.Array;
 import ucar.array.Arrays;
-import ucar.array.InvalidRangeException;
 import ucar.array.Section;
 import ucar.nc2.*;
 import ucar.nc2.grib.collection.Grib;
 import ucar.nc2.grib.grib1.Grib1RecordScanner;
-import ucar.unidata.util.test.Assert2;
+import ucar.nc2.util.Misc;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
 import java.io.IOException;
@@ -40,7 +39,7 @@ public class TestGribMisc {
     try (NetcdfFile ncfile = NetcdfFiles.open(filename, null)) {
       Variable v = ncfile.findVariable("isobaric");
       float val = (Float) v.readArray().getScalar();
-      Assert2.assertNearlyEquals(val, 92500.0);
+      assertThat(Misc.nearlyEquals(val, 92500.0)).isTrue();
     }
   }
 
@@ -94,8 +93,8 @@ public class TestGribMisc {
       int[] shape = {1, 1, 2};
       Array<Float> vals = (Array<Float>) v.readArray(new Section(origin, shape));
       Iterator<Float> iter = vals.iterator();
-      Assert2.assertNearlyEquals(iter.next(), 0.0);
-      Assert2.assertNearlyEquals(iter.next(), 1.0);
+      assertThat(Misc.nearlyEquals(iter.next(), 0.0)).isTrue();
+      assertThat(Misc.nearlyEquals(iter.next(), 1.0)).isTrue();
     }
   }
 
@@ -117,7 +116,7 @@ public class TestGribMisc {
 
   @Ignore("NCEP may be miscoding. Withdraw unit test until we have more info")
   @Test
-  public void testScanMode() throws IOException, InvalidRangeException {
+  public void testScanMode() throws Exception {
     // Robert.C.Lipschutz@noaa.gov
     // we are setting the value of scanMode to 64, which per GRIB2 Table 3.4 indicates "points scan in the +j
     // direction", and so filling
@@ -157,8 +156,8 @@ public class TestGribMisc {
       Variable v = ncfile.getRootGroup().findVariableByAttribute(Grib.VARIABLE_ID_ATTNAME, "VAR_0-0-0_L1");
       assert v != null : ncfile.getLocation();
       Array<Number> vals = (Array<Number>) Arrays.reduce(v.readArray(new Section("0,:,0")));
-      Assert2.assertNearlyEquals(vals.get(0).doubleValue(), 243.289993);
-      Assert2.assertNearlyEquals(vals.get((int) vals.getSize() - 1).doubleValue(), 242.080002);
+      assertThat(Misc.nearlyEquals(vals.get(0).doubleValue(), 243.289993)).isTrue();
+      assertThat(Misc.nearlyEquals(vals.get((int) vals.getSize() - 1).doubleValue(), 242.080002)).isTrue();
     }
   }
 

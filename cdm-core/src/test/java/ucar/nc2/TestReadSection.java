@@ -5,29 +5,23 @@
 package ucar.nc2;
 
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import ucar.array.Arrays;
-import ucar.array.InvalidRangeException;
 import ucar.array.Range;
 import ucar.array.Section;
 import ucar.array.Array;
 import ucar.unidata.util.test.TestDir;
-import java.io.*;
-import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 
 import static com.google.common.truth.Truth.assertThat;
 
 /** Test reading variable data */
 public class TestReadSection {
-  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @Test
-  public void testReadVariableSection() throws InvalidRangeException, IOException {
+  public void testReadVariableSection() throws Exception {
     try (NetcdfFile ncfile = TestDir.openFileLocal("testWrite.nc")) {
       Variable temp = ncfile.findVariable("temperature");
-      assert (null != temp);
+      assertThat(temp).isNotNull();
 
       int[] origin = {3, 6};
       int[] shape = {12, 17};
@@ -36,29 +30,29 @@ public class TestReadSection {
 
       // read array section
       Array<Number> Asection = (Array<Number>) tempSection.readArray();
-      assert Asection.getRank() == 2;
-      assert shape[0] == Asection.getShape()[0];
-      assert shape[1] == Asection.getShape()[1];
+      assertThat(Asection.getRank()).isEqualTo(2);
+      assertThat(shape[0]).isEqualTo(Asection.getShape()[0]);
+      assertThat(shape[1]).isEqualTo(Asection.getShape()[1]);
 
       // read entire array
       Array<Number> A = (Array<Number>) temp.readArray();
-      assert (A.getRank() == 2);
+      assertThat(A.getRank()).isEqualTo(2);
 
       // compare
       Array<Number> Asection2 = Arrays.section(A, new Section(origin, shape));
-      assert (Asection2.getRank() == 2);
-      assert (shape[0] == Asection2.getShape()[0]);
-      assert (shape[1] == Asection2.getShape()[1]);
+      assertThat(Asection2.getRank()).isEqualTo(2);
+      assertThat(shape[0]).isEqualTo(Asection2.getShape()[0]);
+      assertThat(shape[1]).isEqualTo(Asection2.getShape()[1]);
 
       assertThat(Arrays.equalNumbers(Asection, Asection2)).isTrue();
     }
   }
 
   @Test
-  public void testReadVariableSection2() throws InvalidRangeException, IOException {
+  public void testReadVariableSection2() throws Exception {
     try (NetcdfFile ncfile = TestDir.openFileLocal("testWrite.nc")) {
-      Variable temp = null;
-      assert (null != (temp = ncfile.findVariable("temperature")));
+      Variable temp = ncfile.findVariable("temperature");
+      assertThat(temp).isNotNull();
 
       ArrayList<Range> ranges = new ArrayList<>();
       Range r0 = new Range(3, 14);
@@ -67,29 +61,28 @@ public class TestReadSection {
       ranges.add(r1);
 
       Variable tempSection = temp.section(new Section(ranges));
-      assert tempSection.getRank() == 2;
+      assertThat(tempSection.getRank()).isEqualTo(2);
       int[] vshape = tempSection.getShape();
-      assert r0.length() == vshape[0];
-      assert r1.length() == vshape[1];
+      assertThat(r0.length()).isEqualTo(vshape[0]);
+      assertThat(r1.length()).isEqualTo(vshape[1]);
 
       // read array section
       Array<Number> Asection = (Array<Number>) tempSection.readArray();
-      assert Asection.getRank() == 2;
-      assert r0.length() == Asection.getShape()[0];
-      assert r1.length() == Asection.getShape()[1];
+      assertThat(Asection.getRank()).isEqualTo(2);
+      assertThat(r0.length()).isEqualTo(Asection.getShape()[0]);
+      assertThat(r1.length()).isEqualTo(Asection.getShape()[1]);
 
       // read entire array
       Array<Number> A = (Array<Number>) temp.readArray();
-      assert (A.getRank() == 2);
+      assertThat(A.getRank()).isEqualTo(2);
 
       // compare
       Array<Number> Asection2 = Arrays.section(A, new Section(ranges));
-      assert (Asection2.getRank() == 2);
-      assert (r0.length() == Asection2.getShape()[0]);
-      assert (r1.length() == Asection2.getShape()[1]);
+      assertThat(Asection2.getRank()).isEqualTo(2);
+      assertThat(r0.length()).isEqualTo(Asection2.getShape()[0]);
+      assertThat(r1.length()).isEqualTo(Asection2.getShape()[1]);
 
       assertThat(Arrays.equalNumbers(Asection, Asection2)).isTrue();
-
     }
   }
 }

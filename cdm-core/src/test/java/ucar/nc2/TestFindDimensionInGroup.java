@@ -4,11 +4,12 @@
  */
 package ucar.nc2;
 
-import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.lang.invoke.MethodHandles;
+
+import static com.google.common.truth.Truth.assertThat;
 
 /**
  * @author cwardgar
@@ -59,15 +60,15 @@ public class TestFindDimensionInGroup {
 
     System.out.printf("%s%n", ncFile);
 
-    Assert.assertSame(dim, ncFile.findDimension("dim"));
-    Assert.assertSame(dim, ncFile.findDimension("/dim"));
-    Assert.assertSame(subDim, ncFile.findDimension("subGroup/subDim"));
-    Assert.assertSame(subDim, ncFile.findDimension("/subGroup/subDim"));
+    assertThat(dim == ncFile.findDimension("dim")).isTrue();
+    assertThat(dim == ncFile.findDimension("/dim")).isTrue();
+    assertThat(subDim == ncFile.findDimension("subGroup/subDim")).isTrue();
+    assertThat(subDim == ncFile.findDimension("/subGroup/subDim")).isTrue();
     Group ssg = ncFile.findGroup("subGroup/subsubGroup/");
-    Assert.assertNotNull(ssg);
-    Assert.assertSame(subSubDim.makeFullName(ssg), subSubDim, ncFile.findDimension("subGroup/subsubGroup/subSubDim"));
+    assertThat(ssg).isNotNull();
+    assertThat(subSubDim == ncFile.findDimension("subGroup/subsubGroup/subSubDim")).isTrue();
 
-    Assert.assertNull(ncFile.findDimension("subGroup/nonExistentDim"));
-    Assert.assertNull(ncFile.findDimension("/subGroup/subDim/"));
+    assertThat(ncFile.findDimension("subGroup/nonExistentDim")).isNull();
+    assertThat(ncFile.findDimension("/subGroup/subDim/")).isNull();
   }
 }

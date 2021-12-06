@@ -4,7 +4,6 @@
  */
 package ucar.nc2;
 
-import org.junit.Assert;
 import org.junit.Test;
 import ucar.array.Array;
 import ucar.array.ArrayType;
@@ -127,12 +126,12 @@ public class TestUnsigned {
 
     try (NetcdfDataset ncd = NetcdfDatasets.openNcmlDataset(new StringReader(ncml), null, null)) {
       Variable v = ncd.findVariable("bvar");
-      Assert.assertNotNull(v);
-      Assert.assertEquals(ArrayType.UBYTE, v.getArrayType());
+      assertThat(v).isNotNull();
+      assertThat(ArrayType.UBYTE).isEqualTo(v.getArrayType());
 
       boolean hasSigned = false;
       Array<Byte> data = (Array<Byte>) v.readArray();
-      Assert.assertEquals(ArrayType.BYTE, data.getArrayType());
+      assertThat(ArrayType.BYTE).isEqualTo(data.getArrayType());
 
       // but theres a tricky thing that when one gets as float, it seems to know its unsigned??
       for (byte b : data) {
@@ -140,7 +139,7 @@ public class TestUnsigned {
           hasSigned = true;
         }
       }
-      Assert.assertTrue(hasSigned);
+      assertThat(hasSigned).isTrue();
     }
   }
 

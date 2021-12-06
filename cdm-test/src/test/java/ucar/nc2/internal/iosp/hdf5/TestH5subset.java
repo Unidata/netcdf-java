@@ -81,7 +81,7 @@ public class TestH5subset {
   }
 
   @Test
-  public void test() throws IOException, InvalidRangeException {
+  public void test() throws Exception {
     TestSubsettingUtils.subsetVariables(filename, varName, ntrials);
   }
 

@@ -1,14 +1,12 @@
 package ucar.unidata.geoloc.projection;
 
-import org.junit.Assert;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import ucar.unidata.geoloc.*;
-import java.lang.invoke.MethodHandles;
+
+import static com.google.common.truth.Truth.assertThat;
 
 public class TestSinusoidal {
-  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+  private static final double TOLERANCE = 0.1;
 
   // If we want all of the x-coords in the geographic region to be positive, use this.
   // Will be roughly 20015.8.
@@ -34,10 +32,10 @@ public class TestSinusoidal {
     ProjectionRect projBB = new ProjectionRect(upperLeft, lowerRight);
     LatLonRect latLonBB = proj.projToLatLonBB(projBB);
 
-    Assert.assertEquals(-25.84, latLonBB.getLonMin(), 0.1);
-    Assert.assertEquals(35.0, latLonBB.getLonMax(), 0.1);
-    Assert.assertEquals(-40.0, latLonBB.getLatMin(), 0.1);
-    Assert.assertEquals(10.0, latLonBB.getLatMax(), 0.1);
+    assertThat(latLonBB.getLonMin()).isWithin(TOLERANCE).of(-25.84);
+    assertThat(latLonBB.getLonMax()).isWithin(TOLERANCE).of(35.0);
+    assertThat(latLonBB.getLatMin()).isWithin(TOLERANCE).of(-40.0);
+    assertThat(latLonBB.getLatMax()).isWithin(TOLERANCE).of(10.0);
   }
 
   @Test // Reproduces issue from ETO-719860
@@ -55,10 +53,10 @@ public class TestSinusoidal {
     LatLonRect latLonBB = proj.projToLatLonBB(projBB);
 
     // Values come from visual inspection in ToolsUI->Grid Viewer
-    Assert.assertEquals(140.0, latLonBB.getLonMin(), 0.1);
-    Assert.assertEquals(180.0, latLonBB.getLonMax(), 0.1);
-    Assert.assertEquals(60.0, latLonBB.getLatMin(), 0.1);
-    Assert.assertEquals(67.11, latLonBB.getLatMax(), 0.1);
+    assertThat(latLonBB.getLonMin()).isWithin(TOLERANCE).of(140.0);
+    assertThat(latLonBB.getLonMax()).isWithin(TOLERANCE).of(180);
+    assertThat(latLonBB.getLatMin()).isWithin(TOLERANCE).of(60);
+    assertThat(latLonBB.getLatMax()).isWithin(TOLERANCE).of(67.11);
   }
 
   @Test
@@ -77,10 +75,10 @@ public class TestSinusoidal {
     ProjectionRect projBB = new ProjectionRect(upperLeft, lowerRight);
     LatLonRect latLonBB = proj.projToLatLonBB(projBB);
 
-    Assert.assertEquals(-180.0, latLonBB.getLonMin(), 0.1);
-    Assert.assertEquals(-35.761, latLonBB.getLonMax(), 0.1);
-    Assert.assertEquals(-79.627, latLonBB.getLatMin(), 0.1);
-    Assert.assertEquals(-25.002, latLonBB.getLatMax(), 0.1);
+    assertThat(latLonBB.getLonMin()).isWithin(TOLERANCE).of(-180);
+    assertThat(latLonBB.getLonMax()).isWithin(TOLERANCE).of(-35.761);
+    assertThat(latLonBB.getLatMin()).isWithin(TOLERANCE).of(-79.627);
+    assertThat(latLonBB.getLatMax()).isWithin(TOLERANCE).of(-25.002);
   }
 
   @Test
@@ -99,10 +97,10 @@ public class TestSinusoidal {
     ProjectionRect projBB = new ProjectionRect(upperLeft, lowerRight);
     LatLonRect latLonBB = proj.projToLatLonBB(projBB);
 
-    Assert.assertEquals(138.62, latLonBB.getLonMin(), 0.1);
-    Assert.assertEquals(180.0, latLonBB.getLonMax(), 0.1);
-    Assert.assertEquals(-39.224, latLonBB.getLatMin(), 0.1);
-    Assert.assertEquals(-20.037, latLonBB.getLatMax(), 0.1);
+    assertThat(latLonBB.getLonMin()).isWithin(TOLERANCE).of(138.62);
+    assertThat(latLonBB.getLonMax()).isWithin(TOLERANCE).of(180.0);
+    assertThat(latLonBB.getLatMin()).isWithin(TOLERANCE).of(-39.224);
+    assertThat(latLonBB.getLatMax()).isWithin(TOLERANCE).of(-20.037);
   }
 
   @Test
@@ -121,10 +119,10 @@ public class TestSinusoidal {
     ProjectionRect projBB = new ProjectionRect(upperLeft, lowerRight);
     LatLonRect latLonBB = proj.projToLatLonBB(projBB);
 
-    Assert.assertEquals(-180.0, latLonBB.getLonMin(), 0.1);
-    Assert.assertEquals(-109.99, latLonBB.getLonMax(), 0.1);
-    Assert.assertEquals(39.985, latLonBB.getLatMin(), 0.1);
-    Assert.assertEquals(56.465, latLonBB.getLatMax(), 0.1);
+    assertThat(latLonBB.getLonMin()).isWithin(TOLERANCE).of(-180);
+    assertThat(latLonBB.getLonMax()).isWithin(TOLERANCE).of(-109.99);
+    assertThat(latLonBB.getLatMin()).isWithin(TOLERANCE).of(39.985);
+    assertThat(latLonBB.getLatMax()).isWithin(TOLERANCE).of(56.465);
   }
 
   @Test
@@ -146,10 +144,10 @@ public class TestSinusoidal {
     ProjectionRect projBB = new ProjectionRect(lowerLeft, upperRight);
     LatLonRect latLonBB = proj.projToLatLonBB(projBB);
 
-    Assert.assertEquals(-180.0, latLonBB.getLonMin(), 0.1);
-    Assert.assertEquals(180.0, latLonBB.getLonMax(), 0.1);
-    Assert.assertEquals(75.0, latLonBB.getLatMin(), 0.1);
-    Assert.assertEquals(85.0, latLonBB.getLatMax(), 0.1);
+    assertThat(latLonBB.getLonMin()).isWithin(TOLERANCE).of(-180);
+    assertThat(latLonBB.getLonMax()).isWithin(TOLERANCE).of(180);
+    assertThat(latLonBB.getLatMin()).isWithin(TOLERANCE).of(75);
+    assertThat(latLonBB.getLatMax()).isWithin(TOLERANCE).of(85);
   }
 
   @Test
@@ -163,10 +161,10 @@ public class TestSinusoidal {
     ProjectionRect projBB = new ProjectionRect(lowerLeft, upperRight);
     LatLonRect latLonBB = proj.projToLatLonBB(projBB);
 
-    Assert.assertEquals(-180.0, latLonBB.getLonMin(), 0.1);
-    Assert.assertEquals(180.0, latLonBB.getLonMax(), 0.1);
-    Assert.assertEquals(75.0, latLonBB.getLatMin(), 0.1);
-    Assert.assertEquals(85.0, latLonBB.getLatMax(), 0.1);
+    assertThat(latLonBB.getLonMin()).isWithin(TOLERANCE).of(-180);
+    assertThat(latLonBB.getLonMax()).isWithin(TOLERANCE).of(180);
+    assertThat(latLonBB.getLatMin()).isWithin(TOLERANCE).of(75);
+    assertThat(latLonBB.getLatMax()).isWithin(TOLERANCE).of(85);
   }
 
   @Test
@@ -180,10 +178,10 @@ public class TestSinusoidal {
     ProjectionRect projBB = new ProjectionRect(lowerLeft, upperRight);
     LatLonRect latLonBB = proj.projToLatLonBB(projBB);
 
-    Assert.assertEquals(-180.0, latLonBB.getLonMin(), 0.1);
-    Assert.assertEquals(180.0, latLonBB.getLonMax(), 0.1);
-    Assert.assertEquals(75.0, latLonBB.getLatMin(), 0.1);
-    Assert.assertEquals(90.0, latLonBB.getLatMax(), 0.1);
+    assertThat(latLonBB.getLonMin()).isWithin(TOLERANCE).of(-180);
+    assertThat(latLonBB.getLonMax()).isWithin(TOLERANCE).of(180);
+    assertThat(latLonBB.getLatMin()).isWithin(TOLERANCE).of(75);
+    assertThat(latLonBB.getLatMax()).isWithin(TOLERANCE).of(90);
   }
 
   @Test
@@ -198,10 +196,10 @@ public class TestSinusoidal {
     ProjectionRect projBB = new ProjectionRect(lowerLeft, upperRight);
     LatLonRect latLonBB = proj.projToLatLonBB(projBB);
 
-    Assert.assertEquals(-180.0, latLonBB.getLonMin(), 0.1);
-    Assert.assertEquals(180.0, latLonBB.getLonMax(), 0.1);
-    Assert.assertEquals(75.0, latLonBB.getLatMin(), 0.1);
-    Assert.assertEquals(90.0, latLonBB.getLatMax(), 0.1);
+    assertThat(latLonBB.getLonMin()).isWithin(TOLERANCE).of(-180);
+    assertThat(latLonBB.getLonMax()).isWithin(TOLERANCE).of(180);
+    assertThat(latLonBB.getLatMin()).isWithin(TOLERANCE).of(75);
+    assertThat(latLonBB.getLatMax()).isWithin(TOLERANCE).of(90);
   }
 
   @Test
@@ -220,10 +218,10 @@ public class TestSinusoidal {
     ProjectionRect projBB = new ProjectionRect(upperLeft, lowerRight);
     LatLonRect latLonBB = proj.projToLatLonBB(projBB);
 
-    Assert.assertEquals(-180.0, latLonBB.getLonMin(), 0.1);
-    Assert.assertEquals(180.0, latLonBB.getLonMax(), 0.1);
-    Assert.assertEquals(-90.0, latLonBB.getLatMin(), 0.1);
-    Assert.assertEquals(-60.0, latLonBB.getLatMax(), 0.1);
+    assertThat(latLonBB.getLonMin()).isWithin(TOLERANCE).of(-180);
+    assertThat(latLonBB.getLonMax()).isWithin(TOLERANCE).of(180);
+    assertThat(latLonBB.getLatMin()).isWithin(TOLERANCE).of(-90);
+    assertThat(latLonBB.getLatMax()).isWithin(TOLERANCE).of(-60);
   }
 
   @Test
@@ -236,7 +234,7 @@ public class TestSinusoidal {
     ProjectionRect projBB = new ProjectionRect(upperLeft, lowerRight);
     LatLonRect latLonBB = proj.projToLatLonBB(projBB);
 
-    Assert.assertEquals(LatLonRect.INVALID, latLonBB);
+    assertThat(latLonBB).isEqualTo(LatLonRect.INVALID);
   }
 
   @Test
@@ -249,9 +247,9 @@ public class TestSinusoidal {
     ProjectionRect projBB = new ProjectionRect(lowerLeft, upperRight);
     LatLonRect latLonBB = proj.projToLatLonBB(projBB);
 
-    Assert.assertEquals(-180.0, latLonBB.getLonMin(), 0.1);
-    Assert.assertEquals(180.0, latLonBB.getLonMax(), 0.1);
-    Assert.assertEquals(-90.0, latLonBB.getLatMin(), 0.1);
-    Assert.assertEquals(90.0, latLonBB.getLatMax(), 0.1);
+    assertThat(latLonBB.getLonMin()).isWithin(TOLERANCE).of(-180);
+    assertThat(latLonBB.getLonMax()).isWithin(TOLERANCE).of(180);
+    assertThat(latLonBB.getLatMin()).isWithin(TOLERANCE).of(-90);
+    assertThat(latLonBB.getLatMax()).isWithin(TOLERANCE).of(90);
   }
 }
