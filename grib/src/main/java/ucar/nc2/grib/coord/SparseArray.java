@@ -6,6 +6,8 @@ package ucar.nc2.grib.coord;
 
 import java.util.Arrays;
 import javax.annotation.Nullable;
+
+import com.google.common.base.Preconditions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import javax.annotation.concurrent.Immutable;
@@ -67,7 +69,7 @@ public class SparseArray<T> {
   }
 
   private int calcIndex(int... index) {
-    assert index.length == shape.length;
+    Preconditions.checkArgument(index.length == shape.length);
     int result = 0;
     for (int ii = 0; ii < index.length; ii++)
       result += index[ii] * stride[ii];
@@ -240,10 +242,11 @@ public class SparseArray<T> {
     }
 
     int calcIndex(int... index) {
-      assert index.length == shape.length;
+      Preconditions.checkArgument(index.length == shape.length);
       int result = 0;
-      for (int ii = 0; ii < index.length; ii++)
+      for (int ii = 0; ii < index.length; ii++) {
         result += index[ii] * stride[ii];
+      }
       return result;
     }
 

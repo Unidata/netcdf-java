@@ -5,6 +5,7 @@
 
 package ucar.nc2.grib.grib2.table;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import java.nio.charset.StandardCharsets;
 import ucar.nc2.grib.coord.TimeCoordIntvDateValue;
@@ -120,7 +121,7 @@ class CfsrLocalTables extends NcepLocalTables {
     }
 
     int[] intv = getForecastTimeIntervalOffset(gr);
-    assert intv != null;
+    Preconditions.checkNotNull(intv);
     int intvLen = intv[1] - intv[0];
 
     int timeUnitOrg = pds.getTimeUnit();

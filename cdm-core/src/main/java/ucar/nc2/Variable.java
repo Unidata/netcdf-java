@@ -417,8 +417,8 @@ public class Variable implements ProxyReader, Comparable<Variable> {
   public Variable reduce(List<Dimension> dims) {
     List<Integer> dimIdx = new ArrayList<>(dims.size());
     for (Dimension d : dims) {
-      assert dimensions.contains(d);
-      assert d.getLength() == 1;
+      Preconditions.checkArgument(dimensions.contains(d));
+      Preconditions.checkArgument(d.getLength() == 1);
       dimIdx.add(dimensions.indexOf(d));
     }
 
@@ -1006,7 +1006,7 @@ public class Variable implements ProxyReader, Comparable<Variable> {
         } else if (len == 0) {
           list.add(Range.EMPTY);
         } else {
-          assert d.isVariableLength();
+          Preconditions.checkArgument(d.isVariableLength());
           list.add(Range.VLEN);
         }
       }

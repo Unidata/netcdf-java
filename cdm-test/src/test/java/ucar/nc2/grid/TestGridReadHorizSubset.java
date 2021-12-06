@@ -51,7 +51,6 @@ public class TestGridReadHorizSubset {
 
       ProjectionRect expected =
           new ProjectionRect(ProjectionPoint.create(-2129.568880, -1793.004131), 4297.845286, 3308.388526);
-      // assert prect.nearlyEquals(expected);
       assertThat(prect.nearlyEquals(expected)).isTrue();
 
       LatLonRect bb2 = p.projToLatLonBB(prect);

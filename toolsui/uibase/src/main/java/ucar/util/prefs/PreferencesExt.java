@@ -361,9 +361,7 @@ public class PreferencesExt extends java.util.prefs.AbstractPreferences implemen
   /**
    * Empty, never used implementation of AbstractPreferences.flushSpi().
    */
-  protected void flushSpi() {
-    // assert false;
-  }
+  protected void flushSpi() {}
 
   /*
    * Gets the value with this keyName, if not found, look in storedDefaults.
@@ -448,9 +446,7 @@ public class PreferencesExt extends java.util.prefs.AbstractPreferences implemen
    * If this node throws a BackingStoreException, the exception will propagate
    * out beyond the enclosing sync() invocation.
    */
-  protected void syncSpi() {
-    // assert false;
-  }
+  protected void syncSpi() {}
 
   ////////////////////////////////////////////////////////////////////////////
   // low level

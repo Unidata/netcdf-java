@@ -4,6 +4,7 @@
  */
 package ucar.ui.gis;
 
+import com.google.common.base.Preconditions;
 import ucar.ui.gis.GisFeatureRendererMulti.FeatureMD.Part;
 import ucar.unidata.geoloc.*;
 import ucar.ui.prefs.Debug;
@@ -78,7 +79,7 @@ public abstract class GisFeatureRendererMulti extends GisFeatureRenderer {
 
     if (featSetList == null) {
       initFeatSetList();
-      assert !featSetList.isEmpty();
+      Preconditions.checkArgument(!featSetList.isEmpty());
     }
 
     // which featureSet should we ue?

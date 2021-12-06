@@ -5,6 +5,8 @@
 package ucar.nc2.internal.iosp.hdf4;
 
 import java.nio.charset.StandardCharsets;
+
+import com.google.common.base.Preconditions;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.output.XMLOutputter;
@@ -115,7 +117,7 @@ public class ODLparser {
   Element startGroup(Element parent, String line) {
     StringTokenizer stoke = new StringTokenizer(line, "=");
     String toke = stoke.nextToken();
-    assert toke.equals("GROUP");
+    Preconditions.checkArgument(toke.equals("GROUP"));
     String name = stoke.nextToken();
     Element group = new Element(name);
     parent.addContent(group);
@@ -125,17 +127,17 @@ public class ODLparser {
   void endGroup(Element current, String line) {
     StringTokenizer stoke = new StringTokenizer(line, "=");
     String toke = stoke.nextToken();
-    assert toke.equals("END_GROUP");
+    Preconditions.checkArgument(toke.equals("END_GROUP"));
     String name = stoke.nextToken();
     if (debug)
       System.out.println(line + " -> " + current);
-    assert name.equals(current.getName());
+    Preconditions.checkArgument(name.equals(current.getName()));
   }
 
   Element startObject(Element parent, String line) {
     StringTokenizer stoke = new StringTokenizer(line, "=");
     String toke = stoke.nextToken();
-    assert toke.equals("OBJECT");
+    Preconditions.checkArgument(toke.equals("OBJECT"));
     String name = stoke.nextToken();
     Element obj = new Element(name);
     parent.addContent(obj);
@@ -145,11 +147,11 @@ public class ODLparser {
   void endObject(Element current, String line) {
     StringTokenizer stoke = new StringTokenizer(line, "=");
     String toke = stoke.nextToken();
-    assert toke.equals("END_OBJECT");
+    Preconditions.checkArgument(toke.equals("END_OBJECT"));
     String name = stoke.nextToken();
     if (debug)
       System.out.println(line + " -> " + current);
-    assert name.equals(current.getName()) : name + " !+ " + current.getName();
+    Preconditions.checkArgument(name.equals(current.getName()), name + " !+ " + current.getName());
   }
 
   void addField(Element parent, String line) {

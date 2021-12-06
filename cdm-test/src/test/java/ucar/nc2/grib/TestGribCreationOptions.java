@@ -4,11 +4,8 @@
  */
 package ucar.nc2.grib;
 
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import ucar.nc2.Dimension;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset;
@@ -16,11 +13,11 @@ import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.grib.collection.GribCdmIndex;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
-import java.lang.invoke.MethodHandles;
+
+import static com.google.common.truth.Truth.assertThat;
 
 @Category(NeedsCdmUnitTest.class)
 public class TestGribCreationOptions {
-  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @Test
   public void testTimeUnitOption() throws Exception {
@@ -47,9 +44,9 @@ public class TestGribCreationOptions {
     String dataset = TestDir.cdmUnitTestDir + "gribCollections/hrrr/DewpointTempFromGsdHrrrrConus3surface.grib2";
     try (NetcdfDataset ds = NetcdfDatasets.openDataset(dataset)) {
       Variable v = ds.findVariable("DPT_P0_L103_GLC0_height_above_ground");
-      Assert.assertNotNull("DPT_P0_L103_GLC0_height_above_ground", v);
+      assertThat(v).isNotNull();
       Dimension d = v.getDimension(0);
-      Assert.assertEquals(57, d.getLength());
+      assertThat(d.getLength()).isEqualTo(57);
     }
 
   }

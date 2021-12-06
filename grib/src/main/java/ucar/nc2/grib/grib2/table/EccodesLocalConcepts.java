@@ -1,5 +1,6 @@
 package ucar.nc2.grib.grib2.table;
 
+import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableListMultimap;
@@ -257,8 +258,8 @@ class EccodesLocalConcepts {
     }
 
     void merge(LocalConceptPart part) {
-      assert (this.paramName.equals(part.paramName));
-      assert (this.org.atts.equals(part.atts));
+      Preconditions.checkArgument(this.paramName.equals(part.paramName));
+      Preconditions.checkArgument(this.org.atts.equals(part.atts));
       extractValue(part);
     }
 

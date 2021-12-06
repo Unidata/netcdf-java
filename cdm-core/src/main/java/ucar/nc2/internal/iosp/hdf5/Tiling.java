@@ -4,6 +4,8 @@
  */
 package ucar.nc2.internal.iosp.hdf5;
 
+import com.google.common.base.Preconditions;
+
 import java.util.Formatter;
 
 /**
@@ -16,7 +18,6 @@ import java.util.Formatter;
  * Each tile has the same size, given by tileSize.
  */
 public class Tiling {
-
   private final int rank;
   private final int[] shape; // overall data shape - may be larger than actual variable shape
   private final int[] chunk; // actual storage is in this shape
@@ -29,14 +30,16 @@ public class Tiling {
    * @param chunk tile size. may be larger than the shape.
    */
   public Tiling(int[] shape, int[] chunk) {
-    assert shape.length <= chunk.length; // convenient to allow tileSize to have (an) extra dimension at the end
-                                         // to accomodate hdf5 storage, which has the element size
+    // convenient to allow tileSize to have (an) extra dimension at the end
+    // to accomodate hdf5 storage, which has the element size
+    Preconditions.checkArgument(shape.length <= chunk.length);
+
     this.rank = shape.length;
     this.chunk = chunk;
     this.shape = new int[rank];
-    for (int i = 0; i < rank; i++)
+    for (int i = 0; i < rank; i++) {
       this.shape[i] = Math.max(shape[i], chunk[i]);
-    // int[] tile = tile(this.shape);
+    }
 
     int[] tileSize = new int[rank];
     for (int i = 0; i < rank; i++) {
@@ -65,7 +68,6 @@ public class Tiling {
    * @return corresponding tile
    */
   public int[] tile(int[] pt) {
-    // assert pt.length == rank;
     int useRank = Math.min(rank, pt.length); // eg varlen (datatype 9) has mismatch
     int[] tile = new int[useRank];
     for (int i = 0; i < useRank; i++) {

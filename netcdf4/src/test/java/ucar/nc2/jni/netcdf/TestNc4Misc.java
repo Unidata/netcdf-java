@@ -75,13 +75,13 @@ public class TestNc4Misc {
 
     File resultFile = new File(location);
     logger.debug("Wrote data file {} size={}", location, resultFile.length());
-    assert resultFile.length() < 100 * 1000 : resultFile.length();
+    assertThat(resultFile.length()).isLessThan(100 * 1000);
 
     try (NetcdfFile file = NetcdfFiles.open(location)) {
       Variable time = file.findVariable("time");
       Attribute chunk = time.findAttribute(CDM.CHUNK_SIZES);
-      assert chunk != null;
-      assert chunk.getNumericValue().equals(1024) : "chunk failed= " + chunk;
+      assertThat(chunk).isNotNull();
+      assertThat(chunk.getNumericValue()).isEqualTo(1024);
     }
   }
 

@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.util.Formatter;
 import org.jdom2.Element;
-import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -23,6 +22,8 @@ import ucar.nc2.internal.util.CompareNetcdf2;
 import ucar.nc2.write.NcmlWriter;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
+
+import static com.google.common.truth.Truth.assertWithMessage;
 
 /** TestWrite NcML, read back and compare with original. */
 @Category(NeedsCdmUnitTest.class)
@@ -105,7 +106,7 @@ public class TestNcmlWriteAndCompareProblem {
         System.out.printf("--Compare %s is OK (useRecords=%s explicit=%s openDataset=%s compareData=%s)%n",
             durl.getTrueurl(), useRecords, explicit, openDataset, compareData);
       }
-      Assert.assertTrue(durl.getTrueurl(), ok);
+      assertWithMessage(durl.getTrueurl()).that(ok).isTrue();
     } finally {
       org.close();
       copy.close();

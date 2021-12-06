@@ -107,7 +107,7 @@ public class IndexChunkerTiled {
 
     // sanity checks
     long nchunks = Arrays.computeSize(shape);
-    assert nchunks * nelems == total;
+    Preconditions.checkArgument(nchunks * nelems == total);
 
     if (debug) {
       System.out.println("RegularSectionLayout total = " + total + " nchunks= " + nchunks + " nelems= " + nelems
@@ -125,7 +125,6 @@ public class IndexChunkerTiled {
     final int ncontigElements;
 
     Dim(Range data, Range want, Range intersect, int dataStride, int wantStride) {
-      // assert want.length() <= maxSize : want.last() +" > "+ maxSize ;
       this.data = data;
       this.want = want;
       this.intersect = intersect;

@@ -324,7 +324,10 @@ public class DiskCache2 {
 
     // create a lock file to reserve the name
     try {
-      lock.createNewFile();
+      if (!lock.createNewFile()) {
+        cacheLog.error(String.format("Error createNewFile lock file: %s. May result in cache file collisions.", lock));
+        throw new RuntimeException("Failed to create new lock file");
+      }
       cacheLog.debug(String.format("Reserved filename %s for future use.", lockName.replace(lockExtension, "")));
     } catch (IOException e) {
       // should not happen, as DiskCache2 had to make the directory before we can even get here

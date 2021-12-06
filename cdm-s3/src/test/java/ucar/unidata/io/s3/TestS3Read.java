@@ -5,6 +5,7 @@
 package ucar.unidata.io.s3;
 
 import static com.google.common.truth.Truth.assertThat;
+import static com.google.common.truth.Truth.assertWithMessage;
 
 import java.io.File;
 import java.io.IOException;
@@ -14,7 +15,6 @@ import java.net.URL;
 import java.nio.file.Paths;
 import java.util.Formatter;
 import org.junit.AfterClass;
-import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -382,9 +382,9 @@ public class TestS3Read {
         NetcdfFile aws = NetcdfFiles.open(AWS_G16_S3_URI_FULL)) {
       Formatter f = new Formatter();
       CompareNetcdf2 comparer = new CompareNetcdf2(f, false, false, true);
-      Assert.assertTrue("Compare AWS S3 Object to GCS Object.", comparer.compare(aws, gcs));
-      Assert.assertTrue("Compare AWS S3 Object to OSDC Object.", comparer.compare(aws, osdc));
-      Assert.assertTrue("Compare OSDC Object to GCS Object.", comparer.compare(osdc, gcs));
+      assertWithMessage("Compare AWS S3 Object to GCS Object.").that(comparer.compare(aws, gcs)).isTrue();
+      assertWithMessage("Compare AWS S3 Object to OSDC Object.").that(comparer.compare(aws, osdc)).isTrue();
+      assertWithMessage("Compare OSDC Object to GCS Object.").that(comparer.compare(osdc, gcs)).isTrue();
     } finally {
       System.clearProperty(S3TestsCommon.AWS_REGION_PROP_NAME);
     }
@@ -401,9 +401,12 @@ public class TestS3Read {
       Formatter f = new Formatter();
       CompareNetcdf2 comparer = new CompareNetcdf2(f, false, false, true);
       // Indirectly verify some of the S3RandomAccessFile reading logic
-      Assert.assertTrue("Compare local file read to AWS S3 Object store read.", comparer.compare(local, aws));
-      Assert.assertTrue("Compare local file read to GCS Object store read.", comparer.compare(local, gcs));
-      Assert.assertTrue("Compare local file read to OSDC Object store read.", comparer.compare(local, osdc));
+      assertWithMessage("Compare local file read to AWS S3 Object store read.").that(comparer.compare(local, aws))
+          .isTrue();
+      assertWithMessage("Compare local file read to GCS Object store read.").that(comparer.compare(local, gcs))
+          .isTrue();
+      assertWithMessage("Compare local file read to OSDC Object store read.").that(comparer.compare(local, osdc))
+          .isTrue();
     } finally {
       System.clearProperty(S3TestsCommon.AWS_REGION_PROP_NAME);
     }
@@ -528,7 +531,7 @@ public class TestS3Read {
   public <T extends NetcdfFile> void testG16RadVar(T nc) throws IOException {
     // find variable "Rad"
     Variable radiance = nc.findVariable("Rad");
-    Assert.assertNotNull(radiance);
+    assertThat(radiance).isNotNull();
 
     // read full array
     Array array = radiance.readArray();
@@ -543,7 +546,7 @@ public class TestS3Read {
   public <T extends NetcdfFile> void testPartialReadGoes16S3(T nc) throws InvalidRangeException, IOException {
     // find variable "Rad"
     Variable radiance = nc.findVariable("Rad");
-    Assert.assertNotNull(radiance);
+    assertThat(radiance).isNotNull();
 
     // read part of the array
     Section section = new Section("(100:200:2,10:20:1)");

@@ -4,7 +4,6 @@
  */
 package ucar.nc2.grid;
 
-import org.junit.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.nc2.calendar.CalendarDate;
@@ -28,6 +27,7 @@ import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 
 import static com.google.common.truth.Truth.assertThat;
+import static com.google.common.truth.Truth.assertWithMessage;
 
 /** internal class for debugging. */
 public class GribCoverageValidator implements GribDataValidator {
@@ -50,7 +50,7 @@ public class GribCoverageValidator implements GribDataValidator {
     // runtime
     CalendarDate wantRuntime = coords.getRunTime();
     CalendarDate refdate = gr.getReferenceDate();
-    Assert.assertEquals("runtime", refdate, wantRuntime);
+    assertThat(refdate).isEqualTo(wantRuntime);
 
     // time offset
     Double timeOffset = coords.getTimeOffset();
@@ -62,8 +62,8 @@ public class GribCoverageValidator implements GribDataValidator {
     Grib1ParamTime ptime = gr.getParamTime(cust);
     if (ptime.isInterval()) {
       int tinv[] = ptime.getInterval();
-      Assert.assertTrue("time coord lower", tinv[0] <= timeOffset); // lower <= time
-      Assert.assertTrue("time coord lower", tinv[1] >= timeOffset); // upper >= time
+      assertWithMessage("time coord lower").that(tinv[0] <= timeOffset); // lower <= time
+      assertWithMessage("time coord lower").that(tinv[1] >= timeOffset); // upper >= time
     } else {
       assertThat(Misc.nearlyEquals(timeOffset, ptime.getForecastTime())).isTrue();
     }
@@ -77,8 +77,8 @@ public class GribCoverageValidator implements GribDataValidator {
         float lev2 = plevel.getValue2();
         double lower = Math.min(lev1, lev2);
         double upper = Math.max(lev1, lev2);
-        Assert.assertTrue("vert coord lower", lower <= wantVert); // lower <= vert
-        Assert.assertTrue("vert coord upper", upper >= wantVert); // upper >= vert
+        assertWithMessage("vert coord lower").that(lower <= wantVert); // lower <= vert
+        assertWithMessage("vert coord upper").that(upper >= wantVert); // upper >= vert
 
       } else {
         assertThat(Misc.nearlyEquals(lev1, wantVert)).isTrue();
@@ -101,7 +101,7 @@ public class GribCoverageValidator implements GribDataValidator {
     // runtime
     CalendarDate wantRuntime = coords.getRunTime();
     CalendarDate refdate = gr.getReferenceDate();
-    Assert.assertEquals("runtime", wantRuntime, refdate);
+    assertThat(wantRuntime).isEqualTo(refdate);
 
     // time offset
     CalendarDate wantTimeOffset = coords.getTimeOffsetDate();
@@ -109,21 +109,21 @@ public class GribCoverageValidator implements GribDataValidator {
       TimeCoordIntvDateValue tinv = cust.getForecastTimeInterval(gr);
       CoordInterval wantTimeOffsetIntv = coords.getTimeOffsetIntv();
       if (wantTimeOffset != null) {
-        Assert.assertTrue("time coord lower", !tinv.getStart().isAfter(wantTimeOffset)); // lower <= time
-        Assert.assertTrue("time coord upper", !tinv.getEnd().isBefore(wantTimeOffset));// upper >= time
+        assertWithMessage("time coord lower").that(tinv.getStart().isAfter(wantTimeOffset)).isFalse(); // lower <= time
+        assertWithMessage("time coord upper").that(tinv.getEnd().isBefore(wantTimeOffset)).isFalse();// upper >= time
 
       } else if (wantTimeOffsetIntv != null) {
         int[] gribIntv = cust.getForecastTimeIntervalOffset(gr);
 
-        Assert.assertTrue("time coord lower", wantTimeOffsetIntv.start() == gribIntv[0]);
-        Assert.assertTrue("time coord upper", wantTimeOffsetIntv.end() == gribIntv[1]);
+        assertWithMessage("time coord lower").that(wantTimeOffsetIntv.start()).isEqualTo(gribIntv[0]);
+        assertWithMessage("time coord upper").that(wantTimeOffsetIntv.end()).isEqualTo(gribIntv[1]);
       }
 
     } else {
       CalendarDate fdate = cust.getForecastDate(gr);
       if (!fdate.equals(wantTimeOffset))
         logger.debug("forecast date");
-      Assert.assertEquals("time coord", wantTimeOffset, fdate);
+      assertThat(wantTimeOffset).isEqualTo(fdate);
     }
 
     // vert
@@ -132,12 +132,12 @@ public class GribCoverageValidator implements GribDataValidator {
     double level1val = pds.getLevelValue1();
 
     if (vertCoordIntv != null) {
-      Assert.assertTrue(Grib2Utils.isLayer(pds));
+      assertThat(Grib2Utils.isLayer(pds)).isTrue();
       double level2val = pds.getLevelValue2();
       // double lower = Math.min(level1val, level2val);
       // double upper = Math.max(level1val, level2val);
-      // Assert.assertTrue("vert coord lower", lower <= wantVert); // lower <= vert
-      // Assert.assertTrue("vert coord upper", upper >= wantVert); // upper >= vert
+      // assertWithMessage("vert coord lower", lower <= wantVert); // lower <= vert
+      // assertWithMessage("vert coord upper", upper >= wantVert); // upper >= vert
       assertThat(Misc.nearlyEquals(vertCoordIntv.start(), level1val, 1e-6)).isTrue();
       assertThat(Misc.nearlyEquals(vertCoordIntv.end(), level2val, 1e-6)).isTrue();
 

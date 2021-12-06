@@ -5,13 +5,12 @@ package ucar.nc2.grib.grib2;
 
 import org.junit.Before;
 import org.junit.Test;
-import java.io.IOException;
 import java.util.List;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 import ucar.nc2.calendar.CalendarDate;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+
+import static com.google.common.truth.Truth.assertThat;
 
 /**
  * Test data provided by github issue https://github.com/Unidata/thredds/issues/834
@@ -29,12 +28,12 @@ public class TestPds61 {
   private Grib2Pds pds;
 
   @Before
-  public void openTestFile() throws IOException {
+  public void openTestFile() {
     String testfile = "../grib/src/test/data/index/example_pds_61.grib2.gbx9";
 
     Grib2Index gi = new Grib2Index();
     boolean success = gi.readIndex(testfile, -1);
-    assertTrue(success);
+    assertThat(success).isTrue();
     List<Grib2Record> records = gi.getRecords();
     Grib2Record record = records.get(0);
     pds = record.getPDS();
@@ -42,30 +41,30 @@ public class TestPds61 {
 
   @Test
   public void checkPdsBasic() {
-    assertEquals(pds.getRawLength(), 68);
-    assertEquals(pds.getTemplateNumber(), 61);
+    assertThat(pds.getRawLength()).isEqualTo(68);
+    assertThat(pds.getTemplateNumber()).isEqualTo(61);
   }
 
   @Test
   public void checkModelVersionDate() {
-    assertEquals(pds.calcTime(38),
-        CalendarDate.fromUdunitIsoDate("proleptic_gregorian", "2011-03-01T00:00:00").orElseThrow());
+    assertThat(pds.calcTime(38))
+        .isEqualTo(CalendarDate.fromUdunitIsoDate("proleptic_gregorian", "2011-03-01T00:00:00").orElseThrow());
   }
 
   @Test
   public void checkEndOfOverallIntervalDate() {
-    assertEquals(pds.calcTime(45),
-        CalendarDate.fromUdunitIsoDate("proleptic_gregorian", "2010-12-29T06:00:00").orElseThrow());
+    assertThat(pds.calcTime(45))
+        .isEqualTo(CalendarDate.fromUdunitIsoDate("proleptic_gregorian", "2010-12-29T06:00:00").orElseThrow());
   }
 
   @Test
   public void checkTypeOfGeneratingProcess() {
-    assertEquals(pds.getGenProcessType(), 4);
+    assertThat(pds.getGenProcessType()).isEqualTo(4);
   }
 
   @Test
   public void checkNumberOfTimeRanges() {
-    assertEquals(pds.getOctet(52), 1);
+    assertThat(pds.getOctet(52)).isEqualTo(1);
   }
 
 }

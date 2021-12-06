@@ -4,8 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import thredds.client.catalog.Catalog;
 import thredds.client.catalog.Dataset;
 import thredds.client.catalog.ThreddsMetadata;
@@ -22,19 +20,13 @@ import ucar.nc2.calendar.CalendarDate;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
 import java.io.IOException;
-import java.lang.invoke.MethodHandles;
 import java.util.List;
-import static org.junit.Assert.assertEquals;
 
-/**
- * Test MetadataExtractor and MetadataExtractorAcdd
- *
- * @author caron
- * @since 11/1/13
- */
+import static com.google.common.truth.Truth.assertThat;
+
+/** Test MetadataExtractor and MetadataExtractorAcdd */
 @Category(NeedsCdmUnitTest.class)
 public class TestMetadataExtractor {
-  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @Test
   public void testMetadataExtractorAcdd() throws IOException {
@@ -58,7 +50,7 @@ public class TestMetadataExtractor {
 
     Dataset ds = cat.findDatasetByID("testAcdd");
     assert ds != null;
-    assertEquals(FeatureType.STATION, ds.getFeatureType());
+    assertThat(FeatureType.STATION).isEqualTo(ds.getFeatureType());
 
     assert ds.getDocumentation("title").startsWith("Seawater temperature data collected from Bodega Head");
     assert ds.getDocumentation("summary").startsWith("These seawater data are collected");
@@ -68,10 +60,10 @@ public class TestMetadataExtractor {
 
     TimeCoverage tc = ds.getTimeCoverageNew();
     assert tc != null;
-    assertEquals(tc.getStart().toCalendarDate(),
-        CalendarDate.fromUdunitIsoDate(null, "2005-06-27T21:48:00").orElseThrow());
-    assertEquals(tc.getEnd().toCalendarDate(),
-        CalendarDate.fromUdunitIsoDate(null, "2005-11-09T00:53:59").orElseThrow());
+    assertThat(tc.getStart().toCalendarDate())
+        .isEqualTo(CalendarDate.fromUdunitIsoDate(null, "2005-06-27T21:48:00").orElseThrow());
+    assertThat(tc.getEnd().toCalendarDate())
+        .isEqualTo(CalendarDate.fromUdunitIsoDate(null, "2005-11-09T00:53:59").orElseThrow());
 
     ThreddsMetadata.GeospatialCoverage geo = ds.getGeospatialCoverage();
     assert geo != null;

@@ -4,6 +4,7 @@
  */
 package ucar.nc2.iosp;
 
+import com.google.common.base.Preconditions;
 import ucar.array.Arrays;
 import ucar.array.Section;
 import ucar.array.InvalidRangeException;
@@ -46,7 +47,7 @@ public class LayoutSegmented implements Layout {
    */
   public LayoutSegmented(long[] segPos, int[] segSize, int elemSize, int[] srcShape, Section wantSection)
       throws InvalidRangeException {
-    assert segPos.length == segSize.length;
+    Preconditions.checkArgument(segPos.length == segSize.length);
     this.segPos = segPos;
 
     int nsegs = segPos.length;
@@ -54,15 +55,15 @@ public class LayoutSegmented implements Layout {
     segMax = new long[nsegs];
     long totalElems = 0;
     for (int i = 0; i < nsegs; i++) {
-      assert segPos[i] >= 0;
-      assert segSize[i] > 0;
-      assert (segSize[i] % elemSize) == 0;
+      Preconditions.checkArgument(segPos[i] >= 0);
+      Preconditions.checkArgument(segSize[i] > 0);
+      Preconditions.checkArgument((segSize[i] % elemSize) == 0);
 
       segMin[i] = totalElems;
       totalElems += segSize[i];
       segMax[i] = totalElems;
     }
-    assert totalElems >= Arrays.computeSize(srcShape) * elemSize;
+    Preconditions.checkArgument(totalElems >= Arrays.computeSize(srcShape) * elemSize);
 
     chunker = new IndexChunker(srcShape, wantSection);
     this.total = chunker.getTotalNelems();

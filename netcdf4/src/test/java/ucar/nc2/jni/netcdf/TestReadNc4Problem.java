@@ -9,8 +9,6 @@ import org.junit.experimental.categories.Category;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
-import static org.junit.Assert.assertThrows;
-
 /** Compare reading netcdf4 with old ma2.Array and new array.Array IOSPs for problem datasets. */
 @Category(NeedsCdmUnitTest.class)
 public class TestReadNc4Problem {

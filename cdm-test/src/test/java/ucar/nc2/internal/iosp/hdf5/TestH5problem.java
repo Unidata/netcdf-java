@@ -4,15 +4,15 @@
  */
 package ucar.nc2.internal.iosp.hdf5;
 
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import ucar.array.Array;
-import ucar.array.InvalidRangeException;
 import ucar.array.Section;
 import ucar.nc2.*;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import java.io.IOException;
+
+import static com.google.common.truth.Truth.assertThat;
 
 /**
  * Miscellaneaous problems with hdf5 reader
@@ -36,13 +36,13 @@ public class TestH5problem {
     String filename = TestH5.testDir + "StringsWFilter.h5";
     try (NetcdfFile ncfile = NetcdfFiles.open(filename)) {
       Variable v = ncfile.findVariable("/sample/ids");
-      assert v != null;
+      assertThat(v).isNotNull();
       int[] shape = v.getShape();
-      Assert.assertEquals(1, shape.length);
-      Assert.assertEquals(3107, shape[0]);
+      assertThat(1).isEqualTo(shape.length);
+      assertThat(3107).isEqualTo(shape[0]);
       Array data = v.readArray();
-      Assert.assertEquals(1, data.getRank());
-      Assert.assertEquals(3107, data.getShape()[0]);
+      assertThat(1).isEqualTo(data.getRank());
+      assertThat(3107).isEqualTo(data.getShape()[0]);
     }
   }
 
@@ -51,14 +51,14 @@ public class TestH5problem {
     String filename = TestH5.testDir + "StringsWFilter.h5";
     try (NetcdfFile ncfile = NetcdfFiles.open(filename)) {
       Variable v = ncfile.findVariable("/sample/ids");
-      assert v != null;
+      assertThat(v).isNotNull();
       int[] shape = v.getShape();
-      Assert.assertEquals(1, shape.length);
-      Assert.assertEquals(3107, shape[0]);
+      assertThat(1).isEqualTo(shape.length);
+      assertThat(3107).isEqualTo(shape[0]);
 
       Array dataSection = v.readArray(new Section("700:900:2")); // make sure to go acrross a chunk boundary
-      Assert.assertEquals(1, dataSection.getRank());
-      Assert.assertEquals(101, dataSection.getShape()[0]);
+      assertThat(1).isEqualTo(dataSection.getRank());
+      assertThat(101).isEqualTo(dataSection.getShape()[0]);
     }
   }
 
@@ -70,13 +70,14 @@ public class TestH5problem {
     String filename = TestH5.testDir + "SMAP_L4_SM_aup_20140115T030000_V05007_001.h5";
     try (NetcdfFile ncfile = NetcdfFiles.open(filename)) {
       Group g = ncfile.findGroup("Metadata");
-      assert g != null;
+      assertThat(g).isNotNull();
       Attribute att = g.findAttribute("iso_19139_dataset_xml");
-      assert att != null;
-      assert att.isString();
+      assertThat(att).isNotNull();
+      assertThat(att.isString()).isTrue();
       String val = att.getStringValue();
+      assertThat(val).isNotNull();
       System.out.printf(" len of %s is %d%n", att.getName(), val.length());
-      assert val.length() > 200 * 1000; // silly rabbit
+      assertThat(val.length()).isGreaterThan(200 * 1000); // silly rabbit
     }
   }
 

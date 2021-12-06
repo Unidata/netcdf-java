@@ -4,6 +4,7 @@
  */
 package thredds.client.catalog.tools;
 
+import com.google.common.base.Preconditions;
 import ucar.array.Array;
 import ucar.array.InvalidRangeException;
 import ucar.array.Range;
@@ -92,7 +93,7 @@ public class CrawlingUtils {
         if (showDetail)
           System.out.printf(" thread %s read %s(%s) bytes= %d ", who, v.getFullName(), s, s.computeSize());
         Array<?> result = v.readArray(s);
-        assert result.getSize() == s.computeSize();
+        Preconditions.checkArgument(result.getSize() == s.computeSize());
         return result;
       }
     }

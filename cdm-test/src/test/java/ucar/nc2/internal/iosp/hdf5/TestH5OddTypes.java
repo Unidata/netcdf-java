@@ -5,14 +5,12 @@
 package ucar.nc2.internal.iosp.hdf5;
 
 import org.junit.AfterClass;
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.array.Array;
 import ucar.array.ArrayType;
-import ucar.array.InvalidRangeException;
 import ucar.array.Section;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
@@ -22,6 +20,8 @@ import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
+
+import static com.google.common.truth.Truth.assertThat;
 
 /**
  * @author caron
@@ -43,15 +43,15 @@ public class TestH5OddTypes {
     try (NetcdfFile ncfile = TestH5.openH5("samples/opaque.h5")) {
       System.out.println("\n" + ncfile);
       Variable v2 = ncfile.findVariable("Opaque");
-      assert v2 != null;
+      assertThat(v2).isNotNull();
 
-      Array data = v2.readArray();
-      assert data.getArrayType() == ArrayType.OPAQUE : data.getArrayType();
+      Array<?> data = v2.readArray();
+      assertThat(data.getArrayType()).isEqualTo(ArrayType.OPAQUE);
       System.out.println("data size= " + new Section(data.getShape()));
 
-      Array odata = v2.readArray(new Section("1:20"));
-      assert data.getArrayType() == ArrayType.OPAQUE : data.getArrayType();
-      assert odata.getSize() == 20;
+      Array<?> odata = v2.readArray(new Section("1:20"));
+      assertThat(data.getArrayType()).isEqualTo(ArrayType.OPAQUE);
+      assertThat(odata.getSize()).isEqualTo(20);
     }
     H5header.setDebugFlags(DebugFlags.create(""));
   }
@@ -60,21 +60,21 @@ public class TestH5OddTypes {
   @Category(NeedsCdmUnitTest.class)
   public void testEnum() throws Exception {
     try (NetcdfFile ncfile = TestH5.openH5("support/enum.h5")) {
-      Assert.assertNotNull(ncfile);
+      assertThat(ncfile).isNotNull();
       Variable v2 = ncfile.findVariable("enum");
-      Assert.assertNotNull(v2);
+      assertThat(v2).isNotNull();
 
-      Array data = v2.readArray();
-      assert data.getArrayType() == ArrayType.ENUM4 : data.getArrayType();
+      Array<?> data = v2.readArray();
+      assertThat(data.getArrayType()).isEqualTo(ArrayType.ENUM4);
     }
 
     try (NetcdfDataset ncd = TestH5.openH5dataset("support/enum.h5")) {
-      Assert.assertNotNull(ncd);
+      assertThat(ncd).isNotNull();
       Variable v2 = ncd.findVariable("enum");
-      Assert.assertNotNull(v2);
+      assertThat(v2).isNotNull();
 
-      Array data = v2.readArray();
-      assert data.getArrayType() == ArrayType.STRING : data.getArrayType();
+      Array<?> data = v2.readArray();
+      assertThat(data.getArrayType()).isEqualTo(ArrayType.STRING);
     }
   }
 
@@ -137,7 +137,7 @@ public class TestH5OddTypes {
     H5header.setDebugFlags(DebugFlags.create("H5header/header"));
     try (NetcdfFile ncfile = TestH5.openH5("support/cenum.h5")) {
       Variable v = ncfile.findVariable("enum");
-      Array data = v.readArray();
+      Array<?> data = v.readArray();
       System.out.println("\n**** testReadNetcdf4 done\n\n" + ncfile);
     }
     H5header.setDebugFlags(DebugFlags.create(""));

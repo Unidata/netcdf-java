@@ -4,6 +4,7 @@
  */
 package ucar.nc2.internal.iosp.hdf5;
 
+import com.google.common.base.Preconditions;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.SpecialMathFunction;
 import java.io.IOException;
@@ -275,7 +276,7 @@ public class FractalHeap {
             case 2:
               if (btreeHugeObjects == null) {
                 btreeHugeObjects = new BTree2(h5, "FractalHeap btreeHugeObjects", btreeAddressHugeObjects);
-                assert btreeHugeObjects.btreeType == subtype;
+                Preconditions.checkArgument(btreeHugeObjects.btreeType == subtype);
               }
               BTree2.Record1 record1 = btreeHugeObjects.getEntry1(offset);
               if (record1 == null) {

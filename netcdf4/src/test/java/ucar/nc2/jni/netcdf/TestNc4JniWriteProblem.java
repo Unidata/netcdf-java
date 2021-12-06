@@ -6,7 +6,6 @@ package ucar.nc2.jni.netcdf;
 
 import java.io.IOException;
 import java.util.Formatter;
-import org.junit.Assert;
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -69,7 +68,7 @@ public class TestNc4JniWriteProblem {
     // Make sure file has what we expect
     try (NetcdfFile ncFile = NetcdfFiles.open(fname)) {
       Variable arr = ncFile.getRootGroup().findVariableLocal("arr");
-      Assert.assertEquals(5, arr.getSize());
+      assertThat(arr.getSize()).isEqualTo(5);
       Array<Float> arrData = (Array<Float>) arr.readArray();
       float[] expectedData = new float[] {2.f, 4.f, 6.f, 8.f, 10.f};
       assertThat(arrData.length()).isEqualTo(5);

@@ -6,7 +6,6 @@
 package ucar.nc2.grid;
 
 import com.google.common.collect.ImmutableList;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import ucar.nc2.dataset.CoordinateSystem;
@@ -29,7 +28,7 @@ public class TestTdsGribProblems {
   public void checkGEFSensemble() throws Exception {
     String filename =
         TestDir.cdmUnitTestDir + "ncss/GEFS/Global_1p0deg_Ensemble/member/GEFS-Global_1p0deg_Ensemble-members.ncx4";
-    checkGridDataset(filename, 35, 11, 14, 17);
+    checkGridDataset(filename, 35, 11, 14, 13);
   }
 
   // TODO: this has two groups

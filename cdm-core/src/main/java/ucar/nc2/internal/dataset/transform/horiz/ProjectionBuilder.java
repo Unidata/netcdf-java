@@ -5,7 +5,6 @@ import ucar.nc2.AttributeContainer;
 import ucar.unidata.geoloc.Projection;
 
 import javax.annotation.Nullable;
-import java.util.Formatter;
 
 /** A Builder of Projection CoordinateTransform. */
 public interface ProjectionBuilder {

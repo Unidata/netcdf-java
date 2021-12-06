@@ -9,6 +9,8 @@ import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParameterDescription;
 import com.beust.jcommander.ParameterException;
 import java.util.Optional;
+
+import com.google.common.base.Preconditions;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.iosp.NetcdfFileFormat;
 import ucar.nc2.util.CancelTask;
@@ -78,8 +80,8 @@ public class Nccopy {
       public int compare(ParameterDescription p0, ParameterDescription p1) {
         int index0 = orderedParamNames.indexOf(p0.getLongestName());
         int index1 = orderedParamNames.indexOf(p1.getLongestName());
-        assert index0 >= 0 : "Unexpected parameter name: " + p0.getLongestName();
-        assert index1 >= 0 : "Unexpected parameter name: " + p1.getLongestName();
+        Preconditions.checkArgument(index0 >= 0, "Unexpected parameter name: " + p0.getLongestName());
+        Preconditions.checkArgument(index1 >= 0, "Unexpected parameter name: " + p1.getLongestName());
 
         return Integer.compare(index0, index1);
       }

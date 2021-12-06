@@ -5,34 +5,28 @@
 
 package ucar.units;
 
-import java.io.InputStreamReader;
-import java.io.LineNumberReader;
 import java.util.Date;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import java.io.IOException;
-import java.lang.invoke.MethodHandles;
 import java.util.Calendar;
 import java.util.TimeZone;
+
+import static com.google.common.truth.Truth.assertThat;
+import static org.junit.Assert.assertThrows;
 
 /**
  * Tests for udunits.
  */
 public class TestUdunits {
 
-  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-
   @Test
-  public void testOffsetUnit()
-      throws IOException, NameException, UnitExistsException, OperationException, ConversionException {
+  public void testOffsetUnit() throws Exception {
     final BaseUnit kelvin =
         BaseUnit.getOrCreate(UnitName.newUnitName("kelvin", null, "K"), BaseQuantity.THERMODYNAMIC_TEMPERATURE);
     final OffsetUnit celsius = new OffsetUnit(kelvin, 273.15);
     System.out.println("celsius.equals(kelvin)=" + celsius.equals(kelvin));
     System.out.println("celsius.getUnit().equals(kelvin)=" + celsius.getUnit().equals(kelvin));
-    assert !celsius.equals(kelvin);
-    assert celsius.getUnit().equals(kelvin);
+    assertThat(celsius).isNotEqualTo(kelvin);
+    assertThat(celsius.getUnit()).isEqualTo(kelvin);
 
     final Unit celsiusKelvin = celsius.multiplyBy(kelvin);
     System.out.println("celsiusKelvin.divideBy(celsius)=" + celsiusKelvin.divideBy(celsius));
@@ -46,59 +40,48 @@ public class TestUdunits {
     System.out.println("celsius.fromDerivedUnit(new float[]{274.15f},new float[1])[0]="
         + celsius.fromDerivedUnit(new float[] {274.15f}, new float[1])[0]);
     System.out.println("celsius.equals(celsius)=" + celsius.equals(celsius));
-    assert celsius.equals(celsius);
+    assertThat(celsius).isEqualTo(celsius);
 
     final OffsetUnit celsius100 = new OffsetUnit(celsius, 100.);
     System.out.println("celsius.equals(celsius100)=" + celsius.equals(celsius100));
     System.out.println("celsius.isDimensionless()=" + celsius.isDimensionless());
-    assert !celsius.equals(celsius100);
-    assert !celsius.isDimensionless();
+    assertThat(celsius).isNotEqualTo(celsius100);
+    assertThat(celsius.isDimensionless()).isFalse();
 
     final BaseUnit radian = BaseUnit.getOrCreate(UnitName.newUnitName("radian", null, "rad"), BaseQuantity.PLANE_ANGLE);
     final OffsetUnit offRadian = new OffsetUnit(radian, 3.14159 / 2);
     System.out.println("offRadian.isDimensionless()=" + offRadian.isDimensionless());
-    assert offRadian.isDimensionless();
+    assertThat(offRadian.isDimensionless()).isTrue();
   }
 
   @Test
-  public void testLogarithmicUnit()
-      throws IOException, NameException, UnitExistsException, OperationException, ConversionException {
+  public void testLogarithmicUnit() throws Exception {
     final BaseUnit meter = BaseUnit.getOrCreate(UnitName.newUnitName("meter", null, "m"), BaseQuantity.LENGTH);
     final ScaledUnit micron = new ScaledUnit(1e-6, meter);
     final Unit cubicMicron = micron.raiseTo(3);
     final LogarithmicUnit Bz = new LogarithmicUnit(cubicMicron, 10.0);
-    assert Bz.isDimensionless();
-    assert Bz.equals(Bz);
-    assert Bz.getReference().equals(cubicMicron);
-    assert Bz.getBase() == 10.0;
-    assert !Bz.equals(cubicMicron);
-    assert !Bz.equals(micron);
-    assert !Bz.equals(meter);
-    try {
-      Bz.multiplyBy(meter);
-      assert false;
-    } catch (final MultiplyException e) {
-    }
-    try {
-      Bz.divideBy(meter);
-      assert false;
-    } catch (final DivideException e) {
-    }
-    try {
-      Bz.raiseTo(2);
-      assert false;
-    } catch (final RaiseException e) {
-    }
+    assertThat(Bz.isDimensionless()).isTrue();
+    assertThat(Bz).isEqualTo(Bz);
+    assertThat(Bz.getReference()).isEqualTo(cubicMicron);
+    assertThat(Bz.getBase()).isEqualTo(10.0);
+    assertThat(Bz).isNotEqualTo(cubicMicron);
+    assertThat(Bz).isNotEqualTo(micron);
+    assertThat(Bz).isNotEqualTo(meter);
+
+    assertThrows(MultiplyException.class, () -> Bz.multiplyBy(meter));
+    assertThrows(DivideException.class, () -> Bz.divideBy(meter));
+    assertThrows(RaiseException.class, () -> Bz.raiseTo(2));
+
     double value = Bz.toDerivedUnit(0);
-    assert 0.9e-18 < value && value < 1.1e-18 : value;
+    assertThat(0.9e-18 < value && value < 1.1e-18).isTrue();
     value = Bz.toDerivedUnit(1);
-    assert 0.9e-17 < value && value < 1.1e-17 : value;
+    assertThat(0.9e-17 < value && value < 1.1e-17).isTrue();
     value = Bz.fromDerivedUnit(1e-18);
-    assert -0.1 < value && value < 0.1 : value;
+    assertThat(-0.1 < value && value < 0.1).isTrue();
     value = Bz.fromDerivedUnit(1e-17);
-    assert 0.9 < value && value < 1.1 : value;
-    final String string = Bz.toString();
-    assert string.equals("lg(re 9.999999999999999E-19 m3)") : string;
+    assertThat(0.9 < value && value < 1.1).isTrue();
+    final String s = Bz.toString();
+    assertThat(s).isEqualTo("lg(re 9.999999999999999E-19 m3)");
   }
 
   @Test
@@ -114,12 +97,13 @@ public class TestUdunits {
   @Test
   public void testUnknownUnit() throws Exception {
     final UnknownUnit unit1 = UnknownUnit.create("a");
-    assert unit1.equals(unit1) : "unit1.equals(unit1)=" + unit1.equals(unit1);
-    assert !unit1.isDimensionless() : "UnknownUnit.isDimensionless()=" + unit1.isDimensionless();
+    assertThat(unit1).isEqualTo(unit1);
+    assertThat(unit1).isEqualTo(unit1);
+    assertThat(unit1.isDimensionless()).isFalse();
     UnknownUnit unit2 = UnknownUnit.create("b");
-    assert !unit1.equals(unit2) : "unit1.equals(unit2)=" + unit1.equals(unit2);
+    assertThat(unit1).isNotEqualTo(unit2);
     unit2 = UnknownUnit.create("A");
-    assert unit1.equals(unit2) : "unit_a.equals(unit_A))=" + unit1.equals(unit2);
+    assertThat(unit1).isEqualTo(unit2);
   }
 
   @Test
@@ -310,24 +294,6 @@ public class TestUdunits {
             .multiplyBy(m.raiseTo(-1).multiplyBy(1e9)).multiplyBy(s.raiseTo(-1).multiplyBy(1e9).raiseTo(-1))
             .multiplyBy(m).divideBy(s));
     myAssert(parser, "m/km", m.divideBy(m.multiplyBy(1e3)));
-
-    LineNumberReader lineInput = new LineNumberReader(new InputStreamReader(System.in));
-
-    for (;;) {
-      System.out.print("Enter a unit specification or ^D to quit: ");
-
-      String spec = lineInput.readLine();
-      if (spec == null) {
-        break;
-      }
-
-      try {
-        System.out.println(parser.parse(spec.trim()));
-      } catch (Exception e) {
-        System.out.println(e.getMessage());
-      }
-    }
-    System.out.println("");
   }
 
   private static void myAssert(StandardUnitFormat parser, final String spec, final Unit unit) throws Exception {

@@ -4,6 +4,7 @@
  */
 package ucar.nc2.grib.coord;
 
+import com.google.common.base.Preconditions;
 import ucar.array.Section;
 import ucar.nc2.util.Indent;
 import javax.annotation.concurrent.Immutable;
@@ -22,7 +23,7 @@ public class CoordinateND<T> {
   private final SparseArray<T> sa; // indexes refer to coordinates
 
   CoordinateND(List<Coordinate> coordinates, SparseArray<T> sa) {
-    assert coordinates.size() == sa.getRank();
+    Preconditions.checkArgument(coordinates.size() == sa.getRank());
     this.coordinates = Collections.unmodifiableList(coordinates);
     this.sa = sa;
   }
@@ -128,7 +129,7 @@ public class CoordinateND<T> {
      * @param newCoords must have same list of Coordinates as prev, with possibly additional values.
      */
     CoordinateND<T> reindex(List<Coordinate> newCoords, CoordinateND<T> prev) {
-      assert newCoords.size() == prev.getNCoordinates();
+      Preconditions.checkArgument(newCoords.size() == prev.getNCoordinates());
 
       boolean has2Dcoord = false;
       for (Coordinate coord : newCoords) {
@@ -197,7 +198,7 @@ public class CoordinateND<T> {
         if (identity)
           return;
 
-        assert curr.getType() == prev.getType() : curr.getType() + " != " + prev.getType();
+        Preconditions.checkArgument(curr.getType() == prev.getType(), curr.getType() + " != " + prev.getType());
 
         int count = 0;
         Map<Object, Integer> currValMap = new HashMap<>();
@@ -288,7 +289,7 @@ public class CoordinateND<T> {
 
       // every coord in prev must be in curr
       Time2DIndexMap(CoordinateTime2D curr, CoordinateTime2D prev) {
-        assert curr.getType() == prev.getType() : curr.getType() + " != " + prev.getType();
+        Preconditions.checkArgument(curr.getType() == prev.getType(), curr.getType() + " != " + prev.getType());
         currValMap = new HashMap<>(2 * curr.getValues().size());
 
         int[] index2D = new int[2];

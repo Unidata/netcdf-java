@@ -4,6 +4,7 @@
  */
 package ucar.nc2.iosp;
 
+import com.google.common.base.Preconditions;
 import ucar.array.Arrays;
 import ucar.array.Section;
 import ucar.array.InvalidRangeException;
@@ -44,10 +45,10 @@ public class LayoutRegularSegmented implements Layout {
    */
   public LayoutRegularSegmented(long startPos, int elemSize, long recSize, int[] srcShape, Section wantSection)
       throws InvalidRangeException {
-    assert startPos > 0;
-    assert elemSize > 0;
-    assert recSize > 0;
-    assert srcShape.length > 0;
+    Preconditions.checkArgument(startPos > 0);
+    Preconditions.checkArgument(elemSize > 0);
+    Preconditions.checkArgument(recSize > 0);
+    Preconditions.checkArgument(srcShape.length > 0);
 
     this.startPos = startPos;
     this.elemSize = elemSize;

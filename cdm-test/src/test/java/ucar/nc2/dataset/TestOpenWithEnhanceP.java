@@ -5,7 +5,6 @@
 package ucar.nc2.dataset;
 
 import org.apache.commons.io.filefilter.SuffixFileFilter;
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
@@ -15,6 +14,8 @@ import ucar.unidata.util.test.TestDir;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.google.common.truth.Truth.assertThat;
 
 @RunWith(Parameterized.class)
 @Category(NeedsCdmUnitTest.class)
@@ -40,8 +41,8 @@ public class TestOpenWithEnhanceP {
   @Test
   public void openWithEnhance() throws Exception {
     try (NetcdfDataset ncDataset = NetcdfDatasets.openDataset(filename, true, null)) {
-      Assert.assertEquals(NetcdfDataset.getDefaultEnhanceMode(), ncDataset.getEnhanceMode());
-      Assert.assertTrue("size=" + ncDataset.getCoordinateSystems().size(), ncDataset.getCoordinateSystems().size() > 0);
+      assertThat(NetcdfDataset.getDefaultEnhanceMode()).isEqualTo(ncDataset.getEnhanceMode());
+      assertThat(ncDataset.getCoordinateSystems().size()).isGreaterThan(0);
     }
   }
 }

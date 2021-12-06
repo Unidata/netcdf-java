@@ -14,7 +14,6 @@ import java.nio.file.Paths;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.junit.AfterClass;
-import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -53,7 +52,7 @@ public class S3AggScan {
   }
 
   @Test
-  public void testAggJoinNewSuffix() throws IOException, InvalidRangeException {
+  public void testAggJoinNewSuffix() throws Exception {
     for (String ncmlFile : scanWithSuffix) {
       logger.info("Opening {}", ncmlFile);
       try (NetcdfFile ncf = NetcdfDatasets.openFile(ncmlFile, null)) {
@@ -63,7 +62,7 @@ public class S3AggScan {
   }
 
   @Test
-  public void testAggJoinNewPromote() throws IOException, InvalidRangeException {
+  public void testAggJoinNewPromote() throws Exception {
     for (String ncmlFile : scanWithPromote) {
       logger.info("Opening {}", ncmlFile);
       try (NetcdfFile ncf = NetcdfDatasets.openFile(ncmlFile, null)) {
@@ -73,7 +72,7 @@ public class S3AggScan {
   }
 
   @Test
-  public void testAggJoinNewRegExp() throws IOException, InvalidRangeException {
+  public void testAggJoinNewRegExp() throws Exception {
     for (String ncmlFile : scanWithRegExp) {
       logger.info("Opening {}", ncmlFile);
       try (NetcdfFile ncf = NetcdfDatasets.openFile(ncmlFile, null)) {
@@ -83,40 +82,41 @@ public class S3AggScan {
   }
 
   @Test
-  public void testAggJoinNewSuffixOpenNcml() throws IOException, InvalidRangeException {
+  public void testAggJoinNewSuffixOpenNcml() throws Exception {
     for (String ncmlFile : scanWithSuffix) {
       checkOpenNcmlFromString(ncmlFile, NcmlTestsCommon.expectedNumberOfTimesInAgg);
     }
   }
 
   @Test
-  public void testAggJoinNewPromoteOpenNcml() throws IOException, InvalidRangeException {
+  public void testAggJoinNewPromoteOpenNcml() throws Exception {
     for (String ncmlFile : scanWithPromote) {
       checkOpenNcmlFromString(ncmlFile, NcmlTestsCommon.expectedNumberOfTimesInAgg, NcmlTestsCommon.timeVarNamePromote);
     }
   }
 
   @Test
-  public void testAggJoinNewRegExpOpenNcml() throws IOException, InvalidRangeException {
+  public void testAggJoinNewRegExpOpenNcml() throws IOException, Exception {
     for (String ncmlFile : scanWithRegExp) {
       checkOpenNcmlFromString(ncmlFile, NcmlTestsCommon.expectedNumberOfTimesInAggRegExp);
     }
   }
 
   @Test
-  public void compareExplicitVsScan() throws IOException, InvalidRangeException {
+  public void compareExplicitVsScan() throws Exception {
     // 5 minute scans
     try (NetcdfFile ncfScan = NetcdfDatasets.openDataset(NcmlTestsCommon.joinNewNcmlScanSuffixDelim);
         NetcdfFile ncfExp = NetcdfDatasets.openDataset(NcmlTestsCommon.joinNewNcmlExplicit)) {
       // read Rad data from first and last time
       Variable dataVarScan = ncfScan.findVariable(NcmlTestsCommon.dataVarName);
       Variable dataVarExp = ncfExp.findVariable(NcmlTestsCommon.dataVarName);
-      Assert.assertNotNull(dataVarScan);
-      Assert.assertNotNull(dataVarExp);
-      Array dataScanFirst = dataVarScan.readArray(new Section("0,:,:"));
-      Array dataScanLast = dataVarScan.readArray(new Section(NcmlTestsCommon.expectedNumberOfTimesInAgg - 1 + ",:,:"));
-      Array dataExpFirst = dataVarExp.readArray(new Section("0,:,:"));
-      Array dataExpLast = dataVarExp.readArray(new Section(NcmlTestsCommon.expectedNumberOfTimesInAgg - 1 + ",:,:"));
+      assertThat(dataVarScan).isNotNull();
+      assertThat(dataVarExp).isNotNull();
+      Array<?> dataScanFirst = dataVarScan.readArray(new Section("0,:,:"));
+      Array<?> dataScanLast =
+          dataVarScan.readArray(new Section(NcmlTestsCommon.expectedNumberOfTimesInAgg - 1 + ",:,:"));
+      Array<?> dataExpFirst = dataVarExp.readArray(new Section("0,:,:"));
+      Array<?> dataExpLast = dataVarExp.readArray(new Section(NcmlTestsCommon.expectedNumberOfTimesInAgg - 1 + ",:,:"));
 
       // compare data from the scan aggregation and the explicit aggregation
       assertThat(CompareArrayToArray.compareData(NcmlTestsCommon.dataVarName, dataScanFirst, dataExpFirst)).isTrue();
@@ -139,16 +139,16 @@ public class S3AggScan {
     assertThat(time).isNotNull();
     assertThat(time.getLength()).isEqualTo(expectedTimeDimSize);
     Variable timeVar = ncd.findVariable(timeVarName);
-    Array timeValues = timeVar.readArray();
+    Array<?> timeValues = timeVar.readArray();
     assertThat(timeValues).isNotNull();
     Variable expectedTimeVar = ncd.findVariable(NcmlTestsCommon.expectedTimeVarName);
-    Array expectedTimeValues = expectedTimeVar.readArray();
+    Array<?> expectedTimeValues = expectedTimeVar.readArray();
     assertThat(expectedTimeValues).isNotNull();
     assertThat(CompareArrayToArray.compareData(timeVarName, timeValues, expectedTimeValues)).isTrue();
 
     // try to read from first and last object
     Variable dataVar = ncd.findVariable(NcmlTestsCommon.dataVarName);
-    Assert.assertNotNull(dataVar);
+    assertThat(dataVar).isNotNull();
     int[] shape = dataVar.getShape();
     assertThat(shape).isEqualTo(expectedShape);
     Array<Number> data1 = (Array<Number>) dataVar.readArray(new Section("0,0,0"));

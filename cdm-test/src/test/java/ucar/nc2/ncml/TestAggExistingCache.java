@@ -5,14 +5,12 @@
 package ucar.nc2.ncml;
 
 import org.apache.commons.io.FileUtils;
-import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.rules.TemporaryFolder;
 import ucar.array.Array;
-import ucar.array.InvalidRangeException;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.NetcdfDatasets;
@@ -24,6 +22,8 @@ import ucar.unidata.util.test.TestDir;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
+
+import static com.google.common.truth.Truth.assertThat;
 
 /** Test aggregation cache is getting used */
 @Category(NeedsCdmUnitTest.class)
@@ -52,7 +52,7 @@ public class TestAggExistingCache {
 
     DiskCache2 cache = new DiskCache2(cacheDirName, false, 0, 0);
     cache.setAlwaysUseCache(true);
-    Assert.assertEquals(cacheDirName, cache.getRootDirectory());
+    assertThat(cacheDirName).isEqualTo(cache.getRootDirectory());
     assert new File(cache.getRootDirectory()).exists();
 
     Aggregation.setPersistenceCache(cache);
@@ -60,21 +60,21 @@ public class TestAggExistingCache {
 
     try (NetcdfDataset ncfile = NetcdfDatasets.openNcmlDataset(new StringReader(ncml), filename, null)) {
       System.out.println(" TestNcmlAggExisting.open " + filename);
-      Array ATssta = ncfile.readSectionArray("ATssta(:,0,0,0)");
-      Assert.assertEquals(4, ATssta.getSize());
+      Array<?> ATssta = ncfile.readSectionArray("ATssta(:,0,0,0)");
+      assertThat(4).isEqualTo(ATssta.getSize());
     }
-    Assert.assertEquals(0, Aggregation.countCacheUse);
+    assertThat(0).isEqualTo(Aggregation.countCacheUse);
     Aggregation.countCacheUse = 0;
 
     try (NetcdfDataset ncfile = NetcdfDatasets.openNcmlDataset(new StringReader(ncml), filename, null)) {
       System.out.println(" TestNcmlAggExisting.open " + filename);
       Array ATssta = ncfile.readSectionArray("ATssta(:,0,0,0)");
-      Assert.assertEquals(4, ATssta.getSize());
+      assertThat(4).isEqualTo(ATssta.getSize());
     }
-    Assert.assertEquals(8, Aggregation.countCacheUse);
+    assertThat(8).isEqualTo(Aggregation.countCacheUse);
   }
 
-  private String ncml2 = "<?xml version='1.0' encoding='UTF-8'?>\n"
+  private final String ncml2 = "<?xml version='1.0' encoding='UTF-8'?>\n"
       + "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2'>\n"
       + "    <aggregation dimName='time' type='joinExisting' timeUnitsChange='true'>\n"
       + "      <scan location='B:/CM2.1R' suffix='.nc' />\n" + "    </aggregation>\n" + "</netcdf>";
@@ -93,7 +93,7 @@ public class TestAggExistingCache {
 
     DiskCache2 cache = new DiskCache2(cacheDirName, false, 0, 0);
     cache.setAlwaysUseCache(true);
-    Assert.assertEquals(cache.getRootDirectory(), cacheDirName);
+    assertThat(cache.getRootDirectory()).isEqualTo(cacheDirName);
     assert new File(cache.getRootDirectory()).exists();
 
     Aggregation.setPersistenceCache(cache);
@@ -104,6 +104,7 @@ public class TestAggExistingCache {
     try (NetcdfDataset ncfile = NetcdfDatasets.openNcmlDataset(new StringReader(ncml2), filename, null)) {
       System.out.printf("%nTestNcmlAggExisting.open %s%n", filename);
       Variable time = ncfile.findVariable("time");
+      assertThat(time).isNotNull();
       System.out.printf(" Variable %s%n", time.getNameAndDimensions());
       time.readArray();
     }
@@ -118,6 +119,7 @@ public class TestAggExistingCache {
     try (NetcdfDataset ncfile = NetcdfDatasets.openNcmlDataset(new StringReader(ncml2), filename, null)) {
       System.out.printf("%nTestNcmlAggExisting.open %s%n", filename);
       Variable time = ncfile.findVariable("time");
+      assertThat(time).isNotNull();
       System.out.printf(" Variable %s%n", time.getNameAndDimensions());
       time.readArray();
     }

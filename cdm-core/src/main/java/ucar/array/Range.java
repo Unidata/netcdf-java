@@ -4,6 +4,8 @@
  */
 package ucar.array;
 
+import com.google.common.base.Preconditions;
+
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import java.util.Iterator;
@@ -78,7 +80,7 @@ public class Range implements RangeIterator {
 
   /** Used for ONE, VLEN */
   private Range(String name, int length) {
-    assert (length != 0);
+    Preconditions.checkArgument(length != 0);
     this.name = name;
     this.first = 0;
     this.last = length - 1;
@@ -103,7 +105,7 @@ public class Range implements RangeIterator {
    * @param length number of elements in the Range
    */
   public Range(int length) {
-    assert (length != 0);
+    Preconditions.checkArgument(length != 0);
     this.name = null;
     this.first = 0;
     this.last = length - 1;
@@ -157,7 +159,7 @@ public class Range implements RangeIterator {
     this.stride = stride;
     this.length = 1 + (last - first) / stride;
     this.last = first + (this.length - 1) * stride;
-    assert stride != 1 || this.last == last;
+    Preconditions.checkArgument(stride != 1 || this.last == last);
   }
 
   private Range(String name, int first, int last, int stride, int length) throws InvalidRangeException {

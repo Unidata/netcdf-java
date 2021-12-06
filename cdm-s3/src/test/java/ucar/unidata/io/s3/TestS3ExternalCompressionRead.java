@@ -6,7 +6,6 @@ package ucar.unidata.io.s3;
 
 import static com.google.common.truth.Truth.assertThat;
 import java.io.IOException;
-import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -34,10 +33,10 @@ public class TestS3ExternalCompressionRead {
       assertThat(ncfile.findDimension("radialR")).isNotNull();
 
       Variable reflectivity = ncfile.findVariable("Reflectivity");
-      Assert.assertNotNull(reflectivity);
+      assertThat(reflectivity).isNotNull();
 
       // read array
-      Array array = reflectivity.readArray();
+      Array<?> array = reflectivity.readArray();
 
       assertThat(array.getRank()).isEqualTo(3);
 
@@ -62,10 +61,10 @@ public class TestS3ExternalCompressionRead {
       assertThat(ncfile.findDimension("radialR")).isNotNull();
 
       Variable reflectivity = ncfile.findVariable("Reflectivity");
-      Assert.assertNotNull(reflectivity);
+      assertThat(reflectivity).isNotNull();
 
       // read array
-      Array array = reflectivity.readArray();
+      Array<?> array = reflectivity.readArray();
 
       assertThat(array.getRank()).isEqualTo(3);
 

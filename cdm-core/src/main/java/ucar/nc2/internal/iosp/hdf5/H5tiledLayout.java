@@ -6,6 +6,8 @@ package ucar.nc2.internal.iosp.hdf5;
 
 import java.io.IOException;
 import javax.annotation.concurrent.Immutable;
+
+import com.google.common.base.Preconditions;
 import ucar.array.ArrayType;
 import ucar.array.Section;
 import ucar.nc2.iosp.Layout;
@@ -26,7 +28,6 @@ public class H5tiledLayout implements Layout {
   private final int[] chunkSize; // from the StorageLayout message (exclude the elemSize)
   private final int elemSize; // last dimension of the StorageLayout message
 
-
   /**
    * Constructor.
    * This is for HDF5 chunked data storage. The data is read by chunk, for efficency.
@@ -37,8 +38,8 @@ public class H5tiledLayout implements Layout {
    * @throws IOException on io error
    */
   public H5tiledLayout(H5header.Vinfo vinfo, ArrayType dtype, Section wantSection) throws IOException {
-    assert vinfo.isChunked;
-    assert vinfo.btree != null;
+    Preconditions.checkArgument(vinfo.isChunked);
+    Preconditions.checkNotNull(vinfo.btree);
 
     // we have to translate the want section into the same rank as the storageSize, in order to be able to call
     // Section.intersect(). It appears that storageSize (actually msl.chunkSize) may have an extra dimension, reletive

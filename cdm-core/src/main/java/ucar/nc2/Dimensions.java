@@ -33,7 +33,7 @@ public class Dimensions {
         else if (len == 0)
           builder.appendRange(ucar.array.Range.EMPTY);
         else {
-          assert d.isVariableLength();
+          Preconditions.checkArgument(d.isVariableLength());
           builder.appendRange(ucar.array.Range.VLEN);
         }
       }

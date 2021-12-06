@@ -18,6 +18,8 @@ import java.io.*;
 import java.lang.invoke.MethodHandles;
 import java.util.*;
 
+import static com.google.common.truth.Truth.assertThat;
+
 /**
  * Manage the test data directories and servers.
  *
@@ -392,7 +394,7 @@ public class TestDir {
     for (; prefix != null; prefix = prefix.getParentFile()) {// walk up the tree
       int found = 0;
       String[] subdirs = prefix.list();
-      assert (subdirs != null);
+      assertThat(subdirs).isNotNull();
       for (String dirname : subdirs) {
         for (String want : DEFAULTSUBDIRS) {
           if (dirname.equals(want)) {

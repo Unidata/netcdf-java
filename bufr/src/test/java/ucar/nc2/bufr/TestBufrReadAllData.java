@@ -88,7 +88,7 @@ public class TestBufrReadAllData {
           System.out.printf(" %3d nobs = %4d (%s) center = %s table=%s cat=%s ", count++, nobs, m.getHeader(),
               m.getLookup().getCenterNo(), m.getLookup().getTableName(), m.getLookup().getCategoryNo());
         }
-        assert m.isTablesComplete() : "incomplete tables";
+        assertThat(m.isTablesComplete()).isTrue();
 
         if (nobs > 0) {
           BufrSingleMessage bufr = new BufrSingleMessage();

@@ -5,6 +5,7 @@
 
 package ucar.nc2.grib.collection;
 
+import com.google.common.base.Preconditions;
 import com.google.common.base.Throwables;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -139,7 +140,7 @@ public abstract class GribArrayReader {
       if (vindexP.getType() == GribCollectionImmutable.Type.MRUTP) {
         // find the partition from getRuntimeIdxFromMrutpTimeIndex
         CoordinateTime2D time2D = (CoordinateTime2D) vindexP.getCoordinateTime();
-        assert time2D != null;
+        Preconditions.checkNotNull(time2D);
         int[] timeIndices = time2D.getTimeIndicesFromMrutp(indexWanted[0]);
 
         int[] indexReallyWanted = new int[indexWanted.length + 1];

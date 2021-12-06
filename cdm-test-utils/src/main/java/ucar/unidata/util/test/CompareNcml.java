@@ -8,13 +8,14 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Formatter;
 import org.jdom2.Element;
-import org.junit.Assert;
 import org.junit.rules.TemporaryFolder;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.DatasetUrl;
 import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.internal.util.CompareNetcdf2;
 import ucar.nc2.write.NcmlWriter;
+
+import static com.google.common.truth.Truth.assertWithMessage;
 
 /** Read dataset, write NcML, compare results. */
 public class CompareNcml {
@@ -55,24 +56,17 @@ public class CompareNcml {
 
     // create a file and write it out
     String ncmlOut = tempFolder.newFile().getAbsolutePath();
-    if (showFiles)
+    if (showFiles) {
       System.out.println(" output filename= " + ncmlOut);
-
-    try {
-      NcmlWriter ncmlWriter = new NcmlWriter();
-      Element netcdfElement;
-
-      if (explicit) {
-        netcdfElement = ncmlWriter.makeExplicitNetcdfElement(org, null);
-      } else {
-        netcdfElement = ncmlWriter.makeNetcdfElement(org, null);
-      }
-
-      ncmlWriter.writeToFile(netcdfElement, new File(ncmlOut));
-    } catch (IOException ioe) {
-      // ioe.printStackTrace();
-      assert false : ioe.getMessage();
     }
+    NcmlWriter ncmlWriter = new NcmlWriter();
+    Element netcdfElement;
+    if (explicit) {
+      netcdfElement = ncmlWriter.makeExplicitNetcdfElement(org, null);
+    } else {
+      netcdfElement = ncmlWriter.makeNetcdfElement(org, null);
+    }
+    ncmlWriter.writeToFile(netcdfElement, new File(ncmlOut));
 
     // read it back in
     NetcdfFile copy;
@@ -94,7 +88,7 @@ public class CompareNcml {
         System.out.printf("--Compare %s is OK (useRecords=%s explicit=%s openDataset=%s compareData=%s)%n",
             durl.getTrueurl(), useRecords, explicit, openDataset, compareData);
       }
-      Assert.assertTrue(durl.getTrueurl(), ok);
+      assertWithMessage(durl.getTrueurl()).that(ok).isTrue();
     } finally {
       org.close();
       copy.close();

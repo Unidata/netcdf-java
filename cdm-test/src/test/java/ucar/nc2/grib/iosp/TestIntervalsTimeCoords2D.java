@@ -25,6 +25,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
+import static com.google.common.truth.Truth.assertThat;
+
 /*
  * TestIntervalsTimeCoords tests the different type of Grib intervals.
  *
@@ -97,7 +99,7 @@ public class TestIntervalsTimeCoords2D {
         best = ncf.getRootGroup();
       }
       Variable var = best.findVariableByAttribute(Grib.VARIABLE_ID_ATTNAME, parameter);
-      assert var != null : parameter;
+      assertThat(var).isNotNull();
       System.out.printf(" using variable %s%n", var.getFullName());
 
       Dimension dim = var.getDimension(0);
@@ -105,7 +107,7 @@ public class TestIntervalsTimeCoords2D {
         dim = var.getDimension(1);
       String bounds = dim.getShortName() + "_bounds";
       Variable interval = best.findVariableLocal(bounds);
-      assert interval != null : bounds;
+      assertThat(interval).isNotNull();
 
       Array<Number> data = (Array<Number>) interval.readArray();
       Iterator<Number> iter = data.iterator();

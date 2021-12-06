@@ -4,7 +4,6 @@
  */
 package ucar.nc2.grib.iosp;
 
-import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -50,7 +49,7 @@ public class TestGribMisc {
     logger.debug("{}", filename);
     try (NetcdfFile ncfile = NetcdfFiles.open(filename, null)) {
       Variable v = ncfile.getRootGroup().findVariableByAttribute(Grib.VARIABLE_ID_ATTNAME, "VAR_0-0-0_L1");
-      assert v != null : ncfile.getLocation();
+      assertThat(v).isNotNull();
     }
 
     // this one has a forecast and error = must be separate variables
@@ -69,7 +68,7 @@ public class TestGribMisc {
     logger.debug("{}", filename);
     try (NetcdfFile ncfile = NetcdfFiles.open(filename, null)) {
       Variable v = ncfile.getRootGroup().findVariableByAttribute(Grib.VARIABLE_ID_ATTNAME, "VAR_0-0-0_L105");
-      assert v != null : ncfile.getLocation();
+      assertThat(v).isNotNull();
 
       Array data = v.readArray();
       int[] shape = data.getShape();
@@ -106,7 +105,7 @@ public class TestGribMisc {
 
     try (NetcdfFile ncfile = NetcdfFiles.open(filename, null)) {
       Variable v = ncfile.getRootGroup().findVariableByAttribute(Grib.VARIABLE_ID_ATTNAME, "VAR_0-1-194_L1");
-      assert v != null : ncfile.getLocation();
+      assertThat(v).isNotNull();
       Array<Number> vals = (Array<Number>) v.readArray();
       for (Number val : vals) {
         assertThat(val.doubleValue()).isEqualTo(0.0);
@@ -154,7 +153,7 @@ public class TestGribMisc {
     System.out.printf("testScanMode %s%n", filename);
     try (NetcdfFile ncfile = NetcdfFiles.open(filename, null)) {
       Variable v = ncfile.getRootGroup().findVariableByAttribute(Grib.VARIABLE_ID_ATTNAME, "VAR_0-0-0_L1");
-      assert v != null : ncfile.getLocation();
+      assertThat(v).isNotNull();
       Array<Number> vals = (Array<Number>) Arrays.reduce(v.readArray(new Section("0,:,0")));
       assertThat(Misc.nearlyEquals(vals.get(0).doubleValue(), 243.289993)).isTrue();
       assertThat(Misc.nearlyEquals(vals.get((int) vals.getSize() - 1).doubleValue(), 242.080002)).isTrue();
@@ -174,13 +173,13 @@ public class TestGribMisc {
       Variable var = nc.findVariable("2_metre_temperature_surface");
       Array<Float> data = (Array<Float>) var.readArray();
       int npts = 2560 * 5136;
-      Assert.assertEquals(npts, data.getSize());
+      assertThat(npts).isEqualTo(data.getSize());
 
       float first = data.get(0, 0, 0);
       float last = data.get(0, 2559, 5135);
 
-      Assert.assertEquals(273.260162, first, 1e-6);
-      Assert.assertEquals(224.599670, last, 1e-6);
+      assertThat(first).isWithin(1e-6f).of(273.260162f);
+      assertThat(last).isWithin(1e-6f).of(224.599670f);
     }
 
     Grib1RecordScanner.setAllowBadDsLength(false);

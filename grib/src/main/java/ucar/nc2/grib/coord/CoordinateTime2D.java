@@ -91,7 +91,7 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
     }
     this.ntimes = nmax;
     this.nruns = runtime.getSize();
-    assert nruns == times.size();
+    Preconditions.checkArgument(nruns == times.size());
 
     this.offset = makeOffsets(times);
     this.vals = (vals == null) ? null : Collections.unmodifiableList(vals);
@@ -662,14 +662,14 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
       run2master[run2Didx] = masterIdx;
       masterIdx++;
     }
-    assert masterIdx >= nruns;
+    Preconditions.checkArgument(masterIdx >= nruns);
 
     // now for each coordinate, use the latest runtime available
     int[] time2runtime = new int[offsetSorted.size()];
     for (int runIdx = 0; runIdx < nruns; runIdx++) {
       CoordinateTime timeCoord =
           (times == null) ? (CoordinateTime) getTimeCoordinate(runIdx) : (CoordinateTime) times.get(runIdx);
-      assert timeCoord != null;
+      Preconditions.checkNotNull(timeCoord);
       for (Long offset : timeCoord.getOffsetSorted()) {
         Integer bestValIdx = map.get(offset + getOffset(runIdx));
         if (bestValIdx == null) {
@@ -788,7 +788,7 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
       run2master[run2Didx] = masterIdx;
       masterIdx++;
     }
-    assert masterIdx >= nruns;
+    Preconditions.checkArgument(masterIdx >= nruns);
 
     int[] time2runtime = new int[offsetSorted.size()];
     for (int runIdx = 0; runIdx < nruns; runIdx++) {

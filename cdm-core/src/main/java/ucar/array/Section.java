@@ -646,7 +646,7 @@ public class Section {
         odo[digit] = iterReset.next();
         rangeIterList.set(digit, iterReset);
         digit--;
-        assert digit >= 0; // catch screw-ups
+        Preconditions.checkArgument(digit >= 0); // catch screw-ups
       }
     }
 
@@ -803,7 +803,7 @@ public class Section {
 
     /** Remove the first n Ranges, n &le; number of ranges. */
     public Builder removeFirst(int n) {
-      assert n <= ranges.size();
+      Preconditions.checkArgument(n <= ranges.size());
       ranges = ranges.subList(n, ranges.size());
       return this;
     }

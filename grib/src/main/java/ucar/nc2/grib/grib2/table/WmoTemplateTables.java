@@ -4,6 +4,7 @@
  */
 package ucar.nc2.grib.grib2.table;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import javax.annotation.Nonnull;
@@ -114,8 +115,8 @@ public class WmoTemplateTables {
 
       Map<String, TemplateTable> map = new HashMap<>();
       String[] elems = version.getElemNames();
-      assert elems != null;
-      assert elems.length > 3;
+      Preconditions.checkNotNull(elems);
+      Preconditions.checkArgument(elems.length > 3);
 
       Element root = doc.getRootElement();
       List<Element> featList = root.getChildren(elems[0]); // 0 = main element

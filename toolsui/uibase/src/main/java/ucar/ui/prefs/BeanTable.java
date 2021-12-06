@@ -6,6 +6,8 @@
 package ucar.ui.prefs;
 
 import javax.annotation.Nullable;
+
+import com.google.common.base.Preconditions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ui.table.HidableTableColumnModel;
@@ -542,7 +544,8 @@ public class BeanTable<T> extends JPanel {
         column.setPreferredWidth(propCol.getWidth());
 
         tableColumnModel.moveColumn(currentViewIndex, newViewIndex);
-        assert tableColumnModel.getColumn(newViewIndex) == column : "tableColumn wasn't successfully moved.";
+        Preconditions.checkArgument(tableColumnModel.getColumn(newViewIndex) == column,
+            "tableColumn wasn't successfully moved.");
 
         // We must do this last, since moveColumn() only works on visible columns.
         tableColumnModel.setColumnVisible(column, propCol.isVisible());
@@ -680,7 +683,7 @@ public class BeanTable<T> extends JPanel {
       String hiddenProperties = "";
       for (MethodDescriptor md : mds) {
         Method m = md.getMethod();
-        assert m != null;
+        Preconditions.checkNotNull(m);
 
         if (m.getName().equals("hiddenProperties")) {
           try {

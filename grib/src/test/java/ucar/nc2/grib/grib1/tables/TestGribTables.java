@@ -34,18 +34,21 @@ package ucar.nc2.grib.grib1.tables;
 
 import org.junit.*;
 import java.io.File;
-import java.io.IOException;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
+
+import static com.google.common.truth.Truth.assertThat;
 
 @RunWith(JUnit4.class)
 public class TestGribTables {
 
   @Test
-  public void testNclParameterTable() throws IOException {
+  public void testNclParameterTable() {
     String dirS = "../grib/src/main/resources/resources/grib1/ncl";
     File dir = new File(dirS);
-    assert (dir.listFiles() != null);
+    assertThat(dir).isNotNull();
+    assertThat(dir.listFiles()).isNotNull();
+
     for (File f : dir.listFiles()) {
       if (!f.getName().endsWith(".h"))
         continue;

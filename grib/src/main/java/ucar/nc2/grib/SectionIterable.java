@@ -26,10 +26,10 @@ public class SectionIterable implements Iterable<Integer> {
   private final int[] fullShape;
 
   public SectionIterable(List<RangeIterator> ranges, int[] fullShape) {
-    assert ranges.size() == fullShape.length : ranges.size() + " != " + fullShape.length;
+    Preconditions.checkArgument(ranges.size() == fullShape.length, ranges.size() + " != " + fullShape.length);
     int count = 0;
     for (RangeIterator ri : ranges) {
-      assert (ri.length() <= fullShape[count]);
+      Preconditions.checkArgument(ri.length() <= fullShape[count]);
       count++;
     }
 
@@ -38,7 +38,7 @@ public class SectionIterable implements Iterable<Integer> {
   }
 
   public SectionIterable(List<RangeIterator> ranges, List<Integer> fullShapeList) {
-    assert ranges.size() == fullShapeList.size() : ranges.size() + " != " + fullShapeList.size();
+    Preconditions.checkArgument(ranges.size() == fullShapeList.size(), ranges.size() + " != " + fullShapeList.size());
     int count = 0;
     this.fullShape = new int[fullShapeList.size()];
     for (RangeIterator ri : ranges) {
@@ -187,7 +187,7 @@ public class SectionIterable implements Iterable<Integer> {
         odo[digit] = iterReset.next();
         rangeIterList.set(digit, iterReset);
         digit--;
-        assert digit >= 0; // catch screw-ups
+        Preconditions.checkArgument(digit >= 0); // catch screw-ups
       }
     }
 

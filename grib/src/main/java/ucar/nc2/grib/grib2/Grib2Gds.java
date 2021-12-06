@@ -5,6 +5,7 @@
 
 package ucar.nc2.grib.grib2;
 
+import com.google.common.base.Preconditions;
 import ucar.nc2.grib.GdsHorizCoordSys;
 import ucar.nc2.grib.GribNumbers;
 import ucar.nc2.grib.GribUtils;
@@ -229,7 +230,7 @@ public abstract class Grib2Gds {
 
   public boolean isThin() {
     boolean isThin = (getOctet(11) != 0);
-    assert !isThin || (nx < 0 || ny < 0);
+    Preconditions.checkArgument(!isThin || (nx < 0 || ny < 0));
     return isThin;
   }
 

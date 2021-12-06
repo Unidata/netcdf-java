@@ -5,7 +5,6 @@
 
 package ucar.nc2.grib;
 
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
@@ -29,6 +28,8 @@ import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import static com.google.common.truth.Truth.assertThat;
 
 /**
  * Test GribCdmIndex scanning
@@ -150,11 +151,11 @@ public class TestGribCdmIndexUpdating {
       try (NetcdfFile ncfile = NetcdfFiles.open(indexFile)) {
         System.out.printf("opened = %s%n", ncfile.getLocation());
         Group g = ncfile.findGroup("TwoD");
-        assert g != null;
+        assertThat(g).isNotNull();
         Variable v = g.findVariableLocal(varName);
-        Assert.assertNotNull(varName, v);
+        assertThat(v).isNotNull();
         Dimension dim0 = v.getDimension(0);
-        Assert.assertEquals(v.getFullName(), remLen, dim0.getLength());
+        assertThat(remLen).isEqualTo(dim0.getLength());
       }
 
       // new file arrives
@@ -170,9 +171,9 @@ public class TestGribCdmIndexUpdating {
       try (NetcdfFile ncfile = NetcdfFiles.open(indexFile)) {
         System.out.printf("opened = %s%n", ncfile.getLocation());
         Group g = ncfile.findGroup("TwoD");
-        assert g != null;
+        assertThat(g).isNotNull();
         Variable v = g.findVariableLocal(varName);
-        assert v != null;
+        assertThat(v).isNotNull();
 
         Dimension dim0 = v.getDimension(0);
         assert dim0.getLength() == orgLen : dim0.getLength() + " should be " + orgLen;

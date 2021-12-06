@@ -235,9 +235,9 @@ public class TestGridSubsetCurvilinear {
     Variable lon = ncf.findVariable(lonVarName);
     Variable lat = ncf.findVariable(latVarName);
 
-    assert time != null;
-    assert lat != null;
-    assert lon != null;
+    assertThat(time).isNotNull();
+    assertThat(lat).isNotNull();
+    assertThat(lon).isNotNull();
 
     checkWellKnownTime(time, closestIndexTimeStart, closestTimeStart, closestCalendarDateStart, subsetTimeIsoStart);
     checkWellKnownTime(time, closestIndexTimeEnd, closestTimeEnd, closestCalendarDateEnd, subsetTimeIsoEnd);

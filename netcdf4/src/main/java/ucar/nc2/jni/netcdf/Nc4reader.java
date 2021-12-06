@@ -261,9 +261,9 @@ public class Nc4reader extends AbstractIOServiceProvider {
     if (ret != 0)
       throw new IOException(ret + ": " + nc4.nc_strerror(ret));
 
-    assert numDimsInGoup_p.getValue() == numDimidsInGroup_p.getValue() : String.format(
-        "Number of dimensions in group (%s) differed from number of dimension IDs in group (%s).",
-        numDimsInGoup_p.getValue(), numDimidsInGroup_p.getValue());
+    Preconditions.checkArgument(numDimsInGoup_p.getValue() == numDimidsInGroup_p.getValue(),
+        String.format("Number of dimensions in group (%s) differed from number of dimension IDs in group (%s).",
+            numDimsInGoup_p.getValue(), numDimidsInGroup_p.getValue()));
 
     // We need this in order to allocate the correct length for unlimitedDimIdsInGroup.
     IntByReference numUnlimitedDimsInGroup_p = new IntByReference();

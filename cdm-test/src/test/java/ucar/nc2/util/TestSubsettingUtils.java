@@ -16,6 +16,8 @@ import java.util.Random;
 
 import ucar.nc2.internal.util.CompareArrayToArray;
 
+import static com.google.common.truth.Truth.assertThat;
+
 /**
  * Utilities to read and subset data
  *
@@ -38,7 +40,7 @@ public class TestSubsettingUtils {
         for (Variable v2 : ncfile.getAllVariables())
           System.out.printf("  %s%n", v2.getFullName());
       }
-      assert (null != v);
+      assertThat(v).isNotNull();
       int[] shape = v.getShape();
 
       // read entire array
@@ -74,7 +76,7 @@ public class TestSubsettingUtils {
 
     try (NetcdfFile ncfile = NetcdfFiles.open(filename)) {
       Variable v = ncfile.findVariable(varName);
-      assert (null != v);
+      assertThat(v).isNotNull();
       subsetVariable(v, s, v.readArray());
     }
   }

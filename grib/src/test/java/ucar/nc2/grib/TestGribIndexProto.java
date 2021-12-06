@@ -1,7 +1,6 @@
 /* Copyright Unidata */
 package ucar.nc2.grib;
 
-import static org.junit.Assert.*;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -10,11 +9,12 @@ import org.slf4j.LoggerFactory;
 import thredds.inventory.CollectionUpdateType;
 import ucar.nc2.grib.grib1.Grib1Index;
 import ucar.nc2.grib.grib2.Grib2Index;
-import ucar.unidata.util.test.TestDir;
 
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.google.common.truth.Truth.assertThat;
 
 /**
  * Test can read both proto2 and proto3 gbx9.
@@ -52,18 +52,14 @@ public class TestGribIndexProto {
 
   @Test
   public void testOpen() {
-    try {
-      if (isGrib1) {
-        Grib1Index reader = new Grib1Index();
-        boolean ok = reader.readIndex(filename, -1, CollectionUpdateType.never);
-        assertTrue(ok || fail);
-      } else {
-        Grib2Index reader = new Grib2Index();
-        boolean ok = reader.readIndex(filename, -1, CollectionUpdateType.never);
-        assertTrue(ok || fail);
-      }
-    } catch (Exception e) {
-      fail("Exception should not be thrown");
+    if (isGrib1) {
+      Grib1Index reader = new Grib1Index();
+      boolean ok = reader.readIndex(filename, -1, CollectionUpdateType.never);
+      assertThat(ok || fail).isTrue();
+    } else {
+      Grib2Index reader = new Grib2Index();
+      boolean ok = reader.readIndex(filename, -1, CollectionUpdateType.never);
+      assertThat(ok || fail).isTrue();
     }
   }
 }

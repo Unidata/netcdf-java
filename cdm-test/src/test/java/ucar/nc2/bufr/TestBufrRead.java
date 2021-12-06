@@ -66,27 +66,6 @@ public class TestBufrRead {
     System.out.println("***Opened " + count + " files");
   }
 
-  // @Test
-  public void bitCountAllInIddDir() throws IOException {
-    int count = 0;
-    assert 13852 == (count = bitCount(TestDir.cdmUnitTestDir + "formats/bufr/exclude/uniqueIDD.bufr")) : count; // was
-                                                                                                                // 12337
-    assert 11249 == (count = bitCount(TestDir.cdmUnitTestDir + "formats/bufr/exclude/uniqueBrasil.bufr")) : count; // was
-                                                                                                                   // 11533
-    assert 22710 == (count = bitCount(TestDir.cdmUnitTestDir + "formats/bufr/exclude/uniqueExamples.bufr")) : count; // was
-                                                                                                                     // 12727
-    assert 9929 == (count = bitCount(TestDir.cdmUnitTestDir + "formats/bufr/exclude/uniqueFnmoc.bufr")) : count;
-  }
-
-  public void utestCountMessages() throws IOException {
-    int count = 0;
-    count += bitCount(TestDir.cdmUnitTestDir + "formats/bufr/uniqueIDD.bufr");
-    // count += readBufr(TestAll.cdmUnitTestDir + "formats/bufr/uniqueBrasil.bufr");
-    // count += readBufr(TestAll.cdmUnitTestDir + "formats/bufr/uniqueExamples.bufr");
-    // count += readBufr(TestAll.cdmUnitTestDir + "formats/bufr/uniqueFnmoc.bufr");
-    System.out.printf("total read ok = %d%n", count);
-  }
-
   private int bitCount(String filename) throws IOException {
     System.out.printf("%n***bitCount bufr %s%n", filename);
     int bad = 0;
@@ -104,7 +83,7 @@ public class TestBufrRead {
           System.out.printf(" %3d nobs = %4d (%s) center = %s table=%s cat=%s ", count++, nobs, m.getHeader(),
               m.getLookup().getCenterNo(), m.getLookup().getTableName(), m.getLookup().getCategoryNo());
         }
-        assert m.isTablesComplete() : "incomplete tables";
+        assertThat(m.isTablesComplete()).isTrue();
 
         if (nobs > 0) {
           BufrSingleMessage bufr = new BufrSingleMessage();
