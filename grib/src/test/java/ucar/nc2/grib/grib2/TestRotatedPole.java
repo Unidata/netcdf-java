@@ -90,7 +90,7 @@ public class TestRotatedPole {
       assertThat(projVar.findAttribute("grid_north_pole_longitude").getNumericValue().doubleValue()).isWithin(DELTA)
           .of(74.0);
       assertThat(projVar.findAttribute("grid_north_pole_latitude").getNumericValue().doubleValue()).isWithin(DELTA)
-          .of(74.0);
+          .of(36.0);
       // check data variable
       Variable dataVar = nc.findVariable("TMP_P0_L100_GLC0_surface");
       assertThat(dataVar).isNotNull();
