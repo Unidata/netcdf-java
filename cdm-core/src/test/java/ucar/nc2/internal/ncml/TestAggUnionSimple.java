@@ -10,7 +10,6 @@ import java.util.Formatter;
 import java.util.Iterator;
 
 import org.junit.AfterClass;
-import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -304,7 +303,7 @@ public class TestAggUnionSimple {
       if (!ok) {
         System.out.printf("%s%n", errlog);
       }
-      Assert.assertTrue(ok);
+      assertThat(ok).isTrue();
     }
   }
 

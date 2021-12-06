@@ -4,7 +4,6 @@
  */
 package ucar.nc2.internal.ncml;
 
-import static org.junit.Assert.assertArrayEquals;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
@@ -18,6 +17,8 @@ import ucar.array.Arrays;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 
+import static com.google.common.truth.Truth.assertThat;
+
 /** Test ncml value element in the JUnit framework. */
 
 public class TestNcmlValues {
@@ -26,7 +27,7 @@ public class TestNcmlValues {
   String ncml = null;
   int expectedIntLength;
   int[] expectedIntShape = null;
-  Array expectedIntValues = null;
+  Array<Number> expectedIntValues = null;
   String[] intVarNames = null;
 
   @Before
@@ -99,11 +100,11 @@ public class TestNcmlValues {
 
     for (Variable var : varList) {
       System.out.println("  " + var.getDescription());
-      Array values = var.readArray();
+      Array<Number> values = (Array<Number>) var.readArray();
 
-      assertArrayEquals(expectedIntShape, values.getShape());
-      assert expectedIntLength == values.getSize();
-      Arrays.equalNumbers(values, expectedIntValues);
+      assertThat(expectedIntShape).isEqualTo(values.getShape());
+      assertThat(expectedIntLength).isEqualTo(values.getSize());
+      assertThat(Arrays.equalNumbers(values, expectedIntValues)).isTrue();
     }
   }
 }
