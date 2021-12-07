@@ -17,6 +17,8 @@ import ucar.nc2.Variable
 import ucar.nc2.iosp.NetcdfFileFormat
 import ucar.nc2.write.NetcdfFormatWriter
 
+import static com.google.common.truth.Truth.assertThat;
+
 /**
  * Tests miscellaneous aspects of Nc4Iosp.
  *
