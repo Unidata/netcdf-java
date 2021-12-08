@@ -9,17 +9,14 @@ import org.junit.*;
 import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.XMLStore;
 import java.io.IOException;
-import java.lang.invoke.MethodHandles;
+
+import static com.google.common.truth.Truth.assertThat;
 
 @RunWith(JUnit4.class)
 public class TestDebug {
-  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-
   @ClassRule
   public static TemporaryFolder tempFolder = new TemporaryFolder();
 
@@ -39,22 +36,22 @@ public class TestDebug {
   @Test
   public void testDebug() {
     Debug.set("testit", true);
-    assert (Debug.isSet("testit"));
+    assertThat(Debug.isSet("testit")).isTrue();
 
     Debug.set("fart/allow", true);
     // assert( Debug.isSet("fart.allow"));
-    assert (Debug.isSet("fart/allow"));
+    assertThat(Debug.isSet("fart/allow")).isTrue();
 
     Debug.set("fart/allow", false);
-    assert (!Debug.isSet("fart/allow"));
+    assertThat(Debug.isSet("fart/allow")).isFalse();
 
-    assert (!Debug.isSet("fart/notSet"));
+    assertThat(Debug.isSet("fart/notSet")).isFalse();
     try {
-      assert (!store.nodeExists("fart"));
-      assert (store.nodeExists("/Debug/fart"));
-      assert (store.nodeExists("Debug/fart"));
+      assertThat(store.nodeExists("fart")).isFalse();
+      assertThat(store.nodeExists("/Debug/fart")).isTrue();
+      assertThat(store.nodeExists("Debug/fart")).isTrue();
     } catch (Exception e) {
-      assert (false);
+      assertThat(false);
     }
   }
 
@@ -64,7 +61,7 @@ public class TestDebug {
     try {
       xstore.save();
     } catch (java.io.IOException e) {
-      assert (false);
+      assertThat(false);
     }
   }
 }

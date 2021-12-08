@@ -18,6 +18,8 @@ import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
 import java.util.Formatter;
 
+import static com.google.common.truth.Truth.assertThat;
+
 /**
  * Look for missing data in large Grib Collections.
  * These numbers will be different if we index with unionRuntimeCoords
@@ -73,10 +75,10 @@ public class TestGribCollectionsBig {
   public void testSRC() {
     GribCollectionMissing.Count count =
         GribCollectionMissing.read(topdir + "/ds083.2/grib1/2008/2008.10/ds083.2_Aggregation-2008.10.ncx4");
-    System.out.printf("%n%50s == %d/%d/%d%n", "total", count.nerrs, count.nmiss, count.nread);
+    System.out.printf("%n%50s).isEqualTo(%d/%d/%d%n", "total", count.nerrs, count.nmiss, count.nread);
 
-    assert count.nread == 35464 : count.nread;
-    assert count.nmiss == 0;
+    assertThat(count.nread).isEqualTo(35464);
+    assertThat(count.nmiss).isEqualTo(0);
   }
 
   @Test
@@ -85,10 +87,10 @@ public class TestGribCollectionsBig {
         GribCollectionMissing.read(topdir + "/ds083.2/grib1/2008/ds083.2_Aggregation-2008.ncx4");
 
     // local: 104 secs
-    System.out.printf("%n%50s == %d/%d/%d%n", "total", count.nerrs, count.nmiss, count.nread);
+    System.out.printf("%n%50s).isEqualTo(%d/%d/%d%n", "total", count.nerrs, count.nmiss, count.nread);
 
-    assert count.nread == 418704 : count.nread;
-    assert count.nmiss == 0;
+    assertThat(count.nread).isEqualTo(418704);
+    assertThat(count.nmiss).isEqualTo(0);
   }
 
   @Ignore("takes too long")
@@ -97,11 +99,11 @@ public class TestGribCollectionsBig {
     RandomAccessFile.setDebugLeaks(true);
     GribCollectionMissing.Count count = GribCollectionMissing.read(topdir + "/ds083.2/grib1/ds083.2_Aggregation.ncx4");
 
-    System.out.printf("%n%50s == %d/%d/%d%n", "total", count.nerrs, count.nmiss, count.nread);
+    System.out.printf("%n%50s).isEqualTo(%d/%d/%d%n", "total", count.nerrs, count.nmiss, count.nread);
 
-    assert count.nerrs == 0;
-    assert count.nmiss == 492158;
-    assert count.nread == 7038851;
+    assertThat(count.nerrs).isEqualTo(0);
+    assertThat(count.nmiss).isEqualTo(492158);
+    assertThat(count.nread).isEqualTo(7038851);
   }
 
 }

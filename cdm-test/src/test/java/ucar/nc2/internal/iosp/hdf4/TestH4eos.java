@@ -65,35 +65,28 @@ public class TestH4eos {
     try (NetcdfFile ncfile = NetcdfFiles.open(TestDir.cdmUnitTestDir + "formats/hdf4/96108_08.hdf")) {
 
       Variable v = ncfile.findVariable("CalibratedData");
-      assert (null != v);
-      assert v.getRank() == 3;
+      assertThat(v).isNotNull();
+      assertThat(v.getRank()).isEqualTo(3);
       int[] shape = v.getShape();
-      assert shape[0] == 810;
-      assert shape[1] == 50;
-      assert shape[2] == 716;
+      assertThat(shape[0]).isEqualTo(810);
+      assertThat(shape[1]).isEqualTo(50);
+      assertThat(shape[2]).isEqualTo(716);
 
       Array<?> data = v.readArray(new Section("0:809:10,0:49:5,0:715:2"));
-      assert data.getRank() == 3;
+      assertThat(data.getRank()).isEqualTo(3);
       int[] dshape = data.getShape();
-      assert dshape[0] == 810 / 10;
-      assert dshape[1] == 50 / 5;
-      assert dshape[2] == 716 / 2;
+      assertThat(dshape[0]).isEqualTo(810 / 10);
+      assertThat(dshape[1]).isEqualTo(50 / 5);
+      assertThat(dshape[2]).isEqualTo(716 / 2);
 
       // read entire array
-      Array<?> A;
-      try {
-        A = v.readArray();
-      } catch (IOException e) {
-        System.err.println("ERROR reading file");
-        assert (false);
-        return;
-      }
+      Array<?> A = v.readArray();
 
       // compare
       Array<?> Asection = Arrays.section(A, new Section("0:809:10,0:49:5,0:715:2"));
-      assert (Asection.getRank() == 3);
+      assertThat(Asection.getRank()).isEqualTo(3);
       for (int i = 0; i < 3; i++)
-        assert Asection.getShape()[i] == dshape[i];
+        assertThat(Asection.getShape()[i]).isEqualTo(dshape[i]);
 
       CompareArrayToArray.compareData(v.getShortName(), data, Asection);
     }

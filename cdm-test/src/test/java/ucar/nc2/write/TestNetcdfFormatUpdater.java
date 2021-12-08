@@ -89,7 +89,7 @@ public class TestNetcdfFormatUpdater {
     // read it back
     try (NetcdfFile ncfile = NetcdfFiles.open(filename)) {
       Variable vv = ncfile.getRootGroup().findVariableLocal("time");
-      assert vv.getSize() == 9 : vv.getSize();
+      assertThat(vv.getSize()).isEqualTo(9);
 
       Array expected = Arrays.makeArray(ArrayType.INT, 9, 0, 1);
       Array data = vv.readArray();

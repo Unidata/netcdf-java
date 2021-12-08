@@ -23,6 +23,8 @@ import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import static com.google.common.truth.Truth.assertThat;
+
 @RunWith(Parameterized.class)
 @Category(NeedsCdmUnitTest.class)
 public class TestH4eosRdAll {
@@ -71,7 +73,7 @@ public class TestH4eosRdAll {
         g = ncfile.getRootGroup();
 
       Variable dset = g.findVariableLocal("StructMetadata.0");
-      assert (dset != null);
+      assertThat(dset).isNotNull();
     }
   }
 }

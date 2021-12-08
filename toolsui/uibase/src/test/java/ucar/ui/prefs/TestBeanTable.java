@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
+ * See LICENSE for license information.
+ */
 package ucar.ui.prefs;
 
 import java.awt.Dimension;
@@ -5,7 +9,6 @@ import java.awt.HeadlessException;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.beans.BeanInfo;
-import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.io.IOException;
@@ -46,7 +49,7 @@ public class TestBeanTable {
   }
 
   @Test
-  public void testIntrospection() throws IOException {
+  public void testIntrospection() throws Exception {
     TestBean testBean = new TestBean();
     Class<? extends TestBean> beanClass = testBean.getClass();
 
@@ -61,19 +64,12 @@ public class TestBeanTable {
         String propName = propertyDescriptor.getName();
         char first = Character.toUpperCase(propName.charAt(0));
         String method_name = "get" + first + propName.substring(1);
-        try {
-          Method method = beanClass.getMethod(method_name, (Class[]) null);
-          System.out.println("   method = " + method);
-        } catch (NoSuchMethodException e) {
-          System.out.println("  ***NoSuchMethodException " + method_name);
-          assert false;
-        }
+        Method method = beanClass.getMethod(method_name, (Class[]) null);
+        System.out.println("   method = " + method);
       }
 
     } catch (HeadlessException e) {
       // ok to fail if there is no display
-    } catch (IntrospectionException e) {
-      assert false;
     }
   }
 

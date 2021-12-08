@@ -19,6 +19,8 @@ import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 
+import static com.google.common.truth.Truth.assertThat;
+
 /** Test opening and reading npoess files */
 @Category(NeedsCdmUnitTest.class)
 public class TestH5npoess {
@@ -54,7 +56,7 @@ public class TestH5npoess {
     try (NetcdfFile ncfile =
         TestH5.openH5("npoess/ExampleFiles/GDNBF-VNCCO_NPP_d2003125_t101038_e10116_b9_c2005829162517_dev.h5")) {
       Variable dset = ncfile.findVariable("Data_Products/VIIRS-DNB-FGEO/VIIRS-DNB-FGEO_Aggr");
-      assert (null != dset);
+      assertThat(dset).isNotNull();
     }
   }
 
@@ -63,8 +65,8 @@ public class TestH5npoess {
     try (NetcdfFile ncfile = TestH5.open(
         "C:/data/HDF5Files/CrIMSS - CrIS - ATMS/ATMS/ATMS_SCIENCE_RDR/RASCI_npp_d20030125_t104457_e104505_b00016_c20061210190242_den_SWC.h5")) {
       Variable dset = ncfile.findVariable("Data_Products/ATMS-SCIENCE-RDR/ATMS-SCIENCE-RDR_Aggr");
-      assert (null != dset);
-      Array data = dset.readArray();
+      assertThat(dset).isNotNull();
+      dset.readArray();
     }
     H5header.setDebugFlags(DebugFlags.create(""));
   }

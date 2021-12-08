@@ -19,6 +19,8 @@ import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
 import java.io.IOException;
 
+import static com.google.common.truth.Truth.assertThat;
+
 @Category(NeedsCdmUnitTest.class)
 public class TestH4misc {
   static public String testDir = TestDir.cdmUnitTestDir + "formats/hdf4/";
@@ -29,7 +31,7 @@ public class TestH4misc {
     try (NetcdfFile ncfile = NetcdfFiles.open(filename)) {
       String vname = "MODIS_SWATH_Type_L1B/Data_Fields/EV_250_Aggr1km_RefSB";
       Variable v = ncfile.findVariable(vname);
-      assert v != null : filename + " " + vname;
+      assertThat(v).isNotNull();
 
       Array<?> data = v.readArray();
       System.out.printf(" sum =          %f%n", Arrays.sumDouble(data));
@@ -47,7 +49,6 @@ public class TestH4misc {
         System.out.printf("  %d sum3D =        %f%n", i, sum);
         sum2 += sum;
 
-        // assert data2D.getRank() == 2;
         sum = Arrays.sumDouble(Arrays.reduce(data2D, 0));
         System.out.printf("  %d sum2D =        %f%n", i, sum);
         sum3 += sum;
@@ -56,7 +57,7 @@ public class TestH4misc {
       }
       System.out.printf(" sum2D =        %f%n", sum2);
       System.out.printf(" sum2D.reduce = %f%n", sum3);
-      assert sum2 == sum3;
+      assertThat(sum2).isEqualTo(sum3);
     }
   }
 

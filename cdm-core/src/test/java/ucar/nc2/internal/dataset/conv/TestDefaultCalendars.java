@@ -62,7 +62,7 @@ public class TestDefaultCalendars {
       assertWithMessage(failMessage).that(testCond).isTrue();
 
       // look for the calendar attached to the time variable...if there isn't one,
-      // then a default was not set and the assert will fail.
+      // then a default was not set and the test will fail.
       Calendar cal = Calendar.get(tca.attributes().findAttributeIgnoreCase(CF.CALENDAR).getStringValue()).orElseThrow();
       expected = defaultCFCalendar.toString();
       found = cal.toString();
@@ -123,7 +123,7 @@ public class TestDefaultCalendars {
       assertWithMessage(failMessage).that(testCond).isTrue();
 
       // look for the calendar attached to the time variable...if there isn't one,
-      // then a default was not set and the assert will fail.
+      // then a default was not set and the test will fail.
       Calendar cal = Calendar.get(tca.attributes().findAttributeIgnoreCase(CF.CALENDAR).getStringValue()).orElseThrow();
       found = cal.toString();
       expected = defaultCoardsCalendar.toString();

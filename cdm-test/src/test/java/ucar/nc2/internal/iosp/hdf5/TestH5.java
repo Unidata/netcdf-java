@@ -19,60 +19,35 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
 
-/**
- * TestSuite that runs all the sample testsNew
- *
- */
+import static com.google.common.truth.Truth.assertThat;
+
 @Category(NeedsCdmUnitTest.class)
 public class TestH5 {
   private static boolean dumpFile = false;
   public static String testDir = TestDir.cdmUnitTestDir + "formats/hdf5/";
 
-  public static NetcdfFile open(String filename) {
-    try {
-      System.out.println("**** Open " + filename);
-      NetcdfFile ncfile = NetcdfFiles.open(filename);
-      if (TestH5.dumpFile)
-        System.out.println("open " + ncfile);
-      return ncfile;
-
-    } catch (java.io.IOException e) {
-      System.out.println(" fail = " + e);
-      e.printStackTrace();
-      assert (false);
-      return null;
-    }
+  public static NetcdfFile open(String filename) throws IOException {
+    System.out.println("**** Open " + filename);
+    NetcdfFile ncfile = NetcdfFiles.open(filename);
+    if (TestH5.dumpFile)
+      System.out.println("open " + ncfile);
+    return ncfile;
   }
 
-  public static NetcdfFile openH5(String filename) {
-    try {
-      System.out.println("**** Open " + testDir + filename);
-      NetcdfFile ncfile = NetcdfFiles.open(testDir + filename);
-      if (TestH5.dumpFile)
-        System.out.println("open H5 " + ncfile);
-      return ncfile;
-
-    } catch (java.io.IOException e) {
-      e.printStackTrace();
-      assert (false);
-      return null;
-    }
+  public static NetcdfFile openH5(String filename) throws IOException {
+    System.out.println("**** Open " + testDir + filename);
+    NetcdfFile ncfile = NetcdfFiles.open(testDir + filename);
+    if (TestH5.dumpFile)
+      System.out.println("open H5 " + ncfile);
+    return ncfile;
   }
 
-  public static NetcdfDataset openH5dataset(String filename) {
-    try {
-      System.out.println("**** Open " + testDir + filename);
-      NetcdfDataset ncfile = NetcdfDatasets.openDataset(testDir + filename);
-      if (TestH5.dumpFile)
-        System.out.println("open H5 " + ncfile);
-      return ncfile;
-
-    } catch (java.io.IOException e) {
-      System.out.println(" fail = " + e);
-      e.printStackTrace();
-      assert (false);
-      return null;
-    }
+  public static NetcdfDataset openH5dataset(String filename) throws IOException {
+    System.out.println("**** Open " + testDir + filename);
+    NetcdfDataset ncfile = NetcdfDatasets.openDataset(testDir + filename);
+    if (TestH5.dumpFile)
+      System.out.println("open H5 " + ncfile);
+    return ncfile;
   }
 
   public static class H5FileFilter implements FileFilter {
@@ -93,7 +68,7 @@ public class TestH5 {
 
       Array<Long> data = (Array<Long>) v.readArray();
       Index ii = data.getIndex();
-      assert (data.get(ii.set(11, 93)) == 1718796166693743L);
+      assertThat(data.get(ii.set(11, 93))).isEqualTo(1718796166693743L);
     }
   }
 
@@ -106,7 +81,7 @@ public class TestH5 {
 
       Array<Number> data = (Array<Number>) v.readArray();
       Index ii = data.getIndex();
-      assert (data.get(ii.set(3, 2)).doubleValue() == 12.0);
+      assertThat(data.get(ii.set(3, 2)).doubleValue()).isEqualTo(12.0);
     }
   }
 
