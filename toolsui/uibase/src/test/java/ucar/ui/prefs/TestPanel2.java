@@ -1,31 +1,27 @@
 /*
- * Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
-
 package ucar.ui.prefs;
 
 import java.awt.HeadlessException;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.XMLStore;
 import java.beans.*;
-import java.lang.invoke.MethodHandles;
 import java.util.*;
 import javax.swing.*;
 
+import static com.google.common.truth.Truth.assertThat;
+import static org.junit.Assert.assertThrows;
+
 @RunWith(JUnit4.class)
 public class TestPanel2 {
-
-  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @ClassRule
   public static TemporaryFolder tempFolder = new TemporaryFolder();
@@ -94,14 +90,10 @@ public class TestPanel2 {
         "defValue really long name for to be with starting value gotta adjust the thing");
 
     // test duplicate field name
-    try {
+    assertThrows(IllegalArgumentException.class, () -> {
       pp2.addTextField("name", "name", "defValue");
       pp2.finish();
-      assert (false);
-    } catch (IllegalArgumentException e) {
-      System.out.println(e.getMessage());
-      assert (true);
-    }
+    });
   }
 
   @Test
@@ -133,7 +125,7 @@ public class TestPanel2 {
       preferenceDialog.setVisible(true);
 
       store.putInt("myInt", 42);
-      assert (store.getInt("myInt", 43) == 42);
+      assertThat(store.getInt("myInt", 43)).isEqualTo(42);
 
       pp.addActionListener(e -> {
         System.out.println("got accept");
@@ -230,7 +222,7 @@ public class TestPanel2 {
      * } catch (java.text.ParseException e) { }
      */
 
-    ArrayList list = new ArrayList(5);
+    List<Object> list = new ArrayList<>(5);
     list.add("this");
     list.add("is");
     list.add("new");

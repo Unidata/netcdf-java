@@ -13,7 +13,6 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 import ucar.nc2.util.Misc;
 import java.io.IOException;
-import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
 import static com.google.common.truth.Truth.assertThat;
@@ -78,16 +77,16 @@ public class TestXMLStore {
     assertThat(Misc.nearlyEquals(f, 1.23456F)).isTrue();
 
     long ll = prefs.getLong("testL", 0);
-    assert ll == 12345678900L : "long failed";
+    assertThat(ll).isEqualTo(12345678900L);
 
     int ii = prefs.getInt("testI", 0);
-    assert ii == 123456789 : "int failed";
+    assertThat(ii).isEqualTo(123456789);
 
     String s = prefs.get("testS", "");
-    assert s.equals("youdBeDeadbyNow") : "String failed";
+    assertThat(s).isEqualTo("youdBeDeadbyNow");
 
     boolean b = prefs.getBoolean("testB", false);
-    assert b : "boolean failed";
+    assertThat(b).isTrue();
 
     byte[] barr = new byte[3];
     byte[] barr2 = new byte[3];
@@ -96,7 +95,7 @@ public class TestXMLStore {
     barr[2] = 3;
     byte[] ba = prefs.getByteArray("testBA", barr2);
     for (int i = 0; i < 3; i++)
-      assert ba[i] == barr[i] : "BA failed";
+      assertThat(ba[i]).isEqualTo(barr[i]);
   }
 
   @Test
@@ -111,16 +110,16 @@ public class TestXMLStore {
     assertThat(Misc.nearlyEquals(f, 1.23457F)).isTrue();
 
     long ll = prefs.getLong("testL", 0);
-    assert ll == 12345678901L : "long failed";
+    assertThat(ll).isEqualTo(12345678901L);
 
     int ii = prefs.getInt("testI", 0);
-    assert ii == 123456780 : "int failed";
+    assertThat(ii).isEqualTo(123456780);
 
     String s = prefs.get("testS", "");
-    assert s.equals("youdBeLivebyNow") : "String failed";
+    assertThat(s).isEqualTo("youdBeLivebyNow");
 
     boolean b = prefs.getBoolean("testB", true);
-    assert !b : "boolean failed";
+    assertThat(!b).isTrue();
 
     byte[] barr = new byte[3];
     byte[] barr2 = new byte[3];
@@ -129,7 +128,7 @@ public class TestXMLStore {
     barr[2] = 4;
     byte[] ba = prefs.getByteArray("testBA", barr2);
     for (int i = 0; i < 3; i++)
-      assert ba[i] == barr[i] : "BA failed";
+      assertThat(ba[i]).isEqualTo(barr[i]);
   }
 
   @Test
@@ -138,7 +137,7 @@ public class TestXMLStore {
     Preferences prefs = store.getPreferences().node("SemperUbi");
 
     String s = prefs.get("testS", "");
-    assert s.equals("youdBeLivebyNow") : "testPersistenceChange failed 1";
+    assertThat(s).isEqualTo("youdBeLivebyNow");
 
     prefs.put("testS", "NewBetter");
     store.save();
@@ -147,7 +146,7 @@ public class TestXMLStore {
     Preferences prefs2 = store2.getPreferences().node("SemperUbi");
 
     s = prefs2.get("testS", "");
-    assert s.equals("NewBetter") : "testPersistenceChange failed 2";
+    assertThat(s).isEqualTo("NewBetter");
 
     prefs.put("testS", "youdBeDeadbyNow");
     store.save();
@@ -156,7 +155,7 @@ public class TestXMLStore {
     Preferences prefs3 = store3.getPreferences().node("SemperUbi");
 
     s = prefs3.get("testS", "");
-    assert s.equals("youdBeDeadbyNow") : "testPersistenceChange failed 3";
+    assertThat(s).isEqualTo("youdBeDeadbyNow");
   }
 
   @Test
@@ -165,7 +164,7 @@ public class TestXMLStore {
     Preferences prefs = store.getPreferences().node("SemperUbi");
 
     String s = prefs.get("testS2", "def");
-    assert s.equals("def") : "testPersistenceAddRemove failed 1";
+    assertThat(s).isEqualTo("def");
 
     prefs.put("testS2", "WayBetter");
     store.save();
@@ -174,7 +173,7 @@ public class TestXMLStore {
     Preferences prefs2 = store2.getPreferences().node("SemperUbi");
 
     s = prefs2.get("testS2", "");
-    assert s.equals("WayBetter") : "testPersistenceAddRemove failed 2";
+    assertThat(s).isEqualTo("WayBetter");
 
     prefs.remove("testS2");
     store.save();
@@ -183,7 +182,7 @@ public class TestXMLStore {
     Preferences prefs3 = store3.getPreferences().node("SemperUbi");
 
     s = prefs3.get("testS2", "deff");
-    assert s.equals("deff") : "testPersistenceAddRemove failed 3";
+    assertThat(s).isEqualTo("deff");
   }
 
   @Test
@@ -192,19 +191,19 @@ public class TestXMLStore {
     Preferences newNode = store.getPreferences().node("SemperUbi/SubSemperUbi2");
 
     String s = newNode.get("testS2", "def");
-    assert s.equals("def") : "testPersistenceDefaults failed 1";
+    assertThat(s).isEqualTo("def");
 
     s = newNode.get("testS2", "def2");
-    assert s.equals("def2") : "testPersistenceDefaults failed 2";
+    assertThat(s).isEqualTo("def2");
   }
 
   @Test
-  public void testPersistenceAddRemoveNode() throws IOException, BackingStoreException {
+  public void testPersistenceAddRemoveNode() throws Exception {
     XMLStore store = XMLStore.createFromFile(storeFile, null);
     Preferences newNode = store.getPreferences().node("SemperUbi/SubSemperUbi2");
 
     String s = newNode.get("testS2", "def");
-    assert s.equals("def") : "testPersistenceAddRemoveNode failed 1";
+    assertThat(s).isEqualTo("def");
 
     newNode.put("testS2", "WayBetterValue");
     store.save();
@@ -213,7 +212,7 @@ public class TestXMLStore {
     Preferences prefs2 = store2.getPreferences().node("SemperUbi/SubSemperUbi2");
 
     s = prefs2.get("testS2", "");
-    assert s.equals("WayBetterValue") : "testPersistenceAddRemoveNode failed 2";
+    assertThat(s).isEqualTo("WayBetterValue");
 
     prefs2.removeNode();
     store2.save();
@@ -222,7 +221,7 @@ public class TestXMLStore {
     Preferences prefs3 = store3.getPreferences().node("SemperUbi/SubSemperUbi2");
 
     s = prefs3.get("testS2", "deff");
-    assert s.equals("deff") : "testPersistenceAddRemoveNode failed 3 " + s;
+    assertThat(s).isEqualTo("deff");
   }
 
   @Test
@@ -239,6 +238,6 @@ public class TestXMLStore {
     Preferences pref2 = store2.getPreferences().node("badchars");
 
     String s = pref2.get("baddog", null);
-    assert s.equals(bad) : "bad===" + s + "===";
+    assertThat(s).isEqualTo(bad);
   }
 }

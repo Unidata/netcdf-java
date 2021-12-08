@@ -6,6 +6,7 @@ import java.awt.HeadlessException;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
+import java.util.List;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -23,11 +24,12 @@ public class TestSuperComboBox {
         }
       });
 
-      ArrayList a = new ArrayList(30);
-      for (int i = 0; i < 30; i++)
+      List<Object> a = new ArrayList<>(30);
+      for (int i = 0; i < 30; i++) {
         a.add("hifdsjflkjslfk " + i);
+      }
       SuperComboBox scb = new SuperComboBox(frame, "myTestdjdslkfjslkj", true, a.iterator());
-      JComboBox cb = new JComboBox();
+      JComboBox<Object> cb = new JComboBox<>();
       for (Object o : a) {
         cb.addItem(o);
       }

@@ -12,7 +12,6 @@ import org.junit.runners.JUnit4;
 import ucar.nc2.util.Misc;
 import java.io.*;
 import java.util.prefs.BackingStoreException;
-import java.util.prefs.InvalidPreferencesFormatException;
 import java.util.prefs.Preferences;
 
 import static com.google.common.truth.Truth.assertThat;
@@ -26,14 +25,13 @@ public class TestJavaUtilPreferences {
 
     // this makes PreferencesExt the SPI
     Preferences userRoot = Preferences.userRoot();
-    assert userRoot instanceof PreferencesExt : "Factory not set = " + userRoot.getClass().getName() + " Property: "
-        + System.getProperty("java.util.prefs.PreferencesFactory");
+    assertThat(userRoot).isInstanceOf(PreferencesExt.class);
   }
 
   @Test
   public void testPutGet() {
     Preferences userRoot = Preferences.userRoot();
-    assert userRoot instanceof PreferencesExt : "Factory not set = " + userRoot.getClass().getName();
+    assertThat(userRoot).isInstanceOf(PreferencesExt.class);
 
     userRoot.putDouble("testD", 3.14157);
     double d = userRoot.getDouble("testD", 0.0);
@@ -45,19 +43,19 @@ public class TestJavaUtilPreferences {
 
     userRoot.putLong("testL", 12345678900L);
     long ll = userRoot.getLong("testL", 0);
-    assert ll == 12345678900L : "long failed";
+    assertThat(ll).isEqualTo(12345678900L);
 
     userRoot.putInt("testI", 123456789);
     int ii = userRoot.getInt("testI", 0);
-    assert ii == 123456789 : "int failed";
+    assertThat(ii).isEqualTo(123456789);
 
     userRoot.put("testS", "youdBeDeadbyNow");
     String s = userRoot.get("testS", "");
-    assert s.equals("youdBeDeadbyNow") : "String failed";
+    assertThat(s).isEqualTo("youdBeDeadbyNow");
 
     userRoot.putBoolean("testB", true);
     boolean b = userRoot.getBoolean("testB", false);
-    assert b : "boolean failed";
+    assertThat(b).isTrue();
 
     byte[] barr = new byte[3];
     byte[] barr2 = new byte[3];
@@ -67,14 +65,14 @@ public class TestJavaUtilPreferences {
     userRoot.putByteArray("testBA", barr);
     byte[] ba = userRoot.getByteArray("testBA", barr2);
     for (int i = 0; i < 3; i++)
-      assert ba[i] == barr[i] : "BA failed";
+      assertThat(ba[i]).isEqualTo(barr[i]);
   }
 
   @Test
   public void testSubnode() throws BackingStoreException {
     Preferences userRoot = Preferences.userRoot();
     Preferences subNode = userRoot.node("SemperUbi");
-    assert subNode instanceof PreferencesExt : "Factory not set = " + userRoot.getClass().getName();
+    assertThat(subNode).isInstanceOf(PreferencesExt.class);
 
     String[] keys = userRoot.keys();
     for (String key : keys) {
@@ -86,16 +84,16 @@ public class TestJavaUtilPreferences {
     assertThat(Misc.nearlyEquals(f, 1.23456F)).isTrue();
 
     long ll = subNode.getLong("testL", 0);
-    assert ll == 12345678900L : "long failed";
+    assertThat(ll).isEqualTo(12345678900L);
 
     int ii = subNode.getInt("testI", 0);
-    assert ii == 123456789 : "int failed";
+    assertThat(ii).isEqualTo(123456789);
 
     String s = subNode.get("testS", "");
-    assert s.equals("youdBeDeadbyNow") : "String failed";
+    assertThat(s).isEqualTo("youdBeDeadbyNow");
 
     boolean b = subNode.getBoolean("testB", false);
-    assert b : "boolean failed";
+    assertThat(b).isTrue();
 
     byte[] barr = new byte[3];
     byte[] barr2 = new byte[3];
@@ -104,19 +102,18 @@ public class TestJavaUtilPreferences {
     barr[2] = 3;
     byte[] ba = subNode.getByteArray("testBA", barr2);
     for (int i = 0; i < 3; i++)
-      assert ba[i] == barr[i] : "BA failed";
+      assertThat(ba[i]).isEqualTo(barr[i]);
   }
 
   @Test
-  // @Ignore("This doesn't actually assert that the substitute and export features work.")
-  public void testExport() throws IOException, BackingStoreException, InvalidPreferencesFormatException {
+  public void testExport() throws Exception {
     Preferences userRoot = Preferences.userRoot();
     Preferences fromNode = userRoot.node("SemperUbi");
-    assert fromNode instanceof PreferencesExt : "Factory not set = " + userRoot.getClass().getName();
+    assertThat(fromNode).isInstanceOf(PreferencesExt.class);
 
     ByteArrayOutputStream os = new ByteArrayOutputStream(10000);
     fromNode.exportNode(os);
-    String xml = new String(os.toByteArray());
+    String xml = os.toString();
     xml = substitute(xml, "SemperUbi", "SubUbi");
     ByteArrayInputStream is = new ByteArrayInputStream(xml.getBytes());
     Preferences.importPreferences(is);
@@ -127,16 +124,16 @@ public class TestJavaUtilPreferences {
   public void testRemove() {
     Preferences userRoot = Preferences.userRoot();
     Preferences subNode = userRoot.node("SemperUbi");
-    assert subNode instanceof PreferencesExt : "Factory not set = " + userRoot.getClass().getName();
+    assertThat(subNode).isInstanceOf(PreferencesExt.class);
 
     long ll;
     subNode.putLong("testL", 12345678900L);
     ll = subNode.getLong("testL", 0);
-    assert ll == 12345678900L : "long failed 2";
+    assertThat(ll).isEqualTo(12345678900L);
 
     subNode.remove("testL");
     ll = subNode.getLong("testL", 0);
-    assert ll == 0 : "remove failed";
+    assertThat(ll).isEqualTo(0);
   }
 
   @Test
@@ -144,22 +141,22 @@ public class TestJavaUtilPreferences {
     Preferences userRoot = Preferences.userRoot();
     Preferences subNode = userRoot.node("SemperUbi");
     Preferences newNode = subNode.node("SubSemperUbi");
-    assert newNode instanceof PreferencesExt : "Factory not set = " + userRoot.getClass().getName();
+    assertThat(newNode).isInstanceOf(PreferencesExt.class);
 
     newNode.putLong("testL", 12345678900L);
     long ll = subNode.getLong("testL", 0);
-    assert ll == 0 : "testRemoveNode failed";
+    assertThat(ll).isEqualTo(0);
 
     newNode.removeNode();
     String[] kidName = subNode.childrenNames();
 
     for (String aKidName : kidName) {
-      assert !aKidName.equals("SubSemperUbi") : "testRemoveNode failed 1";
+      assertThat(aKidName).isNotEqualTo("SubSemperUbi");
     }
 
     newNode = subNode.node("SubSemperUbi");
     ll = newNode.getLong("testL", 123L);
-    assert ll == 123 : "testRemoveNode failed 2 " + ll;
+    assertThat(ll).isEqualTo(123);
   }
 
   /**
