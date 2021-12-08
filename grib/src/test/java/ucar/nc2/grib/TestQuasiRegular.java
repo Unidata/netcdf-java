@@ -8,7 +8,6 @@ package ucar.nc2.grib;
 /**
  * from https://github.com/lost-carrier 6/12/2014
  */
-import static org.junit.Assert.assertEquals;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import org.junit.Test;
@@ -16,6 +15,8 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static com.google.common.truth.Truth.assertThat;
 
 @RunWith(JUnit4.class)
 public class TestQuasiRegular {
@@ -33,21 +34,21 @@ public class TestQuasiRegular {
 
     float[] out = new float[8];
     QuasiRegular.cubicSpline(in, 0, d2, 0.0, out, 0);
-    assertEquals(0.0, out[0], 0.0);
+    assertThat(out[0]).isEqualTo(0.0f);
     QuasiRegular.cubicSpline(in, 0, d2, 0.5, out, 1);
-    assertEquals(4.5, out[1], 0.0);
+    assertThat(out[1]).isEqualTo(4.5f);
     QuasiRegular.cubicSpline(in, 0, d2, 1.0, out, 2);
-    assertEquals(9.0, out[2], 0.0);
+    assertThat(out[2]).isEqualTo(9.0f);
     QuasiRegular.cubicSpline(in, 0, d2, 1.5, out, 3);
-    assertEquals(13.5, out[3], 0.0);
+    assertThat(out[3]).isEqualTo(13.5f);
     QuasiRegular.cubicSpline(in, 0, d2, 2.0, out, 4);
-    assertEquals(18.0, out[4], 0.0);
+    assertThat(out[4]).isEqualTo(18.0f);
     QuasiRegular.cubicSpline(in, 0, d2, 2.5, out, 5);
-    assertEquals(22.5, out[5], 0.0);
+    assertThat(out[5]).isEqualTo(22.5f);
     QuasiRegular.cubicSpline(in, 0, d2, 3.0, out, 6);
-    assertEquals(27.0, out[6], 0.0);
+    assertThat(out[6]).isEqualTo(27.0f);
     QuasiRegular.cubicSpline(in, 0, d2, 3.5, out, 7);
-    assertEquals(13.5, out[7], 0.0);
+    assertThat(out[7]).isEqualTo(13.5f);
   }
 
 }

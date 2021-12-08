@@ -13,6 +13,7 @@ import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Optional;
 
+import com.google.common.base.Preconditions;
 import ucar.array.ArrayType;
 import ucar.array.Arrays;
 import ucar.array.Storage;
@@ -339,7 +340,7 @@ public class H4iosp extends AbstractIOServiceProvider {
     public LayoutBBTiled.DataChunk next() {
       H4header.DataChunk chunk = chunks.get(chunkNo);
       H4header.TagData chunkData = chunk.data;
-      assert (chunkData.ext_type == TagEnum.SPECIAL_COMP);
+      Preconditions.checkArgument(chunkData.ext_type == TagEnum.SPECIAL_COMP);
       chunkNo++;
 
       return new DataChunk(chunk.origin, chunkData.compress);

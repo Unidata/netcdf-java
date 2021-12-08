@@ -30,7 +30,6 @@ public class ClientCatalogUtil {
     Catalog cat = builder.buildFromLocation(urlString, null);
     if (builder.hasFatalError()) {
       logger.error(builder.getErrorMessage());
-      assert false;
       return null;
     } else {
       String mess = builder.getErrorMessage();

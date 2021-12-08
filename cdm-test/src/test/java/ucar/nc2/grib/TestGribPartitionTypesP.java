@@ -4,8 +4,6 @@
  */
 package ucar.nc2.grib;
 
-import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
@@ -25,6 +23,8 @@ import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.google.common.truth.Truth.assertThat;
 
 @RunWith(Parameterized.class)
 @Category(NeedsCdmUnitTest.class)
@@ -65,7 +65,7 @@ public class TestGribPartitionTypesP {
 
     System.out.printf("============== create %s %n", collectionName);
     try (GribCollectionImmutable gc = GribCdmIndex.openGribCollection(config, CollectionUpdateType.always, logger)) {
-      Assert.assertNotNull(collectionName, gc);
+      assertThat(gc).isNotNull();
       indent.incr();
       openGC(gc.getLocation(), config, indent);
       indent.decr();
@@ -89,7 +89,7 @@ public class TestGribPartitionTypesP {
       return;
 
     try (GribCollectionImmutable gc = GribCdmIndex.openCdmIndex(indexFilename, config, true, logger)) {
-      Assert.assertNotNull(indexFilename, gc);
+      assertThat(gc).isNotNull();
       System.out.printf("%sindex filename = %s %n", indent, gc.getLocation());
 
       indent.incr();

@@ -274,7 +274,7 @@ public class H5tiledLayoutBB implements LayoutBB {
       if (debug)
         System.out.println(" shuffle bytes in= " + data.length + " n= " + n);
 
-      assert data.length % n == 0;
+      Preconditions.checkArgument(data.length % n == 0);
       if (n <= 1)
         return data;
 

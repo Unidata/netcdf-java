@@ -4,6 +4,7 @@
  */
 package ucar.nc2.internal.util;
 
+import com.google.common.base.Preconditions;
 import com.google.common.escape.Escaper;
 import com.google.common.net.UrlEscapers;
 import java.util.Arrays;
@@ -191,7 +192,7 @@ public class DiskCache {
       try {
         if (!simulateUnwritableDir && f.createNewFile()) {
           boolean ret = f.delete();
-          assert ret;
+          Preconditions.checkArgument(ret);
           return f;
         }
       } catch (IOException e) {

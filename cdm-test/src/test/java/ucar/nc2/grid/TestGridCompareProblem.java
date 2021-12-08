@@ -8,11 +8,9 @@ package ucar.nc2.grid;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import ucar.nc2.constants.FeatureType;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
-import java.io.IOException;
 
 import static org.junit.Assert.assertThrows;
 

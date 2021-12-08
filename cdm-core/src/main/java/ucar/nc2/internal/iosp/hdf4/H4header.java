@@ -4,6 +4,7 @@
  */
 package ucar.nc2.internal.iosp.hdf4;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import java.io.IOException;
@@ -932,7 +933,7 @@ public class H4header implements HdfHeaderIF {
     vinfo.setData(data, vb.dataType.getSize());
 
     // apparently the 701 SDDimension tag overrides the VGroup dimensions
-    assert dim.shape.length == vb.getRank();
+    Preconditions.checkArgument(dim.shape.length == vb.getRank());
     boolean ok = true;
     List<Dimension> vdimensions = vb.getDimensions();
     for (int i = 0; i < dim.shape.length; i++) {
@@ -1500,7 +1501,7 @@ public class H4header implements HdfHeaderIF {
 
     DataChunk(Array<Integer> originA, int[] chunk_length, TagData data) {
       // origin is in units of chunks - convert to indices
-      assert originA.getSize() == chunk_length.length;
+      Preconditions.checkArgument(originA.getSize() == chunk_length.length);
       int[] origin = new int[chunk_length.length];
       for (int i = 0; i < origin.length; i++) {
         origin[i] = originA.get(i) * chunk_length[i];

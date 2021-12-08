@@ -1814,8 +1814,9 @@ public class H5objects {
         nameSize = raf.readShort();
         typeSize = raf.readShort();
         spaceSize = raf.readShort();
-        if (version == 3)
+        if (version == 3) {
           encoding = raf.readByte();
+        }
 
       } else if (version == 72) {
         flags = raf.readByte();

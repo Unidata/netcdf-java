@@ -1,12 +1,13 @@
 package ucar.nc2.grib.coord;
 
-import org.junit.Assert;
 import org.junit.Test;
 import ucar.nc2.grib.grib1.Grib1Record;
 import ucar.nc2.calendar.CalendarDate;
 import ucar.nc2.calendar.CalendarPeriod;
 import ucar.nc2.util.Indent;
 import java.util.*;
+
+import static com.google.common.truth.Truth.assertThat;
 
 /**
  * Test {@link CoordinateTime2DUnionizer}
@@ -37,7 +38,7 @@ public class TestCoordinateTime2DUnionizer {
     else
       result.showInfo(f, new Indent(2));
 
-    Assert.assertNull(result);
+    assertThat(result).isNull();
   }
 
   private CoordinateTime makeTimeCoordinate(CalendarDate refDate, int size, int spacing) {
@@ -66,10 +67,10 @@ public class TestCoordinateTime2DUnionizer {
     for (CoordinateTime2D coord : coords) {
       f.format("CoordinateTime2D %d%n", count++);
       CoordinateTime2D result = testUnionizer(coord);
-      Assert.assertNotNull(result);
+      assertThat(result).isNotNull();
       result.showInfo(f, new Indent(2));
       f.format("%n%n");
-      Assert.assertTrue(result.isOrthogonal());
+      assertThat(result.isOrthogonal()).isTrue();
     }
   }
 
@@ -94,7 +95,7 @@ public class TestCoordinateTime2DUnionizer {
 
     f.format("%nUnionized Result:%n");
     result.showInfo(f, new Indent(2));
-    Assert.assertTrue(result.isOrthogonal());
+    assertThat(result.isOrthogonal()).isTrue();
   }
 
   private CoordinateTime2D testUnionizer(CoordinateTime2D coord2D) {

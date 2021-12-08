@@ -7,6 +7,8 @@ package ucar.nc2.grib.collection;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+
+import com.google.common.base.Preconditions;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.DateExtractor;
 import thredds.inventory.MCollection;
@@ -368,7 +370,7 @@ public class PartitionCollectionMutable extends GribCollectionMutable {
 
     if (from instanceof VariableIndexPartitioned && !isPartitionOfPartitions) {
       VariableIndexPartitioned vipFrom = (VariableIndexPartitioned) from;
-      assert vipFrom.partList == null; // // check if vipFrom has been finished
+      Preconditions.checkArgument(vipFrom.partList == null); // // check if vipFrom has been finished
       for (int i = 0; i < vipFrom.nparts; i++)
         vip.addPartition(vipFrom.partnoSA.get(i), vipFrom.groupnoSA.get(i), vipFrom.varnoSA.get(i), 0, 0, 0, vipFrom);
     }

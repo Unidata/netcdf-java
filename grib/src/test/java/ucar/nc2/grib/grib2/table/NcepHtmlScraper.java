@@ -18,7 +18,6 @@ import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.unidata.util.StringUtil2;
-import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
@@ -26,6 +25,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.List;
+
+import static com.google.common.truth.Truth.assertThat;
 
 /**
  * Read NCEP html files to extract the GRIB-2 tables.
@@ -189,7 +190,7 @@ public class NcepHtmlScraper {
     // System.out.printf("%s%n", title);
 
     Element table = doc.select("table").first();
-    assert table != null;
+    assertThat(table).isNotNull();
 
     List<Param> stuff = new ArrayList<>();
     Elements rows = table.select("tr");

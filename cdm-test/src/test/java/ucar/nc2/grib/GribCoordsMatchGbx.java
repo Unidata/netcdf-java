@@ -6,7 +6,6 @@
 package ucar.nc2.grib;
 
 import javax.annotation.Nullable;
-import org.junit.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import thredds.inventory.CollectionUpdateType;
@@ -207,7 +206,7 @@ public class GribCoordsMatchGbx {
         // tryAgain(coords);
         logger.debug("{} {} failed on runtime {} != gbx {}", kind, name, rt_val, gribDate);
       }
-      Assert.assertEquals(gribDate, rt_val);
+      assertThat(gribDate).isEqualTo(rt_val);
     }
 
     // check time
@@ -234,7 +233,7 @@ public class GribCoordsMatchGbx {
         // tryAgain(coords);
         logger.debug("{} {} failed on time: coord={} gbx = {}", kind, name, time_val, gbxDate);
       }
-      Assert.assertEquals(time_val, gbxDate);
+      assertThat(time_val).isEqualTo(gbxDate);
     }
 
     // check vert
@@ -398,7 +397,7 @@ public class GribCoordsMatchGbx {
     }
 
     boolean ok = paramOk && runtimeOk && timeOk && vertOk;
-    Assert.assertTrue(ok);
+    assertThat(ok).isTrue();
   }
 
   /*

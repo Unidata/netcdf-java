@@ -6,6 +6,8 @@
 package ucar.nc2.grib.collection;
 
 import javax.annotation.concurrent.Immutable;
+
+import com.google.common.base.Preconditions;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.CollectionManager;
 import thredds.inventory.CollectionUpdateType;
@@ -224,7 +226,7 @@ abstract class GribCollectionBuilder {
             calendarDateRangeAll = calendarDateRangeAll.extend(calendarDateRange);
         }
       }
-      assert calendarDateRangeAll != null;
+      Preconditions.checkNotNull(calendarDateRangeAll);
 
       // for each Group write an index file
       ok &= writeIndex(gcname, indexFileForRuntime.getPath(), masterRuntimes, runGroupList, allFiles,

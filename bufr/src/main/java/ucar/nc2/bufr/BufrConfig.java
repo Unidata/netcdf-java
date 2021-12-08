@@ -4,6 +4,7 @@
  */
 package ucar.nc2.bufr;
 
+import com.google.common.base.Preconditions;
 import org.jdom2.Element;
 import thredds.client.catalog.Catalog;
 import ucar.array.Array;
@@ -117,7 +118,7 @@ public class BufrConfig {
   ////////////////////////////////////////////////////////////////////////////
 
   private void merge(Element iospParam) {
-    assert iospParam.getName().equals("iospParam");
+    Preconditions.checkArgument(iospParam.getName().equals("iospParam"));
     Element bufr2nc = iospParam.getChild("bufr2nc", Catalog.ncmlNS);
     if (bufr2nc == null)
       return;

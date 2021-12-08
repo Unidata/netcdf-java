@@ -7,7 +7,6 @@ package ucar.nc2.jni.netcdf;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.util.Formatter;
-import org.junit.Assert;
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
@@ -53,22 +52,22 @@ public class TestNc4reader {
       Variable v = ncfile.findVariable("/sample/ids");
       assertThat(v).isNotNull();
       int[] shape = v.getShape();
-      Assert.assertEquals(1, shape.length);
-      Assert.assertEquals(3107, shape[0]);
+      assertThat(1).isEqualTo(shape.length);
+      assertThat(3107).isEqualTo(shape[0]);
 
       Array dataSection = v.readArray(new Section("700:900:2")); // make sure to go acrross a chunk boundary
-      Assert.assertEquals(1, dataSection.getRank());
-      Assert.assertEquals(101, dataSection.getShape()[0]);
+      assertThat(1).isEqualTo(dataSection.getRank());
+      assertThat(101).isEqualTo(dataSection.getShape()[0]);
 
       Variable v2 = jni.findVariable("/sample/ids");
       assertThat(v2).isNotNull();
       int[] shape2 = v2.getShape();
-      Assert.assertEquals(1, shape2.length);
-      Assert.assertEquals(3107, shape2[0]);
+      assertThat(1).isEqualTo(shape2.length);
+      assertThat(3107).isEqualTo(shape2[0]);
 
       Array dataSection2 = v2.readArray(new Section("700:900:2"));
-      Assert.assertEquals(1, dataSection2.getRank());
-      Assert.assertEquals(101, dataSection2.getShape()[0]);
+      assertThat(1).isEqualTo(dataSection2.getRank());
+      assertThat(101).isEqualTo(dataSection2.getShape()[0]);
 
       CompareNetcdf2.compareData(v2.getShortName(), dataSection, dataSection2);
     }
@@ -135,7 +134,7 @@ public class TestNc4reader {
     doCompare(filename, false, false, false);
 
     try (NetcdfFile ncfile = NetcdfFiles.open(filename)) {
-      Assert.assertNotNull(ncfile.findVariable("h"));
+      assertThat(ncfile.findVariable("h")).isNotNull();
     }
   }
 

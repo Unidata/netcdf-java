@@ -6,6 +6,8 @@
 package ucar.ui.op;
 
 import javax.annotation.Nullable;
+
+import com.google.common.base.Preconditions;
 import ucar.nc2.Dimension;
 import ucar.nc2.*;
 import ucar.ui.widget.BAMutil;
@@ -133,7 +135,7 @@ public class DatasetTreeView extends JPanel {
     for (int i = 1; i < gchain.size(); i++) {
       parentGroup = gchain.get(i);
       gnode = gnode.findNestedGroup(parentGroup);
-      assert gnode != null;
+      Preconditions.checkNotNull(gnode);
       pathList.add(gnode);
     }
 

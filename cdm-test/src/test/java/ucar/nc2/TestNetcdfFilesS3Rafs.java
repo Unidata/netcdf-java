@@ -11,7 +11,6 @@ import java.net.URL;
 import java.util.Formatter;
 import org.apache.commons.io.FileUtils;
 import org.junit.AfterClass;
-import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -99,9 +98,9 @@ public class TestNetcdfFilesS3Rafs {
       Formatter f = new Formatter();
       CompareNetcdf2 comparer = new CompareNetcdf2(f, false, false, true);
 
-      Assert.assertTrue(comparer.compare(local, inMem));
-      Assert.assertTrue(comparer.compare(local, http));
-      Assert.assertTrue(comparer.compare(local, s3));
+      assertThat(comparer.compare(local, inMem)).isTrue();
+      assertThat(comparer.compare(local, http)).isTrue();
+      assertThat(comparer.compare(local, s3)).isTrue();
     }
   }
 

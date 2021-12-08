@@ -227,7 +227,6 @@ public class TestMFileS3 {
     MFile mFile1 = new MFileS3(uri1);
     MFile mFile2 = new MFileS3(uri1);
     MFile mFile3 = new MFileS3(uri2);
-    assert mFile1.equals(mFile2);
     assertThat(mFile1).isEqualTo(mFile2);
     assertThat(uri1).ignoringCase().isNotEqualTo(uri2);
     assertThat(mFile1).isNotEqualTo(mFile3);

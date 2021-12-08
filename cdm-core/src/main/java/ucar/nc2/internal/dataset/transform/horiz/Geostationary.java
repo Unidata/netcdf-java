@@ -5,6 +5,7 @@
 
 package ucar.nc2.internal.dataset.transform.horiz;
 
+import com.google.common.base.Preconditions;
 import ucar.nc2.AttributeContainer;
 import ucar.nc2.constants.CF;
 import ucar.nc2.units.SimpleUnit;
@@ -119,7 +120,7 @@ public class Geostationary extends AbstractProjectionCT implements ProjectionBui
       }
     } else {
       // Both semi_minor_axis and inv_flattening are specified.
-      assert (!Double.isNaN(semi_minor_axis)) && (!Double.isNaN(inv_flattening));
+      Preconditions.checkArgument(!Double.isNaN(semi_minor_axis) && !Double.isNaN(inv_flattening));
       // If we were obsessive, we could do a sanity test to verify the values are consistent.
     }
 

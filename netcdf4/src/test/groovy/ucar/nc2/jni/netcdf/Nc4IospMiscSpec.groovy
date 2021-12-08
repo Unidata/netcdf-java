@@ -17,6 +17,8 @@ import ucar.nc2.Variable
 import ucar.nc2.iosp.NetcdfFileFormat
 import ucar.nc2.write.NetcdfFormatWriter
 
+import static com.google.common.truth.Truth.assertThat;
+
 /**
  * Tests miscellaneous aspects of Nc4Iosp.
  *
@@ -37,7 +39,7 @@ class Nc4IospMiscSpec extends Specification {
     def "Nc4Iosp.readDataSection() can read '#varName' variables"() {
         setup: "locate test file"
         File file = new File(this.class.getResource("unsigned.nc4").toURI())
-        assert file.exists()
+        assertThat(file.exists()).isTrue();
         
         and: "open it as a NetcdfFile using Nc4Iosp"
         NetcdfFile ncFile = NetcdfFiles.open(file.absolutePath, Nc4reader.class.canonicalName, -1, null, null)
@@ -74,7 +76,7 @@ class Nc4IospMiscSpec extends Specification {
     def "Nc4Iosp supports multiple groups, each containing an unlimited dimension"() {
         setup: "locate test file"
         File file = new File(this.class.getResource("DBP-690959.nc4").toURI())
-        assert file.exists()
+        assertThat(file.exists()).isTrue();
     
         and: "open it as a NetcdfFile using Nc4Iosp"
         NetcdfFile ncFile = NetcdfFiles.open(file.absolutePath, Nc4reader.class.canonicalName, -1, null, null)

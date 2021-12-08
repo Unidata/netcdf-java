@@ -8,6 +8,8 @@ package ucar.nc2.grib.collection;
 import java.util.Arrays;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+
+import com.google.common.base.Preconditions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import thredds.featurecollection.FeatureCollectionConfig;
@@ -533,7 +535,7 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
       // figure out the runtime
       int timeIdx = wholeIndex[0];
       CoordinateTimeAbstract time = getCoordinateTime();
-      assert time != null;
+      Preconditions.checkNotNull(time);
       int masterIdx = time.getMasterRuntimeIndex(timeIdx) - 1;
       int runtimeIdxPart = matchCoordinate(masterRuntime, masterIdx, compVindex2D.getCoordinate(0));
       if (runtimeIdxPart < 0) {

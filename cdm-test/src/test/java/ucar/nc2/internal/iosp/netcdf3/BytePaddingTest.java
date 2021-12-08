@@ -12,7 +12,6 @@ import org.junit.rules.TemporaryFolder;
 import ucar.array.Array;
 import ucar.array.ArrayType;
 import ucar.array.Arrays;
-import ucar.array.InvalidRangeException;
 import ucar.nc2.*;
 import ucar.nc2.internal.util.CompareArrayToArray;
 import ucar.nc2.write.NetcdfFormatWriter;
@@ -22,9 +21,7 @@ import java.io.File;
 import java.io.IOException;
 
 import static com.google.common.truth.Truth.assertThat;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
 
 /**
  * testing netcdf3 byte padding
@@ -42,11 +39,12 @@ public class BytePaddingTest {
   public void checkReadOfFileWrittenWithIncorrectPaddingOfOneDimByteArrayOnlyRecordVar() throws IOException {
     // File testDataDir = new File( TestDir.cdmLocalTestDataDir, "ucar/nc2/iosp/netcdf3");
     File testFile = new File(TestDir.cdmLocalTestDataDir, "byteArrayRecordVarPaddingTest-bad.nc");
-    assertTrue(testFile.exists());
-    assertTrue(testFile.canRead());
+    assertThat(testFile.exists()).isTrue();
+    assertThat(testFile.canRead()).isTrue();
 
     try (NetcdfFile ncf = NetcdfFiles.open(testFile.getPath())) {
       Variable readVar = ncf.findVariable("V");
+      assertThat(readVar).isNotNull();
       assertThat(readVar.getArrayType()).isEqualTo(ArrayType.BYTE);
       assertThat(readVar.getElementSize()).isEqualTo(1);
       assertThat(readVar.getSize()).isEqualTo(18);
@@ -73,9 +71,9 @@ public class BytePaddingTest {
     File tmpDataDir = tempFolder.newFolder();
     File testFile = new File(tmpDataDir, "file.nc");
 
-    NetcdfFormatWriter.Builder writerb = NetcdfFormatWriter.createNewNetcdf3(testFile.getPath());
+    NetcdfFormatWriter.Builder<?> writerb = NetcdfFormatWriter.createNewNetcdf3(testFile.getPath());
     writerb.addDimension(Dimension.builder().setName("v").setIsUnlimited(true).build());
-    Variable.Builder v = writerb.addVariable("v", ArrayType.BYTE, "v");
+    Variable.Builder<?> v = writerb.addVariable("v", ArrayType.BYTE, "v");
     assertThat(v.dataType).isEqualTo(ArrayType.BYTE);
     assertThat(v.getElementSize()).isEqualTo(1);
     assertThat(v.getSize()).isEqualTo(0);
@@ -91,6 +89,7 @@ public class BytePaddingTest {
 
     try (NetcdfFile ncf = NetcdfFiles.open(testFile.getPath())) {
       Variable readVar = ncf.findVariable("v");
+      assertThat(readVar).isNotNull();
       assertThat(readVar.getArrayType()).isEqualTo(ArrayType.BYTE);
       assertThat(readVar.getElementSize()).isEqualTo(1);
       assertThat(readVar.getSize()).isEqualTo(18);
@@ -105,9 +104,9 @@ public class BytePaddingTest {
     File tmpDataDir = tempFolder.newFolder();
     File testFile = new File(tmpDataDir, "file.nc");
 
-    NetcdfFormatWriter.Builder writerb = NetcdfFormatWriter.createNewNetcdf3(testFile.getPath());
+    NetcdfFormatWriter.Builder<?> writerb = NetcdfFormatWriter.createNewNetcdf3(testFile.getPath());
     writerb.addDimension(Dimension.builder().setName("v").setIsUnlimited(true).build());
-    Variable.Builder v = writerb.addVariable("v", ArrayType.BYTE, "v");
+    Variable.Builder<?> v = writerb.addVariable("v", ArrayType.BYTE, "v");
     assertThat(v.dataType).isEqualTo(ArrayType.BYTE);
     writerb.addVariable("v2", ArrayType.BYTE, "v");
 
@@ -126,12 +125,13 @@ public class BytePaddingTest {
 
     try (NetcdfFile ncf = NetcdfFiles.open(testFile.getPath())) {
       Variable readVar = ncf.findVariable("v");
-      assertEquals(readVar.getArrayType(), ArrayType.BYTE);
-      assertEquals(1, readVar.getElementSize());
+      assertThat(readVar.getArrayType()).isEqualTo(ArrayType.BYTE);
+      assertThat(1).isEqualTo(readVar.getElementSize());
 
       Variable readVar2 = ncf.findVariable("v2");
-      assertEquals(readVar2.getArrayType(), ArrayType.BYTE);
-      assertEquals(1, readVar2.getElementSize());
+      assertThat(readVar2).isNotNull();
+      assertThat(readVar2.getArrayType()).isEqualTo(ArrayType.BYTE);
+      assertThat(1).isEqualTo(readVar2.getElementSize());
 
       Array<?> readdata = readVar.readArray(readVar.getSection());
       CompareArrayToArray.compareData("v", dataArray, readdata);
@@ -143,11 +143,11 @@ public class BytePaddingTest {
     File tmpDataDir = tempFolder.newFolder();
     File testFile = new File(tmpDataDir, "file.nc");
 
-    NetcdfFormatWriter.Builder writerb = NetcdfFormatWriter.createNewNetcdf3(testFile.getPath());
+    NetcdfFormatWriter.Builder<?> writerb = NetcdfFormatWriter.createNewNetcdf3(testFile.getPath());
     writerb.addDimension(Dimension.builder().setName("v").setIsUnlimited(true).build());
     writerb.addDimension(Dimension.builder("s", 3).build());
 
-    Variable.Builder v = writerb.addVariable("v", ArrayType.BYTE, "v s");
+    Variable.Builder<?> v = writerb.addVariable("v", ArrayType.BYTE, "v s");
     assertThat(v.dataType).isEqualTo(ArrayType.BYTE);
     writerb.addVariable("v2", ArrayType.BYTE, "v");
 
@@ -161,8 +161,9 @@ public class BytePaddingTest {
 
     try (NetcdfFile ncf = NetcdfFiles.open(testFile.getPath())) {
       Variable readVar = ncf.findVariable("v");
-      assertEquals(readVar.getArrayType(), ArrayType.BYTE);
-      assertEquals(1, readVar.getElementSize());
+      assertThat(readVar).isNotNull();
+      assertThat(readVar.getArrayType()).isEqualTo(ArrayType.BYTE);
+      assertThat(1).isEqualTo(readVar.getElementSize());
 
       Array<?> readdata = readVar.readArray(readVar.getSection());
       CompareArrayToArray.compareData("v", dataArray, readdata);
@@ -174,16 +175,16 @@ public class BytePaddingTest {
     File tmpDataDir = tempFolder.newFolder();
     File testFile = new File(tmpDataDir, "file.nc");
 
-    NetcdfFormatWriter.Builder writerb = NetcdfFormatWriter.createNewNetcdf3(testFile.getPath());
+    NetcdfFormatWriter.Builder<?> writerb = NetcdfFormatWriter.createNewNetcdf3(testFile.getPath());
     writerb.addDimension(Dimension.builder().setName("v").setIsUnlimited(true).build());
     writerb.addDimension(Dimension.builder("s", 3).build());
 
-    Variable.Builder v = writerb.addVariable("v", ArrayType.BYTE, "v s");
+    Variable.Builder<?> v = writerb.addVariable("v", ArrayType.BYTE, "v s");
     assertThat(v.dataType).isEqualTo(ArrayType.BYTE);
     writerb.addVariable("v2", ArrayType.BYTE, "v");
 
     byte[] data = {1, 2, 3, 11, 12, 13, 21, 22, 23, -1, -2, -3};
-    Array dataArray = Arrays.factory(ArrayType.BYTE, new int[] {4, 3}, data);
+    Array<?> dataArray = Arrays.factory(ArrayType.BYTE, new int[] {4, 3}, data);
 
     try (NetcdfFormatWriter ncfWriteable = writerb.build()) {
       Variable var = ncfWriteable.findVariable("v");
@@ -192,11 +193,12 @@ public class BytePaddingTest {
 
     try (NetcdfFile ncf = NetcdfFiles.open(testFile.getPath())) {
       Variable readVar = ncf.findVariable("v");
-      assertEquals(readVar.getArrayType(), ArrayType.BYTE);
-      assertEquals(1, readVar.getElementSize());
+      assertThat(readVar).isNotNull();
+      assertThat(readVar.getArrayType()).isEqualTo(ArrayType.BYTE);
+      assertThat(1).isEqualTo(readVar.getElementSize());
       Variable readVar2 = ncf.findVariable("v2");
-      assertEquals(readVar2.getArrayType(), ArrayType.BYTE);
-      assertEquals(1, readVar2.getElementSize());
+      assertThat(readVar2.getArrayType()).isEqualTo(ArrayType.BYTE);
+      assertThat(1).isEqualTo(readVar2.getElementSize());
 
       Array<?> readdata = readVar.readArray(readVar.getSection());
       CompareArrayToArray.compareData("v", dataArray, readdata);
@@ -208,14 +210,14 @@ public class BytePaddingTest {
     File tmpDataDir = tempFolder.newFolder();
     File testFile = new File(tmpDataDir, "file.nc");
 
-    NetcdfFormatWriter.Builder writerb = NetcdfFormatWriter.createNewNetcdf3(testFile.getPath());
+    NetcdfFormatWriter.Builder<?> writerb = NetcdfFormatWriter.createNewNetcdf3(testFile.getPath());
     writerb.addDimension(Dimension.builder().setName("v").setIsUnlimited(true).build());
 
-    Variable.Builder v = writerb.addVariable("v", ArrayType.CHAR, "v");
+    Variable.Builder<?> v = writerb.addVariable("v", ArrayType.CHAR, "v");
     assertThat(v.dataType).isEqualTo(ArrayType.CHAR);
 
     char[] data = {1, 2, 3, 4, 5, 6, 7, 8, 9, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50};
-    Array dataArray = Arrays.factory(ArrayType.CHAR, new int[] {data.length}, data);
+    Array<?> dataArray = Arrays.factory(ArrayType.CHAR, new int[] {data.length}, data);
 
     try (NetcdfFormatWriter ncfWriteable = writerb.build()) {
       Variable var = ncfWriteable.findVariable("v");
@@ -224,8 +226,9 @@ public class BytePaddingTest {
 
     try (NetcdfFile ncf = NetcdfFiles.open(testFile.getPath())) {
       Variable readVar = ncf.findVariable("v");
-      assertEquals(readVar.getArrayType(), ArrayType.CHAR);
-      assertEquals(1, readVar.getElementSize());
+      assertThat(readVar).isNotNull();
+      assertThat(readVar.getArrayType()).isEqualTo(ArrayType.CHAR);
+      assertThat(1).isEqualTo(readVar.getElementSize());
 
       Array<?> readdata = readVar.readArray(readVar.getSection());
       CompareArrayToArray.compareData("v", dataArray, readdata);
@@ -237,16 +240,16 @@ public class BytePaddingTest {
     File tmpDataDir = tempFolder.newFolder();
     File testFile = new File(tmpDataDir, "file.nc");
 
-    NetcdfFormatWriter.Builder writerb = NetcdfFormatWriter.createNewNetcdf3(testFile.getPath());
+    NetcdfFormatWriter.Builder<?> writerb = NetcdfFormatWriter.createNewNetcdf3(testFile.getPath());
     writerb.addDimension(Dimension.builder().setName("v").setIsUnlimited(true).build());
     writerb.addDimension(Dimension.builder("s", 3).build());
 
-    Variable.Builder v = writerb.addVariable("v", ArrayType.CHAR, "v s");
+    Variable.Builder<?> v = writerb.addVariable("v", ArrayType.CHAR, "v s");
     assertThat(v.dataType).isEqualTo(ArrayType.CHAR);
     writerb.addVariable("v2", ArrayType.CHAR, "v");
 
     char[] data = {1, 2, 3, 40, 41, 42, 50, 51, 52, 60, 61, 62};
-    Array dataArray = Arrays.factory(ArrayType.CHAR, new int[] {4, 3}, data);
+    Array<?> dataArray = Arrays.factory(ArrayType.CHAR, new int[] {4, 3}, data);
 
     try (NetcdfFormatWriter ncfWriteable = writerb.build()) {
       Variable var = ncfWriteable.findVariable("v");
@@ -256,11 +259,14 @@ public class BytePaddingTest {
 
     try (NetcdfFile ncf = NetcdfFiles.open(testFile.getPath())) {
       Variable readVar = ncf.findVariable("v");
-      assertEquals(readVar.getArrayType(), ArrayType.CHAR);
-      assertEquals(1, readVar.getElementSize());
+      assertThat(readVar).isNotNull();
+      assertThat(readVar.getArrayType()).isEqualTo(ArrayType.CHAR);
+      assertThat(1).isEqualTo(readVar.getElementSize());
+
       Variable readVar2 = ncf.findVariable("v2");
-      assertEquals(readVar2.getArrayType(), ArrayType.CHAR);
-      assertEquals(1, readVar2.getElementSize());
+      assertThat(readVar2).isNotNull();
+      assertThat(readVar2.getArrayType()).isEqualTo(ArrayType.CHAR);
+      assertThat(1).isEqualTo(readVar2.getElementSize());
 
       Array<?> readdata = readVar.readArray(readVar.getSection());
       CompareArrayToArray.compareData("v", dataArray, readdata);
@@ -272,13 +278,13 @@ public class BytePaddingTest {
     File tmpDataDir = tempFolder.newFolder();
     File testFile = new File(tmpDataDir, "file.nc");
 
-    NetcdfFormatWriter.Builder writerb = NetcdfFormatWriter.createNewNetcdf3(testFile.getPath());
+    NetcdfFormatWriter.Builder<?> writerb = NetcdfFormatWriter.createNewNetcdf3(testFile.getPath());
     writerb.addDimension(Dimension.builder().setName("v").setIsUnlimited(true).build());
 
-    Variable.Builder v = writerb.addVariable("v", ArrayType.SHORT, "v");
+    Variable.Builder<?> v = writerb.addVariable("v", ArrayType.SHORT, "v");
 
     short[] data = {1, 2, 3, 4, 5, 6, 7, 8, 9, -1, -2, -3, -4, -5, -6, -7, -8, -9};
-    Array dataArray = Arrays.factory(ArrayType.SHORT, new int[] {data.length}, data);
+    Array<?> dataArray = Arrays.factory(ArrayType.SHORT, new int[] {data.length}, data);
 
     try (NetcdfFormatWriter ncfWriteable = writerb.build()) {
       Variable var = ncfWriteable.findVariable("v");
@@ -287,8 +293,9 @@ public class BytePaddingTest {
 
     try (NetcdfFile ncf = NetcdfFiles.open(testFile.getPath())) {
       Variable readVar = ncf.findVariable("v");
-      assertEquals(readVar.getArrayType(), ArrayType.SHORT);
-      assertEquals(2, readVar.getElementSize());
+      assertThat(readVar).isNotNull();
+      assertThat(readVar.getArrayType()).isEqualTo(ArrayType.SHORT);
+      assertThat(2).isEqualTo(readVar.getElementSize());
 
       Array<?> readdata = readVar.readArray(readVar.getSection());
       CompareArrayToArray.compareData("v", dataArray, readdata);
@@ -300,15 +307,15 @@ public class BytePaddingTest {
     File tmpDataDir = tempFolder.newFolder();
     File testFile = new File(tmpDataDir, "file.nc");
 
-    NetcdfFormatWriter.Builder writerb = NetcdfFormatWriter.createNewNetcdf3(testFile.getPath());
+    NetcdfFormatWriter.Builder<?> writerb = NetcdfFormatWriter.createNewNetcdf3(testFile.getPath());
     writerb.addDimension(Dimension.builder().setName("v").setIsUnlimited(true).build());
     writerb.addDimension(Dimension.builder("s", 3).build());
 
-    Variable.Builder v = writerb.addVariable("v", ArrayType.SHORT, "v s");
+    Variable.Builder<?> v = writerb.addVariable("v", ArrayType.SHORT, "v s");
     writerb.addVariable("v2", ArrayType.SHORT, "v");
 
     short[] data = {1, 2, 3, 10, 11, 12, -1, -2, -3, -7, -8, -9};
-    Array dataArray = Arrays.factory(ArrayType.SHORT, new int[] {4, 3}, data);
+    Array<?> dataArray = Arrays.factory(ArrayType.SHORT, new int[] {4, 3}, data);
 
     try (NetcdfFormatWriter ncfWriteable = writerb.build()) {
       Variable var = ncfWriteable.findVariable("v");
@@ -317,12 +324,14 @@ public class BytePaddingTest {
 
     try (NetcdfFile ncf = NetcdfFiles.open(testFile.getPath())) {
       Variable readVar = ncf.findVariable("v");
-      assertEquals(readVar.getArrayType(), ArrayType.SHORT);
-      assertEquals(2, readVar.getElementSize());
+      assertThat(readVar).isNotNull();
+      assertThat(readVar.getArrayType()).isEqualTo(ArrayType.SHORT);
+      assertThat(2).isEqualTo(readVar.getElementSize());
 
       Variable readVar2 = ncf.findVariable("v2");
-      assertEquals(readVar2.getArrayType(), ArrayType.SHORT);
-      assertEquals(2, readVar2.getElementSize());
+      assertThat(readVar2).isNotNull();
+      assertThat(readVar2.getArrayType()).isEqualTo(ArrayType.SHORT);
+      assertThat(2).isEqualTo(readVar2.getElementSize());
 
       Array<?> readdata = readVar.readArray(readVar.getSection());
       CompareArrayToArray.compareData("v", dataArray, readdata);
@@ -334,15 +343,15 @@ public class BytePaddingTest {
     File tmpDataDir = tempFolder.newFolder();
     File testFile = new File(tmpDataDir, "file.nc");
 
-    NetcdfFormatWriter.Builder writerb = NetcdfFormatWriter.createNewNetcdf3(testFile.getPath());
+    NetcdfFormatWriter.Builder<?> writerb = NetcdfFormatWriter.createNewNetcdf3(testFile.getPath());
     writerb.addDimension(Dimension.builder().setName("D").setIsUnlimited(true).build());
     writerb.addDimension(Dimension.builder("X", 5).build());
 
-    Variable.Builder x = writerb.addVariable("X", ArrayType.DOUBLE, "X");
-    Variable.Builder v = writerb.addVariable("V", ArrayType.BYTE, "D");
+    Variable.Builder<?> x = writerb.addVariable("X", ArrayType.DOUBLE, "X");
+    Variable.Builder<?> v = writerb.addVariable("V", ArrayType.BYTE, "D");
 
     byte[] data = {1, 2, 3, 4, 5, 6, 7, 8, 9, -1, -2, -3, -4, -5, -6, -7, -8, -9};
-    Array dataArray = Arrays.factory(ArrayType.BYTE, new int[] {data.length}, data);
+    Array<?> dataArray = Arrays.factory(ArrayType.BYTE, new int[] {data.length}, data);
 
     try (NetcdfFormatWriter ncfWriteable = writerb.build()) {
       Variable var = ncfWriteable.findVariable("V");
@@ -351,8 +360,9 @@ public class BytePaddingTest {
 
     try (NetcdfFile ncf = NetcdfFiles.open(testFile.getPath())) {
       Variable inv = ncf.findVariable("V");
-      assertEquals(inv.getArrayType(), ArrayType.BYTE);
-      assertEquals(1, inv.getElementSize());
+      assertThat(inv).isNotNull();
+      assertThat(inv.getArrayType()).isEqualTo(ArrayType.BYTE);
+      assertThat(1).isEqualTo(inv.getElementSize());
 
       Array<?> readdata = inv.readArray(inv.getSection());
       CompareArrayToArray.compareData("v", dataArray, readdata);
@@ -365,6 +375,7 @@ public class BytePaddingTest {
     File dataFile = new File(testDir, "files/tst_small.nc");
     try (NetcdfFile ncFile = NetcdfFiles.open(dataFile.getPath(), null)) {
       Variable readVar = ncFile.findVariable("Times");
+      assertThat(readVar).isNotNull();
       assertDataAsExpected(readVar);
     }
   }
@@ -375,7 +386,7 @@ public class BytePaddingTest {
     File dataFile = new File(testDir, "files/tst_small_withoutPaddingInVsize.nc");
     try (NetcdfFile ncFile = NetcdfFiles.open(dataFile.getPath(), null)) {
       Variable readVar = ncFile.findVariable("Times");
-
+      assertThat(readVar).isNotNull();
       assertDataAsExpected(readVar);
     }
   }

@@ -5,11 +5,12 @@
 
 package ucar.util.prefs;
 
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 import java.util.prefs.*;
+
+import static com.google.common.truth.Truth.assertWithMessage;
 
 @RunWith(JUnit4.class)
 public class TestEvents {
@@ -50,13 +51,13 @@ public class TestEvents {
     node.addPreferenceChangeListener(new PreferenceChangeListener() {
       public void preferenceChange(PreferenceChangeEvent evt) {
         if (evt.getKey().equals("love")) {
-          Assert.assertEquals(
-              " node " + evt.getNode().name() + " key = <" + evt.getKey() + "> val= <" + evt.getNewValue() + ">", "ok",
-              evt.getNewValue());
+          assertWithMessage(
+              " node " + evt.getNode().name() + " key = <" + evt.getKey() + "> val= <" + evt.getNewValue() + ">")
+                  .that("ok").isEqualTo(evt.getNewValue());
         } else if (evt.getKey().equals("love2")) {
-          Assert.assertEquals(
-              " node " + evt.getNode().name() + " key = <" + evt.getKey() + "> val= <" + evt.getNewValue() + ">",
-              "not ok", evt.getNewValue());
+          assertWithMessage(
+              " node " + evt.getNode().name() + " key = <" + evt.getKey() + "> val= <" + evt.getNewValue() + ">")
+                  .that("not ok").isEqualTo(evt.getNewValue());
         }
       }
     });

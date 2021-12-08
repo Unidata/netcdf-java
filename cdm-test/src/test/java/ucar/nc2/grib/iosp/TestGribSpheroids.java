@@ -5,7 +5,6 @@
 
 package ucar.nc2.grib.iosp;
 
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
@@ -19,6 +18,8 @@ import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
+
+import static com.google.common.truth.Truth.assertThat;
 
 /**
  * Created by rmay on 5/22/15.
@@ -35,7 +36,8 @@ public class TestGribSpheroids {
     try (NetcdfFile ncfile = NetcdfFiles.open(filename, null)) {
       Variable v = ncfile.findVariable("LatLon_Projection");
       Attribute axis = v.findAttribute("earth_radius");
-      Assert.assertEquals(6367470., axis.getNumericValue().doubleValue(), 0.1);
+      assertThat(axis).isNotNull();
+      assertThat(axis.getNumericValue().doubleValue()).isWithin(0.1).of(6367470.);
     }
   }
 
@@ -45,7 +47,8 @@ public class TestGribSpheroids {
     try (NetcdfFile ncfile = NetcdfFiles.open(filename, null)) {
       Variable v = ncfile.findVariable("LambertConformal_Projection");
       Attribute axis = v.findAttribute("earth_radius");
-      Assert.assertEquals(6371200., axis.getNumericValue().doubleValue(), 0.1);
+      assertThat(axis).isNotNull();
+      assertThat(axis.getNumericValue().doubleValue()).isWithin(0.1).of(6371200.);
     }
   }
 
@@ -56,7 +59,8 @@ public class TestGribSpheroids {
     try (NetcdfFile ncfile = NetcdfFiles.open(filename, null)) {
       Variable v = ncfile.findVariable("LambertConformal_Projection");
       Attribute axis = v.findAttribute("earth_radius");
-      Assert.assertEquals(6371200., axis.getNumericValue().doubleValue(), 0.1);
+      assertThat(axis).isNotNull();
+      assertThat(axis.getNumericValue().doubleValue()).isWithin(0.1).of(6371200.);
     }
   }
 
@@ -66,10 +70,12 @@ public class TestGribSpheroids {
     try (NetcdfFile ncfile = NetcdfFiles.open(filename, null)) {
       Variable v = ncfile.findVariable("LatLon_Projection");
       Attribute axis = v.findAttribute("semi_major_axis");
-      Assert.assertEquals(6378160., axis.getNumericValue().doubleValue(), 0.1);
+      assertThat(axis).isNotNull();
+      assertThat(axis.getNumericValue().doubleValue()).isWithin(0.1).of(6378160.);
       axis = v.findAttribute("semi_minor_axis");
-      Assert.assertEquals(6356684.7, axis.getNumericValue().doubleValue(), 0.1); // We use the inverse flattening, not
-                                                                                 // the specified minor
+      assertThat(axis).isNotNull();
+      // We use the inverse flattening, not the specified minor
+      assertThat(axis.getNumericValue().doubleValue()).isWithin(0.1).of(6356684.7);
     }
   }
 
@@ -79,9 +85,11 @@ public class TestGribSpheroids {
     try (NetcdfFile ncfile = NetcdfFiles.open(filename, null)) {
       Variable v = ncfile.findVariable("SpaceViewPerspective_Projection");
       Attribute axis = v.findAttribute("semi_major_axis");
-      Assert.assertEquals(6378140., axis.getNumericValue().doubleValue(), 0.1);
+      assertThat(axis).isNotNull();
+      assertThat(axis.getNumericValue().doubleValue()).isWithin(0.1).of(6378140.);
       axis = v.findAttribute("semi_minor_axis");
-      Assert.assertEquals(6356755., axis.getNumericValue().doubleValue(), 0.1);
+      assertThat(axis).isNotNull();
+      assertThat(axis.getNumericValue().doubleValue()).isWithin(0.1).of(6356755.);
     }
   }
 
@@ -91,7 +99,8 @@ public class TestGribSpheroids {
     try (NetcdfFile ncfile = NetcdfFiles.open(filename, null)) {
       Variable v = ncfile.findVariable("AlbersEqualArea_Projection");
       Attribute axis = v.findAttribute("semi_major_axis");
-      Assert.assertEquals(6378137., axis.getNumericValue().doubleValue(), 0.1);
+      assertThat(axis).isNotNull();
+      assertThat(axis.getNumericValue().doubleValue()).isWithin(0.1).of(6378137.);
     }
   }
 
@@ -102,7 +111,8 @@ public class TestGribSpheroids {
       Group grp = ncfile.getRootGroup().getGroups().get(0);
       Variable v = grp.findVariableLocal("LatLon_Projection");
       Attribute axis = v.findAttribute("earth_radius");
-      Assert.assertEquals(6371229., axis.getNumericValue().doubleValue(), 0.1);
+      assertThat(axis).isNotNull();
+      assertThat(axis.getNumericValue().doubleValue()).isWithin(0.1).of(6371229.);
     }
   }
 
@@ -112,7 +122,8 @@ public class TestGribSpheroids {
     try (NetcdfFile ncfile = NetcdfFiles.open(filename, null)) {
       Variable v = ncfile.findVariable("LambertConformal_Projection");
       Attribute axis = v.findAttribute("semi_major_axis");
-      Assert.assertEquals(6377397., axis.getNumericValue().doubleValue(), 0.1);
+      assertThat(axis).isNotNull();
+      assertThat(axis.getNumericValue().doubleValue()).isWithin(0.1).of(6377397.);
     }
   }
 }

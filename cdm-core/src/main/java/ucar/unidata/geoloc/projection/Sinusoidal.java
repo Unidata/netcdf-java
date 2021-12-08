@@ -4,6 +4,7 @@
  */
 package ucar.unidata.geoloc.projection;
 
+import com.google.common.base.Preconditions;
 import com.google.common.math.DoubleMath;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
@@ -313,7 +314,7 @@ public class Sinusoidal extends AbstractProjection {
 
   private boolean pointIsBetween(ProjectionPoint point, ProjectionPoint linePoint1, ProjectionPoint linePoint2) {
     if (linePoint1.getX() == linePoint2.getX()) { // No fuzzy comparison necessary.
-      assert point.getX() == linePoint1.getX() : "point should have the same X as the line.";
+      Preconditions.checkArgument(point.getX() == linePoint1.getX(), "point should have the same X as the line.");
 
       double minY = Math.min(linePoint1.getY(), linePoint2.getY());
       double maxY = Math.max(linePoint1.getY(), linePoint2.getY());
@@ -322,7 +323,7 @@ public class Sinusoidal extends AbstractProjection {
       return DoubleMath.fuzzyCompare(minY, point.getY(), TOLERANCE) <= 0
           && DoubleMath.fuzzyCompare(point.getY(), maxY, TOLERANCE) <= 0;
     } else if (linePoint1.getY() == linePoint2.getY()) { // No fuzzy comparison necessary.
-      assert point.getY() == linePoint1.getY() : "point should have the same Y as the line.";
+      Preconditions.checkArgument(point.getY() == linePoint1.getY(), "point should have the same Y as the line.");
 
       double minX = Math.min(linePoint1.getX(), linePoint2.getX());
       double maxX = Math.max(linePoint1.getX(), linePoint2.getX());
@@ -348,7 +349,8 @@ public class Sinusoidal extends AbstractProjection {
 
     for (ProjectionPoint projPoint : projPoints) {
       LatLonPoint latLonPoint = projToLatLon(projPoint);
-      assert latLonPoint != INVALID : "We should have filtered out bad points and added good ones. WTF?";
+      Preconditions.checkArgument(latLonPoint != INVALID,
+          "We should have filtered out bad points and added good ones. WTF?");
 
       minLat = Math.min(minLat, latLonPoint.getLatitude());
       minLon = Math.min(minLon, latLonPoint.getLongitude());

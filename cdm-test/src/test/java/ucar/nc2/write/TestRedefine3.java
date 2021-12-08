@@ -4,8 +4,8 @@
  */
 package ucar.nc2.write;
 
+import static com.google.common.truth.Truth.assertThat;
 import static org.junit.Assert.fail;
-import java.io.IOException;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -13,7 +13,6 @@ import ucar.array.Array;
 import ucar.array.ArrayType;
 import ucar.array.Arrays;
 import ucar.array.Index;
-import ucar.array.InvalidRangeException;
 import ucar.nc2.Attribute;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFiles;
@@ -28,7 +27,7 @@ public class TestRedefine3 {
   @Test
   public void testRedefine3() throws Exception {
     String filename = tempFolder.newFile().getAbsolutePath();
-    NetcdfFormatWriter.Builder writerb =
+    NetcdfFormatWriter.Builder<?> writerb =
         NetcdfFormatWriter.createNewNetcdf3(filename).setFill(false).setExtraHeader(64 * 1000);
     writerb.addDimension("time", 100);
 
@@ -46,7 +45,7 @@ public class TestRedefine3 {
       writer.write("jack", Index.ofRank(1), Arrays.factory(ArrayType.DOUBLE, count, jackData));
 
       writerb.addVariable("jill", ArrayType.DOUBLE, "time");
-      Array jillArray = Arrays.factory(ArrayType.DOUBLE, count, jillData);
+      Array<?> jillArray = Arrays.factory(ArrayType.DOUBLE, count, jillData);
       try {
         writer.write("jill", Index.ofRank(1), jillArray);
         fail();
@@ -57,7 +56,7 @@ public class TestRedefine3 {
 
     try (NetcdfFile nc = NetcdfFiles.open(filename, null)) {
       Variable v = nc.findVariable("jill");
-      assert v == null;
+      assertThat(v).isNull();
     }
   }
 }

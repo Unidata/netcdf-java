@@ -6,6 +6,8 @@ package ucar.nc2.iosp;
 
 import java.util.Arrays;
 import javax.annotation.Nullable;
+
+import com.google.common.base.Preconditions;
 import ucar.array.Section;
 import ucar.array.InvalidRangeException;
 import ucar.array.Range;
@@ -158,7 +160,7 @@ public class IndexChunker {
     chunkIndex = new IndexLong(shape, wstride);
 
     // sanity check
-    assert IndexLong.computeSize(shape) * nelems == total;
+    Preconditions.checkArgument(IndexLong.computeSize(shape) * nelems == total);
 
     if (debug) {
       System.out.println("Index2= " + this);

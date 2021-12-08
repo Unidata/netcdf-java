@@ -237,7 +237,7 @@ public class H5iosp extends AbstractIOServiceProvider {
             break;
           size *= fieldshape[prefixrank];
         }
-        assert size == m.length() : "Internal error: field size mismatch";
+        Preconditions.checkArgument(size == m.length(), "Internal error: field size mismatch");
         Array<?>[] fieldarray = new Array<?>[size]; // hold all the vlen instance data
         // destPos will point to each vlen instance in turn
         // assuming we have 'size' such instances in a row.
@@ -294,7 +294,7 @@ public class H5iosp extends AbstractIOServiceProvider {
     if (vinfo.mfp != null) { // filtered
       if (debugFilter)
         System.out.println("read variable filtered " + v2.getFullName() + " vinfo = " + vinfo);
-      assert vinfo.isChunked;
+      Preconditions.checkArgument(vinfo.isChunked);
       layout = new H5tiledLayoutBB(v2, wantSection, raf, vinfo.mfp.getFilters(), endian);
       if (vinfo.typeInfo.isVString) {
         data = readFilteredStringData((LayoutBB) layout);

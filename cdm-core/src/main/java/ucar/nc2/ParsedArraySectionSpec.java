@@ -4,6 +4,7 @@
  */
 package ucar.nc2;
 
+import com.google.common.base.Preconditions;
 import ucar.array.ArrayType;
 import ucar.array.Range;
 import ucar.array.Section;
@@ -160,7 +161,7 @@ public class ParsedArraySectionSpec {
 
   private static ucar.array.Section makeSpec(StringBuilder sb, Variable v, ucar.array.Section orgSection) {
     if (v.isMemberOfStructure()) {
-      assert v.getParentStructure() != null;
+      Preconditions.checkNotNull(v.getParentStructure());
       orgSection = makeSpec(sb, v.getParentStructure(), orgSection);
       sb.append('.');
     }

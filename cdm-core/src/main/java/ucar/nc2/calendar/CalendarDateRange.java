@@ -30,9 +30,9 @@ public class CalendarDateRange {
   private CalendarDateRange(CalendarDate start, CalendarDate end) {
     Preconditions.checkNotNull(start);
     Preconditions.checkNotNull(end);
+    Preconditions.checkArgument(start.getCalendar() == end.getCalendar());
     this.start = start;
     this.end = end;
-    assert start.getCalendar() == end.getCalendar();
   }
 
   private CalendarDateRange(CalendarDate start, long durationInSecs) {

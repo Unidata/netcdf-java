@@ -4,13 +4,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.List;
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import ucar.nc2.grib.grib1.tables.Grib1Customizer;
 import ucar.nc2.calendar.CalendarDate;
 import ucar.unidata.io.RandomAccessFile;
+
+import static com.google.common.truth.Truth.assertThat;
 
 @RunWith(Parameterized.class)
 public class TestGrib1Records {
@@ -72,25 +73,25 @@ public class TestGrib1Records {
     readFile(filename, (raf, gr) -> {
       Grib1Gds gds = gr.getGDS();
       if (check)
-        Assert.assertEquals(gdsTemplate, gds.template);
+        assertThat(gdsTemplate).isEqualTo(gds.template);
       if (check)
-        Assert.assertTrue(gds.toString().contains("template=" + gdsTemplate));
+        assertThat(gds.toString().contains("template=" + gdsTemplate)).isTrue();
       gds.testHorizCoordSys(new Formatter());
 
       Grib1SectionProductDefinition pds = gr.getPDSsection();
       if (check)
-        Assert.assertEquals(param, pds.getParameterNumber());
+        assertThat(param).isEqualTo(pds.getParameterNumber());
       Formatter f = new Formatter();
       pds.showPds(Grib1Customizer.factory(gr, null), f);
       if (check)
-        Assert.assertTrue(f.toString().contains(String.format("Parameter Name : (%d)", param))
-            || f.toString().contains(String.format("Parameter %d not found", param)));
+        assertThat(f.toString().contains(String.format("Parameter Name : (%d)", param))
+            || f.toString().contains(String.format("Parameter %d not found", param))).isTrue();
       if (check)
-        Assert.assertEquals(this.refdate, pds.getReferenceDate());
+        assertThat(this.refdate).isEqualTo(pds.getReferenceDate());
 
       float[] data = gr.readData(raf);
       if (check)
-        Assert.assertEquals(datalen, data.length);
+        assertThat(datalen).isEqualTo(data.length);
       System.out.printf("%s: template,param,len=  %d, %d, %d, %s %n", filename, gds.template, pds.getParameterNumber(),
           data.length, pds.getReferenceDate());
       return true;

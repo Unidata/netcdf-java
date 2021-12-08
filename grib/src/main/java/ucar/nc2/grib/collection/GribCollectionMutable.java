@@ -8,6 +8,8 @@ package ucar.nc2.grib.collection;
 import com.google.common.base.MoreObjects;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+
+import com.google.common.base.Preconditions;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.MFile;
 import ucar.nc2.grib.GribIndexCache;
@@ -481,7 +483,7 @@ public class GribCollectionMutable implements Closeable {
 
         Grib2SectionProductDefinition pdss = new Grib2SectionProductDefinition(rawPds);
         Grib2Pds pds = pdss.getPDS();
-        assert pds != null;
+        Preconditions.checkNotNull(pds);
         this.tableVersion = -1;
 
         // quantities that are stored in the pds

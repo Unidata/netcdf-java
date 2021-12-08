@@ -5,6 +5,8 @@
 
 package ucar.nc2.grib;
 
+import com.google.common.base.Preconditions;
+
 /**
  * Converts a QuasiRegular grid into a regular rectanglar (lat/lon) grid.
  *
@@ -38,11 +40,11 @@ public class QuasiRegular {
 
     int max = getMax(linePts);
     if (nx < 0) {
-      assert ny == linePts.length;
+      Preconditions.checkArgument(ny == linePts.length);
       nx = max;
     } else {
-      assert ny < 0;
-      assert nx == linePts.length;
+      Preconditions.checkArgument(ny < 0);
+      Preconditions.checkArgument(nx == linePts.length);
       ny = max;
     }
 

@@ -17,6 +17,9 @@ import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.util.Formatter;
 
+import static com.google.common.truth.Truth.assertThat;
+import static com.google.common.truth.Truth.assertWithMessage;
+
 /** Sanity check on reading bufr messages. */
 public class TestBufrModuleRead {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
@@ -71,14 +74,14 @@ public class TestBufrModuleRead {
             System.out.printf(" %3d nobs = %4d (%s) center = %s table=%s cat=%s ", count++, nobs, m.getHeader(),
                 m.getLookup().getCenterNo(), m.getLookup().getTableName(), m.getLookup().getCategoryNo());
           }
-          assert m.isTablesComplete() : "incomplete tables";
+          assertThat(m.isTablesComplete()).isTrue();
 
           if (nobs > 0) {
             BufrSingleMessage bufr = new BufrSingleMessage();
             Sequence top = bufr.fromSingleMessage(m.raf(), m);
             Formatter f = new Formatter();
             MessageBitCounter counter = new MessageBitCounter(top, m, m, f);
-            assert counter.isBitCountOk() : "bit count wrong on " + filename;
+            assertWithMessage("bit count wrong on " + filename).that(counter.isBitCountOk()).isTrue();
           }
 
           totalObs += nobs;
@@ -88,7 +91,6 @@ public class TestBufrModuleRead {
 
         } catch (Exception e) {
           e.printStackTrace();
-          assert true : e.getMessage();
         }
 
       }

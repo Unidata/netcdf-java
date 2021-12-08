@@ -14,6 +14,7 @@ import static ucar.nc2.jni.netcdf.Nc4prototypes.NC_NETCDF4;
 import static ucar.nc2.jni.netcdf.Nc4prototypes.NC_OPAQUE;
 import static ucar.nc2.jni.netcdf.Nc4prototypes.NC_VLEN;
 
+import com.google.common.base.Preconditions;
 import com.sun.jna.ptr.IntByReference;
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -913,7 +914,7 @@ public class Nc4writer extends Nc4reader implements IospFileWriter {
       case Nc4prototypes.NC_BYTE:
       case Nc4prototypes.NC_UBYTE:
         byte[] valb = (byte[]) data;
-        assert valb.length == sectionLen;
+        Preconditions.checkArgument(valb.length == sectionLen);
         int ret = isUnsigned ? nc4.nc_put_vars_uchar(grpid, varid, origin, shape, stride, valb)
             : nc4.nc_put_vars_schar(grpid, varid, origin, shape, stride, valb);
         if (ret != 0) {
@@ -923,7 +924,7 @@ public class Nc4writer extends Nc4reader implements IospFileWriter {
 
       case Nc4prototypes.NC_CHAR:
         byte[] valc = (byte[]) data;
-        assert valc.length == sectionLen;
+        Preconditions.checkArgument(valc.length == sectionLen);
 
         ret = nc4.nc_put_vars_text(grpid, varid, origin, shape, stride, valc);
         // ret = nc4.nc_put_vara_text(grpid, varid, origin, shape, valb);
@@ -935,7 +936,7 @@ public class Nc4writer extends Nc4reader implements IospFileWriter {
 
       case Nc4prototypes.NC_DOUBLE:
         double[] vald = (double[]) data;
-        assert vald.length == sectionLen;
+        Preconditions.checkArgument(vald.length == sectionLen);
         ret = nc4.nc_put_vars_double(grpid, varid, origin, shape, stride, vald);
         if (ret != 0)
           throw new IOException(ret + ": " + nc4.nc_strerror(ret));
@@ -943,7 +944,7 @@ public class Nc4writer extends Nc4reader implements IospFileWriter {
 
       case Nc4prototypes.NC_FLOAT:
         float[] valf = (float[]) data;
-        assert valf.length == sectionLen;
+        Preconditions.checkArgument(valf.length == sectionLen);
         ret = nc4.nc_put_vars_float(grpid, varid, origin, shape, stride, valf);
         if (ret != 0) {
           // log.error("{} on var {}", nc4.nc_strerror(ret), v);
@@ -955,7 +956,7 @@ public class Nc4writer extends Nc4reader implements IospFileWriter {
       case Nc4prototypes.NC_UINT:
       case Nc4prototypes.NC_INT:
         int[] vali = (int[]) data;
-        assert vali.length == sectionLen;
+        Preconditions.checkArgument(vali.length == sectionLen);
         ret = isUnsigned ? nc4.nc_put_vars_uint(grpid, varid, origin, shape, stride, vali)
             : nc4.nc_put_vars_int(grpid, varid, origin, shape, stride, vali);
 
@@ -969,7 +970,7 @@ public class Nc4writer extends Nc4reader implements IospFileWriter {
       case Nc4prototypes.NC_UINT64:
       case Nc4prototypes.NC_INT64:
         long[] vall = (long[]) data;
-        assert vall.length == sectionLen;
+        Preconditions.checkArgument(vall.length == sectionLen);
         ret = isUnsigned ? nc4.nc_put_vars_ulonglong(grpid, varid, origin, shape, stride, vall)
             : nc4.nc_put_vars_longlong(grpid, varid, origin, shape, stride, vall);
 
@@ -980,7 +981,7 @@ public class Nc4writer extends Nc4reader implements IospFileWriter {
       case Nc4prototypes.NC_USHORT:
       case Nc4prototypes.NC_SHORT:
         short[] vals = (short[]) data;
-        assert vals.length == sectionLen;
+        Preconditions.checkArgument(vals.length == sectionLen);
         ret = isUnsigned ? nc4.nc_put_vars_ushort(grpid, varid, origin, shape, stride, vals)
             : nc4.nc_put_vars_short(grpid, varid, origin, shape, stride, vals);
         if (ret != 0)
@@ -989,7 +990,7 @@ public class Nc4writer extends Nc4reader implements IospFileWriter {
 
       case Nc4prototypes.NC_STRING:
         String[] valss = convertStringData(data);
-        assert valss.length == sectionLen;
+        Preconditions.checkArgument(valss.length == sectionLen);
         ret = nc4.nc_put_vars_string(grpid, varid, origin, shape, stride, valss);
         if (ret != 0)
           throw new IOException(ret + ": " + nc4.nc_strerror(ret));

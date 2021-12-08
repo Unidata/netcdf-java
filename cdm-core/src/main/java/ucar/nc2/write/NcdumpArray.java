@@ -400,7 +400,7 @@ public class NcdumpArray {
       Object value = ma.getScalar();
 
       if (ma.getArrayType().isUnsigned()) {
-        assert value instanceof Number : "A data type being unsigned implies that it is numeric.";
+        Preconditions.checkArgument(value instanceof Number, "A data type being unsigned implies that it is numeric.");
 
         // "value" is an unsigned number, but it will be treated as signed when we print it below, because Java only
         // has signed types. If it's large enough ( >= 2^(BIT_WIDTH-1) ), its most-significant bit will be interpreted
@@ -424,7 +424,8 @@ public class NcdumpArray {
         Object value = ma.get(indexFn.odometer(ii));
 
         if (ma.getArrayType().isUnsigned()) {
-          assert value instanceof Number : "A data type being unsigned implies that it is numeric.";
+          Preconditions.checkArgument(value instanceof Number,
+              "A data type being unsigned implies that it is numeric.");
           value = ArrayType.widenNumberIfNegative((Number) value);
         }
 

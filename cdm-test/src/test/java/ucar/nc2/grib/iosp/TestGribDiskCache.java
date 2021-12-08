@@ -5,7 +5,6 @@
 
 package ucar.nc2.grib.iosp;
 
-import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -21,6 +20,8 @@ import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
 import java.io.File;
 import java.lang.invoke.MethodHandles;
+
+import static com.google.common.truth.Truth.assertThat;
 
 /**
  * Test GRIB disk caching
@@ -41,8 +42,8 @@ public class TestGribDiskCache {
 
     DiskCache2 cache = new DiskCache2(cacheDirName, false, 0, 0);
     cache.setAlwaysUseCache(true);
-    Assert.assertEquals(cacheDirName, cache.getRootDirectory());
-    assert new File(cache.getRootDirectory()).exists();
+    assertThat(cacheDirName).isEqualTo(cache.getRootDirectory());
+    assertThat(new File(cache.getRootDirectory()).exists()).isTrue();
     GribIndexCache.setDiskCache2(cache);
 
     String dataDir = TestDir.cdmUnitTestDir + "testCache";
@@ -69,7 +70,7 @@ public class TestGribDiskCache {
       if (data.getName().endsWith(".grib1") || data.getName().endsWith(".grib2")) {
         String index = data.getPath() + ".ncx4";
         File indexFile = cache.getCacheFile(index);
-        assert indexFile != null;
+        assertThat(indexFile).isNotNull();
         assert indexFile.exists() : indexFile.getPath() + " does not exist";
       }
     }

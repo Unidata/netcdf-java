@@ -5,6 +5,7 @@
 
 package ucar.nc2.grib.collection;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import org.slf4j.Logger;
 import ucar.array.Array;
@@ -239,7 +240,7 @@ class GribIospBuilder {
 
         switch (gctype) {
           case SRC: // GC: Single Runtime Collection [ntimes] (run, 2D) scalar runtime
-            assert isRunScaler;
+            Preconditions.checkArgument(isRunScaler);
             dimNames.format("%s ", timeDimName);
             coordinateAtt.format("%s %s ", run.getName(), timeDimName);
             break;
@@ -255,7 +256,7 @@ class GribIospBuilder {
 
           case MRC: // GC: Multiple Runtime Collection [nruns, ntimes] (run, 2D) use Both
           case TwoD: // PC: TwoD time partition [nruns, ntimes]
-            assert run != null : "GRIB MRC or TWOD does not have run coordinate";
+            Preconditions.checkNotNull(run, "GRIB MRC or TWOD does not have run coordinate");
             if (isRunScaler) {
               dimNames.format("%s ", timeDimName);
             } else {

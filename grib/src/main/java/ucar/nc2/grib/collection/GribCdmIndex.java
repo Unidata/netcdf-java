@@ -8,6 +8,8 @@ package ucar.nc2.grib.collection;
 import com.beust.jcommander.*;
 import java.nio.charset.StandardCharsets;
 import javax.annotation.Nullable;
+
+import com.google.common.base.Preconditions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import thredds.featurecollection.FeatureCollectionConfig;
@@ -128,7 +130,7 @@ public class GribCdmIndex implements IndexReader {
     idxPathname = StringUtil2.replace(idxPathname, '\\', "/");
     int pos = idxPathname.lastIndexOf('/');
     String idxFilename = (pos < 0) ? idxPathname : idxPathname.substring(pos + 1);
-    assert idxFilename.endsWith(NCX_SUFFIX) : idxFilename;
+    Preconditions.checkArgument(idxFilename.endsWith(NCX_SUFFIX), idxFilename);
     return idxFilename.substring(0, idxFilename.length() - NCX_SUFFIX.length());
   }
 
@@ -996,8 +998,8 @@ public class GribCdmIndex implements IndexReader {
       public int compare(ParameterDescription p0, ParameterDescription p1) {
         int index0 = orderedParamNames.indexOf(p0.getLongestName());
         int index1 = orderedParamNames.indexOf(p1.getLongestName());
-        assert index0 >= 0 : "Unexpected parameter name: " + p0.getLongestName();
-        assert index1 >= 0 : "Unexpected parameter name: " + p1.getLongestName();
+        Preconditions.checkArgument(index0 >= 0, "Unexpected parameter name: " + p0.getLongestName());
+        Preconditions.checkArgument(index1 >= 0, "Unexpected parameter name: " + p1.getLongestName());
 
         return Integer.compare(index0, index1);
       }

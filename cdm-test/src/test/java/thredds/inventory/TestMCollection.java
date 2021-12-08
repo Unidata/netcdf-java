@@ -51,7 +51,7 @@ public class TestMCollection {
         assertThat(mfile.getName()).isEqualTo("pwat.gdas.199612.grb2");
         count++;
       }
-      assert count == 1;
+      assertThat(count).isEqualTo(1);
     }
   }
 

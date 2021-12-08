@@ -4,6 +4,7 @@
  */
 package ucar.nc2.bufr.tables;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.re2j.Matcher;
 import com.google.re2j.Pattern;
@@ -1191,7 +1192,7 @@ public class BufrTables {
         short seqF = Short.parseShort(split[0]);
         short seqX = Short.parseShort(split[1]);
         short seqY = Short.parseShort(split[2]);
-        assert seqF == 3;
+        Preconditions.checkArgument(seqF == 3);
 
         String seqName = "";
         if (split.length > 3) {

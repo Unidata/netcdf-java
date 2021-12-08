@@ -437,7 +437,7 @@ public class NetcdfFiles {
         } catch (OverlappingFileLockException oe) { // not sure why lock() doesnt block
           try {
             Thread.sleep(100); // msecs
-          } catch (InterruptedException e1) {
+          } catch (InterruptedException ignored) {
           }
         }
       }
@@ -658,22 +658,22 @@ public class NetcdfFiles {
     } catch (IOException | RuntimeException e) {
       try {
         raf.close();
-      } catch (Throwable t2) {
+      } catch (Throwable ignored) {
       }
       try {
         spi.close();
-      } catch (Throwable t1) {
+      } catch (Throwable ignored) {
       }
       throw e;
 
     } catch (Throwable t) {
       try {
         spi.close();
-      } catch (Throwable t1) {
+      } catch (Throwable ignored) {
       }
       try {
         raf.close();
-      } catch (Throwable t2) {
+      } catch (Throwable ignored) {
       }
       throw new RuntimeException(t);
     }

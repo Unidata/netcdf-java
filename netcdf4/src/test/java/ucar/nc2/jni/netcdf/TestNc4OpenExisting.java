@@ -29,6 +29,8 @@ import ucar.nc2.ffi.netcdf.NetcdfClibrary;
 import ucar.nc2.iosp.NetcdfFileFormat;
 import ucar.nc2.write.NetcdfFormatWriter;
 
+import static com.google.common.truth.Truth.assertThat;
+
 /** Test miscellaneous netcdf4 writing */
 public class TestNc4OpenExisting {
 
@@ -47,22 +49,23 @@ public class TestNc4OpenExisting {
 
   @Test
   @Ignore("needs ucar.nc2.jni.netcdf.Nc4updater")
-  public void testUnlimitedDimension() throws IOException, InvalidRangeException {
+  public void testUnlimitedDimension() throws Exception {
     String location = tempFolder.newFile().getAbsolutePath();
 
-    NetcdfFormatWriter.Builder writerb = NetcdfFormatWriter.createNewNetcdf4(NetcdfFileFormat.NETCDF4, location, null);
+    NetcdfFormatWriter.Builder<?> writerb =
+        NetcdfFormatWriter.createNewNetcdf4(NetcdfFileFormat.NETCDF4, location, null);
     System.out.printf("write to file = %s%n", new File(location).getAbsolutePath());
 
     Dimension timeDim = writerb.addUnlimitedDimension("time");
     writerb.addVariable("time", ArrayType.DOUBLE, ImmutableList.of(timeDim));
 
-    Array data = Arrays.factory(ArrayType.DOUBLE, new int[] {4}, new double[] {0, 1, 2, 3});
+    Array<?> data = Arrays.factory(ArrayType.DOUBLE, new int[] {4}, new double[] {0, 1, 2, 3});
     try (NetcdfFormatWriter writer = writerb.build()) {
       writer.write(writer.findVariable("time"), data.getIndex(), data);
     }
 
     Index origin = Index.ofRank(0);
-    NetcdfFormatWriter.Builder existingb = NetcdfFormatWriter.openExisting(location);
+    NetcdfFormatWriter.Builder<?> existingb = NetcdfFormatWriter.openExisting(location);
     try (NetcdfFormatWriter existing = existingb.build()) {
       Variable time = existing.findVariable("time");
       existing.write(time, origin.set((int) time.getSize()), data);
@@ -70,7 +73,8 @@ public class TestNc4OpenExisting {
 
     try (NetcdfFile file = NetcdfFiles.open(location)) {
       Variable time = file.findVariable("time");
-      assert time.getSize() == 8 : "failed to append to unlimited dimension";
+      assertThat(time).isNotNull();
+      assertThat(time.getSize()).isEqualTo(8);
     }
   }
 }

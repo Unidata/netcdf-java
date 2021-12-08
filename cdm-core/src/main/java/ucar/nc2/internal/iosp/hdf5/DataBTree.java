@@ -5,6 +5,8 @@
 package ucar.nc2.internal.iosp.hdf5;
 
 import java.util.Arrays;
+
+import com.google.common.base.Preconditions;
 import ucar.array.Section;
 import ucar.nc2.iosp.LayoutTiled;
 import ucar.unidata.io.RandomAccessFile;
@@ -198,7 +200,7 @@ public class DataBTree {
           raf.skipBytes(8); // skip size, filterMask
           for (int j = 0; j < ndimStorage; j++) {
             long loffset = raf.readLong();
-            assert loffset < Integer.MAX_VALUE;
+            Preconditions.checkArgument(loffset < Integer.MAX_VALUE);
             offset[i][j] = (int) loffset;
           }
           this.childPointer[i] = (i == nentries) ? -1 : h5.readOffset();
@@ -255,7 +257,7 @@ public class DataBTree {
         }
       }
 
-      assert (nentries == 0) || (currentEntry < nentries) : currentEntry + " >= " + nentries;
+      Preconditions.checkArgument((nentries == 0) || (currentEntry < nentries), currentEntry + " >= " + nentries);
     }
 
     // TODO - wouldnt be a bad idea to terminate if possible instead of running through all subsequent entries
@@ -302,7 +304,7 @@ public class DataBTree {
       offset = new int[ndim];
       for (int i = 0; i < ndim; i++) {
         long loffset = raf.readLong();
-        assert loffset < Integer.MAX_VALUE;
+        Preconditions.checkArgument(loffset < Integer.MAX_VALUE);
         offset[i] = (int) loffset;
       }
       this.filePos = last ? -1 : h5.readAddress(); //

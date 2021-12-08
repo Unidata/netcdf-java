@@ -4,7 +4,6 @@
  */
 package ucar.nc2.grib.grib2;
 
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
@@ -13,6 +12,8 @@ import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFiles;
 import ucar.nc2.Variable;
 import java.io.IOException;
+
+import static com.google.common.truth.Truth.assertThat;
 
 @RunWith(JUnit4.class)
 public class TestMRMS {
@@ -26,15 +27,15 @@ public class TestMRMS {
   public void checkVariable() throws IOException {
     try (NetcdfFile nc = NetcdfFiles.open(testfile)) {
       Variable var = nc.findVariable("LowLevelCompositeReflectivity_altitude_above_msl");
-      Assert.assertNotNull(var);
+      assertThat(var).isNotNull();
 
       Attribute att = var.findAttribute("missing_value");
-      Assert.assertNotNull(att);
-      Assert.assertEquals(-99., att.getNumericValue().doubleValue(), 1e-6);
+      assertThat(att).isNotNull();
+      assertThat(att.getNumericValue().doubleValue()).isWithin(1e-6).of(-99.);
 
       att = var.findAttribute("_FillValue");
-      Assert.assertNotNull(att);
-      Assert.assertEquals(-999., att.getNumericValue().doubleValue(), 1e-6);
+      assertThat(att).isNotNull();
+      assertThat(att.getNumericValue().doubleValue()).isWithin(1e-6).of(-999.);
     }
   }
 
@@ -42,15 +43,15 @@ public class TestMRMS {
   public void checkVariable24bit() throws IOException {
     try (NetcdfFile nc = NetcdfFiles.open(testfile24BitPng)) {
       Variable var = nc.findVariable("FLASH_HP_MAXUNITSTREAMFLOW_surface");
-      Assert.assertNotNull(var);
+      assertThat(var).isNotNull();
 
       Attribute att = var.findAttribute("missing_value");
-      Assert.assertNotNull(att);
-      Assert.assertEquals(-9999., att.getNumericValue().doubleValue(), 1e-6);
+      assertThat(att).isNotNull();
+      assertThat(att.getNumericValue().doubleValue()).isWithin(1e-6).of(-9999.);
 
       att = var.findAttribute("_FillValue");
-      Assert.assertNotNull(att);
-      Assert.assertEquals(-999., att.getNumericValue().doubleValue(), 1e-6);
+      assertThat(att).isNotNull();
+      assertThat(att.getNumericValue().doubleValue()).isWithin(1e-6).of(-999.);
     }
   }
 }

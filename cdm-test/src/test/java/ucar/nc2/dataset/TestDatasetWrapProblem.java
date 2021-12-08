@@ -5,7 +5,6 @@
 package ucar.nc2.dataset;
 
 import java.util.Formatter;
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import ucar.array.Array;
@@ -16,6 +15,8 @@ import ucar.nc2.internal.util.CompareArrayToArray;
 import ucar.nc2.internal.util.CompareNetcdf2;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
+
+import static com.google.common.truth.Truth.assertThat;
 
 /** Test things are ok when wrapping by a Dataset */
 @Category(NeedsCdmUnitTest.class)
@@ -39,7 +40,7 @@ public class TestDatasetWrapProblem {
       if (!ok) {
         System.out.printf("FAIL %s %s%n", durl, errlog);
       }
-      Assert.assertTrue(ok);
+      assertThat(ok).isTrue();
     }
   }
 
@@ -52,12 +53,12 @@ public class TestDatasetWrapProblem {
     try (NetcdfDataset ds = NetcdfDatasets.openDataset(filename)) {
       String varName = "Lon";
       Variable wrap = ds.findVariable(varName);
-      assert wrap != null;
-      assert wrap instanceof CoordinateAxis1D;
+      assertThat(wrap).isNotNull();
+      assertThat(wrap).isInstanceOf(CoordinateAxis1D.class);
 
-      Array data_wrap = wrap.readArray();
+      Array<?> data_wrap = wrap.readArray();
       CoordinateAxis1D axis = (CoordinateAxis1D) wrap;
-      Assert.assertTrue(CompareArrayToArray.compareData(varName, data_wrap, axis.readArray()));
+      assertThat(CompareArrayToArray.compareData(varName, data_wrap, axis.readArray())).isTrue();
     }
   }
 
@@ -68,18 +69,19 @@ public class TestDatasetWrapProblem {
     System.out.println(" testLongitudeWrap= " + filename);
 
     try (NetcdfFile ncfile = NetcdfFiles.open(filename); NetcdfDataset ds = NetcdfDatasets.openDataset(filename)) {
-
       String varName = "lon";
       Variable org = ncfile.findVariable(varName);
       Variable wrap = ds.findVariable(varName);
+      assertThat(org).isNotNull();
+      assertThat(wrap).isNotNull();
 
-      Array data_org = org.readArray();
-      Array data_wrap = wrap.readArray();
+      Array<?> data_org = org.readArray();
+      Array<?> data_wrap = wrap.readArray();
 
       boolean ok;
       ok = CompareNetcdf2.compareData(varName, data_org, data_wrap);
 
-      assert wrap instanceof CoordinateAxis1D;
+      assertThat(wrap).isInstanceOf(CoordinateAxis1D.class);
       CoordinateAxis1D axis = (CoordinateAxis1D) wrap;
 
       ok &= CompareArrayToArray.compareData(varName, data_org, axis.readArray());

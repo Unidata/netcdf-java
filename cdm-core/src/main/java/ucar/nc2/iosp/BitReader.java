@@ -111,7 +111,7 @@ public class BitReader {
       // -- put bit to result ----------------------
       // where to place myBits inside of result
       int shift = bitsLeft - size;
-      assert shift >= 0;
+      Preconditions.checkArgument(shift >= 0);
 
       // put it there
       result |= myBits << shift;

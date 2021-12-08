@@ -4,6 +4,7 @@
  */
 package ucar.nc2.dataset;
 
+import com.google.common.base.Preconditions;
 import ucar.array.ArrayType;
 import ucar.array.Array;
 import ucar.array.Arrays;
@@ -156,7 +157,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
       makeBounds();
     if (bound1 == null)
       makeBoundsFromEdges();
-    assert bound1 != null;
+    Preconditions.checkNotNull(bound1);
     return bound1.clone();
   }
 
@@ -175,7 +176,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
       makeBounds();
     if (bound2 == null)
       makeBoundsFromEdges();
-    assert bound2 != null;
+    Preconditions.checkNotNull(bound2);
     return bound2.clone();
   }
 
@@ -583,7 +584,8 @@ public class CoordinateAxis1D extends CoordinateAxis {
       return false;
     }
 
-    assert (data.getRank() == 2) && (data.getShape()[1] == 2) : "incorrect shape data for variable " + boundsVar;
+    Preconditions.checkArgument(data.getRank() == 2 && data.getShape()[1] == 2,
+        "incorrect shape data for variable " + boundsVar);
 
     // extract the bounds
     int n = getShape(0);

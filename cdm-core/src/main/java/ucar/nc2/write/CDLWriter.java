@@ -257,7 +257,7 @@ public class CDLWriter {
         basetype = "";
         break;
       default:
-        assert false : "Internal error";
+        throw new RuntimeException("Unknown base  type =" + e.getBaseArrayType());
     }
     out.format("%s%senum %s { ", indent, basetype, name);
     int count = 0;

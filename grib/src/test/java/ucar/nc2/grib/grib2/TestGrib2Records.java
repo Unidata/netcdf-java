@@ -4,12 +4,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.List;
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import ucar.nc2.calendar.CalendarDate;
 import ucar.unidata.io.RandomAccessFile;
+
+import static com.google.common.truth.Truth.assertThat;
 
 @RunWith(Parameterized.class)
 public class TestGrib2Records {
@@ -67,31 +68,31 @@ public class TestGrib2Records {
     readFile(filename, (raf, gr) -> {
       Grib2Gds gds = gr.getGDS();
       if (check)
-        Assert.assertEquals(gdsTemplate, gds.template);
+        assertThat(gdsTemplate).isEqualTo(gds.template);
       gds.testHorizCoordSys(new Formatter());
 
       Grib2SectionProductDefinition pdss = gr.getPDSsection();
       Grib2Pds pds = pdss.getPDS();
       if (check)
-        Assert.assertEquals(pdsTemplate, pdss.getPDSTemplateNumber());
+        assertThat(pdsTemplate).isEqualTo(pdss.getPDSTemplateNumber());
       Formatter f = new Formatter();
       pds.show(f);
       if (check)
-        Assert.assertTrue(f.toString().contains(String.format("template=%d", pdsTemplate)));
+        assertThat(f.toString()).contains(String.format("template=%d", pdsTemplate));
       if (check)
-        Assert.assertEquals(this.refdate, gr.getReferenceDate());
+        assertThat(this.refdate).isEqualTo(gr.getReferenceDate());
 
       float[] data = gr.readData(raf);
       if (check)
-        Assert.assertEquals(datalen, data.length);
+        assertThat(datalen).isEqualTo(data.length);
       System.out.printf("%s: template,param,len=  %d, %d, %d, \"%s\" %n", filename, gds.template,
           pdss.getPDSTemplateNumber(), data.length, gr.getReferenceDate());
 
       if (check && pds.isSatellite()) {
         Grib2Pds.PdsSatellite sat = (Grib2Pds.PdsSatellite) pds;
         int numBands = sat.getNumSatelliteBands();
-        Assert.assertNotEquals(0, numBands);
-        Assert.assertEquals(numBands, sat.getSatelliteBands().length);
+        assertThat(numBands).isNotEqualTo(0);
+        assertThat(numBands).isEqualTo(sat.getSatelliteBands().length);
       }
       return true;
     });

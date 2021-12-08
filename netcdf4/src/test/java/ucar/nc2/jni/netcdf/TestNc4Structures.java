@@ -5,7 +5,6 @@
 package ucar.nc2.jni.netcdf;
 
 import static com.google.common.truth.Truth.assertThat;
-import static org.junit.Assert.assertNotNull;
 
 import org.junit.*;
 import org.junit.experimental.categories.Category;
@@ -100,7 +99,7 @@ public class TestNc4Structures {
       // Read the file back in and make sure that what we wrote is what we're getting back.
       try (NetcdfFile ncFileIn = NetcdfFiles.open(outFile.getAbsolutePath())) {
         Structure struct = (Structure) ncFileIn.getRootGroup().findVariableLocal("struct");
-        assertNotNull(struct);
+        assertThat(struct).isNotNull();
         assertThat(struct.readScalarString()).isEqualTo("bar");
       }
 
@@ -175,7 +174,7 @@ public class TestNc4Structures {
 
       try (NetcdfFormatWriter writer = writerb.build()) {
         Structure struct = (Structure) writer.findVariable("struct");
-        assertNotNull(struct);
+        assertThat(struct).isNotNull();
 
         int nrecords = 5;
         StructureMembers members = struct.makeStructureMembersBuilder().build();
