@@ -76,7 +76,7 @@ class Nc4IospMiscSpec extends Specification {
     def "Nc4Iosp supports multiple groups, each containing an unlimited dimension"() {
         setup: "locate test file"
         File file = new File(this.class.getResource("DBP-690959.nc4").toURI())
-        assert file.exists()
+        assertThat(file.exists()).isTrue();
     
         and: "open it as a NetcdfFile using Nc4Iosp"
         NetcdfFile ncFile = NetcdfFiles.open(file.absolutePath, Nc4reader.class.canonicalName, -1, null, null)
