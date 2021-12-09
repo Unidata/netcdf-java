@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
-
 package ucar.ui.prefs;
 
 import java.awt.HeadlessException;
@@ -12,17 +11,15 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.XMLStore;
 import java.beans.*;
-import java.lang.invoke.MethodHandles;
+import java.io.IOException;
+
+import static com.google.common.truth.Truth.assertThat;
 
 @RunWith(JUnit4.class)
 public class TestField {
-
-  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @ClassRule
   public static TemporaryFolder tempFolder = new TemporaryFolder();
@@ -75,23 +72,23 @@ public class TestField {
       d.finish();
       d.setVisible(true);
 
-      assert gotEvent1 == 0;
+      assertThat(gotEvent1).isEqualTo(0);
       tf.setEditValue("better value");
       tf.accept(null);
-      assert gotEvent1 == 1 : gotEvent1;
+      assertThat(gotEvent1).isEqualTo(1);
       node.put("name", "best value");
-      // assert gotEvent1 == 2 : gotEvent1; race condition
+      // assertThat( gotEvent1).isEqualTo(2 : gotEvent1; race condition
 
-      assert gotEvent2 == 0;
+      assertThat(gotEvent2).isEqualTo(0);
       intf.setInt(666);
-      assert gotEvent2 == 0 : gotEvent2;
+      assertThat(gotEvent2).isEqualTo(0);
     } catch (HeadlessException e) {
       // ok to fail if there is no display
     }
   }
 
   @Test
-  public void testComboText() {
+  public void testComboText() throws IOException {
     try {
       PreferencesExt node = (PreferencesExt) store.node("testCombo");
       PrefPanel pp = new PrefPanel("testCombo", node);
@@ -100,22 +97,17 @@ public class TestField {
 
       fcb.setText("newbie");
       String v = fcb.getText();
-      assert (v.equals("newbie"));
+      assertThat(v).isEqualTo("newbie");
 
       pp.accept();
-      try {
-        xstore.save();
-      } catch (java.io.IOException ioe) {
-        ioe.printStackTrace();
-        assert false;
-      }
+      xstore.save();
     } catch (HeadlessException e) {
       // ok to fail if there is no display
     }
   }
 
   @Test
-  public void testComboObjects() {
+  public void testComboObjects() throws IOException {
     try {
       PreferencesExt node = (PreferencesExt) store.node("testComboObjects");
       PrefPanel pp = new PrefPanel("testCombo", node);
@@ -124,21 +116,17 @@ public class TestField {
 
       fcb.setText("newbie");
       String v = fcb.getText();
-      assert (v.equals("newbie"));
+      assertThat(v).isEqualTo("newbie");
 
       pp.accept();
-      try {
-        xstore.save();
-      } catch (java.io.IOException ioe) {
-        assert false;
-      }
+      xstore.save();
     } catch (HeadlessException e) {
       // ok to fail if there is no display
     }
   }
 
   @Test
-  public void testEnumCombo() {
+  public void testEnumCombo() throws IOException {
     try {
       PreferencesExt node = (PreferencesExt) store.node("testComboObjects");
       PrefPanel pp = new PrefPanel("testCombo", node);
@@ -148,14 +136,10 @@ public class TestField {
       DataType t = DataType.FLOAT;
       fcb.setValue(t);
       Object vt = fcb.getValue();
-      assert (vt == t) : vt;
+      assertThat(vt).isEqualTo(t);
 
       pp.accept();
-      try {
-        xstore.save();
-      } catch (java.io.IOException ioe) {
-        assert false;
-      }
+      xstore.save();
     } catch (HeadlessException e) {
       // ok to fail if there is no display
     }

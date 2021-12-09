@@ -27,12 +27,12 @@ public class TestH5eos {
       Group root = ncfile.getRootGroup();
       Group g = root.findGroupLocal("HDFEOS_INFORMATION");
       Variable dset = g.findVariableLocal("StructMetadata.0");
-      assert (null != dset);
-      assert (dset.getArrayType() == ArrayType.CHAR);
+      assertThat(dset).isNotNull();
+      assertThat(dset.getArrayType()).isEqualTo(ArrayType.CHAR);
 
       // read entire array
       Array A = dset.readArray();
-      assert (A.getRank() == 1);
+      assertThat(A.getRank()).isEqualTo(1);
 
       String sval = Arrays.makeStringFromChar(A);
       System.out.println(dset.getFullName());
@@ -45,12 +45,11 @@ public class TestH5eos {
   public void test1() throws IOException {
     try (NetcdfFile ncfile = TestH5.openH5("HIRDLS/HIR2ARSP_c3_na.he5")) {
       Variable v = ncfile.findVariable("HDFEOS/SWATHS/H2SO4_H2O_Tisdale/Data_Fields/Wavenumber");
-      assert v != null;
+      assertThat(v).isNotNull();
       Dimension dim = v.getDimension(0);
-      assert dim != null;
-      assert dim.getShortName() != null;
-
-      assert dim.getShortName().equals("nChans");
+      assertThat(dim).isNotNull();
+      assertThat(dim.getShortName()).isNotNull();
+      assertThat(dim.getShortName()).isEqualTo("nChans");
     }
   }
 

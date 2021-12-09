@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
+ * See LICENSE for license information.
+ */
 package thredds.metadata;
 
 import java.util.HashMap;
@@ -49,45 +53,45 @@ public class TestMetadataExtractor {
     writer.writeXML(cat, System.out, false);
 
     Dataset ds = cat.findDatasetByID("testAcdd");
-    assert ds != null;
+    assertThat(ds).isNotNull();
     assertThat(FeatureType.STATION).isEqualTo(ds.getFeatureType());
 
-    assert ds.getDocumentation("title").startsWith("Seawater temperature data collected from Bodega Head");
-    assert ds.getDocumentation("summary").startsWith("These seawater data are collected");
-    assert ds.getDocumentation("history").startsWith("2012-03-06 09:41:58 UTC:");
-    assert ds.getDocumentation("comment").startsWith("Supplementary information: West Coast Observing");
-    assert ds.getDocumentation("rights").startsWith("Please cite Gulf of the Farallones National");
+    assertThat(ds.getDocumentation("title")).startsWith("Seawater temperature data collected from Bodega Head");
+    assertThat(ds.getDocumentation("summary")).startsWith("These seawater data are collected");
+    assertThat(ds.getDocumentation("history")).startsWith("2012-03-06 09:41:58 UTC:");
+    assertThat(ds.getDocumentation("comment")).startsWith("Supplementary information: West Coast Observing");
+    assertThat(ds.getDocumentation("rights")).startsWith("Please cite Gulf of the Farallones National");
 
     TimeCoverage tc = ds.getTimeCoverageNew();
-    assert tc != null;
+    assertThat(tc).isNotNull();
     assertThat(tc.getStart().toCalendarDate())
         .isEqualTo(CalendarDate.fromUdunitIsoDate(null, "2005-06-27T21:48:00").orElseThrow());
     assertThat(tc.getEnd().toCalendarDate())
         .isEqualTo(CalendarDate.fromUdunitIsoDate(null, "2005-11-09T00:53:59").orElseThrow());
 
     ThreddsMetadata.GeospatialCoverage geo = ds.getGeospatialCoverage();
-    assert geo != null;
-    assert geo.getEastWestRange().getSize() == 0.0;
-    assert geo.getNorthSouthRange().getSize() == 0.0;
+    assertThat(geo).isNotNull();
+    assertThat(geo.getEastWestRange().getSize()).isEqualTo(0.0);
+    assertThat(geo.getNorthSouthRange().getSize()).isEqualTo(0.0);
 
     List<ThreddsMetadata.Source> creators = ds.getCreators();
-    assert creators.size() == 1;
+    assertThat(creators).hasSize(1);
     ThreddsMetadata.Source creator = creators.get(0);
-    assert creator.getName().startsWith("Data Manager");
-    assert creator.getEmail().equals("Data Manager (bmldata@ucdavis.edu)");
-    assert creator.getUrl().equals("http://bml.ucdavis.edu");
+    assertThat(creator.getName()).startsWith("Data Manager");
+    assertThat(creator.getEmail()).isEqualTo("Data Manager (bmldata@ucdavis.edu)");
+    assertThat(creator.getUrl()).isEqualTo("http://bml.ucdavis.edu");
 
     List<ThreddsMetadata.Source> publishers = ds.getPublishers();
-    assert publishers.size() == 1;
+    assertThat(publishers).hasSize(1);
     ThreddsMetadata.Source pub = publishers.get(0);
-    assert pub.getName().startsWith("US NATIONAL OCEANOGRAPHIC DATA CENTER");
-    assert pub.getEmail().equals("NODC.Services@noaa.gov");
-    assert pub.getUrl().equals("http://www.nodc.noaa.gov/");
+    assertThat(pub.getName()).startsWith("US NATIONAL OCEANOGRAPHIC DATA CENTER");
+    assertThat(pub.getEmail()).isEqualTo("NODC.Services@noaa.gov");
+    assertThat(pub.getUrl()).isEqualTo("http://www.nodc.noaa.gov/");
 
     List<ThreddsMetadata.Vocab> vocab = ds.getKeywords();
-    assert vocab.size() == 5;
+    assertThat(vocab).hasSize(5);
     ThreddsMetadata.Vocab voc = vocab.get(0);
-    assert voc.getVocabulary().startsWith("GCMD Earth Science Keywords. Version 5.3.3");
+    assertThat(voc.getVocabulary()).startsWith("GCMD Earth Science Keywords. Version 5.3.3");
   }
 
   public static Map<String, Attribute> makeMap(Iterable<Attribute> atts) {

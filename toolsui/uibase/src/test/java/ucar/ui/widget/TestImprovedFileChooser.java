@@ -3,14 +3,12 @@ package ucar.ui.widget;
 import java.awt.Dimension;
 import java.awt.HeadlessException;
 import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
 import org.junit.Test;
 
 public class TestImprovedFileChooser {
 
   @Test
-  public void testStuff()
-      throws ClassNotFoundException, UnsupportedLookAndFeelException, InstantiationException, IllegalAccessException {
+  public void testStuff() throws Exception {
     try {
       if (ImprovedFileChooser.isMacOs) {
         System.setProperty("apple.laf.useScreenMenuBar", "true");
@@ -24,7 +22,7 @@ public class TestImprovedFileChooser {
       }
       ImprovedFileChooser fileChooser = new ImprovedFileChooser();
       fileChooser.setPreferredSize(new Dimension(1000, 750));
-      fileChooser.showDialog(null, "Choose");
+      fileChooser.createDialog(null);
     } catch (HeadlessException e) {
       // ok to fail if there is no display
     }

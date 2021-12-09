@@ -176,11 +176,11 @@ public class TestGribCdmIndexUpdating {
         assertThat(v).isNotNull();
 
         Dimension dim0 = v.getDimension(0);
-        assert dim0.getLength() == orgLen : dim0.getLength() + " should be " + orgLen;
+        assertThat(dim0.getLength()).isEqualTo(orgLen);
       }
 
     } finally { // leave it it the way we found it
-      boolean ok = newModelFileSave.renameTo(newModelFile);
+      newModelFileSave.renameTo(newModelFile);
     }
   }
 

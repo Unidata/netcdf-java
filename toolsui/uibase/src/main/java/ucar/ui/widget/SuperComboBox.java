@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 package ucar.ui.widget;
@@ -375,13 +375,15 @@ public class SuperComboBox extends JPanel {
         selectedObject = ((GeoGridRow) selectedObject).getUserObject();
       }
 
-      if (sendExternalEvent) {
-        if (debugEvent)
+      if (sendExternalEvent && actionSource != null) {
+        if (debugEvent) {
           System.out.println("--->SuperCombo send event " + selectedName);
-        if (immediateMode)
+        }
+        if (immediateMode) {
           actionSource.fireActionValueEvent("redrawImmediate", selectedObject);
-        else
+        } else {
           actionSource.fireActionValueEvent(ActionSourceListener.SELECTED, selectedObject);
+        }
       }
     }
   }

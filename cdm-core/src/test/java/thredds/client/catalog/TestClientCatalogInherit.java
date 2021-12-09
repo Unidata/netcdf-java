@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 package thredds.client.catalog;
@@ -24,7 +24,6 @@ public class TestClientCatalogInherit {
     cat = builder.buildFromLocation(urlString, null);
     if (builder.hasFatalError()) {
       System.out.printf("ERRORS %s%n", builder.getErrorMessage());
-      assert false;
     }
   }
 
@@ -32,19 +31,21 @@ public class TestClientCatalogInherit {
   public void testPropertyInherit() {
     Dataset top = cat.findDatasetByID("top");
     String val = top.findProperty("GoodThing");
-    assert val == null : val;
+    assertThat(val).isNull();
 
     Dataset nest1 = cat.findDatasetByID("nest1");
     val = nest1.findProperty("GoodThing");
-    assert val.equals("Where have you gone?") : val;
+    assertThat(val).isNotNull();
+    assertThat(val).isEqualTo("Where have you gone?");
 
     Dataset nest2 = cat.findDatasetByID("nest2");
     val = nest2.findProperty("GoodThing");
-    assert val == null : val;
+    assertThat(val).isNull();
 
     Dataset nest11 = cat.findDatasetByID("nest11");
     val = nest11.findProperty("GoodThing");
-    assert val.equals("Where have you gone?") : val;
+    assertThat(val).isNotNull();
+    assertThat(val).isEqualTo("Where have you gone?");
 
     Dataset nest12 = cat.findDatasetByID("nest12");
     assertThat(nest12.hasProperty(new Property("GoodThing", "override"))).isTrue();
@@ -58,35 +59,39 @@ public class TestClientCatalogInherit {
 
     ds = cat.findDatasetByID("top");
     s = ds.getServiceDefault();
-    assert (s == null) : s;
+    assertThat(s).isNull();
 
     ds = cat.findDatasetByID("nest1");
     s = ds.getServiceDefault();
-    assert s != null : "nest1";
+    assertThat(s).isNotNull();
     val = s.getName();
-    assert val.equals("ACD") : val;
+    assertThat(val).isNotNull();
+    assertThat(val).isEqualTo("ACD");
 
     ds = cat.findDatasetByID("nest11");
     s = ds.getServiceDefault();
-    assert s != null : "nest11";
+    assertThat(s).isNotNull();
     val = s.getName();
-    assert val.equals("ACD") : val;
+    assertThat(val).isNotNull();
+    assertThat(val).isEqualTo("ACD");
 
     ds = cat.findDatasetByID("nest12");
     s = ds.getServiceDefault();
-    assert s != null : "nest12";
+    assertThat(s).isNotNull();
     val = s.getName();
-    assert val.equals("local") : val;
+    assertThat(val).isNotNull();
+    assertThat(val).isEqualTo("local");
 
     ds = cat.findDatasetByID("nest121");
     s = ds.getServiceDefault();
-    assert s != null : "nest121";
+    assertThat(s).isNotNull();
     val = s.getName();
-    assert val.equals("ACD") : val;
+    assertThat(val).isNotNull();
+    assertThat(val).isEqualTo("ACD");
 
     ds = cat.findDatasetByID("nest2");
     s = ds.getServiceDefault();
-    assert (s == null) : s;
+    assertThat(s).isNull();
   }
 
   @Test
@@ -96,27 +101,27 @@ public class TestClientCatalogInherit {
 
     ds = cat.findDatasetByID("top");
     s = ds.getFeatureType();
-    assert (s == null) : s;
+    assertThat(s).isNull();
 
     ds = cat.findDatasetByID("nest1");
     s = ds.getFeatureType();
-    assert (s == FeatureType.GRID) : s;
+    assertThat(s).isEqualTo(FeatureType.GRID);
 
     ds = cat.findDatasetByID("nest11");
     s = ds.getFeatureType();
-    assert (s == FeatureType.GRID) : s;
+    assertThat(s).isEqualTo(FeatureType.GRID);
 
     ds = cat.findDatasetByID("nest12");
     s = ds.getFeatureType();
-    assert (s.toString().equalsIgnoreCase("Image")) : s;
+    assertThat(s.toString()).isEqualTo("IMAGE");
 
     ds = cat.findDatasetByID("nest121");
     s = ds.getFeatureType();
-    assert (s == FeatureType.GRID) : s;
+    assertThat(s).isEqualTo(FeatureType.GRID);
 
     ds = cat.findDatasetByID("nest2");
     s = ds.getFeatureType();
-    assert (s == null) : s;
+    assertThat(s).isNull();
   }
 
   @Test
@@ -126,27 +131,27 @@ public class TestClientCatalogInherit {
 
     ds = cat.findDatasetByID("top");
     val = ds.getAuthority();
-    assert val.equals("ucar") : val;
+    assertThat(val).isEqualTo("ucar");
 
     ds = cat.findDatasetByID("nest1");
     val = ds.getAuthority();
-    assert val.equals("divine") : val;
+    assertThat(val).isEqualTo("divine");
 
     ds = cat.findDatasetByID("nest11");
     val = ds.getAuthority();
-    assert val.equals("divine") : val;
+    assertThat(val).isEqualTo("divine");
 
     ds = cat.findDatasetByID("nest12");
     val = ds.getAuthority();
-    assert val.equals("human") : val;
+    assertThat(val).isEqualTo("human");
 
     ds = cat.findDatasetByID("nest121");
     val = ds.getAuthority();
-    assert val.equals("divine") : val;
+    assertThat(val).isEqualTo("divine");
 
     ds = cat.findDatasetByID("nest2");
     val = ds.getAuthority();
-    assert (val == null) : val;
+    assertThat(val).isNull();
   }
 
   @Test
@@ -156,29 +161,29 @@ public class TestClientCatalogInherit {
 
     ds = cat.findDatasetByID("top");
     list = ds.getMetadata("NetCDF");
-    assert list.isEmpty();
+    assertThat(list).isEmpty();
 
     ds = cat.findDatasetByID("nest1");
     list = ds.getMetadata("NetCDF");
-    assert (list.size() == 1) : list.size();
+    assertThat(list).hasSize(1);
     ThreddsMetadata.MetadataOther m = (ThreddsMetadata.MetadataOther) list.get(0);
-    assert (m != null) : "nest1";
+    assertThat(m).isNotNull();
 
     ds = cat.findDatasetByID("nest11");
     list = ds.getMetadata("NetCDF");
-    assert list.isEmpty();
+    assertThat(list).isEmpty();
 
     ds = cat.findDatasetByID("nest12");
     list = ds.getMetadata("NetCDF");
-    assert list.isEmpty();
+    assertThat(list).isEmpty();
 
     ds = cat.findDatasetByID("nest121");
     list = ds.getMetadata("NetCDF");
-    assert list.isEmpty();
+    assertThat(list).isEmpty();
 
     ds = cat.findDatasetByID("nest2");
     list = ds.getMetadata("NetCDF");
-    assert list.isEmpty();
+    assertThat(list).isEmpty();
   }
 
   @Test
@@ -188,25 +193,25 @@ public class TestClientCatalogInherit {
     Documentation d;
 
     ds = cat.findDatasetByID("top");
-    assert ds != null;
+    assertThat(ds).isNotNull();
     list = ds.getDocumentation();
-    assert list.isEmpty();
+    assertThat(list).isEmpty();
 
     ds = cat.findDatasetByID("nest1");
-    assert ds != null;
+    assertThat(ds).isNotNull();
     list = ds.getDocumentation();
     d = (Documentation) list.get(0);
-    assert (d != null) : "nest1";
-    assert d.getInlineContent().equals("HEY");
+    assertThat(d).isNotNull();
+    assertThat(d.getInlineContent()).isEqualTo("HEY");
 
     ds = cat.findDatasetByID("nest11");
-    assert ds != null;
+    assertThat(ds).isNotNull();
     list = ds.getDocumentation();
-    assert list.isEmpty();
+    assertThat(list).isEmpty();
 
     ds = cat.findDatasetByID("nest2");
-    assert ds != null;
+    assertThat(ds).isNotNull();
     list = ds.getDocumentation();
-    assert list.isEmpty();
+    assertThat(list).isEmpty();
   }
 }

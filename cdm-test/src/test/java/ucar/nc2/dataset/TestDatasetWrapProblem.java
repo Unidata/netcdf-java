@@ -86,7 +86,7 @@ public class TestDatasetWrapProblem {
 
       ok &= CompareArrayToArray.compareData(varName, data_org, axis.readArray());
 
-      assert ok;
+      assertThat(ok).isTrue();
     }
   }
 }

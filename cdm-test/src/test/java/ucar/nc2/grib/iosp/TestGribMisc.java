@@ -56,8 +56,9 @@ public class TestGribMisc {
     filename = TestDir.cdmUnitTestDir + "formats/grib2/RTMA_CONUS_2p5km_20111225_0000.grib2";
     logger.debug("{}", filename);
     try (NetcdfFile ncfile = NetcdfFiles.open(filename, null)) {
-      assert ncfile.getRootGroup().findVariableByAttribute(Grib.VARIABLE_ID_ATTNAME, "VAR_0-3-0_L1") != null; // Pressure_Surface
-      assert ncfile.getRootGroup().findVariableByAttribute(Grib.VARIABLE_ID_ATTNAME, "VAR_0-0-0_error_L103") != null; // Temperature_error_height_above_ground
+      assertThat(ncfile.getRootGroup().findVariableByAttribute(Grib.VARIABLE_ID_ATTNAME, "VAR_0-3-0_L1")).isNotNull(); // Pressure_Surface
+      assertThat(ncfile.getRootGroup().findVariableByAttribute(Grib.VARIABLE_ID_ATTNAME, "VAR_0-0-0_error_L103"))
+          .isNotNull(); // Temperature_error_height_above_ground
     }
   }
 
@@ -70,11 +71,11 @@ public class TestGribMisc {
       Variable v = ncfile.getRootGroup().findVariableByAttribute(Grib.VARIABLE_ID_ATTNAME, "VAR_0-0-0_L105");
       assertThat(v).isNotNull();
 
-      Array data = v.readArray();
+      Array<?> data = v.readArray();
       int[] shape = data.getShape();
-      assert shape.length == 4;
-      assert shape[shape.length - 2] == 1024;
-      assert shape[shape.length - 1] == 2048;
+      assertThat(shape.length == 4);
+      assertThat(shape[shape.length - 2] == 1024);
+      assertThat(shape[shape.length - 1] == 2048);
     }
   }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 package thredds.client.catalog;
@@ -24,24 +24,19 @@ public class TestWrite {
   public void testWrite1() throws IOException {
     String filename = "test1.xml";
     Catalog cat = ClientCatalogUtil.open(filename);
-    assert cat != null;
+    assertThat(cat).isNotNull();
 
     File tmpFile = tempFolder.newFile();
     System.out.println(" output filename= " + tmpFile.getPath());
 
-    try {
-      OutputStream out = new BufferedOutputStream(new FileOutputStream(tmpFile));
+    try (OutputStream out = new BufferedOutputStream(new FileOutputStream(tmpFile))) {
       CatalogXmlWriter writer = new CatalogXmlWriter();
       writer.writeXML(cat, out);
-      out.close();
-    } catch (IOException ioe) {
-      ioe.printStackTrace();
-      assert false;
     }
 
     // read it back in
     Catalog catR = ClientCatalogUtil.open("file:" + tmpFile.getPath());
-    assert catR != null;
+    assertThat(catR).isNotNull();
 
     compare(cat, catR);
   }
@@ -100,7 +95,7 @@ public class TestWrite {
         System.out.println("   itemR ok = (" + item + ")");
     }
 
-    assert ok;
+    assertThat(ok).isTrue();
   }
 
   private void compareListVariables(List<ThreddsMetadata.VariableGroup> d, List<ThreddsMetadata.VariableGroup> dR) {
@@ -116,7 +111,7 @@ public class TestWrite {
       }
     }
 
-    assert ok;
+    assertThat(ok).isTrue();
   }
 
 }

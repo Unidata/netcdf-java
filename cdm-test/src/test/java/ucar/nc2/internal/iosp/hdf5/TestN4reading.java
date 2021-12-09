@@ -8,7 +8,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
-import com.google.common.base.Preconditions;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
@@ -57,11 +56,11 @@ public class TestN4reading {
     try (NetcdfFile ncfile = NetcdfFiles.open(filename)) {
       Variable v = ncfile.findVariable("temp");
       for (Section sect : sections) {
-        Array data = v.readArray(sect);
+        Array<Number> data = (Array<Number>) v.readArray(sect);
         if (0 < countMissing(data)) {
-          Array data2 = v.readArray(sect);
+          Array<Number> data2 = (Array<Number>) v.readArray(sect);
           countMissing(data2);
-          assert false;
+          assertThat(countMissing(data2)).isEqualTo(0);
         }
       }
       logger.debug("**** testGodivaFindsDataHole read ok on {}", ncfile.getLocation());
@@ -138,7 +137,7 @@ public class TestN4reading {
     try (NetcdfFile ncfile = NetcdfFiles.open(filename)) {
       logger.debug("**** testVlen open\n{}", ncfile);
       Variable v = ncfile.findVariable("levels");
-      Array data = v.readArray();
+      Array<?> data = v.readArray();
       System.out.printf("%s%n", NcdumpArray.printArray(data, "read()", null));
 
       int count = 0;
@@ -148,7 +147,7 @@ public class TestN4reading {
       assertThat(count).isEqualTo(10);
 
       // try subset
-      Array data2 = v.readArray(new Section("0:9:2, :"));
+      Array<?> data2 = v.readArray(new Section("0:9:2, :"));
       assertThat(data2.getShape()).isEqualTo(new int[] {5});
       assertThat(data2.getSize()).isEqualTo(5);
 
@@ -169,17 +168,17 @@ public class TestN4reading {
     try (NetcdfFile ncfile = NetcdfFiles.open(filename)) {
       logger.debug("**** testVlen2 open\n{}", ncfile);
       Variable v = ncfile.findVariable("ragged_array");
-      Array data = v.readArray();
+      Array<?> data = v.readArray();
 
       for (Object o : data) {
-        Array vdata = (Array) o;
+        Array<?> vdata = (Array<?>) o;
         assertThat(vdata.getArrayType()).isEqualTo(ArrayType.FLOAT);
       }
 
       // try subset
       data = v.readArray(new Section("0:4:2,:"));
       for (Object o : data) {
-        Array vdata = (Array) o;
+        Array<?> vdata = (Array<?>) o;
         assertThat(vdata.getArrayType()).isEqualTo(ArrayType.FLOAT);
       }
 
@@ -209,15 +208,15 @@ public class TestN4reading {
     try (NetcdfFile ncfile = NetcdfFiles.open(filename)) {
 
       Variable dset = ncfile.findVariable("x");
-      assert (null != ncfile.findVariable("x"));
-      assert (dset.getArrayType() == ArrayType.STRUCTURE);
-      assert (dset.getRank() == 0);
-      assert (dset.getSize() == 1);
+      assertThat(dset).isNotNull();
+      assertThat(dset.getArrayType()).isEqualTo(ArrayType.STRUCTURE);
+      assertThat(dset.getRank()).isEqualTo(0);
+      assertThat(dset.getSize()).isEqualTo(1);
 
       StructureDataArray data = (StructureDataArray) dset.readArray();
       StructureMembers.Member m = data.getStructureMembers().findMember("field2");
-      assert m != null;
-      assert (m.getArrayType() == ArrayType.STRUCTURE);
+      assertThat(m).isNotNull();
+      assertThat(m.getArrayType()).isEqualTo(ArrayType.STRUCTURE);
 
       logger.debug("{}", NcdumpArray.printArray(data, "", null));
 
@@ -241,19 +240,20 @@ public class TestN4reading {
   public void testAttStruct() throws IOException {
     try (NetcdfFile ncfile = NetcdfFiles.open(TestN4reading.testDir + "attributeStruct.nc")) {
       Variable v = ncfile.findVariable("observations");
-      assert v != null;
-      assert v instanceof Structure;
+      assertThat(v).isNotNull();
+      assertThat(v).isInstanceOf(Structure.class);
 
       Structure s = (Structure) v;
       Variable v2 = s.findVariable("tempMin");
-      assert v2 != null;
-      assert v2.getArrayType() == ArrayType.FLOAT;
+      assertThat(v2).isNotNull();
+      assertThat(v2.getArrayType()).isEqualTo(ArrayType.FLOAT);
 
-      assert null != v2.findAttribute("units");
-      assert null != v2.findAttribute("coordinates");
+      assertThat(v2.findAttribute("units")).isNotNull();
+      assertThat(v2.findAttribute("coordinates")).isNotNull();
 
       Attribute att = v2.findAttribute("units");
-      assert att.getStringValue().equals("degF");
+      assertThat(att).isNotNull();
+      assertThat(att.getStringValue()).isEqualTo("degF");
     }
   }
 
@@ -261,23 +261,25 @@ public class TestN4reading {
   public void testAttStruct2() throws IOException {
     try (NetcdfFile ncfile = NetcdfFiles.open(TestN4reading.testDir + "compound-attribute-test.nc")) {
       Variable v = ncfile.findVariable("compound_test");
-      assert v != null;
-      assert v instanceof Structure;
+      assertThat(v).isNotNull();
+      assertThat(v).isInstanceOf(Structure.class);
 
       Structure s = (Structure) v;
       Variable v2 = s.findVariable("field0");
-      assert v2 != null;
-      assert v2.getArrayType() == ArrayType.FLOAT;
+      assertThat(v2).isNotNull();
+      assertThat(v2.getArrayType()).isEqualTo(ArrayType.FLOAT);
 
       Attribute att = v2.findAttribute("att_primitive_test");
-      assert !att.isString();
-      assert att.getNumericValue().floatValue() == 1.0;
+      assertThat(att).isNotNull();
+      assertThat(att.isString()).isFalse();
+      assertThat(att.getNumericValue().floatValue()).isEqualTo(1.0f);
 
       att = v2.findAttribute("att_string_test");
-      assert att.getStringValue().equals("string for field 0");
+      assertThat(att).isNotNull();
+      assertThat(att.getStringValue()).isEqualTo("string for field 0");
 
       att = v2.findAttribute("att_char_array_test");
-      String result = att.getStringValue();
+      assertThat(att).isNotNull();
       assertThat(att.getStringValue()).isEqualTo("a");
     }
   }
@@ -296,14 +298,14 @@ public class TestN4reading {
     try (NetcdfFile ncfile = NetcdfFiles.open(filename)) {
       logger.debug("**** testReadNetcdf4 done\n{}", ncfile);
       Variable v = ncfile.findVariable("fun_soundings");
-      Array data = v.readArray();
+      assertThat(v).isNotNull();
+      Array<?> data = v.readArray();
       System.out.printf("testCompoundVlens %s%n", NcdumpArray.printArray(data, "fun_soundings", null));
 
       assertThat(data).isInstanceOf(StructureDataArray.class);
       assertThat(data.getSize()).isEqualTo(3);
 
       StructureDataArray as = (StructureDataArray) data;
-      int index = 2;
       String memberName = "temp_vl";
       StructureData sdata = as.get(2);
       Array<Float> vdata = (Array<Float>) sdata.getMemberData(memberName);
@@ -315,7 +317,7 @@ public class TestN4reading {
       Structure s = (Structure) v;
       Array<StructureData> siter = (Array<StructureData>) s.readArray();
       for (StructureData sdata2 : siter) {
-        Array vdata2 = sdata2.getMemberData(memberName);
+        Array<?> vdata2 = sdata2.getMemberData(memberName);
         logger.debug("iter {} has {} elements for vlen member {}", count++, vdata2.getSize(), memberName);
       }
     }
@@ -344,7 +346,7 @@ public class TestN4reading {
     try (NetcdfFile ncfile = NetcdfFiles.open(filename)) {
       System.out.printf("**** testCompoundVlens2 %s%n", filename);
       Variable v = ncfile.findVariable("tim_records");
-      Preconditions.checkNotNull(v);
+      assertThat(v).isNotNull();
       int[] vshape = v.getShape();
       Array<?> data = v.readArray();
 

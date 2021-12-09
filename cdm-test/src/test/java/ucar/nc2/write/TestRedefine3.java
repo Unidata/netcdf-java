@@ -50,7 +50,7 @@ public class TestRedefine3 {
         writer.write("jill", Index.ofRank(1), jillArray);
         fail();
       } catch (Exception e) {
-        assert e instanceof NullPointerException;
+        assertThat(e).isInstanceOf(NullPointerException.class);
       }
     }
 

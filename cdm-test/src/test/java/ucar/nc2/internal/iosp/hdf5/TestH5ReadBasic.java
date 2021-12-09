@@ -5,61 +5,56 @@
 package ucar.nc2.internal.iosp.hdf5;
 
 import org.junit.experimental.categories.Category;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import ucar.array.Array;
 import ucar.array.ArrayType;
 import ucar.array.Arrays;
 import ucar.array.Index;
-import ucar.array.InvalidRangeException;
 import ucar.array.Section;
 import ucar.nc2.*;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import java.io.*;
-import java.lang.invoke.MethodHandles;
 import java.util.Iterator;
+
+import static com.google.common.truth.Truth.assertThat;
 
 /** Test nc2 read JUnit framework. */
 @Category(NeedsCdmUnitTest.class)
 public class TestH5ReadBasic {
-  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @org.junit.Test
   /* attribute array of String */
   public void testReadH5attributeArrayString() throws IOException {
     try (NetcdfFile ncfile = TestH5.openH5("support/astrarr.h5")) {
-
-      Variable dset = null;
-      assert (null != (dset = ncfile.findVariable("dset")));
-      assert (dset.getArrayType() == ArrayType.INT);
+      Variable dset = ncfile.findVariable("dset");
+      assertThat(dset).isNotNull();
+      assertThat(dset.getArrayType()).isEqualTo(ArrayType.INT);
 
       Dimension d = dset.getDimension(0);
-      assert (d.getLength() == 4);
+      assertThat(d.getLength()).isEqualTo(4);
       d = dset.getDimension(1);
-      assert (d.getLength() == 6);
+      assertThat(d.getLength()).isEqualTo(6);
 
       Attribute att = dset.findAttribute("string-att");
-      assert (null != att);
-      assert (att.isArray());
-      assert (att.getLength() == 4);
-      assert (att.isString());
-      assert (att.getStringValue().equals("test "));
-      assert (att.getStringValue(0).equals("test "));
-      assert (att.getStringValue(1).equals("left "));
-      assert (att.getStringValue(2).equals("call "));
-      assert (att.getStringValue(3).equals("mesh "));
+      assertThat(att).isNotNull();
+      assertThat(att.isArray()).isTrue();
+      assertThat(att.getLength()).isEqualTo(4);
+      assertThat(att.isString()).isTrue();
+      assertThat(att.getStringValue()).isEqualTo(("test "));
+      assertThat(att.getStringValue(0)).isEqualTo(("test "));
+      assertThat(att.getStringValue(1)).isEqualTo(("left "));
+      assertThat(att.getStringValue(2)).isEqualTo(("call "));
+      assertThat(att.getStringValue(3)).isEqualTo(("mesh "));
 
       // read entire array
       Array<Integer> A = (Array<Integer>) dset.readArray();
-      assert (A.getRank() == 2);
+      assertThat(A.getRank()).isEqualTo(2);
 
       int i, j;
       Index ima = A.getIndex();
       int[] shape = A.getShape();
-
       for (i = 0; i < shape[0]; i++) {
         for (j = 0; j < shape[1]; j++) {
-          assert (A.get(ima.set(i, j)) == 0);
+          assertThat(A.get(ima.set(i, j))).isEqualTo(0);
         }
       }
 
@@ -69,15 +64,13 @@ public class TestH5ReadBasic {
   @org.junit.Test
   public void testReadH5attributeString() throws IOException {
     try (NetcdfFile ncfile = TestH5.openH5("support/attstr.h5")) {
-
       Group g = ncfile.getRootGroup().findGroupLocal("MyGroup");
-      assert null != g;
+      assertThat(g).isNotNull();
       Attribute att = g.findAttribute("data_contents");
-      assert (null != att);
-      assert (!att.isArray());
-      assert (att.isString());
-      assert (att.getStringValue().equals("important_data"));
-
+      assertThat(att).isNotNull();
+      assertThat(!att.isArray()).isTrue();
+      assertThat(att.isString()).isTrue();
+      assertThat(att.getStringValue()).isEqualTo(("important_data"));
     }
   }
 
@@ -85,19 +78,18 @@ public class TestH5ReadBasic {
   public void testReadH5boolean() throws IOException {
     try (NetcdfFile ncfile = TestH5.openH5("support/bool.h5")) {
 
-      Variable dset = null;
-      assert (null != (dset = ncfile.findVariable("dset")));
-      assert (dset.getArrayType() == ArrayType.INT);
+      Variable dset = ncfile.findVariable("dset");
+      assertThat(dset).isNotNull();
+      assertThat(dset.getArrayType()).isEqualTo(ArrayType.INT);
 
       Dimension d = dset.getDimension(0);
-      assert (d.getLength() == 4);
+      assertThat(d.getLength()).isEqualTo(4);
       d = dset.getDimension(1);
-      assert (d.getLength() == 6);
+      assertThat(d.getLength()).isEqualTo(6);
 
       // read entire array
       Array<Integer> A = (Array<Integer>) dset.readArray();
-
-      assert (A.getRank() == 2);
+      assertThat(A.getRank()).isEqualTo(2);
 
       int i, j;
       Index ima = A.getIndex();
@@ -105,7 +97,7 @@ public class TestH5ReadBasic {
 
       for (i = 0; i < shape[0]; i++) {
         for (j = 0; j < shape[1]; j++) {
-          assert (A.get(ima.set(i, j)) == (j < 3 ? 1 : 0));
+          assertThat(A.get(ima.set(i, j))).isEqualTo((j < 3 ? 1 : 0));
         }
       }
 
@@ -116,21 +108,19 @@ public class TestH5ReadBasic {
   public void testReadH5StringFixed() throws IOException {
     try (NetcdfFile ncfile = TestH5.openH5("support/dstr.h5")) {
 
-      Variable v = null;
-      assert (null != (v = ncfile.findVariable("Char_Data")));
-      assert (v.getArrayType() == ArrayType.CHAR);
+      Variable v = ncfile.findVariable("Char_Data");
+      assertThat(v).isNotNull();
+      assertThat(v.getArrayType()).isEqualTo(ArrayType.CHAR);
 
       Dimension d = v.getDimension(0);
-      assert (d.getLength() == 16);
+      assertThat(d.getLength()).isEqualTo(16);
 
       // read entire array
       Array<Byte> A = (Array<Byte>) v.readArray();
-
-      assert (A.getRank() == 1);
+      assertThat(A.getRank()).isEqualTo(1);
 
       String s = Arrays.makeStringFromChar(A);
-      assert (s.equals("This is a test."));
-
+      assertThat(s).isEqualTo(("This is a test."));
     }
   }
 
@@ -138,29 +128,28 @@ public class TestH5ReadBasic {
   public void testReadH5StringArray() throws IOException {
     try (NetcdfFile ncfile = TestH5.openH5("support/dstrarr.h5")) {
 
-      Variable v = null;
-      assert (null != (v = ncfile.findVariable("strdata")));
-      assert (v.getRank() == 3);
-      assert (v.getArrayType() == ArrayType.CHAR);
+      Variable v = ncfile.findVariable("strdata");
+      assertThat(v).isNotNull();
+      assertThat(v.getRank()).isEqualTo(3);
+      assertThat(v.getArrayType()).isEqualTo(ArrayType.CHAR);
 
       int[] shape = v.getShape();
-      assert (shape[0] == 2);
-      assert (shape[1] == 2);
-      assert (shape[2] == 5);
+      assertThat(shape[0]).isEqualTo(2);
+      assertThat(shape[1]).isEqualTo(2);
+      assertThat(shape[2]).isEqualTo(5);
 
       // read entire array
       Array<Byte> A = (Array<Byte>) v.readArray();
 
-      assert (A.getRank() == 3);
-      assert (A.getArrayType() == ArrayType.CHAR);
+      assertThat(A.getRank()).isEqualTo(3);
+      assertThat(A.getArrayType()).isEqualTo(ArrayType.CHAR);
 
       Array<String> ss = Arrays.makeStringsFromChar(A);
       Iterator<String> siter = ss.iterator();
-      assert (siter.next().equals("test "));
-      assert (siter.next().equals("left "));
-      assert (siter.next().equals("call "));
-      assert (siter.next().equals("mesh "));
-
+      assertThat(siter.next()).isEqualTo(("test "));
+      assertThat(siter.next()).isEqualTo(("left "));
+      assertThat(siter.next()).isEqualTo(("call "));
+      assertThat(siter.next()).isEqualTo(("mesh "));
     }
   }
 
@@ -168,26 +157,25 @@ public class TestH5ReadBasic {
   public void testReadH5ShortArray() throws Exception {
     try (NetcdfFile ncfile = TestH5.openH5("support/short.h5")) {
 
-      Variable dset = null;
-      assert (null != (dset = ncfile.findVariable("IntArray")));
-      assert (dset.getArrayType() == ArrayType.SHORT);
+      Variable dset = ncfile.findVariable("IntArray");
+      assertThat(dset).isNotNull();
+      assertThat(dset.getArrayType()).isEqualTo(ArrayType.SHORT);
 
       Dimension d = dset.getDimension(0);
-      assert (d.getLength() == 5);
+      assertThat(d.getLength()).isEqualTo(5);
       d = dset.getDimension(1);
-      assert (d.getLength() == 6);
+      assertThat(d.getLength()).isEqualTo(6);
 
       // read entire array
       Array<Short> As = (Array<Short>) dset.readArray();
-      assert (As.getRank() == 2);
+      assertThat(As.getRank()).isEqualTo(2);
 
       int i, j;
       Index ima = As.getIndex();
       int[] shape = As.getShape();
-
       for (i = 0; i < shape[0]; i++) {
         for (j = 0; j < shape[1]; j++) {
-          assert (As.get(ima.set(i, j)) == i + j);
+          assertThat(As.get(ima.set(i, j))).isEqualTo(i + j);
         }
       }
 
@@ -199,19 +187,18 @@ public class TestH5ReadBasic {
       shape2[1] = dset.getShape()[1];
       As = (Array<Short>) dset.readArray(new Section(origin2, shape2));
 
-      assert (As.getRank() == 2);
-
+      assertThat(As.getRank()).isEqualTo(2);
       for (j = 0; j < shape2[1]; j++) {
-        assert (As.get(ima.set(0, j)) == j);
+        assertThat(As.get(ima.set(0, j))).isEqualTo(j);
       }
 
       // rank reduction
       Array<Short> Areduce = Arrays.reduce(As);
       Index ima2 = Areduce.getIndex();
-      assert (Areduce.getRank() == 1);
+      assertThat(Areduce.getRank()).isEqualTo(1);
 
       for (j = 0; j < shape2[1]; j++) {
-        assert (Areduce.get(ima2.set(j)) == j);
+        assertThat(Areduce.get(ima2.set(j))).isEqualTo(j);
       }
 
     }

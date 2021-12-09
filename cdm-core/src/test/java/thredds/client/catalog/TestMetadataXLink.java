@@ -1,26 +1,21 @@
 /*
- * Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 package thredds.client.catalog;
 
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import thredds.client.catalog.tools.CatalogXmlWriter;
 import java.io.IOException;
-import java.lang.invoke.MethodHandles;
 import java.util.List;
+
+import static com.google.common.truth.Truth.assertThat;
 
 /**
  * Test metadata element has XLink
  * see https://www.unidata.ucar.edu/software/thredds/v4.6/tds/catalog/InvCatalogSpec.html#metadataElement
- *
- * @author caron
- * @since 1/16/2015
  */
 public class TestMetadataXLink {
-  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   /*
    * <?xml version="1.0" encoding="UTF-8"?>
@@ -102,13 +97,10 @@ public class TestMetadataXLink {
   @Test
   public void testXLink() throws IOException {
     Catalog cat = ClientCatalogUtil.open("catalogDev.xml");
-    assert cat != null;
+    assertThat(cat).isNotNull();
 
     CatalogXmlWriter writer = new CatalogXmlWriter();
     writer.writeXML(cat, System.out);
-
-    // String url = getMetadataURL(cat, "Zonal", "THREDDS");
-    // assert url.equals("ZoneMetadata.xml") : url;
 
     getProject(cat, "Metars", "DIF", "test1");
     getProject(cat, "Radars", "DIF", "test2");
@@ -121,45 +113,46 @@ public class TestMetadataXLink {
 
   private String getMetadataURL(Catalog cat, String name, String mtype) {
     Dataset ds = cat.findDatasetByID(name);
-    assert ds != null;
+    assertThat(ds).isNotNull();
     List<ThreddsMetadata.MetadataOther> list = ds.getMetadata(mtype);
-    assert list != null;
-    assert list.size() > 0;
+    assertThat(list).isNotNull();
+    assertThat(list).isNotEmpty();
     ThreddsMetadata.MetadataOther m = list.get(0);
-    assert m != null;
+    assertThat(m).isNotNull();
     System.out.println(name + " = " + m.getXlinkHref());
-    assert m.getXlinkHref() != null;
+    assertThat(m.getXlinkHref()).isNotNull();
     return m.getXlinkHref();
   }
 
   private void getProject(Catalog cat, String datasetId, String vocab, String text) {
     Dataset ds = cat.findDatasetByID(datasetId);
-    assert ds != null;
+    assertThat(ds).isNotNull();
     List<ThreddsMetadata.Vocab> projects = ds.getProjects();
-    assert projects != null;
-    assert projects.size() > 0;
+    assertThat(projects).isNotNull();
+    assertThat(projects).isNotEmpty();
 
     ThreddsMetadata.Vocab p = projects.get(0);
-    assert p != null;
-    assert p.getVocabulary().equals(vocab);
-    assert p.getText().equals(text);
+    assertThat(p).isNotNull();
+    assertThat(p.getVocabulary()).isEqualTo(vocab);
+    assertThat(p.getText()).isEqualTo(text);
   }
 
   private void getKeyword(Catalog cat, String datasetId, String vocab, String text) {
     Dataset ds = cat.findDatasetByID(datasetId);
-    assert ds != null;
+    assertThat(ds).isNotNull();
     List<ThreddsMetadata.Vocab> list = ds.getKeywords();
-    assert list != null;
-    assert list.size() > 0;
+    assertThat(list).isNotNull();
+    assertThat(list).isNotEmpty();
     for (ThreddsMetadata.Vocab keyword : list) {
       if (vocab == null) {
-        if ((keyword.getVocabulary() == null) && keyword.getText().equals(text))
+        if ((keyword.getVocabulary() == null) && keyword.getText().equals(text)) {
           return;
+        }
       } else {
-
         if ((keyword.getVocabulary() != null) && keyword.getVocabulary().equals(vocab)
-            && keyword.getText().equals(text))
+            && keyword.getText().equals(text)) {
           return;
+        }
       }
     }
     assert false : "cant find keyword " + text + " vocab " + vocab;
@@ -168,47 +161,46 @@ public class TestMetadataXLink {
   @Test
   public void testNamespaces() throws IOException {
     Catalog cat = ClientCatalogUtil.open("testMetadata.xml");
-    assert cat != null;
+    assertThat(cat).isNotNull();
 
     ThreddsMetadata.MetadataOther m = getMetadataByNamespace(cat, "solve", "somethingdifferent");
-    assert !m.isInherited();
-    assert null == m.getXlinkHref();
-    assert m.getContentObject() != null;
+    assertThat(m.isInherited()).isFalse();
+    assertThat(m.getXlinkHref()).isNull();
+    assertThat(m.getContentObject()).isNotNull();
 
     m = getMetadataByType(cat, "solve", "ADN");
-    assert !m.isInherited();
-    assert null != m.getXlinkHref();
+    assertThat(m.isInherited()).isFalse();
+    assertThat(m.getXlinkHref()).isNotNull();
 
     m = getMetadataByType(cat, "solve", "DIF");
-    assert !m.isInherited();
-    assert null != m.getXlinkHref();
+    assertThat(m.isInherited()).isFalse();
+    assertThat(m.getXlinkHref()).isNotNull();
   }
 
   private ThreddsMetadata.MetadataOther getMetadataByType(Catalog cat, String name, String mtype) {
     Dataset ds = cat.findDatasetByID(name);
-    assert ds != null;
+    assertThat(ds).isNotNull();
     List<ThreddsMetadata.MetadataOther> list = ds.getMetadata(mtype);
-    assert list != null;
-    assert list.size() > 0;
+    assertThat(list).isNotNull();
+    assertThat(list).isNotEmpty();
     ThreddsMetadata.MetadataOther m = list.get(0);
-    assert m != null;
+    assertThat(m).isNotNull();
     return m;
   }
 
   public ThreddsMetadata.MetadataOther getMetadataByNamespace(Catalog cat, String name, String wantNs) {
     Dataset ds = cat.findDatasetByID(name);
-    assert ds != null;
+    assertThat(ds).isNotNull();
     List<ThreddsMetadata.MetadataOther> mlist = ds.getMetadataOther();
-    assert mlist != null;
-    assert mlist.size() > 0;
+    assertThat(mlist).isNotNull();
+    assertThat(mlist).isNotEmpty();
 
     for (ThreddsMetadata.MetadataOther m : mlist) {
       String ns = m.getNamespaceURI();
-      // System.out.println(" ns = "+ns);
-      if (ns.equals(wantNs))
+      if (ns.equals(wantNs)) {
         return m;
+      }
     }
-    assert false;
     return null;
   }
 }

@@ -120,8 +120,8 @@ public class TestIntervalsTimeCoords2D {
               var.getFullName());
           System.out.printf("interval %d - %d  known %d - %d%n", start, end, tb[idx][0], tb[idx][1]);
         }
-        assert (start == tb[idx][0]);
-        assert (end == tb[idx][1]);
+        assertThat(start).isEqualTo(tb[idx][0]);
+        assertThat(end).isEqualTo(tb[idx][1]);
         idx++;
       }
 

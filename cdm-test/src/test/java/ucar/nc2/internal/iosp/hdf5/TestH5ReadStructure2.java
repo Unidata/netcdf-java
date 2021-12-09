@@ -9,7 +9,6 @@ import org.junit.experimental.categories.Category;
 import ucar.array.Array;
 import ucar.array.ArrayType;
 import ucar.array.Arrays;
-import ucar.array.InvalidRangeException;
 import ucar.array.StructureData;
 import ucar.array.StructureDataArray;
 import ucar.array.StructureMembers;
@@ -50,13 +49,13 @@ public class TestH5ReadStructure2 {
     try (NetcdfFile ncfile = TestH5.openH5("complex/compound_complex.h5")) {
 
       Variable dset = ncfile.findVariable("CompoundComplex");
-      assert (null != dset);
-      assert (dset.getArrayType() == ArrayType.STRUCTURE);
-      assert (dset.getRank() == 1);
-      assert (dset.getSize() == 6);
+      assertThat(dset).isNotNull();
+      assertThat(dset.getArrayType()).isEqualTo(ArrayType.STRUCTURE);
+      assertThat(dset.getRank()).isEqualTo(1);
+      assertThat(dset.getSize()).isEqualTo(6);
 
       Dimension d = dset.getDimension(0);
-      assert (d.getLength() == 6);
+      assertThat(d.getLength()).isEqualTo(6);
 
       Structure s = (Structure) dset;
 
@@ -70,7 +69,7 @@ public class TestH5ReadStructure2 {
         assertThat(results.length()).isEqualTo(b_name.length);
         int count = 0;
         for (String r : results) {
-          assert r.equals(b_name[count++]);
+          assertThat(r).isEqualTo(b_name[count++]);
         }
 
         for (StructureMembers.Member m : sd.getStructureMembers()) {
@@ -94,13 +93,13 @@ public class TestH5ReadStructure2 {
     try (NetcdfDataset ncfile = NetcdfDatasets.openDataset(TestH5.testDir + "complex/compound_complex.h5")) {
 
       Variable dset = ncfile.findVariable("CompoundComplex");
-      assert (null != dset);
-      assert (dset.getArrayType() == ArrayType.STRUCTURE);
-      assert (dset.getRank() == 1);
-      assert (dset.getSize() == 6);
+      assertThat(dset).isNotNull();
+      assertThat(dset.getArrayType()).isEqualTo(ArrayType.STRUCTURE);
+      assertThat(dset.getRank()).isEqualTo(1);
+      assertThat(dset.getSize()).isEqualTo(6);
 
       Dimension d = dset.getDimension(0);
-      assert (d.getLength() == 6);
+      assertThat(d.getLength()).isEqualTo(6);
 
       Structure s = (Structure) dset;
 
@@ -115,11 +114,11 @@ public class TestH5ReadStructure2 {
         assertThat(results.length()).isEqualTo(b_name.length);
         int count = 0;
         for (String r : results) {
-          assert r.equals(b_name[count++]);
+          assertThat(r).isEqualTo(b_name[count++]);
         }
 
         for (StructureMembers.Member m : sd.getStructureMembers()) {
-          Array data = sd.getMemberData(m);
+          sd.getMemberData(m);
         }
       }
     }
@@ -149,13 +148,13 @@ public class TestH5ReadStructure2 {
     try (NetcdfFile ncfile = TestH5.openH5("complex/compound_native.h5")) {
 
       Variable dset = ncfile.findVariable("CompoundNative");
-      assert (null != dset);
-      assert (dset.getArrayType() == ArrayType.STRUCTURE);
-      assert (dset.getRank() == 1);
-      assert (dset.getSize() == 15);
+      assertThat(dset).isNotNull();
+      assertThat(dset.getArrayType()).isEqualTo(ArrayType.STRUCTURE);
+      assertThat(dset.getRank()).isEqualTo(1);
+      assertThat(dset.getSize()).isEqualTo(15);
 
       Dimension d = dset.getDimension(0);
-      assert (d.getLength() == 15);
+      assertThat(d.getLength()).isEqualTo(15);
 
       Structure s = (Structure) dset;
 
@@ -163,7 +162,7 @@ public class TestH5ReadStructure2 {
       Array<StructureData> iter = (Array<StructureData>) s.readArray();
       for (StructureData sd : iter) {
         for (StructureMembers.Member m : sd.getStructureMembers()) {
-          Array data = sd.getMemberData(m);
+          sd.getMemberData(m);
         }
       }
 
@@ -184,10 +183,10 @@ public class TestH5ReadStructure2 {
     try (NetcdfFile ncfile = TestH5.openH5("IASI/IASI.h5")) {
 
       Variable dset = ncfile.findVariable("U-MARF/EPS/IASI_xxx_1C/DATA/IMAGE_LAT_ARRAY");
-      assert (null != dset);
-      assert (dset.getArrayType() == ArrayType.STRUCTURE);
-      assert (dset.getRank() == 1);
-      assert (dset.getSize() == 3600);
+      assertThat(dset).isNotNull();
+      assertThat(dset.getArrayType()).isEqualTo(ArrayType.STRUCTURE);
+      assertThat(dset.getRank()).isEqualTo(1);
+      assertThat(dset.getSize()).isEqualTo(3600);
 
       Dimension d = dset.getDimension(0);
       assertThat(d.getLength()).isEqualTo(3600);
@@ -221,24 +220,25 @@ public class TestH5ReadStructure2 {
     try (NetcdfFile ncfile = TestH5.openH5("IASI/IASI.h5")) {
 
       Variable dset = ncfile.findVariable("U-MARF/EPS/IASI_xxx_1C/DATA/TIME_DESCR");
-      assert (null != dset);
-      assert (dset.getArrayType() == ArrayType.STRUCTURE);
-      assert (dset.getRank() == 1);
-      assert (dset.getSize() == 60);
+      assertThat(dset).isNotNull();
+      assertThat(dset.getArrayType()).isEqualTo(ArrayType.STRUCTURE);
+      assertThat(dset.getRank()).isEqualTo(1);
+      assertThat(dset.getSize()).isEqualTo(60);
 
       Dimension d = dset.getDimension(0);
-      assert (d.getLength() == 60);
+      assertThat(d.getLength()).isEqualTo(60);
 
       StructureDataArray data = (StructureDataArray) dset.readArray();
       StructureMembers.Member m = data.getStructureMembers().findMember("EntryName");
-      assert m != null;
+      assertThat(m).isNotNull();
       for (int i = 0; i < dset.getSize(); i++) {
         Array<Byte> carr = (Array<Byte>) data.get(i).getMemberData(m);
         String r = Arrays.makeStringFromChar(carr);
-        if (i % 2 == 0)
-          assert r.equals("TIME[" + i / 2 + "]-days") : r + " at " + i;
-        else
-          assert r.equals("TIME[" + i / 2 + "]-milliseconds") : r + " at " + i;
+        if (i % 2 == 0) {
+          assertThat(r).isEqualTo("TIME[" + i / 2 + "]-days");
+        } else {
+          assertThat(r).isEqualTo("TIME[" + i / 2 + "]-milliseconds");
+        }
       }
     }
     System.out.println("*** testReadManyAtATime ok");

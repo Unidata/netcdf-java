@@ -11,7 +11,6 @@ import org.junit.experimental.categories.Category;
 import ucar.array.ArrayType;
 import ucar.array.Array;
 import ucar.array.Index;
-import ucar.array.InvalidRangeException;
 import ucar.array.Section;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Attribute;
@@ -49,10 +48,10 @@ public class TestH5Vlength {
   public void testVlengthAttribute() throws IOException {
     try (NetcdfFile ncfile = TestH5.openH5("support/vlstra.h5")) {
       Attribute att = ncfile.findAttribute("test_scalar");
-      assert (null != att);
-      assert (!att.isArray());
-      assert (att.isString());
-      assert (att.getStringValue().equals("This is the string for the attribute"));
+      assertThat(att).isNotNull();
+      assertThat(att.isArray()).isFalse();
+      assertThat(att.isString()).isTrue();
+      assertThat(att.getStringValue()).isEqualTo("This is the string for the attribute");
     }
   }
 
@@ -61,12 +60,12 @@ public class TestH5Vlength {
     try (NetcdfFile ncfile = TestH5.openH5("support/uvlstr.h5")) {
 
       Variable v = ncfile.findVariable("Space1");
-      assert (null != v);
-      assert (v.getArrayType() == ArrayType.STRING);
-      assert (v.getRank() == 1);
-      assert (v.getShape()[0] == 9);
+      assertThat(v).isNotNull();
+      assertThat(v.getArrayType()).isEqualTo(ArrayType.STRING);
+      assertThat(v.getRank()).isEqualTo(1);
+      assertThat(v.getShape()[0]).isEqualTo(9);
 
-      Array data = v.readArray();
+      Array<?> data = v.readArray();
       for (Object val : data) {
         out.println(val);
       }
@@ -75,9 +74,9 @@ public class TestH5Vlength {
       int[] shape = new int[] {3};
       Array<String> data2 = (Array<String>) v.readArray(new Section(origin, shape));
       Index ima = data2.getIndex();
-      assert (data2.get(ima.set(0))).startsWith("testing whether that nation");
-      assert (data2.get(ima.set(1))).startsWith("O Gloria inmarcesible!");
-      assert (data2.get(ima.set(2))).startsWith("bien germina ya!");
+      assertThat(data2.get(ima.set(0))).startsWith("testing whether that nation");
+      assertThat(data2.get(ima.set(1))).startsWith("O Gloria inmarcesible!");
+      assertThat(data2.get(ima.set(2))).startsWith("bien germina ya!");
     }
   }
 
@@ -86,10 +85,10 @@ public class TestH5Vlength {
     try (NetcdfFile ncfile = TestH5.openH5("support/vlslab.h5")) {
 
       Variable v = ncfile.findVariable("Space1");
-      assert (null != v);
-      assert (v.getArrayType() == ArrayType.STRING);
-      assert (v.getRank() == 1);
-      assert (v.getShape()[0] == 12);
+      assertThat(v).isNotNull();
+      assertThat(v.getArrayType()).isEqualTo(ArrayType.STRING);
+      assertThat(v.getRank()).isEqualTo(1);
+      assertThat(v.getShape()[0]).isEqualTo(12);
 
       Array<String> data = (Array<String>) v.readArray();
       for (Object val : data) {
@@ -147,19 +146,16 @@ public class TestH5Vlength {
   @Test
   public void testVlenEndian() throws IOException {
     testVlenEndian(TestN4reading.testDir + "vlenBigEndian.nc", 10);
-    // testVlenEndian("C:/data/work/bruno/test3_p1_d1wave.nc", 10);
     testVlenEndian(TestN4reading.testDir + "vlenLittleEndian.nc", 100);
-    // testVlenEndian("C:/data/work/bruno/fpscminicodac_1.nc", 100);
   }
 
   private void testVlenEndian(String filename, int n) throws IOException {
     try (NetcdfFile ncfile = NetcdfDatasets.openFile(filename, null)) {
-
       Variable v = ncfile.findVariable("levels");
-      assert (null != v);
-      assert (v.getArrayType() == ArrayType.UINT);
-      assert (v.getRank() == 2);
-      assert (v.getShape()[0] == n) : v.getShape()[0];
+      assertThat(v).isNotNull();
+      assertThat(v.getArrayType()).isEqualTo(ArrayType.UINT);
+      assertThat(v.getRank()).isEqualTo(2);
+      assertThat(v.getShape()[0]).isEqualTo(n);
 
       Array<Array<Integer>> data = (Array<Array<Integer>>) v.readArray();
       for (Array<Integer> inner : data) {

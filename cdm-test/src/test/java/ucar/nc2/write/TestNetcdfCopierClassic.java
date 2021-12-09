@@ -10,23 +10,21 @@ import org.junit.experimental.categories.Category;
 import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.internal.util.CompareNetcdf2;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
 import java.io.File;
 import java.io.IOException;
-import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.google.common.truth.Truth.assertThat;
 
 /** Test NetcdfCopier write to netcdf3, then read back and comparing to original. */
 @Category(NeedsCdmUnitTest.class)
 @RunWith(Parameterized.class)
 public class TestNetcdfCopierClassic {
-  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @Rule
   public final TemporaryFolder tempFolder = new TemporaryFolder();
@@ -63,12 +61,12 @@ public class TestNetcdfCopierClassic {
         fout.getParentFile().exists());
 
     try (NetcdfFile ncfileIn = ucar.nc2.dataset.NetcdfDatasets.openFile(fin.getPath(), null)) {
-      NetcdfFormatWriter.Builder builder = NetcdfFormatWriter.createNewNetcdf3(fout.getPath());
+      NetcdfFormatWriter.Builder<?> builder = NetcdfFormatWriter.createNewNetcdf3(fout.getPath());
       try (NetcdfCopier copier = NetcdfCopier.create(ncfileIn, builder)) {
         copier.write(null);
       }
       try (NetcdfFile ncfileOut = ucar.nc2.dataset.NetcdfDatasets.openFile(fout.getPath(), null)) {
-        assert new CompareNetcdf2().compare(ncfileIn, ncfileOut) == same;
+        assertThat(new CompareNetcdf2().compare(ncfileIn, ncfileOut)).isEqualTo(same);
       }
     }
     System.out.printf("%n");

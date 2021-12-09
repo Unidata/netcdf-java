@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
-
 package ucar.ui.prefs;
 
 import org.junit.BeforeClass;
@@ -21,6 +20,8 @@ import java.lang.invoke.MethodHandles;
 import javax.swing.*;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.XMLStore;
+
+import static com.google.common.truth.Truth.assertThat;
 
 @RunWith(JUnit4.class)
 public class TestFieldInput {
@@ -59,11 +60,11 @@ public class TestFieldInput {
           System.out.println(
               "Text TestFieldInput: old val= <" + evt.getOldValue() + "> new val= <" + evt.getNewValue() + ">");
           if (count == 0) {
-            assert (evt.getOldValue()).equals("defValue") : "<" + evt.getOldValue() + ">";
-            assert (evt.getNewValue()).equals("better value") : "<" + evt.getNewValue() + ">";
+            assertThat(evt.getOldValue()).equals("defValue");
+            assertThat(evt.getNewValue()).equals("better value");
           } else if (count == 1) {
-            assert (evt.getOldValue()).equals("better value") : "<" + evt.getOldValue() + ">";
-            assert (evt.getNewValue()).equals("best value") : "<" + evt.getNewValue() + ">";
+            assertThat(evt.getOldValue()).equals("better value");
+            assertThat(evt.getNewValue()).equals("best value");
           }
           count++;
         }
@@ -78,15 +79,15 @@ public class TestFieldInput {
           System.out.println(
               "Int TestFieldInput:  old val= <" + evt.getOldValue() + "> new val= <" + evt.getNewValue() + ">");
           if (count == 0) {
-            assert evt.getOldValue() instanceof Integer;
-            assert ((Integer) evt.getOldValue()).intValue() == 66 : "<" + evt.getOldValue() + ">";
-            assert ((Integer) evt.getNewValue()).intValue() == 666 : "<" + evt.getNewValue() + ">";
+            assertThat(evt.getOldValue()).isInstanceOf(Integer.class);
+            assertThat((Integer) evt.getOldValue()).isEqualTo(66);
+            assertThat((Integer) evt.getNewValue()).isEqualTo(666);
           }
           if (count == 1) {
-            assert evt.getOldValue() instanceof Number;
-            assert evt.getNewValue() instanceof Number;
-            assert ((Number) evt.getOldValue()).intValue() == 666 : "<" + evt.getOldValue() + ">";
-            assert ((Number) evt.getNewValue()).intValue() == 6666 : "<" + evt.getNewValue() + ">";
+            assertThat(evt.getOldValue()).isInstanceOf(Number.class);
+            assertThat(evt.getNewValue()).isInstanceOf(Number.class);
+            assertThat((Number) evt.getOldValue()).isEqualTo(666);
+            assertThat((Number) evt.getNewValue()).isEqualTo(6666);
           }
           count++;
           // System.out.println(" getInt = "+ ((Field.Int)intf).getInt());
@@ -142,9 +143,9 @@ public class TestFieldInput {
       JPanel main = new JPanel(new BorderLayout()); // new FlowLayout());
       frame.getContentPane().add(main);
       JFormattedTextField d1 = new JFormattedTextField();
-      d1.setValue(new Double(123.987));
+      d1.setValue(123.987);
       JFormattedTextField d2 = new JFormattedTextField();
-      d2.setValue(new Double(999.123));
+      d2.setValue(999.123);
       main.add(d1, BorderLayout.NORTH);
       main.add(d2, BorderLayout.SOUTH);
 

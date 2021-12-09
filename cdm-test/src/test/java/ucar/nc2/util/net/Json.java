@@ -9,6 +9,8 @@ import java.io.IOException;
 import java.io.StreamTokenizer;
 import java.io.StringReader;
 import java.util.*;
+
+import static com.google.common.truth.Truth.assertThat;
 import static java.io.StreamTokenizer.*;
 
 
@@ -78,7 +80,7 @@ abstract public class Json {
     }
 
     protected Object parseAtomic(StreamTokenizer tokens) throws IOException {
-      assert (tokens.ttype == TT_WORD || tokens.ttype == QUOTE);
+      assertThat(tokens.ttype == TT_WORD || tokens.ttype == QUOTE).isTrue();
       String word = tokens.sval;
       if (tokens.ttype == QUOTE)
         return word;
@@ -95,7 +97,7 @@ abstract public class Json {
     }
 
     protected Object parseArray(StreamTokenizer tokens) throws IOException {
-      assert (tokens.ttype == LBRACKET);
+      assertThat(tokens.ttype == LBRACKET).isTrue();
       List<Object> array = new ArrayList<>();
       loop: for (;;) {
         int token = tokens.nextToken();
@@ -123,7 +125,7 @@ abstract public class Json {
     }
 
     protected Object parseMap(StreamTokenizer tokens) throws IOException {
-      assert (tokens.ttype == LBRACE);
+      assertThat(tokens.ttype == LBRACE).isTrue();
       Map<String, Object> map = new LinkedHashMap<>(); // Keep insertion order
       loop: for (;;) {
         int token = tokens.nextToken();

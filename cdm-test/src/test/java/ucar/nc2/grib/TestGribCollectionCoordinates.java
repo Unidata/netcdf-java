@@ -23,6 +23,8 @@ import ucar.unidata.util.test.TestDir;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 
+import static com.google.common.truth.Truth.assertThat;
+
 /**
  * Test GribCollection Coordinates
  */
@@ -99,7 +101,7 @@ public class TestGribCollectionCoordinates {
           continue;
 
         System.out.printf(" %s == %s%n", vds.getFullName(), vds.getClass().getName());
-        assert vds instanceof CoordinateAxis : vds.getFullName();
+        assertThat(vds).isInstanceOf(CoordinateAxis.class);
 
         // test that zero Intervals are removed
         if (vds instanceof CoordinateAxis1D) {
@@ -117,7 +119,7 @@ public class TestGribCollectionCoordinates {
       }
     }
 
-    assert ok;
+    assertThat(ok).isTrue();
   }
 
   // make sure Best reftimes always increase
@@ -139,7 +141,7 @@ public class TestGribCollectionCoordinates {
           continue;
 
         System.out.printf(" %s == %s%n", vds.getFullName(), vds.getClass().getName());
-        assert vds instanceof CoordinateAxis1D : vds.getFullName();
+        assertThat(vds).isInstanceOf(CoordinateAxis1D.class);
         CoordinateAxis1D axis = (CoordinateAxis1D) vds;
 
         // test that values are monotonic
@@ -155,7 +157,7 @@ public class TestGribCollectionCoordinates {
       }
     }
 
-    assert ok;
+    assertThat(ok).isTrue();
   }
 
 

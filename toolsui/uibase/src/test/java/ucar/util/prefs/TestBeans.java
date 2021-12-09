@@ -12,15 +12,13 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import java.io.IOException;
-import java.lang.invoke.MethodHandles;
 import ucar.util.prefs.TestObjectEncode.TesterBean;
+
+import static com.google.common.truth.Truth.assertThat;
 
 @RunWith(JUnit4.class)
 public class TestBeans {
-  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @Rule
   public TemporaryFolder tempFolder = new TemporaryFolder();
@@ -51,17 +49,17 @@ public class TestBeans {
 
     TesterBean tbean = (TesterBean) prefs.getBean("default", null);
     TesterBean tbeano = (TesterBean) prefs.getBean("defaultObject", null);
-    assert tbean != null;
-    assert tbeano != null;
+    assertThat(tbean).isNotNull();
+    assertThat(tbeano).isNotNull();
 
-    assert tbean.getB() == tbeano.getB() : "boolean failed";
-    assert tbean.getByte() == tbeano.getByte() : "byte failed";
-    assert tbean.getShort() == tbeano.getShort() : "short failed";
-    assert tbean.getI() == tbeano.getI() : "int failed";
-    assert tbean.getL() == tbeano.getL() : "long failed";
-    assert tbean.getF() == tbeano.getF() : "float failed";
-    assert tbean.getD() == tbeano.getD() : "double failed";
-    assert tbean.getS().equals(tbeano.getS()) : "string failed";
+    assertThat(tbean.getB()).isEqualTo(tbeano.getB());
+    assertThat(tbean.getByte()).isEqualTo(tbeano.getByte());
+    assertThat(tbean.getShort()).isEqualTo(tbeano.getShort());
+    assertThat(tbean.getI()).isEqualTo(tbeano.getI());
+    assertThat(tbean.getL()).isEqualTo(tbeano.getL());
+    assertThat(tbean.getF()).isEqualTo(tbeano.getF());
+    assertThat(tbean.getD()).isEqualTo(tbeano.getD());
+    assertThat(tbean.getS().equals(tbeano.getS()));
   }
 
   @Test
@@ -82,14 +80,14 @@ public class TestBeans {
     TesterBean tbean = (TesterBean) prefs.getBean("nondefault", null);
     TesterBean tbeano = (TesterBean) prefs.getBean("nondefaultObject", null);
 
-    assert tbean.getB() == tbeano.getB() : "boolean failed";
-    assert tbean.getByte() == tbeano.getByte() : "byte failed";
-    assert tbean.getShort() == tbeano.getShort() : "short failed";
-    assert tbean.getI() == tbeano.getI() : "int failed";
-    assert tbean.getL() == tbeano.getL() : "long failed";
-    assert tbean.getF() == tbeano.getF() : "float failed";
-    assert tbean.getD() == tbeano.getD() : "double failed";
-    assert tbean.getS().equals(tbeano.getS()) : "string failed";
+    assertThat(tbean.getB()).isEqualTo(tbeano.getB());
+    assertThat(tbean.getByte()).isEqualTo(tbeano.getByte());
+    assertThat(tbean.getShort()).isEqualTo(tbeano.getShort());
+    assertThat(tbean.getI()).isEqualTo(tbeano.getI());
+    assertThat(tbean.getL()).isEqualTo(tbeano.getL());
+    assertThat(tbean.getF()).isEqualTo(tbeano.getF());
+    assertThat(tbean.getD()).isEqualTo(tbeano.getD());
+    assertThat(tbean.getS().equals(tbeano.getS()));
   }
 
   @Test
@@ -110,8 +108,8 @@ public class TestBeans {
     TesterBean tbean2 = (TesterBean) prefs2.getBean("changeableBean", null);
     TesterBean tbeano2 = (TesterBean) prefs2.getBean("changeableBeanObject", null);
 
-    assert tbean2.getS().equals("orig");
-    assert tbeano2.getS().equals("orig");
+    assertThat(tbean2.getS().equals("orig"));
+    assertThat(tbeano2.getS().equals("orig"));
 
     // change the objects
     tbean2.setS("changed");
@@ -127,8 +125,8 @@ public class TestBeans {
     TesterBean tbean = (TesterBean) prefs.getBean("changeableBean", null);
     TesterBean tbeano = (TesterBean) prefs.getBean("changeableBeanObject", null);
 
-    assert tbean.getS().equals("changed");
-    assert tbeano.getS().equals("changedo");
+    assertThat(tbean.getS().equals("changed"));
+    assertThat(tbeano.getS().equals("changedo"));
   }
 
   @Test
@@ -152,8 +150,8 @@ public class TestBeans {
     TesterBean tbean = (TesterBean) prefs.getBean("bad", null);
     TesterBean tbeano = (TesterBean) prefs.getBean("bado", null);
 
-    assert tbean.getS().equals(baddies) : "bean encoding failed" + tbean.getS();
-    assert tbeano.getS().equals(baddies) : "beanObject encoding failed" + tbeano.getS();
+    assertThat(tbean.getS().equals(baddies));
+    assertThat(tbeano.getS().equals(baddies));
   }
 
   @Test
