@@ -26,7 +26,6 @@ public interface FilterProvider {
     return id == getId();
   }
 
-
   /**
    * Create a {@link ucar.nc2.filter.Filter} of the correct type
    * 

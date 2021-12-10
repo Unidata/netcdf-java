@@ -199,7 +199,7 @@ public class ZArray {
       try {
         Map<String, Object> compBean = codec.readValue(root.path(ZarrKeys.COMPRESSOR).traverse(codec), HashMap.class);
 
-        Filter compressor = Filters.getFilterByName(compBean);
+        Filter compressor = Filters.getFilter(compBean);
 
         List<Filter> filters = new ArrayList<>();
 
@@ -208,7 +208,7 @@ public class ZArray {
 
         if (filtersBean != null) {
           for (Map<String, Object> bean : filtersBean) {
-            filters.add(Filters.getFilterByName(bean));
+            filters.add(Filters.getFilter(bean));
           }
         }
         return new ZArray(shape, chunks, fill, dtype, compressor, order, filters, delimiter);

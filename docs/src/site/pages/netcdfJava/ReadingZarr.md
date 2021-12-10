@@ -57,6 +57,8 @@ Once implemented, you will need to include these classes as JAR files in your cl
 #### `Filter` implementation
 
 To implement a user-supplied filter, you will need to extend the abstract `ucar.nc2.filter.Filter` class, and provide implementations for the following methods:
+* `getName` returns a `String` identifier for the filter (see note below on filter names)
+* `getId` returns an `int` identifier for the filter (see note below on filter ids)
 * `encode` takes a `byte[]` of unfiltered data and returns a `byte[]` of filtered data
 * `decode` takes a `byte[]` of filtered data and returns a `byte[]` of unfiltered data
 
@@ -67,6 +69,16 @@ Your `Filter` class should look something like this:
 {% endcapture %}
 {{ rmd | markdownify }}
 
+{%include note.html content="
+`getName` and `getId`   
+When reading data, [IOSPs](writing_iosp.html) can look up filters by either a `String` or `int` (name or id). Currently, the `ucar.nc2.filter`
+package is shared by the Zarr and HDF5 IOSPs. The Zarr IOSP looks up filters by name; if you plan to use your third party filter with Zarr data,
+the string returned by `getName` should match that specified by the [NumCodecs](https://numcodecs.readthedocs.io/en/stable/) library.
+The HDF5 IOSP looks up filters by id; if you plan to use your third party filter with HDF5 data, the int returned by `getId` should adhere to the
+[guidelines](https://portal.hdfgroup.org/display/support/Registered+Filter+Plugins) set by the HDF group.
+If your filter is registered with the HDF group, your `getId` method should return the HDF id. If your filter is not registered with the HDF group,
+" %}
+
 #### `FilterProvider` implementation
 
 For the netCDF-Java library to find your `Filter` implementation, you will need to provide a `FilterProvider` as well. 
@@ -75,16 +87,6 @@ For the netCDF-Java library to find your `Filter` implementation, you will need 
 {% includecodeblock netcdf-java&docs/src/test/java/examples/ZarrExamples.java&implementFilterProvider %}
 {% endcapture %}
 {{ rmd | markdownify }}
-
-{%include note.html content="
-`getName` and `getId`   
-When reading data, [IOSPs](writing_iosp.html) can look up filters by either a `String` or `int` (name or id). Currently, the `ucar.nc2.filter` 
-package is shared by the Zarr and HDF5 IOSPs. The Zarr IOSP looks up filters by name; if you plan to use your third party filter with Zarr data,
-the string returned by `getName` should match that specified by the [NumCodecs](https://numcodecs.readthedocs.io/en/stable/) library. 
-The HDF5 IOSP looks up filters by id; if you plan to use your third party filter with HDF5 data, the int returned by `getId` should adhere to the 
-[guidelines](https://portal.hdfgroup.org/display/support/Registered+Filter+Plugins) set by the HDF group. 
-If your filter is registered with the HDF group, your `getId` method should return the HDF id. If your filter is not registered with the HDF group,
-" %}
 
 There are two more methods in the `FilterProvider` interface: the `canProvide` methods. By default, these methods work as follows:
 * `boolean canProvide(String name)` returns true if the string returned by `getName()` matches the string passed to the method

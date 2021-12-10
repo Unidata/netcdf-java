@@ -19,6 +19,10 @@ import java.util.zip.InflaterInputStream;
  */
 public class Deflate extends Filter {
 
+  private static final String name = "zlib";
+
+  private static final int id = 1;
+
   private final int clevel; // compression level
 
   public Deflate(Map<String, Object> properties) {
@@ -37,6 +41,16 @@ public class Deflate extends Filter {
     if (clevel < 0 || clevel > 9) {
       throw new IllegalArgumentException("Invalid compression level: " + clevel);
     }
+  }
+
+  @Override
+  public String getName() {
+    return name;
+  }
+
+  @Override
+  public int getId() {
+    return id;
   }
 
   @Override
@@ -69,10 +83,6 @@ public class Deflate extends Filter {
   }
 
   public static class Provider implements FilterProvider {
-
-    private static final String name = "zlib";
-
-    private static final int id = -1; // not yet implemented by id
 
     @Override
     public String getName() {
