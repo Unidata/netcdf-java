@@ -19,7 +19,16 @@ import java.util.zip.Checksum;
 public class Checksum32 extends Filter {
 
   public enum CType {
-    FLETCHER, ADLER, CRC
+    FLETCHER("fletcher32", 3), ADLER("adler32", -1), CRC("crc32", -1);
+
+    private final String name;
+
+    private final int id;
+
+    CType(String name, int id) {
+      this.name = name;
+      this.id = id;
+    }
   }
 
   private static final int nbytes = 4; // number of bytes in the checksum
@@ -37,6 +46,16 @@ public class Checksum32 extends Filter {
   public Checksum32(CType type) {
     // TODO: can we do this better?
     this(type, ByteOrder.LITTLE_ENDIAN);
+  }
+
+  @Override
+  public String getName() {
+    return type.name;
+  }
+
+  @Override
+  public int getId() {
+    return type.id;
   }
 
   @Override
@@ -112,18 +131,14 @@ public class Checksum32 extends Filter {
 
   public static class Fletcher32Provider implements FilterProvider {
 
-    private static final String name = "fletcher32";
-
-    private static final int id = -1;
-
     @Override
     public String getName() {
-      return name;
+      return CType.FLETCHER.name;
     }
 
     @Override
     public int getId() {
-      return id;
+      return CType.FLETCHER.id;
     }
 
     @Override
@@ -134,18 +149,14 @@ public class Checksum32 extends Filter {
 
   public static class Adler32Provider implements FilterProvider {
 
-    private static final String name = "adler32";
-
-    private static final int id = -1; // not yet implemented by id
-
     @Override
     public String getName() {
-      return name;
+      return CType.ADLER.name;
     }
 
     @Override
     public int getId() {
-      return id;
+      return CType.ADLER.id;
     }
 
     @Override
@@ -156,18 +167,14 @@ public class Checksum32 extends Filter {
 
   public static class CRC32Provider implements FilterProvider {
 
-    private static final String name = "crc32";
-
-    private static final int id = -1; // not yet implemented by id
-
     @Override
     public String getName() {
-      return name;
+      return CType.CRC.name;
     }
 
     @Override
     public int getId() {
-      return id;
+      return CType.CRC.id;
     }
 
     @Override

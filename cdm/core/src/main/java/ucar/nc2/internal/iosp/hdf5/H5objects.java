@@ -17,10 +17,12 @@ import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.Dimension;
+import ucar.nc2.filter.Filters;
+import ucar.nc2.filter.UnknownFilterException;
 import ucar.nc2.iosp.hdf5.BTree2;
 import ucar.nc2.iosp.hdf5.FractalHeap;
 import ucar.nc2.iosp.hdf5.MemTracker;
-import ucar.nc2.util.Misc;
+import ucar.nc2.filter.Filter;
 import ucar.unidata.io.RandomAccessFile;
 
 /** The low-level HDF5 data objects. */
@@ -28,6 +30,7 @@ public class H5objects {
   private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(H5objects.class);
 
   // debugging
+  // LOOK why are there so many debug settings here?
   private static boolean debugEnum, debugVlen;
   private static boolean debug1, debugDetail, debugPos, debugHeap, debugV;
   private static boolean debugGroupBtree, debugDataBtree, debugBtree2;
@@ -1688,14 +1691,55 @@ public class H5objects {
     Filter[] filters;
 
     void read() throws IOException {
+      // create properties map
+      Map<String, Object> props = new HashMap<>();
+
       byte version = raf.readByte();
       byte nfilters = raf.readByte();
-      if (version == 1)
+      // version 1 has 6 bytes reserved
+      if (version == 1) {
         raf.skipBytes(6);
+      }
 
+      // create filters list
       filters = new Filter[nfilters];
-      for (int i = 0; i < nfilters; i++)
-        filters[i] = new Filter(version);
+      for (int i = 0; i < nfilters; i++) {
+        // read filter description
+        short id = raf.readShort();
+        props.put(Filters.Keys.ID, id);
+        // if the filter id < 256 then this field is not stored
+        short nameSize = ((version > 1) && (id < 256)) ? 0 : raf.readShort();
+        short flags = raf.readShort();
+        props.put(Filters.Keys.OPTIONAL, (flags != 0)); // save as boolean
+        short nValues = raf.readShort();
+
+        // get filter name, if present
+        String name = null;
+        if (nameSize > 0) {
+          // version 1 name is padded to multiple of 8
+          name = version == 1 ? readString8(raf) : readStringFixedLength(nameSize);
+        }
+        props.put(Filters.Keys.NAME, name);
+
+        // read data
+        int[] data = new int[nValues];
+        for (int n = 0; n < nValues; n++) {
+          data[n] = raf.readInt();
+        }
+        props.put(Filters.Keys.DATA, data);
+
+        // add padding if nValues is odd
+        if ((version == 1) && (nValues & 1) != 0) {
+          raf.skipBytes(4);
+        }
+
+        // try to get filter by name or id, throw if not recognized filter
+        try {
+          filters[i] = Filters.getFilter(props);
+        } catch (UnknownFilterException ex) {
+          throw new IOException(ex);
+        }
+      }
 
       if (debug1) {
         log.debug("   MessageFilter version=" + version + this);
@@ -1717,52 +1761,7 @@ public class H5objects {
     public String getName() {
       StringBuilder sbuff = new StringBuilder();
       for (Filter f : filters)
-        sbuff.append(f.name).append(", ");
-      return sbuff.toString();
-    }
-  }
-
-  private static final String[] filterName = {"", "deflate", "shuffle", "fletcher32", "szip", "nbit", "scaleoffset"};
-
-  class Filter {
-    short id; // 1=deflate, 2=shuffle, 3=fletcher32, 4=szip, 5=nbit, 6=scaleoffset
-    short flags;
-    String name;
-    short nValues;
-    int[] data;
-
-    Filter(byte version) throws IOException {
-      this.id = raf.readShort();
-      short nameSize = ((version > 1) && (id < 256)) ? 0 : raf.readShort(); // if the filter id < 256 then this field is
-      // not stored
-      this.flags = raf.readShort();
-      nValues = raf.readShort();
-      if (version == 1)
-        this.name = (nameSize > 0) ? readString8(raf) : getFilterName(id); // null terminated, pad to 8 bytes
-      else
-        this.name = (nameSize > 0) ? readStringFixedLength(nameSize) : getFilterName(id); // non-null terminated
-
-      data = new int[nValues];
-      for (int i = 0; i < nValues; i++)
-        data[i] = raf.readInt();
-      if ((version == 1) && (nValues & 1) != 0) // check if odd
-        raf.skipBytes(4);
-
-      if (debug1) {
-        log.debug("{}", this);
-      }
-    }
-
-    String getFilterName(int id) {
-      return (id < filterName.length) ? filterName[id] : "StandardFilter " + id;
-    }
-
-    public String toString() {
-      StringBuilder sbuff = new StringBuilder();
-      sbuff.append("   Filter id= ").append(id).append(" flags = ").append(flags).append(" nValues=").append(nValues)
-          .append(" name= ").append(name).append(" data = ");
-      for (int i = 0; i < nValues; i++)
-        sbuff.append(data[i]).append(" ");
+        sbuff.append(f.getName()).append(", ");
       return sbuff.toString();
     }
   }

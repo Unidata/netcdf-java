@@ -39,6 +39,19 @@ public class ZarrExamples {
     /* DOCS-IGNORE */
     /* INSERT public */class MyFilter extends Filter {
 
+      static final String name = "myFilter";
+      static final int id = 32768;
+
+      @Override
+      public String getName() {
+        return name;
+      }
+
+      @Override
+      public int getId() {
+        return id;
+      }
+
       @Override
       public byte[] encode(byte[] dataIn) throws IOException {
         // your encoding implementation here
@@ -59,13 +72,13 @@ public class ZarrExamples {
       @Override
       public String getName() {
         // returns a string identifier for your filter
-        return "myFilter"; // see notes on filter names and ids
+        return MyFilter.name; // should match name of your Filter class
       }
 
       @Override
       public int getId() {
         // returns a numeric identifier for your filter
-        return 32768; // see notes on filter names and ids
+        return MyFilter.id; // should match id of your Filter class
       }
 
       @Override
@@ -80,12 +93,12 @@ public class ZarrExamples {
 
       @Override
       public String getName() {
-        return "defaultFilter";
+        return DefaultFilter.name;
       }
 
       @Override
       public int getId() {
-        return -1;
+        return DefaultFilter.id;
       }
 
       @Override
@@ -114,6 +127,19 @@ public class ZarrExamples {
       super();
     }
 
+    static final String name = "myFilter";
+    static final int id = 32768;
+
+    @Override
+    public String getName() {
+      return name;
+    }
+
+    @Override
+    public int getId() {
+      return id;
+    }
+
     @Override
     public byte[] encode(byte[] dataIn) throws IOException {
       return new byte[0];
@@ -129,6 +155,19 @@ public class ZarrExamples {
 
     public DefaultFilter(Map<String, Object> properties) {
       super();
+    }
+
+    static final String name = "defaultFilter";
+    static final int id = -1;
+
+    @Override
+    public String getName() {
+      return name;
+    }
+
+    @Override
+    public int getId() {
+      return id;
     }
 
     @Override

@@ -6,11 +6,20 @@
 package ucar.nc2.filter;
 
 import java.io.IOException;
+import java.util.Formatter;
 
 public abstract class Filter {
+
+  public abstract String getName();
+
+  public abstract int getId();
 
   public abstract byte[] encode(byte[] dataIn) throws IOException;
 
   public abstract byte[] decode(byte[] dataIn) throws IOException;
 
+  public String toString() {
+    Formatter f = new Formatter();
+    return f.format("Name: %s, ID: %d", getName(), getId()).toString();
+  }
 }

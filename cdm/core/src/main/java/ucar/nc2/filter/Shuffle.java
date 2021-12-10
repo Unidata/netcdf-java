@@ -12,6 +12,10 @@ import java.util.Map;
  */
 public class Shuffle extends Filter {
 
+  private static final String name = "shuffle";
+
+  private static final int id = 2; // not yet implemented by id
+
   private int elemSize;
   private static final int DEFAULT_SIZE = 4;
 
@@ -21,6 +25,16 @@ public class Shuffle extends Filter {
     } catch (Exception ex) {
       elemSize = DEFAULT_SIZE;
     }
+  }
+
+  @Override
+  public String getName() {
+    return name;
+  }
+
+  @Override
+  public int getId() {
+    return id;
   }
 
   @Override
@@ -68,10 +82,6 @@ public class Shuffle extends Filter {
   }
 
   public static class Provider implements FilterProvider {
-
-    private static final String name = "shuffle";
-
-    private static final int id = -1; // not yet implemented by id
 
     @Override
     public String getName() {
