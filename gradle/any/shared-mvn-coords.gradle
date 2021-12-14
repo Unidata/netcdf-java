@@ -25,7 +25,7 @@ ext {
   // control JCL logging with slf4j (through dependency substitution), and we can't access version information
   // from the java platform alone.
   depVersion.slf4j = '1.7.32'
-  depVersion.logback = '1.2.3'
+  depVersion.logback = '1.2.8'
   // In all cases except one, junit is a testImplementation configuration. However, for the cdm-test-utils
   // subproject, it is an api configuration. We define the junit version here so that it can be defined
   // in the netcdf-java-testing-platform and in the build.gradle config for cdm-test-utils subproject.
