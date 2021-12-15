@@ -8,6 +8,8 @@ package ucar.nc2.bufr;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import static org.junit.Assert.assertThrows;
+
 /** Read local bufr data. */
 public class TestReadBufrLocal {
 
@@ -16,6 +18,13 @@ public class TestReadBufrLocal {
     String filename = TestBufrReadAllData.bufrLocalFromTop + "RadiosondeStationData.bufr";
     TestBufrReadAllData.readArrays(filename);
     TestBufrReadAllData.bitCount(filename);
+  }
+
+  @Test
+  public void testNoDatasets() {
+    String filename = TestBufrReadAllData.bufrLocalFromTop + "temp_20210824133030_IUSK11_AMMC_241200.bufr";
+    assertThrows(java.io.IOException.class, () -> TestBufrReadAllData.readArrays(filename)).getMessage()
+        .contains("No data messages in the file");
   }
 
   @Test
