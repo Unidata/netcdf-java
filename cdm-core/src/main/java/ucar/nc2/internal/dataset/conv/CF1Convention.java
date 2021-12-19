@@ -34,12 +34,10 @@ import ucar.nc2.util.CancelTask;
  * <p/>
  * <i>
  * "The CF conventions for climate and forecast metadata are designed to promote the processing and sharing of files
- * created with the netCDF
- * API. The conventions define metadata that provide a definitive description of what the data in each variable
- * represents, and of the
- * spatial and temporal properties of the data. This enables users of data from different sources to decide which
- * quantities are comparable,
- * and facilitates building applications with powerful extraction, regridding, and display capabilities."
+ * created with the netCDF API. The conventions define metadata that provide a definitive description of what the data
+ * in each variable represents, and of the spatial and temporal properties of the data. This enables users of data
+ * from different sources to decide which quantities are comparable, and facilitates building applications with
+ * powerful extraction, regridding, and display capabilities."
  * </i>
  */
 public class CF1Convention extends CSMConvention {

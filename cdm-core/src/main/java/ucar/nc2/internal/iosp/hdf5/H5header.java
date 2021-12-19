@@ -575,14 +575,12 @@ public class H5header implements HdfHeaderIF {
    * C.3.7 Attributes
    *
    * Attributes in HDF5 and netCDF-4 correspond very closely. Each attribute in an HDF5 file is represented as an
-   * attribute
-   * in the netCDF-4 file, with the exception of the attributes below, which are ignored by the netCDF-4 API.
+   * attribute in the netCDF-4 file, with the exception of the attributes below, which are ignored by the netCDF-4 API.
    *
    * _Netcdf4Coordinates An integer array containing the dimension IDs of a variable which is a multi-dimensional
    * coordinate variable.
    * _nc3_strict When this (scalar, H5T_NATIVE_INT) attribute exists in the root group of the HDF5 file, the netCDF API
-   * will enforce
-   * the netCDF classic model on the data file.
+   * will enforce the netCDF classic model on the data file.
    * REFERENCE_LIST This attribute is created and maintained by the HDF5 dimension scale API.
    * CLASS This attribute is created and maintained by the HDF5 dimension scale API.
    * DIMENSION_LIST This attribute is created and maintained by the HDF5 dimension scale API.
@@ -616,8 +614,7 @@ public class H5header implements HdfHeaderIF {
    * If you expand the "lat" dataset , you will see that it contains an attribute
    * called REFERENCE_LIST. It is a compound type that contains
    * 1) a reference to my "data" dataset
-   * 2) the index of the data dataset this scale is to be associated with (0
-   * for the lat, 1 for the lon)
+   * 2) the index of the data dataset this scale is to be associated with (0 for the lat, 1 for the lon)
    */
 
   // find the Dimension Scale objects, turn them into shared dimensions
@@ -629,20 +626,21 @@ public class H5header implements HdfHeaderIF {
       MessageAttribute matt = iter.next();
       if (matt.name.equals(HDF5_CLASS)) {
         Attribute att = makeAttribute(matt);
-        if (att == null)
+        if (att == null || !att.isString()) {
           throw new IllegalStateException();
+        }
         String val = att.getStringValue();
         if (val.equals(HDF5_DIMENSION_SCALE) && facade.dobj.mds.ndims > 0) {
-
           // create a dimension - always use the first dataspace length
           facade.dimList =
               addDimension(g, h5group, facade.name, facade.dobj.mds.dimLength[0], facade.dobj.mds.maxLength[0] == -1);
           facade.hasNetcdfDimensions = true;
-          if (!h5iosp.includeOriginalAttributes)
+          if (!h5iosp.includeOriginalAttributes) {
             iter.remove();
-
-          if (facade.dobj.mds.ndims > 1)
+          }
+          if (facade.dobj.mds.ndims > 1) {
             facade.is2DCoordinate = true;
+          }
         }
       }
     }
@@ -674,10 +672,11 @@ public class H5header implements HdfHeaderIF {
     boolean unique = true;
     for (Dimension d : h5group.dimList) {
       if (d.getLength() == want_len) {
-        if (match == null)
+        if (match == null) {
           match = d;
-        else
+        } else {
           unique = false;
+        }
       }
     }
     if (match != null && unique) {
@@ -840,9 +839,10 @@ public class H5header implements HdfHeaderIF {
       }
 
     } else { // check has correct length
-      if (d.getLength() != length)
+      if (d.getLength() != length) {
         throw new IllegalStateException(
             "addDimension: DimScale has different length than dimension it references dimScale=" + dimName);
+      }
     }
 
     return d.getShortName();
@@ -1569,10 +1569,11 @@ public class H5header implements HdfHeaderIF {
 
     // set dimensions on the variable
     if (dimNames != null) { // dimensions were passed in
-      if ((mdt.type == 9) && !mdt.isVString)
+      if ((mdt.type == 9) && !mdt.isVString) {
         v.setDimensionsByName(dimNames + " *");
-      else
+      } else {
         v.setDimensionsByName(dimNames);
+      }
     } else {
       v.setDimensionsAnonymous(shape);
     }

@@ -91,7 +91,7 @@ public class WrfEta extends AbstractVerticalTransform {
     CoordinateAxis axis2 = coords.findAxis(type2);
     if (axis2 != null) {
       String dimName = axis2.getDimension(dimIndex).getShortName();
-      return dimName != null && dimName.endsWith("stag");
+      return dimName.endsWith("stag");
     }
     return false;
   }
