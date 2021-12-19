@@ -672,30 +672,28 @@ public class Variable implements ProxyReader, Comparable<Variable> {
     }
     for (int i = 0; i < dimensions.size(); i++) {
       Dimension myd = dimensions.get(i);
-      String dimName = myd.getShortName();
-      if ((dimName != null) && strict) {
-        dimName = NetcdfFiles.makeValidCDLName(dimName);
-      }
       if (i != 0) {
         buf.format(", ");
       }
-      if (myd.isVariableLength()) {
-        buf.format("*");
-      } else if (myd.isShared()) {
-        if (!strict) {
-          buf.format("%s=%d", dimName, myd.getLength());
-        } else {
-          buf.format("%s", dimName);
-        }
-      } else {
-        if (dimName != null) {
-          buf.format("%s=", dimName);
-        }
-        buf.format("%d", myd.getLength());
-      }
+      dimCDL(buf, myd, strict);
     }
     if (getRank() > 0) {
       buf.format(")");
+    }
+  }
+
+  private void dimCDL(Formatter out, Dimension dim, boolean strict) {
+    if (!dim.isShared()) {
+      out.format("%d", dim.getLength());
+    } else if (isVariableLength()) {
+      out.format("*");
+    } else {
+      String dimName = dim.getShortName();
+      if (!strict) {
+        out.format("%s=%d", dimName, dim.getLength());
+      } else {
+        out.format("%s", dimName);
+      }
     }
   }
 

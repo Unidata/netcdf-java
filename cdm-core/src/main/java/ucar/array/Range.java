@@ -67,6 +67,7 @@ public class Range implements RangeIterator {
   private final int first; // first value in range
   private final int last; // last value in range, inclusive
   private final int stride; // stride, must be >= 1
+  @Nullable
   private final String name; // optional name
 
   /** Used for EMPTY */
@@ -79,7 +80,7 @@ public class Range implements RangeIterator {
   }
 
   /** Used for ONE, VLEN */
-  private Range(String name, int length) {
+  private Range(@Nullable String name, int length) {
     Preconditions.checkArgument(length != 0);
     this.name = name;
     this.first = 0;
@@ -121,7 +122,7 @@ public class Range implements RangeIterator {
    * @param last last value in range, inclusive
    * @throws InvalidRangeException elements must be nonnegative, 0 &le; first &le; last
    */
-  public Range(String name, int first, int last) throws InvalidRangeException {
+  public Range(@Nullable String name, int first, int last) throws InvalidRangeException {
     this(name, first, last, 1);
   }
 
@@ -146,7 +147,7 @@ public class Range implements RangeIterator {
    * @param stride stride between consecutive elements, must be &gt; 0
    * @throws InvalidRangeException elements must be nonnegative: 0 &le; first &le; last, stride &gt; 0
    */
-  public Range(String name, int first, int last, int stride) throws InvalidRangeException {
+  public Range(@Nullable String name, int first, int last, int stride) throws InvalidRangeException {
     if (first < 0)
       throw new InvalidRangeException("first (" + first + ") must be >= 0");
     if (last < first)
@@ -162,7 +163,7 @@ public class Range implements RangeIterator {
     Preconditions.checkArgument(stride != 1 || this.last == last);
   }
 
-  private Range(String name, int first, int last, int stride, int length) throws InvalidRangeException {
+  private Range(@Nullable String name, int first, int last, int stride, int length) throws InvalidRangeException {
     if (first < 0)
       throw new InvalidRangeException("first (" + first + ") must be >= 0");
     if (last < first)
@@ -190,7 +191,8 @@ public class Range implements RangeIterator {
   /** Make a copy with a different name. */
   @Override
   public Range copyWithName(String name) {
-    if (name.equals(this.name())) {
+    Preconditions.checkNotNull(name);
+    if ((name == null && this.name() == null) || name.equals(this.name())) {
       return this;
     }
     try {

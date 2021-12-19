@@ -72,15 +72,17 @@ public class Group {
 
   /** Find a Dimension in this or a parent Group, matching on short name */
   public Optional<Dimension> findDimension(String name) {
-    if (name == null)
+    if (name == null) {
       return Optional.empty();
+    }
     Dimension d = findDimensionLocal(name);
-    if (d != null)
+    if (d != null) {
       return Optional.of(d);
+    }
     Group parent = getParentGroup();
-    if (parent != null)
+    if (parent != null) {
       return parent.findDimension(name);
-
+    }
     return Optional.empty();
   }
 
@@ -105,13 +107,14 @@ public class Group {
   /** Find a Dimension using its (short) name, in this group only, or null if not found */
   @Nullable
   public Dimension findDimensionLocal(String shortName) {
-    if (shortName == null)
+    if (shortName == null) {
       return null;
-    for (Dimension d : dimensions) {
-      if (shortName.equals(d.getShortName()))
-        return d;
     }
-
+    for (Dimension d : dimensions) {
+      if (shortName.equals(d.getShortName())) {
+        return d;
+      }
+    }
     return null;
   }
 
@@ -130,7 +133,6 @@ public class Group {
     if (parent != null) {
       return parent.findEnumeration(name);
     }
-
     return null;
   }
 
@@ -193,13 +195,15 @@ public class Group {
     Preconditions.checkNotNull(attName);
     for (Variable v : getVariables()) {
       for (Attribute att : v.attributes())
-        if (attName.equals(att.getShortName()) && attValue.equals(att.getStringValue()))
+        if (attName.equals(att.getShortName()) && attValue.equals(att.getStringValue())) {
           return v;
+        }
     }
     for (Group nested : getGroups()) {
       Variable v = nested.findVariableByAttribute(attName, attValue);
-      if (v != null)
+      if (v != null) {
         return v;
+      }
     }
     return null;
   }
@@ -207,11 +211,13 @@ public class Group {
   /** Find the Variable with the specified (short) name in this group, or null if not found */
   @Nullable
   public Variable findVariableLocal(String varShortName) {
-    if (varShortName == null)
+    if (varShortName == null) {
       return null;
+    }
     for (Variable v : variables) {
-      if (varShortName.equals(v.getShortName()))
+      if (varShortName.equals(v.getShortName())) {
         return v;
+      }
     }
     return null;
   }
@@ -219,13 +225,15 @@ public class Group {
   /** Find the Variable with the specified (short) name in this group or a parent group, or null if not found */
   @Nullable
   public Variable findVariableOrInParent(String varShortName) {
-    if (varShortName == null)
+    if (varShortName == null) {
       return null;
+    }
 
     Variable v = findVariableLocal(varShortName);
     Group parent = getParentGroup();
-    if ((v == null) && (parent != null))
+    if ((v == null) && (parent != null)) {
       v = parent.findVariableOrInParent(varShortName);
+    }
     return v;
   }
 
@@ -282,8 +290,9 @@ public class Group {
    * @return true is it is equal or a parent
    */
   public boolean isParent(Group other) {
-    while ((other != this) && (other.getParentGroup() != null))
+    while ((other != this) && (other.getParentGroup() != null)) {
       other = other.getParentGroup();
+    }
     return (other == this);
   }
 
@@ -295,8 +304,8 @@ public class Group {
   /**
    * Create a dimension list using dimension names. The dimension is searched for recursively in the parent groups.
    *
-   * @param dimString : whitespace separated list of dimension names, or '*' for Dimension.UNKNOWN, or number for anon
-   *        dimension. null or empty String is a scalar.
+   * @param dimString : whitespace separated list of dimension names, or '*' for Dimension.UNKNOWN, or number for
+   *        anonomous dimension. null or empty String is a scalar.
    * @return list of dimensions.
    * @throws IllegalArgumentException if cant find dimension or parse error.
    */
@@ -374,18 +383,20 @@ public class Group {
     }
 
     if (hasA) {
-      if (isRoot())
+      if (isRoot()) {
         out.format("%s// global attributes:%n", indent);
-      else
+      } else {
         out.format("%s// group attributes:%n", indent);
+      }
 
       for (Attribute att : attributes) {
         // String name = strict ? NetcdfFile.escapeNameCDL(getShortName()) : getShortName();
         out.format("%s", indent);
         att.writeCDL(out, strict, null);
         out.format(";");
-        if (!strict && (att.getArrayType() != ArrayType.STRING))
+        if (!strict && (att.getArrayType() != ArrayType.STRING)) {
           out.format(" // %s", att.getArrayType().toCdl());
+        }
         out.format("%n");
       }
     }
@@ -400,13 +411,16 @@ public class Group {
 
   @Override
   public boolean equals(Object oo) {
-    if (this == oo)
+    if (this == oo) {
       return true;
-    if (!(oo instanceof Group))
+    }
+    if (!(oo instanceof Group)) {
       return false;
+    }
     Group og = (Group) oo;
-    if (!getShortName().equals(og.getShortName()))
+    if (!getShortName().equals(og.getShortName())) {
       return false;
+    }
     return !((getParentGroup() != null) && !getParentGroup().equals(og.getParentGroup()));
   }
 
@@ -414,8 +428,9 @@ public class Group {
   public int hashCode() {
     int result = 17;
     result = 37 * result + getShortName().hashCode();
-    if (getParentGroup() != null)
+    if (getParentGroup() != null) {
       result = 37 * result + getParentGroup().hashCode();
+    }
     return result;
   }
 
@@ -453,7 +468,6 @@ public class Group {
       vlistb.add(var);
     }
     this.variables = vlistb.build();
-
     this.attributes = builder.attributes.toImmutable();
   }
 
@@ -588,8 +602,9 @@ public class Group {
       if (dopt.isPresent()) {
         return dopt;
       }
-      if (this.parentGroup != null)
+      if (this.parentGroup != null) {
         return this.parentGroup.findDimension(name);
+      }
 
       return Optional.empty();
     }
@@ -659,8 +674,9 @@ public class Group {
 
     /** Is this group a parent of the other group ? */
     public boolean isParent(Group.Builder other) {
-      while ((other != this) && (other.parentGroup != null))
+      while ((other != this) && (other.parentGroup != null)) {
         other = other.parentGroup;
+      }
       return (other == this);
     }
 
@@ -912,8 +928,9 @@ public class Group {
 
     /** Normally this is called by NetcdfFile.build() */
     Group build(@Nullable Group parent) {
-      if (built)
+      if (built) {
         throw new IllegalStateException("Group was already built " + this.shortName);
+      }
       built = true;
       return new Group(this, parent);
     }

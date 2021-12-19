@@ -38,7 +38,7 @@ class GridIndexPermuter {
     List<Dimension> dims = vds.getDimensions();
     for (int i = 0; i < dims.size(); i++) {
       Dimension d = dims.get(i);
-      if (d.getShortName() != null && d.getShortName().equals(want.getName())) {
+      if (d.getShortName().equals(want.getName())) {
         return i;
       }
     }
@@ -47,7 +47,7 @@ class GridIndexPermuter {
     String depends = (want.getDependsOn().size() == 1) ? want.getDependsOn().get(0) : null;
     for (int i = 0; i < dims.size(); i++) {
       Dimension d = dims.get(i);
-      if (d.getShortName() != null && d.getShortName().equals(depends)) {
+      if (d.getShortName().equals(depends)) {
         return i;
       }
     }

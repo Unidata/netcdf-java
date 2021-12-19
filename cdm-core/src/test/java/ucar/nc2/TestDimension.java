@@ -114,8 +114,11 @@ public class TestDimension {
   }
 
   @Test
-  public void testWriteCDLvariable() {
-    Dimension dim = Dimension.builder().setName("name").setLength(7).setIsVariableLength(true).build();
+  public void testWriteCDLvariableLength() {
+    Dimension dim =
+        Dimension.builder().setName("name").setLength(7).setIsUnlimited(true).setIsVariableLength(true).build();
+    assertThat(dim.isUnlimited()).isFalse();
+    assertThat(dim.isShared()).isFalse();
     assertThat(dim.toString()).isEqualTo("name = UNKNOWN;");;
   }
 
@@ -173,16 +176,13 @@ public class TestDimension {
     Optional<Group> parent = root.findGroupNested("parent");
     Variable v = Variable.builder().setName("v").setArrayType(ArrayType.CHAR).setParentGroupBuilder(parentg)
         .setDimensions(ImmutableList.of(dim)).build(parent.get());
-
-    // TODO what should it be?
     assertThat(dim.makeFullName(v)).isEqualTo("5");
   }
 
 
   @Test
-  public void testAnonDimFullName() throws Exception {
+  public void testAnonDimFullName() {
     Dimension dim = new Dimension(null, 5, false, false, false); // Anonymous dimension.
-    assertThat(dim.getShortName()).isNull();
-    // Assert.assertNull(dim.getFullName()); // getFullName() This used to cause a NullPointerException.
+    assertThat(dim.getShortName()).isEqualTo("5");
   }
 }

@@ -30,14 +30,13 @@ import static com.google.common.truth.Truth.assertThat;
 public class TestBufrReadAllData {
   static String bufrLocalFromTop = "src/test/data/";
   static boolean show = false;
-  static boolean printFailures = false;
 
   @Parameterized.Parameters(name = "{0}")
   public static List<Object[]> getTestParameters() {
     FileFilter ff = TestDir.FileFilterSkipSuffix(".cdl .ncml");
     List<Object[]> result = new ArrayList<>(500);
     try {
-      TestDir.actOnAllParameterized(bufrLocalFromTop, ff, result, false);
+      TestDir.actOnAllParameterized(bufrLocalFromTop, new TestBufrModuleRead.MyFileFilter(), result, false);
       TestDir.actOnAllParameterized(TestDir.cdmUnitTestDir + "formats/bufr/userExamples", ff, result, false);
       TestDir.actOnAllParameterized(TestDir.cdmUnitTestDir + "formats/bufr/embeddedTable", ff, result, false);
     } catch (IOException e) {

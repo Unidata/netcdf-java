@@ -28,11 +28,11 @@ public class Dimensions {
       ucar.array.Section.Builder builder = ucar.array.Section.builder();
       for (Dimension d : dimensions) {
         int len = d.getLength();
-        if (len > 0)
+        if (len > 0) {
           builder.appendRange(new ucar.array.Range(d.getShortName(), 0, len - 1));
-        else if (len == 0)
+        } else if (len == 0) {
           builder.appendRange(ucar.array.Range.EMPTY);
-        else {
+        } else {
           Preconditions.checkArgument(d.isVariableLength());
           builder.appendRange(ucar.array.Range.VLEN);
         }
@@ -48,8 +48,9 @@ public class Dimensions {
   public static long getSize(Iterable<Dimension> dimensions) {
     long size = 1;
     for (Dimension dim : dimensions) {
-      if (dim.getLength() >= 0)
+      if (dim.getLength() >= 0) {
         size *= dim.getLength();
+      }
     }
     return size;
   }
@@ -66,8 +67,9 @@ public class Dimensions {
 
   /** Make a space-delineated String from a list of Dimension names, inverse of makeDimensionsList(). */
   public static String makeDimensionsString(Iterable<Dimension> dimensions) {
-    if (dimensions == null)
+    if (dimensions == null) {
       return "";
+    }
 
     int count = 0;
     Formatter buf = new Formatter();
@@ -100,11 +102,13 @@ public class Dimensions {
    */
   public static ImmutableList<Dimension> makeDimensionsList(FindDimensionByName finder, String dimString)
       throws IllegalArgumentException {
-    if (dimString == null) // scalar
+    if (dimString == null) { // scalar
       return ImmutableList.of(); // empty list
+    }
     dimString = dimString.trim();
-    if (dimString.isEmpty()) // scalar
-      return ImmutableList.of(); // empty list
+    if (dimString.isEmpty()) { // scalar
+      return ImmutableList.of();
+    } // empty list
 
     ImmutableList.Builder<Dimension> newDimensions = ImmutableList.builder();
     StringTokenizer stoke = new StringTokenizer(dimString);
@@ -118,7 +122,7 @@ public class Dimensions {
       }
 
       if (d == null) {
-        // if numeric - then its anonymous dimension
+        // if numeric - then its an anonymous dimension
         try {
           int len = Integer.parseInt(dimName);
           d = Dimension.builder().setLength(len).setIsShared(false).build();
@@ -161,8 +165,9 @@ public class Dimensions {
       addDimensionsAll(result, v.getParentStructure());
     }
 
-    for (int i = 0; i < v.getRank(); i++)
+    for (int i = 0; i < v.getRank(); i++) {
       result.add(v.getDimension(i));
+    }
   }
 
   /**

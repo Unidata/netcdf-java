@@ -122,10 +122,11 @@ public class NetcdfFiles {
       throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
     IOServiceProvider spi;
     spi = (IOServiceProvider) iospClass.getDeclaredConstructor().newInstance(); // fail fast
-    if (userLoadsFirst && !last)
+    if (userLoadsFirst && !last) {
       registeredProviders.add(0, spi); // put user stuff first
-    else
+    } else {
       registeredProviders.add(spi);
+    }
   }
 
   ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -409,13 +410,15 @@ public class NetcdfFiles {
           }
         }
 
-        if (NetcdfFile.debugCompress)
+        if (NetcdfFile.debugCompress) {
           log.info("found uncompressed {} for {}", uncompressedFile, filename);
+        }
         return uncompressedFile.getPath();
 
       } finally {
-        if (lock != null && lock.isValid())
+        if (lock != null && lock.isValid()) {
           lock.release();
+        }
       }
     }
 
@@ -447,8 +450,9 @@ public class NetcdfFiles {
           try (InputStream in = new UncompressInputStream(new FileInputStream(filename))) {
             IO.copyBuffered(in, fout, 100000);
           }
-          if (NetcdfFile.debugCompress)
+          if (NetcdfFile.debugCompress) {
             log.info("uncompressed {} to {}", filename, uncompressedFile);
+          }
 
         } else if (suffix.equalsIgnoreCase("zip")) {
 
@@ -456,8 +460,9 @@ public class NetcdfFiles {
             ZipEntry ze = zin.getNextEntry();
             if (ze != null) {
               IO.copyBuffered(zin, fout, 100000);
-              if (NetcdfFile.debugCompress)
+              if (NetcdfFile.debugCompress) {
                 log.info("unzipped {} entry {} to {}", filename, ze.getName(), uncompressedFile);
+              }
             }
           }
 
@@ -465,28 +470,32 @@ public class NetcdfFiles {
           try (InputStream in = new CBZip2InputStream(new FileInputStream(filename), true)) {
             IO.copyBuffered(in, fout, 100000);
           }
-          if (NetcdfFile.debugCompress)
+          if (NetcdfFile.debugCompress) {
             log.info("unbzipped {} to {}", filename, uncompressedFile);
+          }
 
         } else if (suffix.equalsIgnoreCase("gzip") || suffix.equalsIgnoreCase("gz")) {
           try (InputStream in = new GZIPInputStream(new FileInputStream(filename))) {
             IO.copyBuffered(in, fout, 100000);
           }
 
-          if (NetcdfFile.debugCompress)
+          if (NetcdfFile.debugCompress) {
             log.info("ungzipped {} to {}", filename, uncompressedFile);
+          }
         }
       } catch (Exception e) {
         // dont leave bad files around
         if (uncompressedFile.exists()) {
-          if (!uncompressedFile.delete())
+          if (!uncompressedFile.delete()) {
             log.warn("failed to delete uncompressed file (IOException) {}", uncompressedFile);
+          }
         }
         throw e;
 
       } finally {
-        if (lock != null && lock.isValid())
+        if (lock != null && lock.isValid()) {
           lock.release();
+        }
       }
     }
 
@@ -603,8 +612,9 @@ public class NetcdfFiles {
 
     // Registered providers override defaults.
     for (IOServiceProvider registeredSpi : registeredProviders) {
-      if (NetcdfFile.debugSPI)
+      if (NetcdfFile.debugSPI) {
         log.info(" try iosp = {}", registeredSpi.getClass().getName());
+      }
 
       if (registeredSpi.isValidFile(raf)) {
         // need a new instance for thread safety
@@ -707,8 +717,9 @@ public class NetcdfFiles {
    * @return valid CDM object name
    */
   public static String makeValidCdmObjectName(String shortName) {
-    if (shortName == null)
+    if (shortName == null) {
       return null;
+    }
     return StringUtil2.makeValidCdmObjectName(shortName);
   }
 
@@ -799,8 +810,9 @@ public class NetcdfFiles {
    */
   private static String makeFullName(Variable node, String reservedChars) {
     Group parent = node.getParentGroup();
-    if (((parent == null) || parent.isRoot()) && !node.isMemberOfStructure()) // common case?
+    if (((parent == null) || parent.isRoot()) && !node.isMemberOfStructure()) { // common case?
       return EscapeStrings.backslashEscape(node.getShortName(), reservedChars);
+    }
     StringBuilder sbuff = new StringBuilder();
     appendGroupName(sbuff, parent, reservedChars);
     appendStructureName(sbuff, node, reservedChars);
@@ -808,10 +820,12 @@ public class NetcdfFiles {
   }
 
   private static void appendGroupName(StringBuilder sbuff, Group g, String reserved) {
-    if (g == null)
+    if (g == null) {
       return;
-    if (g.getParentGroup() == null)
+    }
+    if (g.getParentGroup() == null) {
       return;
+    }
     appendGroupName(sbuff, g.getParentGroup(), reserved);
     sbuff.append(EscapeStrings.backslashEscape(g.getShortName(), reserved));
     sbuff.append("/");
