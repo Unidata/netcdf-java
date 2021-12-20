@@ -72,7 +72,7 @@ dependencies {
 
     // netcdf-java logging
     api "org.slf4j:slf4j-api:${depVersion.slf4j}"
-    runtime 'ch.qos.logback:logback-classic:1.2.3'
+    runtime 'ch.qos.logback:logback-classic:1.2.9'
 
     // legacy gradle module
     // todo: remove with legacy in 6
