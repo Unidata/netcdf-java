@@ -27,11 +27,13 @@ public class TestDimensions {
   @Test
   public void testMakeDimensionsList() {
     Dimension dim = new Dimension("dimname", 5);
-    Dimension anon = Dimension.builder().setLength(5).setIsShared(false).build(); // Anonymous dimension.
     Group.Builder groupb = Group.builder().addDimension(dim);
 
     ImmutableList<Dimension> list = Dimensions.makeDimensionsList(groupb::findDimension, "dimname 5");
-    assertThat(ImmutableList.of(dim, anon)).isEqualTo(list);
+    assertThat(list).hasSize(2);
+    assertThat(list.get(0)).isEqualTo(dim);
+    assertThat(list.get(1).isShared()).isFalse();
+    assertThat(list.get(1).getLength()).isEqualTo(5);
 
     assertThat(Dimensions.makeDimensionsList(groupb::findDimension, null)).isEmpty();
     assertThat(Dimensions.makeDimensionsList(groupb::findDimension, "")).isEmpty();
@@ -56,10 +58,22 @@ public class TestDimensions {
   @Test
   public void testMakeDimensionsAnon() {
     ImmutableList<Dimension> list = Dimensions.makeDimensionsAnon(new int[] {5, 6, 7});
-    Dimension dim1 = Dimension.builder().setIsShared(false).setLength(5).build();
-    Dimension dim2 = Dimension.builder().setIsShared(false).setLength(6).build();
-    Dimension dim3 = Dimension.builder().setIsShared(false).setLength(7).build();
-    assertThat(ImmutableList.of(dim1, dim2, dim3)).isEqualTo(list);
+    Dimension dim1o = list.get(0);
+    assertThat(dim1o.getShortName()).isEqualTo("5");
+    assertThat(dim1o.getLength()).isEqualTo(5);
+    assertThat(dim1o.isShared()).isFalse();
+    assertThat(dim1o.isUnlimited()).isFalse();
+    assertThat(dim1o.isVariableLength()).isFalse();
+    assertThat(dim1o.toString()).isEqualTo("5;");
+
+    // unshared dimensions dont match
+    Dimension dim1 = Dimension.builder("", 5).setIsShared(false).build();
+    Dimension dim2 = Dimension.builder("", 6).setIsShared(false).build();
+    Dimension dim3 = Dimension.builder("", 7).setIsShared(false).build();
+    assertThat(ImmutableList.of(dim1, dim2, dim3)).isNotEqualTo(list);
+    assertThat(list.get(0)).isNotEqualTo(dim1);
+    // unshared dimensions compare by name
+    assertThat(list.get(0).compareTo(dim1)).isEqualTo(0);
 
     assertThat(Dimensions.makeDimensionsAnon(new int[0])).isEmpty();
   }

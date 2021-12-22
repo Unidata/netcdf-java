@@ -349,7 +349,6 @@ public class CoordinateSystem {
       proj = allProjections.stream().filter(ct -> builder.transName.equals(ct.getName())).findFirst().orElse(null);
     }
     this.projectionCTV = proj;
-
   }
 
   /** Convert to a mutable Builder. */

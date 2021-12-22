@@ -6,15 +6,16 @@ package ucar.nc2;
 
 import com.google.common.base.Objects;
 import com.google.common.base.Preconditions;
+import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
-import ucar.nc2.util.Indent;
 import java.util.Formatter;
+import ucar.nc2.util.Indent;
 
 /**
  * A Dimension defines the array shape of a Variable.
  * A Variable can be thought of as a sampled function with Domain its Dimensions.
  * A Dimension may be shared among Variables, which provides a simple yet powerful way of associating Variables.
- * When a Dimension is shared, it has a unique name within its Group.
+ * When a Dimension is shared, it has a unique name within its Group. If not shared, it may be named or be left blank.
  * It may have a coordinate Variable, which gives each index a coordinate value.
  * A private Dimension cannot have a coordinate Variable, so only use shared dimensions with coordinates when possible.
  * The Dimension length must be &gt; 0, except for an unlimited dimension which may have length = 0, and a vlen
@@ -48,11 +49,11 @@ public class Dimension implements Comparable<Dimension> {
    */
   public Dimension(String name, int length, boolean isShared, boolean isUnlimited, boolean isVariableLength) {
     Preconditions.checkArgument((name != null && !name.trim().isEmpty()) || !isShared,
-        "Dimension name can only be null/empty if not shared");
+        "Dimension name can only be empty if not shared");
     Preconditions.checkArgument(!isVariableLength || !isUnlimited, "variable length dimension cannot be unlimited");
     Preconditions.checkArgument(!isVariableLength || !isShared, "variable length dimension cannot be shared");
 
-    this.shortName = name == null ? null : name.trim();
+    this.shortName = name == null ? "" : name.trim();
     this.isShared = isShared;
     this.isUnlimited = isUnlimited;
     this.isVariableLength = isVariableLength;
@@ -74,8 +75,11 @@ public class Dimension implements Comparable<Dimension> {
     return length;
   }
 
-  /** Get the name of the Dimension. */
+  /** Get the name of the Dimension. May be the length if not shared and name is empty. */
   public String getShortName() {
+    if (this.shortName.equals("")) {
+      return Integer.toString(this.length);
+    }
     return this.shortName;
   }
 
@@ -145,6 +149,9 @@ public class Dimension implements Comparable<Dimension> {
       return false;
     }
     Dimension dimension = (Dimension) o;
+    if (!isShared() || !dimension.isShared()) {
+      return false;
+    }
     boolean result = isUnlimited == dimension.isUnlimited && isVariableLength == dimension.isVariableLength
         && isShared == dimension.isShared && Objects.equal(shortName, dimension.shortName);
     return isUnlimited ? result : result && getLength() == dimension.getLength();
@@ -152,10 +159,12 @@ public class Dimension implements Comparable<Dimension> {
 
   @Override
   public int hashCode() {
-    if (isUnlimited) {
-      return Objects.hashCode(shortName, isUnlimited, isVariableLength, isShared);
+    if (!isShared) {
+      return super.hashCode();
+    } else if (isUnlimited) {
+      return Objects.hashCode(shortName, true, isVariableLength, isShared);
     } else {
-      return Objects.hashCode(shortName, isUnlimited, isVariableLength, isShared, getLength());
+      return Objects.hashCode(shortName, false, isVariableLength, isShared, getLength());
     }
   }
 
@@ -166,8 +175,7 @@ public class Dimension implements Comparable<Dimension> {
    * @return 0, 1, or -1
    */
   public int compareTo(Dimension odim) {
-    String name = getShortName();
-    return name.compareTo(odim.getShortName());
+    return getShortName().compareTo(odim.getShortName());
   }
 
   @Override
@@ -179,18 +187,25 @@ public class Dimension implements Comparable<Dimension> {
 
   void writeCDL(Formatter out, Indent indent, boolean strict) {
     String name = strict ? NetcdfFiles.makeValidCDLName(getShortName()) : getShortName();
-    out.format("%s%s", indent, name);
-    if (isUnlimited())
-      out.format(" = UNLIMITED;   // (%d currently)", getLength());
-    else if (isVariableLength())
-      out.format(" = UNKNOWN;");
-    else
-      out.format(" = %d;", getLength());
+    if (isVariableLength()) {
+      out.format("%s%s = UNKNOWN;", indent, name);
+    } else if (!isShared()) { // should never be used when strict
+      out.format("%d;", getLength());
+    } else {
+      out.format("%s%s", indent, name);
+      if (isUnlimited()) {
+        out.format(" = UNLIMITED;   // (%d currently)", getLength());
+      } else if (isVariableLength()) {
+        out.format(" = UNKNOWN;");
+      } else {
+        out.format(" = %d;", getLength());
+      }
+    }
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-  private final String shortName;
+  private final String shortName; // empty string only if not shared
   private final boolean isUnlimited;
   private final boolean isVariableLength;
   private final boolean isShared; // shared means its in a group dimension list.
@@ -218,6 +233,7 @@ public class Dimension implements Comparable<Dimension> {
   }
 
   public static class Builder {
+    @Nullable
     private String shortName;
     private boolean isUnlimited;
     private boolean isVariableLength;
@@ -281,7 +297,7 @@ public class Dimension implements Comparable<Dimension> {
       return this;
     }
 
-    public Builder setName(String shortName) {
+    public Builder setName(@Nullable String shortName) {
       this.shortName = NetcdfFiles.makeValidCdmObjectName(shortName);
       return this;
     }

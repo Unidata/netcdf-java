@@ -24,9 +24,17 @@ public class TestProblems {
   public void problem() throws Exception {
     String filename = TestDir.cdmUnitTestDir + "formats/netcdf4/attributeStruct.nc";
     System.out.printf("TestProblems %s%n", filename);
-    try (NetcdfFile ncfile = NetcdfFiles.open(TestDir.cdmUnitTestDir + "formats/netcdf4/attributeStruct.nc")) {
+    try (NetcdfFile ncfile = NetcdfFiles.open(filename)) {
       System.out.printf("result = %s%n", ncfile);
     }
   }
 
+  @Test
+  public void problemAnon() throws Exception {
+    String filename = "/home/snake/Downloads/GC1SG1_202105251107C25504_L2SG_SSTDK_2000.h5";
+    System.out.printf("problemAnon %s%n", filename);
+    try (NetcdfFile ncfile = NetcdfFiles.open(filename)) {
+      System.out.printf("result = %s%n", ncfile);
+    }
+  }
 }
