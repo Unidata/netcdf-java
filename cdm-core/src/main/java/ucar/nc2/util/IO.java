@@ -6,6 +6,7 @@ package ucar.nc2.util;
 
 import com.google.common.io.CharStreams;
 
+import java.nio.Buffer;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.security.AccessControlException;
@@ -117,7 +118,7 @@ public class IO {
       if (n == -1)
         break;
       totalBytesRead += n;
-      buffer.flip();
+      ((Buffer) buffer).flip();
     }
     return totalBytesRead;
   }
