@@ -50,4 +50,5 @@ To register your format/IOServiceProvider, or to send corrections and additions 
 | UAMIV | CAMx UAM-IV formatted files | `cdm-radial` | <http://www.camx.com/> |
 | UniversalRadarFormat | Universal Radar Format | `cdm-radial` | <ftp://ftp.sigmet.com/outgoing/manuals/program/cuf.pdf> |
 | USPLN | US Precision Lightning Network | `cdm-misc` | <http://www.uspln.com/> |
-| VIS5D | Vis5D grid file | `cdm-vs5d` | <http://www.ssec.wisc.edu/~billh/vis5d.html>
+| VIS5D | Vis5D grid file | `cdm-vs5d` | <http://www.ssec.wisc.edu/~billh/vis5d.html>|
+| Zarr | Zarr dataset | `cdm-zarr` | <https://zarr.readthedocs.io/en/stable/> |

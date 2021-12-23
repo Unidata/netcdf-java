@@ -267,6 +267,10 @@ entries:
       url: /read_over_http.html
       output: web, pdf
 
+    - title: Reading Zarr
+      url: /reading_zarr.html
+      output: web, pdf
+
     - title: Standard Horizontal Coordinate Transforms
       url: /std_horizonal_coord_transforms.html
       output: web, pdf

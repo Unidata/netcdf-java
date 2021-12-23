@@ -37,6 +37,7 @@ Point release notes:
   
 5.5.x is the first release that includes read support for [Zarr](https://zarr.readthedocs.io/en/stable/index.html){:target="_blank"}. 
 There is also a new package for filters, `ucar.ma2.filters`, which allows user-provided compressors and filters to be supplied through a [Service Provider Interface](https://www.baeldung.com/java-spi){:target="_blank"}.
+Read about Zarr support and the `filter` package [here](reading_zarr.html)
 
 ## netCDF-Java API Changes (5.4.x)
 
