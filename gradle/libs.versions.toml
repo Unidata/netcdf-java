@@ -1,0 +1,39 @@
+[versions]
+jsr305Version = "3.0.2"
+junitVersion = "4.13.2"
+logbackVersion = "1.2.9"
+slf4jVersion = "1.7.32"
+truthVersion = "1.1"
+
+[libraries]
+# Annotations: Nullable
+# udunits
+jsr305 = { group = "com.google.code.findbugs", name = "jsr305", version.ref = "jsr305Version" }
+
+# test dependencies
+# udunits
+junit = { group = "junit", name = "junit", version.ref = "junitVersion" }
+# udunits
+truth = { group = "com.google.truth", name = "truth", version.ref = "truthVersion" }
+#
+# truthJava8Extension = { group = "com.google.truth.extensions", name = "truth-java8-extension", version.ref = "truthVersion" }
+
+# udunits
+slf4j = { group = "org.slf4j", name = "slf4j-api", version.ref = "slf4jVersion" }
+# udunits
+logbackClassic = { group = "ch.qos.logback", name = "logback-classic", version.ref = "logbackVersion" }
+
+#   buildPlugins = [:]
+#   buildPlugins.gretty = 'org.gretty:gretty:3.0.3'
+#   buildPlugins.shadow = 'com.github.jengelman.gradle.plugins:shadow:5.2.0'
+#   buildPlugins.sonarqube = 'org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:3.0'
+#   buildPlugins.spotless = 'com.diffplug.spotless:spotless-plugin-gradle:4.5.1'
+#   buildPlugins.protobuf = 'com.google.protobuf:protobuf-gradle-plugin:0.8.12'
+#   buildPlugins.depcheck = 'org.owasp:dependency-check-gradle:6.0.2'
+#   buildPlugins.nexus = 'edu.ucar.unidata:unidata-nexus-gradle:0.0.1'
+#   buildPlugins.jekyll = 'edu.ucar.unidata.site:jekyll-plugin:0.0.5'
+#
+#   // need to define the versions of protobuf and grpc here because they are needed in the protobuf configuration
+#   // closure, and the version defined in eiter the java platform cannot be accessed from within the closure.
+#   depVersion.protobuf = '3.19.1'
+#   depVersion.grpc = '1.42.1'
