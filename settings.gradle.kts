@@ -4,6 +4,12 @@ rootProject.name = "netcdf-java"
 // in one location (e.g. gradle/libs.versions.toml)
 enableFeaturePreview("VERSION_CATALOGS")
 
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+    }
+}
+
 dependencyResolutionManagement {
     // Only allow dependencies from repositories explicitly listed here
     //repositoriesMode.set(RepositoriesMode.PREFER_SETTINGS)
@@ -18,3 +24,4 @@ dependencyResolutionManagement {
 include("udunits")
 include("netcdf-java-platform")
 include("netcdf-java-testing-platform")
+include("cdm-core")

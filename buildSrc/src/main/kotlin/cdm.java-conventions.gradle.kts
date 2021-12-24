@@ -1,6 +1,7 @@
 // java projects are tested, checked for codestyle
 plugins {
     java
+    jacoco
 }
 
 java {
