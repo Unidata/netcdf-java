@@ -120,8 +120,7 @@ public final class Factor implements Serializable {
    * @param object
    *        The object.
    * @return <code>true</code> if and only if this Factor is semantically
-   *         identical to <code>object<
-   *         /code>.
+   *         identical to <code>object</code>.
    */
   @Override
   public boolean equals(final Object object) {
