@@ -55,12 +55,12 @@ public class Structure extends Variable {
   }
 
   /** Get the variables contained directly in this Structure. */
-  public ImmutableList<Variable> getVariables() {
+  public List<Variable> getVariables() {
     return members;
   }
 
   /** Get the (short) names of the variables contained directly in this Structure. */
-  public ImmutableList<String> getVariableNames() {
+  public List<String> getVariableNames() {
     return members.stream().map(Variable::getShortName).collect(ImmutableList.toImmutableList());
   }
 

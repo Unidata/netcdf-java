@@ -78,7 +78,7 @@ public abstract class GridAxis<T> implements Comparable<GridAxis<T>>, Iterable<T
   }
 
   /** The list of other Axis this one depends on. Only used for GridAxisDependenceType.dependent. */
-  public ImmutableList<String> getDependsOn() {
+  public List<String> getDependsOn() {
     return dependsOn;
   }
 

@@ -238,12 +238,12 @@ public class GribGridDataset implements GridDataset {
   }
 
   @Override
-  public ImmutableList<GridCoordinateSystem> getGridCoordinateSystems() {
+  public List<GridCoordinateSystem> getGridCoordinateSystems() {
     return this.gridCoordinateSystems;
   }
 
   @Override
-  public ImmutableList<GridAxis<?>> getGridAxes() {
+  public List<GridAxis<?>> getGridAxes() {
     ImmutableList.Builder<GridAxis<?>> builder = ImmutableList.builder();
     builder.addAll(gridAxes.values());
     builder.addAll(hhelper.getHorizAxes()); // always has the same axes, CS may differ when curvilinear
@@ -251,7 +251,7 @@ public class GribGridDataset implements GridDataset {
   }
 
   @Override
-  public ImmutableList<Grid> getGrids() {
+  public List<Grid> getGrids() {
     return this.grids.stream().collect(ImmutableList.toImmutableList());
   }
 }

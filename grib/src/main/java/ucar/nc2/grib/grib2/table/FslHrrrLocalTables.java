@@ -5,7 +5,6 @@
 
 package ucar.nc2.grib.grib2.table;
 
-import com.google.common.collect.ImmutableList;
 import java.nio.charset.StandardCharsets;
 import ucar.nc2.grib.GribTables;
 import ucar.nc2.grib.grib2.Grib2Parameter;
@@ -39,7 +38,7 @@ public class FslHrrrLocalTables extends NcepLocalTables {
   }
 
   @Override
-  public ImmutableList<Parameter> getParameters() {
+  public List<Parameter> getParameters() {
     return getLocalParameters();
   }
 

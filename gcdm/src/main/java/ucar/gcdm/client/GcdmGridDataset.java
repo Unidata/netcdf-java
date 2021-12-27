@@ -53,17 +53,17 @@ public class GcdmGridDataset implements GridDataset {
   }
 
   @Override
-  public ImmutableList<GridCoordinateSystem> getGridCoordinateSystems() {
+  public List<GridCoordinateSystem> getGridCoordinateSystems() {
     return coordsys;
   }
 
   @Override
-  public ImmutableList<GridAxis<?>> getGridAxes() {
+  public List<GridAxis<?>> getGridAxes() {
     return axes;
   }
 
   @Override
-  public ImmutableList<Grid> getGrids() {
+  public List<Grid> getGrids() {
     return grids;
   }
 

@@ -121,7 +121,7 @@ public class MemoryCounterAgentTest {
     for (Dimension dim : ncfile.getRootGroup().getDimensions())
       measureSize(dim.getShortName(), dim, Group.class, false);
 
-    for (Variable v : ncfile.getAllVariables()) {
+    for (Variable v : ncfile.getVariables()) {
       measureSize(v.getFullName(), v, Group.class, false);
       for (Attribute att : v.attributes()) {
         measureSize(att.getShortName(), att, null, false);
@@ -141,7 +141,7 @@ public class MemoryCounterAgentTest {
   static void testN3() throws IOException {
     try (NetcdfFile ncfile = NetcdfDatasets.openFile("C:/data/test2.nc", null)) {
       measureSize("beforeRead", ncfile, null, true);
-      for (Variable v : ncfile.getAllVariables()) {
+      for (Variable v : ncfile.getVariables()) {
         v.readArray();
       }
       measureSize("afterRead", ncfile, null, true);

@@ -92,7 +92,7 @@ public class S3JoinNew {
   public void testJoinNewDataset() throws IOException {
     try (NetcdfDataset ncd = NetcdfDatasets.openDataset(NcmlTestsCommon.joinNewNcmlExplicit)) {
       Variable rad = ncd.findVariable(NcmlTestsCommon.dataVarName);
-      ImmutableList<CoordinateSystem> coordSystems = ((VariableDS) rad).getCoordinateSystems();
+      List<CoordinateSystem> coordSystems = ((VariableDS) rad).getCoordinateSystems();
       assertThat(coordSystems).hasSize(1);
       CoordinateSystem cs = coordSystems.get(0);
       CoordinateAxis timeAxis = cs.findAxis(AxisType.Time);

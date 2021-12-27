@@ -95,7 +95,7 @@ public class TestGribCollectionCoordinates {
     boolean ok = true;
 
     try (NetcdfDataset ds = NetcdfDatasets.openDataset(topLevelIndex)) {
-      for (Variable vds : ds.getAllVariables()) {
+      for (Variable vds : ds.getVariables()) {
         String stdname = vds.findAttributeString("standard_name", "no");
         if (!stdname.equalsIgnoreCase("time"))
           continue;
@@ -135,7 +135,7 @@ public class TestGribCollectionCoordinates {
     boolean ok = true;
 
     try (NetcdfDataset ds = NetcdfDatasets.openDataset(topLevelIndex)) {
-      for (Variable vds : ds.getAllVariables()) {
+      for (Variable vds : ds.getVariables()) {
         String stdname = vds.findAttributeString("standard_name", "no");
         if (!stdname.equalsIgnoreCase("forecast_reference_time"))
           continue;

@@ -3,10 +3,11 @@ package ucar.nc2.grib.grib2.table;
 import static com.google.common.truth.Truth.assertThat;
 import static ucar.nc2.grib.grib2.table.EccodesCodeTable.LATEST_VERSION;
 import com.google.common.base.Splitter;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import java.io.IOException;
 import java.util.Iterator;
+import java.util.List;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
@@ -17,7 +18,7 @@ public class TestLocalTables {
 
   @Test
   public void testLocalTables() throws IOException {
-    ImmutableList<Grib2Tables> tables = Grib2Tables.getAllRegisteredTables();
+    List<Grib2Tables> tables = Grib2Tables.getAllRegisteredTables();
     for (Grib2Tables t : tables) {
       for (GribTables.Parameter p : t.getParameters()) {
         assertThat(p.getName()).isNotEmpty();

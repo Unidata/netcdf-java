@@ -150,7 +150,7 @@ public class EccodesLocalTables extends LocalTables {
   }
 
   @Override
-  public ImmutableList<Parameter> getParameters() {
+  public List<Parameter> getParameters() {
     return localConceptMultimap.values().stream().map(p -> (Parameter) p).sorted(new ParameterSort())
         .collect(ImmutableList.toImmutableList());
   }

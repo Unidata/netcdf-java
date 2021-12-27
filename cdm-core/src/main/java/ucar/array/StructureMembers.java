@@ -36,12 +36,12 @@ public final class StructureMembers implements Iterable<StructureMembers.Member>
   }
 
   /** Get the list of Member objects. */
-  public ImmutableList<Member> getMembers() {
-    return ImmutableList.copyOf(members);
+  public List<Member> getMembers() {
+    return members;
   }
 
   /** Get the names of the members. */
-  public ImmutableList<String> getMemberNames() {
+  public List<String> getMemberNames() {
     return members.stream().map(Member::getName).collect(ImmutableList.toImmutableList());
   }
 

@@ -4,9 +4,10 @@
  */
 package ucar.nc2.dataset;
 
-import com.google.common.collect.ImmutableList;
 import javax.annotation.Nullable;
 import ucar.nc2.Variable;
+
+import java.util.List;
 
 /** Interface to an "enhanced Structure". */
 public interface StructureEnhanced extends VariableEnhanced {
@@ -15,5 +16,5 @@ public interface StructureEnhanced extends VariableEnhanced {
   Variable findVariable(String shortName);
 
   /** Get the variables contained directly in this Structure. */
-  ImmutableList<Variable> getVariables();
+  List<Variable> getVariables();
 }

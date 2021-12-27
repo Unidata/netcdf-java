@@ -65,7 +65,7 @@ public class WmoCodeFlagTables {
   private ImmutableList<WmoTable> wmoTables;
   private ImmutableMap<String, WmoTable> wmoTableMap;
 
-  public ImmutableList<WmoTable> getWmoTables() {
+  public List<WmoTable> getWmoTables() {
     return wmoTables;
   }
 
@@ -318,7 +318,7 @@ public class WmoCodeFlagTables {
       return id;
     }
 
-    public ImmutableList<WmoEntry> getEntries() {
+    public List<WmoEntry> getEntries() {
       return ImmutableList.copyOf(entries);
     }
 

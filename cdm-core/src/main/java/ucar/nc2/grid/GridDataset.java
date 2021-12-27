@@ -4,7 +4,6 @@
  */
 package ucar.nc2.grid;
 
-import com.google.common.collect.ImmutableList;
 import ucar.nc2.Attribute;
 import ucar.nc2.AttributeContainer;
 import ucar.nc2.constants.FeatureType;
@@ -12,6 +11,7 @@ import ucar.nc2.geoloc.vertical.VerticalTransform;
 
 import java.io.Closeable;
 import java.util.Formatter;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -32,13 +32,13 @@ public interface GridDataset extends Closeable {
   FeatureType getFeatureType();
 
   /** All of the GridCoordinateSystem. */
-  ImmutableList<GridCoordinateSystem> getGridCoordinateSystems();
+  List<GridCoordinateSystem> getGridCoordinateSystems();
 
   /** All of the GridAxes. */
-  ImmutableList<GridAxis<?>> getGridAxes();
+  List<GridAxis<?>> getGridAxes();
 
   /** All of the Grids. */
-  ImmutableList<Grid> getGrids();
+  List<Grid> getGrids();
 
   /** Find grid using its full name. */
   default Optional<Grid> findGrid(String name) {

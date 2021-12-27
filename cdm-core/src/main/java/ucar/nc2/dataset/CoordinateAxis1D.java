@@ -73,9 +73,9 @@ public class CoordinateAxis1D extends CoordinateAxis {
    * 
    * <pre>
    *  Coordinate edges must be strictly monotonic:
-   *    coordEdge(0) < coordValue(0) < coordEdge(1) < coordValue(1) ...
-   *    ... coordEdge(i) < coordValue(i) < coordEdge(i+1) < coordValue(i+1) ...
-   *    ... coordEdge(n-1) < coordValue(n-1) < coordEdge(n)
+   *    coordEdge(0) &lt; coordValue(0) &lt; coordEdge(1) &lt; coordValue(1) ...
+   *    ... coordEdge(i) &lt; coordValue(i) &lt; coordEdge(i+1) &lt; coordValue(i+1) ...
+   *    ... coordEdge(n-1) &lt; coordValue(n-1) &lt; coordEdge(n)
    * </pre>
    *
    * @param index which coordinate. Between 0 and getNumElements() inclusive.
@@ -144,8 +144,8 @@ public class CoordinateAxis1D extends CoordinateAxis {
 
   /**
    * Get the coordinate bound1 as a double array.
-   * bound1[i] # coordValue[i] # bound2[i], where # is < if increasing (bound1[i] < bound1[i+1])
-   * else < if decreasing.
+   * bound1[i] # coordValue[i] # bound2[i], where # is &lt; if increasing (bound1[i] &lt; bound1[i+1])
+   * else &lt; if decreasing.
    *
    * @return coordinate bound1.
    * @throws UnsupportedOperationException if !isNumeric()
@@ -163,8 +163,8 @@ public class CoordinateAxis1D extends CoordinateAxis {
 
   /**
    * Get the coordinate bound1 as a double array.
-   * bound1[i] # coordValue[i] # bound2[i], where # is < if increasing (bound1[i] < bound1[i+1])
-   * else < if decreasing.
+   * bound1[i] # coordValue[i] # bound2[i], where # is &lt; if increasing (bound1[i] &lt; bound1[i+1])
+   * else &lt; if decreasing.
    *
    * @return coordinate bound2.
    * @throws UnsupportedOperationException if !isNumeric()
@@ -207,8 +207,8 @@ public class CoordinateAxis1D extends CoordinateAxis {
    * This means that
    * 
    * <pre>
-   * edge[i] <= value < edge[i+1] (if values are ascending)
-   * edge[i] > value >= edge[i+1] (if values are descending)
+   * edge[i] &le; value &lt; edge[i+1] (if values are ascending)
+   * edge[i] &gt; value &ge; edge[i+1] (if values are descending)
    * </pre>
    *
    * @param coordVal position in this coordinate system

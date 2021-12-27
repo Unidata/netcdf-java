@@ -1,15 +1,16 @@
 package ucar.nc2.grib.grib2.table;
 
-import com.google.common.collect.ImmutableList;
 import javax.annotation.Nullable;
 import ucar.nc2.grib.GribTables;
+
+import java.util.List;
 
 public interface Grib2ParamTableInterface {
   String getName();
 
   String getShortName();
 
-  ImmutableList<GribTables.Parameter> getParameters();
+  List<GribTables.Parameter> getParameters();
 
   /**
    * Find the Parameter in this table with the given number.

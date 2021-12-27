@@ -273,7 +273,7 @@ public class CompareNetcdf2 {
     f.format("CompareTo= %s%n", copy.getLocation());
     boolean ok = true;
 
-    for (Variable orgV : org.getAllVariables()) {
+    for (Variable orgV : org.getVariables()) {
       // if (orgV.isCoordinateVariable()) continue;
 
       Variable copyVar = copy.findVariable(orgV.getShortName());
@@ -286,7 +286,7 @@ public class CompareNetcdf2 {
     }
 
     f.format("%n");
-    for (Variable orgV : copy.getAllVariables()) {
+    for (Variable orgV : copy.getVariables()) {
       // if (orgV.isCoordinateVariable()) continue;
       Variable copyVar = org.findVariable(orgV.getShortName());
       if (copyVar == null) {

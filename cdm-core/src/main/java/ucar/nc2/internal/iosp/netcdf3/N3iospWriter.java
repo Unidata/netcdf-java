@@ -325,7 +325,7 @@ public class N3iospWriter extends N3iosp implements IospFileWriter {
   // fill buffer with fill value
   private void fillNonRecordVariables() throws IOException {
     // run through each variable
-    for (Variable v : ncfile.getAllVariables()) {
+    for (Variable v : ncfile.getVariables()) {
       if (v.isUnlimited())
         continue;
       try {
@@ -343,7 +343,7 @@ public class N3iospWriter extends N3iosp implements IospFileWriter {
       Range r = new Range(i, i);
 
       // run through each variable
-      for (Variable v : ncfile.getAllVariables()) {
+      for (Variable v : ncfile.getVariables()) {
         if (!v.isUnlimited() || (v instanceof Structure))
           continue;
         Section.Builder recordSection = v.getSection().toBuilder();

@@ -7,6 +7,8 @@ package ucar.nc2;
 import static com.google.common.truth.Truth.assertThat;
 
 import com.google.common.collect.ImmutableList;
+
+import java.util.List;
 import java.util.Optional;
 import org.junit.Test;
 import ucar.array.ArrayType;
@@ -29,7 +31,7 @@ public class TestDimensions {
     Dimension dim = new Dimension("dimname", 5);
     Group.Builder groupb = Group.builder().addDimension(dim);
 
-    ImmutableList<Dimension> list = Dimensions.makeDimensionsList(groupb::findDimension, "dimname 5");
+    List<Dimension> list = Dimensions.makeDimensionsList(groupb::findDimension, "dimname 5");
     assertThat(list).hasSize(2);
     assertThat(list.get(0)).isEqualTo(dim);
     assertThat(list.get(1).isShared()).isFalse();
@@ -57,7 +59,7 @@ public class TestDimensions {
 
   @Test
   public void testMakeDimensionsAnon() {
-    ImmutableList<Dimension> list = Dimensions.makeDimensionsAnon(new int[] {5, 6, 7});
+    List<Dimension> list = Dimensions.makeDimensionsAnon(new int[] {5, 6, 7});
     Dimension dim1o = list.get(0);
     assertThat(dim1o.getShortName()).isEqualTo("5");
     assertThat(dim1o.getLength()).isEqualTo(5);

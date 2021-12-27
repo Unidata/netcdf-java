@@ -6,12 +6,12 @@ package ucar.nc2.calendar;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import com.google.common.collect.ImmutableList;
 import ucar.unidata.util.StringUtil2;
 
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -137,7 +137,7 @@ public class CalendarPeriod {
     int value;
     String units;
 
-    ImmutableList<String> split = StringUtil2.splitList(udunit);
+    List<String> split = StringUtil2.splitList(udunit);
     if (split.size() == 1) {
       value = 1;
       units = split.get(0);

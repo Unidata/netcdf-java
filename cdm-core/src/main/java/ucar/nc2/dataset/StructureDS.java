@@ -15,6 +15,7 @@ import ucar.nc2.internal.dataset.CoordinatesHelper;
 import ucar.nc2.internal.dataset.StructureDataArrayEnhancer;
 import ucar.nc2.util.CancelTask;
 import java.io.IOException;
+import java.util.List;
 
 /** An "enhanced" Structure. */
 @Immutable
@@ -69,7 +70,7 @@ public class StructureDS extends ucar.nc2.Structure implements StructureEnhanced
   }
 
   @Override
-  public ImmutableList<CoordinateSystem> getCoordinateSystems() {
+  public List<CoordinateSystem> getCoordinateSystems() {
     return this.coordinateSystems == null ? ImmutableList.of() : this.coordinateSystems;
   }
 
@@ -86,7 +87,7 @@ public class StructureDS extends ucar.nc2.Structure implements StructureEnhanced
     if (this.coordinateSystems != null) {
       throw new RuntimeException("Cant call twice");
     }
-    this.coordinateSystems = coords.makeCoordinateSystemsFor(this);
+    this.coordinateSystems = ImmutableList.copyOf(coords.makeCoordinateSystemsFor(this));
   }
 
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////

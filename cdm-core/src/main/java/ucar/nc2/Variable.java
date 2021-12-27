@@ -117,12 +117,12 @@ public class Variable implements ProxyReader, Comparable<Variable> {
    * The most slowly varying (leftmost for Java and C programmers) dimension is first.
    * For scalar variables, the list is empty.
    */
-  public ImmutableList<Dimension> getDimensions() {
+  public List<Dimension> getDimensions() {
     return dimensions;
   }
 
   /** Get the variable's Dimensions as a Set. */
-  public ImmutableSet<Dimension> getDimensionSet() {
+  public Set<Dimension> getDimensionSet() {
     return ImmutableSet.copyOf(dimensions);
   }
 
@@ -1179,7 +1179,7 @@ public class Variable implements ProxyReader, Comparable<Variable> {
       return self();
     }
 
-    public ImmutableList<Dimension> getDimensions() {
+    public List<Dimension> getDimensions() {
       return ImmutableList.copyOf(this.dimensions);
     }
 
@@ -1188,7 +1188,7 @@ public class Variable implements ProxyReader, Comparable<Variable> {
     }
 
     // Get all dimension names, including parent structure
-    public ImmutableSet<String> getDimensionNamesAll() {
+    public Set<String> getDimensionNamesAll() {
       ImmutableSet.Builder<String> dimsAll = new ImmutableSet.Builder<>();
       addDimensionNamesAll(dimsAll, this);
       return dimsAll.build();

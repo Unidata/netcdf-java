@@ -100,7 +100,7 @@ public class Dimensions {
    * @return equivalent list of Dimension objects.
    * @throws IllegalArgumentException if cant find or parse the name.
    */
-  public static ImmutableList<Dimension> makeDimensionsList(FindDimensionByName finder, String dimString)
+  public static List<Dimension> makeDimensionsList(FindDimensionByName finder, String dimString)
       throws IllegalArgumentException {
     if (dimString == null) { // scalar
       return ImmutableList.of(); // empty list
@@ -137,7 +137,7 @@ public class Dimensions {
   }
 
   /** Make a list of private dimensions from an array of lengths */
-  public static ImmutableList<Dimension> makeDimensionsAnon(int[] shape) {
+  public static List<Dimension> makeDimensionsAnon(int[] shape) {
     if ((shape == null) || (shape.length == 0)) { // scalar
       return ImmutableList.of();
     }
@@ -153,7 +153,7 @@ public class Dimensions {
    *
    * @return array of Dimension, rank of v plus all parent Structures.
    */
-  public static ImmutableList<Dimension> makeDimensionsAll(Variable v) {
+  public static List<Dimension> makeDimensionsAll(Variable v) {
     ImmutableList.Builder<Dimension> dimsAll = ImmutableList.builder();
     addDimensionsAll(dimsAll, v);
     return dimsAll.build();
@@ -214,7 +214,7 @@ public class Dimensions {
   }
 
   /** Make the set of Dimensions used by axes. */
-  public static ImmutableSet<Dimension> makeDomain(Iterable<? extends Variable> axes, boolean addAnon) {
+  public static Set<Dimension> makeDomain(Iterable<? extends Variable> axes, boolean addAnon) {
     ImmutableSet.Builder<Dimension> domain = ImmutableSet.builder();
     for (Variable axis : axes) {
       axis.getDimensions().stream().filter(d -> addAnon | d.isShared()).forEach(d -> domain.add(d));

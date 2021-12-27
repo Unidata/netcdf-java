@@ -5,7 +5,6 @@
 
 package ucar.nc2.internal.dataset.conv;
 
-import com.google.common.collect.ImmutableList;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +12,7 @@ import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
 import javax.annotation.Nullable;
 
+import com.google.common.collect.ImmutableList;
 import ucar.array.ArrayType;
 import ucar.array.Array;
 import ucar.array.Arrays;

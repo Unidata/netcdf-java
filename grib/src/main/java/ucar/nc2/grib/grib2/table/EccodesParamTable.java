@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import javax.annotation.Nullable;
 import ucar.nc2.grib.GribTables;
 import ucar.nc2.grib.grib2.Grib2Parameter;
@@ -55,7 +56,7 @@ public class EccodesParamTable implements Grib2ParamTableInterface {
   }
 
   @Override
-  public ImmutableList<GribTables.Parameter> getParameters() {
+  public List<GribTables.Parameter> getParameters() {
     return paramMap.values().stream().sorted().map(p -> (GribTables.Parameter) p)
         .collect(ImmutableList.toImmutableList());
   }

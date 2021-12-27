@@ -4,7 +4,6 @@
  */
 package ucar.nc2.grid;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.primitives.Ints;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -31,6 +30,7 @@ import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Formatter;
+import java.util.List;
 
 import static com.google.common.truth.Truth.assertThat;
 
@@ -186,7 +186,7 @@ public class TestGridSubsetCurvilinear {
       int startIndTime, int endIndTime) throws InvalidRangeException, IOException {
     // Build a section string for the data read
     Section.Builder sectionBuilder = Section.builder();
-    ImmutableList<Dimension> dims = var.getDimensions();
+    List<Dimension> dims = var.getDimensions();
     for (Dimension dim : dims) {
       String dimName = dim.getShortName();
       switch (dim.getShortName()) {

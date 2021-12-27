@@ -9,6 +9,8 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.collect.ImmutableList;
+
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 import javax.annotation.concurrent.Immutable;
 
@@ -44,11 +46,11 @@ public class GaussianLatitudes {
   private final ImmutableList<Double> weights; // the Gaussian weights
   private final ImmutableList<Double> latitudes; // the latitudes in degrees
 
-  public ImmutableList<Double> getGaussWeights() {
+  public List<Double> getGaussWeights() {
     return weights;
   }
 
-  public ImmutableList<Double> getLatitudes() {
+  public List<Double> getLatitudes() {
     return latitudes;
   }
 

@@ -43,7 +43,7 @@ public class CrawlingUtils {
       long total = 0, time = 0;
       System.out.printf("TDSdatasetReader %s started url=%s%n", who, datasetUrl);
       try (NetcdfFile ncfile = NetcdfDatasets.openFile(datasetUrl, cancel)) {
-        for (Variable var : ncfile.getAllVariables()) {
+        for (Variable var : ncfile.getVariables()) {
           long start = System.currentTimeMillis();
           Array result = doLimitedRead(var);
           long took = System.currentTimeMillis() - start;

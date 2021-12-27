@@ -4,6 +4,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableListMultimap;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import javax.annotation.Nullable;
 import ucar.nc2.grib.grib2.table.WmoCodeFlagTables.TableType;
@@ -36,7 +37,7 @@ public class WmoFlagTable implements Grib2FlagTableInterface {
   }
 
   @Override
-  public ImmutableList<Entry> getEntries() {
+  public List<Entry> getEntries() {
     ImmutableList.Builder<Entry> builder = ImmutableList.builder();
     for (Map.Entry<Integer, Collection<WmoEntry>> entry : multimap.asMap().entrySet()) {
       builder.add(new WmoFlagEntry(entry.getKey(), entry.getValue()));
@@ -68,7 +69,7 @@ public class WmoFlagTable implements Grib2FlagTableInterface {
     }
 
     @Override
-    public ImmutableList<Integer> getValues() {
+    public List<Integer> getValues() {
       return entries.stream().map(WmoEntry::getValue).collect(ImmutableList.toImmutableList());
     }
 

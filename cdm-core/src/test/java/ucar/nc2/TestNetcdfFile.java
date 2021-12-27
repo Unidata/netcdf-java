@@ -21,19 +21,24 @@ public class TestNetcdfFile {
   @Test
   public void testBuilder() {
     Attribute att = new Attribute("attName", "value");
-    Dimension dim = new Dimension("dimName", 42);
-    Group.Builder nested = Group.builder().setName("child");
+    Group.Builder nested =
+        Group.builder().setName("child").addAttribute(att).addDimension(new Dimension("dimNameChild", 42))
+            .addVariable(Variable.builder().setName("varNameChild").setArrayType(ArrayType.STRING));
     Variable.Builder<?> vb = Variable.builder().setName("varName").setArrayType(ArrayType.STRING);
-    Group.Builder groupb =
+    Dimension dim = new Dimension("dimName", 42);
+    Group.Builder root =
         Group.builder().setName("").addAttribute(att).addDimension(dim).addGroup(nested).addVariable(vb);
 
     NetcdfFile.Builder<?> builder =
-        NetcdfFile.builder().setId("Hid").setLocation("location").setRootGroup(groupb).setTitle("title");
+        NetcdfFile.builder().setId("Hid").setLocation("location").setRootGroup(root).setTitle("title");
 
     NetcdfFile ncfile = builder.build();
     assertThat(ncfile.getId()).isEqualTo("Hid");
     assertThat(ncfile.getLocation()).isEqualTo("location");
     assertThat(ncfile.getTitle()).isEqualTo("title");
+    assertThat(ncfile.getGlobalAttributes()).hasSize(2);
+    assertThat(ncfile.getVariables()).hasSize(2);
+    assertThat(ncfile.getDimensions()).hasSize(2);
 
     Group group = ncfile.getRootGroup();
     assertThat(group.getNetcdfFile()).isEqualTo(ncfile);
@@ -203,7 +208,7 @@ public class TestNetcdfFile {
     assertThat(dfound).isNotNull();
     assertThat(dfound).isEqualTo(dim);
 
-    List<Dimension> allDims = ncfile.getAllDimensions();
+    List<Dimension> allDims = ncfile.getDimensions();
     assertThat(allDims).hasSize(2);
 
     assertThat(ncfile.hasUnlimitedDimension()).isFalse();

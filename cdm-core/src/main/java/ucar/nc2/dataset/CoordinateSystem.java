@@ -75,8 +75,8 @@ public class CoordinateSystem {
   }
 
   /** Get the List of CoordinateAxes */
-  public ImmutableList<CoordinateAxis> getCoordinateAxes() {
-    return ImmutableList.copyOf(coordAxes);
+  public List<CoordinateAxis> getCoordinateAxes() {
+    return coordAxes;
   }
 
   /** Get the name of the Coordinate System */
@@ -85,7 +85,7 @@ public class CoordinateSystem {
   }
 
   /** Get the Collection of Dimensions used by any of the CoordinateAxes. */
-  public ImmutableCollection<Dimension> getDomain() {
+  public Collection<Dimension> getDomain() {
     return ImmutableList.copyOf(domain);
   }
 

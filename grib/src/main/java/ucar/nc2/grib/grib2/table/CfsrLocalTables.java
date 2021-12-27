@@ -6,7 +6,6 @@
 package ucar.nc2.grib.grib2.table;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableList;
 import java.nio.charset.StandardCharsets;
 import ucar.nc2.grib.coord.TimeCoordIntvDateValue;
 import ucar.nc2.grib.grib2.Grib2Parameter;
@@ -21,6 +20,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Formatter;
+import java.util.List;
 
 /**
  * Read screen scraped DSS tables. CFSR 093 not needed - screen scraped NCEP ok 2/2/2012
@@ -35,7 +35,7 @@ class CfsrLocalTables extends NcepLocalTables {
   }
 
   @Override
-  public ImmutableList<Parameter> getParameters() {
+  public List<Parameter> getParameters() {
     return getLocalParameters();
   }
 
@@ -240,7 +240,7 @@ class CfsrLocalTables extends NcepLocalTables {
           if ((line.isEmpty()) || line.startsWith("#")) {
             continue;
           }
-          ImmutableList<String> flds = StringUtil2.splitList(line);
+          List<String> flds = StringUtil2.splitList(line);
 
           int p1 = Integer.parseInt(flds.get(0)); // must have a number
           int p2 = Integer.parseInt(flds.get(1)); // must have a number
