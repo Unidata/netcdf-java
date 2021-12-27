@@ -35,7 +35,8 @@ public class ZarrExamples {
   }
 
   public static void implementFilter() {
-    byte[] dataOut = null; /* DOCS-IGNORE */
+    byte[] dataOut = null;
+    /* DOCS-IGNORE */
     /* INSERT public */class MyFilter extends Filter {
 
       @Override
@@ -107,7 +108,7 @@ public class ZarrExamples {
   /**
    * Shell classes for code snippets
    */
-  static class MyFilter extends Filter{
+  static class MyFilter extends Filter {
 
     public MyFilter(Map<String, Object> properties) {
       super();

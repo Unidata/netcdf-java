@@ -10,9 +10,9 @@ public class TestZarrExamples {
 
   @Test
   public void testReadZarrExample() {
-      Assert.assertThrows(FileNotFoundException.class, () -> {
-        ZarrExamples.readZarrStores();
-      });
+    Assert.assertThrows(FileNotFoundException.class, () -> {
+      ZarrExamples.readZarrStores();
+    });
   }
 
   @Test
