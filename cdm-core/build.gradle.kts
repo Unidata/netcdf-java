@@ -38,6 +38,16 @@ dependencies {
 
 }
 
+tasks.clean {
+    // created during tests. Cleanup as part of clean task.
+    delete(
+        "src/test/data/compress/testBzip.nc",
+        "src/test/data/compress/testCompress.nc",
+        "src/test/data/compress/testGzip.nc",
+        "src/test/data/compress/testZip.nc"
+    )
+}
+
 tasks.jar {
     manifest {
         attributes(
@@ -45,4 +55,12 @@ tasks.jar {
             "Implementation-Title" to "CDM core library"
         )
     }
+}
+
+tasks.jacocoTestReport {
+    val sourceFileTree: ConfigurableFileTree = fileTree(sourceDirectories.files)
+    val classFileTree: ConfigurableFileTree = fileTree(sourceDirectories.files)
+    // Exclude AutoValue generated sources and classes from the coverage reports
+    sourceDirectories.setFrom(sourceFileTree.exclude("**/AutoValue_*.java"))
+    classDirectories.setFrom(classFileTree.exclude("**/AutoValue_*.class", "**/AutoValue_*$*.class"))
 }
