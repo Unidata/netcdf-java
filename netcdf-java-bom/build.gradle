@@ -4,6 +4,7 @@ apply from: "$rootDir/gradle/any/publishing.gradle"
 
 // netcdf-java library platform
 // responsible for generating a maven bill of materials for the project
+// only includes libraries intended for public use
 
 javaPlatform {
   allowDependencies()

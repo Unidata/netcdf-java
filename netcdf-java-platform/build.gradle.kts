@@ -2,6 +2,8 @@ plugins {
     `java-platform`
 }
 
+// only includes compile and runtime dependencies for projects listed in the netcdf-java-bom
+
 dependencies {
     constraints {
         // compile time constraints
