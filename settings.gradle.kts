@@ -18,6 +18,16 @@ dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
         mavenCentral()
+        exclusiveContent {
+            forRepository {
+                maven {
+                    url = uri("https://artifacts.unidata.ucar.edu/repository/unidata-releases/")
+                }
+            }
+            filter {
+                includeModule("edu.ucar", "jj2000")
+            }
+        }
     }
 }
 
@@ -27,3 +37,4 @@ include("netcdf-java-testing-platform")
 include("cdm-core")
 include("cdm-test-utils")
 include("bufr")
+include("grib")

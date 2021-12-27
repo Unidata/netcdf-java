@@ -6,6 +6,8 @@ groovyAll = "2.5.12"
 guava = "31.0.1-jre"
 jcommander = "1.81"
 jdom2 = "2.0.6"
+jj2000 = "5.4"
+jsoup = "1.14.3"
 jsr305 = "3.0.2"
 junit = "4.13.2"
 logback = "1.2.9"
@@ -25,30 +27,33 @@ autoValue = { group = "com.google.auto.value", name = "auto-value", version.ref 
 # cdm-core
 autoValueAnnotations = { group = "com.google.auto.value", name = "auto-value-annotations", version.ref = "autoValueAnnotations" }
 
-# cdm-core, bufr
+# cdm-core, bufr, grib
 guava = { group = "com.google.guava", name = "guava", version.ref = "guava" }
 
-# cdm-core, bufr
+# command line parsing
+# cdm-core, bufr, grib
+jcommander = { group = "com.beust", name = "jcommander", version.ref = "jcommander" }
+
+# cdm-core, bufr, grib
 jdom2 = { group = "org.jdom", name = "jdom2", version.ref = "jdom2" }
 
-# Annotations: Nullable
-# udunits, cdm-core, bufr
-jsr305 = { group = "com.google.code.findbugs", name = "jsr305", version.ref = "jsr305" }
+# grib
+jj2000 = { group = "edu.ucar", name = "jj2000", version.ref = "jj2000" }
 
-# command line parsing
-# cdm-core, bufr
-jcommander = { group = "com.beust", name = "jcommander", version.ref = "jcommander" }
+# Annotations: Nullable
+# udunits, cdm-core, bufr, grib
+jsr305 = { group = "com.google.code.findbugs", name = "jsr305", version.ref = "jsr305" }
 
 # control protobuf artifact versions using the protobuf-bom
 # see also netcdf-java-platform/build.gradle.kts
 protobufBom = { group = "com.google.protobuf", name = "protobuf-bom", version.ref = "protobuf" }
-# cdm-core, bufr
+# cdm-core, bufr, grib
 protobufJava = { group = "com.google.protobuf", name = "protobuf-java" }
 
-# cdm-core, bufr
+# cdm-core, bufr, grib
 re2j = { group = "com.google.re2j", name = "re2j", version.ref = "re2j" }
 
-# udunits (test), cdm-core, bufr
+# udunits (test), cdm-core, bufr, grib
 slf4j = { group = "org.slf4j", name = "slf4j-api", version.ref = "slf4j" }
 
 #####################
@@ -63,16 +68,19 @@ groovyAll = { group = "org.codehaus.groovy", name = "groovy-all", version.ref = 
 mockitoCore = { group = "org.mockito", name = "mockito-core", version.ref = "mockito" }
 spockCore = { group = "org.spockframework", name = "spock-core", version.ref = "spock" }
 
+# grib
+jsoup = { group = "org.jsoup", name = "jsoup", version.ref = "jsoup" }
+
 # udunits, cdm-core
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 
-# udunits, cdm-core, bufr
+# udunits, cdm-core, bufr, grib
 truth = { group = "com.google.truth", name = "truth", version.ref = "truth" }
 
-# cdm-core
+# cdm-core, grib
 truthJava8Extension = { group = "com.google.truth.extensions", name = "truth-java8-extension", version.ref = "truth" }
 
-# udunits, cdm-core, bufr
+# udunits, cdm-core, bufr, grib
 logbackClassic = { group = "ch.qos.logback", name = "logback-classic", version.ref = "logback" }
 
 #   buildPlugins = [:]
@@ -91,5 +99,5 @@ logbackClassic = { group = "ch.qos.logback", name = "logback-classic", version.r
 #   depVersion.grpc = '1.42.1'
 
 [plugins]
-# bufr
+# bufr, grib
 protobufPlugin = { id = "com.google.protobuf", version = "0.8.18" }

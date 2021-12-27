@@ -8,7 +8,7 @@ import com.google.protobuf.gradle.protobuf
 import com.google.protobuf.gradle.protoc
 
 // Matches Maven's "project.description"
-description = "Decoder for BUFR files."
+description = "Decoder for GRIB 1 and 2 files."
 
 dependencies {
     implementation(enforcedPlatform(project(":netcdf-java-platform")))
@@ -19,6 +19,7 @@ dependencies {
     implementation(libs.guava)
     implementation(libs.jcommander)
     implementation(libs.jdom2)
+    implementation(libs.jj2000)
     implementation(libs.jsr305)
     implementation(libs.protobufJava)
     implementation(libs.re2j)
@@ -26,8 +27,10 @@ dependencies {
 
     testImplementation(project(":cdm-test-utils"))
 
+    testImplementation(libs.jsoup)
     testImplementation(libs.junit)
     testImplementation(libs.truth)
+    testImplementation(libs.truthJava8Extension)
 
     testRuntimeOnly(libs.logbackClassic)
 }
@@ -35,11 +38,10 @@ dependencies {
 tasks.jar {
     manifest {
         attributes(
-            "Implementation-Title" to "BUFR IOSP"
+            "Implementation-Title" to "GRIB 1 and 2 IOSPs and GRIB collections."
         )
     }
 }
-
 
 protobuf {
     protoc {

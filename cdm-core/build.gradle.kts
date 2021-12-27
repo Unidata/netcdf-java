@@ -11,27 +11,28 @@ dependencies {
 
     api(project(":udunits"))
 
-    implementation(libs.jcommander)
+    implementation(libs.autoValueAnnotations)
     implementation(libs.guava)
+    implementation(libs.jcommander)
+    implementation(libs.jdom2)
+    implementation(libs.jsr305)
     implementation(libs.protobufJava)
     implementation(libs.re2j)
-    implementation(libs.jdom2)
     implementation(libs.slf4j)
-    implementation(libs.jsr305)
-    implementation(libs.autoValueAnnotations)
 
     annotationProcessor(libs.autoValue)
 
+    testImplementation(project(":bufr"))
     testImplementation(project(":cdm-test-utils"))
-    testImplementation project(':bufr')
-    //testImplementation project(':grib')
-    testImplementation(libs.truth)
-    testImplementation(libs.truthJava8Extension)
+    testImplementation(project(":grib"))
+
     testImplementation(libs.commonsIo)
-    testImplementation(libs.junit)
     testImplementation(libs.groovyAll)
+    testImplementation(libs.junit)
     testImplementation(libs.mockitoCore)
     testImplementation(libs.spockCore)
+    testImplementation(libs.truth)
+    testImplementation(libs.truthJava8Extension)
 
     testRuntimeOnly(libs.logbackClassic)
 

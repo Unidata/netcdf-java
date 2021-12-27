@@ -7,16 +7,16 @@ plugins {
 dependencies {
     constraints {
         // compile time constraints
-        api(libs.junit)
-        api(libs.slf4j)
-        api(libs.truth)
-        api(libs.truthJava8Extension)
         api(libs.commonsIo)
         api(libs.groovyAll)
+        api(libs.junit)
         api(libs.mockitoCore)
+        api(libs.slf4j)
         api(libs.spockCore)
+        api(libs.truth)
+        api(libs.truthJava8Extension)
 
-        // tuntime constraints
+        // runtime constraints
         runtime(libs.logbackClassic)
     }
 }

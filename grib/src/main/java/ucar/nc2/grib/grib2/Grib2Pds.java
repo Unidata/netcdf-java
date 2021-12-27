@@ -1352,6 +1352,7 @@ public abstract class Grib2Pds {
    *
    * @deprecated 4.31 should be used
    */
+  @Deprecated
   private static class Grib2Pds30 extends Grib2Pds implements PdsSatellite {
 
     Grib2Pds30(byte[] input) {
