@@ -1,0 +1,23 @@
+plugins {
+    `java-platform`
+}
+
+// netcdf-java library platform
+// responsible for generating a maven bill of materials for the project
+// only includes libraries intended for public use
+
+javaPlatform {
+    allowDependencies()
+}
+
+dependencies {
+    api(enforcedPlatform(project(":netcdf-java-platform")))
+    constraints {
+        api(project(":bufr"))
+        api(project(":cdm-core"))
+        api(project(":cdm-s3"))
+        api(project(":grib"))
+        api(project(":netcdf4"))
+        api(project(":udunits"))
+    }
+}
