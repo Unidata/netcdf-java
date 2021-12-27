@@ -1,6 +1,7 @@
 [versions]
 autoValue = "1.7.4"
 autoValueAnnotations = "1.8"
+awsSdk = "2.17.102"
 commonsIo = "2.5"
 groovyAll = "2.5.12"
 guava = "31.0.1-jre"
@@ -28,7 +29,11 @@ autoValue = { group = "com.google.auto.value", name = "auto-value", version.ref 
 # cdm-core
 autoValueAnnotations = { group = "com.google.auto.value", name = "auto-value-annotations", version.ref = "autoValueAnnotations" }
 
-# cdm-core, bufr, grib
+awsSdkBom = { group = "software.amazon.awssdk", name = "bom", version.ref = "awsSdk" }
+# cdm-s3
+awsS3Sdk =  { group = "software.amazon.awssdk", name = "s3" }
+awsApacheClient =  { group = "software.amazon.awssdk", name = "apache-client" }
+# cdm-core, bufr, grib, cdm-s3
 guava = { group = "com.google.guava", name = "guava", version.ref = "guava" }
 
 # command line parsing
@@ -45,7 +50,7 @@ jj2000 = { group = "edu.ucar", name = "jj2000", version.ref = "jj2000" }
 jna = { group = "net.java.dev.jna", name = "jna", version.ref = "jna" }
 
 # Annotations: Nullable
-# udunits, cdm-core, bufr, grib, netcdf4
+# udunits, cdm-core, bufr, grib, netcdf4, cdm-s3
 jsr305 = { group = "com.google.code.findbugs", name = "jsr305", version.ref = "jsr305" }
 
 # control protobuf artifact versions using the protobuf-bom
@@ -57,7 +62,7 @@ protobufJava = { group = "com.google.protobuf", name = "protobuf-java" }
 # cdm-core, bufr, grib
 re2j = { group = "com.google.re2j", name = "re2j", version.ref = "re2j" }
 
-# udunits (test), cdm-core, bufr, grib, netcdf4
+# udunits (test), cdm-core, bufr, grib, netcdf4, cdm-s3
 slf4j = { group = "org.slf4j", name = "slf4j-api", version.ref = "slf4j" }
 
 #####################
@@ -79,16 +84,16 @@ spockCore = { group = "org.spockframework", name = "spock-core", version.ref = "
 # grib
 jsoup = { group = "org.jsoup", name = "jsoup", version.ref = "jsoup" }
 
-# udunits, cdm-core, bufr, grib, netcdf4
+# udunits, cdm-core, bufr, grib, netcdf4, cdm-s3
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 
-# udunits, cdm-core, bufr, grib, netcdf4
+# udunits, cdm-core, bufr, grib, netcdf4, cdm-s3
 truth = { group = "com.google.truth", name = "truth", version.ref = "truth" }
 
 # cdm-core, grib
 truthJava8Extension = { group = "com.google.truth.extensions", name = "truth-java8-extension", version.ref = "truth" }
 
-# udunits, cdm-core, bufr, grib, netcdf4
+# udunits, cdm-core, bufr, grib, netcdf4, cdm-s3
 logbackClassic = { group = "ch.qos.logback", name = "logback-classic", version.ref = "logback" }
 
 #   buildPlugins = [:]

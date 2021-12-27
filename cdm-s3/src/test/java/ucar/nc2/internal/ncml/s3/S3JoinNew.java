@@ -108,6 +108,7 @@ public class S3JoinNew {
   }
 
   @Test
+  @Category(Slow.class)
   public void testCompareFirstAndLast() throws IOException, InvalidRangeException {
     try (NetcdfDataset ncdAgg = NetcdfDatasets.openDataset(NcmlTestsCommon.joinNewNcmlExplicit);
         NetcdfDataset ncdFirst = NetcdfDatasets.openDataset(NcmlTestsCommon.firstObjectLocation);

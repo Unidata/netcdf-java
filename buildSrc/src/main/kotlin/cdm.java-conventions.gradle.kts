@@ -47,3 +47,56 @@ tasks.withType<Javadoc> {
     // At the very least, try 'reference'.
     // options.addStringOption 'Xdoclint:syntax,html,reference', '-quiet'
 }
+
+tasks.test {
+    useJUnit {
+        excludeCategories(
+            "ucar.unidata.util.test.category.NeedsCdmUnitTest",
+            "ucar.unidata.util.test.category.NeedsContentRoot",
+            "ucar.unidata.util.test.category.NeedsExternalResource",
+            "ucar.unidata.util.test.category.NeedsRdaData",
+            "ucar.unidata.util.test.category.NeedsUcarNetwork",
+            "ucar.unidata.util.test.category.NotPullRequest",
+            "ucar.unidata.util.test.category.Slow"
+        )
+    }
+}
+
+val extendedTestsTask = task<Test>("extendedTests") {
+    description = "Runs the extended tests."
+    group = "verification"
+
+    testClassesDirs = sourceSets["test"].output.classesDirs
+    classpath = sourceSets["test"].runtimeClasspath
+    shouldRunAfter("test")
+
+    useJUnit {
+        includeCategories(
+            "ucar.unidata.util.test.category.NeedsCdmUnitTest",
+            "ucar.unidata.util.test.category.NeedsContentRoot",
+            "ucar.unidata.util.test.category.NeedsExternalResource",
+            "ucar.unidata.util.test.category.NotPullRequest",
+            "ucar.unidata.util.test.category.Slow"
+        )
+    }
+}
+
+val specialTestsTask = task<Test>("specialTests") {
+    description = "Runs the special tests."
+    group = "verification"
+
+    testClassesDirs = sourceSets["test"].output.classesDirs
+    classpath = sourceSets["test"].runtimeClasspath
+    shouldRunAfter("extendedTests")
+
+    useJUnit {
+        includeCategories(
+            "ucar.unidata.util.test.category.NeedsRdaData",
+            "ucar.unidata.util.test.category.NeedsUcarNetwork"
+        )
+    }
+}
+
+tasks.check {
+    dependsOn(extendedTestsTask)
+}
