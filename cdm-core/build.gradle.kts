@@ -23,7 +23,7 @@ dependencies {
 
     annotationProcessor(libs.autoValue)
 
-    //testImplementation project(':cdm-test-utils')
+    testImplementation(project(":cdm-test-utils"))
     //testImplementation project(':bufr')
     //testImplementation project(':grib')
     testImplementation(libs.truth)
