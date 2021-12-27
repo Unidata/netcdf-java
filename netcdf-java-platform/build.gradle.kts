@@ -16,6 +16,7 @@ dependencies {
         api(libs.jcommander)
         api(libs.jdom2)
         api(libs.jj2000)
+        api(libs.jna)
         api(libs.jsr305)
         api(libs.protobufJava)
         api(libs.re2j)

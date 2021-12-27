@@ -7,6 +7,7 @@ guava = "31.0.1-jre"
 jcommander = "1.81"
 jdom2 = "2.0.6"
 jj2000 = "5.4"
+jna = "5.10.0"
 jsoup = "1.14.3"
 jsr305 = "3.0.2"
 junit = "4.13.2"
@@ -40,20 +41,23 @@ jdom2 = { group = "org.jdom", name = "jdom2", version.ref = "jdom2" }
 # grib
 jj2000 = { group = "edu.ucar", name = "jj2000", version.ref = "jj2000" }
 
+# netcdf4
+jna = { group = "net.java.dev.jna", name = "jna", version.ref = "jna" }
+
 # Annotations: Nullable
-# udunits, cdm-core, bufr, grib
+# udunits, cdm-core, bufr, grib, netcdf4
 jsr305 = { group = "com.google.code.findbugs", name = "jsr305", version.ref = "jsr305" }
 
 # control protobuf artifact versions using the protobuf-bom
 # see also netcdf-java-platform/build.gradle.kts
 protobufBom = { group = "com.google.protobuf", name = "protobuf-bom", version.ref = "protobuf" }
-# cdm-core, bufr, grib
+# cdm-core, bufr, grib, netcdf4 (test)
 protobufJava = { group = "com.google.protobuf", name = "protobuf-java" }
 
 # cdm-core, bufr, grib
 re2j = { group = "com.google.re2j", name = "re2j", version.ref = "re2j" }
 
-# udunits (test), cdm-core, bufr, grib
+# udunits (test), cdm-core, bufr, grib, netcdf4
 slf4j = { group = "org.slf4j", name = "slf4j-api", version.ref = "slf4j" }
 
 #####################
@@ -63,24 +67,28 @@ slf4j = { group = "org.slf4j", name = "slf4j-api", version.ref = "slf4j" }
 # cdm-core
 commonsIo = { group = "commons-io", name = "commons-io", version.ref = "commonsIo" }
 
-# cdm-core
+# cdm-core, netcdf4
 groovyAll = { group = "org.codehaus.groovy", name = "groovy-all", version.ref = "groovyAll" }
+
+# cdm-core
 mockitoCore = { group = "org.mockito", name = "mockito-core", version.ref = "mockito" }
+
+# cdm-core, netcdf4
 spockCore = { group = "org.spockframework", name = "spock-core", version.ref = "spock" }
 
 # grib
 jsoup = { group = "org.jsoup", name = "jsoup", version.ref = "jsoup" }
 
-# udunits, cdm-core
+# udunits, cdm-core, bufr, grib, netcdf4
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 
-# udunits, cdm-core, bufr, grib
+# udunits, cdm-core, bufr, grib, netcdf4
 truth = { group = "com.google.truth", name = "truth", version.ref = "truth" }
 
 # cdm-core, grib
 truthJava8Extension = { group = "com.google.truth.extensions", name = "truth-java8-extension", version.ref = "truth" }
 
-# udunits, cdm-core, bufr, grib
+# udunits, cdm-core, bufr, grib, netcdf4
 logbackClassic = { group = "ch.qos.logback", name = "logback-classic", version.ref = "logback" }
 
 #   buildPlugins = [:]
