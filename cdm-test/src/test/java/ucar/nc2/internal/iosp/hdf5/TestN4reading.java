@@ -98,10 +98,10 @@ public class TestN4reading {
     String filename = testDir + "globalHeapOverrun.nc4";
     try (NetcdfFile ncfile = NetcdfFiles.open(filename)) {
       logger.debug("**** testGlobalHeapOverun done\n{}", ncfile);
-      List<Variable> vars = ncfile.getAllVariables().stream().sorted().collect(Collectors.toList());
+      List<Variable> vars = ncfile.getVariables().stream().sorted().collect(Collectors.toList());
       for (Variable v : vars)
         logger.debug("  {}", v.getFullName());
-      logger.debug("nvars = {}", ncfile.getAllVariables().size());
+      logger.debug("nvars = {}", ncfile.getVariables().size());
     }
   }
 
@@ -111,10 +111,10 @@ public class TestN4reading {
     String filename = testDir + "tst/tst_enums.nc";
     try (NetcdfFile ncfile = NetcdfFiles.open(filename)) {
       logger.debug("**** testReadNetcdf4 done\n{}", ncfile);
-      List<Variable> vars = ncfile.getAllVariables().stream().sorted().collect(Collectors.toList());
+      List<Variable> vars = ncfile.getVariables().stream().sorted().collect(Collectors.toList());
       for (Variable v : vars)
         logger.debug("  {}", v.getFullName());
-      logger.debug("nvars = {}", ncfile.getAllVariables().size());
+      logger.debug("nvars = {}", ncfile.getVariables().size());
     }
   }
 

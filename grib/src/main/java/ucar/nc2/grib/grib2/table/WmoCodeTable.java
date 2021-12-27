@@ -7,6 +7,8 @@ import ucar.nc2.grib.grib2.table.WmoCodeFlagTables.TableType;
 import ucar.nc2.grib.grib2.table.WmoCodeFlagTables.WmoTable;
 import ucar.nc2.grib.grib2.table.WmoCodeFlagTables.WmoTable.WmoEntry;
 
+import java.util.List;
+
 public class WmoCodeTable implements Grib2CodeTableInterface {
   private final WmoTable wmoTable;
   private final ImmutableMap<Integer, WmoCodeEntry> entryMap;
@@ -31,7 +33,7 @@ public class WmoCodeTable implements Grib2CodeTableInterface {
   }
 
   @Override
-  public ImmutableList<Entry> getEntries() {
+  public List<Entry> getEntries() {
     return ImmutableList.copyOf(entryMap.values());
   }
 

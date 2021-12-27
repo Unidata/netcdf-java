@@ -6,6 +6,7 @@ package ucar.nc2.dataset;
 
 import com.google.common.collect.ImmutableList;
 import java.util.Iterator;
+import java.util.List;
 
 import ucar.array.ArrayType;
 import ucar.array.StructureData;
@@ -38,7 +39,7 @@ public class SequenceDS extends Sequence implements StructureEnhanced {
   }
 
   @Override
-  public ImmutableList<CoordinateSystem> getCoordinateSystems() {
+  public List<CoordinateSystem> getCoordinateSystems() {
     return ImmutableList.of();
   }
 

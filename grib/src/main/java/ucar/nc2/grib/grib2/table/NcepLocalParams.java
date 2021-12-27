@@ -60,7 +60,7 @@ class NcepLocalParams {
   }
 
   @Nullable
-  ImmutableList<GribTables.Parameter> getParameters(String path) {
+  List<GribTables.Parameter> getParameters(String path) {
     Table table = new Table();
     if (!table.readParameterTableXml(path))
       return null;

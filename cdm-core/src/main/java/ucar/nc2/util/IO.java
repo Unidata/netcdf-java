@@ -9,8 +9,6 @@ import com.google.common.io.CharStreams;
 import java.nio.Buffer;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.security.AccessControlException;
-import javax.annotation.Nullable;
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
@@ -25,24 +23,15 @@ public class IO {
    * If that fails, try a plain old FileInputStream().
    * 
    * @param resourcePath name of file path (use forward slashes!)
-   * @return InputStream or null on failure
+   * @return InputStream or FileNotFoundException on failure
    */
-  @Nullable
-  public static InputStream getFileResource(String resourcePath) {
+  public static InputStream getFileResource(String resourcePath) throws FileNotFoundException {
     Class<IO> cl = IO.class;
-
     InputStream is = cl.getResourceAsStream(resourcePath);
     if (is != null) {
       return is;
     }
-
-    try {
-      is = new FileInputStream(resourcePath);
-    } catch (FileNotFoundException | AccessControlException e) {
-      // should throw exception ??
-    }
-
-    return is;
+    return new FileInputStream(resourcePath);
   }
 
   /**

@@ -275,8 +275,9 @@ public class NetcdfFile implements FileCacheable, Closeable {
     while (stoke.hasMoreTokens()) {
       String groupName = NetcdfFiles.makeNameUnescaped(stoke.nextToken());
       g = g.findGroupLocal(groupName);
-      if (g == null)
+      if (g == null) {
         return null;
+      }
     }
     return g;
   }
@@ -310,46 +311,51 @@ public class NetcdfFile implements FileCacheable, Closeable {
       while (stoke.hasMoreTokens()) {
         String token = NetcdfFiles.makeNameUnescaped(stoke.nextToken());
         g = g.findGroupLocal(token);
-        if (g == null)
+        if (g == null) {
           return null;
+        }
       }
     }
 
     // heres var.var - tokenize respecting the possible escaped '.'
     List<String> snames = EscapeStrings.tokenizeEscapedName(vars);
-    if (snames.isEmpty())
+    if (snames.isEmpty()) {
       return null;
+    }
 
     String varShortName = NetcdfFiles.makeNameUnescaped(snames.get(0));
     Variable v = g.findVariableLocal(varShortName);
-    if (v == null)
+    if (v == null) {
       return null;
+    }
 
     int memberCount = 1;
     while (memberCount < snames.size()) {
-      if (!(v instanceof Structure))
+      if (!(v instanceof Structure)) {
         return null;
+      }
       String name = NetcdfFiles.makeNameUnescaped(snames.get(memberCount++));
       v = ((Structure) v).findVariable(name);
-      if (v == null)
+      if (v == null) {
         return null;
+      }
     }
     return v;
   }
 
 
   /** Get all of the group attributes in the file, in all groups. Alternatively, use groups. */
-  public ImmutableList<Attribute> getAllAttributes() {
+  public List<Attribute> getGlobalAttributes() {
     return allAttributes;
   }
 
   /** Get all shared Dimensions used in this file, in all groups. Alternatively, use groups. */
-  public ImmutableList<Dimension> getAllDimensions() {
+  public List<Dimension> getDimensions() {
     return allDimensions;
   }
 
   /** Get all of the variables in the file, in all groups. Alternatively, use groups. */
-  public ImmutableList<Variable> getAllVariables() {
+  public List<Variable> getVariables() {
     return allVariables;
   }
 
@@ -361,8 +367,9 @@ public class NetcdfFile implements FileCacheable, Closeable {
    */
   @Nullable
   public String getFileTypeId() {
-    if (iosp != null)
+    if (iosp != null) {
       return iosp.getFileTypeId();
+    }
     return null;
   }
 
@@ -373,8 +380,9 @@ public class NetcdfFile implements FileCacheable, Closeable {
    * @see "https://www.unidata.ucar.edu/software/netcdf-java/formats/FileTypes.html"
    */
   public String getFileTypeDescription() {
-    if (iosp != null)
+    if (iosp != null) {
       return iosp.getFileTypeDescription();
+    }
     return "N/A";
   }
 
@@ -385,8 +393,9 @@ public class NetcdfFile implements FileCacheable, Closeable {
    * @see "https://www.unidata.ucar.edu/software/netcdf-java/formats/FileTypes.html"
    */
   public String getFileTypeVersion() {
-    if (iosp != null)
+    if (iosp != null) {
       return iosp.getFileTypeVersion();
+    }
     return "N/A";
   }
 
@@ -438,8 +447,9 @@ public class NetcdfFile implements FileCacheable, Closeable {
   @Nullable
   public Dimension getUnlimitedDimension() {
     for (Dimension d : allDimensions) {
-      if (d.isUnlimited())
+      if (d.isUnlimited()) {
         return d;
+      }
     }
     return null;
   }
@@ -502,8 +512,9 @@ public class NetcdfFile implements FileCacheable, Closeable {
    * @return iosp specific return, may be null
    */
   public Object sendIospMessage(Object message) {
-    if (null == message)
+    if (null == message) {
       return null;
+    }
 
     if (message == IOSP_MESSAGE_GET_IOSP) {
       return this.iosp;
@@ -588,10 +599,12 @@ public class NetcdfFile implements FileCacheable, Closeable {
   private void toStringStart(Formatter f, Indent indent, boolean strict) {
     String name = getLocation();
     if (strict) {
-      if (name.endsWith(".nc"))
+      if (name.endsWith(".nc")) {
         name = name.substring(0, name.length() - 3);
-      if (name.endsWith(".cdl"))
+      }
+      if (name.endsWith(".cdl")) {
         name = name.substring(0, name.length() - 4);
+      }
       name = NetcdfFiles.makeValidCDLName(name);
     }
     f.format("%snetcdf %s {%n", indent, name);

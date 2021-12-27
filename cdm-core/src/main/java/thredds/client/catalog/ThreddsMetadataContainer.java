@@ -15,6 +15,5 @@ import java.util.List;
 public interface ThreddsMetadataContainer {
   Object getLocalField(String fldName);
 
-  // TODO will be ImmutableList in ver7
   List getLocalFieldAsList(String fldName);
 }

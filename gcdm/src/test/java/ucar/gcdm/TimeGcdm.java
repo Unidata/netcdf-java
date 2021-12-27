@@ -33,7 +33,7 @@ public class TimeGcdm {
     try (GcdmNetcdfFile gcdmFile = GcdmNetcdfFile.builder().setRemoteURI(gcdmUrl).build()) {
       System.out.println("Test input: " + gcdmFile.getLocation());
       boolean ok = true;
-      for (Variable v : gcdmFile.getAllVariables()) {
+      for (Variable v : gcdmFile.getVariables()) {
         System.out.printf("  read variable though array : %s %s", v.getArrayType(), v.getShortName());
         Stopwatch stopwatch = Stopwatch.createStarted();
         Array<?> data = v.readArray();

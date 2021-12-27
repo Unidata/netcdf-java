@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * A Client Catalog Dataset
@@ -57,8 +58,8 @@ public class Dataset extends DatasetNode implements ThreddsMetadataContainer {
 
   public static final String NotAThreddsDataset = "NotAThreddsDataset"; // used to set Property in catalog
 
-  public static final ImmutableSet<String> listFlds = ImmutableSet.of(Access, Contributors, Creators, Documentation,
-      Keywords, MetadataOther, Projects, Properties, Publishers, VariableGroups);
+  public static final Set<String> listFlds = ImmutableSet.of(Access, Contributors, Creators, Documentation, Keywords,
+      MetadataOther, Projects, Properties, Publishers, VariableGroups);
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

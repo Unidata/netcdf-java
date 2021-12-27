@@ -9,6 +9,8 @@ import ucar.nc2.grib.grib2.table.WmoCodeFlagTables.TableType;
 import ucar.nc2.grib.grib2.table.WmoCodeFlagTables.WmoTable;
 import ucar.nc2.grib.grib2.table.WmoCodeFlagTables.WmoTable.WmoEntry;
 
+import java.util.List;
+
 public class WmoParamTable implements Grib2ParamTableInterface {
 
   @Nullable
@@ -49,7 +51,7 @@ public class WmoParamTable implements Grib2ParamTableInterface {
   }
 
   @Override
-  public ImmutableList<GribTables.Parameter> getParameters() {
+  public List<GribTables.Parameter> getParameters() {
     return ImmutableList.copyOf(entryMap.values());
   }
 

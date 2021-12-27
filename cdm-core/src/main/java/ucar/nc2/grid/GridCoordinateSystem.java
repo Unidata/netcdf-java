@@ -38,7 +38,7 @@ public class GridCoordinateSystem {
   }
 
   /** The GridAxes that constitute this Coordinate System. */
-  public ImmutableList<GridAxis<?>> getGridAxes() {
+  public List<GridAxis<?>> getGridAxes() {
     return this.axes;
   }
 

@@ -31,11 +31,11 @@ abstract class LocalTables extends Grib2Tables {
   }
 
   @Override
-  public ImmutableList<Parameter> getParameters() {
+  public List<Parameter> getParameters() {
     return getLocalParameters();
   }
 
-  protected ImmutableList<Parameter> getLocalParameters() {
+  protected List<Parameter> getLocalParameters() {
     return localParams.values().stream().sorted(new ParameterSort()).collect(ImmutableList.toImmutableList());
   }
 

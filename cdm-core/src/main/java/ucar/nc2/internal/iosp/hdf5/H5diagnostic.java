@@ -39,7 +39,7 @@ public class H5diagnostic {
 
   public void showCompress(Formatter f) throws IOException {
     Size totalSize = new Size(0, 0);
-    for (Variable v : ncfile.getAllVariables()) {
+    for (Variable v : ncfile.getVariables()) {
       H5header.Vinfo vinfo = (H5header.Vinfo) v.getSPobject();
       showCompress(v, vinfo, totalSize, f);
     }

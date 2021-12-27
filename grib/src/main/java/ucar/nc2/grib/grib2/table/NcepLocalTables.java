@@ -93,7 +93,7 @@ class NcepLocalTables extends LocalTables {
   }
 
   @Override
-  public ImmutableList<Parameter> getParameters() {
+  public List<Parameter> getParameters() {
     ImmutableList.Builder<GribTables.Parameter> allParams = ImmutableList.builder();
     try {
       String[] fileNames = getResourceListing(config.getPath());

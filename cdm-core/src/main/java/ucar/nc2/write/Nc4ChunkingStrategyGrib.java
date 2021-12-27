@@ -5,9 +5,10 @@
 
 package ucar.nc2.write;
 
-import com.google.common.collect.ImmutableList;
 import ucar.nc2.Dimension;
 import ucar.nc2.Variable;
+
+import java.util.List;
 
 /**
  * chunk on last 2 dimensions, like GRIB
@@ -68,7 +69,7 @@ public class Nc4ChunkingStrategyGrib extends Nc4ChunkingDefault {
       result[0] = 1; // Unlimited variable with rank 1
 
     } else {
-      ImmutableList<Dimension> dims = v.getDimensions();
+      List<Dimension> dims = v.getDimensions();
       for (int i = 0; i < n; i++) {
         result[i] = (i < n - 2) ? 1 : dims.get(i).getLength();
       }

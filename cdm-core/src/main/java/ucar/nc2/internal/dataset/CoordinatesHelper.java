@@ -31,7 +31,7 @@ import ucar.nc2.internal.dataset.transform.horiz.ProjectionFactory;
 public class CoordinatesHelper {
   private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CoordinatesHelper.class);
 
-  public static ImmutableList<CoordinateAxis> makeAxes(NetcdfDataset ncd) {
+  public static List<CoordinateAxis> makeAxes(NetcdfDataset ncd) {
     List<CoordinateAxis> axes = new ArrayList<>();
     addAxes(ncd.getRootGroup(), axes);
     return ImmutableList.copyOf(axes);
@@ -82,19 +82,19 @@ public class CoordinatesHelper {
 
   //////////////////////////////////////////////////////////////////////////////////////////
 
-  public ImmutableList<CoordinateAxis> getCoordAxes() {
+  public List<CoordinateAxis> getCoordAxes() {
     return coordAxes;
   }
 
-  public ImmutableList<CoordinateSystem> getCoordSystems() {
+  public List<CoordinateSystem> getCoordSystems() {
     return coordSystems;
   }
 
-  public ImmutableList<ProjectionCTV> getCoordTransforms() {
+  public List<ProjectionCTV> getCoordTransforms() {
     return coordTransforms;
   }
 
-  public ImmutableList<CoordinateSystem> makeCoordinateSystemsFor(Variable v) {
+  public List<CoordinateSystem> makeCoordinateSystemsFor(Variable v) {
     ArrayList<CoordinateSystem> result = new ArrayList<>();
     for (CoordinateSystem csys : coordSystems) {
       if (csys.isCoordinateSystemFor(v) && csys.isComplete(v)) {
@@ -110,8 +110,8 @@ public class CoordinatesHelper {
   private final ImmutableList<CoordinateSystem> coordSystems;
   private final ImmutableList<ProjectionCTV> coordTransforms;
 
-  private CoordinatesHelper(Builder builder, ImmutableList<CoordinateAxis> axes) {
-    this.coordAxes = axes;
+  private CoordinatesHelper(Builder builder, List<CoordinateAxis> axes) {
+    this.coordAxes = ImmutableList.copyOf(axes);
 
     ImmutableList.Builder<ProjectionCTV> ctBuilders = ImmutableList.builder();
     ctBuilders.addAll(builder.coordTransforms.stream().filter(Objects::nonNull).collect(Collectors.toList()));
@@ -281,7 +281,7 @@ public class CoordinatesHelper {
     }
 
     // Note that only ncd.axes can be accessed, not coordsys or transforms.
-    public CoordinatesHelper build(ImmutableList<CoordinateAxis> coordAxes) {
+    public CoordinatesHelper build(List<CoordinateAxis> coordAxes) {
       if (built)
         throw new IllegalStateException("already built");
       built = true;

@@ -130,7 +130,7 @@ public class Grib2Tables implements ucar.nc2.grib.GribTables, TimeUnitConverter 
     return isLocal(uncode[0], uncode[1], uncode[2]);
   }
 
-  public static ImmutableList<Grib2Tables> getAllRegisteredTables() {
+  public static List<Grib2Tables> getAllRegisteredTables() {
     ImmutableList.Builder<Grib2Tables> builder = ImmutableList.builder();
     for (Grib2TableConfig config : Grib2TableConfig.getTables()) {
       builder.add(build(config));
@@ -761,7 +761,7 @@ public class Grib2Tables implements ucar.nc2.grib.GribTables, TimeUnitConverter 
   /**
    * Get the list of parameters provided by this Grib2Table.
    */
-  public ImmutableList<GribTables.Parameter> getParameters() {
+  public List<GribTables.Parameter> getParameters() {
     ImmutableList.Builder<GribTables.Parameter> allParams = ImmutableList.builder();
     for (WmoTable wmoTable : WmoCodeFlagTables.getInstance().getWmoTables()) {
       if (wmoTable.getType() == TableType.param) {

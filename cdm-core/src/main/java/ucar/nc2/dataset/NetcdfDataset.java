@@ -4,7 +4,6 @@
  */
 package ucar.nc2.dataset;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
@@ -130,7 +129,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    *
    * @return list of type CoordinateSystem; may be empty, not null.
    */
-  public ImmutableList<CoordinateSystem> getCoordinateSystems() {
+  public List<CoordinateSystem> getCoordinateSystems() {
     return coords.getCoordSystems();
   }
 
@@ -157,7 +156,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    *
    * @return list of type CoordinateAxis; may be empty, not null.
    */
-  public ImmutableList<CoordinateAxis> getCoordinateAxes() {
+  public List<CoordinateAxis> getCoordinateAxes() {
     return coords.getCoordAxes();
   }
 
@@ -373,12 +372,12 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     this.enhanceMode = ImmutableSet.copyOf(builder.getEnhanceMode());
     this.agg = builder.agg;
 
-    ImmutableList<CoordinateAxis> axes = CoordinatesHelper.makeAxes(this);
+    List<CoordinateAxis> axes = CoordinatesHelper.makeAxes(this);
     this.coords = builder.coords.build(axes);
 
     // We have to break VariableDS Immutability here, because VariableDS is constructed in NetcdfFile, but needs a
     // link to the CoordinatesHelper, which isnt complete yet.
-    for (Variable v : this.getAllVariables()) {
+    for (Variable v : this.getVariables()) {
       if (v instanceof CoordinateAxis) {
         continue;
       }

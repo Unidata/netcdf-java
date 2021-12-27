@@ -5,7 +5,6 @@
 package ucar.nc2.bufr.tables;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableList;
 import com.google.re2j.Matcher;
 import com.google.re2j.Pattern;
 import java.nio.charset.StandardCharsets;
@@ -638,7 +637,7 @@ public class BufrTables {
           line = dataIS.readLine();
           if (line != null) {
             line = StringUtil2.remove(line, '*');
-            ImmutableList<String> split = StringUtil2.splitList(line);
+            List<String> split = StringUtil2.splitList(line);
             scale = Integer.parseInt(split.get(0));
             refVal = Integer.parseInt(split.get(1));
             width = Integer.parseInt(split.get(2));
@@ -988,7 +987,7 @@ public class BufrTables {
 
       if (startMode) {
         try {
-          ImmutableList<String> flds = StringUtil2.splitList(line);
+          List<String> flds = StringUtil2.splitList(line);
           int fxy = Integer.parseInt(flds.get(0));
           int y = fxy % 1000;
           fxy /= 1000;
@@ -1007,7 +1006,7 @@ public class BufrTables {
       }
       if (currDesc != null) {
         try {
-          ImmutableList<String> flds = StringUtil2.splitList(line);
+          List<String> flds = StringUtil2.splitList(line);
           String fxys = cleanNumber(flds.get(0));
           int fxy = Integer.parseInt(fxys);
           int y1 = fxy % 1000;

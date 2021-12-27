@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Formatter;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -297,7 +298,7 @@ public class VariableDS extends Variable implements VariableEnhanced {
   }
 
   @Override
-  public ImmutableList<CoordinateSystem> getCoordinateSystems() {
+  public List<CoordinateSystem> getCoordinateSystems() {
     return this.coordinateSystems == null ? ImmutableList.of() : this.coordinateSystems;
   }
 
@@ -378,7 +379,7 @@ public class VariableDS extends Variable implements VariableEnhanced {
     if (this.coordinateSystems != null) {
       throw new RuntimeException("Cant call twice");
     }
-    this.coordinateSystems = coords.makeCoordinateSystemsFor(this);
+    this.coordinateSystems = ImmutableList.copyOf(coords.makeCoordinateSystemsFor(this));
   }
 
   /** Get Builder for this class that allows subclassing. */

@@ -162,7 +162,7 @@ public class WmoTemplateTables {
   private ImmutableList<TemplateTable> templateTables;
   private ImmutableMap<String, TemplateTable> templateMap;
 
-  public ImmutableList<TemplateTable> getTemplateTables() {
+  public List<TemplateTable> getTemplateTables() {
     return templateTables;
   }
 

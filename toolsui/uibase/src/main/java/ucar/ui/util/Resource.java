@@ -4,10 +4,15 @@
  */
 package ucar.ui.util;
 
-import java.awt.*;
-import java.awt.image.*;
-import java.io.*;
 import javax.swing.ImageIcon;
+import java.awt.Cursor;
+import java.awt.Image;
+import java.awt.Point;
+import java.awt.Toolkit;
+import java.awt.image.ImageObserver;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 
 /**
  * Cover for fetching files using Class.getResource().
@@ -132,9 +137,6 @@ public class Resource {
     } catch (FileNotFoundException e) {
       if (debug)
         System.out.println("  FileNotFoundException: Resource.getFile failed on " + resourcePath);
-    } catch (java.security.AccessControlException e) {
-      if (debug)
-        System.out.println("  AccessControlException: Resource.getFile failed on " + resourcePath);
     }
 
     return is;

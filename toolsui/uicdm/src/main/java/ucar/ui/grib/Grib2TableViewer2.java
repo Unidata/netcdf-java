@@ -97,8 +97,8 @@ public class Grib2TableViewer2 extends JPanel {
     add(split, BorderLayout.CENTER);
 
     try {
-      ImmutableList<Grib2Tables> tables = Grib2Tables.getAllRegisteredTables();
-      java.util.List<TableBean> beans = new ArrayList<>();
+      List<Grib2Tables> tables = Grib2Tables.getAllRegisteredTables();
+      ArrayList<TableBean> beans = new ArrayList<>();
       for (Grib2Tables t : tables) {
         beans.add(new TableBean(t));
       }

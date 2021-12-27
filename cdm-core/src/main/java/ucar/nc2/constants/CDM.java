@@ -6,6 +6,8 @@ package ucar.nc2.constants;
 
 import com.google.common.collect.ImmutableList;
 
+import java.util.List;
+
 /** CDM constants. */
 public class CDM {
   /** @deprecated use StandardCharsets.UTF_8 */
@@ -62,7 +64,7 @@ public class CDM {
   public static final String SUPERBLOCKVERSION = "_SuperblockVersion";
   public static final String DAP4_LITTLE_ENDIAN = "_DAP4_Little_Endian";
   public static final String EDU_UCAR_PREFIX = "_edu.ucar";
-  public static final ImmutableList<String> NETCDF4_SPECIAL_ATTS =
+  public static final List<String> NETCDF4_SPECIAL_ATTS =
       ImmutableList.of(NCPROPERTIES, ISNETCDF4, SUPERBLOCKVERSION, DAP4_LITTLE_ENDIAN, EDU_UCAR_PREFIX);
 
   // class not interface, per Bloch edition 2 item 19

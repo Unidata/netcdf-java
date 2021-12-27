@@ -4,9 +4,10 @@
  */
 package ucar.nc2.dataset;
 
-import com.google.common.collect.ImmutableList;
 import javax.annotation.Nullable;
 import ucar.nc2.Group;
+
+import java.util.List;
 
 /** Interface to an "enhanced Variable". */
 public interface VariableEnhanced {
@@ -37,5 +38,5 @@ public interface VariableEnhanced {
   Group getParentGroup();
 
   /** Get the list of Coordinate Systems for this Variable, larger number of axes first. */
-  ImmutableList<CoordinateSystem> getCoordinateSystems();
+  List<CoordinateSystem> getCoordinateSystems();
 }

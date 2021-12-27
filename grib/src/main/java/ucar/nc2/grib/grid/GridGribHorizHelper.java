@@ -158,11 +158,11 @@ class GridGribHorizHelper {
     return result;
   }
 
-  ImmutableList<GridAxis<?>> getHorizAxes() {
+  List<GridAxis<?>> getHorizAxes() {
     return ImmutableList.of(xaxis, yaxis);
   }
 
-  ImmutableList<GribCollectionImmutable.VariableIndex> getVariables() {
+  List<GribCollectionImmutable.VariableIndex> getVariables() {
     return ImmutableList.copyOf(vars);
   }
 

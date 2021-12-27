@@ -238,12 +238,12 @@ public class Group {
   }
 
   /** Get the shared Dimensions contained directly in this group. */
-  public ImmutableList<Dimension> getDimensions() {
+  public List<Dimension> getDimensions() {
     return dimensions;
   }
 
   /** Get the enumerations contained directly in this group. */
-  public ImmutableList<EnumTypedef> getEnumTypedefs() {
+  public List<EnumTypedef> getEnumTypedefs() {
     return ImmutableList.copyOf(enumTypedefs);
   }
 
@@ -258,8 +258,8 @@ public class Group {
   }
 
   /** Get the Groups contained directly in this Group. */
-  public ImmutableList<Group> getGroups() {
-    return ImmutableList.copyOf(groups);
+  public List<Group> getGroups() {
+    return groups;
   }
 
   /** Get the NetcdfFile that owns this Group. */
@@ -279,7 +279,7 @@ public class Group {
   }
 
   /** Get the Variables contained directly in this group. */
-  public ImmutableList<Variable> getVariables() {
+  public List<Variable> getVariables() {
     return variables;
   }
 
@@ -309,7 +309,7 @@ public class Group {
    * @return list of dimensions.
    * @throws IllegalArgumentException if cant find dimension or parse error.
    */
-  public ImmutableList<Dimension> makeDimensionsList(String dimString) throws IllegalArgumentException {
+  public List<Dimension> makeDimensionsList(String dimString) throws IllegalArgumentException {
     return Dimensions.makeDimensionsList(this::findDimension, dimString);
   }
 
@@ -889,7 +889,7 @@ public class Group {
     }
 
     /** Make list of dimensions by looking in this Group or parent groups */
-    public ImmutableList<Dimension> makeDimensionsList(String dimString) throws IllegalArgumentException {
+    public List<Dimension> makeDimensionsList(String dimString) throws IllegalArgumentException {
       return Dimensions.makeDimensionsList(this::findDimension, dimString);
     }
 

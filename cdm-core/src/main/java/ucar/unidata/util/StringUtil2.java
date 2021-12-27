@@ -11,6 +11,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 /** Static String utilities. Replace with standard java library when possible. */
 public class StringUtil2 {
@@ -468,7 +469,7 @@ public class StringUtil2 {
    * @param source split this string
    * @return tokens that were seperated by whitespace, trimmed
    */
-  public static ImmutableList<String> splitList(String source) {
+  public static List<String> splitList(String source) {
     return ImmutableList.copyOf(split(source));
   }
 

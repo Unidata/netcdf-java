@@ -82,7 +82,7 @@ public class AggregationNew extends AggregationOuter {
     // Note that we haven't identified coordinate systems with CoordSysBuilder, so that info is not available.
     // So this isn't that general of a solution. But probably better than nothing
     if (aggVarNames.isEmpty()) {
-      for (Variable v : typical.getAllVariables()) {
+      for (Variable v : typical.getVariables()) {
         if (!(v instanceof CoordinateAxis))
           aggVarNames.add(v.getShortName());
       }
