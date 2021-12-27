@@ -1,6 +1,5 @@
 plugins {
     id("cdm.library-conventions")
-    alias(libs.plugins.protobuf)
 }
 
 // Matches Maven's "project.description"
@@ -24,7 +23,7 @@ dependencies {
     annotationProcessor(libs.autoValue)
 
     testImplementation(project(":cdm-test-utils"))
-    //testImplementation project(':bufr')
+    testImplementation project(':bufr')
     //testImplementation project(':grib')
     testImplementation(libs.truth)
     testImplementation(libs.truthJava8Extension)
@@ -45,22 +44,4 @@ tasks.jar {
             "Implementation-Title" to "CDM core library"
         )
     }
-    exclude("cdmrfeature.proto", "ncStream.proto", "pointStream.proto")
-}
-
-// handle proto generated source and class files
-sourceSets {
-    main {
-        java {
-            srcDir("build/generated/source/proto/main/java")
-        }
-    }
-}
-
-tasks.jacocoTestReport {
-    val sourceFileTree: ConfigurableFileTree = fileTree(sourceDirectories.files)
-    val classFileTree: ConfigurableFileTree = fileTree(sourceDirectories.files)
-    // Exclude proto generated sources and classes from the coverage reports
-    sourceDirectories.setFrom(sourceFileTree.exclude("**/*Proto.java"))
-    classDirectories.setFrom(classFileTree.exclude("**/*Proto.class", "**/*Proto$*.class"))
 }

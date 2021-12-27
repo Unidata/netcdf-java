@@ -25,27 +25,30 @@ autoValue = { group = "com.google.auto.value", name = "auto-value", version.ref 
 # cdm-core
 autoValueAnnotations = { group = "com.google.auto.value", name = "auto-value-annotations", version.ref = "autoValueAnnotations" }
 
-# cdm-core
+# cdm-core, bufr
 guava = { group = "com.google.guava", name = "guava", version.ref = "guava" }
 
-# cdm-core
+# cdm-core, bufr
 jdom2 = { group = "org.jdom", name = "jdom2", version.ref = "jdom2" }
 
 # Annotations: Nullable
-# udunits, cdm-core
+# udunits, cdm-core, bufr
 jsr305 = { group = "com.google.code.findbugs", name = "jsr305", version.ref = "jsr305" }
 
 # command line parsing
-# cdm-core
+# cdm-core, bufr
 jcommander = { group = "com.beust", name = "jcommander", version.ref = "jcommander" }
 
-# cdm-core
-protobufJava = { group = "com.google.protobuf", name = "protobuf-java", version.ref = "protobuf" }
+# control protobuf artifact versions using the protobuf-bom
+# see also netcdf-java-platform/build.gradle.kts
+protobufBom = { group = "com.google.protobuf", name = "protobuf-bom", version.ref = "protobuf" }
+# cdm-core, bufr
+protobufJava = { group = "com.google.protobuf", name = "protobuf-java" }
 
-# cdm-core
+# cdm-core, bufr
 re2j = { group = "com.google.re2j", name = "re2j", version.ref = "re2j" }
 
-# udunits (test), cdm-core
+# udunits (test), cdm-core, bufr
 slf4j = { group = "org.slf4j", name = "slf4j-api", version.ref = "slf4j" }
 
 #####################
@@ -63,13 +66,13 @@ spockCore = { group = "org.spockframework", name = "spock-core", version.ref = "
 # udunits, cdm-core
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 
-# udunits, cdm-core
+# udunits, cdm-core, bufr
 truth = { group = "com.google.truth", name = "truth", version.ref = "truth" }
 
 # cdm-core
 truthJava8Extension = { group = "com.google.truth.extensions", name = "truth-java8-extension", version.ref = "truth" }
 
-# udunits, cdm-core
+# udunits, cdm-core, bufr
 logbackClassic = { group = "ch.qos.logback", name = "logback-classic", version.ref = "logback" }
 
 #   buildPlugins = [:]
@@ -88,5 +91,5 @@ logbackClassic = { group = "ch.qos.logback", name = "logback-classic", version.r
 #   depVersion.grpc = '1.42.1'
 
 [plugins]
-# cdm-core
-protobuf = { id = "com.google.protobuf", version = "0.8.12" }
+# bufr
+protobufPlugin = { id = "com.google.protobuf", version = "0.8.18" }

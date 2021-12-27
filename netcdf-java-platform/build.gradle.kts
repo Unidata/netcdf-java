@@ -2,9 +2,13 @@ plugins {
     `java-platform`
 }
 
-// only includes compile and runtime dependencies for projects listed in the netcdf-java-bom
+javaPlatform {
+    allowDependencies()
+}
 
+// only includes compile and runtime dependencies for projects listed in the netcdf-java-bom
 dependencies {
+    api(platform(libs.protobufBom))
     constraints {
         // compile time constraints
         api(libs.jsr305)
