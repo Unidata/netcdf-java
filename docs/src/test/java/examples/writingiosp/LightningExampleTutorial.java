@@ -59,7 +59,7 @@ public class LightningExampleTutorial {
         return "Data from lightning data test file";
       }
     }
-    return new UspLightning();
+    return new UspLightning(); /* DOCS-IGNORE */
   }
 
   /**
