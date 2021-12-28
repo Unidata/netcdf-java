@@ -56,8 +56,8 @@ An example using JDK14 logging:
 ~~~groovy
 // In Gradle
 dependencies {
-  compile "edu.ucar:cdm-core:${netcdfJavaVersion}"
-  runtime "org.slf4j:slf4j-jdk14:${slf4jVersion}"
+  implementation "edu.ucar:cdm-core:${netcdfJavaVersion}"
+  runtimeOnly "org.slf4j:slf4j-jdk14:${slf4jVersion}"
 }
 ~~~
 
@@ -115,12 +115,12 @@ For example, in Maven and Gradle:
 ~~~groovy
 // In Gradle
 dependencies {
-  runtime "edu.ucar:bufr:${netcdfJavaVersion}"
-  runtime "edu.ucar:cdm-image:${netcdfJavaVersion}"
-  runtime "edu.ucar:grib:${netcdfJavaVersion}"
-  runtime "edu.ucar:netcdf4:${netcdfJavaVersion}"
-  runtime "edu.ucar:opendap:${netcdfJavaVersion}"
-  runtime "edu.ucar:cdm-mcidas:${netcdfJavaVersion}"
+  runtimeOnly "edu.ucar:bufr:${netcdfJavaVersion}"
+  runtimeOnly "edu.ucar:cdm-image:${netcdfJavaVersion}"
+  runtimeOnly "edu.ucar:grib:${netcdfJavaVersion}"
+  runtimeOnly "edu.ucar:netcdf4:${netcdfJavaVersion}"
+  runtimeOnly "edu.ucar:opendap:${netcdfJavaVersion}"
+  runtimeOnly "edu.ucar:cdm-mcidas:${netcdfJavaVersion}"
 }
 ~~~
 ## Building with netcdfAll
