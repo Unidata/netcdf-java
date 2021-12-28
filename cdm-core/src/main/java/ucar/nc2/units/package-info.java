@@ -5,7 +5,6 @@
 
 /**
  * Utility classes for scientific units.
- * All accesses to ucar.units package must go through here.
- * Note that Calendar Dates are not handled by udunits, see ucar.nc2.calendar.
+ * Note that Calendar Dates are not handled here, see ucar.nc2.calendar.
  */
 package ucar.nc2.units;

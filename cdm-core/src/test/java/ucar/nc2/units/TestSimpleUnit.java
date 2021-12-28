@@ -121,8 +121,8 @@ public class TestSimpleUnit {
     SimpleUnit uu = SimpleUnit.factory(text);
     assertThat(uu).isNotNull();
 
-    assertThat(uu.getUnit()).isInstanceOf(ScaledUnit.class);
-    ScaledUnit scaled = (ScaledUnit) uu.getUnit();
+    assertThat(uu.uu).isInstanceOf(ScaledUnit.class);
+    ScaledUnit scaled = (ScaledUnit) uu.uu;
     assertThat(scaled.getScale()).isEqualTo(9900.0);
     assertThat(uu.isUnknownUnit()).isFalse();
   }
