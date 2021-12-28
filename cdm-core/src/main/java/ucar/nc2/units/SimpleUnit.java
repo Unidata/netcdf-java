@@ -23,7 +23,6 @@ public class SimpleUnit {
   public static final SimpleUnit meterUnit;
   public static final SimpleUnit pressureUnit;
 
-  // static protected UnitFormat format;
   protected static final Unit secsUnit, dateReferenceUnit;
 
   static {
@@ -135,8 +134,9 @@ public class SimpleUnit {
    */
   public static boolean isDateUnit(ucar.units.Unit uu) {
     boolean ok = uu.isCompatible(dateReferenceUnit);
-    if (!ok)
+    if (!ok) {
       return false;
+    }
     try {
       uu.getConverterTo(dateReferenceUnit);
       return true;
@@ -168,7 +168,7 @@ public class SimpleUnit {
    */
   public static boolean isDateUnit(String unitString) {
     SimpleUnit su = factory(unitString);
-    return su != null && isDateUnit(su.getUnit());
+    return su != null && isDateUnit(su.uu);
   }
 
   /**
@@ -179,7 +179,7 @@ public class SimpleUnit {
    */
   public static boolean isTimeUnit(String unitString) {
     SimpleUnit su = factory(unitString);
-    return su != null && isTimeUnit(su.getUnit());
+    return su != null && isTimeUnit(su.uu);
   }
 
   /**
@@ -219,15 +219,6 @@ public class SimpleUnit {
   }
 
   /**
-   * Get underlying ucar.units.Unit.
-   *
-   * @return underlying ucar.units.Unit.
-   */
-  public Unit getUnit() {
-    return uu;
-  }
-
-  /**
    * Convert given value of this unit to the new unit.
    *
    * @param value value in this unit
@@ -237,7 +228,7 @@ public class SimpleUnit {
    */
   public double convertTo(double value, SimpleUnit outputUnit) throws IllegalArgumentException {
     try {
-      return uu.convertTo(value, outputUnit.getUnit());
+      return uu.convertTo(value, outputUnit.uu);
     } catch (ConversionException e) {
       throw new IllegalArgumentException(e.getMessage());
     }
@@ -270,19 +261,21 @@ public class SimpleUnit {
    * @return true if an instance of an UnknownUnit
    */
   public boolean isUnknownUnit() {
-    ucar.units.Unit uu = getUnit();
-    if (uu instanceof ucar.units.UnknownUnit)
+    if (uu instanceof ucar.units.UnknownUnit) {
       return true;
-    if (uu instanceof ucar.units.DerivedUnit)
+    }
+    if (uu instanceof ucar.units.DerivedUnit) {
       return isUnknownUnit((ucar.units.DerivedUnit) uu);
+    }
     if (uu instanceof ucar.units.ScaledUnit) {
       ucar.units.ScaledUnit scu = (ucar.units.ScaledUnit) uu;
       Unit u = scu.getUnit();
-      if (u instanceof ucar.units.UnknownUnit)
+      if (u instanceof ucar.units.UnknownUnit) {
         return true;
-
-      if (u instanceof ucar.units.DerivedUnit)
+      }
+      if (u instanceof ucar.units.DerivedUnit) {
         return isUnknownUnit((ucar.units.DerivedUnit) u);
+      }
     }
     return false;
   }
@@ -290,8 +283,9 @@ public class SimpleUnit {
   private boolean isUnknownUnit(ucar.units.DerivedUnit du) {
     UnitDimension dim = du.getDimension();
     for (Factor f : dim.getFactors()) {
-      if (f.getBase() instanceof ucar.units.UnknownUnit)
+      if (f.getBase() instanceof ucar.units.UnknownUnit) {
         return true;
+      }
     }
     return false;
   }
@@ -302,8 +296,9 @@ public class SimpleUnit {
    * @return value of this unit if ScaledUnit, else NaN
    */
   public double getValue() {
-    if (!(uu instanceof ScaledUnit))
+    if (!(uu instanceof ScaledUnit)) {
       return Double.NaN;
+    }
     ScaledUnit offset = (ScaledUnit) uu;
     return offset.getScale();
   }

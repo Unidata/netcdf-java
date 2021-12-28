@@ -18,10 +18,7 @@ import java.util.Calendar;
 /**
  * Handles Units that are time durations, eg in seconds, hours, days, years.
  * It keeps track of the original unit name, rather than converting to canonical "seconds".
- * The unit name never changes, but the value may (will be Immutable in ver7)
- * <p>
- * This is a wrapper around ucar.units.
- * The underlying ucar.units.Unit always has a value of "1.0", ie is a base unit.
+ * Note this is a duration of time, not a date, see {@link CalendarDate} instead.
  */
 @Immutable
 public class TimeUnit extends SimpleUnit {
