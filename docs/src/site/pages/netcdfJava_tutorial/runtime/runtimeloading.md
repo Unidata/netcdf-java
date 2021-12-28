@@ -88,6 +88,19 @@ See [GribTables](grib_tables.html)  for more information about lookup tables.
 
 The file must be a [BUFR table lookup file](bufr_tables.html).
 
+### Register a `Filter` implementation:
+Users-supplied filters must be provided using the [Service Provider](https://docs.oracle.com/javase/tutorial/ext/basics/spi.html){:target="_blank"}
+mechanism and included in a JAR on the classpath, where it is dynamically loaded at runtime. 
+In your JAR, include a file named `META-INF/services/ucar.nc2.filter.FilterProvider` containing the name(s) of your implementations, eg:
+
+~~~
+ucar.nc2.filter.BloscFilter
+ucar.nc2.filter.GZipFilter
+~~~
+
+Your `FilterProvider` classes must implement the `ucar.nc2.filter.FilterProvider` interface. 
+See [here](reading_zarr.html#implementing-a-filter) for details on implementing user-supplied filters.
+
 ## Runtime Configuration
 
 Instead of calling the above routines in your code, you can pass the CDM library an XML configuration file. 
