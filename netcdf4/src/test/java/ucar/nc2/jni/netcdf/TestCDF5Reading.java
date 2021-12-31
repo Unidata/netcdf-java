@@ -23,11 +23,9 @@ import ucar.nc2.internal.util.CompareArrayToArray;
 import ucar.nc2.iosp.NetcdfFileFormat;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.test.TestDir;
-import ucar.unidata.util.test.category.NeedsContentRoot;
 import java.io.IOException;
 
 /** Test Reading of CDF-5 files using JNI netcdf-4 iosp */
-@Category(NeedsContentRoot.class)
 public class TestCDF5Reading {
   private static final Array<Float> BASELINE;
 

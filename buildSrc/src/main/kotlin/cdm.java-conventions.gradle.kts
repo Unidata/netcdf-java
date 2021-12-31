@@ -52,7 +52,6 @@ tasks.test {
     useJUnit {
         excludeCategories(
             "ucar.unidata.util.test.category.NeedsCdmUnitTest",
-            "ucar.unidata.util.test.category.NeedsContentRoot",
             "ucar.unidata.util.test.category.NeedsExternalResource",
             "ucar.unidata.util.test.category.NeedsRdaData",
             "ucar.unidata.util.test.category.NeedsUcarNetwork",
@@ -73,12 +72,16 @@ val extendedTestsTask = task<Test>("extendedTests") {
     useJUnit {
         includeCategories(
             "ucar.unidata.util.test.category.NeedsCdmUnitTest",
-            "ucar.unidata.util.test.category.NeedsContentRoot",
             "ucar.unidata.util.test.category.NeedsExternalResource",
             "ucar.unidata.util.test.category.NotPullRequest",
             "ucar.unidata.util.test.category.Slow"
         )
     }
+    // Important property for extendedTests
+    systemProperties(
+        Pair("unidata.testdata.path", System.getProperty("unidata.testdata.path")),
+        Pair("jna.library.path", System.getProperty("jna.library.path")),
+    )
 }
 
 val specialTestsTask = task<Test>("specialTests") {
@@ -99,4 +102,11 @@ val specialTestsTask = task<Test>("specialTests") {
 
 tasks.check {
     dependsOn(extendedTestsTask)
+}
+
+tasks.withType<Test> {
+    // Important property for tests that rely on the netCDF-C library
+    systemProperties(
+        Pair("jna.library.path", System.getProperty("jna.library.path")),
+    )
 }

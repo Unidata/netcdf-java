@@ -15,13 +15,11 @@ import org.slf4j.LoggerFactory;
 import ucar.nc2.iosp.NetcdfFileFormat;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.test.TestDir;
-import ucar.unidata.util.test.category.NeedsContentRoot;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.List;
 
 /** Test that NetcdfFileFormat.findNetcdfFormatType can recognize various file types */
-@Category(NeedsContentRoot.class)
 @RunWith(Parameterized.class)
 public class TestCheckFileType {
 

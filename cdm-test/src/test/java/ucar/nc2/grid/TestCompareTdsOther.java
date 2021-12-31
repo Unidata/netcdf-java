@@ -33,7 +33,7 @@ public class TestCompareTdsOther {
        * datasets, perhaps in the LDM feed?
        * PolarStereographic 190X245 -56,-99
        * PolarStereographic 399X493- 60,-90
-       * Unidata TDS separated these into “Derived Fields” and “Model Fields”, see
+       * Unidata TDS separated these into "Derived Fields" and "Model Fields", see
        * https://thredds.ucar.edu/thredds/catalog/grib/CMC/RDPS/NA_15km/catalog.html
        */
       // result.add(new Object[] {topDir + "CMC/RDPS/NA_15km/CMC_RDPS_ps15km_20201027_0000.grib2.ncx4", 58, 17, 24});
