@@ -7,6 +7,8 @@ groovyAll = "2.5.12"
 guava = "31.0.1-jre"
 jcommander = "1.81"
 jdom2 = "2.0.6"
+# http://www.jgoodies.com/. Latest version is 1.9.0, but there is breakage when we try to upgrade.
+jgoodies = "1.6.0"
 jj2000 = "5.4"
 jna = "5.10.0"
 jsoup = "1.14.3"
@@ -23,10 +25,10 @@ truth = "1.1"
 [libraries]
 # = { group = "", name = "", version.ref = "" }
 
-# cdm-core
+# cdm-core, uibase
 autoValue = { group = "com.google.auto.value", name = "auto-value", version.ref = "autoValue" }
 
-# cdm-core
+# cdm-core, uibase
 autoValueAnnotations = { group = "com.google.auto.value", name = "auto-value-annotations", version.ref = "autoValueAnnotations" }
 
 awsSdkBom = { group = "software.amazon.awssdk", name = "bom", version.ref = "awsSdk" }
@@ -35,15 +37,18 @@ awsS3Sdk =  { group = "software.amazon.awssdk", name = "s3" }
 # cdm-s3
 awsApacheClient =  { group = "software.amazon.awssdk", name = "apache-client" }
 
-# cdm-core, bufr, grib, cdm-s3
+# cdm-core, bufr, grib, cdm-s3, uibase
 guava = { group = "com.google.guava", name = "guava", version.ref = "guava" }
 
 # command line parsing
 # cdm-core, bufr, grib
 jcommander = { group = "com.beust", name = "jcommander", version.ref = "jcommander" }
 
-# cdm-core, bufr, grib, cdm-test (test)
+# cdm-core, bufr, grib, cdm-test (test), uibase
 jdom2 = { group = "org.jdom", name = "jdom2", version.ref = "jdom2" }
+
+# uibase
+jgoodies = { group = "com.jgoodies", name = "jgoodies-forms", version.ref = "jgoodies" }
 
 # grib
 jj2000 = { group = "edu.ucar", name = "jj2000", version.ref = "jj2000" }
@@ -52,7 +57,7 @@ jj2000 = { group = "edu.ucar", name = "jj2000", version.ref = "jj2000" }
 jna = { group = "net.java.dev.jna", name = "jna", version.ref = "jna" }
 
 # Annotations: Nullable
-# udunits, cdm-core, bufr, grib, netcdf4, cdm-s3
+# udunits, cdm-core, bufr, grib, netcdf4, cdm-s3, uibase
 jsr305 = { group = "com.google.code.findbugs", name = "jsr305", version.ref = "jsr305" }
 
 # control protobuf artifact versions using the protobuf-bom
@@ -64,7 +69,7 @@ protobufJava = { group = "com.google.protobuf", name = "protobuf-java" }
 # cdm-core, bufr, grib, cdm-test (test)
 re2j = { group = "com.google.re2j", name = "re2j", version.ref = "re2j" }
 
-# udunits (test), cdm-core, bufr, grib, netcdf4, cdm-s3, cdm-test (test)
+# udunits (test), cdm-core, bufr, grib, netcdf4, cdm-s3, cdm-test (test), uibase
 slf4j = { group = "org.slf4j", name = "slf4j-api", version.ref = "slf4j" }
 
 #####################
@@ -77,7 +82,7 @@ commonsIo = { group = "commons-io", name = "commons-io", version.ref = "commonsI
 # cdm-core, netcdf4
 groovyAll = { group = "org.codehaus.groovy", name = "groovy-all", version.ref = "groovyAll" }
 
-# cdm-core
+# cdm-core, uibase
 mockitoCore = { group = "org.mockito", name = "mockito-core", version.ref = "mockito" }
 
 # cdm-core, netcdf4
@@ -86,10 +91,10 @@ spockCore = { group = "org.spockframework", name = "spock-core", version.ref = "
 # grib
 jsoup = { group = "org.jsoup", name = "jsoup", version.ref = "jsoup" }
 
-# udunits, cdm-core, bufr, grib, netcdf4, cdm-s3, cdm-test
+# udunits, cdm-core, bufr, grib, netcdf4, cdm-s3, cdm-test, uibase
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 
-# udunits, cdm-core, bufr, grib, netcdf4, cdm-s3, cdm-test
+# udunits, cdm-core, bufr, grib, netcdf4, cdm-s3, cdm-test, uibase
 truth = { group = "com.google.truth", name = "truth", version.ref = "truth" }
 
 # cdm-core, grib, cdm-test
