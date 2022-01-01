@@ -24,3 +24,9 @@ dependencyCheck {
     // fail the build if any vulnerable dependencies are identified (any CVSS score > 0).
     failBuildOnCVSS = 0F
 }
+
+// shortcut to run toolsUI
+tasks.register("toolsui") {
+    group = "application"
+    dependsOn(":toolsui:uicdm:run")
+}

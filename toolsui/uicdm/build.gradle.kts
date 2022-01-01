@@ -1,6 +1,7 @@
 plugins {
     id("cdm.java-conventions")
     alias(libs.plugins.protobufPlugin)
+    application
 }
 
 import com.google.protobuf.gradle.generateProtoTasks
@@ -27,6 +28,9 @@ dependencies {
     implementation(libs.protobufJava)
     implementation(libs.re2j)
     implementation(libs.slf4j)
+
+    runtimeOnly(project(":cdm-s3"))
+    runtimeOnly(project(":netcdf4"))
 
     runtimeOnly(libs.logbackClassic)
 
@@ -66,6 +70,7 @@ sourceSets {
         }
     }
 }
+java.sourceSets["main"].java
 
 tasks.jacocoTestReport {
     val sourceFileTree: ConfigurableFileTree = fileTree(sourceDirectories.files)
@@ -73,4 +78,8 @@ tasks.jacocoTestReport {
     // Exclude proto generated sources and classes from the coverage reports
     sourceDirectories.setFrom(sourceFileTree.exclude("**/*Proto.java"))
     classDirectories.setFrom(classFileTree.exclude("**/*Proto.class", "**/*Proto$*.class"))
+}
+
+application {
+    mainClass.set("ucar.ui.ToolsUI")
 }
