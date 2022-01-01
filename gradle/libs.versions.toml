@@ -29,14 +29,16 @@ spock = "1.3-groovy-2.5"
 tomcatAnnotationsApi = "6.0.53"
 truth = "1.1"
 
-# plugin versions
+###################
+# plugin versions #
+###################
+
 execforkPlugin = "0.1.15"
+owaspDepCheckPlugin = "6.5.1"
 protobufPlugin = "0.8.18"
 spotlessPlugin = "6.1.0"
 
 [libraries]
-# = { group = "", name = "", version.ref = "" }
-
 # cdm-core, uibase, gcdm
 autoValue = { group = "com.google.auto.value", name = "auto-value", version.ref = "autoValue" }
 
@@ -107,9 +109,9 @@ slf4jJdk14 = { group = "org.slf4j", name = "slf4j-jdk14", version.ref = "slf4j" 
 # gcdm
 tomcatAnnotationsApi = { group = "org.apache.tomcat", name = "annotations-api", version.ref = "tomcatAnnotationsApi" }
 
-#####################
-# test dependencies #
-#####################
+##########################
+# test only dependencies #
+##########################
 
 # cdm-core, cdm-test, gcdm
 commonsIo = { group = "commons-io", name = "commons-io", version.ref = "commonsIo" }
@@ -138,19 +140,17 @@ truthJava8Extension = { group = "com.google.truth.extensions", name = "truth-jav
 # udunits, cdm-core, bufr, grib, netcdf4, cdm-s3, cdm-test
 logbackClassic = { group = "ch.qos.logback", name = "logback-classic", version.ref = "logback" }
 
-#   buildPlugins = [:]
-#   buildPlugins.gretty = 'org.gretty:gretty:3.0.3'
-#   buildPlugins.shadow = 'com.github.jengelman.gradle.plugins:shadow:5.2.0'
-#   buildPlugins.sonarqube = 'org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:3.0'
-#   buildPlugins.depcheck = 'org.owasp:dependency-check-gradle:6.0.2'
-#   buildPlugins.nexus = 'edu.ucar.unidata:unidata-nexus-gradle:0.0.1'
-#   buildPlugins.jekyll = 'edu.ucar.unidata.site:jekyll-plugin:0.0.5'
-
-
 [plugins]
 # gcdm
 execforkPlugin = { id = "com.github.psxpaul.execfork", version.ref = "execforkPlugin" }
+# all
+owaspDepCheckPlugin = { id = "org.owasp.dependencycheck", version.ref = "owaspDepCheckPlugin" }
 # bufr, grib, uicdm, gcdm
 protobufPlugin = { id = "com.google.protobuf", version.ref = "protobufPlugin" }
 # all
 spotlessPlugin = { id = "com.diffplug.spotless", version.ref = "spotlessPlugin" }
+
+#   buildPlugins.shadow = 'com.github.jengelman.gradle.plugins:shadow:5.2.0'
+#   buildPlugins.sonarqube = 'org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:3.0'
+#   buildPlugins.nexus = 'edu.ucar.unidata:unidata-nexus-gradle:0.0.1'
+#   buildPlugins.jekyll = 'edu.ucar.unidata.site:jekyll-plugin:0.0.5'
