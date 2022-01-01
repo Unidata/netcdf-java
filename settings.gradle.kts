@@ -28,6 +28,16 @@ dependencyResolutionManagement {
                 includeModule("edu.ucar", "jj2000")
             }
         }
+        exclusiveContent {
+            forRepository {
+                maven {
+                    url = uri("https://artifacts.unidata.ucar.edu/repository/unidata-3rdparty/")
+                }
+            }
+            filter {
+                includeModule("org.bounce", "bounce")
+            }
+        }
     }
 }
 
@@ -43,3 +53,4 @@ include("cdm-s3")
 include("netcdf-java-bom")
 include("cdm-test")
 include("toolsui:uibase")
+include("toolsui:uicdm")

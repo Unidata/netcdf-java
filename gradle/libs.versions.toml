@@ -2,11 +2,15 @@
 autoValue = "1.7.4"
 autoValueAnnotations = "1.8"
 awsSdk = "2.17.102"
+# Used by NcmlEditor. Abandoned, no updates since 2013. https://sourceforge.net/projects/bounce/
+# https://sourceforge.net/p/bounce/svn/HEAD/tree/src/main/java/org/bounce/
+bounce = "0.18"
 commonsIo = "2.5"
 groovyAll = "2.5.12"
 guava = "31.0.1-jre"
 jcommander = "1.81"
 jdom2 = "2.0.6"
+jfreechart = "1.0.19"
 # http://www.jgoodies.com/. Latest version is 1.9.0, but there is breakage when we try to upgrade.
 jgoodies = "1.6.0"
 jj2000 = "5.4"
@@ -14,6 +18,7 @@ jna = "5.10.0"
 jsoup = "1.14.3"
 jsr305 = "3.0.2"
 junit = "4.13.2"
+lgooddatepicker = "10.3.1"
 logback = "1.2.9"
 mockito = "2.28.2"
 protobuf = "3.19.1"
@@ -37,17 +42,23 @@ awsS3Sdk =  { group = "software.amazon.awssdk", name = "s3" }
 # cdm-s3
 awsApacheClient =  { group = "software.amazon.awssdk", name = "apache-client" }
 
-# cdm-core, bufr, grib, cdm-s3, uibase
+# uicdm
+bounce = { group = "org.bounce", name = "bounce", version.ref = "bounce" }
+
+# cdm-core, bufr, grib, cdm-s3, uibase, uicdm
 guava = { group = "com.google.guava", name = "guava", version.ref = "guava" }
 
 # command line parsing
 # cdm-core, bufr, grib
 jcommander = { group = "com.beust", name = "jcommander", version.ref = "jcommander" }
 
-# cdm-core, bufr, grib, cdm-test (test), uibase
+# cdm-core, bufr, grib, cdm-test (test), uibase, uicdm
 jdom2 = { group = "org.jdom", name = "jdom2", version.ref = "jdom2" }
 
-# uibase
+# uicdm
+jfreechart = { group = "org.jfree", name = "jfreechart", version.ref = "jfreechart" }
+
+# uibase, uicdm
 jgoodies = { group = "com.jgoodies", name = "jgoodies-forms", version.ref = "jgoodies" }
 
 # grib
@@ -60,16 +71,19 @@ jna = { group = "net.java.dev.jna", name = "jna", version.ref = "jna" }
 # udunits, cdm-core, bufr, grib, netcdf4, cdm-s3, uibase
 jsr305 = { group = "com.google.code.findbugs", name = "jsr305", version.ref = "jsr305" }
 
+# uicdm
+lgooddatepicker = { group = "com.github.lgooddatepicker", name = "LGoodDatePicker", version.ref = "lgooddatepicker" }
+
 # control protobuf artifact versions using the protobuf-bom
 # see also netcdf-java-platform/build.gradle.kts
 protobufBom = { group = "com.google.protobuf", name = "protobuf-bom", version.ref = "protobuf" }
-# cdm-core, bufr, grib, netcdf4 (test)
+# cdm-core, bufr, grib, netcdf4 (test), uicdm
 protobufJava = { group = "com.google.protobuf", name = "protobuf-java" }
 
-# cdm-core, bufr, grib, cdm-test (test)
+# cdm-core, bufr, grib, cdm-test (test), uicdm
 re2j = { group = "com.google.re2j", name = "re2j", version.ref = "re2j" }
 
-# udunits (test), cdm-core, bufr, grib, netcdf4, cdm-s3, cdm-test (test), uibase
+# udunits (test), cdm-core, bufr, grib, netcdf4, cdm-s3, cdm-test (test), uibase, uicdm
 slf4j = { group = "org.slf4j", name = "slf4j-api", version.ref = "slf4j" }
 
 #####################
@@ -91,7 +105,7 @@ spockCore = { group = "org.spockframework", name = "spock-core", version.ref = "
 # grib
 jsoup = { group = "org.jsoup", name = "jsoup", version.ref = "jsoup" }
 
-# udunits, cdm-core, bufr, grib, netcdf4, cdm-s3, cdm-test, uibase
+# udunits, cdm-core, bufr, grib, netcdf4, cdm-s3, cdm-test, uibase, uicdm
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 
 # udunits, cdm-core, bufr, grib, netcdf4, cdm-s3, cdm-test, uibase
