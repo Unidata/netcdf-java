@@ -29,7 +29,10 @@ spock = "1.3-groovy-2.5"
 tomcatAnnotationsApi = "6.0.53"
 truth = "1.1"
 
-spotless = "6.1.0"
+# plugin versions
+execforkPlugin = "0.1.15"
+protobufPlugin = "0.8.18"
+spotlessPlugin = "6.1.0"
 
 [libraries]
 # = { group = "", name = "", version.ref = "" }
@@ -139,14 +142,15 @@ logbackClassic = { group = "ch.qos.logback", name = "logback-classic", version.r
 #   buildPlugins.gretty = 'org.gretty:gretty:3.0.3'
 #   buildPlugins.shadow = 'com.github.jengelman.gradle.plugins:shadow:5.2.0'
 #   buildPlugins.sonarqube = 'org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:3.0'
-#   buildPlugins.spotless = 'com.diffplug.spotless:spotless-plugin-gradle:4.5.1'
 #   buildPlugins.depcheck = 'org.owasp:dependency-check-gradle:6.0.2'
 #   buildPlugins.nexus = 'edu.ucar.unidata:unidata-nexus-gradle:0.0.1'
 #   buildPlugins.jekyll = 'edu.ucar.unidata.site:jekyll-plugin:0.0.5'
 
 
 [plugins]
-# bufr, grib
-protobufPlugin = { id = "com.google.protobuf", version = "0.8.18" }
-execfork = { id = "com.github.psxpaul.execfork", version = "0.1.15" }
-spotlessPlugin = { id = "com.diffplug.spotless", version.ref = "spotless" }
+# gcdm
+execforkPlugin = { id = "com.github.psxpaul.execfork", version.ref = "execforkPlugin" }
+# bufr, grib, uicdm, gcdm
+protobufPlugin = { id = "com.google.protobuf", version.ref = "protobufPlugin" }
+# all
+spotlessPlugin = { id = "com.diffplug.spotless", version.ref = "spotlessPlugin" }

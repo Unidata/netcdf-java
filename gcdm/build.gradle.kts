@@ -2,7 +2,7 @@ plugins {
     id("cdm.library-conventions")
     id("application")
     alias(libs.plugins.protobufPlugin)
-    alias(libs.plugins.execfork)
+    alias(libs.plugins.execforkPlugin)
 }
 
 import com.google.protobuf.gradle.generateProtoTasks

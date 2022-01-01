@@ -3,7 +3,7 @@ repositories {
 }
 
 dependencies {
-    implementation("com.diffplug.spotless:spotless-plugin-gradle:${libs.versions.spotless.get()}")
+    implementation("com.diffplug.spotless:spotless-plugin-gradle:${libs.versions.spotlessPlugin.get()}")
 }
 
 plugins {
