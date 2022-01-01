@@ -7,6 +7,7 @@ awsSdk = "2.17.102"
 bounce = "0.18"
 commonsIo = "2.5"
 groovyAll = "2.5.12"
+grpc = "1.42.1"
 guava = "31.0.1-jre"
 jcommander = "1.81"
 jdom2 = "2.0.6"
@@ -25,15 +26,16 @@ protobuf = "3.19.1"
 re2j = "1.6"
 slf4j = "1.7.32"
 spock = "1.3-groovy-2.5"
+tomcatAnnotationsApi = "6.0.53"
 truth = "1.1"
 
 [libraries]
 # = { group = "", name = "", version.ref = "" }
 
-# cdm-core, uibase
+# cdm-core, uibase, gcdm
 autoValue = { group = "com.google.auto.value", name = "auto-value", version.ref = "autoValue" }
 
-# cdm-core, uibase
+# cdm-core, uibase, gcdm
 autoValueAnnotations = { group = "com.google.auto.value", name = "auto-value-annotations", version.ref = "autoValueAnnotations" }
 
 awsSdkBom = { group = "software.amazon.awssdk", name = "bom", version.ref = "awsSdk" }
@@ -45,7 +47,15 @@ awsApacheClient =  { group = "software.amazon.awssdk", name = "apache-client" }
 # uicdm
 bounce = { group = "org.bounce", name = "bounce", version.ref = "bounce" }
 
-# cdm-core, bufr, grib, cdm-s3, uibase, uicdm
+grpcBom = { group = "io.grpc", name = "grpc-bom", version.ref = "grpc" }
+# gcdm
+grpcProtobuf = { group = "io.grpc", name = "grpc-protobuf" }
+# gcdm
+grpcStub =  { group = "io.grpc", name = "grpc-stub" }
+# gcdm
+grpcNettyShaded = { group = "io.grpc", name = "grpc-netty-shaded" }
+
+# cdm-core, bufr, grib, cdm-s3, uibase, uicdm, gcdm
 guava = { group = "com.google.guava", name = "guava", version.ref = "guava" }
 
 # command line parsing
@@ -77,20 +87,26 @@ lgooddatepicker = { group = "com.github.lgooddatepicker", name = "LGoodDatePicke
 # control protobuf artifact versions using the protobuf-bom
 # see also netcdf-java-platform/build.gradle.kts
 protobufBom = { group = "com.google.protobuf", name = "protobuf-bom", version.ref = "protobuf" }
-# cdm-core, bufr, grib, netcdf4 (test), uicdm
+# cdm-core, bufr, grib, netcdf4 (test), uicdm, gcdm
 protobufJava = { group = "com.google.protobuf", name = "protobuf-java" }
 
 # cdm-core, bufr, grib, cdm-test (test), uicdm
 re2j = { group = "com.google.re2j", name = "re2j", version.ref = "re2j" }
 
-# udunits (test), cdm-core, bufr, grib, netcdf4, cdm-s3, cdm-test (test), uibase, uicdm
+# udunits (test), cdm-core, bufr, grib, netcdf4, cdm-s3, cdm-test (test), uibase, uicdm, gcdm
 slf4j = { group = "org.slf4j", name = "slf4j-api", version.ref = "slf4j" }
+
+# gcdm
+slf4jJdk14 = { group = "org.slf4j", name = "slf4j-jdk14", version.ref = "slf4j" }
+
+# gcdm
+tomcatAnnotationsApi = { group = "org.apache.tomcat", name = "annotations-api", version.ref = "tomcatAnnotationsApi" }
 
 #####################
 # test dependencies #
 #####################
 
-# cdm-core, cdm-test
+# cdm-core, cdm-test, gcdm
 commonsIo = { group = "commons-io", name = "commons-io", version.ref = "commonsIo" }
 
 # cdm-core, netcdf4
@@ -105,10 +121,10 @@ spockCore = { group = "org.spockframework", name = "spock-core", version.ref = "
 # grib
 jsoup = { group = "org.jsoup", name = "jsoup", version.ref = "jsoup" }
 
-# udunits, cdm-core, bufr, grib, netcdf4, cdm-s3, cdm-test, uibase, uicdm
+# udunits, cdm-core, bufr, grib, netcdf4, cdm-s3, cdm-test, uibase, uicdm, gcdm
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 
-# udunits, cdm-core, bufr, grib, netcdf4, cdm-s3, cdm-test, uibase
+# udunits, cdm-core, bufr, grib, netcdf4, cdm-s3, cdm-test, uibase, gcdm
 truth = { group = "com.google.truth", name = "truth", version.ref = "truth" }
 
 # cdm-core, grib, cdm-test
@@ -122,16 +138,12 @@ logbackClassic = { group = "ch.qos.logback", name = "logback-classic", version.r
 #   buildPlugins.shadow = 'com.github.jengelman.gradle.plugins:shadow:5.2.0'
 #   buildPlugins.sonarqube = 'org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:3.0'
 #   buildPlugins.spotless = 'com.diffplug.spotless:spotless-plugin-gradle:4.5.1'
-#   buildPlugins.protobuf = 'com.google.protobuf:protobuf-gradle-plugin:0.8.12'
 #   buildPlugins.depcheck = 'org.owasp:dependency-check-gradle:6.0.2'
 #   buildPlugins.nexus = 'edu.ucar.unidata:unidata-nexus-gradle:0.0.1'
 #   buildPlugins.jekyll = 'edu.ucar.unidata.site:jekyll-plugin:0.0.5'
-#
-#   // need to define the versions of protobuf and grpc here because they are needed in the protobuf configuration
-#   // closure, and the version defined in eiter the java platform cannot be accessed from within the closure.
-#   depVersion.protobuf = '3.19.1'
-#   depVersion.grpc = '1.42.1'
+
 
 [plugins]
 # bufr, grib
 protobufPlugin = { id = "com.google.protobuf", version = "0.8.18" }
+execfork = { id = "com.github.psxpaul.execfork", version = "0.1.15" }
