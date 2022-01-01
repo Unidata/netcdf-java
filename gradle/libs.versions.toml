@@ -29,6 +29,8 @@ spock = "1.3-groovy-2.5"
 tomcatAnnotationsApi = "6.0.53"
 truth = "1.1"
 
+spotless = "6.1.0"
+
 [libraries]
 # = { group = "", name = "", version.ref = "" }
 
@@ -147,3 +149,4 @@ logbackClassic = { group = "ch.qos.logback", name = "logback-classic", version.r
 # bufr, grib
 protobufPlugin = { id = "com.google.protobuf", version = "0.8.18" }
 execfork = { id = "com.github.psxpaul.execfork", version = "0.1.15" }
+spotlessPlugin = { id = "com.diffplug.spotless", version.ref = "spotless" }

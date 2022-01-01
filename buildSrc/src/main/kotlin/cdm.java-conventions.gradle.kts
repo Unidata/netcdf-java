@@ -2,6 +2,7 @@
 plugins {
     java
     jacoco
+    id("com.diffplug.spotless")
 }
 
 java {
@@ -109,4 +110,13 @@ tasks.withType<Test> {
     systemProperties(
         Pair("jna.library.path", System.getProperty("jna.library.path")),
     )
+}
+
+spotless {
+    java {
+        // target java files in source directories (will not pick up generated sources)
+        target("src/*/java/**/*.java")
+        eclipse().configFile("$rootDir/project-files/code-styles/eclipse-style-guide.xml")
+        encoding("UTF-8")
+    }
 }

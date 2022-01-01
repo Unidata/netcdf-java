@@ -30,8 +30,8 @@ public class TestGridDataset {
       assertThat(gds).isNotNull();
       System.out.println("readGridDataset: " + gds.getLocation());
       assertThat(gds.toString()).startsWith("name = GFS_Puerto_Rico_191km_20090729_0000.nc" + System.lineSeparator()
-          + "location = ../cdm-core/src/test/data/ncml/fmrc/GFS_Puerto_Rico_191km_20090729_0000.nc" + System.lineSeparator()
-          + "featureType = GRID");
+          + "location = ../cdm-core/src/test/data/ncml/fmrc/GFS_Puerto_Rico_191km_20090729_0000.nc"
+          + System.lineSeparator() + "featureType = GRID");
 
       Grid grid = gds.findGridByAttribute("Grib_Variable_Id", "VAR_7-0-2-11_L100").orElseThrow();
       assertThat(grid.getName()).isEqualTo("Temperature_isobaric");
@@ -54,10 +54,8 @@ public class TestGridDataset {
       assertThat((Object) gcs.findCoordAxisByType(AxisType.Ensemble)).isNull();
 
       assertThat(gcs.toString()).startsWith("Coordinate System (time isobaric1 y x)" + System.lineSeparator()
-              + " time (GridAxisPoint) " + System.lineSeparator()
-              + " isobaric1 (GridAxisPoint) " + System.lineSeparator()
-              + " y (GridAxisPoint) " + System.lineSeparator()
-              + " x (GridAxisPoint) ");
+          + " time (GridAxisPoint) " + System.lineSeparator() + " isobaric1 (GridAxisPoint) " + System.lineSeparator()
+          + " y (GridAxisPoint) " + System.lineSeparator() + " x (GridAxisPoint) ");
 
       assertThat(gcs.showFnSummary()).isEqualTo("GRID(T,Z,Y,X)");
     }
