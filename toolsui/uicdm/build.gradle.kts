@@ -32,6 +32,7 @@ dependencies {
     implementation(project(":bufr"))
     implementation(project(":grib"))
     implementation(project(":toolsui:uibase"))
+    implementation(project(":udunits"))
 
     implementation(libs.bounce)
     implementation(libs.guava)

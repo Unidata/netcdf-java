@@ -26,6 +26,7 @@ dependencies {
     implementation(libs.slf4j)
 
     testImplementation(project(":cdm-test-utils"))
+    testImplementation(project(":udunits"))
 
     testImplementation(libs.jsoup)
     testImplementation(libs.junit)
