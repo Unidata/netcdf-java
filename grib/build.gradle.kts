@@ -1,11 +1,14 @@
+import com.google.protobuf.gradle.protobuf
+import com.google.protobuf.gradle.protoc
+
+// bug in IntelliJ in which `libs` shows up as not being accessible
+// see https://youtrack.jetbrains.com/issue/KTIJ-19369
+@Suppress("DSL_SCOPE_VIOLATION")
+
 plugins {
     id("cdm.library-conventions")
     alias(libs.plugins.protobufPlugin)
 }
-
-import com.google.protobuf.gradle.generateProtoTasks
-import com.google.protobuf.gradle.protobuf
-import com.google.protobuf.gradle.protoc
 
 // Matches Maven's "project.description"
 description = "Decoder for GRIB 1 and 2 files."
