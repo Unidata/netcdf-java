@@ -9,7 +9,7 @@ dependencies {
     implementation(platform(project(":netcdf-java-platform")))
     testImplementation(platform(project(":netcdf-java-testing-platform")))
 
-    api(project(":udunits"))
+    implementation(project(":udunits"))
 
     implementation(libs.autoValueAnnotations)
     implementation(libs.guava)
