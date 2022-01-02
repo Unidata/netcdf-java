@@ -7,12 +7,7 @@ plugins {
 // responsible for generating a maven bill of materials for the project
 // only includes libraries intended for public use
 
-javaPlatform {
-    allowDependencies()
-}
-
 dependencies {
-    api(enforcedPlatform(project(":netcdf-java-platform")))
     constraints {
         api(project(":bufr"))
         api(project(":cdm-core"))
