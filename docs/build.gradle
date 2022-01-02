@@ -1,13 +1,14 @@
 plugins {
   id 'base'
-  id 'edu.ucar.unidata.site.jekyll'
+  alias(libs.plugins.jekyllPlugin)
+  alias(libs.plugins.nexusPlugin).apply(false)
 }
 
 // disable tasks added by the jekyll plugin...we need custom tasks, one for each docset
 buildJekyllSite.enabled(false)
 serveJekyllSite.enabled(false)
 
-apply from: "${rootDir}/gradle/any/properties.gradle"
+apply from: "${projectDir}/gradle/properties.gradle"
 apply from: "${projectDir}/gradle/helpers.gradle"
 apply from: "${projectDir}/gradle/tests.gradle"
 apply from: "${projectDir}/gradle/spotless.gradle"
@@ -16,6 +17,25 @@ import edu.ucar.build.publishing.tasks.PublishToRawRepoTask
 import edu.ucar.build.publishing.tasks.DeleteFromNexusTask
 import edu.ucar.unidata.site.jekyll.tasks.ServeTask
 
+// It makes sense to publish major.minor versions of the docs, as
+// any patch bumps should be backwards compatible bug fixes only
+// To do this, we need to make a special "doc version" string.
+// First, drop any dangling snapshot, alpha, beta tags
+def cleanVersion = "$version".split('-')[0]
+
+// tokenize version on the '.' character, which gives us a list of [major, minor, patch]
+def docVersionParts = cleanVersion.tokenize('.')
+
+// we should always have a major, minor, and patch value in our version
+assert docVersionParts.size == 3
+
+// keep major and minor parts of the version and use those to version the docs
+def docVersion = docVersionParts[0] + '.' + docVersionParts[1]
+
+def javaProjects = subprojects.findAll {
+  subproject -> subproject.plugins.hasPlugin('java')
+}
+
 ////////////////////////
 // Jekyll Sites Build //
 ////////////////////////
@@ -23,7 +43,7 @@ import edu.ucar.unidata.site.jekyll.tasks.ServeTask
 final def docSetsInfo = [
   developer: [
     rawRepoName: 'docs-netcdf-java',
-    version: "$project.docVersion",
+    version: "$docVersion",
     isDocSet: true,
     hasDocVersionFile: false
   ],
@@ -35,7 +55,7 @@ final def docSetsInfo = [
   ],
   userguide: [
     rawRepoName: 'docs-netcdf-java',
-    version: "$project.docVersion",
+    version: "$docVersion",
     isDocSet: true,
     hasDocVersionFile: true
   ]

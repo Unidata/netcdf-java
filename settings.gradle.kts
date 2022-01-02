@@ -7,6 +7,19 @@ enableFeaturePreview("VERSION_CATALOGS")
 pluginManagement {
     repositories {
         gradlePluginPortal()
+        exclusiveContent {
+            forRepository {
+                maven {
+                    url = uri("https://artifacts.unidata.ucar.edu/repository/unidata-all/")
+                }
+            }
+            filter {
+                includeModule("edu.ucar.unidata.nexus", "edu.ucar.unidata.nexus.gradle.plugin")
+                includeModule("edu.ucar.unidata.site.jekyll", "edu.ucar.unidata.site.jekyll.gradle.plugin")
+                includeModule("edu.ucar.unidata", "unidata-nexus-gradle")
+                includeModule("edu.ucar.unidata.site", "jekyll-plugin")
+            }
+        }
     }
 }
 
@@ -15,7 +28,7 @@ dependencyResolutionManagement {
     //repositoriesMode.set(RepositoriesMode.PREFER_SETTINGS)
     // Don't let plugins add repositories - this will make sure we know exactly which external
     // repositories are in use by the project.
-    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositoriesMode.set(RepositoriesMode.PREFER_PROJECT)
     repositories {
         mavenCentral()
         exclusiveContent {
@@ -38,6 +51,7 @@ dependencyResolutionManagement {
                 includeModule("org.bounce", "bounce")
             }
         }
+        gradlePluginPortal()
     }
 }
 
@@ -55,3 +69,4 @@ include("cdm-test")
 include("toolsui:uibase")
 include("toolsui:uicdm")
 include("gcdm")
+include("docs")

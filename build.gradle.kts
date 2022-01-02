@@ -2,8 +2,10 @@ plugins {
     alias(libs.plugins.owaspDepCheckPlugin)
 }
 
-
 subprojects {
+    // See buildSrc/src/main/kotlin/cdm.java-conventions.gradle.kts and
+    // buildSrc/src/main/kotlin/cdm.library-conventions.gradle.kts for
+    // more details on how cdm projects are built.
     project.version = "8.0.0-SNAPSHOT"
     project.group = "edu.ucar"
 }
@@ -13,7 +15,6 @@ tasks.wrapper {
     distributionSha256Sum = "c9490e938b221daf0094982288e4038deed954a3f12fb54cbf270ddf4e37d879"
     distributionType = Wrapper.DistributionType.ALL
 }
-
 
 dependencyCheck {
     analyzers.retirejs.enabled = false

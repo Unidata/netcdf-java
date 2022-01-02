@@ -34,6 +34,8 @@ truth = "1.1"
 ###################
 
 execforkPlugin = "0.1.15"
+jekyllPlugin = "0.0.5"
+nexusPlugin = "0.0.1"
 owaspDepCheckPlugin = "6.5.1"
 protobufPlugin = "0.8.18"
 spotlessPlugin = "6.1.0"
@@ -143,6 +145,10 @@ logbackClassic = { group = "ch.qos.logback", name = "logback-classic", version.r
 [plugins]
 # gcdm
 execforkPlugin = { id = "com.github.psxpaul.execfork", version.ref = "execforkPlugin" }
+# docs
+jekyllPlugin = { id = "edu.ucar.unidata.site.jekyll", version.ref = "jekyllPlugin"}
+# docs
+nexusPlugin = { id = "edu.ucar.unidata.nexus", version.ref = "nexusPlugin"}
 # all
 owaspDepCheckPlugin = { id = "org.owasp.dependencycheck", version.ref = "owaspDepCheckPlugin" }
 # bufr, grib, uicdm, gcdm
