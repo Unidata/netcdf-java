@@ -20,7 +20,7 @@ jobs:
           java-vendor: ${{ matrix.java-vendor }}
           java-version: ${{ matrix.java-version }}
           build-tool: 'gradlew'
-          test-command: '--info --stacktrace testAll'
+          test-command: '--info --stacktrace test'
       - if: failure()
         uses: actions/upload-artifact@v2
         with:
