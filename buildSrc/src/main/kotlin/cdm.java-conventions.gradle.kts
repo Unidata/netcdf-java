@@ -15,6 +15,11 @@ tasks.jar {
     // Fails the build when an attempt is made to add a duplicate entry to an archive.
     duplicatesStrategy = DuplicatesStrategy.FAIL
 
+    // add unidata license to jar files
+    from(rootProject.rootDir.resolve("LICENSE")) {
+        into("META-INF/")
+    }
+
     manifest {
         attributes(
             "Implementation-Title" to project.name,
