@@ -3,6 +3,7 @@
 @Suppress("DSL_SCOPE_VIOLATION")
 
 plugins {
+    base
     alias(libs.plugins.owaspDepCheckPlugin)
 }
 

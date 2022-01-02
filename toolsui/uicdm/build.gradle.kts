@@ -1,3 +1,8 @@
+import java.nio.file.Files
+import java.nio.file.Paths
+import java.security.DigestInputStream
+import java.security.MessageDigest
+
 import com.google.protobuf.gradle.protobuf
 import com.google.protobuf.gradle.protoc
 
@@ -9,9 +14,15 @@ plugins {
     id("cdm.java-conventions")
     alias(libs.plugins.protobufPlugin)
     application
+    alias(libs.plugins.shadowPlugin)
+    alias(libs.plugins.nexusPlugin)
 }
 
 description = "Provides a graphical interface to the CDM library."
+// the location where the toolsUI fatJar and toolsUI distribution zip file will be stored
+// everything in this directory will also be published to the netcdf-java downloads raw
+// repo on the unidata nexus server.
+val toolsUIArtifactDir = rootProject.buildDir.resolve("toolsUI")
 
 dependencies {
     implementation(platform(project(":netcdf-java-platform")))
@@ -73,7 +84,6 @@ sourceSets {
         }
     }
 }
-java.sourceSets["main"].java
 
 tasks.jacocoTestReport {
     val sourceFileTree: ConfigurableFileTree = fileTree(sourceDirectories.files)
@@ -84,5 +94,119 @@ tasks.jacocoTestReport {
 }
 
 application {
+    applicationName = "toolsUI"
     mainClass.set("ucar.ui.ToolsUI")
+}
+
+tasks.startScripts {
+    applicationName = "toolsUI"
+}
+
+tasks.distZip {
+    archiveBaseName.set("toolsUI")
+    destinationDirectory.set(toolsUIArtifactDir)
+}
+
+tasks.shadowJar {
+    archiveBaseName.set("toolsUI")
+    archiveClassifier.set("")
+    destinationDirectory.set(toolsUIArtifactDir)
+    manifest {
+        attributes(
+            "Implementation-Title" to "ToolsUI",
+            "Main-Class" to "ucar.ui.ToolsUI"
+        )
+    }
+    exclude(
+        "AUTHORS",
+        "DATE",
+        "LICENCE",
+        "LICENSE",
+        "NOTICE",
+        "*.txt",
+        "META-INF/INDEX.LIST",
+        "META-INF/DEPENDENCIES",
+        "META-INF/LICENSE",
+        "META-INF/NOTICE",
+        "META-INF/*.SF",
+        "META-INF/*.DSA",
+        "META-INF/*.RSA",
+        "META-INF/*.txt",
+        "META-INF/*.xml",
+    )
+    // Transformations
+    append("META-INF/spring.handlers")
+    append("META-INF/spring.schemas")
+    mergeServiceFiles()
+}
+
+fun writeChecksums() {
+    val files = fileTree(toolsUIArtifactDir).matching {
+        include("**/*.jar", "**/*.zip")
+    }
+    listOf("MD5", "SHA-1", "SHA-256").forEach { algorithm ->
+        val md = MessageDigest.getInstance(algorithm)
+        val buffer = ByteArray(2048)
+        files.forEach { sourceFile ->
+            Files.newInputStream(Paths.get(sourceFile.absolutePath)).use { inputStream ->
+                DigestInputStream(inputStream, md).use { dis ->
+                    while (dis.read(buffer) != -1) {
+                        // just need to read inputStream through the DigestInputStream to get
+                        // the message digest
+                    }
+                }
+            }
+            val ext = algorithm.toLowerCase().replace("-", "")
+            val outputFilename = toolsUIArtifactDir.resolve("${sourceFile.name}.${ext}").toString()
+            File(outputFilename).writeText(
+                buildString {
+                    for (digestByte in md.digest()) {
+                        append(
+                             ((digestByte.toInt()).and(0xff) + 0x100).toString(16).substring(1)
+                        )
+                    }
+                }
+            )
+        }
+    }
+}
+
+val checksumTask = tasks.register("createChecksums") {
+    writeChecksums()
+    dependsOn(tasks.distZip)
+    dependsOn(tasks.shadowJar)
+}
+
+tasks.publishToRawRepo {
+    group = "publishing"
+    description = "Publish toolsUI artifacts to Nexus downloads under /version/."
+    host = "https://artifacts.unidata.ucar.edu/"
+    repoName = "downloads-netcdf-java"
+
+    publishSrc = toolsUIArtifactDir.toString()
+    destPath = "$version".split('-')[0]
+    username = System.getProperty("nexus.username", "")
+    password = System.getProperty("nexus.password", "")
+    dependsOn(checksumTask)
+}
+
+// disable unused tasks
+tasks.distTar {
+    enabled = false
+}
+
+tasks.shadowDistTar {
+    enabled = false
+}
+
+tasks.shadowDistZip {
+    enabled = false
+}
+
+tasks.startShadowScripts {
+    enabled = false
+}
+
+tasks.runShadow {
+    enabled = false
 }

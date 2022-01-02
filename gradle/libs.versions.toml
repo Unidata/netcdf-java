@@ -38,6 +38,7 @@ jekyllPlugin = "0.0.5"
 nexusPlugin = "0.0.1"
 owaspDepCheckPlugin = "6.5.1"
 protobufPlugin = "0.8.18"
+shadowPlugin = "7.1.2"
 spotlessPlugin = "6.1.0"
 
 [libraries]
@@ -149,14 +150,13 @@ execforkPlugin = { id = "com.github.psxpaul.execfork", version.ref = "execforkPl
 jekyllPlugin = { id = "edu.ucar.unidata.site.jekyll", version.ref = "jekyllPlugin"}
 # docs
 nexusPlugin = { id = "edu.ucar.unidata.nexus", version.ref = "nexusPlugin"}
-# all
+# all but docs
 owaspDepCheckPlugin = { id = "org.owasp.dependencycheck", version.ref = "owaspDepCheckPlugin" }
 # bufr, grib, uicdm, gcdm
 protobufPlugin = { id = "com.google.protobuf", version.ref = "protobufPlugin" }
+#uicdm
+shadowPlugin = { id = "com.github.johnrengelman.shadow", version.ref = "shadowPlugin" }
 # all
 spotlessPlugin = { id = "com.diffplug.spotless", version.ref = "spotlessPlugin" }
 
-#   buildPlugins.shadow = 'com.github.jengelman.gradle.plugins:shadow:5.2.0'
 #   buildPlugins.sonarqube = 'org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:3.0'
-#   buildPlugins.nexus = 'edu.ucar.unidata:unidata-nexus-gradle:0.0.1'
-#   buildPlugins.jekyll = 'edu.ucar.unidata.site:jekyll-plugin:0.0.5'
