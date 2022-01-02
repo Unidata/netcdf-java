@@ -6,8 +6,8 @@ description = "Classes for CDM unit and integration testing. Relies on having ac
         "cdmUnitTest files, which can be obtained at https://github.com/unidata/thredds-test-data."
 
 dependencies {
-    testImplementation(enforcedPlatform(project(":netcdf-java-platform")))
-    testImplementation(enforcedPlatform(project(":netcdf-java-testing-platform")))
+    testImplementation(platform(project(":netcdf-java-platform")))
+    testImplementation(platform(project(":netcdf-java-testing-platform")))
 
     testImplementation(project(":cdm-core"))
     testImplementation(project(":cdm-s3"))

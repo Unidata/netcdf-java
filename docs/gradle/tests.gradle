@@ -2,7 +2,7 @@
 apply plugin: 'java'
 
 dependencies {
-  testImplementation enforcedPlatform(project(':netcdf-java-testing-platform'))
+  testImplementation platform(project(':netcdf-java-testing-platform'))
 
   testImplementation project(':cdm-core')
   testImplementation project(':cdm-s3')

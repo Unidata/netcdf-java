@@ -1,5 +1,6 @@
 plugins {
     `java-platform`
+    id("cdm.publication-conventions")
 }
 
 javaPlatform {
@@ -8,8 +9,8 @@ javaPlatform {
 
 // only includes compile and runtime dependencies for projects listed in the netcdf-java-bom
 dependencies {
-    api(platform(libs.protobufBom))
-    api(platform(libs.awsSdkBom))
+    api(enforcedPlatform(libs.protobufBom))
+    api(enforcedPlatform(libs.awsSdkBom))
     constraints {
         // compile time constraints
         api(libs.autoValue)
@@ -23,5 +24,13 @@ dependencies {
         api(libs.protobufJava)
         api(libs.re2j)
         api(libs.slf4j)
+    }
+}
+
+publishing {
+    publications {
+        create<MavenPublication>("NcjPlatform") {
+            from(components["javaPlatform"])
+        }
     }
 }

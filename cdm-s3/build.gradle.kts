@@ -6,8 +6,8 @@ plugins {
 description = "The Common Data Model (CDM) AWS S3 support."
 
 dependencies {
-    implementation(enforcedPlatform(project(":netcdf-java-platform")))
-    testImplementation(enforcedPlatform(project(":netcdf-java-testing-platform")))
+    implementation(platform(project(":netcdf-java-platform")))
+    testImplementation(platform(project(":netcdf-java-testing-platform")))
 
     api(project(":cdm-core"))
 

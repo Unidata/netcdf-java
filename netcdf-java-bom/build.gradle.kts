@@ -1,5 +1,6 @@
 plugins {
     `java-platform`
+    id("cdm.publication-conventions")
 }
 
 // netcdf-java library platform
@@ -19,5 +20,13 @@ dependencies {
         api(project(":grib"))
         api(project(":netcdf4"))
         api(project(":udunits"))
+    }
+}
+
+publishing {
+    publications {
+        create<MavenPublication>("NcjBom") {
+            from(components["javaPlatform"])
+        }
     }
 }

@@ -5,8 +5,8 @@ plugins {
 description = "UI elements that are independent of the CDM"
 
 dependencies {
-    implementation(enforcedPlatform(project(":netcdf-java-platform")))
-    testImplementation(enforcedPlatform(project(":netcdf-java-testing-platform")))
+    implementation(platform(project(":netcdf-java-platform")))
+    testImplementation(platform(project(":netcdf-java-testing-platform")))
 
     implementation(libs.autoValueAnnotations)
     implementation(libs.guava)

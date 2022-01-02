@@ -11,8 +11,8 @@ import com.google.protobuf.gradle.protoc
 description = "Decoder for GRIB 1 and 2 files."
 
 dependencies {
-    implementation(enforcedPlatform(project(":netcdf-java-platform")))
-    testImplementation(enforcedPlatform(project(":netcdf-java-testing-platform")))
+    implementation(platform(project(":netcdf-java-platform")))
+    testImplementation(platform(project(":netcdf-java-testing-platform")))
 
     api(project(":cdm-core"))
 

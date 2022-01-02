@@ -1,5 +1,6 @@
 plugins {
     `java-platform`
+    id("cdm.publication-conventions")
 }
 
 // internal Unidata use only
@@ -18,5 +19,13 @@ dependencies {
 
         // runtime constraints
         runtime(libs.logbackClassic)
+    }
+}
+
+publishing {
+    publications {
+        create<MavenPublication>("NcjTestingPlatform") {
+            from(components["javaPlatform"])
+        }
     }
 }

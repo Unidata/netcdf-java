@@ -1,3 +1,13 @@
+import com.google.protobuf.gradle.generateProtoTasks
+import com.google.protobuf.gradle.id
+import com.google.protobuf.gradle.plugins
+import com.google.protobuf.gradle.protobuf
+import com.google.protobuf.gradle.protoc
+
+// bug in IntelliJ in which `libs` shows up as not being accessible
+// see https://youtrack.jetbrains.com/issue/KTIJ-19369
+@Suppress("DSL_SCOPE_VIOLATION")
+
 plugins {
     id("cdm.library-conventions")
     id("application")
@@ -5,19 +15,13 @@ plugins {
     alias(libs.plugins.execforkPlugin)
 }
 
-import com.google.protobuf.gradle.generateProtoTasks
-import com.google.protobuf.gradle.id
-import com.google.protobuf.gradle.plugins
-import com.google.protobuf.gradle.protobuf
-import com.google.protobuf.gradle.protoc
-
 // Matches Maven's "project.description"
 description = "gRPC client and server implementation of CDM Remote Procedure Calls (gCDM)."
 
 dependencies {
-    implementation(enforcedPlatform(project(":netcdf-java-platform")))
-    implementation(enforcedPlatform(libs.grpcBom))
-    testImplementation(enforcedPlatform(project(":netcdf-java-testing-platform")))
+    implementation(platform(project(":netcdf-java-platform")))
+    implementation(platform(libs.grpcBom))
+    testImplementation(platform(project(":netcdf-java-testing-platform")))
 
     implementation(project(":cdm-core"))
 

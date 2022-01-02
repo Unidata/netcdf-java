@@ -6,8 +6,8 @@ plugins {
 description = "A collection of reusable classes to be used internally for testing across the various THREDDS projects."
 
 dependencies {
-    implementation(enforcedPlatform(project(":netcdf-java-platform")))
-    implementation(enforcedPlatform(project(":netcdf-java-testing-platform")))
+    implementation(platform(project(":netcdf-java-platform")))
+    implementation(platform(project(":netcdf-java-testing-platform")))
 
     api(project(":cdm-core"))
 

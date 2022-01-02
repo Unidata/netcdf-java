@@ -1,18 +1,21 @@
+import com.google.protobuf.gradle.protobuf
+import com.google.protobuf.gradle.protoc
+
+// bug in IntelliJ in which `libs` shows up as not being accessible
+// see https://youtrack.jetbrains.com/issue/KTIJ-19369
+@Suppress("DSL_SCOPE_VIOLATION")
+
 plugins {
     id("cdm.java-conventions")
     alias(libs.plugins.protobufPlugin)
     application
 }
 
-import com.google.protobuf.gradle.generateProtoTasks
-import com.google.protobuf.gradle.protobuf
-import com.google.protobuf.gradle.protoc
-
 description = "Provides a graphical interface to the CDM library."
 
 dependencies {
-    implementation(enforcedPlatform(project(":netcdf-java-platform")))
-    testImplementation(enforcedPlatform(project(":netcdf-java-testing-platform")))
+    implementation(platform(project(":netcdf-java-platform")))
+    testImplementation(platform(project(":netcdf-java-testing-platform")))
 
     implementation(project(":cdm-core"))
     implementation(project(":bufr"))
@@ -39,13 +42,13 @@ dependencies {
     testRuntimeOnly(project(":cdm-test-utils"))
 }
 
-//tasks.test {
+tasks.test {
     // Tell java to use ucar.util.prefs.PreferencesExtFactory to generate preference objects
     // Important for ucar.util.prefs.TestJavaUtilPreferences
-    //systemProperties(
-    //    Pair("java.util.prefs.PreferencesFactory", "ucar.util.prefs.PreferencesExtFactory")
-    //)
-//}
+    systemProperties(
+        Pair("java.util.prefs.PreferencesFactory", "ucar.util.prefs.PreferencesExtFactory")
+    )
+}
 
 tasks.jar {
     manifest {

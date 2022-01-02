@@ -6,8 +6,8 @@ plugins {
 description = "The ucar.units Java package for the Unidata formatted unit specifications."
 
 dependencies {
-    implementation(enforcedPlatform(project(":netcdf-java-platform")))
-    testImplementation(enforcedPlatform(project(":netcdf-java-testing-platform")))
+    implementation(platform(project(":netcdf-java-platform")))
+    testImplementation(platform(project(":netcdf-java-testing-platform")))
 
     implementation(libs.jsr305)
 
