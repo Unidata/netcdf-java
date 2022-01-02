@@ -103,7 +103,7 @@ protobufJava = { group = "com.google.protobuf", name = "protobuf-java" }
 # cdm-core, bufr, grib, cdm-test (test), uicdm
 re2j = { group = "com.google.re2j", name = "re2j", version.ref = "re2j" }
 
-# udunits (test), cdm-core, bufr, grib, netcdf4, cdm-s3, cdm-test (test), uibase, uicdm, gcdm
+# udunits (test), cdm-core, bufr, grib, netcdf4, cdm-s3, cdm-test (test), uibase, uicdm, gcdm, docs
 slf4j = { group = "org.slf4j", name = "slf4j-api", version.ref = "slf4j" }
 
 # gcdm
@@ -134,13 +134,13 @@ jsoup = { group = "org.jsoup", name = "jsoup", version.ref = "jsoup" }
 # udunits, cdm-core, bufr, grib, netcdf4, cdm-s3, cdm-test, uibase, uicdm, gcdm
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 
-# udunits, cdm-core, bufr, grib, netcdf4, cdm-s3, cdm-test, uibase, gcdm
+# udunits, cdm-core, bufr, grib, netcdf4, cdm-s3, cdm-test, uibase, gcdm, docs
 truth = { group = "com.google.truth", name = "truth", version.ref = "truth" }
 
 # cdm-core, grib, cdm-test
 truthJava8Extension = { group = "com.google.truth.extensions", name = "truth-java8-extension", version.ref = "truth" }
 
-# udunits, cdm-core, bufr, grib, netcdf4, cdm-s3, cdm-test
+# udunits, cdm-core, bufr, grib, netcdf4, cdm-s3, cdm-test, docs
 logbackClassic = { group = "ch.qos.logback", name = "logback-classic", version.ref = "logback" }
 
 [plugins]
@@ -148,15 +148,13 @@ logbackClassic = { group = "ch.qos.logback", name = "logback-classic", version.r
 execforkPlugin = { id = "com.github.psxpaul.execfork", version.ref = "execforkPlugin" }
 # docs
 jekyllPlugin = { id = "edu.ucar.unidata.site.jekyll", version.ref = "jekyllPlugin"}
-# docs
+# docs, uicdm
 nexusPlugin = { id = "edu.ucar.unidata.nexus", version.ref = "nexusPlugin"}
 # all but docs
 owaspDepCheckPlugin = { id = "org.owasp.dependencycheck", version.ref = "owaspDepCheckPlugin" }
 # bufr, grib, uicdm, gcdm
 protobufPlugin = { id = "com.google.protobuf", version.ref = "protobufPlugin" }
-#uicdm
+# uicdm
 shadowPlugin = { id = "com.github.johnrengelman.shadow", version.ref = "shadowPlugin" }
 # all
 spotlessPlugin = { id = "com.diffplug.spotless", version.ref = "spotlessPlugin" }
-
-#   buildPlugins.sonarqube = 'org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:3.0'
