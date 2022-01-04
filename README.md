@@ -17,6 +17,7 @@ If you are looking for that codebase, it can be found at <https://github.com/Uni
 
 ## Quick Start
 
+* clean project: `./gradlew clean`
 * build jar files: `./gradlew assemble`
 * run tests: `./gradlew test` (only non-annotated tests)
 * run toolsUI: `./gradlew toolsui`
