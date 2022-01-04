@@ -51,11 +51,9 @@ public class TestGridDataset {
       assertThat((Object) gcs.findCoordAxisByType(AxisType.Time)).isNotNull();
       assertThat((Object) gcs.findCoordAxisByType(AxisType.Ensemble)).isNull();
 
-      assertThat(gcs.toString()).startsWith(String.format("Coordinate System (time isobaric1 y x)%n"
-          + " time (GridAxisPoint) %n"
-          + " isobaric1 (GridAxisPoint) %n"
-          + " y (GridAxisPoint) %n"
-          + " x (GridAxisPoint) "));
+      assertThat(gcs.toString())
+          .startsWith(String.format("Coordinate System (time isobaric1 y x)%n" + " time (GridAxisPoint) %n"
+              + " isobaric1 (GridAxisPoint) %n" + " y (GridAxisPoint) %n" + " x (GridAxisPoint) "));
 
       assertThat(gcs.showFnSummary()).isEqualTo("GRID(T,Z,Y,X)");
     }

@@ -73,8 +73,7 @@ public class TestNcMLStrides extends TestCase {
     Index di = data.getIndex();
     for (int i = 0; i < data.getSize(); i++) {
       assertWithMessage(stride + " index " + i + " = " + data.get(di.set(i)) + " != " + correct.get(ci.set(i)))
-              .that(data.get(di.set(i)))
-              .isEqualTo(ci.set(i));
+          .that(data.get(di.set(i))).isEqualTo(ci.set(i));
     }
   }
 }
