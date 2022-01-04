@@ -18,6 +18,9 @@ import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import java.io.IOException;
 
+import static com.google.common.truth.Truth.assertThat;
+import static com.google.common.truth.Truth.assertWithMessage;
+
 /** Test netcdf dataset in the JUnit framework. */
 @Category(NeedsCdmUnitTest.class)
 public class TestNcMLStrides extends TestCase {
@@ -51,7 +54,7 @@ public class TestNcMLStrides extends TestCase {
 
     Array<Integer> all = (Array<Integer>) time.readArray();
     for (int i = 0; i < all.getSize(); i++) {
-      assert (all.get(i) == i + 1);
+      assertThat(all.get(i)).isEqualTo(i + 1);
     }
 
     testStride("0:13:3");
@@ -68,9 +71,10 @@ public class TestNcMLStrides extends TestCase {
     Array<Integer> data = (Array<Integer>) time.readArray(new Section(stride));
     Index ci = correct.getIndex();
     Index di = data.getIndex();
-    for (int i = 0; i < data.getSize(); i++)
-      assert (data.get(di.set(i)) == correct.get(ci.set(i)))
-          : stride + " index " + i + " = " + data.get(di.set(i)) + " != " + correct.get(ci.set(i));
+    for (int i = 0; i < data.getSize(); i++) {
+      assertWithMessage(stride + " index " + i + " = " + data.get(di.set(i)) + " != " + correct.get(ci.set(i)))
+              .that(data.get(di.set(i)))
+              .isEqualTo(ci.set(i));
+    }
   }
-
 }
