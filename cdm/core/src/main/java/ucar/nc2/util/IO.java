@@ -5,6 +5,7 @@
 
 package ucar.nc2.util;
 
+import java.nio.Buffer;
 import java.nio.charset.StandardCharsets;
 import ucar.nc2.constants.CDM;
 import java.io.*;
@@ -147,7 +148,7 @@ public class IO {
       if (n == -1)
         break;
       totalBytesRead += n;
-      buffer.flip();
+      ((Buffer) buffer).flip();
     }
     return totalBytesRead;
   }
@@ -171,7 +172,7 @@ public class IO {
       for (int i = 0; i < buffersize; i++)
         touch += result[i];
 
-      buffer.flip();
+      ((Buffer) buffer).flip();
     }
     return touch;
   }
@@ -397,7 +398,7 @@ public class IO {
    * // The read() call leaves the buffer in "fill mode". To prepare
    * // to write bytes from the bufferwe have to put it in "drain mode"
    * // by flipping it: setting limit to position and position to zero
-   * buffer.flip();
+   * ((Buffer) buffer).flip();
    * 
    * // Now write some or all of the bytes out to the output channel
    * out.write(buffer);
