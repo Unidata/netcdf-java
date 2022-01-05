@@ -11,11 +11,15 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.util.Map;
+
 import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Section;
 import ucar.nc2.Variable;
 import ucar.nc2.filter.Filter;
+import ucar.nc2.filter.Filters;
+import ucar.nc2.filter.UnknownFilterException;
 import ucar.nc2.iosp.LayoutBB;
 import ucar.nc2.iosp.LayoutBBTiled;
 import ucar.nc2.iosp.hdf5.DataBTree;
@@ -56,16 +60,16 @@ public class H5tiledLayoutBB implements LayoutBB {
 
   /**
    * Constructor.
-   * This is for HDF5 chunked data storage. The data is read by chunk, for efficency.
+   * This is for HDF5 chunked data storage. The data is read by chunk, for efficiency.
    *
    * @param v2 Variable to index over; assumes that vinfo is the data object
    * @param wantSection the wanted section of data, contains a List of Range objects. must be complete
    * @param raf the RandomAccessFile
-   * @param filters set of filters that have been applied to the data
+   * @param filterProps set of filter propertoes from which filter object will be created
    * @throws InvalidRangeException if section invalid for this variable
    * @throws IOException on io error
    */
-  public H5tiledLayoutBB(Variable v2, Section wantSection, RandomAccessFile raf, Filter[] filters, ByteOrder byteOrder)
+  public H5tiledLayoutBB(Variable v2, Section wantSection, RandomAccessFile raf, H5objects.Filter[] filterProps, ByteOrder byteOrder)
       throws InvalidRangeException, IOException {
     wantSection = Section.fill(wantSection, v2.getShape());
 
@@ -74,7 +78,18 @@ public class H5tiledLayoutBB implements LayoutBB {
     assert vinfo.btree != null;
 
     this.raf = raf;
-    this.filters = filters;
+    this.filters = new Filter[filterProps.length];
+    for (int i = 0; i < filterProps.length; i++) {
+      // add var info to filter props
+      Map<String, Object> props = filterProps[i].getProperties();
+      props.put(Filters.Keys.ELEM_SIZE, v2.getElementSize());
+      // try to get filter by name or id, throw if not recognized filter
+      try {
+        filters[i] = Filters.getFilter(props);
+      } catch (UnknownFilterException ex) {
+        throw new IOException(ex);
+      }
+    }
     this.byteOrder = byteOrder;
 
     // we have to translate the want section into the same rank as the storageSize, in order to be able to call

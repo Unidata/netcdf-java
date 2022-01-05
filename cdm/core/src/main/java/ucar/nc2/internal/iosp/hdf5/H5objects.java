@@ -18,7 +18,6 @@ import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.Dimension;
 import ucar.nc2.filter.Filters;
-import ucar.nc2.filter.UnknownFilterException;
 import ucar.nc2.iosp.hdf5.BTree2;
 import ucar.nc2.iosp.hdf5.FractalHeap;
 import ucar.nc2.iosp.hdf5.MemTracker;
@@ -1691,8 +1690,6 @@ public class H5objects {
     Filter[] filters;
 
     void read() throws IOException {
-      // create properties map
-      Map<String, Object> props = new HashMap<>();
 
       byte version = raf.readByte();
       byte nfilters = raf.readByte();
@@ -1704,6 +1701,8 @@ public class H5objects {
       // create filters list
       filters = new Filter[nfilters];
       for (int i = 0; i < nfilters; i++) {
+        // create properties map
+        Map<String, Object> props = new HashMap<>();
         // read filter description
         short id = raf.readShort();
         props.put(Filters.Keys.ID, id);
@@ -1733,12 +1732,8 @@ public class H5objects {
           raf.skipBytes(4);
         }
 
-        // try to get filter by name or id, throw if not recognized filter
-        try {
-          filters[i] = Filters.getFilter(props);
-        } catch (UnknownFilterException ex) {
-          throw new IOException(ex);
-        }
+        // add to filters list
+        filters[i] = new Filter(props);
       }
 
       if (debug1) {
@@ -1763,6 +1758,26 @@ public class H5objects {
       for (Filter f : filters)
         sbuff.append(f.getName()).append(", ");
       return sbuff.toString();
+    }
+  }
+
+  class Filter {
+    Map<String, Object> properties;
+
+    Filter(Map<String, Object> props) {
+      this.properties = props;
+    }
+
+    String getName() {
+      return this.properties.get(Filters.Keys.NAME).toString();
+    }
+
+    int getId() {
+      return (int)this.properties.get(Filters.Keys.ID);
+    }
+
+    Map<String, Object> getProperties() {
+      return this.properties;
     }
   }
 

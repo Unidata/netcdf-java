@@ -14,14 +14,14 @@ public class Shuffle extends Filter {
 
   private static final String name = "shuffle";
 
-  private static final int id = 2; // not yet implemented by id
+  private static final int id = 2;
 
   private int elemSize;
   private static final int DEFAULT_SIZE = 4;
 
   public Shuffle(Map<String, Object> properties) {
     try {
-      elemSize = (int) properties.get("elementsize");
+      elemSize = (int) properties.get(Filters.Keys.ELEM_SIZE);
     } catch (Exception ex) {
       elemSize = DEFAULT_SIZE;
     }

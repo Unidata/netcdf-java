@@ -31,7 +31,10 @@ public class Filters {
      * key mapping to client data used by filter
      */
     public static final String DATA = "data";
-
+    /**
+     * key mapping to element size
+     */
+    public static final String ELEM_SIZE = "elementsize";
   }
 
   private static NullFilter nullFilter = new NullFilter();

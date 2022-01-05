@@ -23,7 +23,7 @@ public class ScaleOffset extends Filter {
 
   private static final String name = "fixedscaleoffset";
 
-  private static final int id = 6; // not yet implemented by id
+  private static final int id = 6;
 
   // maps numeric zarr datatypes to CDM datatypes
   private static Map<String, DataType> dTypeMap;

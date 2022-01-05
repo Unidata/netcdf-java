@@ -161,8 +161,6 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
    * 3) all variables' dimensions have a dimension scale
    */
 
-  private static final int KNOWN_FILTERS = 3;
-
   private final RandomAccessFile raf;
   private final Group.Builder root;
   private final H5iospNew h5iosp;
@@ -1618,7 +1616,7 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
       if (mfp == null)
         return null;
       Formatter f = new Formatter();
-      for (Filter filt : mfp.filters) {
+      for (H5objects.Filter filt : mfp.filters) {
         f.format("name: %s , id: %d", filt.getName(), filt.getId());
       }
       return f.toString();

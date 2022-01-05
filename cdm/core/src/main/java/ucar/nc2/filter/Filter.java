@@ -6,7 +6,9 @@
 package ucar.nc2.filter;
 
 import java.io.IOException;
+import java.nio.ByteOrder;
 import java.util.Formatter;
+import java.util.Map;
 
 public abstract class Filter {
 
