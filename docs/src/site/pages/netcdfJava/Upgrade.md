@@ -31,6 +31,7 @@ As such, we no longer utilize WebStart.
 ## netCDF-Java API Changes (5.5.x)
 
 Point release notes:
+* [5.5.2](https://github.com/Unidata/netcdf-java/releases/tag/v5.5.2){:target="_blank"} (_2022-1-05_)
 * [5.5.1](https://github.com/Unidata/netcdf-java/releases/tag/v5.5.1){:target="_blank"} (_2021-12-20_)
 * `5.5.0` was released but not announced.
   It should not be used.
