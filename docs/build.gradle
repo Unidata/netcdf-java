@@ -32,8 +32,8 @@ assert docVersionParts.size == 3
 // keep major and minor parts of the version and use those to version the docs
 def docVersion = docVersionParts[0] + '.' + docVersionParts[1]
 
-def javaProjects = subprojects.findAll {
-  subproject -> subproject.plugins.hasPlugin('java')
+def javaProjects = rootProject.subprojects.findAll {
+  subproject -> subproject.plugins.hasPlugin('java-library')
 }
 
 ////////////////////////
@@ -396,8 +396,8 @@ gradle.projectsEvaluated {
 
         // Will be evaluated at task execution time, not during configuration.
         // Fails the build if the specified properties haven't been provided.
-        username = getPropertyOrFailBuild NEXUS_USERNAME_KEY
-        password = getPropertyOrFailBuild NEXUS_PASSWORD_KEY
+        username = project.properties["nexus.username"].toString()
+        password = project.properties["nexus.password"].toString()
         return true
       }
     }

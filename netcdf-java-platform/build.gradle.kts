@@ -9,8 +9,8 @@ javaPlatform {
 
 // only includes compile and runtime dependencies for projects listed in the netcdf-java-bom
 dependencies {
-    api(enforcedPlatform(libs.protobufBom))
-    api(enforcedPlatform(libs.awsSdkBom))
+    api(platform(libs.protobufBom))
+    api(platform(libs.awsSdkBom))
     constraints {
         // compile time constraints
         api(libs.autoValue)

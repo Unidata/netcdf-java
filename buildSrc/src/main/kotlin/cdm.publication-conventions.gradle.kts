@@ -12,9 +12,10 @@ publishing {
             } else {
                 uri("https://artifacts.unidata.ucar.edu/repository/unidata-releases/")
             }
+
             credentials {
-                username = System.getProperty("nexus.username", "")
-                password = System.getProperty("nexus.password", "")
+                username = project.properties["nexus.username"].toString()
+                password = project.properties["nexus.password"].toString()
             }
         }
     }

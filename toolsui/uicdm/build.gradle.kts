@@ -145,7 +145,7 @@ fun writeChecksums() {
     val files = fileTree(toolsUIArtifactDir).matching {
         include("**/*.jar", "**/*.zip")
     }
-    listOf("MD5", "SHA-1", "SHA-256").forEach { algorithm ->
+    listOf("MD5", "SHA-1", "SHA-256", "SHA-512").forEach { algorithm ->
         val md = MessageDigest.getInstance(algorithm)
         val buffer = ByteArray(2048)
         files.forEach { sourceFile ->
@@ -173,9 +173,11 @@ fun writeChecksums() {
 }
 
 val checksumTask = tasks.register("createChecksums") {
-    writeChecksums()
     dependsOn(tasks.distZip)
     dependsOn(tasks.shadowJar)
+    doLast {
+        writeChecksums()
+    }
 }
 
 tasks.publishToRawRepo {
@@ -186,9 +188,14 @@ tasks.publishToRawRepo {
 
     publishSrc = toolsUIArtifactDir.toString()
     destPath = "$version".split('-')[0]
-    username = System.getProperty("nexus.username", "")
-    password = System.getProperty("nexus.password", "")
+    username = project.properties["nexus.username"].toString()
+    password = project.properties["nexus.password"].toString()
     dependsOn(checksumTask)
+}
+
+tasks.register("publish") {
+    group = "publishing"
+    dependsOn(tasks.publishToRawRepo)
 }
 
 // disable unused tasks
