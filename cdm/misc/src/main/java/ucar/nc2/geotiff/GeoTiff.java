@@ -320,7 +320,7 @@ public class GeoTiff implements Closeable {
       channel.position(nextOverflowData);
       ByteBuffer vbuffer = ByteBuffer.allocate(size);
       writeValues(vbuffer, ifd);
-      v((Buffer) buffer).flip();
+      ((Buffer) vbuffer).flip();
       channel.write(vbuffer);
       nextOverflowData += size;
     }
@@ -510,7 +510,7 @@ public class GeoTiff implements Closeable {
       ByteBuffer vbuffer = ByteBuffer.allocate(ifd.count * ifd.type.size);
       vbuffer.order(byteOrder);
       assert ifd.count * ifd.type.size == channel.read(vbuffer);
-      v((Buffer) buffer).flip();
+      ((Buffer) vbuffer).flip();
       readValues(vbuffer, ifd);
     }
 
