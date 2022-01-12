@@ -6,7 +6,7 @@ package ucar.units;
 
 /**
  * Provides support for the International System of Units (SI). A good on-line
- * reference for the SI can be found at <http://physics.nist.gov/cuu/Units/>.
+ * reference for the SI can be found at <a href="https://physics.nist.gov/cuu/Units/">NIST</a>.
  *
  * @author Steven R. Emmerson
  */

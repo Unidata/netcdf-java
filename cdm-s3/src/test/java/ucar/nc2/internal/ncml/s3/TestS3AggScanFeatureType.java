@@ -20,6 +20,7 @@ import java.util.stream.Stream;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.array.InvalidRangeException;
@@ -43,6 +44,7 @@ import ucar.nc2.grid.GridReferencedArray;
 import ucar.nc2.grid.GridTimeCoordinateSystem;
 import ucar.nc2.grid.MaterializedCoordinateSystem;
 import ucar.unidata.io.s3.S3TestsCommon;
+import ucar.unidata.util.test.category.Slow;
 
 public class TestS3AggScanFeatureType {
 
@@ -83,6 +85,7 @@ public class TestS3AggScanFeatureType {
   }
 
   @Test
+  @Category(Slow.class)
   public void testWrapGridDataset() throws IOException, InvalidRangeException {
     String ncml;
     String ncmlFile = NcmlTestsCommon.joinNewNcmlScanEnhanced;

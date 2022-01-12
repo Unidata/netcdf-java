@@ -33,9 +33,9 @@ import java.util.Optional;
  * where
  * z(n,k,j,i) is height, positive upwards, relative to ocean datum (e.g. mean sea level) at gridpoint (n,k,j,i)
  * eta(n,j,i) is the height of the ocean surface, positive upwards, relative to ocean datum at gridpoint (n,j,i)
- * s(k) is the dimensionless coordinate at vertical gridpoint (k) with a range of -1 ⇐ s(k) ⇐ 0
+ * s(k) is the dimensionless coordinate at vertical gridpoint (k) with a range of -1 <= s(k) <= 0
  * s(0) corresponds to eta(n,j,i) whereas s(-1) corresponds to depth(j,i)
- * C(k) is the dimensionless vertical coordinate stretching function at gridpoint (k) with a range of -1 ⇐ C(k) ⇐ 0
+ * C(k) is the dimensionless vertical coordinate stretching function at gridpoint (k) with a range of -1 <= C(k) <= 0
  * C(0) corresponds to eta(n,j,i) whereas C(-1) corresponds to depth(j,i)
  * the constant depth_c, (positive value), is a critical depth controlling the stretching
  * depth(j,i) is the distance from ocean datum to sea floor (positive value) at horizontal gridpoint (j,i).

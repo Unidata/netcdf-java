@@ -1,17 +1,19 @@
-apply from: "$rootDir/gradle/any/testing.gradle"
+//apply from: "$rootDir/gradle/any/testing.gradle"
+apply plugin: 'java'
 
 dependencies {
-  testImplementation enforcedPlatform(project(':netcdf-java-testing-platform'))
+  testImplementation platform(project(':netcdf-java-testing-platform'))
 
-  testCompile project(':cdm-core')
-  testCompile project(':cdm-s3')
-  testCompile project(':netcdf4')
-  testCompile project(':cdm-test-utils')
-  testCompile 'org.slf4j:slf4j-api'
-  testCompile 'junit:junit'
-  testCompile 'com.google.truth:truth'
+  testImplementation project(':cdm-core')
+  testImplementation project(':cdm-s3')
+  testImplementation project(':netcdf4')
+  testImplementation project(':cdm-test-utils')
 
-  testRuntimeOnly 'ch.qos.logback:logback-classic'
+  testImplementation(libs.slf4j)
+  testImplementation(libs.junit)
+  testImplementation(libs.truth)
+
+  testRuntimeOnly(libs.logbackClassic)
 }
 
 /////////////////////
@@ -34,4 +36,8 @@ tasks.withType(JavaCompile).all {
 
   // show deprecation details
   options.compilerArgs = ['-Xlint:deprecation']
+}
+
+test {
+  systemProperty("jna.library.path", System.getProperty("jna.library.path"))
 }

@@ -122,6 +122,7 @@ public class TestS3Read {
    * @throws IOException Error accessing object store
    */
   @Test
+  @Category(Slow.class)
   public void awsFullReadFile() throws IOException {
     System.setProperty(S3TestsCommon.AWS_REGION_PROP_NAME, S3TestsCommon.AWS_G16_REGION);
     try (NetcdfFile ncfile = NetcdfFiles.open(AWS_G16_S3_URI_FULL)) {
@@ -132,6 +133,7 @@ public class TestS3Read {
   }
 
   @Test
+  @Category(Slow.class)
   public void awsFullReadDataset() throws IOException {
     System.setProperty(S3TestsCommon.AWS_REGION_PROP_NAME, S3TestsCommon.AWS_G16_REGION);
     try (NetcdfDataset ncd = NetcdfDatasets.openDataset(AWS_G16_S3_URI_FULL)) {
@@ -275,6 +277,7 @@ public class TestS3Read {
    * @throws IOException Error accessing object store
    */
   @Test
+  @Category(Slow.class)
   public void gcsFullReadFile() throws IOException {
     try (NetcdfFile ncfile = NetcdfFiles.open(GCS_G16_S3_URI)) {
       testFullReadGoes16S3(ncfile);
@@ -282,6 +285,7 @@ public class TestS3Read {
   }
 
   @Test
+  @Category(Slow.class)
   public void gcsFullReadDataset() throws IOException {
     try (NetcdfDataset ncd = NetcdfDatasets.openDataset(GCS_G16_S3_URI)) {
       testFullReadGoes16S3(ncd);
@@ -330,6 +334,7 @@ public class TestS3Read {
    * @throws IOException Error accessing object store
    */
   @Test
+  @Category(Slow.class)
   public void osdcFullReadFile() throws IOException {
     try (NetcdfFile ncfile = NetcdfFiles.open(OSDC_G16_S3_URI)) {
       testFullReadGoes16S3(ncfile);
@@ -337,6 +342,7 @@ public class TestS3Read {
   }
 
   @Test
+  @Category(Slow.class)
   public void osdcFullReadDataset() throws IOException {
     try (NetcdfDataset ncd = NetcdfDatasets.openDataset(OSDC_G16_S3_URI)) {
       testFullReadGoes16S3(ncd);

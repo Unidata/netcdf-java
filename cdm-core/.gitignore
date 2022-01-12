@@ -1,0 +1,5 @@
+# create during tests
+src/test/data/compress/testBzip.nc
+src/test/data/compress/testCompress.nc
+src/test/data/compress/testGzip.nc
+src/test/data/compress/testZip.nc

@@ -1,3 +1,5 @@
+import java.nio.file.Paths
+
 // Helper methods
 // These are useful methods for managing the programmatic creation of tasks related to the building
 // and publication/deletion of documentation sets.
@@ -59,6 +61,19 @@ def getNexusPath(docSetInfo, versioned = true) {
   topLevelRawRepoDir == 'ncml' ? "${topLevelRawRepoDir}/${nexusVersion}" : "${nexusVersion}"
 }
 
+def getBranchName(mustExist=false) {
+  def branchName = ''
+  // If this is a git repo, grab the branch name to tag the sonarcloud analysis
+  def headFile = Paths.get("$rootDir", ".git", "HEAD").toFile()
+  if (headFile.exists()) {
+    String head = headFile.getText('UTF-8')
+    branchName = head.split('refs/heads/').last()
+  } else if (mustExist) {
+    throw new FileNotFoundException("The task calling this function requires that it be ran from a git repository. Cannot find ${headFile}.")
+  }
+  return branchName
+}
+
 //////////////////////////
 // NOT EXPORTED METHODS //
 //////////////////////////
@@ -88,4 +103,5 @@ ext {
   getNexusPath = this.&getNexusPath
   getPathForDescription = this.&getPathForDescription
   getRawRepoName = this.&getRawRepoName
+  getBranchName = this.&getBranchName
 }
