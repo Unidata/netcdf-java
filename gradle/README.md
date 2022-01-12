@@ -1,7 +1,15 @@
 # NetCDF-Java Gradle Build Docs
 
+NetCDF-Java utilizes the Gradle build system.
+This document provides an overview of the build system, and focuses on how to build and the run tests associated with the project.
+Currently, netCDF-Java targets Java 11.
+We use the Gradle toolchain feature to set the source compatibility and target level for compilation.
+You will likely be able to run the build with a version of Java other than 11, but because of the toolchain feature, Java version 11 will be downloaded and used for the build and tests if a recognized JDK 11 cannot be found on your system.
+We mostly use the [Eclipse Temurin distribution of OpenJDK](https://adoptium.net/) on our build and tests systems, but do test with a few other vendors occasionally.
+
 ## Common Gradle Tasks
 
+* clean the project: `./gradlew clean`
 * build jar files: `./gradlew assemble`
   * jar files located in `build/libs/` directory of each project
 * run toolsUI: `./gradlew toolsui`
@@ -20,22 +28,31 @@ Testing is special and is covered in the next section.
 
 ## Testing
 
-There are three flavors of test tasks supported by this build system.
+There are four flavors of test tasks supported by this build system.
 
 1. test
 2. extendedTests
-3. specialTests
+3. slowTests
+4. specialTests
 
 The `test` task do not rely on having access to any special data or resources.
 These tests should run on any system by anyone with a copy of the repository.
+If a test class or method is not annotated with a category, the `test` task will run it.
 
-The `extendedTest` task only runs tests annotated with certain categories, such as those marked as `Slow`.
-Additionally, many of these tests need to have access to a special set of test data.
+The `extendedTest` task only runs tests annotated with certain categories:
+* `NeedsCdmUnitTest`
+* `NeedsExternalResource`
+* `NotPullRequest`
+Tests marked with `NeedsCdmUnitTest` need to have access to a special set of test data.
 These data are openly accessible and can be obtained by using `rsync`.
 See https://github.com/unidata/thredds-test-data for more details.
 For more information about which test categories are included, see `buildSrc/src/main/kotlin/cdm.java-conventions.gradle.kts`.
 
+The `slowTest` task only runs tests annotated specifically with `Slow`.
+Like the `extendedTest` tests, `slowTest` tests sometimes need access to the special set of test data.
+
 `specialTests` require access to resources only available to Unidata employees, such as the internal UCAR network.
+Currently, only tests marked with `NeedsUcarNetwork` fall into this special situation.
 Very few tests are annotated with this category.
 Don't feel bad about not running them.
 We don't like this restriction either.
