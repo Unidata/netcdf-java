@@ -64,6 +64,10 @@ tasks.test {
             "ucar.unidata.util.test.category.Slow"
         )
     }
+    // Important property for extendedTests
+    systemProperties(
+        Pair("jna.library.path", System.getProperty("jna.library.path")),
+    )
 }
 
 val extendedTestsTask = task<Test>("extendedTests") {

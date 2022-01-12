@@ -37,3 +37,7 @@ tasks.withType(JavaCompile).all {
   // show deprecation details
   options.compilerArgs = ['-Xlint:deprecation']
 }
+
+test {
+  systemProperty("jna.library.path", System.getProperty("jna.library.path"))
+}

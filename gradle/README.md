@@ -35,7 +35,7 @@ There are four flavors of test tasks supported by this build system.
 3. slowTests
 4. specialTests
 
-The `test` task do not rely on having access to any special data or resources.
+The `test` task do not rely on having access to any special data or resources other than the netCDF-C library (for tests that write netCDF-4 files).
 These tests should run on any system by anyone with a copy of the repository.
 If a test class or method is not annotated with a category, the `test` task will run it.
 
@@ -87,7 +87,7 @@ Similarly, any test dependency not used by a project meant as a library for publ
 While the testing platform isn't really intended to be used outside of Unidata, it is shared between the various THREDDS projects for convenience.
 We also produce a project bill of materials, `netcdf-java-bom/build.gradle.kts`, which simply lists the library components of netCDF-Java intended for public use.
 
-## upgrading gradle
+## Upgrading gradle
 
 To upgrade the gradle wrapper, you will need to edit the `build.gradle.kts` file in the root of the repository.
 Look for the wrapper task configuration section:
