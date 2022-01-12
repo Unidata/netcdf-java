@@ -59,7 +59,6 @@ tasks.test {
         excludeCategories(
             "ucar.unidata.util.test.category.NeedsCdmUnitTest",
             "ucar.unidata.util.test.category.NeedsExternalResource",
-            "ucar.unidata.util.test.category.NeedsRdaData",
             "ucar.unidata.util.test.category.NeedsUcarNetwork",
             "ucar.unidata.util.test.category.NotPullRequest",
             "ucar.unidata.util.test.category.Slow"
@@ -68,7 +67,7 @@ tasks.test {
 }
 
 val extendedTestsTask = task<Test>("extendedTests") {
-    description = "Runs the extended tests."
+    description = "Runs the extended tests (but not slow test)."
     group = "verification"
 
     testClassesDirs = sourceSets["test"].output.classesDirs
@@ -80,7 +79,33 @@ val extendedTestsTask = task<Test>("extendedTests") {
             "ucar.unidata.util.test.category.NeedsCdmUnitTest",
             "ucar.unidata.util.test.category.NeedsExternalResource",
             "ucar.unidata.util.test.category.NotPullRequest",
-            "ucar.unidata.util.test.category.Slow"
+        )
+        excludeCategories(
+            "ucar.unidata.util.test.category.Slow",
+            "ucar.unidata.util.test.category.NeedsUcarNetwork",
+        )
+    }
+    // Important property for extendedTests
+    systemProperties(
+        Pair("unidata.testdata.path", System.getProperty("unidata.testdata.path")),
+        Pair("jna.library.path", System.getProperty("jna.library.path")),
+    )
+}
+
+val slowTestsTask = task<Test>("slowTests") {
+    description = "Runs the extended tests."
+    group = "verification"
+
+    testClassesDirs = sourceSets["test"].output.classesDirs
+    classpath = sourceSets["test"].runtimeClasspath
+    shouldRunAfter("test")
+
+    useJUnit {
+        includeCategories(
+            "ucar.unidata.util.test.category.Slow",
+        )
+        excludeCategories(
+            "ucar.unidata.util.test.category.NeedsUcarNetwork",
         )
     }
     // Important property for extendedTests
@@ -91,7 +116,7 @@ val extendedTestsTask = task<Test>("extendedTests") {
 }
 
 val specialTestsTask = task<Test>("specialTests") {
-    description = "Runs the special tests."
+    description = "Runs the special tests that need access to the UCAR Network."
     group = "verification"
 
     testClassesDirs = sourceSets["test"].output.classesDirs
@@ -100,7 +125,6 @@ val specialTestsTask = task<Test>("specialTests") {
 
     useJUnit {
         includeCategories(
-            "ucar.unidata.util.test.category.NeedsRdaData",
             "ucar.unidata.util.test.category.NeedsUcarNetwork"
         )
     }
