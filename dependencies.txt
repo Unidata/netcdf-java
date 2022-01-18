@@ -17,7 +17,7 @@ No dependencies
 
 compileClasspath - Compile classpath for source set 'main'.
 +--- project :netcdf-java-platform
-|    +--- com.google.protobuf:protobuf-java:3.19.1 (c)
+|    +--- com.google.protobuf:protobuf-java:3.19.3 (c)
 |    +--- com.google.guava:guava:31.0.1-jre (c)
 |    +--- com.google.re2j:re2j:1.6 (c)
 |    +--- org.jdom:jdom2:2.0.6 (c)
@@ -35,7 +35,7 @@ compileClasspath - Compile classpath for source set 'main'.
 |    +--- org.checkerframework:checker-qual:3.12.0
 |    +--- com.google.errorprone:error_prone_annotations:2.7.1
 |    \--- com.google.j2objc:j2objc-annotations:1.3
-+--- com.google.protobuf:protobuf-java -> 3.19.1
++--- com.google.protobuf:protobuf-java -> 3.19.3
 +--- com.google.re2j:re2j -> 1.6
 +--- org.jdom:jdom2 -> 2.0.6
 +--- org.slf4j:slf4j-api -> 1.7.32
@@ -50,7 +50,7 @@ No dependencies
 
 compileProtoPath
 +--- project :netcdf-java-platform
-|    +--- com.google.protobuf:protobuf-java:3.19.1 (c)
+|    +--- com.google.protobuf:protobuf-java:3.19.3 (c)
 |    +--- com.google.guava:guava:31.0.1-jre (c)
 |    +--- com.google.re2j:re2j:1.6 (c)
 |    +--- org.jdom:jdom2:2.0.6 (c)
@@ -69,7 +69,7 @@ compileProtoPath
 |    +--- org.checkerframework:checker-qual:3.12.0
 |    +--- com.google.errorprone:error_prone_annotations:2.7.1
 |    \--- com.google.j2objc:j2objc-annotations:1.3
-+--- com.google.protobuf:protobuf-java -> 3.19.1
++--- com.google.protobuf:protobuf-java -> 3.19.3
 +--- com.google.re2j:re2j -> 1.6
 +--- org.jdom:jdom2 -> 2.0.6
 +--- org.slf4j:slf4j-api -> 1.7.32
@@ -104,11 +104,11 @@ protobuf
 No dependencies
 
 protobufToolsLocator_protoc
-\--- com.google.protobuf:protoc:3.19.1
+\--- com.google.protobuf:protoc:3.19.3
 
 runtimeClasspath - Runtime classpath of source set 'main'.
 +--- project :netcdf-java-platform
-|    +--- com.google.protobuf:protobuf-java:3.19.1 (c)
+|    +--- com.google.protobuf:protobuf-java:3.19.3 (c)
 |    +--- com.google.guava:guava:31.0.1-jre (c)
 |    +--- com.google.re2j:re2j:1.6 (c)
 |    +--- org.jdom:jdom2:2.0.6 (c)
@@ -127,7 +127,7 @@ runtimeClasspath - Runtime classpath of source set 'main'.
 |    +--- org.checkerframework:checker-qual:3.12.0
 |    +--- com.google.errorprone:error_prone_annotations:2.7.1
 |    \--- com.google.j2objc:j2objc-annotations:1.3
-+--- com.google.protobuf:protobuf-java -> 3.19.1
++--- com.google.protobuf:protobuf-java -> 3.19.3
 +--- com.google.re2j:re2j -> 1.6
 +--- org.jdom:jdom2 -> 2.0.6
 +--- org.slf4j:slf4j-api -> 1.7.32
@@ -145,7 +145,7 @@ No dependencies
 
 testCompileClasspath - Compile classpath for source set 'test'.
 +--- project :netcdf-java-platform
-|    +--- com.google.protobuf:protobuf-java:3.19.1 (c)
+|    +--- com.google.protobuf:protobuf-java:3.19.3 (c)
 |    +--- com.google.guava:guava:31.0.1-jre (c)
 |    +--- com.google.re2j:re2j:1.6 (c)
 |    +--- org.jdom:jdom2:2.0.6 (c)
@@ -164,7 +164,7 @@ testCompileClasspath - Compile classpath for source set 'test'.
 |    +--- org.checkerframework:checker-qual:3.12.0
 |    +--- com.google.errorprone:error_prone_annotations:2.7.1
 |    \--- com.google.j2objc:j2objc-annotations:1.3
-+--- com.google.protobuf:protobuf-java -> 3.19.1
++--- com.google.protobuf:protobuf-java -> 3.19.3
 +--- com.google.re2j:re2j -> 1.6
 +--- org.jdom:jdom2 -> 2.0.6
 +--- org.slf4j:slf4j-api -> 1.7.32
@@ -187,14 +187,14 @@ testCompileClasspath - Compile classpath for source set 'test'.
 |    +--- org.jdom:jdom2 -> 2.0.6
 |    +--- com.google.code.findbugs:jsr305 -> 3.0.2
 |    +--- com.beust:jcommander -> 1.81
-|    +--- com.google.protobuf:protobuf-java -> 3.19.1
+|    +--- com.google.protobuf:protobuf-java -> 3.19.3
 |    +--- com.google.re2j:re2j -> 1.6
 |    +--- org.slf4j:slf4j-api -> 1.7.32
 |    \--- com.google.guava:guava -> 31.0.1-jre (*)
 +--- project :grib
 |    +--- project :netcdf-java-platform (*)
 |    +--- project :cdm-core (*)
-|    +--- com.google.protobuf:protobuf-java -> 3.19.1
+|    +--- com.google.protobuf:protobuf-java -> 3.19.3
 |    +--- org.jdom:jdom2 -> 2.0.6
 |    +--- com.google.code.findbugs:jsr305 -> 3.0.2
 |    +--- edu.ucar:jj2000 -> 5.4
@@ -306,7 +306,7 @@ No dependencies
 
 testCompileProtoPath
 +--- project :netcdf-java-platform
-|    +--- com.google.protobuf:protobuf-java:3.19.1 (c)
+|    +--- com.google.protobuf:protobuf-java:3.19.3 (c)
 |    +--- com.google.guava:guava:31.0.1-jre (c)
 |    +--- com.google.re2j:re2j:1.6 (c)
 |    +--- org.jdom:jdom2:2.0.6 (c)
@@ -326,7 +326,7 @@ testCompileProtoPath
 |    +--- org.checkerframework:checker-qual:3.12.0
 |    +--- com.google.errorprone:error_prone_annotations:2.7.1
 |    \--- com.google.j2objc:j2objc-annotations:1.3
-+--- com.google.protobuf:protobuf-java -> 3.19.1
++--- com.google.protobuf:protobuf-java -> 3.19.3
 +--- com.google.re2j:re2j -> 1.6
 +--- org.jdom:jdom2 -> 2.0.6
 +--- org.slf4j:slf4j-api -> 1.7.32
@@ -361,14 +361,14 @@ testCompileProtoPath
 |    +--- org.jdom:jdom2 -> 2.0.6
 |    +--- com.google.code.findbugs:jsr305 -> 3.0.2
 |    +--- com.beust:jcommander -> 1.81
-|    +--- com.google.protobuf:protobuf-java -> 3.19.1
+|    +--- com.google.protobuf:protobuf-java -> 3.19.3
 |    +--- com.google.re2j:re2j -> 1.6
 |    +--- org.slf4j:slf4j-api -> 1.7.32
 |    \--- com.google.guava:guava -> 31.0.1-jre (*)
 +--- project :grib
 |    +--- project :netcdf-java-platform (*)
 |    +--- project :cdm-core (*)
-|    +--- com.google.protobuf:protobuf-java -> 3.19.1
+|    +--- com.google.protobuf:protobuf-java -> 3.19.3
 |    +--- org.jdom:jdom2 -> 2.0.6
 |    +--- com.google.code.findbugs:jsr305 -> 3.0.2
 |    +--- edu.ucar:jj2000 -> 5.4
@@ -500,7 +500,7 @@ No dependencies
 
 testRuntimeClasspath - Runtime classpath of source set 'test'.
 +--- project :netcdf-java-platform
-|    +--- com.google.protobuf:protobuf-java:3.19.1 (c)
+|    +--- com.google.protobuf:protobuf-java:3.19.3 (c)
 |    +--- com.google.guava:guava:31.0.1-jre (c)
 |    +--- com.google.re2j:re2j:1.6 (c)
 |    +--- org.jdom:jdom2:2.0.6 (c)
@@ -521,7 +521,7 @@ testRuntimeClasspath - Runtime classpath of source set 'test'.
 |    +--- org.checkerframework:checker-qual:3.12.0
 |    +--- com.google.errorprone:error_prone_annotations:2.7.1
 |    \--- com.google.j2objc:j2objc-annotations:1.3
-+--- com.google.protobuf:protobuf-java -> 3.19.1
++--- com.google.protobuf:protobuf-java -> 3.19.3
 +--- com.google.re2j:re2j -> 1.6
 +--- org.jdom:jdom2 -> 2.0.6
 +--- org.slf4j:slf4j-api -> 1.7.32
@@ -556,14 +556,14 @@ testRuntimeClasspath - Runtime classpath of source set 'test'.
 |    +--- org.jdom:jdom2 -> 2.0.6
 |    +--- com.google.code.findbugs:jsr305 -> 3.0.2
 |    +--- com.beust:jcommander -> 1.81
-|    +--- com.google.protobuf:protobuf-java -> 3.19.1
+|    +--- com.google.protobuf:protobuf-java -> 3.19.3
 |    +--- com.google.re2j:re2j -> 1.6
 |    +--- org.slf4j:slf4j-api -> 1.7.32
 |    \--- com.google.guava:guava -> 31.0.1-jre (*)
 +--- project :grib
 |    +--- project :netcdf-java-platform (*)
 |    +--- project :cdm-core (*)
-|    +--- com.google.protobuf:protobuf-java -> 3.19.1
+|    +--- com.google.protobuf:protobuf-java -> 3.19.3
 |    +--- org.jdom:jdom2 -> 2.0.6
 |    +--- com.google.code.findbugs:jsr305 -> 3.0.2
 |    +--- edu.ucar:jj2000 -> 5.4
