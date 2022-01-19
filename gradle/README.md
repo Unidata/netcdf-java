@@ -57,6 +57,18 @@ Very few tests are annotated with this category.
 Don't feel bad about not running them.
 We don't like this restriction either.
 
+By default, the test suite will stop running once a failure occurs in a single project.
+If you would like the tests to keep running until completion, set the `ignoreFailures` property to true.
+For example:
+
+~~~shell
+./gradlew test -DignoreFailures=true
+~~~
+
+This will cause all of the tests tasks in all of the projects to run, regardless of how many of the test fail.
+If one or more tasks fail, the overall gradle process will show as successful. 
+However, CI tools like Jenkins will show that this step Fails due to the tests reporting failures.
+
 ## Common Build Scripts
 
 ### Base Java Build Script

@@ -143,6 +143,7 @@ tasks.withType<Test> {
     systemProperties(
         Pair("jna.library.path", System.getProperty("jna.library.path")),
     )
+    ignoreFailures = System.getProperty("ignoreFailures").toBoolean()
 }
 
 spotless {
