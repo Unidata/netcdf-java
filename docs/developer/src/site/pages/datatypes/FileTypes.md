@@ -21,13 +21,14 @@ For more information on including modules in your build, see [here](../userguide
 
 To register your format/IOServiceProvider, or to send corrections and additions to this table, please send email to <support-netcdf-java@unidata.ucar.edu>.
 
-| Id | Description | Module | Reference URL |
-| BUFR | WMO Binary Universal Form | `bufr` | <http://www.wmo.int/pages/prog/www/WMOCodes/OperationalCodes.html/> |
-| GRIB-1| WMO GRIB Edition 1 | `grib` | <http://www.wmo.ch/pages/prog/www/WMOCodes/Guides/GRIB/GRIB1-Contents.html> |
-| GRIB-2 | WMO GRIB Edition 2 | `grib` | <http://www.wmo.ch/pages/prog/www/WMOCodes/Guides/GRIB/GRIB2_062006.pdf> |
-| HDF4 | Hierarchical Data Format, version 4 | `cdm-core` | <http://www.hdfgroup.org/products/hdf4/> |
-| HDF5 | Hierarchical Data Format, version 5 | `cdm-core` | <http://www.hdfgroup.org/HDF5/> |
-| netCDF | NetCDF classic format | `cdm-core` | <https://www.unidata.ucar.edu/software/netcdf/index.html> |
-| netCDF-4 | NetCDF-4 format on HDF-5 | `cdm-core` | <https://www.unidata.ucar.edu/software/netcdf/index.html> |
-| OPeNDAP | Open-source Project for a Network Data Access Protocol | `opendap` | <http://opendap.org/> |
-| S3 | RandomAccessFile access to CDM datasets on object stores | `cdm-s3` | <https://docs.unidata.ucar.edu/netcdf-java/5.4/userguide/dataset_urls.html#object-stores> |
+| Id | Description | Module | 
+| BUFR | WMO Binary Universal Form | `bufr` | 
+| GeoTIFF | Georeferencing information embedded within a TIFF file | 'cdm-misc' |
+| GRIB-1| WMO GRIB Edition 1 | `grib` | 
+| GRIB-2 | WMO GRIB Edition 2 | `grib` | 
+| HDF4 | Hierarchical Data Format, version 4 | `cdm-core` | 
+| HDF5 | Hierarchical Data Format, version 5 | `cdm-core` | 
+| netCDF | NetCDF classic format | `cdm-core` | 
+| netCDF-4 | NetCDF-4 format on HDF-5 | `cdm-core` | 
+| OPeNDAP | Open-source Project for a Network Data Access Protocol | `opendap` | 
+| S3 | RandomAccessFile access to CDM datasets on object stores | `cdm-s3` | 
