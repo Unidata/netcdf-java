@@ -18,6 +18,7 @@ import ucar.array.InvalidRangeException;
 import ucar.array.Section;
 import ucar.nc2.Variable;
 import ucar.nc2.internal.iosp.hdf5.H5objects.Filter;
+import ucar.nc2.internal.iosp.hdf5.zstd.ZstdDecompressor;
 import ucar.nc2.iosp.LayoutBB;
 import ucar.nc2.iosp.LayoutBBTiled;
 import ucar.nc2.util.IO;
@@ -30,12 +31,12 @@ import ucar.unidata.io.RandomAccessFile;
  * Used for filtered data
  */
 public class H5tiledLayoutBB implements LayoutBB {
-  static boolean debugFilter;
+  static boolean debugFilter = false;
 
   private static final int DEFAULTZIPBUFFERSIZE = 512;
   // System property name for -D flag
   private static final String INFLATEBUFFERSIZE_PROPERTY = "unidata.h5iosp.inflate.buffersize";
-  private static boolean debug;
+  private static boolean debug = false;
 
   private final LayoutBBTiled delegate;
 
@@ -198,7 +199,7 @@ public class H5tiledLayoutBB implements LayoutBB {
       return offset;
     }
 
-    public ByteBuffer getByteBuffer() throws IOException {
+    public ByteBuffer getByteBuffer(int expectedLengthBytes) throws IOException {
       try {
         // read the data
         byte[] data = new byte[delegate.size];
@@ -209,22 +210,25 @@ public class H5tiledLayoutBB implements LayoutBB {
         for (int i = filters.length - 1; i >= 0; i--) {
           Filter f = filters[i];
           if (isBitSet(delegate.filterMask, i)) {
-            if (debug)
-              System.out.println("skip for chunk " + delegate);
             continue;
           }
-          if (f.id == 1) {
-            data = inflate(data);
-          } else if (f.id == 2) {
-            data = shuffle(data, f.data[0]);
-          } else if (f.id == 3) {
-            data = checkfletcher32(data);
-            /*
-             * } else if (f.id == 307) {
-             * data = unbzip2(data);
-             */
-          } else
-            throw new RuntimeException("Unknown filter type=" + f.id);
+          switch (f.filterType) {
+            case deflate:
+              data = inflate(data);
+              break;
+            case shuffle:
+              data = shuffle(data, f.data[0]);
+              break;
+            case fletcher32:
+              data = checkfletcher32(data);
+              break;
+            case zstandard:
+              ByteBuffer result = zstandard(data, expectedLengthBytes);
+              result.order(byteOrder);
+              return result;
+            default:
+              throw new RuntimeException("Unknown filter type=" + H5objects.FilterType.nameFromId(f.id));
+          }
         }
 
         ByteBuffer result = ByteBuffer.wrap(data);
@@ -237,6 +241,28 @@ public class H5tiledLayoutBB implements LayoutBB {
         throw oom;
       }
     }
+
+    /**
+     * decompress using Zstandard
+     *
+     * @param compressed compressed data
+     * @return uncompressed data
+     */
+    private ByteBuffer zstandard(byte[] compressed, int expectedLengthBytes) {
+      ByteBuffer input = ByteBuffer.wrap(compressed);
+      ByteBuffer output = ByteBuffer.wrap(new byte[expectedLengthBytes]);
+
+      ZstdDecompressor decompressor = new ZstdDecompressor();
+      decompressor.decompress(input, output);
+      output.flip();
+      if (debug || debugFilter) {
+        float compress = (float) compressed.length / output.limit();
+        System.out.printf(" zstandard bytes in= %d out= %d compress = %f.2%n", compressed.length, output.limit(),
+            compress);
+      }
+      return output.slice();
+    }
+
 
     /**
      * inflate data

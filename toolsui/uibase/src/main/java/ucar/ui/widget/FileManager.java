@@ -223,6 +223,11 @@ public class FileManager {
     return result;
   }
 
+  public String chooseFileOrDirectory(String defaultDirectory) {
+    chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+    return (defaultDirectory == null) ? chooseFilename() : chooseFilename(defaultDirectory);
+  }
+
   /**
    * Allow user to select file, then return the filename, in canonical form,
    * always using '/', never '\'

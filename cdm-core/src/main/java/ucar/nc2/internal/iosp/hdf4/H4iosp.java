@@ -361,7 +361,7 @@ public class H4iosp extends AbstractIOServiceProvider {
       return offset;
     }
 
-    public ByteBuffer getByteBuffer() throws IOException {
+    public ByteBuffer getByteBuffer(int expectedSizeBytes) throws IOException {
       if (bb == null) {
         // read compressed data in
         H4header.TagData cdata = compress.getDataTag();

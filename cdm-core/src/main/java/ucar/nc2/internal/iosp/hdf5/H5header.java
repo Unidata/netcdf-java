@@ -1414,7 +1414,7 @@ public class H5header implements HdfHeaderIF {
     vinfo.setOwner(vb);
     if ((vinfo.mfp != null) && warnings) {
       for (Filter f : vinfo.mfp.getFilters()) {
-        if (f.id > KNOWN_FILTERS) {
+        if (f.filterType == H5objects.FilterType.unknown) {
           log.warn("  Variable " + facade.name + " has unknown Filter(s) = " + vinfo.mfp);
           break;
         }
