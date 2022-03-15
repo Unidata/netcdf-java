@@ -355,39 +355,26 @@ public class HorizCoordSys {
    * cases:
    * A. wantMin < wantMax
    * 1 wantMin, wantMax > end : empty
-   * 2 wantMin, wantMax < end : [wantMin, wantMax]
-   * 3 wantMin < end, wantMax > end : [wantMin, end]
+   * 2 wantMin < end : [wantMin, min(wantMax,end)]
    * 
    * B. wantMin > wantMax
    * 1 wantMin, wantMax > end : all [start, end]
    * 2 wantMin, wantMax < end : 2 pieces: [wantMin, end] + [start, max]
-   * 3 wantMin < end, wantMax > end : [wantMin, end]
    */
   private List<MAMath.MinMax> subsetLonIntervals(double wantMin, double wantMax, double start, double end) {
     if (wantMin <= wantMax) {
-      if (wantMin > end && wantMax > end) // none A.1
+      if (wantMin > end) { // none A.1
         return ImmutableList.of();
-
-      if (wantMin < end && wantMax < end) // A.2
-        return Lists.newArrayList(new MAMath.MinMax(wantMin, wantMax));
-
-      if (wantMin < end && wantMax > end) // A.3
-        return Lists.newArrayList(new MAMath.MinMax(wantMin, end));
-
-    } else {
-      if (wantMin > end && wantMax > end) // all B.1
-        return Lists.newArrayList(new MAMath.MinMax(start, end));
-
-      if (wantMin < end && wantMax < end) { // B.2
+      } else { // A.2
+        return Lists.newArrayList(new MAMath.MinMax(wantMin, Math.min(wantMax, end)));
+      }
+    } else { // wantMin > wantMax
+      if (wantMax > end) { // all B.1
+        return Lists.newArrayList(new MAMath.MinMax(start, end)); // LOOK is this correct?!
+      } else {
         return Lists.newArrayList(new MAMath.MinMax(wantMin, end), new MAMath.MinMax(start, wantMax));
       }
-      if (wantMin < end && wantMax > end) // B.3
-        return Lists.newArrayList(new MAMath.MinMax(wantMin, end));
     }
-
-    // otherwise shouldnt get to this
-    logger.error("longitude want [{},{}] does not intersect axis [{},{}]", wantMin, wantMax, start, end);
-    return ImmutableList.of();
   }
 
   // return y, x range
