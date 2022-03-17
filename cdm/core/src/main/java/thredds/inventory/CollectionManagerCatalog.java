@@ -5,6 +5,7 @@
 
 package thredds.inventory;
 
+import java.io.OutputStream;
 import thredds.client.catalog.Access;
 import thredds.client.catalog.Dataset;
 import thredds.client.catalog.tools.CatalogCrawler;
@@ -145,6 +146,11 @@ public class CollectionManagerCatalog extends CollectionManagerAbstract implemen
     @Override
     public void setAuxInfo(Object info) {
       this.info = info;
+    }
+
+    @Override
+    public void writeToStream(OutputStream outputStream) throws IOException {
+      throw new IOException("Writing MFileRemote not implemented. Filename: " + getName());
     }
   }
 

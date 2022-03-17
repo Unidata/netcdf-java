@@ -5,6 +5,7 @@
 
 package thredds.filesystem;
 
+import java.io.OutputStream;
 import thredds.inventory.MFile;
 import ucar.unidata.util.StringUtil2;
 import javax.annotation.concurrent.ThreadSafe;
@@ -112,6 +113,11 @@ public class MFileOS7 implements MFile {
   @Override
   public String toString() {
     return getPath();
+  }
+
+  @Override
+  public void writeToStream(OutputStream outputStream) throws IOException {
+    throw new IOException("Writing MFileOS7 to stream not implemented. Filename: " + getName());
   }
 
   public Path getNioPath() {

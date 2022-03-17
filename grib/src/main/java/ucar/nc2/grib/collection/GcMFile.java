@@ -5,6 +5,8 @@
 
 package ucar.nc2.grib.collection;
 
+import java.io.IOException;
+import java.io.OutputStream;
 import javax.annotation.Nullable;
 import thredds.filesystem.MFileOS;
 import thredds.inventory.MFile;
@@ -107,5 +109,10 @@ public class GcMFile implements thredds.inventory.MFile {
   public String toString() {
     return "GcMFile{" + "directory=" + directory + ", name='" + name + '\'' + ", lastModified=" + lastModified
         + ", length=" + length + ", index=" + index + '}';
+  }
+
+  @Override
+  public void writeToStream(OutputStream outputStream) throws IOException {
+    throw new IOException("Writing GcMFile to stream not implemented. Filename: " + getName());
   }
 }

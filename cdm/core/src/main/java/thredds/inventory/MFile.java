@@ -6,6 +6,7 @@
 package thredds.inventory;
 
 import java.io.IOException;
+import java.io.OutputStream;
 
 /**
  * An abstraction for java.io.File / java.nio.file.Path
@@ -62,4 +63,11 @@ public interface MFile extends Comparable<MFile> {
   Object getAuxInfo();
 
   void setAuxInfo(Object info);
+
+  /**
+   * Write the MFile to an OutputStream
+   *
+   * @param outputStream the OutputStream the MFile contents should be written to
+   */
+  void writeToStream(OutputStream outputStream) throws IOException;
 }
