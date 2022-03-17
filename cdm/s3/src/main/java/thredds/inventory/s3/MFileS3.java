@@ -86,12 +86,8 @@ public class MFileS3 implements MFile {
   @Nullable
   private HeadObjectResponse getHeadObjectResponse() {
     HeadObjectResponse response = null;
-    S3Client client = null;
-    try {
-      client = CdmS3Client.acquire(cdmS3Uri);
-    } catch (IOException ioe) {
-      logger.error("Could not create a CdmS3Client for {}", cdmS3Uri, ioe);
-    }
+    S3Client client = getClient();
+
     if (client != null) {
       Builder headObjectRequestBuilder = HeadObjectRequest.builder().bucket(cdmS3Uri.getBucket());
       if (key != null) {
@@ -100,6 +96,17 @@ public class MFileS3 implements MFile {
       response = client.headObject(headObjectRequestBuilder.build());
     }
     return response;
+  }
+
+  @Nullable
+  private S3Client getClient() {
+    S3Client client = null;
+    try {
+      client = CdmS3Client.acquire(cdmS3Uri);
+    } catch (IOException ioe) {
+      logger.error("Could not create a CdmS3Client for {}", cdmS3Uri, ioe);
+    }
+    return client;
   }
 
   @Override
