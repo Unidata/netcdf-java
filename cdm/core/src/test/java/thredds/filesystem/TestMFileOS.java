@@ -37,6 +37,28 @@ public class TestMFileOS {
     assertThat(outputStream.toByteArray()).isEqualTo(Files.readAllBytes(file.toPath()));
   }
 
+  @Test
+  public void shouldWritePartialFileToStream() throws IOException {
+    final File file = createTemporaryFile(expectedSize);
+    final MFileOS mFile = new MFileOS(file);
+    final long length = mFile.getLength();
+    assertThat(length).isEqualTo(expectedSize);
+
+    final int offset = 42;
+    final int maxBytes = 100;
+
+    final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+    mFile.writeToStream(outputStream, offset, maxBytes);
+
+    final int startPosition = Math.min(offset, expectedSize);
+    final int endPosition = Math.min(offset + maxBytes, expectedSize);
+
+    assertThat(outputStream.size()).isEqualTo(Math.max(0, endPosition - startPosition));
+
+    final byte[] partialFile = Arrays.copyOfRange(Files.readAllBytes(file.toPath()), startPosition, endPosition);
+    assertThat(outputStream.toByteArray()).isEqualTo(partialFile);
+  }
+
   private File createTemporaryFile(int size) throws IOException {
     final File tempFile = File.createTempFile("TestMFileOS-", ".tmp");
     tempFile.deleteOnExit();
