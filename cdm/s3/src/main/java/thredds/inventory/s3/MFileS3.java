@@ -290,6 +290,11 @@ public class MFileS3 implements MFile {
     IO.copy(responseInputStream, outputStream);
   }
 
+  @Override
+  public void writeToStream(OutputStream outputStream, long offset, long maxBytes) throws IOException {
+    throw new IOException("Writing MFileZip with a byte range to stream not implemented. Filename: " + getName());
+  }
+
   public static class Provider implements MFileProvider {
 
     private static String protocol = CdmS3Uri.SCHEME_CDM_S3;

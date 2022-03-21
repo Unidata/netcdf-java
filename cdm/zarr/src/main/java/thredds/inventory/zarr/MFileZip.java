@@ -157,6 +157,11 @@ public class MFileZip implements MFile {
     }
   }
 
+  @Override
+  public void writeToStream(OutputStream outputStream, long offset, long maxBytes) throws IOException {
+    throw new IOException("Writing MFileZip with a byte range to stream not implemented. Filename: " + getName());
+  }
+
   public Path getRootPath() {
     return rootPath;
   }

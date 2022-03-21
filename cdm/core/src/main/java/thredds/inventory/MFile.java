@@ -70,4 +70,13 @@ public interface MFile extends Comparable<MFile> {
    * @param outputStream the OutputStream the MFile contents should be written to
    */
   void writeToStream(OutputStream outputStream) throws IOException;
+
+  /**
+   * Write the MFile to an OutputStream
+   *
+   * @param outputStream the OutputStream the MFile contents should be written to
+   * @param offset the index of the first byte to write out
+   * @param maxBytes the maximum number of bytes to copy
+   */
+  void writeToStream(OutputStream outputStream, long offset, long maxBytes) throws IOException;
 }

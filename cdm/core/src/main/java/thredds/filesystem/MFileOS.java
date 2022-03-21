@@ -11,6 +11,7 @@ import java.nio.file.Files;
 import javax.annotation.Nullable;
 import thredds.inventory.MFile;
 import ucar.nc2.util.IO;
+import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.StringUtil2;
 import javax.annotation.concurrent.ThreadSafe;
 import java.io.File;
@@ -114,6 +115,13 @@ public class MFileOS implements MFile {
   @Override
   public void writeToStream(OutputStream outputStream) throws IOException {
     IO.copyFileB(file, outputStream, 60 * 1000);
+  }
+
+  @Override
+  public void writeToStream(OutputStream outputStream, long offset, long maxBytes) throws IOException {
+    try (RandomAccessFile randomAccessFile = RandomAccessFile.acquire(file.getPath())) {
+      IO.copyRafB(randomAccessFile, offset, maxBytes, outputStream, new byte[60000]);
+    }
   }
 
   public File getFile() {

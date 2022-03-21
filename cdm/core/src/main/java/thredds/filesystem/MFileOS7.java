@@ -120,6 +120,11 @@ public class MFileOS7 implements MFile {
     throw new IOException("Writing MFileOS7 to stream not implemented. Filename: " + getName());
   }
 
+  @Override
+  public void writeToStream(OutputStream outputStream, long offset, long maxBytes) throws IOException {
+    throw new IOException("Writing MFileOS7 to stream not implemented. Filename: " + getName());
+  }
+
   public Path getNioPath() {
     return path;
   }

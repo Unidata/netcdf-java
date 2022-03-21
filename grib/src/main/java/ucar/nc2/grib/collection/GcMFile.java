@@ -115,4 +115,9 @@ public class GcMFile implements thredds.inventory.MFile {
   public void writeToStream(OutputStream outputStream) throws IOException {
     throw new IOException("Writing GcMFile to stream not implemented. Filename: " + getName());
   }
+
+  @Override
+  public void writeToStream(OutputStream outputStream, long offset, long maxBytes) throws IOException {
+    throw new IOException("Writing GcMFile to stream not implemented. Filename: " + getName());
+  }
 }

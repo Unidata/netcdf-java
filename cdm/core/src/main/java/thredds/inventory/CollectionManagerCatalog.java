@@ -152,6 +152,11 @@ public class CollectionManagerCatalog extends CollectionManagerAbstract implemen
     public void writeToStream(OutputStream outputStream) throws IOException {
       throw new IOException("Writing MFileRemote not implemented. Filename: " + getName());
     }
+
+    @Override
+    public void writeToStream(OutputStream outputStream, long offset, long maxBytes) throws IOException {
+      throw new IOException("Writing MFileRemote not implemented. Filename: " + getName());
+    }
   }
 
   ///////////////////////////////
