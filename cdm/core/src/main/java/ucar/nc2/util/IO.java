@@ -354,6 +354,17 @@ public class IO {
   }
 
   /**
+   * copy file to output stream
+   *
+   * @param fileIn copy this file
+   * @param out copy here
+   * @throws java.io.IOException on io error
+   */
+  public static void copyFile(File fileIn, OutputStream out) throws IOException {
+    copyFileB(fileIn, out, default_file_buffersize);
+  }
+
+  /**
    * copy file to output stream, specify internal buffer size
    *
    * @param fileIn copy this file
@@ -411,6 +422,21 @@ public class IO {
    * }
    * }
    */
+
+  /**
+   * Copy part of a RandomAccessFile to output stream
+   *
+   * @param raf copy this file
+   * @param offset start here (byte offset)
+   * @param length number of bytes to copy
+   * @param out copy to this stream
+   * @return number of bytes copied
+   * @throws java.io.IOException on io error
+   */
+  public static long copyRafB(ucar.unidata.io.RandomAccessFile raf, long offset, long length, OutputStream out)
+      throws IOException {
+    return copyRafB(raf, offset, length, out, new byte[default_file_buffersize]);
+  }
 
   /**
    * Copy part of a RandomAccessFile to output stream, specify internal buffer size

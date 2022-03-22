@@ -114,13 +114,13 @@ public class MFileOS implements MFile {
 
   @Override
   public void writeToStream(OutputStream outputStream) throws IOException {
-    IO.copyFileB(file, outputStream, 60 * 1000);
+    IO.copyFile(file, outputStream);
   }
 
   @Override
   public void writeToStream(OutputStream outputStream, long offset, long maxBytes) throws IOException {
     try (RandomAccessFile randomAccessFile = RandomAccessFile.acquire(file.getPath())) {
-      IO.copyRafB(randomAccessFile, offset, maxBytes, outputStream, new byte[60000]);
+      IO.copyRafB(randomAccessFile, offset, maxBytes, outputStream);
     }
   }
 
