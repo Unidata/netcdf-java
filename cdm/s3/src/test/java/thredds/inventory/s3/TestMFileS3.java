@@ -6,7 +6,9 @@
 package thredds.inventory.s3;
 
 import static com.google.common.truth.Truth.assertThat;
+import static org.junit.Assert.assertThrows;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -14,6 +16,7 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import software.amazon.awssdk.services.s3.model.NoSuchKeyException;
 import thredds.inventory.MFile;
 import ucar.unidata.io.s3.S3TestsCommon;
 import ucar.unidata.util.test.category.NotPullRequest;
@@ -168,6 +171,37 @@ public class TestMFileS3 {
     for (String delimiter : DELIMITER_FRAGMENTS) {
       checkS3MFilesAuxInfo(OSDC_G16_S3_OBJECT_1 + delimiter);
     }
+  }
+
+  @Test
+  public void shouldWriteObjectsToStream() throws IOException {
+    final String[] objects = {AWS_G16_S3_OBJECT_1, GCS_G16_S3_OBJECT_1, OSDC_G16_S3_OBJECT_1};
+
+    for (String object : objects) {
+      final MFile mFile = new MFileS3(object);
+      final long length = mFile.getLength();
+
+      final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+      mFile.writeToStream(outputStream);
+      assertThat(outputStream.size()).isEqualTo(length);
+    }
+  }
+
+  @Test
+  public void shouldNotWriteDirectoryToStream() throws IOException {
+    final MFile mFile = new MFileS3(AWS_G16_S3_URI_DIR + "/" + DELIMITER_FRAGMENT);
+    assertThat(mFile.isDirectory()).isTrue();
+
+    final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+    assertThrows(NoSuchKeyException.class, () -> mFile.writeToStream(outputStream));
+  }
+
+  @Test
+  public void shouldNotWriteNonExistingObjectToStream() throws IOException {
+    final MFile mFile = new MFileS3(AWS_G16_S3_URI_DIR + "?NotARealKey");
+
+    final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+    assertThrows(NoSuchKeyException.class, () -> mFile.writeToStream(outputStream));
   }
 
   private void checkWithBucket(String cdmS3Uri) throws IOException {
