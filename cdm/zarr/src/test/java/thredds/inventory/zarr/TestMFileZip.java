@@ -13,12 +13,17 @@ import java.util.Random;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
 @RunWith(Parameterized.class)
 public class TestMFileZip {
+
+  @ClassRule
+  public static final TemporaryFolder tempFolder = new TemporaryFolder();
 
   @Parameterized.Parameters(name = "{0}, {1}")
   static public List<Integer[]> getTestParameters() {
@@ -47,8 +52,7 @@ public class TestMFileZip {
   }
 
   private ZipFile createTemporaryZipFile(int size, int numberOfFiles) throws IOException {
-    final File zipFile = File.createTempFile("TestMFileZip-", ".zip");
-    zipFile.deleteOnExit();
+    final File zipFile = tempFolder.newFile("TestMFileZip" + size + "-" + numberOfFiles +".zip");
 
     try (FileOutputStream fos = new FileOutputStream(zipFile.getPath());
         ZipOutputStream zipOS = new ZipOutputStream(fos)) {
@@ -69,8 +73,7 @@ public class TestMFileZip {
   }
 
   private File createTemporaryFile(int size) throws IOException {
-    final File tempFile = File.createTempFile("TestMFileZip-", ".tmp");
-    tempFile.deleteOnExit();
+    final File tempFile = tempFolder.newFile();
 
     byte[] bytes = new byte[size];
     new Random().nextBytes(bytes);

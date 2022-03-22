@@ -9,12 +9,17 @@ import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
 @RunWith(Parameterized.class)
 public class TestMFileOS {
+
+  @ClassRule
+  public static final TemporaryFolder tempFolder = new TemporaryFolder();
 
   @Parameterized.Parameters(name = "{0}")
   static public List<Integer> getTestParameters() {
@@ -60,8 +65,7 @@ public class TestMFileOS {
   }
 
   private File createTemporaryFile(int size) throws IOException {
-    final File tempFile = File.createTempFile("TestMFileOS-", ".tmp");
-    tempFile.deleteOnExit();
+    final File tempFile = tempFolder.newFile();
 
     byte[] bytes = new byte[size];
     new Random().nextBytes(bytes);
