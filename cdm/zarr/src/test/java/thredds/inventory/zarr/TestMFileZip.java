@@ -52,7 +52,7 @@ public class TestMFileZip {
   }
 
   private ZipFile createTemporaryZipFile(int size, int numberOfFiles) throws IOException {
-    final File zipFile = tempFolder.newFile("TestMFileZip" + size + "-" + numberOfFiles +".zip");
+    final File zipFile = tempFolder.newFile("TestMFileZip" + size + "-" + numberOfFiles + ".zip");
 
     try (FileOutputStream fos = new FileOutputStream(zipFile.getPath());
         ZipOutputStream zipOS = new ZipOutputStream(fos)) {
