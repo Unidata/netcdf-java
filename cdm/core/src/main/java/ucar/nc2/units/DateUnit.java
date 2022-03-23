@@ -14,7 +14,7 @@ import java.util.StringTokenizer;
  * "1203 days since 1970-01-01 00:00:00".
  * <p>
  * This is a wrapper around ucar.units package.
- * It tracks the value, the base time unit, and the date origin seperately.
+ * It tracks the value, the base time unit, and the date origin separately.
  *
  * @author caron
  */

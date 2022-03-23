@@ -12,7 +12,7 @@ import java.io.Serializable;
  * Universal Transverse Mercator.
  * Ellipsoidal earth.
  * <p/>
- * Origin of coordinate system is reletive to the point where the
+ * Origin of coordinate system is relative to the point where the
  * central meridian and the equator cross.
  * This point has x,y value = (500, 0) km for north hemisphere.
  * and (500, 10,0000) km for south hemisphere.

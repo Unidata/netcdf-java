@@ -63,7 +63,7 @@ public class ThreddsDatasetChooser extends JPanel {
   private CatalogChooser catalogChooser;
   private JTabbedPane tabbedPane;
 
-  private boolean doResolve; // shoul we resolve Resolver datasets?
+  private boolean doResolve; // should we resolve Resolver datasets?
   private boolean pipeOut; // send results to standard out
   private boolean messageOut; // send results to popup message
   private JFrame frame; // need for popup messages

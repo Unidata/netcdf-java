@@ -678,7 +678,7 @@ public abstract class Aggregation implements AggregationIF {
      *
      * @param mainv aggregated Variable
      * @param cancelTask let user cancel
-     * @param section reletive to the local Variable
+     * @param section relative to the local Variable
      * @return the complete Array for mainv
      * @throws IOException on I/O error
      * @throws InvalidRangeException on section error

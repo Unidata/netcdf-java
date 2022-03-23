@@ -49,7 +49,7 @@ import java.io.IOException;
  * - xlink:title = childCollectionCrDs.getName()
  * 
  * 2) The ID of a catalog dataset element is the ID of the parent dataset
- * and the name of the corresponding CrawlableDataset seperated by a "/".
+ * and the name of the corresponding CrawlableDataset separated by a "/".
  * So, it ends up being the path of the CrawlableDataset from the point
  * where the collection CrawlableDataset path ends then prefixed by the
  * ID of the datasetScan element for that collection. Example:

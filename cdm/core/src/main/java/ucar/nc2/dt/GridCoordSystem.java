@@ -40,7 +40,7 @@ public interface GridCoordSystem {
    */
 
   /**
-   * The name of the Grid Coordinate System, consisting of the list of coordinate axes, seperated by blanks.
+   * The name of the Grid Coordinate System, consisting of the list of coordinate axes, separated by blanks.
    * 
    * @return name of the Grid Coordinate System
    */

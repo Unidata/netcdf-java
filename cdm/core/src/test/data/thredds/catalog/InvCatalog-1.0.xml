@@ -6,7 +6,7 @@
   <!--	all referenced servers -->
   <service name="ACD" serviceType="DODS" base="http://www.acd.ucar.edu/dods/testServer/"/>
   <service name="local" serviceType="NetCDF" base="file://E:/metapps/data/"/>
-  <service name="reletive" serviceType="NetCDF" base=""/>
+  <service name="relative" serviceType="NetCDF" base=""/>
   <service name="Motherlode" serviceType="Compound" base="">
     <service name="MotherlodeFTP" serviceType="FTP" base="ftp://motherlode.ucar.edu/ftp/pub/thredds/"/>
     <service name="MotherlodeDODS" serviceType="DODS" base="http://motherlode.ucar.edu/cgi-bin/dods/"/>
@@ -31,7 +31,7 @@
       <dataset name="CO2" ID="CO2_Flux">
         <access serviceName="MotherlodeFTP" urlPath="ftp/flux/CO2.nc"/>
         <access serviceName="MotherlodeDODS" urlPath="1998/CO2.nc"/>
-        <access serviceName="reletive" urlPath="1998/CO2.nc"/>
+        <access serviceName="relative" urlPath="1998/CO2.nc"/>
       </dataset>
       <dataset name="NO2" ID="NO2_Flux">
         <access serviceName="MotherlodeFTP" urlPath="ftp/flux/NO2.nc"/>

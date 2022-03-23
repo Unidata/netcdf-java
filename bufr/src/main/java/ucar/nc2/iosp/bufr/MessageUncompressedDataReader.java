@@ -95,7 +95,7 @@ public class MessageUncompressedDataReader {
    * @param abb place data into here in order (may be null)
    * @param m read this message
    * @param raf from this file
-   * @param r which datasets, reletive to this message. null == all.
+   * @param r which datasets, relative to this message. null == all.
    * @param addTime add the time coordinate
    * @param f output bit count debugging info (may be null)
    * @return number of datasets read

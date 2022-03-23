@@ -34,7 +34,7 @@ public class TestURLnaming {
 
   private void testResolve(String base, String rel, String result) {
     System.out.println("baseUri          = " + base);
-    System.out.println("reletiveUri      = " + rel);
+    System.out.println("relativeUri      = " + rel);
     System.out.println("URLnaming.resolve= " + URLnaming.resolve(base, rel));
     System.out.println();
     if (result != null)

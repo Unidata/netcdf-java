@@ -113,7 +113,7 @@ public class IFPSConvention extends CoordSystemBuilder {
     }
 
     // figure out the time coordinate for each data variable
-    // LOOK : always seperate; could try to discover if they are the same
+    // LOOK : always separate; could try to discover if they are the same
     // Make copy because we will add new elements to it.
     for (Variable.Builder<?> ncvar : ImmutableList.copyOf(rootGroup.vbuilders)) {
       // variables that are used but not displayable or have no data have DIM_0, also don't want history, since those

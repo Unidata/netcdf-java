@@ -59,7 +59,7 @@ public class TimeOffsetAxis extends CoverageCoordAxis1D {
 
     assert (builder != null);
 
-    // all the offsets are reletive to rundate
+    // all the offsets are relative to rundate
     builder.setReferenceDate(runDate);
     return Optional.of(new TimeOffsetAxis(builder));
   }

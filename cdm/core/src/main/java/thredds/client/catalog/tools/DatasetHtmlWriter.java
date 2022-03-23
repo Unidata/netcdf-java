@@ -420,7 +420,7 @@ public class DatasetHtmlWriter {
   }
 
   /**
-   * resolve reletive URLS against the catalog URL.
+   * resolve relative URLS against the catalog URL.
    *
    * @param ds use ds parent catalog, if it exists
    * @param href URL to resolve

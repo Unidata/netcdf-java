@@ -2519,7 +2519,7 @@ public class H5objects {
     // the heap id is has already been read into a byte array at given pos
     HeapIdentifier(ByteBuffer bb, int pos) {
       bb.order(ByteOrder.LITTLE_ENDIAN); // header information is in le byte order
-      bb.position(pos); // reletive reading
+      bb.position(pos); // relative reading
       nelems = bb.getInt();
       heapAddress = header.isOffsetLong ? bb.getLong() : (long) bb.getInt();
       index = bb.getInt();

@@ -137,7 +137,7 @@ Create **union** of datasets `cldc.mean.nc` and `lflx.mean.nc` located in the di
 </netcdf>
 ~~~
 
-Create **union** of all datasets ending in `mean.nc` located in the directory `nc` reletive to where the NcML file is found:
+Create **union** of all datasets ending in `mean.nc` located in the directory `nc` relative to where the NcML file is found:
 
 ~~~xml
 <?xml version="1.0" encoding="UTF-8"?>

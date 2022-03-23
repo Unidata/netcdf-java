@@ -552,7 +552,7 @@ public abstract class AggregationOuterDimension extends Aggregation implements P
   class DatasetOuterDimension extends Dataset {
 
     protected int ncoord; // number of coordinates in outer dimension for this dataset
-    protected String coordValue; // if theres a coordValue on the netcdf element - may be multiple, blank seperated
+    protected String coordValue; // if theres a coordValue on the netcdf element - may be multiple, blank separated
     protected Date coordValueDate; // if its a date
     protected boolean isStringValued;
     private int aggStart, aggEnd; // index in aggregated dataset; aggStart <= i < aggEnd
@@ -599,7 +599,7 @@ public abstract class AggregationOuterDimension extends Aggregation implements P
         }
       }
 
-      // allow coordValue attribute on JOIN_EXISTING, may be multiple values seperated by blanks or commas
+      // allow coordValue attribute on JOIN_EXISTING, may be multiple values separated by blanks or commas
       if ((type == Type.joinExisting) && (coordValueS != null)) {
         StringTokenizer stoker = new StringTokenizer(coordValueS, " ,");
         this.ncoord = stoker.countTokens();
@@ -712,13 +712,13 @@ public abstract class AggregationOuterDimension extends Aggregation implements P
     }
 
     /**
-     * Get the desired Range, reletive to this Dataset, if no overlap, return null.
+     * Get the desired Range, relative to this Dataset, if no overlap, return null.
      * <p>
      * wantStart, wantStop are the indices in the aggregated dataset, wantStart <= i < wantEnd.
      * if this overlaps, set the Range required for the nested dataset.
      * note this should handle strides ok.
      *
-     * @param totalRange desired range, reletive to aggregated dimension.
+     * @param totalRange desired range, relative to aggregated dimension.
      * @return desired Range or null if theres nothing wanted from this datase.
      * @throws InvalidRangeException if invalid range request
      */

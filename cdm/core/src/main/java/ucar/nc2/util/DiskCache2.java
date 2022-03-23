@@ -17,7 +17,7 @@ import java.util.*;
  * This starts up a thread to periodically scour itself; be sure to call exit() to terminate the thread.
  *
  * <p>
- * Each DiskCache has a "root directory", which may be set as an absolute path, or reletive to the
+ * Each DiskCache has a "root directory", which may be set as an absolute path, or relative to the
  * DiskCache "home directory". The root directory must be writeable.
  *
  * The DiskCache home directory is set in the following order:
@@ -102,15 +102,15 @@ public class DiskCache2 {
    * Create a cache on disk. Use default policy (CachePathPolicy.NestedDirectory)
    * 
    * @param root the root directory of the cache. Must be writeable.
-   * @param reletiveToHome if the root directory is relative to the cache home directory.
+   * @param relativeToHome if the root directory is relative to the cache home directory.
    * @param persistMinutes a file is deleted if its last modified time is greater than persistMinutes
    * @param scourEveryMinutes how often to run the scour process. If <= 0, don't scour.
    */
-  public DiskCache2(String root, boolean reletiveToHome, int persistMinutes, int scourEveryMinutes) {
+  public DiskCache2(String root, boolean relativeToHome, int persistMinutes, int scourEveryMinutes) {
     this.persistMinutes = persistMinutes;
     this.scourEveryMinutes = scourEveryMinutes;
 
-    if (reletiveToHome) {
+    if (relativeToHome) {
       String home = System.getProperty("nj22.cachePersistRoot");
 
       if (home == null)

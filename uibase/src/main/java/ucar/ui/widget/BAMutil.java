@@ -60,7 +60,7 @@ public class BAMutil {
   /**
    * Set the resource path for icons, images, cursors.
    * 
-   * @param path reletive to the classpath
+   * @param path relative to the classpath
    */
   public static void setResourcePath(String path) {
     defaultResourcePath = path;

@@ -88,7 +88,7 @@ public class DatasetBuilder {
     this.parent = parent;
     this.name = from.getName();
     for (Map.Entry<String, Object> entry : from.getFldIterator()) {
-      if (!entry.getKey().equals(Dataset.Datasets) && !entry.getKey().equals(Dataset.Access)) // set seperately
+      if (!entry.getKey().equals(Dataset.Datasets) && !entry.getKey().equals(Dataset.Access)) // set separately
         this.flds.put(entry.getKey(), entry.getValue());
     }
   }

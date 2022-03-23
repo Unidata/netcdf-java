@@ -232,14 +232,14 @@ class LayoutM implements LayoutManager2 {
             x = b2.getX();
           else if (cs.xspace < 0) // negative means cs.xspace is the right edge, absolute
             x = -(size.getWidth() + cs.xspace);
-          else // otherwise its reletive to right edge of cs.c
+          else // otherwise its relative to right edge of cs.c
             x = b2.getX() + b2.getWidth() + cs.xspace;
 
           if (cs.yspace == 0) // 0 means align
             y = b2.getY();
           else if (cs.yspace < 0) // negative means cs.yspace is the bottom edge, absolute
             y = -(size.getHeight() + cs.yspace);
-          else // otherwise its reletive to bottom edge of cs.c
+          else // otherwise its relative to bottom edge of cs.c
             y = b2.getY() + b2.getHeight() + cs.yspace;
 
           // set bounds
@@ -249,7 +249,7 @@ class LayoutM implements LayoutManager2 {
 
           globalBounds = globalBounds.union(bounds);
           if (debugLayout) {
-            System.out.println("  " + name + " SET (reletive) " + comp.getClass().getName() + " bounds= " + cB
+            System.out.println("  " + name + " SET (relative) " + comp.getClass().getName() + " bounds= " + cB
                 + " prefrredSize= " + size);
             System.out.println("  new bounds= " + bounds);
           }

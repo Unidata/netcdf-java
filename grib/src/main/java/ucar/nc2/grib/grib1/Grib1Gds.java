@@ -50,7 +50,7 @@ import java.util.Formatter;
 @Immutable
 public abstract class Grib1Gds {
   private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Grib1Gds.class);
-  static final double maxReletiveErrorPos = .01; // reletive error in position - GRIB numbers sometime miscoded
+  static final double maxRelativeErrorPos = .01; // relative error in position - GRIB numbers sometime miscoded
 
   /*
    * Code table 6 – Data representation type
@@ -517,10 +517,10 @@ public abstract class Grib1Gds {
       }
 
       LatLon other = (LatLon) o;
-      if (!Misc.nearlyEqualsAbs(la1, other.la1, maxReletiveErrorPos * deltaLat)) {
-        return false; // allow some slop, reletive to grid size
+      if (!Misc.nearlyEqualsAbs(la1, other.la1, maxRelativeErrorPos * deltaLat)) {
+        return false; // allow some slop, relative to grid size
       }
-      if (!Misc.nearlyEqualsAbs(lo1, other.lo1, maxReletiveErrorPos * deltaLon)) {
+      if (!Misc.nearlyEqualsAbs(lo1, other.lo1, maxRelativeErrorPos * deltaLon)) {
         return false;
       }
       if (!Misc.nearlyEquals(deltaLat, other.deltaLat)) {
@@ -532,9 +532,9 @@ public abstract class Grib1Gds {
     @Override
     public int hashCode() {
       if (hashCode == 0) {
-        int useLat = (int) (la1 / (maxReletiveErrorPos * deltaLat)); // Two equal objects must have the same hashCode()
+        int useLat = (int) (la1 / (maxRelativeErrorPos * deltaLat)); // Two equal objects must have the same hashCode()
                                                                      // value
-        int useLon = (int) (lo1 / (maxReletiveErrorPos * deltaLon));
+        int useLon = (int) (lo1 / (maxRelativeErrorPos * deltaLon));
         int useDeltaLon = (int) (deltaLon / Misc.defaultMaxRelativeDiffFloat);
         int useDeltaLat = (int) (deltaLat / Misc.defaultMaxRelativeDiffFloat);
 
@@ -803,10 +803,10 @@ public abstract class Grib1Gds {
 
       PolarStereographic that = (PolarStereographic) o;
 
-      if (!Misc.nearlyEqualsAbs(la1, that.la1, maxReletiveErrorPos * dY)) {
-        return false; // allow some slop, reletive to grid size
+      if (!Misc.nearlyEqualsAbs(la1, that.la1, maxRelativeErrorPos * dY)) {
+        return false; // allow some slop, relative to grid size
       }
-      if (!Misc.nearlyEqualsAbs(lo1, that.lo1, maxReletiveErrorPos * dX)) {
+      if (!Misc.nearlyEqualsAbs(lo1, that.lo1, maxRelativeErrorPos * dX)) {
         return false;
       }
       if (!Misc.nearlyEquals(lov, that.lov)) {
@@ -826,8 +826,8 @@ public abstract class Grib1Gds {
     @Override
     public int hashCode() {
       if (hashCode == 0) {
-        int useLat = (int) (la1 / (maxReletiveErrorPos * dY)); // Two equal objects must have the same hashCode() value
-        int useLon = (int) (lo1 / (maxReletiveErrorPos * dX));
+        int useLat = (int) (la1 / (maxRelativeErrorPos * dY)); // Two equal objects must have the same hashCode() value
+        int useLon = (int) (lo1 / (maxRelativeErrorPos * dX));
         int useLov = (int) (lov / Misc.defaultMaxRelativeDiffFloat);
         int useDeltaLon = (int) (dX / Misc.defaultMaxRelativeDiffFloat);
         int useDeltaLat = (int) (dY / Misc.defaultMaxRelativeDiffFloat);
@@ -995,10 +995,10 @@ public abstract class Grib1Gds {
 
       LambertConformal that = (LambertConformal) o;
 
-      if (!Misc.nearlyEqualsAbs(la1, that.la1, maxReletiveErrorPos * dY)) {
+      if (!Misc.nearlyEqualsAbs(la1, that.la1, maxRelativeErrorPos * dY)) {
         return false; // allow some slop, relative to grid size
       }
-      if (!Misc.nearlyEqualsAbs(lo1, that.lo1, maxReletiveErrorPos * dX)) {
+      if (!Misc.nearlyEqualsAbs(lo1, that.lo1, maxRelativeErrorPos * dX)) {
         return false;
       }
       if (!Misc.nearlyEquals(lad, that.lad)) {
@@ -1023,8 +1023,8 @@ public abstract class Grib1Gds {
     @Override
     public int hashCode() {
       if (hashCode == 0) {
-        int useLat = (int) (la1 / (maxReletiveErrorPos * dY)); // Two equal objects must have the same hashCode() value
-        int useLon = (int) (lo1 / (maxReletiveErrorPos * dX));
+        int useLat = (int) (la1 / (maxRelativeErrorPos * dY)); // Two equal objects must have the same hashCode() value
+        int useLon = (int) (lo1 / (maxRelativeErrorPos * dX));
         int useLad = (int) (lad / Misc.defaultMaxRelativeDiffFloat);
         int useLov = (int) (lov / Misc.defaultMaxRelativeDiffFloat);
         int useDeltaLon = (int) (dX / Misc.defaultMaxRelativeDiffFloat);
@@ -1161,10 +1161,10 @@ public abstract class Grib1Gds {
 
       Mercator that = (Mercator) o;
 
-      if (!Misc.nearlyEqualsAbs(la1, that.la1, maxReletiveErrorPos * dY)) {
-        return false; // allow some slop, reletive to grid size
+      if (!Misc.nearlyEqualsAbs(la1, that.la1, maxRelativeErrorPos * dY)) {
+        return false; // allow some slop, relative to grid size
       }
-      if (!Misc.nearlyEqualsAbs(lo1, that.lo1, maxReletiveErrorPos * dX)) {
+      if (!Misc.nearlyEqualsAbs(lo1, that.lo1, maxRelativeErrorPos * dX)) {
         return false;
       }
       if (!Misc.nearlyEquals(latin, that.latin)) {
@@ -1180,8 +1180,8 @@ public abstract class Grib1Gds {
     @Override
     public int hashCode() {
       if (hashCode == 0) {
-        int useLat = (int) (la1 / (maxReletiveErrorPos * dY)); // Two equal objects must have the same hashCode() value
-        int useLon = (int) (lo1 / (maxReletiveErrorPos * dX));
+        int useLat = (int) (la1 / (maxRelativeErrorPos * dY)); // Two equal objects must have the same hashCode() value
+        int useLon = (int) (lo1 / (maxRelativeErrorPos * dX));
         int useLad = (int) (latin / Misc.defaultMaxRelativeDiffFloat);
         int useDeltaLon = (int) (dX / Misc.defaultMaxRelativeDiffFloat);
         int useDeltaLat = (int) (dY / Misc.defaultMaxRelativeDiffFloat);

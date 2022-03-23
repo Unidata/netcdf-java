@@ -57,7 +57,7 @@ public class BufrMessageViewer extends JPanel {
   private StructureTable dataTable;
   private IndependentWindow dataWindow;
   private FileManager fileChooser;
-  private boolean seperateWindow;
+  private boolean separateWindow;
 
   public BufrMessageViewer(PreferencesExt prefs, JPanel buttPanel) {
     this.prefs = prefs;
@@ -90,14 +90,14 @@ public class BufrMessageViewer extends JPanel {
     });
     buttPanel.add(showButt);
 
-    AbstractAction seperateWindowAction = new AbstractAction() {
+    AbstractAction separateWindowAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        seperateWindow = (Boolean) getValue(BAMutil.STATE);
+        separateWindow = (Boolean) getValue(BAMutil.STATE);
       }
     };
-    BAMutil.setActionProperties(seperateWindowAction, "nj22/DrawVert", "seperate DDS window", true, 'C', -1);
-    seperateWindowAction.putValue(BAMutil.STATE, seperateWindow);
-    BAMutil.addActionToContainer(buttPanel, seperateWindowAction);
+    BAMutil.setActionProperties(separateWindowAction, "nj22/DrawVert", "separate DDS window", true, 'C', -1);
+    separateWindowAction.putValue(BAMutil.STATE, separateWindow);
+    BAMutil.addActionToContainer(buttPanel, separateWindowAction);
 
     AbstractButton distinctDdsButt = BAMutil.makeButtcon("nj22/dd", "Dump distinct DDS", false);
     distinctDdsButt.addActionListener(e -> dumpDDS());
@@ -189,7 +189,7 @@ public class BufrMessageViewer extends JPanel {
         MessageBean vb = (MessageBean) messageTable.getSelectedBean();
         if (vb == null)
           return;
-        if (!seperateWindow)
+        if (!separateWindow)
           infoTA.clear();
         Formatter f = new Formatter();
         try {
@@ -204,7 +204,7 @@ public class BufrMessageViewer extends JPanel {
           JOptionPane.showMessageDialog(BufrMessageViewer.this, e1.getMessage());
           e1.printStackTrace(); // To change body of catch statement use File | Settings | File Templates.
         }
-        if (seperateWindow) {
+        if (separateWindow) {
           TextHistoryPane ta = new TextHistoryPane();
           IndependentWindow info = new IndependentWindow("Extra Information", BAMutil.getImage("nj22/NetcdfUI"), ta);
           info.setBounds((Rectangle) prefs.getBean("InfoWindowBounds", new Rectangle(300, 300, 500, 300)));

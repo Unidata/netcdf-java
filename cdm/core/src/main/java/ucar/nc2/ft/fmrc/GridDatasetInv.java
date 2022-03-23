@@ -289,7 +289,7 @@ public class GridDatasetInv {
    */
   public class Grid implements Comparable<Grid> {
     final String name;
-    TimeCoord tc; // time coordinates reletive to getRunDate()
+    TimeCoord tc; // time coordinates relative to getRunDate()
     EnsCoord ec; // optional
     VertCoord vc; // optional
 

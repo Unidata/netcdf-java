@@ -367,7 +367,7 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis { // implements Itera
         // default is all
         break;
 
-      // x,y get seperately subsetted
+      // x,y get separately subsetted
       case GeoX:
       case GeoY:
       case Lat:

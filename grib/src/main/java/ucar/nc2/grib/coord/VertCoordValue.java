@@ -67,7 +67,7 @@ public class VertCoordValue implements Comparable<VertCoordValue> {
     return Objects.hash(value1, value2, mid, isLayer);
   }
 
-  // cannot do approx equals and be consistent with hashCode, so make seperate call
+  // cannot do approx equals and be consistent with hashCode, so make separate call
   public boolean nearlyEquals(VertCoordValue other) {
     return Misc.nearlyEquals(value1, other.value1) && Misc.nearlyEquals(value2, other.value2);
   }

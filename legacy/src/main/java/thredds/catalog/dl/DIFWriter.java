@@ -274,8 +274,8 @@ public class DIFWriter {
         TimeDuration duration = tm.getDuration();
         double ndays = duration.getValue("days");
         if (ndays > 0) {
-          String reletiveTime = "RELATIVE_START_DATE: " + ((int) -ndays);
-          rootElem.addContent(new Element("Keyword", defNS).addContent(reletiveTime));
+          String relativeTime = "RELATIVE_START_DATE: " + ((int) -ndays);
+          rootElem.addContent(new Element("Keyword", defNS).addContent(relativeTime));
         }
       }
     }

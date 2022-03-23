@@ -32,7 +32,7 @@ public class URLnaming {
    * If baseURi is not a file: scheme, then URI.resolve is called.
    * Otherwise the last "/" is found in the base, and the ref is appended to it.
    * <p>
-   * For file: baseURLS: only reletive URLS not starting with / are supported. This is
+   * For file: baseURLS: only relative URLS not starting with / are supported. This is
    * apparently different from the behavior of URI.resolve(), so may be trouble,
    * but it allows NcML absolute location to be specified without the file: prefix.
    * <p/>
@@ -45,7 +45,7 @@ public class URLnaming {
    * </pre>
    *
    * @param baseUri base URI as a Strng
-   * @param relativeUri reletive URI, as a String
+   * @param relativeUri relative URI, as a String
    * @return the resolved URI as a String
    */
   public static String resolve(String baseUri, String relativeUri) {
@@ -58,7 +58,7 @@ public class URLnaming {
     // deal with a base file URL
     if (baseUri.startsWith("file:")) {
 
-      // the case where the reletiveURL is absolute.
+      // the case where the relativeURL is absolute.
       // unfortunately, we may get an Exception
       try {
         URI uriRelative = URI.create(relativeUri);

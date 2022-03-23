@@ -83,7 +83,7 @@ within the NWS field offices (i.e. Center 9 - US NWS FIELD STATIONS) and differ 
      however, these do not show reference date, but possibly date written.
      assume that we should take the last record seen.
 
-  2) mixed intervals - should be seperate variables (?)  how uniform ??
+  2) mixed intervals - should be separate variables (?)  how uniform ??
      maybe:
         http://www.hpc.ncep.noaa.gov/npvu/confpres/hydro15/preprint_adj.pdf
         http://origin.hpc.ncep.noaa.gov/npvu/help/
