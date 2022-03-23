@@ -10,6 +10,8 @@ import java.io.OutputStream;
 import javax.annotation.Nullable;
 import thredds.filesystem.MFileOS;
 import thredds.inventory.MFile;
+import ucar.nc2.util.IO;
+import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.StringUtil2;
 import java.io.File;
 import java.util.ArrayList;
@@ -113,11 +115,13 @@ public class GcMFile implements thredds.inventory.MFile {
 
   @Override
   public void writeToStream(OutputStream outputStream) throws IOException {
-    throw new IOException("Writing GcMFile to stream not implemented. Filename: " + getName());
+    IO.copyFile(getPath(), outputStream);
   }
 
   @Override
   public void writeToStream(OutputStream outputStream, long offset, long maxBytes) throws IOException {
-    throw new IOException("Writing GcMFile to stream not implemented. Filename: " + getName());
+    try (RandomAccessFile randomAccessFile = RandomAccessFile.acquire(getPath())) {
+      IO.copyRafB(randomAccessFile, offset, maxBytes, outputStream);
+    }
   }
 }
