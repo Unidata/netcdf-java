@@ -262,12 +262,12 @@ public class Range implements RangeIterator {
   }
 
   /**
-   * Create a new Range by composing a Range that is reletive to this Range.
+   * Create a new Range by composing a Range that is relative to this Range.
    * Revised 2013/04/19 by Dennis Heimbigner to handle edge cases.
    * See the commentary associated with the netcdf-c file dceconstraints.h,
    * function dceslicecompose().
    *
-   * @param r range reletive to base
+   * @param r range relative to base
    * @return combined Range, may be EMPTY
    * @throws InvalidRangeException elements must be nonnegative, 0 <= first <= last
    */

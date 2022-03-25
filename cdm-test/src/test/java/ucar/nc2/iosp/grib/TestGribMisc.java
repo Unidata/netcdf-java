@@ -81,7 +81,7 @@ public class TestGribMisc {
       assert v != null : ncfile.getLocation();
     }
 
-    // this one has a forecast and error = must be seperate variables
+    // this one has a forecast and error = must be separate variables
     filename = TestDir.cdmUnitTestDir + "formats/grib2/RTMA_CONUS_2p5km_20111225_0000.grib2";
     logger.debug("{}", filename);
     try (NetcdfFile ncfile = NetcdfFiles.open(filename, null)) {

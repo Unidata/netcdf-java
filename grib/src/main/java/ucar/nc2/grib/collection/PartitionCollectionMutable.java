@@ -201,7 +201,7 @@ public class PartitionCollectionMutable extends GribCollectionMutable {
       File file = new File(directory, filename);
       File existingFile = GribIndexCache.getExistingFileOrCache(file.getPath());
       if (existingFile == null) {
-        // try reletive to index file
+        // try relative to index file
         File parent = getIndexParentFile();
         if (parent == null)
           return null;

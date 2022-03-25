@@ -322,7 +322,7 @@ public class NcMLReader {
    * eg: NcMLReader.readNcML(new StringReader(ncml), location, null);
    *
    * @param r the Reader containing the NcML document
-   * @param ncmlLocation the URL location string of the NcML document, used to resolve reletive path of the referenced
+   * @param ncmlLocation the URL location string of the NcML document, used to resolve relative path of the referenced
    *        dataset,
    *        or may be just a unique name for caching purposes.
    * @param cancelTask allow user to cancel the task; may be null
@@ -357,7 +357,7 @@ public class NcMLReader {
   /**
    * Read NcML from a JDOM Document, and construct a NetcdfDataset.
    *
-   * @param ncmlLocation the URL location string of the NcML document, used to resolve reletive path of the referenced
+   * @param ncmlLocation the URL location string of the NcML document, used to resolve relative path of the referenced
    *        dataset,
    *        or may be just a unique name for caching purposes.
    * @param netcdfElem the JDOM Document's root (netcdf) element
@@ -385,7 +385,7 @@ public class NcMLReader {
    * @param netcdfElem the JDOM Document's root (netcdf) element
    * @param referencedDatasetUri the URL location string of the underlying dataset, which overrides anything in
    *        netcdfElem.
-   *        prepend with "file:" to eliminate reletive resolving against ncmlLocation
+   *        prepend with "file:" to eliminate relative resolving against ncmlLocation
    * @param cancelTask allow user to cancel the task; may be null
    * @return the resulting NetcdfDataset
    * @throws IOException on read error, or bad referencedDatasetUri URI
@@ -405,7 +405,7 @@ public class NcMLReader {
    * This sets up the target dataset and the referenced dataset.
    * only place that iospParam is processed, so everything must go through here
    *
-   * @param ncmlLocation the URL location string of the NcML document, used to resolve reletive path of the referenced
+   * @param ncmlLocation the URL location string of the NcML document, used to resolve relative path of the referenced
    *        dataset,
    *        or may be just a unique name for caching purposes.
    * @param referencedDatasetUri refers to this dataset (may be null)
@@ -469,7 +469,7 @@ public class NcMLReader {
     explicit = (elemE != null);
 
     // general idea is that we just modify the referenced dataset
-    // the exception is when explicit is specified, then we keep them seperate.
+    // the exception is when explicit is specified, then we keep them separate.
     // refds != null refds == null
     // explicit refds!=new new (ref=new)
     // readMetadata modify (new=ref) new (ref=new)
@@ -499,7 +499,7 @@ public class NcMLReader {
    * <p/>
    * This is a bit tricky, because it handles several cases
    * When targetDS == refds, we are just modifying targetDS.
-   * When targetDS != refds, we keep them seperate, and copy from refds to newds.
+   * When targetDS != refds, we keep them separate, and copy from refds to newds.
    * <p/>
    * The user may be defining new elements or modifying old ones. The only way to tell is by seeing
    * if the elements already exist.

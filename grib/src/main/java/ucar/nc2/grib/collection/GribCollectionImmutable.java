@@ -1089,7 +1089,7 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
     String filename = mfile.getPath();
     File dataFile = new File(filename);
 
-    // if data file does not exist, check reletive location - eg may be /upc/share instead of Q:
+    // if data file does not exist, check relative location - eg may be /upc/share instead of Q:
     if (!dataFile.exists()) {
       if (fileMap.size() == 1) {
         dataFile = new File(directory, name); // single file case

@@ -149,7 +149,7 @@ class Grib2CollectionWriter extends GribCollectionWriter {
       /*
        * message GribCollection {
        * string name = 1; // must be unique - index filename is name.ncx
-       * string topDir = 2; // MFile, Partition filenames are reletive to this
+       * string topDir = 2; // MFile, Partition filenames are relative to this
        * repeated MFile mfiles = 3; // list of grib MFiles
        * repeated Dataset dataset = 4;
        * repeated Gds gds = 5; // unique Gds, shared amongst datasets

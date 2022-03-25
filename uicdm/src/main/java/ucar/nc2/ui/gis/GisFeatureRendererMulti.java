@@ -145,7 +145,7 @@ public abstract class GisFeatureRendererMulti extends GisFeatureRenderer {
     /*
      * if (Debug.isSet("bug.drawShapes")) {
      * int count =0;
-     * // make each GisPart a seperate shape for debugging
+     * // make each GisPart a separate shape for debugging
      * feats:while (featList.hasNext()) {
      * AbstractGisFeature feature = (AbstractGisFeature) featList.next();
      * java.util.Iterator pi = feature.getGisParts();

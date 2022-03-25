@@ -273,9 +273,9 @@ public class Section {
 
 
   /**
-   * Create a new Section by composing with a Section that is reletive to this Section.
+   * Create a new Section by composing with a Section that is relative to this Section.
    *
-   * @param want Section reletive to this one. If null, return this. If individual ranges are null, use corresponding
+   * @param want Section relative to this one. If null, return this. If individual ranges are null, use corresponding
    *        Range in this.
    * @return new Section, composed
    * @throws InvalidRangeException if want.getRank() not equal to this.getRank(), or invalid component Range
@@ -371,7 +371,7 @@ public class Section {
 
   /**
    * Create a new Section by shifting each range by newOrigin.first()
-   * The result is then a reletive offset from the newOrigin.
+   * The result is then a relative offset from the newOrigin.
    *
    * @param newOrigin this becomes the origin of the result
    * @return new Section, shifted

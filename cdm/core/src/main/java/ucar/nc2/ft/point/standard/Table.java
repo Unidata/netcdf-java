@@ -65,7 +65,7 @@ public abstract class Table {
       case ArrayStructure: // given array of StructureData, stored in config.as
         return new TableArrayStructure(ds, config);
 
-      case Construct: // construct the table from its children - theres no seperate station table, stn info is
+      case Construct: // construct the table from its children - theres no separate station table, stn info is
                       // duplicated in the obs structure.
         return new TableConstruct(ds, config);
 
@@ -405,7 +405,7 @@ public abstract class Table {
   ///////////////////////////////////////////////////////
 
   /**
-   * When theres no seperate station table, but info is duplicated in the obs structure.
+   * When theres no separate station table, but info is duplicated in the obs structure.
    * Must have a ParentId child table
    * No variables are added to cols.
    * <p>

@@ -92,7 +92,7 @@ import java.io.IOException;
  * </li>
  *
  * <li> The ID of a catalog dataset element is the ID of the parent dataset
- * and the name of the corresponding CrawlableDataset seperated by a "/".
+ * and the name of the corresponding CrawlableDataset separated by a "/".
  * So, it ends up being the path of the corresponding CrawlableDataset from
  * the point where the collection CrawlableDataset path ends then prefixed
  * by the collectionId which is set using the setCollectionId() string. Example:

@@ -29,7 +29,7 @@ import java.util.Formatter;
 @Immutable
 public abstract class Grib2Gds {
   private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Grib2Gds.class);
-  static final double maxReletiveErrorPos = .01; // reletive error in position - GRIB numbers sometimes miscoded
+  static final double maxRelativeErrorPos = .01; // relative error in position - GRIB numbers sometimes miscoded
 
   public static Grib2Gds factory(int template, byte[] data) {
     Grib2Gds result;
@@ -453,23 +453,23 @@ public abstract class Grib2Gds {
         return false;
 
       LatLon other = (LatLon) o;
-      if (!Misc.nearlyEqualsAbs(la1, other.la1, maxReletiveErrorPos * deltaLat))
-        return false; // allow some slop, reletive to grid size
-      if (!Misc.nearlyEqualsAbs(lo1, other.lo1, maxReletiveErrorPos * deltaLon))
+      if (!Misc.nearlyEqualsAbs(la1, other.la1, maxRelativeErrorPos * deltaLat))
+        return false; // allow some slop, relative to grid size
+      if (!Misc.nearlyEqualsAbs(lo1, other.lo1, maxRelativeErrorPos * deltaLon))
         return false;
-      if (!Misc.nearlyEqualsAbs(la2, other.la2, maxReletiveErrorPos * deltaLat))
+      if (!Misc.nearlyEqualsAbs(la2, other.la2, maxRelativeErrorPos * deltaLat))
         return false;
-      return Misc.nearlyEqualsAbs(lo2, other.lo2, maxReletiveErrorPos * deltaLon);
+      return Misc.nearlyEqualsAbs(lo2, other.lo2, maxRelativeErrorPos * deltaLon);
     }
 
     @Override
     public int hashCode() {
       if (hashCode == 0) {
-        int useLat1 = (int) Math.round(la1 / (maxReletiveErrorPos * deltaLat)); // Two equal objects must have the same
+        int useLat1 = (int) Math.round(la1 / (maxRelativeErrorPos * deltaLat)); // Two equal objects must have the same
                                                                                 // hashCode() value
-        int useLon1 = (int) Math.round(lo1 / (maxReletiveErrorPos * deltaLon));
-        int useLat2 = (int) Math.round(la2 / (maxReletiveErrorPos * deltaLat));
-        int useLon2 = (int) Math.round(lo2 / (maxReletiveErrorPos * deltaLon));
+        int useLon1 = (int) Math.round(lo1 / (maxRelativeErrorPos * deltaLon));
+        int useLat2 = (int) Math.round(la2 / (maxRelativeErrorPos * deltaLat));
+        int useLon2 = (int) Math.round(lo2 / (maxRelativeErrorPos * deltaLon));
 
         int result = super.hashCode();
         result = 31 * result + useLat1;
@@ -793,11 +793,11 @@ public abstract class Grib2Gds {
 
       Mercator that = (Mercator) o;
 
-      if (!Misc.nearlyEqualsAbs(la1, that.la1, maxReletiveErrorPos * dY))
-        return false; // allow some slop, reletive to grid size
-      if (!Misc.nearlyEqualsAbs(lo1, that.lo1, maxReletiveErrorPos * dX))
+      if (!Misc.nearlyEqualsAbs(la1, that.la1, maxRelativeErrorPos * dY))
+        return false; // allow some slop, relative to grid size
+      if (!Misc.nearlyEqualsAbs(lo1, that.lo1, maxRelativeErrorPos * dX))
         return false;
-      if (!Misc.nearlyEqualsAbs(lad, that.lad, maxReletiveErrorPos * dY))
+      if (!Misc.nearlyEqualsAbs(lad, that.lad, maxRelativeErrorPos * dY))
         return false;
       if (!Misc.nearlyEquals(dY, that.dY))
         return false;
@@ -808,10 +808,10 @@ public abstract class Grib2Gds {
     @Override
     public int hashCode() {
       if (hashCode == 0) {
-        int useLat = (int) Math.round(la1 / (maxReletiveErrorPos * dY)); // Two equal objects must have the same
+        int useLat = (int) Math.round(la1 / (maxRelativeErrorPos * dY)); // Two equal objects must have the same
                                                                          // hashCode() value
-        int useLon = (int) Math.round(lo1 / (maxReletiveErrorPos * dX));
-        int useLad = (int) Math.round(lad / (maxReletiveErrorPos * dY));
+        int useLon = (int) Math.round(lo1 / (maxRelativeErrorPos * dX));
+        int useLad = (int) Math.round(lad / (maxRelativeErrorPos * dY));
         int useDeltaLon = Math.round(dX / Misc.defaultMaxRelativeDiffFloat);
         int useDeltaLat = Math.round(dY / Misc.defaultMaxRelativeDiffFloat);
 
@@ -942,9 +942,9 @@ public abstract class Grib2Gds {
 
       PolarStereographic that = (PolarStereographic) o;
 
-      if (!Misc.nearlyEqualsAbs(la1, that.la1, maxReletiveErrorPos * dY))
-        return false; // allow some slop, reletive to grid size
-      if (!Misc.nearlyEqualsAbs(lo1, that.lo1, maxReletiveErrorPos * dX))
+      if (!Misc.nearlyEqualsAbs(la1, that.la1, maxRelativeErrorPos * dY))
+        return false; // allow some slop, relative to grid size
+      if (!Misc.nearlyEqualsAbs(lo1, that.lo1, maxRelativeErrorPos * dX))
         return false;
       if (!Misc.nearlyEquals(lad, that.lad))
         return false;
@@ -962,9 +962,9 @@ public abstract class Grib2Gds {
     @Override
     public int hashCode() {
       if (hashCode == 0) {
-        int useLat = (int) Math.round(la1 / (maxReletiveErrorPos * dY)); // Two equal objects must have the same
+        int useLat = (int) Math.round(la1 / (maxRelativeErrorPos * dY)); // Two equal objects must have the same
                                                                          // hashCode() value
-        int useLon = (int) Math.round(lo1 / (maxReletiveErrorPos * dX));
+        int useLon = (int) Math.round(lo1 / (maxRelativeErrorPos * dX));
         int useLad = Math.round(lad / Misc.defaultMaxRelativeDiffFloat);
         int useLov = Math.round(lov / Misc.defaultMaxRelativeDiffFloat);
         int useDeltaLon = Math.round(dX / Misc.defaultMaxRelativeDiffFloat);
@@ -1124,9 +1124,9 @@ public abstract class Grib2Gds {
 
       LambertConformal that = (LambertConformal) o;
 
-      if (!Misc.nearlyEqualsAbs(la1, that.la1, maxReletiveErrorPos * dY))
-        return false; // allow some slop, reletive to grid size
-      if (!Misc.nearlyEqualsAbs(lo1, that.lo1, maxReletiveErrorPos * dX))
+      if (!Misc.nearlyEqualsAbs(la1, that.la1, maxRelativeErrorPos * dY))
+        return false; // allow some slop, relative to grid size
+      if (!Misc.nearlyEqualsAbs(lo1, that.lo1, maxRelativeErrorPos * dX))
         return false;
       if (!Misc.nearlyEquals(lad, that.lad))
         return false;
@@ -1145,9 +1145,9 @@ public abstract class Grib2Gds {
     @Override
     public int hashCode() {
       if (hashCode == 0) {
-        int useLat = (int) Math.round(la1 / (maxReletiveErrorPos * dY)); // Two equal objects must have the same
+        int useLat = (int) Math.round(la1 / (maxRelativeErrorPos * dY)); // Two equal objects must have the same
                                                                          // hashCode() value
-        int useLon = (int) Math.round(lo1 / (maxReletiveErrorPos * dX));
+        int useLon = (int) Math.round(lo1 / (maxRelativeErrorPos * dX));
         int useLad = Math.round(lad / Misc.defaultMaxRelativeDiffFloat);
         int useLov = Math.round(lov / Misc.defaultMaxRelativeDiffFloat);
         int useDeltaLon = Math.round(dX / Misc.defaultMaxRelativeDiffFloat);

@@ -116,7 +116,7 @@ public class MessageCompressedDataReader {
    * @param ama place data into here in order (may be null). iterators must be already set.
    * @param m read this message
    * @param raf from this file
-   * @param r which datasets, reletive to this message. null == all.
+   * @param r which datasets, relative to this message. null == all.
    * @param f output bit count debugging info (may be null)
    * @throws IOException on read error
    */

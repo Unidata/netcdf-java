@@ -168,10 +168,10 @@ public class Catalog extends DatasetNode {
   }
 
   /**
-   * Resolve reletive URIs, using the catalog's base URI. If the uriString is not reletive, then
+   * Resolve relative URIs, using the catalog's base URI. If the uriString is not relative, then
    * no resolution is done. This also allows baseURI to be a file: scheme.
    *
-   * @param uriString any url, reletive or absolute
+   * @param uriString any url, relative or absolute
    * @return resolved url string, or null on error
    * @throws java.net.URISyntaxException if uriString violates RFC 2396
    */

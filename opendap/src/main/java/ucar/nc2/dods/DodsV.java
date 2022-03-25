@@ -69,7 +69,7 @@ class DodsV implements Comparable {
    * Recursively build the dodsV tree.
    * 1) put all Variables into a DodsV
    * 2) unravel DConstructors (DSequence, DStructure, DGrid)
-   * 3) for Darray, we put Variable = elemType, and store the darray seperately, not in the heirarchy.
+   * 3) for Darray, we put Variable = elemType, and store the darray separately, not in the heirarchy.
    *
    * @param parent of the tree
    * @param children list of BaseType
@@ -146,7 +146,7 @@ class DodsV implements Comparable {
    * Recursively build the dodsV tree.
    * 1) put all Variables into a DodsV
    * 2) unravel DConstructors (DSequence, DStructure, DGrid)
-   * 3) for Darray, we put Variable = elemType, and store the darray seperately, not in the heirarchy.
+   * 3) for Darray, we put Variable = elemType, and store the darray separately, not in the heirarchy.
    *
    * @param parent of the tree
    * @param children list of BaseType
@@ -397,7 +397,7 @@ class DodsV implements Comparable {
         addAttributeTable(this, attTable, tableName, true);
 
       } else if (tableName.equals("DODS_EXTRA") || tableName.equals("EXTRA_DIMENSION")) {
-        // handled seperately in DODSNetcdfFile
+        // handled separately in DODSNetcdfFile
         continue;
 
       } else {

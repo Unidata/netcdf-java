@@ -169,7 +169,7 @@ public class StopButton extends JButton {
     myTimer = new Timer(1000, watcher); // every second
     myTimer.start();
 
-    // do task in a seperate, non-event, thread
+    // do task in a separate, non-event, thread
     Thread taskThread = new Thread(task);
     taskThread.start();
 

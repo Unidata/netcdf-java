@@ -41,7 +41,7 @@ public class H5tiledLayout implements Layout {
     assert vinfo.btree != null;
 
     // we have to translate the want section into the same rank as the storageSize, in order to be able to call
-    // Section.intersect(). It appears that storageSize (actually msl.chunkSize) may have an extra dimension, reletive
+    // Section.intersect(). It appears that storageSize (actually msl.chunkSize) may have an extra dimension, relative
     // to the Variable.
     if ((dtype == DataType.CHAR) && (wantSection.getRank() < vinfo.storageSize.length)) {
       this.want = Section.builder().appendRanges(wantSection.getRanges()).appendRange(1).build();

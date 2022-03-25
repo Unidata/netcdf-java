@@ -9,7 +9,7 @@ toc: false
 
 ### Standard table mapping
 
-A _standard table_ is a BUFR parameter table that is automatically used by the CDM. A _standard table map_ is an association of a standard table with a center/subcenter/version id. The CDM internally loads one table map located in <b>_bufr.jar_</b> at <b>/resources/bufrTables/local/tablelookup.csv_</b>. It is a csv (comma seperated value) format:
+A _standard table_ is a BUFR parameter table that is automatically used by the CDM. A _standard table map_ is an association of a standard table with a center/subcenter/version id. The CDM internally loads one table map located in <b>_bufr.jar_</b> at <b>/resources/bufrTables/local/tablelookup.csv_</b>. It is a csv (comma separated value) format:
 
 ~~~
 #

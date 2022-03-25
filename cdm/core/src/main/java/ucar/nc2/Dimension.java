@@ -210,7 +210,7 @@ public class Dimension extends CDMNode implements Comparable<Dimension> {
   /**
    * If this is a NetCDF unlimited dimension. The length might increase between invocations,
    * but it remains fixed for the lifetime of the NetcdfFile.
-   * If you modify the file in a seperate process, you must close and reopen the file.
+   * If you modify the file in a separate process, you must close and reopen the file.
    *
    * @return if its an "unlimited" Dimension
    */

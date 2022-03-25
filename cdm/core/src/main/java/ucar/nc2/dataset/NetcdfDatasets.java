@@ -158,7 +158,7 @@ public class NetcdfDatasets {
    * eg: NcmlReader.readNcml(new StringReader(ncml), location, null);
    *
    * @param reader the Reader containing the NcML document
-   * @param ncmlLocation the URL location string of the NcML document, used to resolve reletive path of the referenced
+   * @param ncmlLocation the URL location string of the NcML document, used to resolve relative path of the referenced
    *        dataset,
    *        or may be just a unique name for caching purposes.
    * @param cancelTask allow user to cancel the task; may be null

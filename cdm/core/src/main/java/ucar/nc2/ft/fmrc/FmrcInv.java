@@ -168,8 +168,8 @@ public class FmrcInv {
   }
 
   // not really needed
-  private final TimeCoord tcOffAll; // all offsets in this collection, reletive to baseDate
-  private final TimeCoord tcIntAll; // all intervals in this collection, reletive to baseDate
+  private final TimeCoord tcOffAll; // all offsets in this collection, relative to baseDate
+  private final TimeCoord tcIntAll; // all intervals in this collection, relative to baseDate
 
   // public for debugging
   public List<FmrInv> getFmrList() {

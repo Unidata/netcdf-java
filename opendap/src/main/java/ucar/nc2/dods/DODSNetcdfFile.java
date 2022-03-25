@@ -242,7 +242,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
     if (cancelTask != null && cancelTask.isCancel())
       return;
 
-    // LOOK why do we want to do the primitives seperate from compounds?
+    // LOOK why do we want to do the primitives separate from compounds?
     constructTopVariables(rootDodsV, cancelTask);
     if (cancelTask != null && cancelTask.isCancel())
       return;
@@ -367,7 +367,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
    * 
    * // DDS -> {BaseType} for arrays, BaseType = DArray -> {elemType}
    * // here we 1) put all Variables into a DodsV, 2) unravel DConstructors (DSequence, DStructure, DGrid)
-   * // 3) for Darray, we put Variable = elemType, and store the darray seperately, not in the heirarchy.
+   * // 3) for Darray, we put Variable = elemType, and store the darray separately, not in the heirarchy.
    * // so you need to get the parent from the dodsV.
    * private void parseVariables( DodsV parent, Enumeration variables, ArrayList dodsVlist) {
    * while (variables.hasMoreElements()) {

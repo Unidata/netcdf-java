@@ -1801,7 +1801,7 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
   protected int elementSize;
 
   // TODO do we need these? breaks immutability
-  // TODO maybe caching read data shoul be seperate from "this is the source of the data".
+  // TODO maybe caching read data should be separate from "this is the source of the data".
   protected Cache cache = new Cache(); // cache cannot be null
   protected int sizeToCache = -1; // bytes
 

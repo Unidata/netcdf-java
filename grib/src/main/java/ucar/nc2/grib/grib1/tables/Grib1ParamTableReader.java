@@ -50,7 +50,7 @@ public class Grib1ParamTableReader {
   /**
    * Read a dataset-specific table from a file
    *
-   * @param path read from this path, may be reletive
+   * @param path read from this path, may be relative
    */
   public Grib1ParamTableReader(String path) {
     this.path = StringUtil2.replace(path, "\\", "/");
@@ -65,7 +65,7 @@ public class Grib1ParamTableReader {
    * @param center_id associate with this center
    * @param subcenter_id associate with this subcenter
    * @param version associate with this version
-   * @param path read from this path, may be reletive
+   * @param path read from this path, may be relative
    */
   Grib1ParamTableReader(int center_id, int subcenter_id, int version, String path) {
     this.center_id = center_id;

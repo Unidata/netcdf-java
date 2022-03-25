@@ -443,7 +443,7 @@ public class H5iospNew extends AbstractIOServiceProvider {
       assert v2 != null;
       H5headerNew.Vinfo vm = (H5headerNew.Vinfo) v2.getSPobject();
 
-      // apparently each member may have seperate byte order (!!!??)
+      // apparently each member may have separate byte order (!!!??)
       if (vm.typeInfo.endian >= 0)
         m.setDataObject(
             vm.typeInfo.endian == RandomAccessFile.LITTLE_ENDIAN ? ByteOrder.LITTLE_ENDIAN : ByteOrder.BIG_ENDIAN);

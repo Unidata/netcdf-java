@@ -30,7 +30,7 @@ import java.nio.*;
 
 /*
  * Implementation notes
- * any field called address is actually reletive to the base address.
+ * any field called address is actually relative to the base address.
  * any field called filePos or dataPos is a byte offset within the file.
  */
 /*
@@ -1069,7 +1069,7 @@ public class H5header extends NCheader implements H5headerIF {
         }
         StructureMembers.Member m = sm.addMember(h5sm.name, null, null, dt, dim);
 
-        if (h5sm.mdt.endian >= 0) // apparently each member may have seperate byte order (!!!??)
+        if (h5sm.mdt.endian >= 0) // apparently each member may have separate byte order (!!!??)
           m.setDataObject(
               h5sm.mdt.endian == RandomAccessFile.LITTLE_ENDIAN ? ByteOrder.LITTLE_ENDIAN : ByteOrder.BIG_ENDIAN);
         m.setDataParam((h5sm.offset)); // offset since start of Structure
@@ -4802,7 +4802,7 @@ public class H5header extends NCheader implements H5headerIF {
     // the heap id is has already been read into a byte array at given pos
     HeapIdentifier(ByteBuffer bb, int pos) {
       bb.order(ByteOrder.LITTLE_ENDIAN); // header information is in le byte order
-      bb.position(pos); // reletive reading
+      bb.position(pos); // relative reading
       nelems = bb.getInt();
       heapAddress = isOffsetLong ? bb.getLong() : (long) bb.getInt();
       index = bb.getInt();

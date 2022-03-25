@@ -58,7 +58,7 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
    * @param timeUnit time duration, based on code
    * @param vals complete set of Time2D values, may be null (used only during creation)
    * @param runtime list of runtimes
-   * @param times list of times, one for each runtime, offsets reletive to its runtime, may not be null
+   * @param times list of times, one for each runtime, offsets relative to its runtime, may not be null
    */
   public CoordinateTime2D(int code, CalendarPeriod timeUnit, List<Time2D> vals, CoordinateRuntime runtime,
       List<Coordinate> times, int[] time2runtime) {
@@ -91,7 +91,7 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
    * @param vals complete set of Time2D values, may be null (used only during creation)
    * @param runtime list of runtimes
    * @param otime list of offsets, all the same for each runtime
-   * @param times list of times, one for each runtime, offsets reletive to its runtime, may be null (Only available
+   * @param times list of times, one for each runtime, offsets relative to its runtime, may be null (Only available
    *        during creation, not stored in index)
    */
   public CoordinateTime2D(int code, CalendarPeriod timeUnit, List<Time2D> vals, CoordinateRuntime runtime,
@@ -123,7 +123,7 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
    * @param vals complete set of Time2D values, may be null (used only during creation)
    * @param runtime list of runtimes
    * @param regList list of offsets, one each for each possible runtime hour of day.
-   * @param times list of times, one for each runtime, offsets reletive to its runtime, may be null (Only available
+   * @param times list of times, one for each runtime, offsets relative to its runtime, may be null (Only available
    *        during creation, not stored in index)
    */
   public CoordinateTime2D(int code, CalendarPeriod timeUnit, List<Time2D> vals, CoordinateRuntime runtime,
@@ -766,7 +766,7 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
     CoordinateTimeAbstract time = getTimeCoordinate(runIdx);
     if (time.getNCoords() == 1)
       return 0;
-    return time.getIndex(val); // not sure if its reletive to runtime ??
+    return time.getIndex(val); // not sure if its relative to runtime ??
   }
 
   /**

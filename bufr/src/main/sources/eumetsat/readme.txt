@@ -8,7 +8,7 @@ http://www.eumetsat.int/Home/Main/Access_to_Data/Meteosat_Meteorological_Product
 
 the two table C are identical
 
-table B and D (11) have additions, but no changes reletive to (10)
+table B and D (11) have additions, but no changes relative to (10)
 
 B:
 
