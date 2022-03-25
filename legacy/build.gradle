@@ -23,7 +23,7 @@ dependencies {
 
   compile 'com.amazonaws:aws-java-sdk-s3'  // For CrawlableDatasetAmazonS3.
   constraints {
-    implementation('com.fasterxml.jackson.core:jackson-databind:2.11.2') {
+    implementation('com.fasterxml.jackson.core:jackson-databind:2.13.2.1') {
       because 'Replacement v2.6.7.3, which is recomended by aws-java-sdk v1.x for those who do'
       'not need java 6 compatibility - see https://github.com/aws/aws-sdk-java#cve-2017-15095--cve-2018-7489'
     }
