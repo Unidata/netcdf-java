@@ -10,14 +10,6 @@
     <packageUrl regex="true">^pkg:maven/junit/junit@.*$</packageUrl>
     <vulnerabilityName>CVE-2020-15250</vulnerabilityName>
   </suppress>
-<!--  <suppress>-->
-<!--    <notes><![CDATA[-->
-<!--       file name: jackson-databind-2.10.4.jar-->
-<!--       reason: Fixed in 2.10.5.1 (see https://github.com/FasterXML/jackson-databind/issues/2589-->
-<!--      ]]></notes>-->
-<!--    <packageUrl regex="true">^pkg:maven/com\.fasterxml\.jackson\.core/jackson\-databind@.*$</packageUrl>-->
-<!--    <cve>CVE-2020-25649</cve>-->
-<!--  </suppress>-->
   <suppress>
     <notes><![CDATA[
        file name: jdom2-2.0.6.jar
