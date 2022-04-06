@@ -14,7 +14,11 @@ import ucar.nc2.ft2.coverage.SubsetParams;
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.Station;
 import ucar.unidata.util.test.TestDir;
+
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -39,6 +43,53 @@ public class TestCoverageAsPoint {
   public static void setupTest() throws IOException {
     // create coverage as point for all vars in test file
     gds = CoverageDatasetFactory.open(testFilePath).getCoverageCollections().get(0);
+  }
+
+  @Test
+  public void testFileHash() throws IOException, NoSuchAlgorithmException {
+    MessageDigest mdigest = MessageDigest.getInstance("MD5");
+    // Get file input stream for reading the file
+    // content
+    FileInputStream fis = new FileInputStream(testFilePath);
+
+    // Create byte array to read data in chunks
+    byte[] byteArray = new byte[1024];
+    int bytesCount = 0;
+
+    // read the data from file and update that data in
+    // the message digest
+    while ((bytesCount = fis.read(byteArray)) != -1)
+    {
+      mdigest.update(byteArray, 0, bytesCount);
+    };
+
+    // close the input stream
+    fis.close();
+
+    // store the bytes returned by the digest() method
+    byte[] bytes = mdigest.digest();
+
+    // this array of bytes has bytes in decimal format
+    // so we need to convert it into hexadecimal format
+
+    // for this we create an object of StringBuilder
+    // since it allows us to update the string i.e. its
+    // mutable
+    StringBuilder sb = new StringBuilder();
+
+    // loop through the bytes array
+    for (int i = 0; i < bytes.length; i++) {
+
+      // the following line converts the decimal into
+      // hexadecimal format and appends that to the
+      // StringBuilder object
+      sb.append(Integer
+              .toString((bytes[i] & 0xff) + 0x100, 16)
+              .substring(1));
+    }
+
+    // finally we return the complete hash
+    assertThat(sb.toString()).isEqualTo("162f0df1be52baccff678a5622054b8a");
   }
 
   @Test
