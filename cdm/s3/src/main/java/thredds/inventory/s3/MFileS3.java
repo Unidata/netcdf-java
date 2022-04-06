@@ -19,8 +19,10 @@ import software.amazon.awssdk.services.s3.model.HeadObjectRequest.Builder;
 import thredds.inventory.MFile;
 import thredds.inventory.MFileProvider;
 import ucar.nc2.util.IO;
+import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.io.s3.CdmS3Client;
 import ucar.unidata.io.s3.CdmS3Uri;
+import ucar.unidata.io.s3.S3RandomAccessFile;
 
 /**
  * Implements {@link thredds.inventory.MFile} for objects stored on AWS S3 compatible object stores.
@@ -292,7 +294,11 @@ public class MFileS3 implements MFile {
 
   @Override
   public void writeToStream(OutputStream outputStream, long offset, long maxBytes) throws IOException {
-    throw new IOException("Writing MFileZip with a byte range to stream not implemented. Filename: " + getName());
+    final S3RandomAccessFile.Provider provider = new S3RandomAccessFile.Provider();
+
+    try (RandomAccessFile randomAccessFile = provider.open(cdmS3Uri.toString())) {
+      IO.copyRafB(randomAccessFile, offset, maxBytes, outputStream);
+    }
   }
 
   public static class Provider implements MFileProvider {

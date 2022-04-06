@@ -153,7 +153,7 @@ public class MFileZip implements MFile {
   public void writeToStream(OutputStream outputStream) throws IOException {
     for (ZipEntry entry : leafEntries) {
       final File file = new File(entry.getName());
-      IO.copyFileB(file, outputStream, 60 * 1000);
+      IO.copyFile(file, outputStream);
     }
   }
 

@@ -188,6 +188,25 @@ public class TestMFileS3 {
   }
 
   @Test
+  public void shouldWritePartialObjectToStream() throws IOException {
+    final MFile mFile = new MFileS3(AWS_G16_S3_OBJECT_1);
+    final long length = mFile.getLength();
+
+    final long[][] testCases = {{0, 0}, {10, 10}, {0, length}, {0, 100}, {42, 100}};
+
+    for (long[] testCase : testCases) {
+      final long offset = testCase[0];
+      final long maxBytes = testCase[1];
+
+      final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+      mFile.writeToStream(outputStream, offset, maxBytes);
+
+      final long bytesWritten = Math.min(maxBytes, length - offset);
+      assertThat(outputStream.size()).isEqualTo(bytesWritten);
+    }
+  }
+
+  @Test
   public void shouldNotWriteDirectoryToStream() throws IOException {
     final MFile mFile = new MFileS3(AWS_G16_S3_URI_DIR + "/" + DELIMITER_FRAGMENT);
     assertThat(mFile.isDirectory()).isTrue();
