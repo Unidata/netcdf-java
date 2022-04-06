@@ -58,10 +58,9 @@ public class TestCoverageAsPoint {
 
     // read the data from file and update that data in
     // the message digest
-    while ((bytesCount = fis.read(byteArray)) != -1)
-    {
+    while ((bytesCount = fis.read(byteArray)) != -1) {
       mdigest.update(byteArray, 0, bytesCount);
-    };
+    } ;
 
     // close the input stream
     fis.close();
@@ -83,9 +82,7 @@ public class TestCoverageAsPoint {
       // the following line converts the decimal into
       // hexadecimal format and appends that to the
       // StringBuilder object
-      sb.append(Integer
-              .toString((bytes[i] & 0xff) + 0x100, 16)
-              .substring(1));
+      sb.append(Integer.toString((bytes[i] & 0xff) + 0x100, 16).substring(1));
     }
 
     // finally we return the complete hash
