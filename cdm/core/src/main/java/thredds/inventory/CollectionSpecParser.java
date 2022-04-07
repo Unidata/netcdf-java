@@ -62,62 +62,16 @@ public class CollectionSpecParser {
    */
   public CollectionSpecParser(String collectionSpec, Formatter errlog) {
     this.spec = collectionSpec.trim();
-    int posFilter;
 
-    int posGlob = collectionSpec.indexOf("/**/");
-    if (posGlob > 0) {
-      rootDir = collectionSpec.substring(0, posGlob);
-      posFilter = posGlob + 3;
-      subdirs = true;
-
-    } else {
-      subdirs = false;
-      posFilter = collectionSpec.lastIndexOf('/');
-      if (posFilter > 0)
-        rootDir = collectionSpec.substring(0, posFilter);
-      else
-        rootDir = System.getProperty("user.dir"); // working directory
-    }
+    rootDir = getRootDir(collectionSpec);
+    subdirs = collectionSpec.contains("/**/");
+    final String filterAndDateMark = getFilterAndDateMarkString(collectionSpec);
+    filter = getRegEx(filterAndDateMark);
+    dateFormatMark = getDateFormatMark(filterAndDateMark);
 
     File locFile = new File(rootDir);
     if (!locFile.exists() && errlog != null) {
       errlog.format(" Directory %s does not exist %n", rootDir);
-    }
-
-    // optional filter
-    String filter = null;
-    if (posFilter < collectionSpec.length() - 2)
-      filter = collectionSpec.substring(posFilter + 1); // remove topDir
-
-    if (filter != null) {
-      // optional dateFormatMark
-      int posFormat = filter.indexOf('#');
-      if (posFormat >= 0) {
-        // check for two hash marks
-        int posFormat2 = filter.lastIndexOf('#');
-
-        if (posFormat != posFormat2) { // two hash
-          dateFormatMark = filter.substring(0, posFormat2); // everything up to the second hash
-          filter = StringUtil2.remove(filter, '#'); // remove hashes, replace with .
-          StringBuilder sb = new StringBuilder(filter);
-          for (int i = posFormat; i < posFormat2 - 1; i++)
-            sb.setCharAt(i, '.');
-          String regExp = sb.toString();
-          this.filter = Pattern.compile(regExp);
-
-        } else { // one hash
-          dateFormatMark = filter; // everything
-          String regExp = filter.substring(0, posFormat) + "*";
-          this.filter = Pattern.compile(regExp);
-        }
-
-      } else { // no hash (dateFormatMark)
-        dateFormatMark = null;
-        this.filter = Pattern.compile(filter);
-      }
-    } else {
-      dateFormatMark = null;
-      this.filter = null;
     }
 
     this.filterOnName = true;
@@ -130,6 +84,67 @@ public class CollectionSpecParser {
     this.filter = Pattern.compile(spec);
     this.dateFormatMark = null;
     this.filterOnName = false;
+  }
+
+  private static String getRootDir(String collectionSpec) {
+    if (collectionSpec.contains("/**/")) {
+      return collectionSpec.split(Pattern.quote("/**/"))[0];
+    }
+
+    if (collectionSpec.contains("/")) {
+      return collectionSpec.substring(0, collectionSpec.lastIndexOf('/'));
+    }
+
+    return System.getProperty("user.dir"); // working directory
+  }
+
+  private static String getFilterAndDateMarkString(String collectionSpec) {
+    final int posFilter =
+        collectionSpec.contains("/**/") ? collectionSpec.indexOf("/**/") + 3 : collectionSpec.lastIndexOf('/');
+
+    if (posFilter >= collectionSpec.length() - 2) {
+      return null;
+    }
+
+    return collectionSpec.substring(posFilter + 1); // remove topDir
+  }
+
+  private static Pattern getRegEx(String filterAndDateMark) {
+    if (filterAndDateMark == null) {
+      return null;
+    }
+
+    int numberOfHashes = filterAndDateMark.length() - filterAndDateMark.replace("#", "").length();
+
+    if (numberOfHashes == 0) {
+      return Pattern.compile(filterAndDateMark);
+    } else if (numberOfHashes == 1) {
+      return Pattern.compile(filterAndDateMark.substring(0, filterAndDateMark.indexOf('#')) + "*");
+    } else {
+      StringBuilder sb = new StringBuilder(StringUtil2.remove(filterAndDateMark, '#')); // remove hashes, replace with .
+
+      for (int i = filterAndDateMark.indexOf('#'); i < filterAndDateMark.lastIndexOf('#') - 1; i++) {
+        sb.setCharAt(i, '.');
+      }
+
+      return Pattern.compile(sb.toString());
+    }
+  }
+
+  private static String getDateFormatMark(String filterAndDateMark) {
+    if (filterAndDateMark == null) {
+      return null;
+    }
+
+    int numberOfHashes = filterAndDateMark.length() - filterAndDateMark.replace("#", "").length();
+
+    if (numberOfHashes == 0) {
+      return null;
+    } else if (numberOfHashes == 1) {
+      return filterAndDateMark;
+    } else {
+      return filterAndDateMark.substring(0, filterAndDateMark.lastIndexOf('#'));
+    }
   }
 
   public PathMatcher getPathMatcher() {
