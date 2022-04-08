@@ -44,7 +44,7 @@ public class CoverageAsPoint {
   private class VarGroup {
     private String name;
     private List<VarData> varData;
-    private FeatureType ftype;
+    private FeatureType fType;
 
     private CoverageCoordAxis1D timeAxis;
     private CalendarDateUnit dateUnit;
@@ -57,21 +57,23 @@ public class CoverageAsPoint {
       for (Coverage cov : wantCovs) {
         this.varData.add(new VarData(cov));
       }
-      CoverageCoordSys subsetCys = this.varData.get(0).array.getCoordSysForData();
+      CoverageCoordSys subsetSys = this.varData.get(0).array.getCoordSysForData();
 
       // single point subset, so only one lat/lon to grab, and this will be the lat/lon
       // closest to the one requested in the subset
-      nearestLatLonPoint = subsetCys.getHorizCoordSys().getLatLon(0, 0);
+      if (nearestLatLonPoint == null) {
+        nearestLatLonPoint = subsetSys.getHorizCoordSys().getLatLon(0, 0);
+      }
 
-      this.timeAxis = (CoverageCoordAxis1D) subsetCys.getTimeAxis();
+      this.timeAxis = (CoverageCoordAxis1D) subsetSys.getTimeAxis();
       if (this.timeAxis != null) {
         this.dateUnit = this.timeAxis.getCalendarDateUnit();
       }
-      this.zAxis = (CoverageCoordAxis1D) subsetCys.getZAxis();
+      this.zAxis = (CoverageCoordAxis1D) subsetSys.getZAxis();
       if (this.zAxis != null) {
         this.zUnit = this.zAxis.getUnits();
       }
-      this.ftype =
+      this.fType =
           (this.zAxis == null || this.zAxis.getNcoords() <= 1) ? FeatureType.STATION : FeatureType.STATION_PROFILE;
     }
   }
@@ -114,12 +116,12 @@ public class CoverageAsPoint {
   }
 
   public FeatureDatasetPoint asFeatureDatasetPoint() {
-    return varGroups.size() == 0 ? null : new CoverageAsFeatureDatasetPoint();
+    return varGroups.isEmpty() ? null : new CoverageAsFeatureDatasetPoint();
   }
 
   private class CoverageAsFeatureDatasetPoint extends ucar.nc2.ft.point.PointDatasetImpl {
     CoverageAsFeatureDatasetPoint() {
-      super(varGroups.size() > 1 ? FeatureType.ANY_POINT : varGroups.get(0).ftype);
+      super(varGroups.size() > 1 ? FeatureType.ANY_POINT : varGroups.get(0).fType);
       this.collectionList = new ArrayList<>();
       List<VariableSimpleIF> dataVars = new ArrayList<>();
       // each group of vars is its own collection
@@ -144,7 +146,7 @@ public class CoverageAsPoint {
     CoverageAsStationFeatureCollection(VarGroup varGroup) {
       super(varGroup.name + " AsStationFeatureCollection", varGroup.dateUnit, varGroup.zUnit);
       this.varGroup = varGroup;
-      this.collectionFeatureType = varGroup.ftype;
+      this.collectionFeatureType = varGroup.fType;
     }
 
     @Override

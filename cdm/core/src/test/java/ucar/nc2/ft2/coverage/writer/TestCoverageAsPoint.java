@@ -44,9 +44,7 @@ public class TestCoverageAsPoint {
   @Test
   public void testVarGroupByDimensions() throws IOException {
     List<String> varNames = new ArrayList<>();
-    gds.getCoverages().forEach(cov -> {
-      varNames.add(cov.getName());
-    });
+    gds.getCoverages().forEach(cov -> varNames.add(cov.getName()));
 
     SubsetParams params = new SubsetParams();
     params.setVariables(varNames);
