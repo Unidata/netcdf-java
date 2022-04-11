@@ -16,7 +16,8 @@ import ucar.unidata.geoloc.LatLonRect;
  *
  * @author caron
  */
-public interface StationTimeSeriesFeatureCollection extends PointFeatureCC, Iterable<StationTimeSeriesFeature> {
+public interface StationTimeSeriesFeatureCollection
+    extends StationFeatureCollection, PointFeatureCC, Iterable<StationTimeSeriesFeature> {
 
   List<StationFeature> getStationFeatures();
 
