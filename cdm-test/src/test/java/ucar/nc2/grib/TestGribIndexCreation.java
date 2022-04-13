@@ -307,7 +307,7 @@ public class TestGribIndexCreation {
   }
 
 
-  @Test // has one file for for each month, all in same directory
+  @Test // has one file for each month, all in same directory
   @Category(NeedsCdmUnitTest.class)
   public void testRdvamds627p1() throws IOException {
     Grib.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
@@ -322,7 +322,7 @@ public class TestGribIndexCreation {
 
   ////////////////
 
-  @Test // has one file for for each month, all in same directory
+  @Test // has one file for each month, all in same directory
   @Category(NeedsCdmUnitTest.class)
   public void testTimePartition() throws IOException {
     Grib.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));

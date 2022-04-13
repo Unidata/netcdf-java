@@ -63,7 +63,7 @@ public class TestControllerS3 {
   }
 
   //////////////////////
-  // getInventoryAll() tests
+  // getInventoryTop() tests
   //
   @Test
   public void testGetInventoryTopBucketNoDelimiterAws() throws URISyntaxException {
