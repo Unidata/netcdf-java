@@ -146,7 +146,7 @@ public class CoverageAsPoint {
     private VarGroup varGroup;
 
     CoverageAsStationProfileCollection(VarGroup varGroup) {
-      super(varGroup.name + " AsStationFeatureCollection", varGroup.dateUnit, varGroup.zUnit);
+      super(varGroup.name + " AsStationProfileCollection", varGroup.dateUnit, varGroup.zUnit);
       this.varGroup = varGroup;
       this.collectionFeatureType = varGroup.fType;
     }
@@ -165,7 +165,7 @@ public class CoverageAsPoint {
     protected StationHelper createStationHelper() throws IOException {
       StationHelper helper = new StationHelper();
       String name = String.format("GridPointRequestedAt[%s]", LatLonPoints.toString(latLonPoint, 3));
-      name = StringUtil2.replace(name.trim(), ' ', "_");
+      name = StringUtil2.replace(name, ' ', "_");
       helper.addStation(createStationFeature(name));
       return helper;
     }
@@ -191,7 +191,7 @@ public class CoverageAsPoint {
     protected StationHelper createStationHelper() {
       StationHelper helper = new StationHelper();
       String name = String.format("GridPointRequestedAt[%s]", LatLonPoints.toString(latLonPoint, 3));
-      name = StringUtil2.replace(name.trim(), ' ', "_");
+      name = StringUtil2.replace(name, ' ', "_");
       helper.addStation(createStationFeature(name));
       return helper;
     }
