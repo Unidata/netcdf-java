@@ -186,10 +186,7 @@ public class MFileS3 implements MFile {
       // Now, find the location of the rightmost delimiter
       int lastDelimiter = name.lastIndexOf(delimiter);
 
-      // if no rightmost delimiter found, then we are at the top level of the bucket, so the name is blank
-      if (lastDelimiter < 0) {
-        name = "";
-      } else {
+      if (lastDelimiter >= 0) {
         // the "name" is everything after that last delimiter
         name = name.substring(lastDelimiter);
         if (name.startsWith(delimiter)) {
