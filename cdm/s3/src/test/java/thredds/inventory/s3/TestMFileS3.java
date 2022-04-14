@@ -27,6 +27,7 @@ public class TestMFileS3 {
 
   private static final String parentDirName = "242";
   private static final String dirName = "00";
+  private static final String topLevelDir = "ABI-L1b-RadC";
   private static final String G16_DIR = "ABI-L1b-RadC/2017/" + parentDirName + "/" + dirName;
   private static final String G16_NAME_1 =
       "OR_ABI-L1b-RadC-M3C01_G16_s20172420002168_e20172420004540_c20172420004583.nc";
@@ -43,6 +44,7 @@ public class TestMFileS3 {
   private static final String AWS_G16_S3_OBJECT_1 = S3TestsCommon.TOP_LEVEL_AWS_BUCKET + "?" + G16_OBJECT_KEY_1;
   private static final String AWS_G16_S3_OBJECT_2 = S3TestsCommon.TOP_LEVEL_AWS_BUCKET + "?" + G16_OBJECT_KEY_2;
   private static final String AWS_G16_S3_URI_DIR = S3TestsCommon.TOP_LEVEL_AWS_BUCKET + "?" + G16_DIR;
+  private static final String AWS_G16_S3_URI_TOP_DIR = S3TestsCommon.TOP_LEVEL_AWS_BUCKET + "?" + topLevelDir;
 
   // Google Cloud Platform constants
   private static final String GCS_G16_S3_OBJECT_1 = S3TestsCommon.TOP_LEVEL_GCS_BUCKET + "?" + G16_OBJECT_KEY_1;
@@ -129,6 +131,15 @@ public class TestMFileS3 {
   public void dirCheckOsdc() throws IOException {
     dirCheckNoDelim(OSDC_G16_S3_URI_DIR, OSDC_G16_DIR);
     dirCheckDelim(OSDC_G16_S3_URI_DIR + DELIMITER_FRAGMENT);
+  }
+
+  @Test
+  public void shouldReturnTopLevelKeyName() throws IOException {
+    final MFileS3 fileWithoutDelimiter = new MFileS3(AWS_G16_S3_URI_TOP_DIR);
+    assertThat(fileWithoutDelimiter.getName()).isEqualTo(topLevelDir);
+
+    final MFileS3 fileWithDelimiter = new MFileS3(AWS_G16_S3_URI_TOP_DIR + DELIMITER_FRAGMENT);
+    assertThat(fileWithDelimiter.getName()).isEqualTo(topLevelDir);
   }
 
   @Test
