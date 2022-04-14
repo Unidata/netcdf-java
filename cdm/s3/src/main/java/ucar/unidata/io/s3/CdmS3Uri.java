@@ -265,11 +265,12 @@ public final class CdmS3Uri {
       newUri = newUri.replace(key, newKey);
     } else {
       int fragLoc = newUri.lastIndexOf("#");
+      String fragment = "";
       if (fragLoc > 0) {
-        String fragment = newUri.substring(fragLoc);
+        fragment = newUri.substring(fragLoc);
         newUri = newUri.substring(0, fragLoc);
-        newUri = newUri + "?" + newKey + fragment;
       }
+      newUri = newUri + "?" + newKey + fragment;
     }
 
     return new CdmS3Uri(newUri);
