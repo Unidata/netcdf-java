@@ -126,7 +126,9 @@ public class CoverageAsPoint {
       List<VariableSimpleIF> dataVars = new ArrayList<>();
       // each group of vars is its own collection
       for (VarGroup vg : varGroups) {
-        this.collectionList.add(new CoverageAsStationFeatureCollection(vg));
+        DsgFeatureCollection featCol = vg.fType == FeatureType.STATION_PROFILE ? new CoverageAsStationProfileCollection(vg) :
+                new CoverageAsStationFeatureCollection(vg);
+        this.collectionList.add(featCol);
 
         for (VarData vd : vg.varData) {
           Coverage cov = vd.cov;
@@ -136,6 +138,41 @@ public class CoverageAsPoint {
         }
       }
       this.dataVariables = dataVars;
+    }
+  }
+
+  private class CoverageAsStationProfileCollection extends StationProfileCollectionImpl {
+    private VarGroup varGroup;
+
+    CoverageAsStationProfileCollection(VarGroup varGroup) {
+      super(varGroup.name + " AsStationFeatureCollection", varGroup.dateUnit, varGroup.zUnit);
+      this.varGroup = varGroup;
+      this.collectionFeatureType = varGroup.fType;
+    }
+
+    @Override
+    public IOIterator<PointFeatureCC> getCollectionIterator() throws IOException {
+      return null;
+    }
+
+    @Override
+    public PointFeatureCCIterator getNestedPointFeatureCollectionIterator() throws IOException {
+      return null;
+    }
+
+    @Override
+    protected StationHelper createStationHelper() throws IOException {
+      StationHelper helper = new StationHelper();
+      String name = String.format("GridPointRequestedAt[%s]", LatLonPoints.toString(latLonPoint, 3));
+      name = StringUtil2.replace(name.trim(), ' ', "_");
+      helper.addStation(createStationFeature(name));
+      return helper;
+    }
+
+    private StationFeature createStationFeature(String name) {
+      double stationZ = varGroup.zAxis != null ? varGroup.zAxis.getCoordEdgeFirst() : 0.0;
+      return new CoverageAsStationProfile(name, name, null, nearestLatLonPoint.getLatitude(),
+              nearestLatLonPoint.getLongitude(), stationZ, this.timeUnit, this.altUnits, -1, varGroup);
     }
   }
 
@@ -160,10 +197,7 @@ public class CoverageAsPoint {
 
     private StationFeature createStationFeature(String name) {
       double stationZ = varGroup.zAxis != null ? varGroup.zAxis.getCoordEdgeFirst() : 0.0;
-      return this.collectionFeatureType == FeatureType.STATION_PROFILE
-          ? new CoverageAsStationProfile(name, name, null, nearestLatLonPoint.getLatitude(),
-              nearestLatLonPoint.getLongitude(), stationZ, this.timeUnit, this.altUnits, -1, varGroup)
-          : new CoverageAsStationFeature(name, name, null, nearestLatLonPoint.getLatitude(),
+      return new CoverageAsStationFeature(name, name, null, nearestLatLonPoint.getLatitude(),
               nearestLatLonPoint.getLongitude(), stationZ, this.timeUnit, null, -1, varGroup);
     }
   }

@@ -156,8 +156,8 @@ public class TestCoverageAsPoint {
     assertThat(fdp.getFeatureType()).isEqualTo(FeatureType.STATION_PROFILE);
     final String varName = varNames.get(0);
 
-    StationTimeSeriesFeatureCollection fc =
-        (StationTimeSeriesFeatureCollection) fdp.getPointFeatureCollectionList().get(0);
+    StationProfileFeatureCollection fc =
+        (StationProfileFeatureCollection) fdp.getPointFeatureCollectionList().get(0);
     assertThat(fc).isNotNull();
     assertThat(fc.getCollectionFeatureType()).isEqualTo(FeatureType.STATION_PROFILE);
 
