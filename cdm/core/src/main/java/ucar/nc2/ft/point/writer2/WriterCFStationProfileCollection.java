@@ -68,7 +68,7 @@ class WriterCFStationProfileCollection extends WriterCFPointAbstract {
     super(fileOut, globalAtts, dataVars, timeUnit, altUnits, config);
     writerb.addAttribute(new Attribute(CF.FEATURE_TYPE, CF.FeatureType.timeSeriesProfile.name()));
     writerb.addAttribute(
-        new Attribute(CF.DSG_REPRESENTATION, "Ragged array representation of time series profiless, H.5.3"));
+        new Attribute(CF.DSG_REPRESENTATION, "Ragged array representation of time series profiles, H.5.3"));
   }
 
   void setStations(List<StationFeature> stns) {
