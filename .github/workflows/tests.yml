@@ -11,7 +11,16 @@ jobs:
         java-vendor: [ 'zulu', 'temurin' ]
     steps:
       - uses: actions/checkout@v2
-      - name: Build and test with Gradle (${{ matrix.java-vendor }} ${{ matrix.java-version }})
+      - name: Set up JDK 11 for compiling
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'adopt'
+          java-version: '11'
+      - name: Move JDK so test environment can access it
+        run: mv $JAVA_HOME ${{ github.workspace }}/jdk-11
+      - name: Set environment variable
+        run: echo "JDK_11_PATH=${{ github.workspace }}/jdk-11" >> $GITHUB_ENV
+      - name: Test with Gradle (${{ matrix.java-vendor }} ${{ matrix.java-version }})
         uses: Unidata/thredds-test-action@v1
         with:
           java-vendor: ${{ matrix.java-vendor }}

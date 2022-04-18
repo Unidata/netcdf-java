@@ -14,4 +14,7 @@ tasks.withType(JavaCompile).all {
 
   // show deprecation details
   //options.compilerArgs = ['-Xlint:deprecation']
+
+  options.fork = true
+  options.forkOptions.javaHome = System.env.'JDK_11_PATH' as File
 }
