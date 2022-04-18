@@ -4,6 +4,7 @@
  */
 package ucar.nc2.ft.coverage;
 
+import java.util.Arrays;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -50,7 +51,7 @@ public class TestRdaReading {
       SubsetParams subset = new SubsetParams().setTimePresent();
       GeoReferencedArray geo = cov.readData(subset);
       Array data = geo.getData();
-      System.out.printf(" read data from %s shape = %s%n", cov.getName(), Misc.showInts(data.getShape()));
+      System.out.printf(" read data from %s shape = %s%n", cov.getName(), Arrays.toString(data.getShape()));
     }
 
     Grib.setDebugFlags(new DebugFlagsImpl(""));
@@ -73,7 +74,7 @@ public class TestRdaReading {
       SubsetParams subset = new SubsetParams().setTimePresent();
       GeoReferencedArray geo = cov.readData(subset);
       Array data = geo.getData();
-      System.out.printf(" read data from %s shape = %s%n", cov.getName(), Misc.showInts(data.getShape()));
+      System.out.printf(" read data from %s shape = %s%n", cov.getName(), Arrays.toString(data.getShape()));
     }
 
     Grib.setDebugFlags(new DebugFlagsImpl(""));
@@ -113,7 +114,7 @@ public class TestRdaReading {
       SubsetParams subset = new SubsetParams().setTimePresent();
       GeoReferencedArray geo = cov.readData(subset);
       Array data = geo.getData();
-      System.out.printf(" read data from %s shape = %s%n", cov.getName(), Misc.showInts(data.getShape()));
+      System.out.printf(" read data from %s shape = %s%n", cov.getName(), Arrays.toString(data.getShape()));
     }
 
     Grib.setDebugFlags(new DebugFlagsImpl(""));
@@ -156,7 +157,7 @@ public class TestRdaReading {
       SubsetParams subset = new SubsetParams().setTimePresent();
       GeoReferencedArray geo = cov.readData(subset);
       Array data = geo.getData();
-      System.out.printf(" read data from %s shape = %s%n", cov.getName(), Misc.showInts(data.getShape()));
+      System.out.printf(" read data from %s shape = %s%n", cov.getName(), Arrays.toString(data.getShape()));
     }
 
     Grib.setDebugFlags(new DebugFlagsImpl(""));

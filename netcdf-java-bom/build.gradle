@@ -1,0 +1,45 @@
+apply plugin: 'java-platform'
+apply from: "$rootDir/gradle/any/dependencies.gradle"
+apply from: "$rootDir/gradle/any/publishing.gradle"
+
+// netcdf-java library platform
+// responsible for generating a maven bill of materials for the project
+
+javaPlatform {
+  allowDependencies()
+}
+
+dependencies {
+  api enforcedPlatform(project(':netcdf-java-platform'))
+  constraints {
+    api project(':bufr')
+    api project(':cdm:cdm-core')
+    api project(':cdm:cdm-image')
+    api project(':cdm:cdm-misc')
+    api project(':cdm:cdm-radial')
+    api project(':cdm:cdm-s3')
+    api project(':cdm-test-utils')
+    api project(':dap4:d4core')
+    api project(':dap4:d4lib')
+    api project(':dap4:d4cdm')
+    api project(':grib')
+    api project(':httpservices')
+    api project(':legacy')
+    api project(':netcdf4')
+    api project(':opendap')
+    api project(':udunits')
+    api project(':uibase')
+    api project(':uicdm')
+    api project(':visad:cdm-mcidas')
+    api project(':visad:cdm-vis5d')
+    api project(':waterml')
+  }
+}
+
+publishing {
+  publications {
+    netcdfJavaBom(MavenPublication) {
+      from components.javaPlatform
+    }
+  }
+}

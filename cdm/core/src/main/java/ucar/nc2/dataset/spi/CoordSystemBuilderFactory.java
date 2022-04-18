@@ -6,7 +6,7 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.internal.dataset.CoordSystemBuilder;
 
 /**
- * Service Provider interface to CoordSystemBuilder.
+ * A Service Provider of CoordSystemBuilder.
  */
 public interface CoordSystemBuilderFactory {
   @Nullable

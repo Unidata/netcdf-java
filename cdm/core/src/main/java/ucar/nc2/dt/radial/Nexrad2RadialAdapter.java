@@ -13,9 +13,10 @@ import ucar.nc2.time.CalendarDateUnit;
 import ucar.nc2.units.DateFormatter;
 import ucar.nc2.units.DateUnit;
 import ucar.ma2.*;
+import ucar.unidata.geoloc.EarthLocation;
+import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.Earth;
-import ucar.unidata.geoloc.LatLonPointImpl;
 import java.io.IOException;
 import java.util.*;
 
@@ -42,9 +43,9 @@ public class Nexrad2RadialAdapter extends AbstractRadialAdapter {
 
   /////////////////////////////////////////////////
   public Object isMine(FeatureType wantFeatureType, NetcdfDataset ncd, Formatter errlog) {
-    String convention = ncd.getRootGroup().findAttValueIgnoreCase("Conventions", null);
+    String convention = ncd.getRootGroup().findAttributeString("Conventions", null);
     if (_Coordinate.Convention.equals(convention)) {
-      String format = ncd.getRootGroup().findAttValueIgnoreCase("Format", null);
+      String format = ncd.getRootGroup().findAttributeString("Format", null);
       if (format != null && (isNEXRAD2Format(format) || format.equals("CINRAD-SA"))) {
         return this;
       }
@@ -91,13 +92,13 @@ public class Nexrad2RadialAdapter extends AbstractRadialAdapter {
     if (origin == null)
       return;
 
-    double dLat = Math.toDegrees(getMaximumRadialDist() / Earth.getRadius());
+    double dLat = Math.toDegrees(getMaximumRadialDist() / Earth.WGS84_EARTH_RADIUS_METERS);
     double latRadians = Math.toRadians(origin.getLatitude());
     double dLon = dLat * Math.cos(latRadians);
 
     double lat1 = origin.getLatitude() - dLat / 2;
     double lon1 = origin.getLongitude() - dLon / 2;
-    bb = new LatLonRect(new LatLonPointImpl(lat1, lon1), dLat, dLon);
+    bb = new LatLonRect(LatLonPoint.create(lat1, lon1), dLat, dLon);
 
     boundingBox = bb;
   }
@@ -137,7 +138,7 @@ public class Nexrad2RadialAdapter extends AbstractRadialAdapter {
     else
       elev = 0.0;
 
-    origin = new ucar.unidata.geoloc.EarthLocationImpl(latv, lonv, elev);
+    origin = EarthLocation.create(latv, lonv, elev);
   }
 
   public ucar.unidata.geoloc.EarthLocation getCommonOrigin() {
@@ -194,7 +195,7 @@ public class Nexrad2RadialAdapter extends AbstractRadialAdapter {
   }
 
   protected void setStartDate() {
-    String start_datetime = ds.getRootGroup().findAttValueIgnoreCase("time_coverage_start", null);
+    String start_datetime = ds.getRootGroup().findAttributeString("time_coverage_start", null);
     if (start_datetime != null)
       startDate = formatter.getISODate(start_datetime);
     else
@@ -202,7 +203,7 @@ public class Nexrad2RadialAdapter extends AbstractRadialAdapter {
   }
 
   protected void setEndDate() {
-    String end_datetime = ds.getRootGroup().findAttValueIgnoreCase("time_coverage_end", null);
+    String end_datetime = ds.getRootGroup().findAttributeString("time_coverage_end", null);
     if (end_datetime != null)
       endDate = formatter.getISODate(end_datetime);
     else

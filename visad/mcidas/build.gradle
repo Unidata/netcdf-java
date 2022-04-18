@@ -1,17 +1,24 @@
-description = "Mcidas and Gempak IOSPs."
-ext.title = "Mcidas and Gempak IOSPs"
+description = 'Mcidas and Gempak IOSPs.'
+ext.title = 'Mcidas and Gempak IOSPs'
 
 apply from: "$rootDir/gradle/any/dependencies.gradle"
-apply from: "$rootDir/gradle/any/java.gradle"
-apply from: "$rootDir/gradle/any/archiving.gradle"
-apply from: "$rootDir/gradle/any/publishing.gradle"
+apply from: "$rootDir/gradle/any/java-library.gradle"
 
 dependencies {
-    compile project(':cdm:cdm-core')
-    compile project(':grib')
+  api enforcedPlatform(project(':netcdf-java-platform'))
+  testImplementation enforcedPlatform(project(':netcdf-java-testing-platform'))
 
-    compile libraries["guava"]
-    compile libraries["re2j"]
+  api project(':cdm:cdm-core')
 
-    compile libraries["slf4j-api"]
+  compile project(':grib')
+
+  compile 'edu.wisc.ssec:visad-mcidas-slim-ucar-ns'
+  compile 'com.google.guava:guava'
+  compile 'com.google.re2j:re2j'
+
+  compile 'org.slf4j:slf4j-api'
+
+  testImplementation project(':cdm-test-utils')
+
+  testImplementation 'com.google.truth:truth'
 }

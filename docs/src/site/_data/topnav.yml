@@ -1,0 +1,52 @@
+# Documentation version menu
+topnav_docvermenu:
+  - title: Version
+    id: docmenu
+    folderitems:
+      - title: Menu Loading...
+        url:
+        id: remove
+
+#Topnav dropdowns
+topnav_dropdowns:
+  - title: Topnav dropdowns
+    folders:
+      - title: netCDF-Java
+        folderitems:
+          - title: Unidata Homepage
+            external_url: https://www.unidata.ucar.edu/software/netcdf-java/
+          - title: GitHub
+            external_url: https://github.com/Unidata/netcdf-java
+          - title: User guide
+            external_url: https://docs.unidata.ucar.edu/netcdf-java/5.5/userguide/index.html
+          - title: Javadoc
+            external_url: https://docs.unidata.ucar.edu/netcdf-java/5.5/javadoc/index.html
+          - title: NcML
+            external_url: https://docs.unidata.ucar.edu/thredds/ncml/2.2/index.html
+
+      - title: TDS
+        folderitems:
+          - title: Unidata Homepage
+            external_url: https://www.unidata.ucar.edu/software/tds/
+          - title: GitHub
+            external_url: https://github.com/Unidata/tds
+          - title: Documentation
+            external_url: https://docs.unidata.ucar.edu/tds/current/userguide/index.html
+
+      - title: Rosetta
+        folderitems:
+          - title: Unidata Homepage
+            external_url: https://www.unidata.ucar.edu/software/rosetta/
+          - title: GitHub
+            external_url: https://github.com/Unidata/Rosetta
+          - title: User guide
+            external_url: https://docs.unidata.ucar.edu/rosetta/current/userguide/index.html
+
+      - title: Siphon
+        folderitems:
+          - title: Unidata Homepage
+            external_url: https://www.unidata.ucar.edu/software/siphon/
+          - title: GitHub
+            external_url: https://github.com/Unidata/siphon
+          - title: Documentation
+            external_url: https://unidata.github.io/siphon/latest/

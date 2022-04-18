@@ -30,7 +30,7 @@ import java.nio.*;
 
 /*
  * Implementation notes
- * any field called address is actually reletive to the base address.
+ * any field called address is actually relative to the base address.
  * any field called filePos or dataPos is a byte offset within the file.
  */
 /*
@@ -59,6 +59,9 @@ public class H5header extends NCheader implements H5headerIF {
   private static boolean debugContinueMessage, debugTracker, debugSoftLink, debugHardLink, debugSymbolTable;
   private static boolean warnings = true, debugReference, debugRegionReference, debugCreationOrder, debugStructure;
   private static boolean debugDimensionScales;
+
+  // NULL string value, following netCDF-C, set to NIL
+  private static final String NULL_STRING_VALUE = "NIL";
 
   public static void setWarnings(boolean warn) {
     warnings = warn;
@@ -136,6 +139,10 @@ public class H5header extends NCheader implements H5headerIF {
 
   boolean isNetcdf4() {
     return isNetcdf4;
+  }
+
+  boolean isClassic() {
+    return false; // TODO
   }
 
   public void read(java.io.PrintWriter debugPS) throws IOException {
@@ -476,6 +483,39 @@ public class H5header extends NCheader implements H5headerIF {
 
     createDimensions(ncGroup, h5group);
 
+    // process types first
+    for (DataObjectFacade facadeNested : h5group.nestedObjects) {
+      if (facadeNested.isTypedef) {
+        if (debugReference && facadeNested.dobj.mdt.type == 7) {
+          log.debug("{}", facadeNested);
+        }
+
+        if (facadeNested.dobj.mdt.map != null) {
+          EnumTypedef enumTypedef = ncGroup.findEnumeration(facadeNested.name);
+          if (enumTypedef == null) {
+            DataType basetype;
+            switch (facadeNested.dobj.mdt.byteSize) {
+              case 1:
+                basetype = DataType.ENUM1;
+                break;
+              case 2:
+                basetype = DataType.ENUM2;
+                break;
+              default:
+                basetype = DataType.ENUM4;
+                break;
+            }
+            enumTypedef = new EnumTypedef(facadeNested.name, facadeNested.dobj.mdt.map, basetype);
+            ncGroup.addEnumeration(enumTypedef);
+          }
+        }
+        if (debugV) {
+          log.debug("  made enumeration {}", facadeNested.name);
+        }
+      }
+
+    } // loop over typedefs
+
     // nested objects - groups and variables
     for (DataObjectFacade facadeNested : h5group.nestedObjects) {
 
@@ -523,36 +563,7 @@ public class H5header extends NCheader implements H5headerIF {
             log.debug("  made Variable " + v.getFullName() + "  vinfo= " + vinfo + "\n" + v);
           }
         }
-
-      } else if (facadeNested.isTypedef) {
-        if (debugReference && facadeNested.dobj.mdt.type == 7) {
-          log.debug("{}", facadeNested);
-        }
-
-        if (facadeNested.dobj.mdt.map != null) {
-          EnumTypedef enumTypedef = ncGroup.findEnumeration(facadeNested.name);
-          if (enumTypedef == null) {
-            DataType basetype;
-            switch (facadeNested.dobj.mdt.byteSize) {
-              case 1:
-                basetype = DataType.ENUM1;
-                break;
-              case 2:
-                basetype = DataType.ENUM2;
-                break;
-              default:
-                basetype = DataType.ENUM4;
-                break;
-            }
-            enumTypedef = new EnumTypedef(facadeNested.name, facadeNested.dobj.mdt.map, basetype);
-            ncGroup.addEnumeration(enumTypedef);
-          }
-        }
-        if (debugV) {
-          log.debug("  made enumeration {}", facadeNested.name);
-        }
       }
-
     } // loop over nested objects
 
     // create group attributes last. need enums to be found first
@@ -572,7 +583,7 @@ public class H5header extends NCheader implements H5headerIF {
 
   /////////////////////////
   /*
-   * from http://www.unidata.ucar.edu/software/netcdf/docs/netcdf.html#NetCDF_002d4-Format
+   * from https://www.unidata.ucar.edu/software/netcdf/docs/netcdf.html#NetCDF_002d4-Format
    * C.3.7 Attributes
    * 
    * Attributes in HDF5 and netCDF-4 correspond very closely. Each attribute in an HDF5 file is represented as an
@@ -597,7 +608,7 @@ public class H5header extends NCheader implements H5headerIF {
    * Attribute references to any associated Dataset
    * 
    * -------------
-   * from http://www.unidata.ucar.edu/mailing_lists/archives/netcdfgroup/2008/msg00093.html
+   * from https://www.unidata.ucar.edu/mailing_lists/archives/netcdfgroup/2008/msg00093.html
    * 
    * Then comes the part you will have to do for your datasets. You open the data
    * dataset, get an ID, DID variable here, open the latitude dataset, get its ID,
@@ -1058,7 +1069,7 @@ public class H5header extends NCheader implements H5headerIF {
         }
         StructureMembers.Member m = sm.addMember(h5sm.name, null, null, dt, dim);
 
-        if (h5sm.mdt.endian >= 0) // apparently each member may have seperate byte order (!!!??)
+        if (h5sm.mdt.endian >= 0) // apparently each member may have separate byte order (!!!??)
           m.setDataObject(
               h5sm.mdt.endian == RandomAccessFile.LITTLE_ENDIAN ? ByteOrder.LITTLE_ENDIAN : ByteOrder.BIG_ENDIAN);
         m.setDataParam((h5sm.offset)); // offset since start of Structure
@@ -1730,9 +1741,14 @@ public class H5header extends NCheader implements H5headerIF {
 
     // set the enumTypedef
     if (dt.isEnum()) {
-      Group ncGroup = v.getParentGroup();
-      EnumTypedef enumTypedef = ncGroup.findEnumeration(mdt.enumTypeName);
-      if (enumTypedef == null) { // if shared object, wont have a name, shared version gets added later
+      Group ncGroup = v.getParentGroupOrRoot();
+      EnumTypedef local = new EnumTypedef(mdt.enumTypeName, mdt.map);
+      EnumTypedef enumTypedef =
+          ncGroup.getEnumTypedefs().stream().filter((e) -> e.equalsMapOnly(local)).findFirst().orElse(local);
+      if (enumTypedef != null) {
+        // if found, make sure it is added to the group
+        ncGroup.addEnumeration(enumTypedef);
+      } else { // if shared object, wont have a name, shared version gets added later
         enumTypedef = new EnumTypedef(mdt.enumTypeName, mdt.map);
         ncGroup.addEnumeration(enumTypedef);
       }
@@ -4117,9 +4133,7 @@ public class H5header extends NCheader implements H5headerIF {
               attMessage.read(dh.getPos());
               f.format(" %-30s", trunc(attMessage.getName(), 30));
             }
-            f.format(" heapId=:");
-            Misc.showBytes(heapId, f);
-            f.format("%n");
+            f.format(" heapId=:%s%n", Arrays.toString(heapId));
           }
 
         } catch (IOException e) {
@@ -4700,6 +4714,9 @@ public class H5header extends NCheader implements H5headerIF {
    */
   String readHeapString(long heapIdAddress) throws IOException {
     H5header.HeapIdentifier heapId = new HeapIdentifier(heapIdAddress);
+    if (heapId.isEmpty()) {
+      return NULL_STRING_VALUE;
+    }
     H5header.GlobalHeap.HeapObject ho = heapId.getHeapObject();
     if (ho == null)
       throw new IllegalStateException("Cant find Heap Object,heapId=" + heapId);
@@ -4719,6 +4736,9 @@ public class H5header extends NCheader implements H5headerIF {
    */
   String readHeapString(ByteBuffer bb, int pos) throws IOException {
     H5header.HeapIdentifier heapId = new HeapIdentifier(bb, pos);
+    if (heapId.isEmpty()) {
+      return NULL_STRING_VALUE;
+    }
     H5header.GlobalHeap.HeapObject ho = heapId.getHeapObject();
     if (ho == null)
       throw new IllegalStateException("Cant find Heap Object,heapId=" + heapId);
@@ -4782,7 +4802,7 @@ public class H5header extends NCheader implements H5headerIF {
     // the heap id is has already been read into a byte array at given pos
     HeapIdentifier(ByteBuffer bb, int pos) {
       bb.order(ByteOrder.LITTLE_ENDIAN); // header information is in le byte order
-      bb.position(pos); // reletive reading
+      bb.position(pos); // relative reading
       nelems = bb.getInt();
       heapAddress = isOffsetLong ? bb.getLong() : (long) bb.getInt();
       index = bb.getInt();
@@ -4889,6 +4909,8 @@ public class H5header extends NCheader implements H5headerIF {
         long startPos = raf.getFilePointer();
         HeapObject o = new HeapObject();
         o.id = raf.readShort();
+        if (o.id == 0)
+          break; // ?? look
         o.refCount = raf.readShort();
         raf.skipBytes(4);
         o.dataSize = readLength();
@@ -4897,8 +4919,6 @@ public class H5header extends NCheader implements H5headerIF {
         int dsize = ((int) o.dataSize) + padding((int) o.dataSize, 8);
         countBytes += dsize + 16;
 
-        if (o.id == 0)
-          break; // ?? look
         if (o.dataSize < 0)
           break; // ran off the end, must be done
         if (countBytes < 0)

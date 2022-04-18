@@ -2,7 +2,6 @@ package ucar.unidata.geoloc.projection;
 
 import org.junit.Test;
 import ucar.unidata.geoloc.LatLonPoint;
-import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.ProjectionPoint;
 import ucar.unidata.geoloc.ProjectionRect;
@@ -40,13 +39,13 @@ public class TestVerticalPerspectiveView {
      * while (theta <= 360) {
      * double x = limit*radius * Math.cos(Math.toRadians(theta));
      * double y = limit*radius * Math.sin(Math.toRadians(theta));
-     * LatLonPointImpl llpt = (LatLonPointImpl) a.projToLatLon( new ProjectionPointImpl(x, y));
+     * LatLonPointImpl llpt = (LatLonPointImpl) a.projToLatLon( ProjectionPoint.create(x, y));
      * System.out.println(theta+" = "+llpt.toString());
      * theta += 15;
      * }
      */
 
-    LatLonRect rect = new LatLonRect(new LatLonPointImpl(-45.0, -45.0), -45.0, -45.0);
+    LatLonRect rect = new LatLonRect(LatLonPoint.create(-45.0, -45.0), -45.0, -45.0);
     ProjectionRect r = a.latLonToProjBB(rect);
     System.out.println(" ProjectionRect result = " + r);
 
@@ -73,10 +72,10 @@ public class TestVerticalPerspectiveView {
      * 
      * } else {
      * Projection dataProjection = getProjection();
-     * ProjectionPoint ll = dataProjection.latLonToProj(llpt, new ProjectionPointImpl());
-     * ProjectionPoint ur = dataProjection.latLonToProj(urpt, new ProjectionPointImpl());
-     * ProjectionPoint lr = dataProjection.latLonToProj(lrpt, new ProjectionPointImpl());
-     * ProjectionPoint ul = dataProjection.latLonToProj(ulpt, new ProjectionPointImpl());
+     * ProjectionPoint ll = dataProjection.latLonToProj(llpt, ProjectionPoint.create());
+     * ProjectionPoint ur = dataProjection.latLonToProj(urpt, ProjectionPoint.create());
+     * ProjectionPoint lr = dataProjection.latLonToProj(lrpt, ProjectionPoint.create());
+     * ProjectionPoint ul = dataProjection.latLonToProj(ulpt, ProjectionPoint.create());
      * 
      * minx = Math.min(ll.getX(), ul.getX());
      * miny = Math.min(ll.getY(), lr.getY());

@@ -1,8 +1,11 @@
 /*
- * Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2020 University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
+
 package ucar.nc2.dataset;
+
+import static java.lang.Float.NaN;
 
 import org.junit.Assert;
 import org.junit.Rule;
@@ -13,7 +16,10 @@ import org.slf4j.LoggerFactory;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
+import ucar.nc2.util.CompareNetcdf2;
 import ucar.nc2.util.Misc;
+import ucar.nc2.write.Ncdump;
+import ucar.nc2.write.NetcdfFormatWriter;
 import ucar.unidata.util.test.Assert2;
 import ucar.nc2.dataset.NetcdfDataset.Enhance;
 import java.io.File;
@@ -34,59 +40,53 @@ public class TestScaleOffsetMissingUnsigned {
     String filename = tempFolder.newFile().getAbsolutePath();
     ArrayDouble unpacked;
     MAMath.ScaleOffset so;
-    Array packed;
 
-    try (NetcdfFileWriter ncfile = NetcdfFileWriter.createNew(filename, true)) {
-      // define dimensions
-      Dimension latDim = ncfile.addDimension("lat", 200);
-      Dimension lonDim = ncfile.addDimension("lon", 300);
-      int n = lonDim.getLength();
+    NetcdfFormatWriter.Builder writerb = NetcdfFormatWriter.createNewNetcdf3(filename);
 
-      // create an array
-      unpacked = new ArrayDouble.D2(latDim.getLength(), lonDim.getLength());
-      Index ima = unpacked.getIndex();
+    // define dimensions
+    Dimension latDim = writerb.addDimension("lat", 200);
+    Dimension lonDim = writerb.addDimension("lon", 300);
+    int n = lonDim.getLength();
 
-      for (int i = 0; i < latDim.getLength(); i++) {
-        for (int j = 0; j < lonDim.getLength(); j++) {
-          unpacked.setDouble(ima.set(i, j), (i * n + j) + 30.0);
-        }
+    // create an array
+    unpacked = new ArrayDouble.D2(latDim.getLength(), lonDim.getLength());
+    Index ima = unpacked.getIndex();
+
+    for (int i = 0; i < latDim.getLength(); i++) {
+      for (int j = 0; j < lonDim.getLength(); j++) {
+        unpacked.setDouble(ima.set(i, j), (i * n + j) + 30.0);
       }
+    }
+    double missingValue = -9999;
+    int nbits = 16;
 
-      double missingValue = -9999;
-      int nbits = 16;
+    // convert to packed form
+    so = MAMath.calcScaleOffsetSkipMissingData(unpacked, missingValue, nbits);
+    writerb.addVariable("unpacked", DataType.DOUBLE, "lat lon");
+    writerb.addVariable("packed", DataType.SHORT, "lat lon")
+        .addAttribute(new Attribute(CDM.MISSING_VALUE, (short) -9999))
+        .addAttribute(new Attribute(CDM.SCALE_FACTOR, so.scale)).addAttribute(new Attribute(CDM.ADD_OFFSET, so.offset));
 
-      // convert to packed form
-      so = MAMath.calcScaleOffsetSkipMissingData(unpacked, missingValue, nbits);
-      ncfile.addVariable("unpacked", DataType.DOUBLE, "lat lon");
-
-      ncfile.addVariable("packed", DataType.SHORT, "lat lon");
-      ncfile.addVariableAttribute("packed", CDM.MISSING_VALUE, (short) -9999);
-      ncfile.addVariableAttribute("packed", CDM.SCALE_FACTOR, so.scale);
-      ncfile.addVariableAttribute("packed", "add_offset", so.offset);
-
-      // create the file
-      ncfile.create();
-
-      ncfile.write("unpacked", unpacked);
-
-      packed = MAMath.convert2packed(unpacked, missingValue, nbits, DataType.SHORT);
-      ncfile.write("packed", packed);
+    // create and write to the file
+    Array packed = MAMath.convert2packed(unpacked, missingValue, nbits, DataType.SHORT);
+    try (NetcdfFormatWriter writer = writerb.build()) {
+      writer.write("unpacked", unpacked);
+      writer.write("packed", packed);
     }
 
-    Array readPacked;
-
     // read the packed form, compare to original
-    try (NetcdfFile ncfileRead = NetcdfFile.open(filename)) {
+    Array readPacked;
+    try (NetcdfFile ncfileRead = NetcdfFiles.open(filename)) {
       Variable v = ncfileRead.findVariable("packed");
       assert v != null;
       readPacked = v.read();
-      ucar.unidata.util.test.CompareNetcdf.compareData(readPacked, packed);
+      CompareNetcdf2.compareData("packed", packed, readPacked);
     }
 
     Array readEnhanced;
 
     // read the packed form, enhance using scale/offset, compare to original
-    try (NetcdfDataset ncd = NetcdfDataset.openDataset(filename)) {
+    try (NetcdfDataset ncd = NetcdfDatasets.openDataset(filename)) {
       VariableDS vs = (VariableDS) ncd.findVariable("packed");
       vs.removeEnhancement(Enhance.ConvertMissing);
       readEnhanced = vs.read();
@@ -100,7 +100,7 @@ public class TestScaleOffsetMissingUnsigned {
     doSubset(filename);
   }
 
-  void nearlyEquals(Array packed, Array data1, Array data2, double close) {
+  private void nearlyEquals(Array packed, Array data1, Array data2, double close) {
     IndexIterator iterp = packed.getIndexIterator();
     IndexIterator iter1 = data1.getIndexIterator();
     IndexIterator iter2 = data2.getIndexIterator();
@@ -117,19 +117,19 @@ public class TestScaleOffsetMissingUnsigned {
   // check section of scale/offset only applies it once
   private void doSubset(String filename) throws IOException, InvalidRangeException {
     // read the packed form, enhance using scale/offset, compare to original
-    try (NetcdfDataset ncd = NetcdfDataset.openDataset(filename)) {
+    try (NetcdfDataset ncd = NetcdfDatasets.openDataset(filename)) {
       Variable vs = ncd.findVariable("packed");
       assert vs != null;
 
-      Section s = new Section().appendRange(1, 1).appendRange(1, 1);
+      Section s = Section.builder().appendRange(1, 1).appendRange(1, 1).build();
       Array readEnhanced = vs.read(s);
-      logger.debug(NCdumpW.toString(readEnhanced));
+      logger.debug(Ncdump.printArray(readEnhanced));
 
       Variable sec = vs.section(s);
       Array readSection = sec.read();
-      logger.debug(NCdumpW.toString(readSection));
+      logger.debug(Ncdump.printArray(readSection));
 
-      ucar.unidata.util.test.CompareNetcdf.compareData(readEnhanced, readSection);
+      CompareNetcdf2.compareData(vs.getShortName(), readEnhanced, readSection);
     }
   }
 
@@ -140,6 +140,7 @@ public class TestScaleOffsetMissingUnsigned {
   public void testScaledFillValue() throws URISyntaxException, IOException {
     File testResource = new File(getClass().getResource("testScaledFillValue.ncml").toURI());
 
+    // LOOK removeEnhancement does not work in new
     try (NetcdfDataset ncd = NetcdfDataset.openDataset(testResource.getAbsolutePath(), true, null)) {
       VariableDS fooVar = (VariableDS) ncd.findVariable("foo");
 
@@ -177,6 +178,7 @@ public class TestScaleOffsetMissingUnsigned {
   public void testScaleMissingFloatingPointComparisons() throws IOException, URISyntaxException {
     File testResource = new File(getClass().getResource("testScaleMissingFloatingPointComparisons.ncml").toURI());
 
+    // LOOK removeEnhancement does not work in new
     try (NetcdfDataset ncd = NetcdfDataset.openDataset(testResource.getAbsolutePath(), true, null)) {
       VariableDS fooVar = (VariableDS) ncd.findVariable("foo");
       fooVar.removeEnhancement(Enhance.ConvertMissing);
@@ -223,7 +225,7 @@ public class TestScaleOffsetMissingUnsigned {
   public void testMissingUnsigned() throws URISyntaxException, IOException {
     File testResource = new File(getClass().getResource("testScaleOffsetMissingUnsigned.ncml").toURI());
 
-    try (NetcdfDataset ncd = NetcdfDataset.openDataset(testResource.getAbsolutePath(), true, null)) {
+    try (NetcdfDataset ncd = NetcdfDatasets.openDataset(testResource.getAbsolutePath(), true, null)) {
       VariableDS var = (VariableDS) ncd.findVariable("missingUnsigned");
 
       // Packed valid_min == -106. Interpreting bit pattern as unsigned, we get 150.
@@ -250,7 +252,7 @@ public class TestScaleOffsetMissingUnsigned {
   public void testScaleOffsetMissingUnsigned() throws URISyntaxException, IOException {
     File testResource = new File(getClass().getResource("testScaleOffsetMissingUnsigned.ncml").toURI());
 
-    try (NetcdfDataset ncd = NetcdfDataset.openDataset(testResource.getAbsolutePath(), true, null)) {
+    try (NetcdfDataset ncd = NetcdfDatasets.openDataset(testResource.getAbsolutePath(), true, null)) {
       VariableDS var = (VariableDS) ncd.findVariable("scaleOffsetMissingUnsigned");
 
       // These vals are the same as ones from "missingUnsigned", but with a scale_factor of 100 and offset of 1 applied.
@@ -284,11 +286,36 @@ public class TestScaleOffsetMissingUnsigned {
     }
   }
 
+  // This test demonstrated the bug in https://github.com/Unidata/netcdf-java/issues/572, but for unsigned variables.
+  @Test
+  public void testNegativeScaleOffsetValidRangeUnsigned() throws URISyntaxException, IOException {
+    File testResource = new File(getClass().getResource("testScaleOffsetMissingUnsigned.ncml").toURI());
+    float fpTol = 1e-6f;
+
+    try (NetcdfDataset ncd = NetcdfDatasets.openDataset(testResource.getAbsolutePath(), true, null)) {
+      VariableDS var = (VariableDS) ncd.findVariable("scaleOffsetMissingUnsignedValidRange");
+
+      Assert.assertEquals(-25001, var.getValidMin(), fpTol);
+      Assert.assertEquals(-15001, var.getValidMax(), fpTol);
+
+      Assert.assertEquals(-25501, var.getFillValue(), fpTol);
+      Assert.assertEquals(-25501, var.getMissingValues()[0], fpTol);
+      // Because scale and offset are now float (to preserve negative values), var is float
+      Assert.assertEquals(DataType.FLOAT, var.getDataType());
+
+      // These vals are the same as ones from "missingUnsigned", but with a scale_factor of -100 and offset of
+      // -1 applied.
+      float[] expecteds = new float[] {NaN, -15001, -25001, NaN, NaN, NaN};
+      float[] actuals = (float[]) var.read().getStorage();
+      Assert.assertArrayEquals(expecteds, actuals, fpTol);
+    }
+  }
+
   @Test
   public void testScaleValidRange() throws IOException, URISyntaxException {
     File testResource = new File(getClass().getResource("testScaleOffsetMissingUnsigned.ncml").toURI());
 
-    try (NetcdfDataset ncd = NetcdfDataset.openDataset(testResource.getAbsolutePath(), true, null)) {
+    try (NetcdfDataset ncd = NetcdfDatasets.openDataset(testResource.getAbsolutePath(), true, null)) {
       VariableDS var = (VariableDS) ncd.findVariable("scaleValidRange");
       var.addEnhancement(Enhance.ConvertMissing);
 
@@ -297,7 +324,7 @@ public class TestScaleOffsetMissingUnsigned {
 
       Assert.assertEquals(DataType.FLOAT, var.getDataType()); // scale_factor is float.
 
-      float[] expecteds = new float[] {Float.NaN, 9.9f, 10.0f, 10.1f, Float.NaN};
+      float[] expecteds = new float[] {NaN, 9.9f, 10.0f, 10.1f, NaN};
       float[] actuals = (float[]) var.read().getStorage();
       Assert2.assertArrayNearlyEquals(expecteds, actuals);
     }
@@ -309,7 +336,7 @@ public class TestScaleOffsetMissingUnsigned {
     DatasetUrl location = DatasetUrl.findDatasetUrl(testResource.getAbsolutePath());
     Set<Enhance> enhanceMode = EnumSet.of(Enhance.ConvertUnsigned, Enhance.ApplyScaleOffset); // No ConvertMissing!
 
-    try (NetcdfDataset ncd = NetcdfDataset.openDataset(location, enhanceMode, -1, null, null)) {
+    try (NetcdfDataset ncd = NetcdfDatasets.openDataset(location, enhanceMode, -1, null, null)) {
       VariableDS var = (VariableDS) ncd.findVariable("unpackedValidRange");
 
       // valid_range will be interpreted as unpacked because of:
@@ -334,7 +361,7 @@ public class TestScaleOffsetMissingUnsigned {
   public void testUnsignedOffsetAttribute() throws IOException, URISyntaxException {
     File testResource = new File(getClass().getResource("testScaleOffsetMissingUnsigned.ncml").toURI());
 
-    try (NetcdfDataset ncd = NetcdfDataset.openDataset(testResource.getAbsolutePath(), true, null)) {
+    try (NetcdfDataset ncd = NetcdfDatasets.openDataset(testResource.getAbsolutePath(), true, null)) {
       VariableDS var = (VariableDS) ncd.findVariable("unsignedOffsetAttribute");
 
       Assert.assertEquals(156, var.getOffset(), 0);

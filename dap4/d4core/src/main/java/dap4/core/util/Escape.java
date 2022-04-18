@@ -174,7 +174,7 @@ public class Escape {
    * @param s the string to escape
    * @param wrt what printable characters to escape;
    *        control characters and '\\' are always escaped.
-   * @return
+   * @return escaped string
    */
   public static String backslashEscape(String s, String wrt) {
     if (wrt == null)

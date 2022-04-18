@@ -7,9 +7,9 @@ import ucar.nc2.constants.FeatureType
 import ucar.nc2.ft.*
 import ucar.nc2.time.CalendarDateRange
 import ucar.nc2.time.CalendarDateUnit
-import ucar.unidata.geoloc.EarthLocationImpl
-import ucar.unidata.geoloc.LatLonPointImpl
+import ucar.unidata.geoloc.EarthLocation
 import ucar.unidata.geoloc.LatLonRect
+import ucar.unidata.geoloc.LatLonPoint
 
 /**
  * @author cwardgar
@@ -42,7 +42,7 @@ class FlattenedDatasetPointCollectionSpec extends Specification {
 
     private static PointFeature makePointFeat(
             DsgFeatureCollection dsg, double lat, double lon, double alt, double time, CalendarDateUnit dateUnit) {
-        def earthLoc = new EarthLocationImpl(lat, lon, alt)
+        def earthLoc = EarthLocation.create(lat, lon, alt)
 
         // Pass null StructureData; we only care about the metadata for these tests.
         return new SimplePointFeature(dsg, earthLoc, time, time, dateUnit, null)
@@ -186,7 +186,7 @@ class FlattenedDatasetPointCollectionSpec extends Specification {
 
         and: "the bounds include all 9 PointFeatures"
         flattenedDatasetCol.size() == 9
-        flattenedDatasetCol.boundingBox == new LatLonRect(new LatLonPointImpl(-85, -70), new LatLonPointImpl(85, 170))
+        flattenedDatasetCol.boundingBox == new LatLonRect(LatLonPoint.create(-85, -70), LatLonPoint.create(85, 170))
 
         and:
         def calDateUnit = flattenedDatasetCol.timeUnit

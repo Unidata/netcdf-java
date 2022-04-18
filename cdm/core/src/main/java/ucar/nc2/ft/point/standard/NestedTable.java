@@ -28,7 +28,6 @@ import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateFormatter;
 import ucar.nc2.time.CalendarDateUnit;
 import ucar.unidata.geoloc.EarthLocation;
-import ucar.unidata.geoloc.EarthLocationImpl;
 
 /**
  * Implements "nested table" views of point feature datasets.
@@ -583,7 +582,7 @@ public class NestedTable {
       else
         alt += stnElev;
     }
-    return new EarthLocationImpl(lat, lon, alt);
+    return EarthLocation.create(lat, lon, alt);
   }
 
   public String getFeatureName(Cursor cursor) {
@@ -707,6 +706,10 @@ public class NestedTable {
 
   public StructureDataIterator getMiddleFeatureDataIterator(Cursor cursor) throws IOException {
     return leaf.parent.getStructureDataIterator(cursor); // the middle table
+  }
+
+  public int getStationNestingLevel() {
+    return stnVE.nestingLevel;
   }
 
   // also called from StandardPointFeatureIterator

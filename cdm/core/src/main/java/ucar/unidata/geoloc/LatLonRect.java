@@ -20,6 +20,7 @@ import java.util.StringTokenizer;
  *
  * @author Russ Rew
  * @author John Caron
+ *         TODO will be @Immutable in ver6, will use Builders.
  */
 public class LatLonRect {
 
@@ -83,7 +84,7 @@ public class LatLonRect {
 
     // these are an alternative way to view the longitude range
     this.width = Math.abs(deltaLon);
-    this.lon0 = LatLonPointImpl.lonNormal(p1.getLongitude() + deltaLon / 2);
+    this.lon0 = LatLonPoints.lonNormal(p1.getLongitude() + deltaLon / 2);
     this.allLongitude = (this.width >= 360.0);
   }
 
@@ -100,7 +101,7 @@ public class LatLonRect {
    */
   public LatLonRect(LatLonPoint left, LatLonPoint right) {
     this(left, right.getLatitude() - left.getLatitude(),
-        LatLonPointImpl.lonNormal360(right.getLongitude() - left.getLongitude()));
+        LatLonPoints.lonNormal360(right.getLongitude() - left.getLongitude()));
   }
 
   /**
@@ -119,7 +120,7 @@ public class LatLonRect {
     double deltaLat = Double.parseDouble(stoker.nextToken());
     double deltaLon = Double.parseDouble(stoker.nextToken());
 
-    init(new LatLonPointImpl(lat, lon), deltaLat, deltaLon);
+    init(LatLonPoint.create(lat, lon), deltaLat, deltaLon);
   }
 
 
@@ -137,13 +138,14 @@ public class LatLonRect {
    * Create a LatLonRect that covers the whole world.
    */
   public LatLonRect() {
-    this(new LatLonPointImpl(-90, -180), 180, 360);
+    this(LatLonPoint.create(-90, -180), 180, 360);
   }
 
   /**
    * Get the upper right corner of the bounding box.
    *
    * @return upper right corner of the bounding box
+   *         LOOK will return LatLonPoint in ver6
    */
   public LatLonPointImpl getUpperRightPoint() {
     return upperRight;
@@ -153,6 +155,7 @@ public class LatLonRect {
    * Get the lower left corner of the bounding box.
    *
    * @return lower left corner of the bounding box
+   *         LOOK will return LatLonPoint in ver6
    */
   public LatLonPointImpl getLowerLeftPoint() {
     return lowerLeft;
@@ -162,6 +165,7 @@ public class LatLonRect {
    * Get the upper left corner of the bounding box.
    *
    * @return upper left corner of the bounding box
+   *         LOOK will return LatLonPoint in ver6
    */
   public LatLonPointImpl getUpperLeftPoint() {
     return new LatLonPointImpl(upperRight.getLatitude(), lowerLeft.getLongitude());
@@ -171,6 +175,7 @@ public class LatLonRect {
    * Get the lower left corner of the bounding box.
    *
    * @return lower left corner of the bounding box
+   *         LOOK will return LatLonPoint in ver6
    */
   public LatLonPointImpl getLowerRightPoint() {
     return new LatLonPointImpl(lowerLeft.getLatitude(), upperRight.getLongitude());
@@ -365,11 +370,27 @@ public class LatLonRect {
    * }
    */
 
+  // LOOK maybe want LatLonRectMutable for efficiency ??
+
+  /** Extend the bounding box to contain this point. Return new LatLonRect. */
+  public static LatLonRect extend(LatLonRect rect, LatLonPoint p) {
+    LatLonRect copy = new LatLonRect(rect);
+    copy.extend(p);
+    return copy;
+  }
+
+  /** Extend the bounding box to contain another bounding box. Return new LatLonRect. */
+  public static LatLonRect extend(LatLonRect rect, LatLonRect other) {
+    LatLonRect copy = new LatLonRect(rect);
+    copy.extend(other);
+    return copy;
+  }
+
   /**
    * Extend the bounding box to contain this point
    *
    * @param p point to include
-   * @deprecated use builder
+   * @deprecated use LatLonRect.extend()
    */
   @Deprecated
   public void extend(LatLonPoint p) {
@@ -438,7 +459,7 @@ public class LatLonRect {
    * Extend the bounding box to contain the given rectangle
    *
    * @param r rectangle to include
-   * @deprecated use builder
+   * @deprecated use LatLonRect.extend()
    */
   @Deprecated
   public void extend(LatLonRect r) {
@@ -459,11 +480,11 @@ public class LatLonRect {
     if (allLongitude)
       return;
 
-    // everything is reletive to current LonMin
+    // everything is relative to current LonMin
     double lonMin = getLonMin();
     double lonMax = getLonMax();
 
-    double nlonMin = LatLonPointImpl.lonNormal(r.getLonMin(), lonMin);
+    double nlonMin = LatLonPoints.lonNormal(r.getLonMin(), lonMin);
     double nlonMax = nlonMin + r.getWidth();
     lonMin = Math.min(lonMin, nlonMin);
     lonMax = Math.max(lonMax, nlonMax);
@@ -474,7 +495,7 @@ public class LatLonRect {
       width = 360.0;
       lonMin = -180.0;
     } else {
-      lonMin = LatLonPointImpl.lonNormal(lonMin);
+      lonMin = LatLonPoints.lonNormal(lonMin);
     }
 
     lowerLeft.setLongitude(lonMin);
@@ -517,7 +538,7 @@ public class LatLonRect {
     if (deltaLon < 0)
       return null;
 
-    return new LatLonRect(new LatLonPointImpl(latMin, lonMin), deltaLat, deltaLon);
+    return new LatLonRect(LatLonPoint.create(latMin, lonMin), deltaLat, deltaLon);
   }
 
   private boolean intersect(double min1, double max1, double min2, double max2) {

@@ -39,7 +39,7 @@ import java.util.Formatter;
  * <li>regexp= ".*\.grb" (anything ending with .grb)</li>
  * </ul>
  *
- * @see "http://www.unidata.ucar.edu/projects/THREDDS/tech/tds4.2/reference/collections/CollectionSpecification.html"
+ * @see "https://www.unidata.ucar.edu/projects/THREDDS/tech/tds4.2/reference/collections/CollectionSpecification.html"
  * @author caron
  * @since Jul 7, 2009
  */

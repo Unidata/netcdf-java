@@ -1,14 +1,11 @@
 apply from: "$rootDir/gradle/any/dependencies.gradle"
-apply from: "$rootDir/gradle/any/java.gradle"
-// d4cdm has no tests.
-apply from: "$rootDir/gradle/any/archiving.gradle"
-apply from: "$rootDir/gradle/any/publishing.gradle"
+apply from: "$rootDir/gradle/any/java-library.gradle"
 
 dependencies {
-    compile project(':dap4:d4core')
-    compile project(':dap4:d4lib')
-    compile project(':cdm:cdm-core')
-    compile project(':netcdf4')
-    
-    compileOnly libraries["javax.servlet-api"]
+  api enforcedPlatform(project(':netcdf-java-platform'))
+
+  compile project(':dap4:d4core')
+  compile project(':dap4:d4lib')
+  compile project(':cdm:cdm-core')
+  compile project(':netcdf4')
 }

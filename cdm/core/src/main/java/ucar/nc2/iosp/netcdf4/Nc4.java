@@ -11,9 +11,11 @@ package ucar.nc2.iosp.netcdf4;
  * @author caron
  * @since 7/31/12
  *
- * @see "http://www.unidata.ucar.edu/software/netcdf/docs/netcdf_4_spec.html"
- * @see "http://www.unidata.ucar.edu/software/netcdf/docs/"
+ * @see "https://www.unidata.ucar.edu/software/netcdf/docs/netcdf_4_spec.html"
+ * @see "https://www.unidata.ucar.edu/software/netcdf/docs/"
+ * @deprecated do not use
  */
+@Deprecated
 public class Nc4 {
   // only on the multi-dimensional coordinate variables of the netCDF model (2D chars).
   // appears to hold the dimension ids of the 2 dimensions.

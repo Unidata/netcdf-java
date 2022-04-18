@@ -302,7 +302,7 @@ class FmrcDataset {
 
       // some additional global attributes
       Group root = result.getRootGroup();
-      String orgConv = root.attributes().findAttValueIgnoreCase(CDM.CONVENTIONS, null);
+      String orgConv = root.attributes().findAttributeString(CDM.CONVENTIONS, null);
       String convAtt = CoordSysBuilder.buildConventionAttribute("CF-1.4", orgConv);
       root.addAttribute(new Attribute(CDM.CONVENTIONS, convAtt));
       root.addAttribute(new Attribute("cdm_data_type", FeatureType.GRID.toString()));
@@ -443,7 +443,7 @@ class FmrcDataset {
 
     // transfer variables - eliminate any references to component files
     for (Variable v : srcGroup.getVariables()) {
-      Variable targetV = targetGroup.findVariable(v.getShortName());
+      Variable targetV = targetGroup.findVariableLocal(v.getShortName());
 
       if (null == targetV) { // add it
         if (v instanceof Structure) {
@@ -471,7 +471,7 @@ class FmrcDataset {
 
     // nested groups - check if target already has it
     for (Group srcNested : srcGroup.getGroups()) {
-      Group nested = targetGroup.findGroup(srcNested.getShortName());
+      Group nested = targetGroup.findGroupLocal(srcNested.getShortName());
       if (null == nested) {
         nested = new Group(target, targetGroup, srcNested.getShortName());
         targetGroup.addGroup(nested);
@@ -565,7 +565,7 @@ class FmrcDataset {
     runtimeCoordVar.setCachedData(runCoordVals);
 
     // make the time coordinate(s) as 2D
-    List<Variable> nonAggVars = result.getVariables();
+    List<Variable> nonAggVars = new ArrayList<>(result.getVariables());
     for (FmrcInvLite.Gridset gridset : lite.gridSets) {
       Group newGroup = result.getRootGroup(); // can it be different ??
 
@@ -614,7 +614,7 @@ class FmrcDataset {
         }
 
         // create dimension list
-        List<Dimension> dimList = aggVar.getDimensions();
+        List<Dimension> dimList = new ArrayList<>(aggVar.getDimensions());
         dimList = dimList.subList(1, dimList.size()); // LOOK assumes time is outer dimension
         dimList.add(0, timeDim);
         dimList.add(0, runDim);
@@ -761,7 +761,7 @@ class FmrcDataset {
     ProxyReader1D proxyReader1D = new ProxyReader1D();
 
     // make the time coordinate(s) for each runSeq
-    List<Variable> nonAggVars = result.getVariables();
+    List<Variable> nonAggVars = new ArrayList(result.getVariables());
     for (FmrcInvLite.Gridset gridset : lite.gridSets) {
       Group group = result.getRootGroup(); // can it be different ??
       String timeDimName = gridset.gridsetName;
@@ -814,7 +814,7 @@ class FmrcDataset {
         }
 
         // create dimension list
-        List<Dimension> dimList = aggVar.getDimensions();
+        List<Dimension> dimList = new ArrayList<>(aggVar.getDimensions());
         dimList = dimList.subList(1, dimList.size()); // LOOK assumes time is outer dimension
         dimList.add(0, timeDim);
 
@@ -1058,9 +1058,9 @@ class FmrcDataset {
 
     // assume time is first dimension LOOK: out of-order; ensemble; section different ??
     Range timeRange = new Range(timeInstance.getDatasetIndex(), timeInstance.getDatasetIndex());
-    Section s = new Section(innerSection);
-    s.insertRange(0, timeRange);
-    return v.read(s);
+    Section.Builder sb = Section.builder().appendRanges(innerSection);
+    sb.insertRange(0, timeRange);
+    return v.read(sb.build());
   }
 
   /**
@@ -1080,10 +1080,10 @@ class FmrcDataset {
     }
 
     if (config.innerNcml == null) {
-      ncd = NetcdfDataset.acquireDataset(new DatasetUrl(null, location), true, null); // default enhance
+      ncd = NetcdfDataset.acquireDataset(DatasetUrl.create(null, location), true, null); // default enhance
 
     } else {
-      NetcdfFile nc = NetcdfDataset.acquireFile(new DatasetUrl(null, location), null);
+      NetcdfFile nc = NetcdfDataset.acquireFile(DatasetUrl.create(null, location), null);
       ncd = NcMLReader.mergeNcML(nc, config.innerNcml); // create new dataset
       ncd.enhance(); // now that the ncml is added, enhance "in place", ie modify the NetcdfDataset
     }

@@ -13,6 +13,7 @@ import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
+import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.CF;
@@ -30,11 +31,8 @@ import ucar.unidata.geoloc.projection.LambertConformal;
 import ucar.unidata.geoloc.projection.Stereographic;
 import ucar.unidata.geoloc.projection.TransverseMercator;
 
-/**
- * Default Coordinate Conventions.
- */
+/** Default Coordinate Conventions. Used when no other is specified or recognized. */
 public class DefaultConventions extends CoordSystemBuilder {
-
   private static final Logger logger = LoggerFactory.getLogger(ucar.nc2.dataset.conv.DefaultConvention.class);
 
   protected ProjectionCT projCT;
@@ -82,7 +80,7 @@ public class DefaultConventions extends CoordSystemBuilder {
     // coordinates is an alias for _CoordinateAxes
     for (VarProcess vp : varList) {
       if (vp.coordinateAxes == null) { // dont override if already set
-        String coordsString = vp.vb.getAttributeContainer().findAttValueIgnoreCase(CF.COORDINATES, null);
+        String coordsString = vp.vb.getAttributeContainer().findAttributeString(CF.COORDINATES, null);
         if (coordsString != null) {
           vp.coordinates = coordsString;
         }
@@ -108,7 +106,7 @@ public class DefaultConventions extends CoordSystemBuilder {
     // look for time axes based on units
     if (map.get(AxisType.Time) == null) {
       for (VarProcess vp : varList) {
-        String unit = vp.vb.units;
+        String unit = vp.vb.getUnits();
         if (unit != null && SimpleUnit.isDateUnit(unit)) {
           vp.isCoordinateAxis = true;
           map.put(AxisType.Time, vp);
@@ -178,11 +176,11 @@ public class DefaultConventions extends CoordSystemBuilder {
     if (vname == null) {
       return null;
     }
-    String unit = vb.units;
+    String unit = vb.getUnits();
     if (unit == null) {
       unit = "";
     }
-    String desc = vb.desc;
+    String desc = vb.getDescription();
     if (desc == null) {
       desc = "";
     }
@@ -245,9 +243,9 @@ public class DefaultConventions extends CoordSystemBuilder {
 
   // look for an coord_axis or coord_alias attribute
   private String findAlias(VariableDS.Builder vb) {
-    String alias = vb.getAttributeContainer().findAttValueIgnoreCase("coord_axis", null);
+    String alias = vb.getAttributeContainer().findAttributeString("coord_axis", null);
     if (alias == null) {
-      alias = vb.getAttributeContainer().findAttValueIgnoreCase("coord_alias", "");
+      alias = vb.getAttributeContainer().findAttributeString("coord_alias", "");
     }
     if (alias == null) {
       alias = "";
@@ -259,8 +257,7 @@ public class DefaultConventions extends CoordSystemBuilder {
   // we assume that coordinate axes get identified by being coordinate variables
   @Nullable
   private AxisType getAxisTypeCoards(VariableDS.Builder vb) {
-
-    String unit = vb.units;
+    String unit = vb.getUnits();
     if (unit == null) {
       return null;
     }
@@ -292,7 +289,7 @@ public class DefaultConventions extends CoordSystemBuilder {
       return AxisType.GeoZ;
     }
 
-    String positive = vb.getAttributeContainer().findAttValueIgnoreCase("positive", null);
+    String positive = vb.getAttributeContainer().findAttributeString("positive", null);
     if (positive != null) {
       if (SimpleUnit.isCompatible("m", unit)) {
         return AxisType.Height;
@@ -305,14 +302,14 @@ public class DefaultConventions extends CoordSystemBuilder {
 
   private ProjectionCT makeProjectionCT() {
     // look for projection in global attribute
-    String projection = rootGroup.getAttributeContainer().findAttValueIgnoreCase("projection", null);
+    String projection = rootGroup.getAttributeContainer().findAttributeString("projection", null);
     if (null == projection) {
       parseInfo.format("Default Conventions error: NO projection name found %n");
       return null;
     }
-    String params = rootGroup.getAttributeContainer().findAttValueIgnoreCase("projection_params", null);
+    String params = rootGroup.getAttributeContainer().findAttributeString("projection_params", null);
     if (null == params) {
-      params = rootGroup.getAttributeContainer().findAttValueIgnoreCase("proj_params", null);
+      params = rootGroup.getAttributeContainer().findAttributeString("proj_params", null);
     }
     if (null == params) {
       parseInfo.format("Default Conventions error: NO projection parameters found %n");
@@ -359,6 +356,12 @@ public class DefaultConventions extends CoordSystemBuilder {
     @Nullable
     public String getConventionName() {
       return null;
+    }
+
+    public boolean isMine(NetcdfFile ncfile) {
+      // this is to test DefaultConventions, not needed when we remove old convention builders.
+      // return ncfile.getLocation().endsWith("amsr-avhrr-v2.20040729.nc");
+      return false;
     }
 
     @Override

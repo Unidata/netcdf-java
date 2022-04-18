@@ -37,6 +37,7 @@ import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.nc2.NetcdfFile;
+import ucar.nc2.NetcdfFiles;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDatatype;
@@ -61,7 +62,7 @@ public class TestLongitudeWrap {
      * The following tests BugFixes.evalTimeAxes, called by ucar.nc2.dt.grid.GridCoordSys.isGridCoordSys
      */
     String testFileFullPath = TestDir.cdmUnitTestDir + "ft/grid/echoTops_runtime.nc";
-    GridDataset runtimeDataset = new GridDataset(new NetcdfDataset(NetcdfFile.open(testFileFullPath)));
+    GridDataset runtimeDataset = new GridDataset(new NetcdfDataset(NetcdfFiles.open(testFileFullPath)));
     if (runtimeDataset.getGrids().isEmpty()) {
       throw new RuntimeException("Runtime data file did not generate a dataset with grids");
     }

@@ -35,52 +35,35 @@ import java.util.*;
  *
  * @author John Caron
  * @see Projection
- * @deprecated only use Projection interface in 6.
+ * @deprecated only use Projection interface in 6; will not implement Serializable in ver6
  */
+@Deprecated
 public abstract class ProjectionImpl implements Projection, java.io.Serializable {
-  /**
-   * Earth radius in kilometers
-   */
-  public static final double EARTH_RADIUS = Earth.getRadius() * 0.001; // km
+  /** @deprecated not public. */
+  public static final double EARTH_RADIUS = Earth.WGS84_EARTH_RADIUS_KM;
 
-  /**
-   * Latitude index
-   */
+  /** @deprecated not public. */
   public static final int INDEX_LAT = 0;
 
-  /**
-   * Longitude index
-   */
+  /** @deprecated not public. */
   public static final int INDEX_LON = 1;
 
-  /**
-   * X index
-   */
+  /** @deprecated not public. */
   public static final int INDEX_X = 0;
 
-  /**
-   * Y index
-   */
+  /** @deprecated not public. */
   public static final int INDEX_Y = 1;
 
-  /**
-   * tolerence for checks
-   */
+  /** @deprecated not public. */
   protected static final double TOLERANCE = 1.0e-6;
 
-  /**
-   * PI
-   */
+  /** @deprecated use Math.PI */
   public static final double PI = Math.PI;
 
-  /**
-   * PI/2
-   */
+  /** @deprecated use Math.PI/2 */
   public static final double PI_OVER_2 = Math.PI / 2.0;
 
-  /**
-   * PI/4
-   */
+  /** @deprecated use Math.PI/4 */
   public static final double PI_OVER_4 = Math.PI / 4.0;
 
   ///////////////////////////////////////////////////////////////////////
@@ -108,7 +91,8 @@ public abstract class ProjectionImpl implements Projection, java.io.Serializable
   /**
    * copy constructor - avoid clone !!
    *
-   * @return a copy of this Projection
+   * @return a copy of this Projection.
+   *         TODO return Projection in ver6
    */
   public abstract ProjectionImpl constructCopy();
 
@@ -144,7 +128,6 @@ public abstract class ProjectionImpl implements Projection, java.io.Serializable
    *
    * @return Type label
    */
-
   public String getProjectionTypeLabel() {
     return getClassName();
   }
@@ -155,19 +138,10 @@ public abstract class ProjectionImpl implements Projection, java.io.Serializable
    * @param latlon convert from these lat, lon coordinates
    * @param destPoint the object to write to
    * @return the given destPoint
+   * @deprecated use latLonToProj(LatLonPoint latLon)
    */
+  @Deprecated
   public abstract ProjectionPoint latLonToProj(LatLonPoint latlon, ProjectionPointImpl destPoint);
-
-
-  /**
-   * Convert projection coordinates to a LatLonPoint
-   * Note: a new object is not created on each call for the return value.
-   *
-   * @param ppt convert from these projection coordinates
-   * @param destPoint the object to write to
-   * @return LatLonPoint convert to these lat/lon coordinates
-   */
-  public abstract LatLonPoint projToLatLon(ProjectionPoint ppt, LatLonPointImpl destPoint);
 
   /**
    * Convert a LatLonPoint to projection coordinates
@@ -179,6 +153,18 @@ public abstract class ProjectionImpl implements Projection, java.io.Serializable
   public ProjectionPoint latLonToProj(LatLonPoint latLon) {
     return latLonToProj(latLon, new ProjectionPointImpl());
   }
+
+  /**
+   * Convert projection coordinates to a LatLonPoint
+   * Note: a new object is not created on each call for the return value.
+   *
+   * @param ppt convert from these projection coordinates
+   * @param destPoint the object to write to
+   * @return LatLonPoint convert to these lat/lon coordinates
+   * @deprecated use projToLatLon(ProjectionPoint ppt)
+   */
+  @Deprecated
+  public abstract LatLonPoint projToLatLon(ProjectionPoint ppt, LatLonPointImpl destPoint);
 
   /**
    * Convert projection coordinates to a LatLonPoint
@@ -217,6 +203,8 @@ public abstract class ProjectionImpl implements Projection, java.io.Serializable
     return name;
   }
 
+  /** @deprecated use builder */
+  @Deprecated
   public void setName(String name) {
     this.name = name;
   }
@@ -230,6 +218,8 @@ public abstract class ProjectionImpl implements Projection, java.io.Serializable
     return atts;
   }
 
+  /** @deprecated do not use */
+  @Deprecated
   public Parameter findProjectionParameter(String want) {
     for (Parameter p : atts) {
       if (p.getName().equals(want))
@@ -326,7 +316,9 @@ public abstract class ProjectionImpl implements Projection, java.io.Serializable
    * theres no bounding box that works for all projections.
    *
    * @param bb bounding box
+   * @deprecated use builder
    */
+  @Deprecated
   public void setDefaultMapArea(ProjectionRect bb) {
     if (bb == null)
       return;
@@ -334,30 +326,6 @@ public abstract class ProjectionImpl implements Projection, java.io.Serializable
   }
 
   //////// convenience routines
-
-  /**
-   * Convert a LatLonPoint to projection coordinates
-   * Note: a new object is now created on each call for the return value, as of 4.0.46
-   *
-   * @param lat latitude of point to convert
-   * @param lon longitude of point to convert
-   * @return ProjectionPointImpl convert to these projection coordinates
-   */
-  public ProjectionPoint latLonToProj(double lat, double lon) {
-    return latLonToProj(new LatLonPointImpl(lat, lon));
-  }
-
-  /**
-   * Convert a projection coordinate to a LatLonPoint
-   * Note: a new object is now created on each call for the return value, as of 4.0.46
-   *
-   * @param x x value to convert
-   * @param y y value to convert
-   * @return LatLonPointImpl convert to these lat/lon coordinates
-   */
-  public LatLonPoint projToLatLon(double x, double y) {
-    return projToLatLon(new ProjectionPointImpl(x, y));
-  }
 
   ///////////////////////////////////////////////////////////////////////////////////
   // optimizations for doing double and float arrays
@@ -370,7 +338,9 @@ public abstract class ProjectionImpl implements Projection, java.io.Serializable
    *        of the ith point
    * @return resulting array of lat/lon coordinates, where to[0][i], to[1][i]
    *         is the lat,lon coordinate of the ith point
+   * @deprecated use Projections.latLonToProj(Projection proj, ...)
    */
+  @Deprecated
   public double[][] projToLatLon(double[][] from) {
     return projToLatLon(from, new double[2][from[0].length]);
   }
@@ -385,7 +355,9 @@ public abstract class ProjectionImpl implements Projection, java.io.Serializable
    *        (to[0][i], to[1][i]) is the (lat, lon) coordinate of
    *        the ith point
    * @return the "to" array
+   * @deprecated use Projections.latLonToProj(Projection proj, ...)
    */
+  @Deprecated
   public double[][] projToLatLon(double[][] from, double[][] to) {
     if ((from == null) || (from.length != 2)) {
       throw new IllegalArgumentException(
@@ -417,7 +389,9 @@ public abstract class ProjectionImpl implements Projection, java.io.Serializable
    *        of the ith point
    * @return resulting array of lat/lon coordinates, where to[0][i], to[1][i]
    *         is the lat,lon coordinate of the ith point
+   * @deprecated use Projections.latLonToProj(Projection proj, ...)
    */
+  @Deprecated
   public float[][] projToLatLon(float[][] from) {
     return projToLatLon(from, new float[2][from[0].length]);
   }
@@ -432,7 +406,9 @@ public abstract class ProjectionImpl implements Projection, java.io.Serializable
    *        (to[0][i], to[1][i]) is the (lat, lon) coordinate of
    *        the ith point
    * @return the "to" array
+   * @deprecated use Projections.latLonToProj(Projection proj, ...)
    */
+  @Deprecated
   public float[][] projToLatLon(float[][] from, float[][] to) {
     if ((from == null) || (from.length != 2)) {
       throw new IllegalArgumentException(
@@ -447,12 +423,9 @@ public abstract class ProjectionImpl implements Projection, java.io.Serializable
       throw new IllegalArgumentException("ProjectionImpl.projToLatLon:" + "from array not same length as to array");
     }
 
-    ProjectionPointImpl ppi = new ProjectionPointImpl();
-    LatLonPointImpl llpi = new LatLonPointImpl();
-
     for (int i = 0; i < from[0].length; i++) {
-      ppi.setLocation((double) from[0][i], (double) from[1][i]);
-      projToLatLon(ppi, llpi);
+      ProjectionPoint ppi = ProjectionPoint.create(from[0][i], from[1][i]);
+      LatLonPoint llpi = projToLatLon(ppi);
       to[0][i] = (float) llpi.getLatitude();
       to[1][i] = (float) llpi.getLongitude();
     }
@@ -468,7 +441,9 @@ public abstract class ProjectionImpl implements Projection, java.io.Serializable
    *        coordinate of the ith point
    * @return resulting array of projection coordinates, where to[0][i],
    *         to[1][i] is the (x,y) coordinate of the ith point
+   * @deprecated use Projections.latLonToProj(Projection proj, ...)
    */
+  @Deprecated
   public double[][] latLonToProj(double[][] from) {
     return latLonToProj(from, new double[2][from[0].length]);
   }
@@ -483,7 +458,9 @@ public abstract class ProjectionImpl implements Projection, java.io.Serializable
    *        where (to[0][i], to[1][i]) is the (x,y) coordinate
    *        of the ith point
    * @return the "to" array
+   * @deprecated use Projections.latLonToProj(Projection proj, ...)
    */
+  @Deprecated
   public double[][] latLonToProj(double[][] from, double[][] to) {
     return latLonToProj(from, to, INDEX_LAT, INDEX_LON);
   }
@@ -498,7 +475,9 @@ public abstract class ProjectionImpl implements Projection, java.io.Serializable
    * @param lonIndex index of lon coordinate; must be 0 or 1
    * @return resulting array of projection coordinates: to[2][n] where
    *         (to[0][i], to[1][i]) is the (x,y) coordinate of the ith point
+   * @deprecated use Projections.latLonToProj(Projection proj, ...)
    */
+  @Deprecated
   public double[][] latLonToProj(double[][] from, int latIndex, int lonIndex) {
     return latLonToProj(from, new double[2][from[0].length], latIndex, lonIndex);
   }
@@ -515,7 +494,9 @@ public abstract class ProjectionImpl implements Projection, java.io.Serializable
    * @param latIndex index of lat coordinate; must be 0 or 1
    * @param lonIndex index of lon coordinate; must be 0 or 1
    * @return the "to" array
+   * @deprecated use Projections.latLonToProj(Projection proj, ...)
    */
+  @Deprecated
   public double[][] latLonToProj(double[][] from, double[][] to, int latIndex, int lonIndex) {
     if ((from == null) || (from.length != 2)) {
       throw new IllegalArgumentException(
@@ -530,13 +511,9 @@ public abstract class ProjectionImpl implements Projection, java.io.Serializable
       throw new IllegalArgumentException("ProjectionImpl.latLonToProj:" + "from array not same length as to array");
     }
 
-    ProjectionPointImpl ppi = new ProjectionPointImpl();
-    LatLonPointImpl llpi = new LatLonPointImpl();
-
     for (int i = 0; i < from[0].length; i++) {
-      llpi.setLatitude(from[latIndex][i]);
-      llpi.setLongitude(from[lonIndex][i]);
-      latLonToProj(llpi, ppi);
+      LatLonPoint llpi = LatLonPoint.create(from[latIndex][i], from[lonIndex][i]);
+      ProjectionPoint ppi = latLonToProj(llpi);
       to[0][i] = ppi.getX();
       to[1][i] = ppi.getY();
     }
@@ -551,7 +528,9 @@ public abstract class ProjectionImpl implements Projection, java.io.Serializable
    *        coordinate of the ith point
    * @return resulting array of projection coordinates, where to[0][i],
    *         to[1][i] is the (x,y) coordinate of the ith point
+   * @deprecated use Projections.latLonToProj(Projection proj, ...)
    */
+  @Deprecated
   public float[][] latLonToProj(float[][] from) {
     return latLonToProj(from, new float[2][from[0].length]);
   }
@@ -566,7 +545,9 @@ public abstract class ProjectionImpl implements Projection, java.io.Serializable
    *        where (to[0][i], to[1][i]) is the (x,y) coordinate
    *        of the ith point
    * @return the "to" array
+   * @deprecated use Projections.latLonToProj(Projection proj, ...)
    */
+  @Deprecated
   public float[][] latLonToProj(float[][] from, float[][] to) {
     return latLonToProj(from, to, INDEX_LAT, INDEX_LON);
   }
@@ -581,7 +562,9 @@ public abstract class ProjectionImpl implements Projection, java.io.Serializable
    * @param lonIndex index of lon coordinate; must be 0 or 1
    * @return resulting array of projection coordinates: to[2][n] where
    *         (to[0][i], to[1][i]) is the (x,y) coordinate of the ith point
+   * @deprecated use Projections.latLonToProj(Projection proj, ...)
    */
+  @Deprecated
   public float[][] latLonToProj(float[][] from, int latIndex, int lonIndex) {
     return latLonToProj(from, new float[2][from[0].length], latIndex, lonIndex);
   }
@@ -599,7 +582,9 @@ public abstract class ProjectionImpl implements Projection, java.io.Serializable
    * @param latIndex index of lat coordinate; must be 0 or 1
    * @param lonIndex index of lon coordinate; must be 0 or 1
    * @return the "to" array
+   * @deprecated use Projections.latLonToProj(Projection proj, ...)
    */
+  @Deprecated
   public float[][] latLonToProj(float[][] from, float[][] to, int latIndex, int lonIndex) {
     // ucar.unidata.util.Misc.printStack ("latLonToProj-" + this + " size=" + from[0].length, 4, null);
 
@@ -616,13 +601,9 @@ public abstract class ProjectionImpl implements Projection, java.io.Serializable
       throw new IllegalArgumentException("ProjectionImpl.latLonToProj:" + "from array not same length as to array");
     }
 
-    ProjectionPointImpl ppi = new ProjectionPointImpl();
-    LatLonPointImpl llpi = new LatLonPointImpl();
-
     for (int i = 0; i < from[0].length; i++) {
-      llpi.setLatitude(from[latIndex][i]);
-      llpi.setLongitude(from[lonIndex][i]);
-      latLonToProj(llpi, ppi);
+      LatLonPoint llpi = LatLonPoint.create(from[latIndex][i], from[lonIndex][i]);
+      ProjectionPoint ppi = latLonToProj(llpi);
       to[0][i] = (float) ppi.getX();
       to[1][i] = (float) ppi.getY();
     }
@@ -630,61 +611,9 @@ public abstract class ProjectionImpl implements Projection, java.io.Serializable
     return to;
   }
 
-  // bounding box utilities
+  //////////////////////////////////////////////////////////////////////
 
-  /**
-   * Alternate way to calculate latLonToProjBB, originally in GridCoordSys.
-   * Difficult to do this in a general way.
-   *
-   * @param latlonRect desired lat/lon rectangle
-   * @return a ProjectionRect
-   */
-  ProjectionRect latLonToProjBB2(LatLonRect latlonRect) {
-    double minx, maxx, miny, maxy;
-
-    LatLonPointImpl llpt = latlonRect.getLowerLeftPoint();
-    LatLonPointImpl urpt = latlonRect.getUpperRightPoint();
-    LatLonPointImpl lrpt = latlonRect.getLowerRightPoint();
-    LatLonPointImpl ulpt = latlonRect.getUpperLeftPoint();
-
-    if (isLatLon()) {
-      minx = getMinOrMaxLon(llpt.getLongitude(), ulpt.getLongitude(), true);
-      miny = Math.min(llpt.getLatitude(), lrpt.getLatitude());
-      maxx = getMinOrMaxLon(urpt.getLongitude(), lrpt.getLongitude(), false);
-      maxy = Math.min(ulpt.getLatitude(), urpt.getLatitude());
-
-    } else {
-      ProjectionPoint ll = latLonToProj(llpt, new ProjectionPointImpl());
-      ProjectionPoint ur = latLonToProj(urpt, new ProjectionPointImpl());
-      ProjectionPoint lr = latLonToProj(lrpt, new ProjectionPointImpl());
-      ProjectionPoint ul = latLonToProj(ulpt, new ProjectionPointImpl());
-
-      minx = Math.min(ll.getX(), ul.getX());
-      miny = Math.min(ll.getY(), lr.getY());
-      maxx = Math.max(ur.getX(), lr.getX());
-      maxy = Math.max(ul.getY(), ur.getY());
-    }
-
-    return new ProjectionRect(minx, miny, maxx, maxy);
-  }
-
-  private double getMinOrMaxLon(double lon1, double lon2, boolean wantMin) {
-    double midpoint = (lon1 + lon2) / 2;
-    lon1 = LatLonPointImpl.lonNormal(lon1, midpoint);
-    lon2 = LatLonPointImpl.lonNormal(lon2, midpoint);
-
-    return wantMin ? Math.min(lon1, lon2) : Math.max(lon1, lon2);
-  }
-
-  /**
-   * Convert a lat/lon bounding box to a world coordinate bounding box,
-   * by finding the minimum enclosing box.
-   * Handles lat/lon points that do not intersect the projection panel.
-   *
-   * @param latlonRect input lat,lon bounding box
-   * @return minimum enclosing box in world coordinates, or null if no part of the LatLonRect intersects the projection
-   *         plane
-   */
+  // Allow subclasses to override.
   @Override
   public ProjectionRect latLonToProjBB(LatLonRect latlonRect) {
     if (isLatLon) {
@@ -692,96 +621,32 @@ public abstract class ProjectionImpl implements Projection, java.io.Serializable
       llp.setCenterLon(latlonRect.getCenterLon()); // LOOK side effect BAD !!
     }
 
-    ProjectionPointImpl w1 = new ProjectionPointImpl();
-    ProjectionPointImpl w2 = new ProjectionPointImpl();
-
     LatLonPoint ll = latlonRect.getLowerLeftPoint();
     LatLonPoint ur = latlonRect.getUpperRightPoint();
-    latLonToProj(ll, w1);
-    latLonToProj(ur, w2);
-
-    // if (!isLatLon && crossSeam(w1, w2)) {
-    // log.warn("CROSS SEAM failure=" + w1 + " " + w2+" for "+this, new Throwable());
-    // }
+    ProjectionPoint w1 = latLonToProj(ll);
+    ProjectionPoint w2 = latLonToProj(ur);
 
     // make bounding box out of those two corners
     ProjectionRect world = new ProjectionRect(w1.getX(), w1.getY(), w2.getX(), w2.getY());
 
-    LatLonPointImpl la = new LatLonPointImpl();
-    LatLonPointImpl lb = new LatLonPointImpl();
+    LatLonPoint la = LatLonPoint.create(ur.getLatitude(), ll.getLongitude());
+    LatLonPoint lb = LatLonPoint.create(ll.getLatitude(), ur.getLongitude());
 
     // now extend if needed to the other two corners
-    la.setLatitude(ur.getLatitude());
-    la.setLongitude(ll.getLongitude());
-    latLonToProj(la, w1);
-    world.add(w1);
-
-    lb.setLatitude(ll.getLatitude());
-    lb.setLongitude(ur.getLongitude());
-    latLonToProj(lb, w2);
-    world.add(w2);
+    world.add(latLonToProj(la));
+    world.add(latLonToProj(lb));
 
     return world;
   }
 
-  /**
-   * Convert a world coordinate bounding box to a lat/lon bounding box,
-   * by finding the minimum enclosing box.
-   *
-   * @param world input world coordinate bounding box
-   * @return minimum enclosing box in lat,lon coordinates.
-   */
-  public LatLonRect projToLatLonBBold(ProjectionRect world) {
-    ProjectionPoint min = world.getMinPoint();
-    ProjectionPoint max = world.getMaxPoint();
-    LatLonRect llbb;
-    LatLonPointImpl llmin = new LatLonPointImpl();
-    LatLonPointImpl llmax = new LatLonPointImpl();
-
-    // make bounding box out of the min, max corners
-    projToLatLon(min, llmin);
-    projToLatLon(max, llmax);
-    llbb = new LatLonRect(llmin, llmax);
-
-    /*
-     * double lona = la.getLongitude();
-     * double lonb = lb.getLongitude();
-     *
-     * if (((lona < lonb) && (lonb - lona <= 180.0))
-     * || ((lona > lonb) && (lona - lonb >= 180.0))) {
-     * llbb = new LatLonRect(la, lb);
-     * } else {
-     * llbb = new LatLonRect(lb, la);
-     * }
-     */
-
-    ProjectionPointImpl w1 = new ProjectionPointImpl();
-    ProjectionPointImpl w2 = new ProjectionPointImpl();
-
-    // now extend if needed using the other two corners
-    w1.setLocation(min.getX(), max.getY());
-    projToLatLon(w1, llmin);
-    llbb.extend(llmin);
-
-    w2.setLocation(max.getX(), min.getY());
-    projToLatLon(w2, llmax);
-    llbb.extend(llmax);
-
-    return llbb;
-  }
-
-  /**
-   * Compute lat/lon bounding box from projection bounding box by finding the minimum enclosing box.
-   * 
-   * @param bb projection bounding box
-   * @return lat, lon bounding box.
-   */
+  // Allow subclasses to override.
+  @Override
   public LatLonRect projToLatLonBB(ProjectionRect bb) {
     // look at all 4 corners of the bounding box
-    LatLonPoint llpt = projToLatLon(bb.getLowerLeftPoint(), new LatLonPointImpl());
-    LatLonPoint lrpt = projToLatLon(bb.getLowerRightPoint(), new LatLonPointImpl());
-    LatLonPoint urpt = projToLatLon(bb.getUpperRightPoint(), new LatLonPointImpl());
-    LatLonPoint ulpt = projToLatLon(bb.getUpperLeftPoint(), new LatLonPointImpl());
+    LatLonPoint llpt = projToLatLon(bb.getLowerLeftPoint());
+    LatLonPoint lrpt = projToLatLon(bb.getLowerRightPoint());
+    LatLonPoint urpt = projToLatLon(bb.getUpperRightPoint());
+    LatLonPoint ulpt = projToLatLon(bb.getUpperLeftPoint());
 
     // Check if grid contains poles.
     boolean includesNorthPole = false;
@@ -802,7 +667,7 @@ public abstract class ProjectionImpl implements Projection, java.io.Serializable
     LatLonRect llbb;
 
     if (includesNorthPole && !includesSouthPole) {
-      llbb = new LatLonRect(llpt, new LatLonPointImpl(90.0, 0.0)); // ??? lon=???
+      llbb = new LatLonRect(llpt, LatLonPoint.create(90.0, 0.0)); // ??? lon=???
       llbb.extend(lrpt);
       llbb.extend(urpt);
       llbb.extend(ulpt);
@@ -812,7 +677,7 @@ public abstract class ProjectionImpl implements Projection, java.io.Serializable
       // llbb.extend( new LatLonRect( urpt, ulpt ) );
       // llbb.extend( new LatLonRect( ulpt, llpt ) );
     } else if (includesSouthPole && !includesNorthPole) {
-      llbb = new LatLonRect(llpt, new LatLonPointImpl(-90.0, -180.0)); // ??? lon=???
+      llbb = new LatLonRect(llpt, LatLonPoint.create(-90.0, -180.0)); // ??? lon=???
       llbb.extend(lrpt);
       llbb.extend(urpt);
       llbb.extend(ulpt);
@@ -825,10 +690,99 @@ public abstract class ProjectionImpl implements Projection, java.io.Serializable
       double lonMin = getMinOrMaxLon(llpt.getLongitude(), ulpt.getLongitude(), true);
       double lonMax = getMinOrMaxLon(lrpt.getLongitude(), urpt.getLongitude(), false);
 
-      LatLonPointImpl min = new LatLonPointImpl(latMin, lonMin);
-      LatLonPointImpl max = new LatLonPointImpl(latMax, lonMax);
+      LatLonPoint min = LatLonPoint.create(latMin, lonMin);
+      LatLonPoint max = LatLonPoint.create(latMax, lonMax);
       llbb = new LatLonRect(min, max);
     }
+
+    return llbb;
+  }
+
+  /**
+   * Alternate way to calculate latLonToProjBB, originally in GridCoordSys.
+   * Difficult to do this in a general way.
+   * TODO evaluate if this is better than latLonToProjBB
+   *
+   * @param latlonRect desired lat/lon rectangle
+   * @return a ProjectionRect
+   */
+  ProjectionRect latLonToProjBB2(LatLonRect latlonRect) {
+    double minx, maxx, miny, maxy;
+
+    LatLonPoint llpt = latlonRect.getLowerLeftPoint();
+    LatLonPoint urpt = latlonRect.getUpperRightPoint();
+    LatLonPoint lrpt = latlonRect.getLowerRightPoint();
+    LatLonPoint ulpt = latlonRect.getUpperLeftPoint();
+
+    if (isLatLon()) {
+      minx = getMinOrMaxLon(llpt.getLongitude(), ulpt.getLongitude(), true);
+      miny = Math.min(llpt.getLatitude(), lrpt.getLatitude());
+      maxx = getMinOrMaxLon(urpt.getLongitude(), lrpt.getLongitude(), false);
+      maxy = Math.min(ulpt.getLatitude(), urpt.getLatitude());
+
+    } else {
+      ProjectionPoint ll = latLonToProj(llpt);
+      ProjectionPoint ur = latLonToProj(urpt);
+      ProjectionPoint lr = latLonToProj(lrpt);
+      ProjectionPoint ul = latLonToProj(ulpt);
+
+      minx = Math.min(ll.getX(), ul.getX());
+      miny = Math.min(ll.getY(), lr.getY());
+      maxx = Math.max(ur.getX(), lr.getX());
+      maxy = Math.max(ul.getY(), ur.getY());
+    }
+
+    return new ProjectionRect(minx, miny, maxx, maxy);
+  }
+
+  private double getMinOrMaxLon(double lon1, double lon2, boolean wantMin) {
+    double midpoint = (lon1 + lon2) / 2;
+    lon1 = LatLonPoints.lonNormal(lon1, midpoint);
+    lon2 = LatLonPoints.lonNormal(lon2, midpoint);
+
+    return wantMin ? Math.min(lon1, lon2) : Math.max(lon1, lon2);
+  }
+
+  /**
+   * Convert a world coordinate bounding box to a lat/lon bounding box,
+   * by finding the minimum enclosing box.
+   *
+   * @param world input world coordinate bounding box
+   * @return minimum enclosing box in lat,lon coordinates.
+   * @deprecated do not use
+   */
+  @Deprecated
+  public LatLonRect projToLatLonBBold(ProjectionRect world) {
+    ProjectionPoint min = world.getMinPoint();
+    ProjectionPoint max = world.getMaxPoint();
+    LatLonRect llbb;
+
+    // make bounding box out of the min, max corners
+    LatLonPoint llmin = projToLatLon(min);
+    LatLonPoint llmax = projToLatLon(max);
+    llbb = new LatLonRect(llmin, llmax);
+
+    /*
+     * double lona = la.getLongitude();
+     * double lonb = lb.getLongitude();
+     *
+     * if (((lona < lonb) && (lonb - lona <= 180.0))
+     * || ((lona > lonb) && (lona - lonb >= 180.0))) {
+     * llbb = new LatLonRect(la, lb);
+     * } else {
+     * llbb = new LatLonRect(lb, la);
+     * }
+     */
+
+    ProjectionPoint w1 = ProjectionPoint.create(min.getX(), max.getY());
+    ProjectionPoint w2 = ProjectionPoint.create(max.getX(), min.getY());
+
+    // now extend if needed using the other two corners
+    llmin = projToLatLon(w1);
+    llbb.extend(llmin);
+
+    llmax = projToLatLon(w2);
+    llbb.extend(llmax);
 
     return llbb;
   }

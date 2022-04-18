@@ -12,9 +12,7 @@ import org.slf4j.LoggerFactory;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.grid.GridDataset;
-import ucar.nc2.util.Misc;
 import ucar.unidata.geoloc.LatLonPoint;
-import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.ProjectionImpl;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
@@ -58,7 +56,7 @@ public class TestProjectionCoordinates {
   private void testCoordinates(String filename, double startLat, double startLon, double endLat, double endLon)
       throws IOException, InvalidRangeException {
     System.out.printf("%n***Open %s%n", filename);
-    NetcdfDataset ncd = NetcdfDataset.openDataset(filename);
+    NetcdfDataset ncd = NetcdfDatasets.openDataset(filename);
     GridDataset gds = new GridDataset(ncd);
     GridCoordSystem gsys = null;
     ProjectionImpl p = null;
@@ -83,8 +81,8 @@ public class TestProjectionCoordinates {
     System.out.printf("start = %f %f%n", start1.getLatitude(), start1.getLongitude());
     System.out.printf("end = %f %f%n", start2.getLatitude(), start2.getLongitude());
 
-    assert start1.nearlyEquals(new LatLonPointImpl(startLat, startLon), 2.0E-4);
-    assert start2.nearlyEquals(new LatLonPointImpl(endLat, endLon), 2.0E-4);
+    assert start1.nearlyEquals(LatLonPoint.create(startLat, startLon), 2.0E-4);
+    assert start2.nearlyEquals(LatLonPoint.create(endLat, endLon), 2.0E-4);
 
     ncd.close();
   }

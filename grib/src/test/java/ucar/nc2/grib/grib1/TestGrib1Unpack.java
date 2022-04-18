@@ -9,12 +9,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
-import ucar.nc2.NCdumpW;
 import ucar.nc2.NetcdfFile;
+import ucar.nc2.NetcdfFiles;
 import ucar.nc2.Variable;
 import ucar.nc2.grib.GribData;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
+import ucar.nc2.write.Ncdump;
 
 /**
  * Test misc GRIB1 unpacking
@@ -30,7 +31,7 @@ public class TestGrib1Unpack {
   @Test
   public void testEcmwfExtendedComplexData() throws IOException {
     final String testfile = "../grib/src/test/data/complex_packing.grib1";
-    try (NetcdfFile nc = NetcdfFile.open(testfile)) {
+    try (NetcdfFile nc = NetcdfFiles.open(testfile)) {
       Variable var = nc.findVariable("Minimum_temperature_at_2_metres_in_the_last_6_hours_surface_6_Hour");
       Array data = var.read();
       float first = data.getFloat(0);
@@ -43,7 +44,7 @@ public class TestGrib1Unpack {
   @Test
   public void testEcmwfExtendedComplexData2() throws IOException {
     final String testfile = "../grib/src/test/data/complex_packing2.grib1";
-    try (NetcdfFile nc = NetcdfFile.open(testfile)) {
+    try (NetcdfFile nc = NetcdfFiles.open(testfile)) {
 
       Variable var = nc.findVariable("Snowfall_surface");
       Array data = var.read();
@@ -59,7 +60,7 @@ public class TestGrib1Unpack {
   @Test
   public void testThinGridAtEndofFile() throws IOException {
     final String testfile = "../grib/src/test/data/thinGrid.grib1";
-    try (NetcdfFile nc = NetcdfFile.open(testfile)) {
+    try (NetcdfFile nc = NetcdfFiles.open(testfile)) {
 
       Variable var = nc.findVariable("Temperature_isobaric");
       Array data = var.read();
@@ -123,7 +124,7 @@ public class TestGrib1Unpack {
       int[] shape = new int[] {gds.getNy(), gds.getNx()};
       Array dataA = Array.factory(DataType.FLOAT, shape, data);
       Array lineA = dataA.slice(0, lineno);
-      logger.debug("{}", NCdumpW.toString(lineA));
+      logger.debug("{}", Ncdump.printArray(lineA));
     }
     System.out.printf("%s%n", method);
 

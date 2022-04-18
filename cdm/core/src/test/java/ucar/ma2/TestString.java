@@ -67,7 +67,7 @@ public class TestString extends TestCase {
 
     // write
     ima.set0(0);
-    A.setString(ima, "hey");
+    A.setString(ima, "hiy");
     ima.set0(1);
     A.setString(ima, "there");
     ima.set0(2);
@@ -77,7 +77,7 @@ public class TestString extends TestCase {
 
     // read
     ima.set0(0);
-    assert (A.getString(ima).equals("hey"));
+    assert (A.getString(ima).equals("hiy"));
     ima.set0(1);
     assert (A.getString(ima).equals("the"));
     ima.set0(2);

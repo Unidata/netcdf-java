@@ -30,6 +30,11 @@ public class Catalog extends DatasetNode {
   public static final String CATALOG_NAMESPACE_10 = "http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0";
   public static final Namespace defNS = Namespace.getNamespace(CATALOG_NAMESPACE_10);
   public static final String NJ22_NAMESPACE = "http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2";
+  // The following line (and related code) handles incorrect HTTPS variant of NcML Namespace URI.
+  // NOTE: The HTTPS variant is incorrect (according to recent, Oct 2021, decision).
+  // The variant probably appeared when Unidata servers started requiring HTTPS.
+  // NcML is only place HTTPS namespace variants are handled (and tested in testReadHttps.xml).
+  // Should probably just be dropped.
   public static final String NJ22_NAMESPACE_HTTPS = "https://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2";
   public static final Namespace ncmlNS = Namespace.getNamespace("ncml", NJ22_NAMESPACE);
   public static final Namespace ncmlNSHttps = Namespace.getNamespace("ncml", NJ22_NAMESPACE_HTTPS);
@@ -163,10 +168,10 @@ public class Catalog extends DatasetNode {
   }
 
   /**
-   * Resolve reletive URIs, using the catalog's base URI. If the uriString is not reletive, then
+   * Resolve relative URIs, using the catalog's base URI. If the uriString is not relative, then
    * no resolution is done. This also allows baseURI to be a file: scheme.
    *
-   * @param uriString any url, reletive or absolute
+   * @param uriString any url, relative or absolute
    * @return resolved url string, or null on error
    * @throws java.net.URISyntaxException if uriString violates RFC 2396
    */

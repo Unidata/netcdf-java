@@ -24,7 +24,7 @@ import java.io.IOException;
 public class BuoyShipSynop extends TableConfigurerImpl {
 
   public boolean isMine(FeatureType wantFeatureType, NetcdfDataset ds) {
-    String title = ds.getRootGroup().findAttValueIgnoreCase("title", null);
+    String title = ds.getRootGroup().findAttributeString("title", null);
     return title != null && (title.equals("BUOY definition") || title.equals("SYNOPTIC definition"));
   }
 

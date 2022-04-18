@@ -14,7 +14,8 @@ import ucar.nc2.util.CancelTask;
 import ucar.nc2.dataset.*;
 import ucar.nc2.units.SimpleUnit;
 import ucar.unidata.geoloc.*;
-import ucar.unidata.geoloc.projection.*;
+import ucar.unidata.geoloc.projection.LambertConformal;
+import ucar.unidata.geoloc.projection.Stereographic;
 import ucar.unidata.util.Format;
 import ucar.unidata.util.StringUtil2;
 import java.io.IOException;
@@ -22,7 +23,7 @@ import java.util.*;
 
 /**
  * NUWG Convention (ad hoc).
- * see http://www.unidata.ucar.edu/packages/netcdf/NUWG/
+ * see https://www.unidata.ucar.edu/software/netcdf/NUWG/
  *
  * @author caron
  */
@@ -164,7 +165,7 @@ public class NUWGConvention extends CoordSysBuilder {
             if (units != null) {
               units = StringUtil2.remove(units, '(');
               units = StringUtil2.remove(units, ')');
-              ncvar.addAttribute(new Attribute(CDM.UNITS, units));
+              ((VariableDS) ncvar).setUnitsString(units);
             }
           } else {
             parseInfo.format("Couldnt add referential coordAxis = %s%n", ncvar.getFullName());
@@ -562,7 +563,7 @@ public class NUWGConvention extends CoordSysBuilder {
 
       // we have to project in order to find the origin
       LambertConformal lc = new LambertConformal(latin1, lov, latin1, latin2);
-      ProjectionPointImpl start = (ProjectionPointImpl) lc.latLonToProj(new LatLonPointImpl(la1, lo1));
+      ProjectionPoint start = lc.latLonToProj(LatLonPoint.create(la1, lo1));
       if (debug)
         System.out.println("start at proj coord " + start);
       startx = start.getX();
@@ -589,7 +590,7 @@ public class NUWGConvention extends CoordSysBuilder {
       Stereographic ps = new Stereographic(90.0, lov, .933);
 
       // we have to project in order to find the origin
-      ProjectionPointImpl start = (ProjectionPointImpl) ps.latLonToProj(new LatLonPointImpl(la1, lo1));
+      ProjectionPoint start = ps.latLonToProj(LatLonPoint.create(la1, lo1));
       if (debug)
         System.out.println("start at proj coord " + start);
       startx = start.getX();

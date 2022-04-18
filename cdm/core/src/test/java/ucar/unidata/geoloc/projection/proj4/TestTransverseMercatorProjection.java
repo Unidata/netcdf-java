@@ -5,6 +5,7 @@ import ucar.unidata.geoloc.Earth;
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.ProjectionImpl;
+import ucar.unidata.geoloc.ProjectionPoint;
 import ucar.unidata.geoloc.ProjectionPointImpl;
 
 public class TestTransverseMercatorProjection {
@@ -14,15 +15,15 @@ public class TestTransverseMercatorProjection {
     double[] x = new double[lat.length];
     double[] y = new double[lat.length];
     for (int i = 0; i < lat.length; ++i) {
-      LatLonPoint lp = new LatLonPointImpl(lat[i], lon[i]);
-      ProjectionPointImpl p = (ProjectionPointImpl) proj.latLonToProj(lp, new ProjectionPointImpl());
+      LatLonPoint lp = LatLonPoint.create(lat[i], lon[i]);
+      ProjectionPoint p = proj.latLonToProj(lp);
       System.out.println(lp.getLatitude() + ", " + lp.getLongitude() + ": " + p.getX() + ", " + p.getY());
       x[i] = p.getX();
       y[i] = p.getY();
     }
     for (int i = 0; i < lat.length; ++i) {
-      ProjectionPointImpl p = new ProjectionPointImpl(x[i], y[i]);
-      LatLonPointImpl lp = (LatLonPointImpl) proj.projToLatLon(p);
+      ProjectionPoint p = ProjectionPoint.create(x[i], y[i]);
+      LatLonPoint lp = proj.projToLatLon(p);
       if ((Math.abs(lp.getLatitude() - lat[i]) > 1e-5) || (Math.abs(lp.getLongitude() - lon[i]) > 1e-5)) {
         if (Math.abs(lp.getLatitude()) > 89.99 && (Math.abs(lp.getLatitude() - lat[i]) < 1e-5)) {
           // ignore longitude singularities at poles

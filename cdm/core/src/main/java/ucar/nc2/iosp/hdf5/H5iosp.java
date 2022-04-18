@@ -4,12 +4,15 @@
  */
 package ucar.nc2.iosp.hdf5;
 
+import static ucar.nc2.NetcdfFile.IOSP_MESSAGE_GET_NETCDF_FILE_FORMAT;
+
 import java.nio.charset.StandardCharsets;
 import ucar.nc2.constants.DataFormatType;
 import ucar.ma2.*;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.iosp.netcdf3.N3iosp;
 import ucar.nc2.time.CalendarDate;
+import ucar.nc2.write.NetcdfFileFormat;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.nc2.iosp.*;
 import ucar.nc2.iosp.hdf4.HdfEos;
@@ -79,7 +82,7 @@ public class H5iosp extends AbstractIOServiceProvider {
 
   public void getEosInfo(Formatter f) throws IOException {
     NetcdfFile ncfile = headerParser.ncfile;
-    Group eosInfo = ncfile.getRootGroup().findGroup(HdfEos.HDF5_GROUP);
+    Group eosInfo = ncfile.getRootGroup().findGroupLocal(HdfEos.HDF5_GROUP);
     if (eosInfo != null) {
       HdfEos.getEosInfo(ncfile, eosInfo, f);
     } else {
@@ -108,7 +111,7 @@ public class H5iosp extends AbstractIOServiceProvider {
     headerParser.read(null);
 
     // check if its an HDF5-EOS file
-    Group eosInfo = ncfile.getRootGroup().findGroup(HdfEos.HDF5_GROUP);
+    Group eosInfo = ncfile.getRootGroup().findGroupLocal(HdfEos.HDF5_GROUP);
     if (eosInfo != null && useHdfEos) {
       isEos = HdfEos.amendFromODL(ncfile, eosInfo);
     }
@@ -394,7 +397,7 @@ public class H5iosp extends AbstractIOServiceProvider {
       assert v2 != null;
       H5header.Vinfo vm = (H5header.Vinfo) v2.getSPobject();
 
-      // apparently each member may have seperate byte order (!!!??)
+      // apparently each member may have separate byte order (!!!??)
       if (vm.typeInfo.endian >= 0)
         m.setDataObject(
             vm.typeInfo.endian == RandomAccessFile.LITTLE_ENDIAN ? ByteOrder.LITTLE_ENDIAN : ByteOrder.BIG_ENDIAN);
@@ -648,6 +651,13 @@ public class H5iosp extends AbstractIOServiceProvider {
     if (message.toString().equals("headerEmpty")) {
       NetcdfFile ncfile = new NetcdfFileSubclass();
       return new H5header(raf, ncfile, this);
+    }
+
+    if (message.equals(IOSP_MESSAGE_GET_NETCDF_FILE_FORMAT)) {
+      if (!headerParser.isNetcdf4()) {
+        return null;
+      }
+      return headerParser.isClassic() ? NetcdfFileFormat.NETCDF4_CLASSIC : NetcdfFileFormat.NETCDF4;
     }
 
     return super.sendIospMessage(message);

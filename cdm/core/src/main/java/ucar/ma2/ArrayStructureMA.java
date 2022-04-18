@@ -206,7 +206,7 @@ public class ArrayStructureMA extends ArrayStructure {
 
     // To create an ArrayStructureMA that we can iterate over later, we need to know the shape of "from".
     if (from.getSize() > 0) {
-      ArrayStructureMA to = new ArrayStructureMA(new StructureMembers(from.getStructureMembers()), from.getShape());
+      ArrayStructureMA to = new ArrayStructureMA(from.getStructureMembers().toBuilder(false).build(), from.getShape());
       for (StructureMembers.Member m : from.getMembers()) {
         to.setMemberArray(m.getName(), from.extractMemberArray(m));
       }
@@ -243,7 +243,7 @@ public class ArrayStructureMA extends ArrayStructure {
       shape = new int[] {numRecords};
     }
 
-    ArrayStructureMA to = new ArrayStructureMA(new StructureMembers(from.getStructureMembers()), shape);
+    ArrayStructureMA to = new ArrayStructureMA(from.getStructureMembers().toBuilder(false).build(), shape);
 
     for (Map.Entry<String, Array> entry : memberArrayMap.entrySet()) {
       to.setMemberArray(entry.getKey(), entry.getValue());

@@ -1,8 +1,8 @@
-description = "The NetCDF-Java Library is a Java interface to NetCDF files, as well as to many other types of " +
-        "scientific data formats."
-ext.title = "CDM library"
+description = 'The NetCDF-Java Library is a Java interface to NetCDF files, as well as to many other types of ' +
+    'scientific data formats.'
+ext.title = 'CDM library'
 
 subprojects {
-    // TODO: Give the subprojects real titles.
-    ext.title = "CDM: $name"
+  // TODO: Give the subprojects real titles.
+  ext.title = "CDM: $name"
 }

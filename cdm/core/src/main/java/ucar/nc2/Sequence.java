@@ -11,7 +11,7 @@ import java.util.ArrayList;
 /**
  * Sequence is a one-dimensional Structure with indeterminate length.
  * The only data access is through getStructureIterator().
- * However, read() will read in the entire data and return an ArraySequence.
+ * However, read() will read in the entire data and return an in-memory ArraySequence.
  * 
  * @author caron
  * @since Feb 23, 2008
@@ -112,10 +112,11 @@ public class Sequence extends Structure {
 
   ////////////////////////////////////////////////////////////////////////////////////////////
 
-  protected Sequence(Builder<?> builder) {
-    super(builder);
+  protected Sequence(Builder<?> builder, Group parentGroup) {
+    super(builder, parentGroup);
   }
 
+  /** Turn into a mutable Builder. Can use toBuilder().build() to copy. */
   public Builder<?> toBuilder() {
     return addLocalFieldsToBuilder(builder());
   }
@@ -141,17 +142,18 @@ public class Sequence extends Structure {
     }
   }
 
+  /** A builder of Sequences */
   public static abstract class Builder<T extends Builder<T>> extends Structure.Builder<T> {
     private boolean built;
 
     protected abstract T self();
 
-    public Sequence build() {
+    public Sequence build(Group parentGroup) {
       if (built)
         throw new IllegalStateException("already built");
       built = true;
       this.setDataType(DataType.SEQUENCE);
-      return new Sequence(this);
+      return new Sequence(this, parentGroup);
     }
   }
 

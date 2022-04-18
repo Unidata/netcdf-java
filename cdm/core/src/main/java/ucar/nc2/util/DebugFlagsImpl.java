@@ -11,8 +11,8 @@ import java.util.StringTokenizer;
 
 /**
  * An implementation of DebugFlags
- *
- * @author caron
+ * 
+ * TODO will move in ver 6
  */
 public class DebugFlagsImpl implements DebugFlags {
 

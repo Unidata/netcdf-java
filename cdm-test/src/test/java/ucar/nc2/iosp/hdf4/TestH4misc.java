@@ -14,6 +14,7 @@ import ucar.ma2.InvalidRangeException;
 import ucar.ma2.MAMath;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
+import ucar.nc2.util.CompareNetcdf2;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
 import java.io.IOException;
@@ -59,7 +60,7 @@ public class TestH4misc {
         System.out.printf("  %d sum2D =        %f%n", i, sum);
         sum3 += sum;
 
-        ucar.unidata.util.test.CompareNetcdf.compareData(data2D, data2D.reduce(0));
+        CompareNetcdf2.compareData(v.getShortName(), data2D, data2D.reduce(0));
       }
       System.out.printf(" sum2D =        %f%n", sum2);
       System.out.printf(" sum2D.reduce = %f%n", sum3);

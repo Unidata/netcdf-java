@@ -8,12 +8,9 @@ import javax.annotation.concurrent.Immutable;
 
 /**
  * Knuth-Morris-Pratt Algorithm for Pattern Matching.
- * Immutable
  *
- * @author caron
  * @see <a href=
  *      "http://www.fmi.uni-sofia.bg/fmi/logic/vboutchkova/sources/KMPMatch_java.html">http://www.fmi.uni-sofia.bg/fmi/logic/vboutchkova/sources/KMPMatch_java.html</a>
- * @since May 9, 2008
  */
 @Immutable
 public class KMPMatch {

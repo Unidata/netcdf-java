@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2018 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 
@@ -107,7 +107,7 @@ abstract class GribCollectionBuilderFromIndex {
       /*
        * message GribCollection {
        * required string name = 1; // must be unique - index filename is name.ncx
-       * required string topDir = 2; // filenames are reletive to this
+       * required string topDir = 2; // filenames are relative to this
        * repeated MFile mfiles = 3; // list of grib MFiles
        * repeated Dataset dataset = 4;
        * repeated Gds gds = 5; // unique Gds, shared amongst datasets
@@ -280,8 +280,17 @@ abstract class GribCollectionBuilderFromIndex {
 
         case time2D:
           CoordinateTime2D t2d = (CoordinateTime2D) coord;
-          if (timeCoord > 0)
-            t2d.setName("time" + timeCoord);
+          if (timeCoord > 0) {
+            // make sure 2d time coordinate (non-unique) does not use the same name as the dimension
+            // note: dimension name gets set in GribIosp, GribIospBuilder
+            // See https://github.com/Unidata/netcdf-java/issues/152
+            if (!t2d.hasUniqueTimes()) {
+              t2d.setName("validtime" + timeCoord);
+            } else {
+              t2d.setName("time" + timeCoord);
+            }
+          }
+
           timeCoord++;
           time2DCoords.add(t2d);
           break;

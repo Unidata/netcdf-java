@@ -149,6 +149,20 @@ public class IospHelper {
         raf.readFully(pa, (int) chunk.getDestElem() * recsize, chunk.getNelems() * recsize);
       }
       return pa;
+    } else if (dataType == DataType.STRING) {
+      int size = (int) layout.getTotalNelems();
+      int elemSize = layout.getElemSize();
+      StringBuilder sb = new StringBuilder(size);
+      while (layout.hasNext()) {
+        Layout.Chunk chunk = layout.next();
+        if (chunk == null) {
+          continue;
+        }
+        for (int i = 0; i < chunk.getNelems(); i++) {
+          sb.append(raf.readString(elemSize));
+        }
+      }
+      return sb.toString();
     }
 
     throw new IllegalStateException("unknown type= " + dataType);
@@ -287,20 +301,26 @@ public class IospHelper {
     if (showLayoutTypes)
       System.out.println("***BB LayoutType=" + layout.getClass().getName());
 
-    if (dataType.getPrimitiveClassType() == byte.class || (dataType == DataType.CHAR)) {
+    if (dataType.getPrimitiveClassType() == byte.class || (dataType == DataType.CHAR) || dataType == DataType.BOOLEAN) {
       byte[] pa = (byte[]) arr;
       while (layout.hasNext()) {
         LayoutBB.Chunk chunk = layout.next();
         ByteBuffer bb = chunk.getByteBuffer();
+        // if chunk is empty, use fill value
+        if (!bb.hasRemaining()) {
+          continue;
+        }
         bb.position(chunk.getSrcElem());
         int pos = (int) chunk.getDestElem();
         for (int i = 0; i < chunk.getNelems(); i++)
           pa[pos++] = bb.get();
       }
       // return (dataType == DataType.CHAR) ? convertByteToChar(pa) : pa;
-      if (dataType == DataType.CHAR)
+      if (dataType == DataType.CHAR) {
         return convertByteToChar(pa);
-      else
+      } else if (dataType == DataType.BOOLEAN) {
+        return convertByteToBoolean(pa);
+      } else
         return pa;
 
     } else if (dataType.getPrimitiveClassType() == short.class) {
@@ -308,6 +328,10 @@ public class IospHelper {
       while (layout.hasNext()) {
         LayoutBB.Chunk chunk = layout.next();
         ShortBuffer buff = chunk.getShortBuffer();
+        // if chunk is empty, use fill value
+        if (!buff.hasRemaining()) {
+          continue;
+        }
         buff.position(chunk.getSrcElem());
         int pos = (int) chunk.getDestElem();
         for (int i = 0; i < chunk.getNelems(); i++)
@@ -320,6 +344,10 @@ public class IospHelper {
       while (layout.hasNext()) {
         LayoutBB.Chunk chunk = layout.next();
         IntBuffer buff = chunk.getIntBuffer();
+        // if chunk is empty, use fill value
+        if (!buff.hasRemaining()) {
+          continue;
+        }
         buff.position(chunk.getSrcElem());
         int pos = (int) chunk.getDestElem();
         for (int i = 0; i < chunk.getNelems(); i++)
@@ -332,6 +360,10 @@ public class IospHelper {
       while (layout.hasNext()) {
         LayoutBB.Chunk chunk = layout.next();
         FloatBuffer buff = chunk.getFloatBuffer();
+        // if chunk is empty, use fill value
+        if (!buff.hasRemaining()) {
+          continue;
+        }
         buff.position(chunk.getSrcElem());
         int pos = (int) chunk.getDestElem();
         for (int i = 0; i < chunk.getNelems(); i++)
@@ -344,6 +376,10 @@ public class IospHelper {
       while (layout.hasNext()) {
         LayoutBB.Chunk chunk = layout.next();
         DoubleBuffer buff = chunk.getDoubleBuffer();
+        // if chunk is empty, use fill value
+        if (!buff.hasRemaining()) {
+          continue;
+        }
         buff.position(chunk.getSrcElem());
         int pos = (int) chunk.getDestElem();
         for (int i = 0; i < chunk.getNelems(); i++)
@@ -356,6 +392,10 @@ public class IospHelper {
       while (layout.hasNext()) {
         LayoutBB.Chunk chunk = layout.next();
         LongBuffer buff = chunk.getLongBuffer();
+        // if chunk is empty, use fill value
+        if (!buff.hasRemaining()) {
+          continue;
+        }
         buff.position(chunk.getSrcElem());
         int pos = (int) chunk.getDestElem();
         for (int i = 0; i < chunk.getNelems(); i++)
@@ -369,10 +409,35 @@ public class IospHelper {
       while (layout.hasNext()) {
         LayoutBB.Chunk chunk = layout.next();
         ByteBuffer bb = chunk.getByteBuffer();
+        // if chunk is empty, use fill value
+        if (!bb.hasRemaining()) {
+          continue;
+        }
         bb.position(chunk.getSrcElem() * recsize);
         int pos = (int) chunk.getDestElem() * recsize;
         for (int i = 0; i < chunk.getNelems() * recsize; i++)
           pa[pos++] = bb.get();
+      }
+      return pa;
+    } else if (dataType == DataType.STRING) {
+      String[] pa = (String[]) arr;
+      int recsize = layout.getElemSize();
+      while (layout.hasNext()) {
+        LayoutBB.Chunk chunk = layout.next();
+        ByteBuffer bb = chunk.getByteBuffer();
+        // if chunk is empty, use fill value
+        if (!bb.hasRemaining()) {
+          continue;
+        }
+        bb.position(chunk.getSrcElem() * recsize);
+        int pos = (int) chunk.getDestElem();
+        for (int i = 0; i < chunk.getNelems(); i++) {
+          char[] ch = new char[dataType.getSize()];
+          for (int j = 0; j < ch.length; j++) {
+            ch[j] = (char) bb.get();
+          }
+          pa[pos++] = new String(ch);
+        }
       }
       return pa;
     }
@@ -580,8 +645,7 @@ public class IospHelper {
     if (as.getClass().equals(ArrayStructureBB.class)) // no subclasses
       return (ArrayStructureBB) as;
 
-    StructureMembers smo = as.getStructureMembers();
-    StructureMembers sm = new StructureMembers(smo);
+    StructureMembers sm = as.getStructureMembers().toBuilder(false).build();
     ArrayStructureBB abb = new ArrayStructureBB(sm, as.getShape());
     ArrayStructureBB.setOffsets(sm);
 
@@ -596,7 +660,7 @@ public class IospHelper {
    * @deprecated use StructureDataDeep.copyToArrayBB
    */
   public static ArrayStructureBB copyToArrayBB(StructureData sdata) {
-    StructureMembers sm = new StructureMembers(sdata.getStructureMembers());
+    StructureMembers sm = sdata.getStructureMembers();
     int size = sm.getStructureSize();
     ByteBuffer bb = ByteBuffer.allocate(size); // default is big endian
     ArrayStructureBB abb = new ArrayStructureBB(sm, new int[] {1}, bb, 0);
@@ -653,9 +717,15 @@ public class IospHelper {
    */
   public static Object makePrimitiveArray(int size, DataType dataType, Object fillValue) {
 
-    if (dataType.getPrimitiveClassType() == byte.class || (dataType == DataType.CHAR)) {
+    if (dataType.getPrimitiveClassType() == byte.class || (dataType == DataType.CHAR) || dataType == DataType.BOOLEAN) {
       byte[] pa = new byte[size];
-      byte val = ((Number) fillValue).byteValue();
+      byte val;
+      if (fillValue instanceof String) {
+        byte[] bytes = ((String) fillValue).getBytes();
+        val = bytes.length > 0 ? ((String) fillValue).getBytes()[0] : 0;
+      } else {
+        val = ((Number) fillValue).byteValue();
+      }
       if (val != 0)
         for (int i = 0; i < size; i++)
           pa[i] = val;
@@ -742,7 +812,6 @@ public class IospHelper {
   }
 
   // convert byte array to char array
-
   public static char[] convertByteToChar(byte[] byteArray) {
     int size = byteArray.length;
     char[] cbuff = new char[size];
@@ -752,7 +821,6 @@ public class IospHelper {
   }
 
   // convert char array to byte array
-
   public static byte[] convertCharToByte(char[] from) {
     byte[] to = null;
     if (from != null) {
@@ -760,6 +828,18 @@ public class IospHelper {
       to = new byte[size];
       for (int i = 0; i < size; i++)
         to[i] = (byte) from[i]; // LOOK wrong, convert back to unsigned byte ???
+    }
+    return to;
+  }
+
+  // convert byte array to boolean array
+  public static boolean[] convertByteToBoolean(byte[] from) {
+    boolean[] to = null;
+    if (from != null) {
+      int size = from.length;
+      to = new boolean[size];
+      for (int i = 0; i < size; i++)
+        to[i] = from[i] != 0;
     }
     return to;
   }
@@ -874,10 +954,9 @@ public class IospHelper {
   }
 
   // LOOK could be used in createView ??
-
   private static ArrayStructure sectionArrayStructure(ParsedSectionSpec child, ArrayStructure innerData,
       StructureMembers.Member m) {
-    StructureMembers membersw = new StructureMembers(m.getStructureMembers()); // no data arrays get propagated
+    StructureMembers membersw = m.getStructureMembers().toBuilder(false).build(); // no data arrays get propagated
     ArrayStructureW result = new ArrayStructureW(membersw, child.section.getShape());
 
     int count = 0;

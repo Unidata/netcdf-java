@@ -28,6 +28,10 @@ public class LambertConformal extends ProjectionImpl {
   private double par1, par2; // standard parallel 1 and 2 degrees
   private double falseEasting, falseNorthing;
 
+  // values passed in through the constructor
+  // need for constructCopy
+  private double _lat0, _lon0;
+
   private double n, F, rho; // constants from Snyder's equations
   private double earthRadiusTimesF;// Earth's radius time F
   private double lon0Degrees; // lon naught ??
@@ -97,6 +101,9 @@ public class LambertConformal extends ProjectionImpl {
       double false_northing, double earth_radius) {
 
     super("LambertConformal", false);
+
+    this._lat0 = lat0;
+    this._lon0 = lon0;
 
     this.lat0 = Math.toRadians(lat0);
     this.lon0 = Math.toRadians(lon0);
@@ -255,19 +262,19 @@ public class LambertConformal extends ProjectionImpl {
   /**
    * Get the origin longitude in degrees
    *
-   * @return the origin longitude.
+   * @return the origin longitude in degrees.
    */
   public double getOriginLon() {
-    return Math.toDegrees(lon0);
+    return _lon0;
   }
 
   /**
    * Get the origin latitude in degrees
    *
-   * @return the origin latitude.
+   * @return the origin latitude in degrees.
    */
   public double getOriginLat() {
-    return Math.toDegrees(lat0);
+    return _lat0;
   }
 
   /**
@@ -291,33 +298,41 @@ public class LambertConformal extends ProjectionImpl {
   //////////////////////////////////////////////
   // setters for IDV serialization - do not use except for object creating
 
+  @Deprecated
   public void setOriginLat(double lat0) {
+    _lat0 = lat0;
     this.lat0 = Math.toRadians(lat0);
     precalculate();
   }
 
+  @Deprecated
   public void setOriginLon(double lon0) {
+    _lon0 = lon0;
     this.lon0 = Math.toRadians(lon0);
     precalculate();
   }
 
   // sic
+  @Deprecated
   public void setParellelOne(double par1) {
     this.par1 = par1;
     precalculate();
   }
 
   // sic
+  @Deprecated
   public void setParellelTwo(double par2) {
     this.par2 = par2;
     precalculate();
   }
 
+  @Deprecated
   public void setParallelOne(double par1) {
     this.par1 = par1;
     precalculate();
   }
 
+  @Deprecated
   public void setParallelTwo(double par2) {
     this.par2 = par2;
     precalculate();
@@ -326,9 +341,10 @@ public class LambertConformal extends ProjectionImpl {
   /**
    * Set the false_easting, in km.
    * natural_x_coordinate + false_easting = x coordinate
-   * 
+   *
    * @param falseEasting x offset
    */
+  @Deprecated
   public void setFalseEasting(double falseEasting) {
     this.falseEasting = falseEasting;
   }
@@ -339,6 +355,7 @@ public class LambertConformal extends ProjectionImpl {
    *
    * @param falseNorthing y offset
    */
+  @Deprecated
   public void setFalseNorthing(double falseNorthing) {
     this.falseNorthing = falseNorthing;
   }
@@ -365,9 +382,8 @@ public class LambertConformal extends ProjectionImpl {
 
   @Override
   public String toString() {
-    return "LambertConformal{" + "earth_radius=" + earth_radius + ", lat0=" + Math.toDegrees(lat0) + ", lon0="
-        + Math.toDegrees(lon0) + ", par1=" + par1 + ", par2=" + par2 + ", falseEasting=" + falseEasting
-        + ", falseNorthing=" + falseNorthing + '}';
+    return "LambertConformal{" + "earth_radius=" + earth_radius + ", lat0=" + _lat0 + ", lon0=" + _lon0 + ", par1="
+        + par1 + ", par2=" + par2 + ", falseEasting=" + falseEasting + ", falseNorthing=" + falseNorthing + '}';
   }
 
   /**
@@ -427,7 +443,7 @@ public class LambertConformal extends ProjectionImpl {
    */
   public boolean crossSeam(ProjectionPoint pt1, ProjectionPoint pt2) {
     // either point is infinite
-    if (ProjectionPointImpl.isInfinite(pt1) || ProjectionPointImpl.isInfinite(pt2)) {
+    if (LatLonPoints.isInfinite(pt1) || LatLonPoints.isInfinite(pt2)) {
       return true;
     }
     // opposite signed X values, larger then 20,000 km
@@ -438,7 +454,7 @@ public class LambertConformal extends ProjectionImpl {
    * MACROBODY
    * latLonToProj {} {
    * fromLat = Math.toRadians(fromLat);
-   * double dlon = LatLonPointImpl.lonNormal(fromLon - lon0Degrees);
+   * double dlon = LatLonPoints.lonNormal(fromLon - lon0Degrees);
    * double theta = n * Math.toRadians(dlon);
    * double tn = Math.pow( Math.tan(PI_OVER_4 + fromLat/2), n);
    * double r = earthRadiusTimesF / tn;
@@ -452,15 +468,15 @@ public class LambertConformal extends ProjectionImpl {
    * fromX *= -1.0;
    * fromY *= -1.0;
    * }
-   * 
+   *
    * double yd = (rhop - fromY);
    * double theta = Math.atan2( fromX, yd);
    * double r = Math.sqrt( fromX*fromX + yd*yd);
    * if (n < 0.0)
    * r *= -1.0;
-   * 
+   *
    * toLon = (Math.toDegrees(theta/n + lon0));
-   * 
+   *
    * if (Math.abs(r) < TOLERANCE) {
    * toLat = ((n < 0.0) ? -90.0 : 90.0);
    * } else {
@@ -468,7 +484,7 @@ public class LambertConformal extends ProjectionImpl {
    * toLat = Math.toDegrees(2.0 * Math.atan( rn) - Math.PI/2);
    * }
    * }
-   * 
+   *
    * MACROBODY
    */
 
@@ -497,7 +513,7 @@ public class LambertConformal extends ProjectionImpl {
 
 
     fromLat = Math.toRadians(fromLat);
-    double dlon = LatLonPointImpl.lonNormal(fromLon - lon0Degrees);
+    double dlon = LatLonPoints.lonNormal(fromLon - lon0Degrees);
     double theta = n * Math.toRadians(dlon);
     double tn = Math.pow(Math.tan(PI_OVER_4 + fromLat / 2), n);
     double r = earthRadiusTimesF / tn;
@@ -508,14 +524,6 @@ public class LambertConformal extends ProjectionImpl {
     return result;
   }
 
-  /**
-   * Convert projection coordinates to a LatLonPoint
-   * Note: a new object is not created on each call for the return value.
-   *
-   * @param world convert from these projection coordinates
-   * @param result the object to write to
-   * @return LatLonPoint convert to these lat/lon coordinates
-   */
   public LatLonPoint projToLatLon(ProjectionPoint world, LatLonPointImpl result) {
     double toLat, toLon;
     double fromX = world.getX() - falseEasting;
@@ -575,7 +583,7 @@ public class LambertConformal extends ProjectionImpl {
       double fromLon = fromLonA[i];
 
       fromLat = Math.toRadians(fromLat);
-      double dlon = LatLonPointImpl.lonNormal(fromLon - lon0Degrees);
+      double dlon = LatLonPoints.lonNormal(fromLon - lon0Degrees);
       double theta = n * Math.toRadians(dlon);
       double tn = Math.pow(Math.tan(PI_OVER_4 + fromLat / 2), n);
       double r = earthRadiusTimesF / tn;
@@ -665,7 +673,7 @@ public class LambertConformal extends ProjectionImpl {
       double fromLon = fromLonA[i];
 
       fromLat = Math.toRadians(fromLat);
-      double dlon = LatLonPointImpl.lonNormal(fromLon - lon0Degrees);
+      double dlon = LatLonPoints.lonNormal(fromLon - lon0Degrees);
       double theta = n * Math.toRadians(dlon);
       double tn = Math.pow(Math.tan(PI_OVER_4 + fromLat / 2), n);
       double r = earthRadiusTimesF / tn;

@@ -26,7 +26,7 @@ public class TestNcMLModifyAtts extends TestCase {
   NetcdfFile ncfile = null;
 
   public void setUp() throws IOException {
-    String filename = "file:" + TestNcMLRead.topDir + "modifyAtts.xml";
+    String filename = "file:" + TestNcmlRead.topDir + "modifyAtts.xml";
     ncfile = NcMLReader.readNcML(filename, null);
   }
 

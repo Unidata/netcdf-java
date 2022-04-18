@@ -54,10 +54,10 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
  lm.sendEvent(event);
  * </pre>
- *
  * 
- * @author John Caron
+ * @deprecated will move in ver 6
  */
+@Deprecated
 @ThreadSafe
 public class ListenerManager {
   private static final Logger logger = org.slf4j.LoggerFactory.getLogger(ListenerManager.class);

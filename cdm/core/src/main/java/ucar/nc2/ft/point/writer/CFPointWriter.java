@@ -35,10 +35,10 @@ import java.util.*;
  * <ul>
  * <li>netcdf3: use indexed ragged array representation</li>
  * </ul>
- *
- * @author caron
- * @since 4/11/12
+ * 
+ * @deprecated use writer2
  */
+@Deprecated
 public abstract class CFPointWriter implements Closeable {
   private static final Logger logger = LoggerFactory.getLogger(CFPointWriter.class);
 
@@ -68,8 +68,6 @@ public abstract class CFPointWriter implements Closeable {
   public static final String trajIdName = "trajectoryId";
 
   public static final int idMissingValue = -9999;
-
-
   private static boolean debug;
 
   public static int writeFeatureCollection(FeatureDatasetPoint fdpoint, String fileOut,
@@ -558,7 +556,7 @@ public abstract class CFPointWriter implements Closeable {
       }
 
       if (newVar == null) {
-        logger.warn("Variable already exists =" + oldVar.getShortName()); // LOOK barf
+        logger.warn("Variable already exists =" + oldVar.getShortName());
         continue;
       }
 
@@ -755,11 +753,12 @@ public abstract class CFPointWriter implements Closeable {
     for (StructureMembers.Member m : sdata.getMembers()) {
       Variable mv = varMap.get(m.getName());
       if (mv == null)
-        continue; // LOOK OK??
+        continue; // ok
 
       Array org = sdata.getArray(m);
       if (m.getDataType() == DataType.STRING) { // convert to ArrayChar
-        org = ArrayChar.makeFromStringArray((ArrayObject) org);
+        int strlen = mv.getDimension(mv.getDimensions().size() - 1).getLength();
+        org = ArrayChar.makeFromStringArray((ArrayObject) org, strlen);
       }
 
       Array orgPlus1 = Array.makeArrayRankPlusOne(org); // add dimension on the left (slow)
@@ -782,9 +781,9 @@ public abstract class CFPointWriter implements Closeable {
     if (loc != null) {
       if (llbb == null) {
         llbb = new LatLonRect(loc, .001, .001);
-        return;
+      } else {
+        llbb.extend(loc);
       }
-      llbb.extend(loc);
     }
 
     // date is handled specially

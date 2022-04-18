@@ -50,7 +50,7 @@ import java.util.Formatter;
 @Immutable
 public abstract class Grib1Gds {
   private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Grib1Gds.class);
-  static final double maxReletiveErrorPos = .01; // reletive error in position - GRIB numbers sometime miscoded
+  static final double maxRelativeErrorPos = .01; // relative error in position - GRIB numbers sometime miscoded
 
   /*
    * Code table 6 – Data representation type
@@ -405,7 +405,10 @@ public abstract class Grib1Gds {
       } else {
         deltaLon = calcDelta;
       }
-      if (!Misc.nearlyEquals(deltaLon, calcDelta)) {
+      // If calcDelta is a finite number (isn't the case when we only have one lat/lon
+      // point in the GDS, which can lead to NaN or +/-Inf), can compare deltaLon
+      // against a calculated delta, which appears to be more accurate in some cases.
+      if (Float.isFinite(calcDelta) && !Misc.nearlyEquals(deltaLon, calcDelta)) {
         log.debug("deltaLon != calcDeltaLon");
         deltaLon = calcDelta;
       }
@@ -443,8 +446,10 @@ public abstract class Grib1Gds {
        * deltaLat = calcDelta;
        * }
        */
-
-      if (!Misc.nearlyEquals(deltaLat, calcDelta)) {
+      // If calcDelta is a finite number (isn't the case when we only have one lat/lon
+      // point in the GDS, which can lead to NaN or +/-Inf), can compare deltaLon
+      // against a calculated delta, which appears to be more accurate in some cases.
+      if (Float.isFinite(calcDelta) && !Misc.nearlyEquals(deltaLat, calcDelta)) {
         log.debug("deltaLat != calcDeltaLat");
         deltaLat = calcDelta;
       }
@@ -512,10 +517,10 @@ public abstract class Grib1Gds {
       }
 
       LatLon other = (LatLon) o;
-      if (!Misc.nearlyEqualsAbs(la1, other.la1, maxReletiveErrorPos * deltaLat)) {
-        return false; // allow some slop, reletive to grid size
+      if (!Misc.nearlyEqualsAbs(la1, other.la1, maxRelativeErrorPos * deltaLat)) {
+        return false; // allow some slop, relative to grid size
       }
-      if (!Misc.nearlyEqualsAbs(lo1, other.lo1, maxReletiveErrorPos * deltaLon)) {
+      if (!Misc.nearlyEqualsAbs(lo1, other.lo1, maxRelativeErrorPos * deltaLon)) {
         return false;
       }
       if (!Misc.nearlyEquals(deltaLat, other.deltaLat)) {
@@ -527,9 +532,9 @@ public abstract class Grib1Gds {
     @Override
     public int hashCode() {
       if (hashCode == 0) {
-        int useLat = (int) (la1 / (maxReletiveErrorPos * deltaLat)); // Two equal objects must have the same hashCode()
+        int useLat = (int) (la1 / (maxRelativeErrorPos * deltaLat)); // Two equal objects must have the same hashCode()
                                                                      // value
-        int useLon = (int) (lo1 / (maxReletiveErrorPos * deltaLon));
+        int useLon = (int) (lo1 / (maxRelativeErrorPos * deltaLon));
         int useDeltaLon = (int) (deltaLon / Misc.defaultMaxRelativeDiffFloat);
         int useDeltaLat = (int) (deltaLat / Misc.defaultMaxRelativeDiffFloat);
 
@@ -552,7 +557,7 @@ public abstract class Grib1Gds {
     @Override
     public GdsHorizCoordSys makeHorizCoordSys() {
       LatLonProjection proj = new LatLonProjection(getEarth());
-      // ProjectionPoint startP = proj.latLonToProj(new LatLonPointImpl(la1, lo1));
+      // ProjectionPoint startP = proj.latLonToProj(LatLonPoint.create(la1, lo1));
       double startx = lo1; // startP.getX();
       double starty = la1; // startP.getY();
       return new GdsHorizCoordSys(getNameShort(), template, 0, scanMode, proj, startx, getDx(), starty, getDy(),
@@ -565,15 +570,15 @@ public abstract class Grib1Gds {
       if (Lo2 < lo1) {
         Lo2 += 360;
       }
-      LatLonPointImpl startLL = new LatLonPointImpl(la1, lo1);
-      LatLonPointImpl endLL = new LatLonPointImpl(la2, Lo2);
+      LatLonPoint startLL = LatLonPoint.create(la1, lo1);
+      LatLonPoint endLL = LatLonPoint.create(la2, Lo2);
 
       f.format("%s testProjection%n", getClass().getName());
       f.format("  start at latlon= %s%n", startLL);
       f.format("    end at latlon= %s%n", endLL);
 
-      ProjectionPointImpl endPP = (ProjectionPointImpl) cs.proj.latLonToProj(endLL, new ProjectionPointImpl());
-      f.format("   start at proj coord= %s%n", new ProjectionPointImpl(cs.startx, cs.starty));
+      ProjectionPoint endPP = cs.proj.latLonToProj(endLL);
+      f.format("   start at proj coord= %s%n", ProjectionPoint.create(cs.startx, cs.starty));
       f.format("     end at proj coord= %s%n", endPP);
 
       double endx = cs.startx + (getNx() - 1) * cs.dx;
@@ -798,10 +803,10 @@ public abstract class Grib1Gds {
 
       PolarStereographic that = (PolarStereographic) o;
 
-      if (!Misc.nearlyEqualsAbs(la1, that.la1, maxReletiveErrorPos * dY)) {
-        return false; // allow some slop, reletive to grid size
+      if (!Misc.nearlyEqualsAbs(la1, that.la1, maxRelativeErrorPos * dY)) {
+        return false; // allow some slop, relative to grid size
       }
-      if (!Misc.nearlyEqualsAbs(lo1, that.lo1, maxReletiveErrorPos * dX)) {
+      if (!Misc.nearlyEqualsAbs(lo1, that.lo1, maxRelativeErrorPos * dX)) {
         return false;
       }
       if (!Misc.nearlyEquals(lov, that.lov)) {
@@ -821,8 +826,8 @@ public abstract class Grib1Gds {
     @Override
     public int hashCode() {
       if (hashCode == 0) {
-        int useLat = (int) (la1 / (maxReletiveErrorPos * dY)); // Two equal objects must have the same hashCode() value
-        int useLon = (int) (lo1 / (maxReletiveErrorPos * dX));
+        int useLat = (int) (la1 / (maxRelativeErrorPos * dY)); // Two equal objects must have the same hashCode() value
+        int useLon = (int) (lo1 / (maxRelativeErrorPos * dX));
         int useLov = (int) (lov / Misc.defaultMaxRelativeDiffFloat);
         int useDeltaLon = (int) (dX / Misc.defaultMaxRelativeDiffFloat);
         int useDeltaLat = (int) (dY / Misc.defaultMaxRelativeDiffFloat);
@@ -874,7 +879,7 @@ public abstract class Grib1Gds {
             0.0, 0.0, earth);
       }
 
-      ProjectionPointImpl start = (ProjectionPointImpl) proj.latLonToProj(new LatLonPointImpl(la1, lo1));
+      ProjectionPointImpl start = (ProjectionPointImpl) proj.latLonToProj(LatLonPoint.create(la1, lo1));
       return new GdsHorizCoordSys(getNameShort(), template, 0, scanMode, proj, start.getX(), getDx(), start.getY(),
           getDy(), getNx(), getNy(), null);
     }
@@ -885,12 +890,12 @@ public abstract class Grib1Gds {
 
       double endx = cs.startx + (getNx() - 1) * cs.dx;
       double endy = cs.starty + (getNy() - 1) * cs.dy;
-      ProjectionPointImpl endPP = new ProjectionPointImpl(endx, endy);
-      f.format("   start at proj coord= %s%n", new ProjectionPointImpl(cs.startx, cs.starty));
+      ProjectionPoint endPP = ProjectionPoint.create(endx, endy);
+      f.format("   start at proj coord= %s%n", ProjectionPoint.create(cs.startx, cs.starty));
       f.format("     end at proj coord= %s%n", endPP);
 
-      LatLonPointImpl startLL = new LatLonPointImpl(la1, lo1);
-      LatLonPoint endLL = cs.proj.projToLatLon(endPP, new LatLonPointImpl());
+      LatLonPoint startLL = LatLonPoint.create(la1, lo1);
+      LatLonPoint endLL = cs.proj.projToLatLon(endPP);
 
       f.format("  start at latlon= %s%n", startLL);
       f.format("    end at latlon= %s%n", endLL);
@@ -990,10 +995,10 @@ public abstract class Grib1Gds {
 
       LambertConformal that = (LambertConformal) o;
 
-      if (!Misc.nearlyEqualsAbs(la1, that.la1, maxReletiveErrorPos * dY)) {
+      if (!Misc.nearlyEqualsAbs(la1, that.la1, maxRelativeErrorPos * dY)) {
         return false; // allow some slop, relative to grid size
       }
-      if (!Misc.nearlyEqualsAbs(lo1, that.lo1, maxReletiveErrorPos * dX)) {
+      if (!Misc.nearlyEqualsAbs(lo1, that.lo1, maxRelativeErrorPos * dX)) {
         return false;
       }
       if (!Misc.nearlyEquals(lad, that.lad)) {
@@ -1018,8 +1023,8 @@ public abstract class Grib1Gds {
     @Override
     public int hashCode() {
       if (hashCode == 0) {
-        int useLat = (int) (la1 / (maxReletiveErrorPos * dY)); // Two equal objects must have the same hashCode() value
-        int useLon = (int) (lo1 / (maxReletiveErrorPos * dX));
+        int useLat = (int) (la1 / (maxRelativeErrorPos * dY)); // Two equal objects must have the same hashCode() value
+        int useLon = (int) (lo1 / (maxRelativeErrorPos * dX));
         int useLad = (int) (lad / Misc.defaultMaxRelativeDiffFloat);
         int useLov = (int) (lov / Misc.defaultMaxRelativeDiffFloat);
         int useDeltaLon = (int) (dX / Misc.defaultMaxRelativeDiffFloat);
@@ -1055,7 +1060,7 @@ public abstract class Grib1Gds {
             0.0, earth);
       }
 
-      LatLonPointImpl startLL = new LatLonPointImpl(la1, lo1);
+      LatLonPoint startLL = LatLonPoint.create(la1, lo1);
       ProjectionPointImpl start = (ProjectionPointImpl) proj.latLonToProj(startLL);
       return new GdsHorizCoordSys(getNameShort(), template, 0, scanMode, proj, start.getX(), getDx(), start.getY(),
           getDy(), getNx(), getNy(), null);
@@ -1067,12 +1072,12 @@ public abstract class Grib1Gds {
 
       double endx = cs.startx + (getNx() - 1) * cs.dx;
       double endy = cs.starty + (getNy() - 1) * cs.dy;
-      ProjectionPointImpl endPP = new ProjectionPointImpl(endx, endy);
-      f.format("   start at proj coord= %s%n", new ProjectionPointImpl(cs.startx, cs.starty));
+      ProjectionPoint endPP = ProjectionPoint.create(endx, endy);
+      f.format("   start at proj coord= %s%n", ProjectionPoint.create(cs.startx, cs.starty));
       f.format("     end at proj coord= %s%n", endPP);
 
-      LatLonPointImpl startLL = new LatLonPointImpl(la1, lo1);
-      LatLonPoint endLL = cs.proj.projToLatLon(endPP, new LatLonPointImpl());
+      LatLonPoint startLL = LatLonPoint.create(la1, lo1);
+      LatLonPoint endLL = cs.proj.projToLatLon(endPP);
 
       f.format("  start at latlon= %s%n", startLL);
       f.format("    end at latlon= %s%n", endLL);
@@ -1156,10 +1161,10 @@ public abstract class Grib1Gds {
 
       Mercator that = (Mercator) o;
 
-      if (!Misc.nearlyEqualsAbs(la1, that.la1, maxReletiveErrorPos * dY)) {
-        return false; // allow some slop, reletive to grid size
+      if (!Misc.nearlyEqualsAbs(la1, that.la1, maxRelativeErrorPos * dY)) {
+        return false; // allow some slop, relative to grid size
       }
-      if (!Misc.nearlyEqualsAbs(lo1, that.lo1, maxReletiveErrorPos * dX)) {
+      if (!Misc.nearlyEqualsAbs(lo1, that.lo1, maxRelativeErrorPos * dX)) {
         return false;
       }
       if (!Misc.nearlyEquals(latin, that.latin)) {
@@ -1175,8 +1180,8 @@ public abstract class Grib1Gds {
     @Override
     public int hashCode() {
       if (hashCode == 0) {
-        int useLat = (int) (la1 / (maxReletiveErrorPos * dY)); // Two equal objects must have the same hashCode() value
-        int useLon = (int) (lo1 / (maxReletiveErrorPos * dX));
+        int useLat = (int) (la1 / (maxRelativeErrorPos * dY)); // Two equal objects must have the same hashCode() value
+        int useLon = (int) (lo1 / (maxRelativeErrorPos * dX));
         int useLad = (int) (latin / Misc.defaultMaxRelativeDiffFloat);
         int useDeltaLon = (int) (dX / Misc.defaultMaxRelativeDiffFloat);
         int useDeltaLat = (int) (dY / Misc.defaultMaxRelativeDiffFloat);
@@ -1201,7 +1206,7 @@ public abstract class Grib1Gds {
           new ucar.unidata.geoloc.projection.Mercator(lo1, latin, 0, 0, earth.getEquatorRadius() * .001);
 
       // find out where things start
-      ProjectionPoint startP = proj.latLonToProj(new LatLonPointImpl(la1, lo1));
+      ProjectionPoint startP = proj.latLonToProj(LatLonPoint.create(la1, lo1));
       double startx = startP.getX();
       double starty = startP.getY();
 
@@ -1215,15 +1220,15 @@ public abstract class Grib1Gds {
       if (Lo2 < lo1) {
         Lo2 += 360;
       }
-      LatLonPointImpl startLL = new LatLonPointImpl(la1, lo1);
-      LatLonPointImpl endLL = new LatLonPointImpl(la2, Lo2);
+      LatLonPoint startLL = LatLonPoint.create(la1, lo1);
+      LatLonPoint endLL = LatLonPoint.create(la2, Lo2);
 
       f.format("%s testProjection%n", getClass().getName());
       f.format("  start at latlon= %s%n", startLL);
       f.format("    end at latlon= %s%n", endLL);
 
-      ProjectionPointImpl endPP = (ProjectionPointImpl) cs.proj.latLonToProj(endLL, new ProjectionPointImpl());
-      f.format("   start at proj coord= %s%n", new ProjectionPointImpl(cs.startx, cs.starty));
+      ProjectionPoint endPP = cs.proj.latLonToProj(endLL);
+      f.format("   start at proj coord= %s%n", ProjectionPoint.create(cs.startx, cs.starty));
       f.format("     end at proj coord= %s%n", endPP);
 
       double endx = cs.startx + (getNx() - 1) * cs.dx;
@@ -1289,7 +1294,7 @@ public abstract class Grib1Gds {
       ucar.unidata.geoloc.projection.RotatedLatLon proj =
           new ucar.unidata.geoloc.projection.RotatedLatLon(latSouthPole, lonSouthPole, angleRotation);
       // LOOK dont transform - works for grib1 Q:/cdmUnitTest/transforms/HIRLAMhybrid.grib
-      // LatLonPoint startLL = proj.projToLatLon(new ProjectionPointImpl(lo1, la1));
+      // LatLonPoint startLL = proj.projToLatLon(ProjectionPoint.create(lo1, la1));
       // double startx = startLL.getLongitude();
       // double starty = startLL.getLatitude();
       return new GdsHorizCoordSys(getNameShort(), template, 0, scanMode, proj, lo1, deltaLon, la1, deltaLat, nx, ny,
@@ -1298,15 +1303,15 @@ public abstract class Grib1Gds {
 
     public void testHorizCoordSys(Formatter f) {
       GdsHorizCoordSys cs = makeHorizCoordSys();
-      LatLonPoint startLL = cs.proj.projToLatLon(new ProjectionPointImpl(lo1, la1));
-      LatLonPoint endLL = cs.proj.projToLatLon(new ProjectionPointImpl(lo2, la2));
+      LatLonPoint startLL = cs.proj.projToLatLon(ProjectionPoint.create(lo1, la1));
+      LatLonPoint endLL = cs.proj.projToLatLon(ProjectionPoint.create(lo2, la2));
 
       f.format("%s testProjection%n", getClass().getName());
       f.format("  start at latlon= %s%n", startLL);
       f.format("    end at latlon= %s%n", endLL);
 
-      ProjectionPointImpl endPP = (ProjectionPointImpl) cs.proj.latLonToProj(endLL, new ProjectionPointImpl());
-      f.format("   start at proj coord= %s%n", new ProjectionPointImpl(cs.startx, cs.starty));
+      ProjectionPoint endPP = cs.proj.latLonToProj(endLL);
+      f.format("   start at proj coord= %s%n", ProjectionPoint.create(cs.startx, cs.starty));
       f.format("     end at proj coord= %s%n", endPP);
 
       double endx = cs.startx + (nx - 1) * cs.dx;

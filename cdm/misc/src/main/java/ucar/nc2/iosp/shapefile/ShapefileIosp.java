@@ -16,12 +16,7 @@ import ucar.unidata.io.RandomAccessFile;
 import java.io.IOException;
 import java.nio.ByteOrder;
 
-/**
- * Class Description.
- *
- * @author caron
- * @since 9/27/12
- */
+/** This is a start of a shapfile iosp. Left here in case we want to revive it. */
 public class ShapefileIosp extends AbstractIOServiceProvider {
   private static final int MAGIC = 9994;
   private static final int VERSION = 1000;

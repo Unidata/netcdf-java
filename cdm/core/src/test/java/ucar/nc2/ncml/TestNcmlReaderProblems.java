@@ -9,15 +9,10 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.internal.ncml.NcMLReaderNew;
+import ucar.nc2.internal.ncml.NcmlReader;
 import ucar.nc2.util.CompareNetcdf2;
 
-/**
- * Compare old and new NcmlReaders on specific problem datasets.
- *
- * @author caron
- * @since 10/4/2019.
- */
+/** Compare old and new NcmlReaders on specific problem datasets. */
 public class TestNcmlReaderProblems {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
@@ -29,7 +24,7 @@ public class TestNcmlReaderProblems {
     // This used to fail in NcmlReader. Succeeds in NcmlReaderNew, but doesnt get the time coordinates right.
     // compare("file:" + TestNcMLRead.topDir + "exclude/aggExistingNoCoordsDir.xml");
 
-    compare("file:" + TestNcMLRead.topDir + "standalone/enum.ncml");
+    compare("file:" + TestNcmlRead.topDir + "aggUbyte.ncml");
   }
 
   private void compare(String ncmlLocation) throws IOException {
@@ -37,11 +32,11 @@ public class TestNcmlReaderProblems {
     logger.info("TestNcmlReaders on {}%n", ncmlLocation);
     try (NetcdfDataset org = NcMLReader.readNcML(ncmlLocation, null)) {
       System.out.printf("NcMLReader == %s%n", org);
-      try (NetcdfDataset withBuilder = NcMLReaderNew.readNcML(ncmlLocation, null, null).build()) {
-        System.out.printf("NcMLReaderNew == %s%n", withBuilder);
+      try (NetcdfDataset withBuilder = NcmlReader.readNcml(ncmlLocation, null, null).build()) {
+        System.out.printf("NcmlReaderNew == %s%n", withBuilder);
         Formatter f = new Formatter();
         CompareNetcdf2 compare = new CompareNetcdf2(f, true, true, true);
-        boolean ok = compare.compare(org, withBuilder);
+        boolean ok = compare.compare(org, withBuilder, new TestNcmlReadersCompare.CoordsObjFilter());
         System.out.printf("%s %s%n", ok ? "OK" : "NOT OK", f);
         assertThat(ok).isTrue();
       }

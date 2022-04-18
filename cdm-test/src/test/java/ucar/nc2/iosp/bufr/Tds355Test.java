@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
 import java.io.File;
@@ -25,7 +26,7 @@ public class Tds355Test {
   public void testTds355() throws IOException {
     File example = new File(tds355Dir, "iasi_20110513_045057_metopa_23676_eps_o.l1_bufr");
 
-    try (NetcdfDataset dataset = NetcdfDataset.openDataset(example.getAbsolutePath())) {
+    try (NetcdfDataset dataset = NetcdfDatasets.openDataset(example.getAbsolutePath())) {
       Variable obs = dataset.findVariable("obs");
 
       obs.read(); // Throws an NPE after about 50 seconds on my machine.

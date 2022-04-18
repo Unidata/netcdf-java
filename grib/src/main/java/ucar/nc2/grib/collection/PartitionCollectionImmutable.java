@@ -5,6 +5,7 @@
 
 package ucar.nc2.grib.collection;
 
+import java.util.Arrays;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import org.slf4j.Logger;
@@ -18,6 +19,7 @@ import ucar.nc2.dataset.DatasetUrl;
 import ucar.nc2.ft2.coverage.SubsetParams;
 import ucar.nc2.grib.GdsHorizCoordSys;
 import ucar.nc2.grib.GribIndexCache;
+import ucar.nc2.grib.coord.SparseArray;
 import ucar.nc2.grib.coord.TimeCoordIntvValue;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.util.CancelTask;
@@ -339,6 +341,22 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
       // return sb.toString();
     }
 
+    public void showSparseArray(Formatter f) throws IOException {
+      f.format("VariableIndexPartitioned SparseArrays %s%n%n", name);
+      for (int partno = 0; partno < partnoSA.getN(); partno++) {
+        GribCollectionImmutable.VariableIndex vpart = getVindex2D(partno);
+        if (vpart == null) {
+          continue;
+        }
+
+        vpart.readRecords(); // make sure sparse array has been read in.
+        if (vpart.getSparseArray() != null) {
+          SparseArray<Record> sa = vpart.getSparseArray();
+          sa.showMissing(f);
+        }
+      }
+    }
+
     ///////////////////////////////////////////////////////////////////
 
     /**
@@ -351,8 +369,8 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
     DataRecord getDataRecord(int[] indexWanted) throws IOException {
 
       if (Grib.debugRead)
-        logger.debug("PartitionCollection.getDataRecord index wanted = ({}) on {} type={}", Misc.showInts(indexWanted),
-            indexFilename, group.ds.gctype);
+        logger.debug("PartitionCollection.getDataRecord index wanted = ({}) on {} type={}",
+            Arrays.toString(indexWanted), indexFilename, group.ds.gctype);
 
       // find the runtime index
       int firstIndex = indexWanted[0];
@@ -398,9 +416,9 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
         return null; // LOOK is this possible?
       }
 
-      // find the 2D vi in that partition
-      GribCollectionImmutable.VariableIndex vindex2Dpart = getVindex2D(partno); // the 2D component variable in the
-                                                                                // partno partition
+      // the 2D component variable in the partno partition
+      GribCollectionImmutable.VariableIndex vindex2Dpart = getVindex2D(partno);
+
       if (vindex2Dpart == null)
         return null; // missing
       if (Grib.debugRead)
@@ -443,7 +461,7 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
       if (group.getType() == Type.Best) {
         int[] indexWantedP = translateIndexBest(indexWanted, compVindex2Dp);
         if (Grib.debugRead)
-          logger.debug("  (Best) getDataRecordPofP= {}", Misc.showInts(indexWantedP));
+          logger.debug("  (Best) getDataRecordPofP= {}", Arrays.toString(indexWantedP));
         if (indexWantedP == null)
           return null;
         return compVindex2Dp.getDataRecord(indexWantedP);
@@ -452,7 +470,7 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
         // corresponding index into compVindex2Dp
         int[] indexWantedP = translateIndex2D(indexWanted, compVindex2Dp);
         if (Grib.debugRead)
-          logger.debug("  (2D) getDataRecordPofP= {}", Misc.showInts(indexWantedP));
+          logger.debug("  (2D) getDataRecordPofP= {}", Arrays.toString(indexWantedP));
         if (indexWantedP == null)
           return null;
         return compVindex2Dp.getDataRecord(indexWantedP);
@@ -488,12 +506,8 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
       // the 2D vip for this variable
       VariableIndexPartitioned vip = isPartitionOfPartitions ? getVariable2DByHash(group.horizCoordSys, this) : this;
 
-      if (vip == null)
-        throw new IllegalStateException();
-
-      int partWant = vip.partnoSA.findIdx(partno); // which partition ? index into
-                                                   // PartitionCollectionImmutable.partitions[]. variable doesnt have to
-                                                   // exist in all partitions
+      // which partition? index into PartitionCollectionImmutable.partitions[]: variable may not exist in all partitions
+      int partWant = vip.partnoSA.findIdx(partno);
       if (partWant < 0 || partWant >= vip.nparts) {
         if (Grib.debugRead)
           logger.debug("  cant find partition={} in vip={}", partno, vip);
@@ -764,13 +778,13 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
       int rp = usePartition.getName().compareTo(op.usePartition.getName());
       if (rp != 0)
         return rp;
-      int r = Misc.compare(partno, op.partno);
+      int r = Integer.compare(partno, op.partno);
       if (r != 0)
         return r;
-      r = Misc.compare(record.fileno, o.record.fileno);
+      r = Integer.compare(record.fileno, o.record.fileno);
       if (r != 0)
         return r;
-      return Misc.compare(record.pos, o.record.pos);
+      return Long.compare(record.pos, o.record.pos);
     }
 
     boolean usesSameFile(DataRecord o) {
@@ -779,10 +793,10 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
       int rp = usePartition.getName().compareTo(o.usePartition.getName());
       if (rp != 0)
         return false;
-      int r = Misc.compare(partno, o.partno);
+      int r = Integer.compare(partno, o.partno);
       if (r != 0)
         return false;
-      r = Misc.compare(record.fileno, o.record.fileno);
+      r = Integer.compare(record.fileno, o.record.fileno);
       return r == 0;
     }
 

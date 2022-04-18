@@ -5,6 +5,7 @@
 package ucar.nc2.ft.coverage;
 
 import com.google.common.collect.Lists;
+import java.util.Arrays;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -180,7 +181,7 @@ public class TestCoverageMisc {
       SubsetParams subset = new SubsetParams().setVertCoord(300.0).setTimeOffset(42.0);
       GeoReferencedArray geo = cover.readData(subset);
       Array data = geo.getData();
-      logger.info("{}", Misc.showInts(data.getShape()));
+      logger.info("{}", Arrays.toString(data.getShape()));
     }
   }
 }

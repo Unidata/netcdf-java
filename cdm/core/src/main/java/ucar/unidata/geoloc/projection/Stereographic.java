@@ -43,6 +43,13 @@ public class Stereographic extends ProjectionImpl {
   private boolean isNorth;
   private boolean isPolar;
 
+  // values passed in through the constructor
+  // need for constructCopy
+  private double _latts;
+  private double _latt;
+  private double _lont;
+  private double _scale;
+
   @Override
   public ProjectionImpl constructCopy() {
     ProjectionImpl result = new Stereographic(getTangentLat(), getTangentLon(), getScale(), getFalseEasting(),
@@ -95,6 +102,11 @@ public class Stereographic extends ProjectionImpl {
       double radius) {
     super("Stereographic", false);
 
+    this._latts = 0.0;
+    this._latt = latt;
+    this._lont = lont;
+    this._scale = scale;
+
     this.latt = Math.toRadians(latt);
     this.lont = Math.toRadians(lont);
     this.earthRadius = radius;
@@ -122,11 +134,15 @@ public class Stereographic extends ProjectionImpl {
    *
    * @param lat_ts_deg Latitude at natural origin (degrees_north)
    * @param latt_deg tangent point of projection (degrees_north)
-   * @param lont_deg tangent point of projection, also origin of projection coord system ((degrees_east)
+   * @param lont_deg tangent point of projection, also origin of projection coord system (degrees_east)
    * @param north true if north pole, false is south pole
    */
   public Stereographic(double lat_ts_deg, double latt_deg, double lont_deg, boolean north) {
     super("PolarStereographic", false);
+
+    this._latts = lat_ts_deg;
+    this._latt = latt_deg;
+    this._lont = lont_deg;
 
     this.latts = Math.toRadians(lat_ts_deg);
     this.latt = Math.toRadians(latt_deg);
@@ -192,34 +208,34 @@ public class Stereographic extends ProjectionImpl {
    * @return the scale
    */
   public double getScale() {
-    return scale / earthRadius;
+    return _scale;
   }
 
   /**
-   * Get the latitude at natural origin
+   * Get the latitude at natural origin in degrees
    *
    * @return latitude at natural origin
    */
   public double getNaturalOriginLat() {
-    return Math.toDegrees(latts);
+    return _latts;
   }
 
   /**
    * Get the tangent longitude in degrees
    *
-   * @return the origin longitude.
+   * @return the origin longitude in degrees.
    */
   public double getTangentLon() {
-    return Math.toDegrees(lont);
+    return _lont;
   }
 
   /**
    * Get the tangent latitude in degrees
    *
-   * @return the origin latitude.
+   * @return the origin latitude in degrees.
    */
   public double getTangentLat() {
-    return Math.toDegrees(latt);
+    return _latt;
   }
 
   public double getEarthRadius() {
@@ -240,14 +256,18 @@ public class Stereographic extends ProjectionImpl {
   /**
    * @deprecated
    */
+  @Deprecated
   public void setScale(double scale) {
+    _scale = scale;
     this.scale = earthRadius * scale;
   }
 
   /**
    * @deprecated
    */
+  @Deprecated
   public void setTangentLat(double latt) {
+    _latt = latt;
     this.latt = Math.toRadians(latt);
     precalculate();
   }
@@ -255,7 +275,9 @@ public class Stereographic extends ProjectionImpl {
   /**
    * @deprecated
    */
+  @Deprecated
   public void setTangentLon(double lont) {
+    _lont = lont;
     this.lont = Math.toRadians(lont);
     precalculate();
   }
@@ -265,6 +287,7 @@ public class Stereographic extends ProjectionImpl {
   /**
    * @deprecated
    */
+  @Deprecated
   public void setCentralMeridian(double lont) {
     setTangentLon(lont);
   }
@@ -275,6 +298,7 @@ public class Stereographic extends ProjectionImpl {
    *
    * @param falseEasting x offset
    */
+  @Deprecated
   public void setFalseEasting(double falseEasting) {
     this.falseEasting = falseEasting;
   }
@@ -285,6 +309,7 @@ public class Stereographic extends ProjectionImpl {
    *
    * @param falseNorthing y offset
    */
+  @Deprecated
   public void setFalseNorthing(double falseNorthing) {
     this.falseNorthing = falseNorthing;
   }
@@ -303,7 +328,7 @@ public class Stereographic extends ProjectionImpl {
   @Override
   public String toString() {
     return "Stereographic{" + "falseEasting=" + falseEasting + ", falseNorthing=" + falseNorthing + ", scale=" + scale
-        + ", earthRadius=" + earthRadius + ", latt=" + latt + ", lont=" + lont + '}';
+        + ", earthRadius=" + earthRadius + ", latt=" + _latt + ", lont=" + _lont + '}';
   }
 
   /**
@@ -314,7 +339,7 @@ public class Stereographic extends ProjectionImpl {
    * @return false if there is no seam
    */
   public boolean crossSeam(ProjectionPoint pt1, ProjectionPoint pt2) {
-    return false; // ProjectionPointImpl.isInfinite(pt1) || ProjectionPointImpl.isInfinite(pt2);
+    return false; // LatLonPoints.isInfinite(pt1) || LatLonPoints.isInfinite(pt2);
   }
 
   @Override
@@ -389,24 +414,24 @@ public class Stereographic extends ProjectionImpl {
    * double c = 2.0 * Math.atan2( rho, 2.0*scale);
    * double sinc = Math.sin(c);
    * double cosc = Math.cos(c);
-   * 
+   *
    * if (Math.abs(rho) < TOLERANCE)
    * phi = latt;
    * else
    * phi = Math.asin( cosc * sinlatt + fromY * sinc * coslatt / rho);
-   * 
+   *
    * toLat = Math.toDegrees(phi);
-   * 
+   *
    * if ((Math.abs(fromX) < TOLERANCE) && (Math.abs(fromY) < TOLERANCE))
    * lam = lont;
    * else if (Math.abs(coslatt) < TOLERANCE)
    * lam = lont + Math.atan2( fromX, ((latt > 0) ? -fromY : fromY) );
    * else
    * lam = lont + Math.atan2( fromX*sinc, rho*coslatt*cosc - fromY*sinc*sinlatt);
-   * 
+   *
    * toLon = Math.toDegrees(lam);
    * }
-   * 
+   *
    * latLonToProj {} {
    * double lat = Math.toRadians (fromLat);
    * double lon = Math.toRadians(fromLon);
@@ -414,12 +439,12 @@ public class Stereographic extends ProjectionImpl {
    * if ((Math.abs(lat + latt) <= TOLERANCE)) {
    * lat = -latt * (1.0 - TOLERANCE);
    * }
-   * 
+   *
    * double sdlon = Math.sin(lon - lont);
    * double cdlon = Math.cos(lon - lont);
    * double sinlat = Math.sin(lat);
    * double coslat = Math.cos(lat);
-   * 
+   *
    * double k = 2.0 * scale / (1.0 + sinlatt * sinlat + coslatt * coslat * cdlon);
    * toX = k * coslat * sdlon;
    * toY = k * ( coslatt * sinlat - sinlatt * coslat * cdlon);

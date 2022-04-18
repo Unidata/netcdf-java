@@ -58,7 +58,7 @@ public class StructurePseudo2Dim extends StructurePseudoDS {
     }
 
     for (String name : varNames) {
-      Variable orgV = group.findVariable(name);
+      Variable orgV = group.findVariableLocal(name);
       if (orgV == null) {
         log.warn("StructurePseudo2Dim cannot find variable " + name);
         continue;
@@ -90,7 +90,7 @@ public class StructurePseudo2Dim extends StructurePseudoDS {
 
   @Override
   public Structure select(List<String> memberNames) {
-    StructurePseudo2Dim result = new StructurePseudo2Dim((NetcdfDataset) ncfile, getParentGroup(), getShortName(),
+    StructurePseudo2Dim result = new StructurePseudo2Dim((NetcdfDataset) ncfile, getParentGroupOrRoot(), getShortName(),
         memberNames, getDimension(0), getDimension(1));
     result.isSubset = true;
     return result;
@@ -128,8 +128,8 @@ public class StructurePseudo2Dim extends StructurePseudoDS {
 
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-  protected StructurePseudo2Dim(Builder<?> builder) {
-    super(builder);
+  protected StructurePseudo2Dim(Builder<?> builder, Group parentGroup) {
+    super(builder, parentGroup);
   }
 
   @Override
@@ -152,12 +152,12 @@ public class StructurePseudo2Dim extends StructurePseudoDS {
     private boolean built;
 
     /** Normally this is called by Group.build() */
-    public StructurePseudo2Dim build() {
+    public StructurePseudo2Dim build(Group parentGroup) {
       if (built)
         throw new IllegalStateException("already built");
       built = true;
       this.setDataType(DataType.STRUCTURE);
-      return new StructurePseudo2Dim(this);
+      return new StructurePseudo2Dim(this, parentGroup);
     }
   }
 }

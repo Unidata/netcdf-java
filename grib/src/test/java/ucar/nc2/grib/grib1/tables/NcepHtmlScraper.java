@@ -1,3 +1,5 @@
+
+
 /*
  * Copyright (c) 1998-2018 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
@@ -6,6 +8,8 @@
 package ucar.nc2.grib.grib1.tables;
 
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 import org.jsoup.Jsoup;
@@ -35,11 +39,13 @@ public class NcepHtmlScraper {
   private static final boolean debug = false;
   private static final boolean show = false;
 
+  private static final String dirOut = "build/tables/grib1/";
+
   //////////////////////////////////////////////////////////////////
-  // http://www.nco.ncep.noaa.gov/pmb/docs/on388/tablea.html
+  // https://www.nco.ncep.noaa.gov/pmb/docs/on388/tablea.html
   // LOOK the table is hand edited to add the units (!)
   void parseTable3() throws IOException {
-    String url = "http://www.nco.ncep.noaa.gov/pmb/docs/on388/table3.html";
+    String url = "https://www.nco.ncep.noaa.gov/pmb/docs/on388/table3.html";
     Document doc = Jsoup.parse(new URL(url), 5 * 1000); // 5 sec timeout
     System.out.printf("%s%n", doc);
 
@@ -159,14 +165,11 @@ public class NcepHtmlScraper {
    */
 
   //////////////////////////////////////////////////////////////////
-  // http://www.nco.ncep.noaa.gov/pmb/docs/on388/tablea.html
+  // https://www.nco.ncep.noaa.gov/pmb/docs/on388/tablea.html
 
   void parseTableA() throws IOException {
-    String source = "http://www.nco.ncep.noaa.gov/pmb/docs/on388/tablea.html";
-    String base = "http://www.nco.ncep.noaa.gov/pmb/docs/on388/";
-    // File input = new File("C:\\dev\\github\\thredds\\grib\\src\\main\\sources\\ncep\\ON388.TableA.htm");
-    // Document doc = Jsoup.parse(input, "UTF-8", base);
-    // System.out.printf("%s%n", doc);
+    String source = "https://www.nco.ncep.noaa.gov/pmb/docs/on388/tablea.html";
+
     Document doc = Jsoup.parse(new URL(source), 10 * 1000);
 
     Element table = doc.select("table").first();
@@ -244,10 +247,8 @@ public class NcepHtmlScraper {
   private int[] tableVersions = new int[] {2, 0, 128, 129, 130, 131, 133, 140, 0, 0, 141};
 
   void parseTable2() throws IOException {
-    String source = "http://www.nco.ncep.noaa.gov/pmb/docs/on388/table2.html";
-    // File input = new File("C:\\dev\\github\\thredds\\grib\\src\\main\\sources\\ncep\\on388.2011-11-18.htm");
-    // Document doc = Jsoup.parse(input, "UTF-8", "http://www.nco.ncep.noaa.gov/pmb/docs/on388/");
-    // System.out.printf("%s%n", doc);
+    String source = "https://www.nco.ncep.noaa.gov/pmb/docs/on388/table2.html";
+
     Document doc = Jsoup.parse(new URL(source), 10 * 1000);
 
     int count = 0;
@@ -317,8 +318,6 @@ public class NcepHtmlScraper {
   }
 
   /////////////////////////////////////////////////////////
-  // String dirOut = "C:\\dev\\github\\thredds\\grib\\src\\main\\resources\\resources\\grib1\\ncep\\";
-  String dirOut = "C:/tmp/ncep/grib1/";
 
   private void writeTable2Xml(String name, String source, String filename, List<Param> params) throws IOException {
     org.jdom2.Element rootElem = new org.jdom2.Element("parameterMap");
@@ -362,9 +361,10 @@ public class NcepHtmlScraper {
   }
 
   public static void main(String[] args) throws IOException {
+    Files.createDirectories(Paths.get(dirOut));
     NcepHtmlScraper scraper = new NcepHtmlScraper();
-    // scraper.parseTable2();
-    // scraper.parseTableA();
+    scraper.parseTable2();
+    scraper.parseTableA();
     scraper.parseTable3();
   }
 }

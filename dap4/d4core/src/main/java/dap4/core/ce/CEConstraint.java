@@ -310,7 +310,7 @@ public class CEConstraint implements Constraint {
    * @param record the record to evaluate
    * @param expr the filter
    * @throws DapException
-   * @returns the value of the expression (usually a Boolean)
+   * @return the value of the expression (usually a Boolean)
    */
   protected Object eval(DapVariable var, DapSequence seq, DataCursor record, CEAST expr) throws DapException {
     switch (expr.sort) {
@@ -493,7 +493,7 @@ public class CEConstraint implements Constraint {
    * Finish creating this Constraint.
    *
    * @throws DapException
-   * @returns this - fluent interface
+   * @return this - fluent interface
    */
   public CEConstraint finish() throws DapException {
     if (!finished) {
@@ -680,7 +680,7 @@ public class CEConstraint implements Constraint {
    * @param seq the template
    * @param rec the record to evaluate
    * @throws DapException
-   * @returns true if the filter matches the record
+   * @return true if the filter matches the record
    */
   public boolean match(DapVariable sqvar, DapSequence seq, DataCursor rec) throws DapException {
     Segment sseq = findSegment(sqvar);
@@ -699,8 +699,9 @@ public class CEConstraint implements Constraint {
    * @param seq the template
    * @param rec the record to evaluate
    * @param filter the filter
+   *
+   * @return true if a match
    * @throws DapException
-   * @returns true if a match
    */
   protected boolean matches(DapVariable var, DapSequence seq, DataCursor rec, CEAST filter) throws DapException {
     Object value = eval(var, seq, rec, filter);

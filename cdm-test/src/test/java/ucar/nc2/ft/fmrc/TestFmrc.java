@@ -41,7 +41,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import thredds.featurecollection.FeatureCollectionConfig;
 import ucar.ma2.Array;
-import ucar.nc2.NCdumpW;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.CoordinateAxis1D;
@@ -49,6 +48,7 @@ import ucar.nc2.dataset.CoordinateAxis1DTime;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDatatype;
+import ucar.nc2.write.Ncdump;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import java.lang.invoke.MethodHandles;
@@ -182,7 +182,7 @@ public class TestFmrc {
           if (axis.getShortName().startsWith("layer_between")) {
             CoordinateAxis1D axis1 = (CoordinateAxis1D) axis;
             Array data = axis.read();
-            logger.debug(NCdumpW.toString(data));
+            logger.debug(Ncdump.printArray(data));
             Formatter f = new Formatter();
             f.format("%n bounds1=");
             showArray(f, axis1.getBound1());

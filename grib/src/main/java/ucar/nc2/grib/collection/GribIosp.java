@@ -1,10 +1,11 @@
 /*
- * Copyright (c) 1998-2018 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 
 package ucar.nc2.grib.collection;
 
+import com.google.common.collect.ImmutableList;
 import javax.annotation.Nullable;
 import org.jdom2.Element;
 import thredds.client.catalog.Catalog;
@@ -16,6 +17,7 @@ import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
 import ucar.nc2.constants._Coordinate;
+import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.grib.*;
 import ucar.nc2.grib.coord.Coordinate;
 import ucar.nc2.grib.coord.CoordinateEns;
@@ -158,8 +160,8 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
       for (GribCollectionImmutable.Dataset ds : gribCollection.getDatasets()) {
         Group.Builder topGroup;
         if (useDatasetGroup) {
-          topGroup = Group.builder(rootGroup);
-          topGroup.setName(ds.getType().toString());
+          topGroup = Group.builder().setName(ds.getType().toString());
+          rootGroup.addGroup(topGroup);
         } else {
           topGroup = rootGroup;
         }
@@ -356,7 +358,16 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
           if (gctype.isUniqueTime()) {
             makeUniqueTimeCoordinate2D(ncfile, g, (CoordinateTime2D) coord);
           } else {
-            makeTimeCoordinate2D(ncfile, g, (CoordinateTime2D) coord, gctype);
+            CoordinateTime2D time2D = (CoordinateTime2D) coord;
+            if (time2D.isOrthogonal()) {
+              String timeDimName = makeTimeOffsetOrthogonal(g, time2D);
+              makeTimeCoordinate2D(ncfile, g, time2D, timeDimName);
+            } else if (time2D.isRegular()) {
+              String timeDimName = makeTimeOffsetRegular(g, time2D);
+              makeTimeCoordinate2D(ncfile, g, time2D, timeDimName);
+            } else {
+              makeTimeCoordinate2D(ncfile, g, time2D, make2dValidTimeDimensionName(time2D.getName()));
+            }
           }
           break;
       }
@@ -391,13 +402,26 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
           throw new IllegalStateException("No time coordinate = " + vindex);
         }
 
+        String timeDimName = time.getName();
+        String timeCoordName = time.getName();
+
+        if (time instanceof CoordinateTime2D) {
+          CoordinateTime2D time2D = (CoordinateTime2D) time;
+          if (!gctype.isUniqueTime() && (time2D.isOrthogonal() || time2D.isRegular())) {
+            timeDimName = makeTimeOffsetName(time.getName());
+          } else {
+            timeDimName = make2dValidTimeDimensionName(time.getName());
+            timeCoordName = make2dValidTimeCoordName(timeDimName);
+          }
+        }
+
         boolean isRunScaler = (run != null) && run.getSize() == 1;
 
         switch (gctype) {
           case SRC: // GC: Single Runtime Collection [ntimes] (run, 2D) scalar runtime
             assert isRunScaler;
-            dimNames.format("%s ", time.getName());
-            coordinateAtt.format("%s %s ", run.getName(), time.getName());
+            dimNames.format("%s ", timeDimName);
+            coordinateAtt.format("%s %s ", run.getName(), timeDimName);
             break;
 
           case MRUTP: // PC: Multiple Runtime Unique Time Partition [ntimes]
@@ -405,25 +429,28 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
             // case MRSTC: // GC: Multiple Runtime Single Time Collection [nruns, 1]
             // case MRSTP: // PC: Multiple Runtime Single Time Partition [nruns, 1] (run, 2D) ignore the run, its
             // generated from the 2D in
-            dimNames.format("%s ", time.getName());
-            coordinateAtt.format("ref%s %s ", time.getName(), time.getName());
+            dimNames.format("%s ", timeDimName);
+            coordinateAtt.format("ref%s %s ", timeDimName, timeDimName);
             break;
 
           case MRC: // GC: Multiple Runtime Collection [nruns, ntimes] (run, 2D) use Both
           case TwoD: // PC: TwoD time partition [nruns, ntimes]
             assert run != null : "GRIB MRC or TWOD does not have run coordinate";
             if (isRunScaler) {
-              dimNames.format("%s ", time.getName());
+              dimNames.format("%s ", timeDimName);
             } else {
-              dimNames.format("%s %s ", run.getName(), time.getName());
+              dimNames.format("%s %s ", run.getName(), timeDimName);
             }
-            coordinateAtt.format("%s %s ", run.getName(), time.getName());
+            coordinateAtt.format("%s %s ", run.getName(), timeCoordName);
+            if (timeDimName != timeCoordName) {
+              coordinateAtt.format("%s ", timeDimName);
+            }
             break;
 
           case Best: // PC: Best time partition [ntimes] (time) reftime is generated in makeTimeAuxReference()
           case BestComplete: // PC: Best complete time partition [ntimes]
-            dimNames.format("%s ", time.getName());
-            coordinateAtt.format("ref%s %s ", time.getName(), time.getName());
+            dimNames.format("%s ", timeDimName);
+            coordinateAtt.format("ref%s %s ", timeDimName, timeDimName);
             break;
 
           default:
@@ -510,9 +537,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
     boolean isScalar = (n == 1); // this is the case of runtime[1]
     String tcName = rtc.getName();
     String dims = isScalar ? null : rtc.getName(); // null means scalar
-    if (!isScalar) {
-      ncfile.addDimension(g, new Dimension(tcName, n));
-    }
+    ncfile.addDimension(g, new Dimension(tcName, n));
 
     Variable v = ncfile.addVariable(g, new Variable(ncfile, g, null, tcName, DataType.DOUBLE, dims));
     v.addAttribute(new Attribute(CDM.UNITS, rtc.getUnit()));
@@ -568,9 +593,10 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
     }
     int ntimes = countU;
     String tcName = time2D.getName();
+    String timeDimName = make2dValidTimeDimensionName(tcName);
 
-    ncfile.addDimension(g, new Dimension(tcName, ntimes));
-    Variable v = ncfile.addVariable(g, new Variable(ncfile, g, null, tcName, DataType.DOUBLE, tcName));
+    ncfile.addDimension(g, new Dimension(timeDimName, ntimes));
+    Variable v = ncfile.addVariable(g, new Variable(ncfile, g, null, tcName, DataType.DOUBLE, timeDimName));
     String units = runtime.getUnit(); // + " since " + runtime.getFirstDate();
     v.addAttribute(new Attribute(CDM.UNITS, units));
     v.addAttribute(new Attribute(CF.STANDARD_NAME, CF.TIME));
@@ -583,9 +609,9 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
     } else {
       v.setSPobject(new Time2Dinfo(Time2DinfoType.intvU, time2D, null));
       // bounds for intervals
-      String bounds_name = tcName + "_bounds";
+      String bounds_name = timeDimName + "_bounds";
       Variable bounds =
-          ncfile.addVariable(g, new Variable(ncfile, g, null, bounds_name, DataType.DOUBLE, tcName + " 2"));
+          ncfile.addVariable(g, new Variable(ncfile, g, null, bounds_name, DataType.DOUBLE, timeDimName + " 2"));
       v.addAttribute(new Attribute(CF.BOUNDS, bounds_name));
       bounds.addAttribute(new Attribute(CDM.UNITS, units));
       bounds.addAttribute(new Attribute(CDM.LONG_NAME, "bounds for " + tcName));
@@ -595,8 +621,8 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
     if (runtime.getNCoords() != 1) {
       // for this case we have to generate a separate reftime, because have to use the same dimension
       String refName = "ref" + tcName;
-      if (g.findVariable(refName) == null) {
-        Variable vref = ncfile.addVariable(g, new Variable(ncfile, g, null, refName, DataType.DOUBLE, tcName));
+      if (g.findVariableLocal(refName) == null) {
+        Variable vref = ncfile.addVariable(g, new Variable(ncfile, g, null, refName, DataType.DOUBLE, timeDimName));
         vref.addAttribute(new Attribute(CF.STANDARD_NAME, CF.TIME_REFERENCE));
         vref.addAttribute(new Attribute(CDM.LONG_NAME, Grib.GRIB_RUNTIME));
         vref.addAttribute(new Attribute(CF.CALENDAR, Calendar.proleptic_gregorian.toString()));
@@ -607,25 +633,49 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
   }
 
   /*
+   * For better compatibility with CF recommendations, the 2D time coordinates should not have the same name as
+   * a dimension (a recommendation, but not a strict requirement). 2D time coordinates are now called "validtime{n}",
+   * where n is empty or a number (starting with 1). In order to maintain shared dimensions with other time variables,
+   * we need to transform that name into a dimension name. It's all pretty simple, but we do it enough times that it
+   * gets its own method. Basically, the variable "validtime{n}" will use dimension "time{n}".
+   * See https://github.com/Unidata/netcdf-java/issues/152
+   */
+  private String make2dValidTimeDimensionName(String variableName) {
+    return variableName.replaceFirst("valid", "");
+  }
+
+  private String make2dValidTimeCoordName(String dimName) {
+    return "valid" + dimName;
+  }
+
+  private String makeTimeOffsetName(String timeName) {
+    return timeName.toLowerCase() + "Offset";
+  }
+
+  /*
    * non unique time case
    * 3) time(nruns, ntimes) with reftime(nruns)
    */
-  private void makeTimeCoordinate2D(NetcdfFile ncfile, Group g, CoordinateTime2D time2D,
-      GribCollectionImmutable.Type gctype) {
+  private void makeTimeCoordinate2D(NetcdfFile ncfile, Group g, CoordinateTime2D time2D, String timeDimName) {
     CoordinateRuntime runtime = time2D.getRuntimeCoordinate();
 
     int ntimes = time2D.getNtimes();
     String tcName = time2D.getName();
-    String dims = runtime.getName() + " " + tcName;
+    String dims = runtime.getName() + " " + timeDimName;
     int dimLength = ntimes;
-
-    ncfile.addDimension(g, new Dimension(tcName, dimLength));
+    if (g.findDimension(timeDimName) == null) {
+      ncfile.addDimension(g, new Dimension(timeDimName, dimLength));
+    }
     Variable v = ncfile.addVariable(g, new Variable(ncfile, g, null, tcName, DataType.DOUBLE, dims));
     String units = runtime.getUnit(); // + " since " + runtime.getFirstDate();
     v.addAttribute(new Attribute(CDM.UNITS, units));
     v.addAttribute(new Attribute(CF.STANDARD_NAME, CF.TIME));
     v.addAttribute(new Attribute(CDM.LONG_NAME, Grib.GRIB_VALID_TIME));
     v.addAttribute(new Attribute(CF.CALENDAR, Calendar.proleptic_gregorian.toString()));
+    if (!tcName.equalsIgnoreCase(timeDimName)) {
+      // explicitly set the axis type as Time
+      v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Time.toString()));
+    }
 
     // the data is not generated until asked for to save space
     if (!time2D.isTimeInterval()) {
@@ -1149,6 +1199,137 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
    * return 0;
    * }
    */
+
+  // orthogonal runtime, offset; both independent
+  private String makeTimeOffsetOrthogonal(Group g, CoordinateTime2D time2D) {
+    List<?> offsets = time2D.getOffsetsSorted();
+    int n = offsets.size();
+    String toName = makeTimeOffsetName(time2D.getName());
+    g.addDimension(new Dimension(toName, n));
+    Variable v = new Variable(ncfile, g, null, toName, DataType.DOUBLE, toName);
+    g.addVariable(v);
+    v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.TimeOffset.toString()));
+    v.addAttribute(new Attribute(CDM.UNITS, time2D.getUnit()));
+    v.addAttribute(new Attribute(CF.STANDARD_NAME, CF.TIME_OFFSET));
+    v.addAttribute(new Attribute(CDM.LONG_NAME, CDM.TIME_OFFSET));
+    v.addAttribute(new Attribute(CDM.UDUNITS, time2D.getTimeUdUnit()));
+    v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.TimeOffset.toString()));
+
+    double[] midpoints = new double[n];
+    double[] bounds = null;
+    if (time2D.isTimeInterval()) {
+      bounds = new double[2 * n];
+      int count = 0;
+      int countb = 0;
+      for (Object offset : offsets) {
+        TimeCoordIntvValue tinv = (TimeCoordIntvValue) offset;
+        midpoints[count++] = (tinv.getBounds1() + tinv.getBounds2()) / 2.0;
+        bounds[countb++] = tinv.getBounds1();
+        bounds[countb++] = tinv.getBounds2();
+      }
+    } else {
+      int count = 0;
+      for (Object val : offsets) {
+        Integer off = (Integer) val;
+        midpoints[count++] = off; // int ??
+      }
+    }
+    v.setCachedData(Array.factory(DataType.DOUBLE, new int[] {n}, midpoints), false);
+
+    if (time2D.isTimeInterval()) {
+      String boundsName = toName + "_bounds";
+      Variable varBounds = new Variable(ncfile, g, null, boundsName, DataType.DOUBLE, toName + " 2");
+      varBounds.addAttribute(new Attribute(CDM.LONG_NAME, "TimeOffset coord bounds"));
+      VariableDS coordVarBounds = new VariableDS(g, varBounds, true);
+      coordVarBounds.setUnitsString(time2D.getTimeUdUnit());
+      coordVarBounds.setCachedData(Array.factory(DataType.DOUBLE, new int[] {n, 2}, bounds), false);
+
+      g.addVariable(coordVarBounds);
+
+      v.addAttribute(new Attribute(CF.BOUNDS, boundsName));
+    }
+
+    return toName;
+  }
+
+  // regular runtime, offset; offset depends on runtime hour from 0z
+  private String makeTimeOffsetRegular(Group g, CoordinateTime2D time2D) {
+    try {
+      List<Object> hourFrom0z = ImmutableList.copyOf(time2D.getRegularHourOffsets());
+      int nhours = hourFrom0z.size();
+      int noffsets = time2D.getNtimes();
+      String toName = makeTimeOffsetName(time2D.getName());
+      if (g.findDimension(toName) == null) {
+        g.addDimension(new Dimension(toName, noffsets));
+      }
+      String dimNames = nhours + " " + toName;
+
+      Variable v = new Variable(ncfile, g, null, toName, DataType.DOUBLE, dimNames);
+      g.addVariable(v);
+      v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.TimeOffset.toString()));
+      v.addAttribute(new Attribute(CDM.UNITS, time2D.getUnit()));
+      v.addAttribute(new Attribute(CF.STANDARD_NAME, CF.TIME_OFFSET));
+      v.addAttribute(new Attribute(CDM.LONG_NAME, CDM.TIME_OFFSET));
+      v.addAttribute(new Attribute(CDM.UDUNITS, time2D.getTimeUdUnit()));
+      v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.TimeOffset.toString()));
+
+      // Special Coordinates. TODO is there a CF equivalent?
+      v.addAttribute(new Attribute(CDM.RUNTIME_COORDINATE, g.getFullName() + time2D.getRuntimeCoordinate().getName()));
+      Attribute.Builder attb =
+          Attribute.builder(CDM.TIME_OFFSET_HOUR).setDataType(DataType.INT).setValues(hourFrom0z, false);
+      v.addAttribute(attb.build());
+
+      // We use a rectangular array; uneven arrays will have NaNs.
+      double[] midpoints = new double[nhours * noffsets];
+      java.util.Arrays.fill(midpoints, Double.NaN);
+      double[] bounds = null;
+      if (time2D.isTimeInterval()) {
+        bounds = new double[2 * nhours * noffsets];
+        java.util.Arrays.fill(bounds, Double.NaN);
+        int houridx = 0;
+        for (int hour : time2D.getRegularHourOffsets()) {
+          CoordinateTimeIntv timeCoord = (CoordinateTimeIntv) time2D.getTimeCoordinate(houridx);
+          // uneven number of values for each hour
+          int count = houridx * noffsets;
+          int countb = 2 * houridx * noffsets;
+          for (TimeCoordIntvValue tinv : timeCoord.getTimeIntervals()) {
+            midpoints[count++] = (tinv.getBounds1() + tinv.getBounds2()) / 2.0;
+            bounds[countb++] = tinv.getBounds1();
+            bounds[countb++] = tinv.getBounds2();
+          }
+          houridx++;
+        }
+      } else {
+        java.util.Arrays.fill(midpoints, Double.NaN);
+        int houridx = 0;
+        for (int hour : time2D.getRegularHourOffsets()) {
+          CoordinateTime timeCoord = (CoordinateTime) time2D.getRegularTimeCoordinate(hour);
+          // may be uneven number of values for each hour
+          int count = houridx * noffsets;
+          for (Integer offset : timeCoord.getOffsetSorted()) {
+            midpoints[count++] = offset;
+          }
+          houridx++;
+        }
+      }
+      v.setCachedData(Array.factory(DataType.DOUBLE, new int[] {nhours, noffsets}, midpoints), false);
+
+      if (time2D.isTimeInterval()) {
+        String boundsName = toName + "_bounds";
+        Variable varBounds = new Variable(ncfile, g, null, boundsName, DataType.DOUBLE, toName + " 2");
+        varBounds.addAttribute(new Attribute(CDM.LONG_NAME, "time offset coord bounds"));
+        VariableDS coordVarBounds = new VariableDS(g, varBounds, true);
+        coordVarBounds.setUnitsString(time2D.getTimeUdUnit());
+        coordVarBounds.setCachedData(Array.factory(DataType.DOUBLE, new int[] {nhours, noffsets, 2}, bounds), false);
+
+        v.addAttribute(new Attribute(CF.BOUNDS, boundsName));
+      }
+      return toName;
+    } catch (Throwable t) {
+      logger.error("Error in makeTimeOffsetRegular variable {}", makeTimeOffsetName(time2D.getName()), t);
+      throw new RuntimeException(t);
+    }
+  }
 
   ///////////////////////////////////////
   // debugging back door

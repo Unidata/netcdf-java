@@ -20,7 +20,7 @@ import javax.swing.ImageIcon;
  * 
  * 2. Filepath.
  * Use a resourcePath starting with a forward slash. getResource() then searches relative to the classpath.
- * otherwise it will search reletive to ucar.nc2.ui.util, which is probably not what you want.
+ * otherwise it will search relative to ucar.nc2.ui.util, which is probably not what you want.
  */
 
 public class Resource {

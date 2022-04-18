@@ -165,7 +165,6 @@ public class ConvertD2N {
 
     // scalars
     if (dataV.darray == null) {
-
       if (dataV.bt instanceof DStructure) {
         ArrayStructure structArray = makeArrayStructure(dataV);
         iconvertDataStructure((DStructure) dataV.bt, structArray.getStructureMembers());
@@ -189,29 +188,22 @@ public class ConvertD2N {
     }
 
     // arrays
-    if (dataV.darray != null) {
+    if (dataV.bt instanceof DStructure) {
+      ArrayStructure structArray = makeArrayStructure(dataV);
+      iconvertDataStructureArray(dataV.darray, structArray.getStructureMembers());
+      return structArray;
 
-      if (dataV.bt instanceof DStructure) {
-        ArrayStructure structArray = makeArrayStructure(dataV);
-        iconvertDataStructureArray(dataV.darray, structArray.getStructureMembers());
-        return structArray;
+    } else if (dataV.bt instanceof DString) {
+      return convertStringArray(dataV.darray);
 
-      } else if (dataV.bt instanceof DString) {
-        return convertStringArray(dataV.darray);
-
-      } else {
-        // the DGrid case comes here also
-        // create the array, using DODS internal array so there's no copying
-        opendap.dap.PrimitiveVector pv = dataV.darray.getPrimitiveVector();
-        Object storage = pv.getInternalStorage();
-        DataType dtype = dataV.getDataType();
-        return Array.factory(dtype, makeShape(dataV.darray), storage);
-      }
+    } else {
+      // the DGrid case comes here also
+      // create the array, using DODS internal array so there's no copying
+      PrimitiveVector pv = dataV.darray.getPrimitiveVector();
+      Object storage = pv.getInternalStorage();
+      DataType dtype = dataV.getDataType();
+      return Array.factory(dtype, makeShape(dataV.darray), storage);
     }
-
-    String mess = "Unknown baseType " + dataV.bt.getClass().getName() + " name=" + dataV.getEncodedName();
-    logger.error(mess);
-    throw new IllegalStateException(mess);
   }
 
   private ArrayStructure makeArrayStructure(DodsV dataV) {
@@ -267,6 +259,70 @@ public class ConvertD2N {
     // ArraySequence makes the inner data arrays; now make iterators for them
     List<StructureMembers.Member> memberList = members.getMembers();
     for (StructureMembers.Member m : memberList) {
+      Array data = m.getDataArray();
+      m.setDataObject(data.getIndexIterator()); // for setting values
+    }
+
+    return aseq;
+  }
+
+  ////////////////////////////////////////////////////////////////////////////////////
+  // Port to StructureMember.Builder. Not ready yet because of partial construction.
+
+  private ArrayStructure makeArrayStructureNew(DodsV dataV) {
+    StructureMembers.Builder members = StructureMembers.builder().setName(dataV.getNetcdfShortName());
+    for (DodsV dodsV : dataV.children) {
+      StructureMembers.MemberBuilder mb =
+          members.addMember(dodsV.getNetcdfShortName(), null, null, dodsV.getDataType(), dodsV.getShape());
+      Array data;
+      if ((dodsV.bt instanceof DStructure) || (dodsV.bt instanceof DGrid)) {
+        data = makeArrayStructure(dodsV);
+      } else if (dodsV.bt instanceof DSequence) {
+        data = makeArrayNestedSequence(dodsV);
+        mb.setShape(data.getShape()); // fix the shape based on the actual data LOOK
+      } else {
+        data = Array.factory(dodsV.getDataType(), dodsV.getShapeAll());
+      }
+      mb.setDataArray(data);
+      mb.setDataObject(data.getIndexIterator()); // for setting values
+    }
+
+    return new ArrayStructureMA(members.build(), dataV.getShapeAll());
+  }
+
+  private ArrayStructure makeArrayNestedSequenceNew(DodsV dataV) {
+
+    // make the members
+    StructureMembers.Builder smb = StructureMembers.builder().setName(dataV.getClearName());
+    for (DodsV dodsV : dataV.children) {
+      smb.addMember(dodsV.getClearName(), null, null, dodsV.getDataType(), dodsV.getShape());
+    }
+    StructureMembers members = smb.build();
+
+    // make the ArraySequence
+    // LOOK single nested
+    DSequence outerSeq = (DSequence) dataV.parent.bt;
+    int outerLength = outerSeq.getRowCount();
+    ArraySequenceNested aseq = new ArraySequenceNested(members, outerLength);
+
+    // tell it how long each one is
+    String name = dataV.getClearName();
+    for (int row = 0; row < outerLength; row++) {
+      Vector dv = outerSeq.getRow(row);
+      for (int j = 0; j < dv.size(); j++) {
+        BaseType bt = (BaseType) dv.elementAt(j);
+        if (bt.getClearName().equals(name)) {
+          DSequence innerSeq = (DSequence) bt;
+          int innerLength = innerSeq.getRowCount();
+          aseq.setSequenceLength(row, innerLength);
+        }
+      }
+    }
+    aseq.finish();
+
+    // ArraySequence makes the inner data arrays; now make iterators for them
+    List<StructureMembers.Member> memberList = members.getMembers();
+    for (StructureMembers.Member m : members.getMembers()) {
       Array data = m.getDataArray();
       m.setDataObject(data.getIndexIterator()); // for setting values
     }

@@ -17,6 +17,7 @@ import ucar.nc2.Variable;
 import ucar.ma2.*;
 import java.io.IOException;
 import java.util.*;
+import ucar.unidata.geoloc.EarthLocation;
 
 /**
  * Make a Dorade 2 NetcdfDataset into a RadialDataset.
@@ -32,9 +33,9 @@ public class Dorade2RadialAdapter extends AbstractRadialAdapter {
 
   /////////////////////////////////////////////////
   public Object isMine(FeatureType wantFeatureType, NetcdfDataset ncd, Formatter errlog) {
-    String convention = ncd.getRootGroup().findAttValueIgnoreCase("Conventions", null);
+    String convention = ncd.getRootGroup().findAttributeString("Conventions", null);
     if (_Coordinate.Convention.equals(convention)) {
-      String format = ncd.getRootGroup().findAttValueIgnoreCase("Format", null);
+      String format = ncd.getRootGroup().findAttributeString("Format", null);
       if ("Unidata/netCDF/Dorade".equals(format))
         return this;
     }
@@ -102,7 +103,7 @@ public class Dorade2RadialAdapter extends AbstractRadialAdapter {
 
   public ucar.unidata.geoloc.EarthLocation getCommonOrigin() {
     if (isStationary())
-      return new ucar.unidata.geoloc.EarthLocationImpl(latv[0], lonv[0], elev[0]);
+      return EarthLocation.create(latv[0], lonv[0], elev[0]);
     return null;
   }
 
@@ -122,7 +123,7 @@ public class Dorade2RadialAdapter extends AbstractRadialAdapter {
 
   protected void setEarthLocation() {
     if (isStationary())
-      origin = new ucar.unidata.geoloc.EarthLocationImpl(latv[0], lonv[0], elev[0]);
+      origin = EarthLocation.create(latv[0], lonv[0], elev[0]);
     origin = null;
   }
 
@@ -363,7 +364,7 @@ public class Dorade2RadialAdapter extends AbstractRadialAdapter {
        * Location of the origin of the radial
        */
       public ucar.unidata.geoloc.EarthLocation getOrigin(int ray) {
-        return new ucar.unidata.geoloc.EarthLocationImpl(latv[ray], lonv[ray], altv[ray]);
+        return EarthLocation.create(latv[ray], lonv[ray], altv[ray]);
       }
 
       public float getMeanAzimuth() {

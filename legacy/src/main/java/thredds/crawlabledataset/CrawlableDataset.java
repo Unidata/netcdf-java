@@ -27,7 +27,7 @@ import java.io.IOException;
  * <p>
  * The CrawlableDataset interface is a generalization (and simplification) of
  * the java.io.File class. A CrawlableDataset path is made up of ONE or more
- * path segments each seperated by a slash ("/"). The path may start or end with
+ * path segments each separated by a slash ("/"). The path may start or end with
  * a slash ("/").
  * </p>
  * <p/>

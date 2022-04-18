@@ -3,6 +3,7 @@ package ucar.nc2.ft.coverage;
 
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
+import java.util.Arrays;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -45,7 +46,7 @@ public class TestCoverageHorizStride {
       Assert.assertNotNull(covName, cover);
       CoverageCoordSys csys = cover.getCoordSys();
       int[] csysShape = csys.getShape();
-      System.out.printf("csys shape = %s%n", Misc.showInts(csysShape));
+      System.out.printf("csys shape = %s%n", Arrays.toString(csysShape));
 
       SubsetParams params = new SubsetParams().setHorizStride(2);
       Optional<CoverageCoordSys> opt = csys.subset(params);
@@ -56,7 +57,7 @@ public class TestCoverageHorizStride {
 
       CoverageCoordSys subsetCoordSys = opt.get();
       int[] subsetShape = subsetCoordSys.getShape();
-      System.out.printf("csysSubset shape = %s%n", Misc.showInts(subsetShape));
+      System.out.printf("csysSubset shape = %s%n", Arrays.toString(subsetShape));
 
       int n = csysShape.length;
       csysShape[n - 1] = (csysShape[n - 1] + 1) / 2;
@@ -89,7 +90,7 @@ public class TestCoverageHorizStride {
       Assert.assertNotNull(covName, coverage);
       CoverageCoordSys csys = coverage.getCoordSys();
       int[] csysShape = csys.getShape();
-      System.out.printf("csys shape = %s%n", Misc.showInts(csysShape));
+      System.out.printf("csys shape = %s%n", Arrays.toString(csysShape));
 
       SubsetParams params = new SubsetParams().set(SubsetParams.timePresent, true).setHorizStride(2);
       Optional<CoverageCoordSys> opt = csys.subset(params);
@@ -100,7 +101,7 @@ public class TestCoverageHorizStride {
 
       CoverageCoordSys subsetCoordSys = opt.get();
       int[] subsetShape = subsetCoordSys.getShape();
-      System.out.printf("csysSubset shape = %s%n", Misc.showInts(subsetShape));
+      System.out.printf("csysSubset shape = %s%n", Arrays.toString(subsetShape));
 
       int n = csysShape.length;
       csysShape[n - 1] = (csysShape[n - 1] + 1) / 2;
@@ -110,10 +111,10 @@ public class TestCoverageHorizStride {
 
       ///////////////////////////
       GeoReferencedArray geo = coverage.readData(params);
-      System.out.printf("CoordSysForData shape=%s%n", Misc.showInts(geo.getCoordSysForData().getShape()));
+      System.out.printf("CoordSysForData shape=%s%n", Arrays.toString(geo.getCoordSysForData().getShape()));
 
       Array data = geo.getData();
-      System.out.printf("data shape=%s%n", Misc.showInts(data.getShape()));
+      System.out.printf("data shape=%s%n", Arrays.toString(data.getShape()));
       Assert.assertArrayEquals(csysShape, data.getShape());
     }
   }

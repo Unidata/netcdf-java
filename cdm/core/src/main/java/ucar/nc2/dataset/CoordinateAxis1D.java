@@ -1,13 +1,20 @@
 /*
- * Copyright (c) 1998-2018 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
+
 package ucar.nc2.dataset;
 
-import ucar.ma2.*;
-import ucar.nc2.Attribute;
+import ucar.ma2.Array;
+import ucar.ma2.ArrayChar;
+import ucar.ma2.DataType;
+import ucar.ma2.Index;
+import ucar.ma2.IndexIterator;
+import ucar.ma2.InvalidRangeException;
+import ucar.ma2.MAMath;
+import ucar.ma2.Range;
+import ucar.ma2.Section;
 import ucar.nc2.Group;
-import ucar.nc2.Variable;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.CF;
 import ucar.nc2.util.NamedObject;
@@ -36,7 +43,7 @@ import java.util.List;
  * this case isContiguous() is true when bounds1(i+1) == bounds2(i) for all i.
  *
  * @author john caron
- * @see CoordinateAxis#factory
+ * @see CoordinateAxis#fromVariableDS
  */
 
 public class CoordinateAxis1D extends CoordinateAxis {
@@ -119,7 +126,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
    * @throws InvalidRangeException if IllegalRange
    */
   public CoordinateAxis1D section(Range r) throws InvalidRangeException {
-    Section section = new Section().appendRange(r);
+    Section section = Section.builder().appendRange(r).build();
     CoordinateAxis1D result = (CoordinateAxis1D) section(section);
     int len = r.length();
 
@@ -182,7 +189,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
 
   @Override
   public CoordinateAxis copyNoCache() {
-    CoordinateAxis1D axis = new CoordinateAxis1D(ncd, getParentGroup(), getShortName(), getDataType(),
+    CoordinateAxis1D axis = new CoordinateAxis1D(ncd, getParentGroupOrRoot(), getShortName(), getDataType(),
         getDimensionsString(), getUnitsString(), getDescription());
 
     // other state
@@ -200,7 +207,9 @@ public class CoordinateAxis1D extends CoordinateAxis {
    * The ith one refers to the ith coordinate.
    *
    * @return List of ucar.nc2.util.NamedObject, or empty list.
+   * @deprecated will move in ver 6
    */
+  @Deprecated
   public List<NamedObject> getNames() {
     int n = getDimension(0).getLength();
     List<NamedObject> names = new ArrayList<>(n);
@@ -763,6 +772,8 @@ public class CoordinateAxis1D extends CoordinateAxis {
   }
 
   // LOOK turns longitude coordinate into monotonic, dealing with possible wrap.
+  /** @deprecated do not use. */
+  @Deprecated
   public void correctLongitudeWrap() {
     // correct non-monotonic longitude coords
     if (axisType != AxisType.Lon) {
@@ -842,7 +853,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
       names[count++] = iter.next();
   }
 
-  private void readValues() {
+  protected void readValues() {
     Array data;
     try {
       // setUseNaNs(false); // missing values not allowed LOOK not true for point data !!
@@ -874,11 +885,11 @@ public class CoordinateAxis1D extends CoordinateAxis {
   }
 
   private boolean makeBoundsFromAux() {
-    String boundsVarName = attributes().findAttValueIgnoreCase(CF.BOUNDS, null);
+    String boundsVarName = attributes().findAttributeString(CF.BOUNDS, null);
     if (boundsVarName == null) {
       return false;
     }
-    VariableDS boundsVar = (VariableDS) ncd.findVariable(getParentGroup(), boundsVarName);
+    VariableDS boundsVar = (VariableDS) getParentGroupOrRoot().findVariableLocal(boundsVarName);
     if (null == boundsVar)
       return false;
     if (2 != boundsVar.getRank())
@@ -891,6 +902,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
 
     Array data;
     try {
+      // LOOK this seems bogus
       boundsVar.removeEnhancement(NetcdfDataset.Enhance.ConvertMissing); // Don't convert missing values to NaN.
       data = boundsVar.read();
     } catch (IOException e) {
@@ -991,13 +1003,13 @@ public class CoordinateAxis1D extends CoordinateAxis {
 
   ////////////////////////////////////////////////////////////////////////////////////////////
   // These are all calculated, I think?
-  private boolean wasRead; // have the data values been read
+  protected boolean wasRead; // have the data values been read
   private boolean wasBoundsDone; // have we created the bounds arrays if exists ?
   private boolean isInterval; // is this an interval coordinates - then should use bounds
   private boolean isAscending;
 
   // read in on doRead()
-  private double[] coords; // coordinate values, must be between edges
+  protected double[] coords; // coordinate values, must be between edges
   private String[] names; // only set if String or char values
 
   // defer making until asked, use makeBounds()
@@ -1008,16 +1020,12 @@ public class CoordinateAxis1D extends CoordinateAxis {
   private boolean isRegular;
   private double start, increment;
 
-  protected CoordinateAxis1D(Builder<?> builder) {
-    super(builder);
+  protected CoordinateAxis1D(Builder<?> builder, Group parentGroup) {
+    super(builder, parentGroup);
   }
 
   public Builder<?> toBuilder() {
     return addLocalFieldsToBuilder(builder());
-  }
-
-  public CoordinateAxis1D(VariableDS.Builder<?> builder) {
-    super(builder);
   }
 
   // Add local fields to the passed - in builder.
@@ -1046,11 +1054,11 @@ public class CoordinateAxis1D extends CoordinateAxis {
 
     protected abstract T self();
 
-    public CoordinateAxis1D build() {
+    public CoordinateAxis1D build(Group parentGroup) {
       if (built)
         throw new IllegalStateException("already built");
       built = true;
-      return new CoordinateAxis1D(this);
+      return new CoordinateAxis1D(this, parentGroup);
     }
   }
 

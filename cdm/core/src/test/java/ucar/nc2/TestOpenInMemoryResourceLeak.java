@@ -44,7 +44,7 @@ public class TestOpenInMemoryResourceLeak {
      * Read the file into a NetcdfFile. try-with-resources ensures that the NetcdfFile's close()
      * method is called, so all resources with it are released.
      */
-    try (NetcdfFile ncfile = NetcdfFile.openInMemory(tempFile.toUri())) {
+    try (NetcdfFile ncfile = NetcdfFiles.openInMemory(tempFile.toUri())) {
       // prove it's opened
       Assert.assertTrue(ncfile.getFileTypeId().equalsIgnoreCase("netcdf"));
     }

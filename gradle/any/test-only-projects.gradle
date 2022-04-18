@@ -1,0 +1,17 @@
+apply plugin: 'java'
+apply from: "$rootDir/gradle/any/testing.gradle"
+apply from: "$rootDir/gradle/any/coverage.gradle"
+apply from: "$rootDir/gradle/any/spotless.gradle"
+
+java {
+  sourceCompatibility = JavaVersion.VERSION_1_8
+  targetCompatibility = JavaVersion.VERSION_1_8
+}
+
+// Will apply to "compileJava", "compileTestJava", "compileSourceSetJava", etc.
+tasks.withType(JavaCompile).all {
+  options.encoding = 'UTF-8'
+
+  // show deprecation details
+  //options.compilerArgs = ['-Xlint:deprecation']
+}

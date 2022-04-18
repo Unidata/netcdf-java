@@ -43,14 +43,7 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.lang.invoke.MethodHandles;
 
-/**
- * Class Description
- *
- * @author caron
- * @since Jul 3, 2009
- */
-
-
+/** Test reading and processing NcML attributes */
 public class TestValuesFromAttribute extends TestCase {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
@@ -67,7 +60,7 @@ public class TestValuesFromAttribute extends TestCase {
       + "     <values fromAttribute='time@actual_range'/>\n" + "   </variable>\n" + "</netcdf>";
 
   public void testValuesFromAttribute() throws IOException, InvalidRangeException {
-    String filename = "file:./" + TestNcMLRead.topDir + "TestValuesFromAttribute.xml";
+    String filename = "file:./" + TestNcmlRead.topDir + "TestValuesFromAttribute.xml";
 
     NetcdfFile ncfile = NcMLReader.readNcML(new StringReader(ncml), filename, null);
     System.out.println(" TestNcmlAggExisting.open " + filename + "\n" + ncfile);

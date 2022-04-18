@@ -1,17 +1,16 @@
 apply from: "$rootDir/gradle/any/dependencies.gradle"
-apply from: "$rootDir/gradle/any/java.gradle"
-// d4lib has no tests
-apply from: "$rootDir/gradle/any/archiving.gradle"
-apply from: "$rootDir/gradle/any/publishing.gradle"
+apply from: "$rootDir/gradle/any/java-library.gradle"
 
 dependencies {
-    compile project(':dap4:d4core')
-    compile project(':httpservices')
-    compile project(':netcdf4')
+  api enforcedPlatform(project(':netcdf-java-platform'))
 
-    compile libraries["jna"]
-    compile libraries["jcommander"]
-    compile libraries["slf4j-api"]
-    compile libraries["httpclient"]
-    compile libraries["httpcore"]
+  compile project(':dap4:d4core')
+  compile project(':httpservices')
+  compile project(':netcdf4')
+
+  compile 'org.apache.httpcomponents:httpclient'
+  compile 'org.apache.httpcomponents:httpcore'
+  compile 'net.java.dev.jna:jna'
+  compile 'com.beust:jcommander'
+  compile 'org.slf4j:slf4j-api'
 }

@@ -14,9 +14,9 @@ import ucar.ma2.Array;
 import ucar.ma2.ArrayStructure;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.StructureMembers;
-import ucar.nc2.NCdumpW;
 import ucar.nc2.Variable;
 import ucar.nc2.util.IO;
+import ucar.nc2.write.Ncdump;
 import ucar.unidata.util.test.UtilsMa2Test;
 import java.io.IOException;
 import java.io.PrintStream;
@@ -140,7 +140,7 @@ public class TestConvertD2N {
         Variable v = (Variable) vars.get(i);
         Array data = v.read();
         if (showData)
-          logger.debug(NCdumpW.toString(data, v.getFullName() + data.shapeToString(), null));
+          logger.debug(Ncdump.printArray(data, v.getFullName() + data.shapeToString(), null));
       }
     }
 
@@ -158,7 +158,7 @@ public class TestConvertD2N {
       }
 
       if (showData)
-        logger.debug(NCdumpW.toString(data, v.getFullName() + data.shapeToString(), null));
+        logger.debug(Ncdump.printArray(data, v.getFullName() + data.shapeToString(), null));
     }
 
   }

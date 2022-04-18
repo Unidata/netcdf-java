@@ -10,7 +10,9 @@ import org.junit.runners.Parameterized;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.nc2.NetcdfFile;
+import ucar.nc2.NetcdfFiles;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
 import java.lang.invoke.MethodHandles;
@@ -51,14 +53,14 @@ public class TestUrlForms {
 
   @org.junit.Test
   public void openNetcdfFile() throws Exception {
-    try (NetcdfFile ncfile = NetcdfFile.open(name)) {
+    try (NetcdfFile ncfile = NetcdfFiles.open(name)) {
       assert true;
     }
   }
 
   @org.junit.Test
   public void openNetcdfDataset() throws Exception {
-    try (NetcdfDataset ncd = NetcdfDataset.openDataset(name)) {
+    try (NetcdfDataset ncd = NetcdfDatasets.openDataset(name)) {
       assert true;
     }
   }

@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
+ * See LICENSE for license information.
+ */
+
 package ucar.nc2.dataset;
 
 import static com.google.common.truth.Truth.assertThat;
@@ -35,7 +40,7 @@ public class TestCoordSysBuildingProblem {
       try (NetcdfDataset withBuilder = NetcdfDatasets.openDataset(fileLocation)) {
         Formatter f = new Formatter();
         CompareNetcdf2 compare = new CompareNetcdf2(f, false, false, true);
-        boolean ok = compare.compare(org, withBuilder, new TestCoordSysCompare.CoordsObjFilter(), false, false, true);
+        boolean ok = compare.compare(org, withBuilder, new TestCoordSysCompare.CoordsObjFilter());
         System.out.printf("%s %s%n", ok ? "OK" : "NOT OK", f);
         assertThat(ok).isTrue();
       }

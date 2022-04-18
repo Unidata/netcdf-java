@@ -4,21 +4,21 @@
  */
 package ucar.nc2.dataset;
 
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Formatter;
 import javax.annotation.Nullable;
+import ucar.ma2.DataType;
+import ucar.ma2.Array;
 import ucar.nc2.AttributeContainer;
 import ucar.nc2.Attribute;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.dataset.transform.*;
-import ucar.ma2.DataType;
-import ucar.ma2.Array;
 import ucar.nc2.ft2.coverage.CoverageTransform;
 import ucar.unidata.geoloc.ProjectionImpl;
 import ucar.unidata.util.Parameter;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Formatter;
 
 /**
  * Manager for Coordinate Transforms.
@@ -70,6 +70,9 @@ public class CoordTransBuilder {
     // -sachin 03/25/09
     registerTransform("ocean_s_coordinate_g1", VOceanSG1.class);
     registerTransform("ocean_s_coordinate_g2", VOceanSG2.class);
+
+    registerTransform("sigma_level", CsmSigma.class);
+    registerTransform("hybrid_sigma_pressure", CsmSigma.HybridSigmaPressureBuilder.class);
 
     // further calls to registerTransform are by the user
     userMode = true;
@@ -158,15 +161,19 @@ public class CoordTransBuilder {
   public static CoordinateTransform makeCoordinateTransform(NetcdfDataset ds, AttributeContainer ctv,
       Formatter parseInfo, Formatter errInfo) {
     // standard name
-    String transform_name = ctv.findAttValueIgnoreCase("transform_name", null);
+    String transform_name = ctv.findAttributeString("transform_name", null);
     if (null == transform_name)
-      transform_name = ctv.findAttValueIgnoreCase("Projection_Name", null);
+      transform_name = ctv.findAttributeString("Projection_Name", null);
 
     // these names are from CF - dont want to have to duplicate
     if (null == transform_name)
-      transform_name = ctv.findAttValueIgnoreCase(CF.GRID_MAPPING_NAME, null);
+      transform_name = ctv.findAttributeString(CF.GRID_MAPPING_NAME, null);
     if (null == transform_name)
-      transform_name = ctv.findAttValueIgnoreCase(CF.STANDARD_NAME, null);
+      transform_name = ctv.findAttributeString(CF.STANDARD_NAME, null);
+
+    // Finally check the units
+    if (null == transform_name)
+      transform_name = ctv.findAttributeString(CDM.UNITS, null);
 
     if (null == transform_name) {
       parseInfo.format("**Failed to find Coordinate Transform name from Variable= %s%n", ctv);
@@ -223,11 +230,13 @@ public class CoordTransBuilder {
     if (ct != null) {
       parseInfo.format(" Made Coordinate transform %s from variable %s: %s%n", transform_name, ctv.getName(),
           builderObject.getClass().getName());
+    } else {
+      parseInfo.format(" Failed to make Coordinate transform %s from variable %s: %s%n", transform_name, ctv.getName(),
+          builderObject.getClass().getName());
     }
 
     return ct;
   }
-
 
   /**
    * Create a "dummy" Coordinate Transform Variable based on the given CoordinateTransform.
@@ -260,15 +269,17 @@ public class CoordTransBuilder {
   }
 
   /**
-   * Make a CoordinateTransform object from the parameters in a GridCoordTransform, using an intrinsic or
+   * Make a CoordinateTransform object from the parameters in a CoordTransform, using an intrinsic or
    * registered CoordTransBuilder.
    * 
    * @param errInfo pass back error information.
    * @return CoordinateTransform, or null if failure.
+   *         TODO return Projection in ver6
    */
+  @Deprecated
   public static ProjectionImpl makeProjection(CoverageTransform gct, Formatter errInfo) {
     // standard name
-    String transform_name = gct.findAttValueIgnoreCase(CF.GRID_MAPPING_NAME, null);
+    String transform_name = gct.findAttributeString(CF.GRID_MAPPING_NAME, null);
 
     if (null == transform_name) {
       errInfo.format("**Failed to find Coordinate Transform name from GridCoordTransform= %s%n", gct);
@@ -304,7 +315,7 @@ public class CoordTransBuilder {
       return null;
     }
 
-    String units = gct.findAttValueIgnoreCase(CDM.UNITS, null);
+    String units = gct.findAttributeString(CDM.UNITS, null);
     builder.setErrorBuffer(errInfo);
     ProjectionCT ct = builder.makeCoordinateTransform(gct, units);
     assert ct != null;

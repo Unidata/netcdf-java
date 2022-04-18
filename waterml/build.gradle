@@ -1,31 +1,43 @@
-description = "Converts CDM DSGs to WaterML 2.0 timeseries and vice-versa."
-ext.title = "NetCDF to WaterML Converter"
+description = 'Converts CDM DSGs to WaterML 2.0 timeseries and vice-versa.'
+ext.title = 'NetCDF to WaterML Converter'
 
 apply from: "$rootDir/gradle/any/dependencies.gradle"
-apply from: "$rootDir/gradle/any/java.gradle"
-apply from: "$rootDir/gradle/any/testing.gradle"
-apply from: "$rootDir/gradle/any/coverage.gradle"
-apply from: "$rootDir/gradle/any/archiving.gradle"
-apply from: "$rootDir/gradle/any/publishing.gradle"
-
-// TODO: Add to dependencies.gradle
-repositories {
-    maven {
-        url "http://52north.org/maven/repo/releases"
-    }
-}
+apply from: "$rootDir/gradle/any/java-library.gradle"
 
 dependencies {
-    compile project(':cdm:cdm-core')
+  api enforcedPlatform(project(':netcdf-java-platform'))
+  testImplementation enforcedPlatform(project(':netcdf-java-testing-platform'))
 
-    compile libraries["xmlbeans"]
-    compile libraries["52n-xml-waterML-v20"]
-    compile libraries["52n-xml-gml-v321"]
-    compile libraries["52n-xml-sweCommon-v20"]
-    compile libraries["52n-xml-om-v20"]
-    compile libraries["52n-xml-sampling-v20"]
+  api project(':cdm:cdm-core')
 
-    compile libraries["guava"]
-    compile libraries["slf4j-api"]
-    testRuntime libraries["logback-classic"]
+  compile('org.n52.sensorweb:52n-xml-waterML-v20') {
+    exclude group: 'stax', module: 'stax-api'
+  }
+  compile('org.n52.sensorweb:52n-xml-gml-v321') {
+    exclude group: 'stax', module: 'stax-api'
+  }
+  compile('org.n52.sensorweb:52n-xml-sweCommon-v20') {
+    exclude group: 'stax', module: 'stax-api'
+  }
+  compile('org.n52.sensorweb:52n-xml-om-v20') {
+    exclude group: 'stax', module: 'stax-api'
+  }
+  compile('org.n52.sensorweb:52n-xml-sampling-v20') {
+    exclude group: 'stax', module: 'stax-api'
+  }
+
+  compile 'com.google.guava:guava'
+  compile 'org.slf4j:slf4j-api'
+
+  testImplementation project(':cdm-test-utils')
+
+  testImplementation 'junit:junit'
+
+  testRuntimeOnly 'ch.qos.logback:logback-classic'
+}
+
+spotless {
+  java {
+    targetExclude('src/main/java/ucar/nc2/ogc/erddap/**/*.java') // exclude sources from erddap
+  }
 }

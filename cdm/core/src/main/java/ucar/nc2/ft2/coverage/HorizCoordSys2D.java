@@ -1,13 +1,14 @@
 /*
- * Copyright (c) 1998-2018 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 package ucar.nc2.ft2.coverage;
 
 import ucar.ma2.*;
+import ucar.nc2.constants.AxisType;
 import ucar.nc2.util.Optional;
 import ucar.unidata.geoloc.LatLonPoint;
-import ucar.unidata.geoloc.LatLonPointImpl;
+import ucar.unidata.geoloc.LatLonPoints;
 import ucar.unidata.geoloc.LatLonRect;
 import java.util.ArrayList;
 import java.util.Formatter;
@@ -42,6 +43,7 @@ public class HorizCoordSys2D extends HorizCoordSys {
   public Optional<HorizCoordSys> subset(SubsetParams params) {
 
     LatLonRect llbb = (LatLonRect) params.get(SubsetParams.latlonBB);
+    LatLonPoint latlon = (LatLonPoint) params.get(SubsetParams.latlonPoint);
     Integer horizStride = (Integer) params.get(SubsetParams.horizStride);
     if (horizStride == null || horizStride < 1)
       horizStride = 1;
@@ -49,7 +51,22 @@ public class HorizCoordSys2D extends HorizCoordSys {
     LatLonAxis2D lataxisSubset = null, lonaxisSubset = null;
 
     Formatter errMessages = new Formatter();
-    if (llbb != null) {
+    if (latlon != null) {
+      Optional<CoordReturn> opt = findXYindexFromCoord(latlon.getLongitude(), latlon.getLatitude());
+      if (!opt.isPresent()) {
+        errMessages.format("%s;%n", opt.getErrorMessage());
+      } else {
+        CoordReturn ind = opt.get();
+        try {
+          Range xRange = new Range(AxisType.GeoX.toString(), ind.x, ind.x);
+          Range yRange = new Range(AxisType.GeoY.toString(), ind.y, ind.y);
+          lataxisSubset = latAxis2D.subset(xRange, yRange); // x, y
+          lonaxisSubset = lonAxis2D.subset(xRange, yRange);
+        } catch (InvalidRangeException e) {
+          errMessages.format("%s;%n", e.getMessage());
+        }
+      }
+    } else if (llbb != null) {
       Optional<List<RangeIterator>> opt = computeBounds(llbb, horizStride);
       if (!opt.isPresent()) {
         errMessages.format("%s;%n", opt.getErrorMessage());
@@ -60,8 +77,10 @@ public class HorizCoordSys2D extends HorizCoordSys {
       }
     } else if (horizStride > 1) {
       try {
-        lataxisSubset = latAxis2D.subset(new Range(0, ncols - 1, horizStride), new Range(0, nrows - 1, horizStride));
-        lonaxisSubset = lonAxis2D.subset(new Range(0, ncols - 1, horizStride), new Range(0, nrows - 1, horizStride));
+        Range xRange = new Range(AxisType.GeoX.toString(), 0, ncols - 1, horizStride);
+        Range yRange = new Range(AxisType.GeoY.toString(), 0, nrows - 1, horizStride);
+        lataxisSubset = latAxis2D.subset(xRange, yRange);
+        lonaxisSubset = lonAxis2D.subset(xRange, yRange);
       } catch (InvalidRangeException e) {
         errMessages.format("%s;%n", e.getMessage());
       }
@@ -84,7 +103,7 @@ public class HorizCoordSys2D extends HorizCoordSys {
   public LatLonPoint getLatLon(int yindex, int xindex) {
     double lat = latAxis2D.getCoord(yindex, xindex);
     double lon = lonAxis2D.getCoord(yindex, xindex);
-    return new LatLonPointImpl(lat, lon);
+    return LatLonPoint.create(lat, lon);
   }
 
   @Override
@@ -145,7 +164,7 @@ public class HorizCoordSys2D extends HorizCoordSys {
       int nlons = (int) lonEdge.getSize();
       for (int i = 0; i < nlons; i++) {
         double nonVal = lonEdge.getDouble(i);
-        lonEdge.setDouble(i, LatLonPointImpl.lonNormalFrom(nonVal, lonMinMax.min));
+        lonEdge.setDouble(i, LatLonPoints.lonNormalFrom(nonVal, lonMinMax.min));
       }
 
       if (debug)
@@ -162,7 +181,7 @@ public class HorizCoordSys2D extends HorizCoordSys {
      * @return false if not in the grid.
      */
     public boolean findCoordElement(double wantLat, double wantLon, int[] rectIndex) {
-      double wantLonNormal = LatLonPointImpl.lonNormalFrom(wantLon, lonMinMax.min);
+      double wantLonNormal = LatLonPoints.lonNormalFrom(wantLon, lonMinMax.min);
       return findCoordElementNoForce(wantLat, wantLonNormal, rectIndex);
     }
 
@@ -452,15 +471,15 @@ public class HorizCoordSys2D extends HorizCoordSys {
 
     // return y, x ranges
     Optional<List<RangeIterator>> computeBoundsExhaustive(LatLonRect rect, int horizStride) {
-      LatLonPointImpl llpt = rect.getLowerLeftPoint();
-      LatLonPointImpl urpt = rect.getUpperRightPoint();
+      LatLonPoint llpt = rect.getLowerLeftPoint();
+      LatLonPoint urpt = rect.getUpperRightPoint();
 
       double miny = llpt.getLatitude();
       double maxy = urpt.getLatitude();
 
       // normalize to [minLon,minLon+360], edge already normalized to this
-      double minx = LatLonPointImpl.lonNormalFrom(llpt.getLongitude(), lonMinMax.min);
-      double maxx = LatLonPointImpl.lonNormalFrom(urpt.getLongitude(), lonMinMax.min);
+      double minx = LatLonPoints.lonNormalFrom(llpt.getLongitude(), lonMinMax.min);
+      double maxx = LatLonPoints.lonNormalFrom(urpt.getLongitude(), lonMinMax.min);
 
       int[] shape = lonAxis2D.getShape();
       int ny = shape[0];
@@ -516,8 +535,8 @@ public class HorizCoordSys2D extends HorizCoordSys {
 
       try {
         List<RangeIterator> list = new ArrayList<>();
-        list.add(new Range(minRow, maxRow - 1, horizStride));
-        list.add(new Range(minCol, maxCol - 1, horizStride));
+        list.add(new Range(AxisType.GeoY.toString(), minRow, maxRow - 1, horizStride));
+        list.add(new Range(AxisType.GeoX.toString(), minCol, maxCol - 1, horizStride));
         return Optional.of(list);
 
       } catch (InvalidRangeException e) {
@@ -528,8 +547,8 @@ public class HorizCoordSys2D extends HorizCoordSys {
 
     private double getMinOrMaxLon(double lon1, double lon2, boolean wantMin) {
       double midpoint = (lon1 + lon2) / 2;
-      lon1 = LatLonPointImpl.lonNormal(lon1, midpoint);
-      lon2 = LatLonPointImpl.lonNormal(lon2, midpoint);
+      lon1 = LatLonPoints.lonNormal(lon1, midpoint);
+      lon2 = LatLonPoints.lonNormal(lon2, midpoint);
 
       return wantMin ? Math.min(lon1, lon2) : Math.max(lon1, lon2);
     }

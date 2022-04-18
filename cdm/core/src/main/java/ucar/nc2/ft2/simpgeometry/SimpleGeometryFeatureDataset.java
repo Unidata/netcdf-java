@@ -1,6 +1,7 @@
 package ucar.nc2.ft2.simpgeometry;
 
 import ucar.nc2.Attribute;
+import ucar.nc2.AttributeContainer;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.constants.CDM;
@@ -67,7 +68,7 @@ public class SimpleGeometryFeatureDataset implements FeatureDataset {
   public String getTitle() {
     String title = ncd.getTitle();
     if (title == null)
-      title = ncd.getRootGroup().findAttValueIgnoreCase(CDM.TITLE, null);
+      title = ncd.getRootGroup().findAttributeString(CDM.TITLE, null);
     if (title == null)
       title = getName();
     return title;
@@ -75,9 +76,9 @@ public class SimpleGeometryFeatureDataset implements FeatureDataset {
 
   @Override
   public String getDescription() {
-    String desc = ncd.getRootGroup().findAttValueIgnoreCase(CDM.DESCRIPTION, null);
+    String desc = ncd.getRootGroup().findAttributeString(CDM.DESCRIPTION, null);
     if (desc == null)
-      desc = ncd.getRootGroup().findAttValueIgnoreCase(CDM.HISTORY, null);
+      desc = ncd.getRootGroup().findAttributeString(CDM.HISTORY, null);
     return (desc == null) ? getName() : desc;
   }
 
@@ -106,10 +107,19 @@ public class SimpleGeometryFeatureDataset implements FeatureDataset {
     return null;
   }
 
+  @Override
+  public AttributeContainer attributes() {
+    return ncd.getRootGroup().attributes();
+  }
+
+  /** @deprecated use attributes() */
+  @Deprecated
   public List<Attribute> getGlobalAttributes() {
     return ncd.getGlobalAttributes();
   }
 
+  /** @deprecated use attributes() */
+  @Deprecated
   public Attribute findGlobalAttributeIgnoreCase(String name) {
     return ncd.findGlobalAttributeIgnoreCase(name);
   }
@@ -121,7 +131,7 @@ public class SimpleGeometryFeatureDataset implements FeatureDataset {
 
 
   public VariableSimpleIF getDataVariable(String shortName) {
-    return ncd.getRootGroup().findVariable(shortName);
+    return ncd.getRootGroup().findVariableLocal(shortName);
   }
 
   public NetcdfFile getNetcdfFile() {
@@ -138,6 +148,8 @@ public class SimpleGeometryFeatureDataset implements FeatureDataset {
     return 0;
   }
 
+  /** @deprecated do not use */
+  @Deprecated
   @Override
   public void setFileCache(FileCacheIF fileCache) {
     ncd.setFileCache(fileCache);
@@ -214,13 +226,15 @@ public class SimpleGeometryFeatureDataset implements FeatureDataset {
     return ncd.getConventionUsed();
   }
 
-  // release any resources like file handles
+  /** @deprecated do not use */
+  @Deprecated
   public void release() throws IOException {
     if (ncd != null)
       ncd.release();
   }
 
-  // reacquire any resources like file handles
+  /** @deprecated do not use */
+  @Deprecated
   public void reacquire() throws IOException {
     if (ncd != null)
       ncd.reacquire();

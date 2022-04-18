@@ -4,17 +4,17 @@
  */
 package ucar.nc2.ft2.coverage;
 
+import java.util.Arrays;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
-import ucar.nc2.AttributeContainerHelper;
-import ucar.nc2.NCdumpW;
+import ucar.nc2.AttributeContainer;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.util.Indent;
-import ucar.nc2.util.Misc;
 import ucar.nc2.util.Optional;
 import javax.annotation.Nonnull;
 import java.util.Formatter;
+import ucar.nc2.write.Ncdump;
 
 /**
  * Fmrc TimeAxis: time(runtime, time)
@@ -64,9 +64,9 @@ public class TimeAxis2DFmrc extends CoverageCoordAxis {
   @Override
   public void toString(Formatter f, Indent indent) {
     super.toString(f, indent);
-    f.format("%s  %s%n", indent, Misc.showInts(shape));
+    f.format("%s  %s%n", indent, Arrays.toString(shape));
     Array data = getCoordsAsArray();
-    f.format("%s%n", NCdumpW.toString(data, getName() + " values", null));
+    f.format("%s%n", Ncdump.printArray(data, getName() + " values", null));
   }
 
   @Override
@@ -142,8 +142,8 @@ public class TimeAxis2DFmrc extends CoverageCoordAxis {
         values[count++] = subset.nextDouble();
 
       CoverageCoordAxisBuilder builder = new CoverageCoordAxisBuilder(name, units, description, dataType, axisType,
-          AttributeContainerHelper.filter(attributes, "_Coordinate"), dependenceType, getDependsOn(), spacing, n,
-          values[0], values[n - 1], 0.0, values, reader);
+          AttributeContainer.filter(attributes, "_Coordinate"), dependenceType, getDependsOn(), spacing, n, values[0],
+          values[n - 1], 0.0, values, reader);
       builder.setIsSubset(true);
       return new CoverageCoordAxis1D(builder);
     }
@@ -159,7 +159,7 @@ public class TimeAxis2DFmrc extends CoverageCoordAxis {
         values[count++] = subset.nextDouble();
 
       CoverageCoordAxisBuilder builder = new CoverageCoordAxisBuilder(name, units, description, dataType, axisType,
-          AttributeContainerHelper.filter(attributes, "_Coordinate"), dependenceType, getDependsOn(), spacing, n / 2,
+          AttributeContainer.filter(attributes, "_Coordinate"), dependenceType, getDependsOn(), spacing, n / 2,
           values[0], values[n - 1], 0.0, values, reader);
 
       builder.setIsSubset(true);

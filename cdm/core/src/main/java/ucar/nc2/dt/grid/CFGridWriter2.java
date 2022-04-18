@@ -25,12 +25,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Write CF compliant gridded data
- * version 2
+ * Write CF compliant gridded data version 2.
  *
- * @author caron
- * @since 6/18/2014
+ * @deprecated Convert to CoverageCollection and use {@link ucar.nc2.ft2.coverage.writer.CFGridCoverageWriter}
  */
+@Deprecated
 public class CFGridWriter2 {
   private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CFGridWriter2.class);
 
@@ -417,14 +416,12 @@ public class CFGridWriter2 {
     int ny = yData.length;
 
     // create the data
-    ProjectionPointImpl projPoint = new ProjectionPointImpl();
-    LatLonPointImpl latlonPoint = new LatLonPointImpl();
     double[] latData = new double[nx * ny];
     double[] lonData = new double[nx * ny];
     for (int i = 0; i < ny; i++) {
       for (int j = 0; j < nx; j++) {
-        projPoint.setLocation(xData[j], yData[i]);
-        proj.projToLatLon(projPoint, latlonPoint);
+        ProjectionPoint projPoint = ProjectionPoint.create(xData[j], yData[i]);
+        LatLonPoint latlonPoint = proj.projToLatLon(projPoint);
         latData[i * nx + j] = latlonPoint.getLatitude();
         lonData[i * nx + j] = latlonPoint.getLongitude();
       }
@@ -502,7 +499,7 @@ public class CFGridWriter2 {
     // see https://github.com/Unidata/python-workshop/issues/372
     for (String varName : varNameList) {
       Variable v = ncd.findVariable(varName);
-      String gridMappingName = v.attributes().findAttValueIgnoreCase(CF.GRID_MAPPING, null);
+      String gridMappingName = v.attributes().findAttributeString(CF.GRID_MAPPING, null);
       if (gridMappingName != null && (!coordTransformNames.contains(gridMappingName))) {
         coordTransformNames.add(gridMappingName);
       }

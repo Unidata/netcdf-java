@@ -4,6 +4,7 @@
  */
 package ucar.nc2.grib.coord;
 
+import java.util.Arrays;
 import ucar.nc2.grib.GribUtils;
 import ucar.nc2.grib.grib1.Grib1ParamTime;
 import ucar.nc2.grib.grib1.Grib1Record;
@@ -121,7 +122,7 @@ public class CoordinateTimeIntv extends CoordinateTimeAbstract implements Coordi
       info.format(" %s,", cd);
     info.format(" (%d) %n", timeIntervals.size());
     if (time2runtime != null)
-      info.format("%stime2runtime: %s", indent, Misc.showInts(time2runtime));
+      info.format("%stime2runtime: %s", indent, Arrays.toString(time2runtime));
   }
 
   @Override

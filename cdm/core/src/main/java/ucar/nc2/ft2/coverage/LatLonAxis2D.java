@@ -1,14 +1,14 @@
 /*
- * Copyright (c) 1998-2018 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 package ucar.nc2.ft2.coverage;
 
+import java.util.Arrays;
 import ucar.ma2.*;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.CoordinateAxis2D;
 import ucar.nc2.util.Indent;
-import ucar.nc2.util.Misc;
 import ucar.nc2.util.Optional;
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -28,11 +28,13 @@ public class LatLonAxis2D extends CoverageCoordAxis {
   // can only be set once
   private int[] shape; // y, x
   private Object userObject;
+  private final List<RangeIterator> ranges; // holds a section describing the subset of a 2D axis
 
   public LatLonAxis2D(CoverageCoordAxisBuilder builder) {
     super(builder);
     this.shape = builder.shape;
     this.userObject = builder.userObject;
+    this.ranges = builder.ranges;
   }
 
   @Override
@@ -73,15 +75,20 @@ public class LatLonAxis2D extends CoverageCoordAxis {
 
   public List<RangeIterator> getRanges() {
     List<RangeIterator> result = new ArrayList<>();
-    result.add(Range.make(AxisType.Lat.toString(), shape[0])); // LOOK wrong, need subset Range
-    result.add(Range.make(AxisType.Lon.toString(), shape[1]));
+    if (isSubset) {
+      result.add(ranges.get(0));
+      result.add(ranges.get(1));
+    } else {
+      result.add(Range.make(AxisType.Lat.toString(), shape[0]));
+      result.add(Range.make(AxisType.Lon.toString(), shape[1]));
+    }
     return result;
   }
 
   @Override
   public void toString(Formatter f, Indent indent) {
     super.toString(f, indent);
-    f.format("%s  shape=[%s]%n", indent, Misc.showInts(shape));
+    f.format("%s  shape=[%s]%n", indent, Arrays.toString(shape));
   }
 
   public double getCoord(int yindex, int xindex) {
@@ -127,14 +134,20 @@ public class LatLonAxis2D extends CoverageCoordAxis {
     int ny = rangey.length();
     double[] svalues = new double[nx * ny];
     int count = 0;
-    for (int y : rangey)
-      for (int x : rangex)
-        svalues[count++] = values[y * nx + x];
+    for (int y : rangey) {
+      for (int x : rangex) {
+        // shape is [ny, nx], and we need nx of the axis being subset
+        svalues[count++] = values[y * shape[1] + x];
+      }
+    }
 
     builder.values = svalues;
     builder.isSubset = true;
     builder.ncoords = nx * ny;
     builder.shape = new int[] {ny, nx};
+
+    // sets the ranges describing the subset
+    builder.ranges = Arrays.asList(rangey, rangex);
 
     return new LatLonAxis2D(builder);
   }

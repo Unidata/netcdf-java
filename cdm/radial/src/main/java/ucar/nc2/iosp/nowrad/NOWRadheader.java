@@ -20,9 +20,9 @@ import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.units.DateFormatter;
-import ucar.unidata.geoloc.LatLonPointImpl;
+import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.ProjectionImpl;
-import ucar.unidata.geoloc.ProjectionPointImpl;
+import ucar.unidata.geoloc.ProjectionPoint;
 import ucar.unidata.geoloc.projection.LambertConformal;
 import ucar.unidata.util.Parameter;
 import ucar.unidata.util.StringUtil2;
@@ -436,8 +436,8 @@ public class NOWRadheader {
     double lrlat = 17.2454;
     double lrlon = -70.1154;
 
-    ProjectionPointImpl ptul = (ProjectionPointImpl) projection.latLonToProj(new LatLonPointImpl(ullat, ullon));
-    ProjectionPointImpl ptlr = (ProjectionPointImpl) projection.latLonToProj(new LatLonPointImpl(lrlat, lrlon));
+    ProjectionPoint ptul = projection.latLonToProj(LatLonPoint.create(ullat, ullon));
+    ProjectionPoint ptlr = projection.latLonToProj(LatLonPoint.create(lrlat, lrlon));
     double startX = ptul.getX();
     double startY = ptlr.getY();
     double dx = (ptlr.getX() - ptul.getX()) / (numX - 1);

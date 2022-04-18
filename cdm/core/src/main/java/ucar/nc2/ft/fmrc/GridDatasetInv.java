@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2018 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 
@@ -20,6 +20,7 @@ import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.NetcdfFile;
+import ucar.nc2.internal.dataset.ft.fmrc.InventoryCacheProvider;
 import ucar.nc2.ncml.NcMLReader;
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.time.CalendarDate;
@@ -53,8 +54,7 @@ public class GridDatasetInv {
   private static final int REQ_VERSION = 2; // minimum required version, else regenerate XML
   private static final int CURR_VERSION = 2; // current version
 
-  // Cache the GridDatasetInv directly, not persisted to disk.
-  // TODO: Add persistence if thats shown to be needed.
+  // Cache the GridDatasetInv directly in memory. Persist to disk if InventoryCacheProvider if found.
   private static Cache<String, GridDatasetInv> cache = CacheBuilder.newBuilder().maximumSize(100).build();
 
   public static GridDatasetInv open(MCollection cm, MFile mfile, Element ncml) throws IOException {
@@ -69,6 +69,18 @@ public class GridDatasetInv {
     private final MCollection cm;
     private final MFile mfile;
     private final Element ncml;
+    private static final InventoryCacheProvider persistedCache;
+
+    // Look for InventoryCacheProvider, which implements a persistent cache of GridDatasetInv.
+    // Persistence is needed for the TDS
+    static {
+      InventoryCacheProvider icp = null;
+      for (InventoryCacheProvider provider : ServiceLoader.load(InventoryCacheProvider.class)) {
+        // first one wins
+        icp = provider;
+      }
+      persistedCache = icp;
+    }
 
     GenerateInv(MCollection cm, MFile mfile, Element ncml) {
       this.cm = cm;
@@ -79,23 +91,33 @@ public class GridDatasetInv {
     @Override
     public GridDatasetInv call() throws Exception {
       GridDataset gds = null;
-      try {
-        if (ncml == null) {
-          gds = GridDataset.open(mfile.getPath());
+      GridDatasetInv inv = null;
+      if (persistedCache != null) {
+        inv = persistedCache.get(mfile);
+      }
 
-        } else {
-          NetcdfFile nc = NetcdfDataset.acquireFile(new DatasetUrl(null, mfile.getPath()), null);
-          NetcdfDataset ncd = NcMLReader.mergeNcML(nc, ncml); // create new dataset
-          ncd.enhance(); // now that the ncml is added, enhance "in place", ie modify the NetcdfDataset
-          gds = new GridDataset(ncd);
-        }
-
-        return new GridDatasetInv(gds, cm.extractDate(mfile));
-      } finally {
-        if (gds != null) {
-          gds.close();
+      if (inv == null) {
+        try {
+          if (ncml == null) {
+            gds = GridDataset.open(mfile.getPath());
+          } else {
+            NetcdfFile nc = NetcdfDataset.acquireFile(DatasetUrl.create(null, mfile.getPath()), null);
+            NetcdfDataset ncd = NcMLReader.mergeNcML(nc, ncml); // create new dataset
+            ncd.enhance(); // now that the ncml is added, enhance "in place", ie modify the NetcdfDataset
+            gds = new GridDataset(ncd);
+          }
+          inv = new GridDatasetInv(gds, cm.extractDate(mfile));
+          if (persistedCache != null && inv != null) {
+            // add inventory to persisted cache
+            persistedCache.put(mfile, inv);
+          }
+        } finally {
+          if (gds != null) {
+            gds.close();
+          }
         }
       }
+      return inv;
     }
   }
 
@@ -118,9 +140,9 @@ public class GridDatasetInv {
 
     NetcdfFile ncfile = gds.getNetcdfFile();
     if (ncfile != null && this.runDate == null) {
-      runTimeString = ncfile.getRootGroup().findAttValueIgnoreCase(_Coordinate.ModelBaseDate, null);
+      runTimeString = ncfile.getRootGroup().findAttributeString(_Coordinate.ModelBaseDate, null);
       if (runTimeString == null) {
-        runTimeString = ncfile.getRootGroup().findAttValueIgnoreCase(_Coordinate.ModelRunDate, null);
+        runTimeString = ncfile.getRootGroup().findAttributeString(_Coordinate.ModelRunDate, null);
       }
 
       if (runTimeString != null) {
@@ -169,6 +191,15 @@ public class GridDatasetInv {
 
   public String toString() {
     return location;
+  }
+
+  /**
+   * Check if the GribDatasetInv xml format can be fully understood by this code.
+   *
+   * @return true if version can be fully understood, otherwise false.
+   */
+  public boolean isXmlVersionCompatible() {
+    return this.version >= REQ_VERSION;
   }
 
   public String getLocation() {
@@ -258,7 +289,7 @@ public class GridDatasetInv {
    */
   public class Grid implements Comparable<Grid> {
     final String name;
-    TimeCoord tc; // time coordinates reletive to getRunDate()
+    TimeCoord tc; // time coordinates relative to getRunDate()
     EnsCoord ec; // optional
     VertCoord vc; // optional
 
@@ -457,11 +488,12 @@ public class GridDatasetInv {
    * @return ForecastModelRun
    * @throws IOException on io error
    */
-  private static GridDatasetInv readXML(byte[] xmlString) throws IOException {
+  public static GridDatasetInv readXML(byte[] xmlString) throws IOException {
     InputStream is = new BufferedInputStream(new ByteArrayInputStream(xmlString));
     org.jdom2.Document doc;
     try {
       SAXBuilder builder = new SAXBuilder();
+      builder.setExpandEntities(false);
       doc = builder.build(is);
     } catch (JDOMException e) {
       throw new IOException(e.getMessage() + " reading from XML ");

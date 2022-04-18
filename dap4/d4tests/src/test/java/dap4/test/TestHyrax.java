@@ -3,6 +3,7 @@ package dap4.test;
 import dap4.core.util.DapUtil;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
@@ -10,7 +11,7 @@ import org.slf4j.LoggerFactory;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.unidata.util.test.UnitTestCommon;
 import ucar.unidata.util.test.category.NotJenkins;
-import ucar.unidata.util.test.category.NotTravis;
+import ucar.unidata.util.test.category.NotPullRequest;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.lang.invoke.MethodHandles;
@@ -255,7 +256,7 @@ public class TestHyrax extends DapTestCommon {
   // Junit test method
 
   @Test
-  @Category({NotJenkins.class, NotTravis.class})
+  @Category({NotJenkins.class, NotPullRequest.class})
   public void testHyrax() throws Exception {
     boolean pass = true;
     for (ClientTest testcase : chosentests) {

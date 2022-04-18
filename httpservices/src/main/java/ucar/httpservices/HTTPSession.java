@@ -5,7 +5,45 @@
 
 package ucar.httpservices;
 
-import org.apache.http.*;
+import com.google.common.collect.ImmutableMap;
+import java.io.Closeable;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.charset.UnsupportedCharsetException;
+import java.security.KeyManagementException;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.UnrecoverableEntryException;
+import java.security.cert.CertificateException;
+import java.security.cert.CertificateExpiredException;
+import java.security.cert.CertificateNotYetValidException;
+import java.security.cert.X509Certificate;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentSkipListSet;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.ZipInputStream;
+import javax.annotation.concurrent.ThreadSafe;
+import javax.print.attribute.UnmodifiableSetException;
+import org.apache.http.Header;
+import org.apache.http.HeaderElement;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpException;
+import org.apache.http.HttpHost;
+import org.apache.http.HttpRequestInterceptor;
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpResponseInterceptor;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.Credentials;
 import org.apache.http.auth.UsernamePasswordCredentials;
@@ -24,27 +62,15 @@ import org.apache.http.conn.ssl.TrustStrategy;
 import org.apache.http.cookie.Cookie;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.*;
+import org.apache.http.impl.client.BasicCookieStore;
+import org.apache.http.impl.client.BasicCredentialsProvider;
+import org.apache.http.impl.client.DefaultHttpRequestRetryHandler;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.ssl.SSLContextBuilder;
 import org.apache.http.ssl.SSLContexts;
-import javax.annotation.concurrent.ThreadSafe;
-import javax.print.attribute.UnmodifiableSetException;
-import java.io.*;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.nio.charset.UnsupportedCharsetException;
-import java.security.*;
-import java.security.cert.CertificateException;
-import java.security.cert.CertificateExpiredException;
-import java.security.cert.CertificateNotYetValidException;
-import java.security.cert.X509Certificate;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentSkipListSet;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.zip.GZIPInputStream;
-import java.util.zip.ZipInputStream;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A session is encapsulated in an instance of the class HTTPSession.
@@ -139,7 +165,7 @@ public class HTTPSession implements Closeable {
   // deprecated, so just use an enum
 
   /* package */ enum Prop {
-    ALLOW_CIRCULAR_REDIRECTS, HANDLE_REDIRECTS, HANDLE_AUTHENTICATION, MAX_REDIRECTS, MAX_CONNECTIONS, SO_TIMEOUT, CONN_TIMEOUT, CONN_REQ_TIMEOUT, USER_AGENT, COOKIE_STORE, RETRIES, UNAVAILRETRIES, COMPRESSION, CREDENTIALS, USESESSIONS,
+    ALLOW_CIRCULAR_REDIRECTS, HANDLE_REDIRECTS, HANDLE_AUTHENTICATION, MAX_REDIRECTS, MAX_CONNECTIONS, SO_TIMEOUT, CONN_TIMEOUT, CONN_REQ_TIMEOUT, USER_AGENT, COOKIE_STORE, RETRIES, UNAVAILRETRIES, COMPRESSION, CREDENTIALS, USESESSIONS, COOKIE_SPEC,
   }
 
   // Header names
@@ -164,6 +190,8 @@ public class HTTPSession implements Closeable {
   static final String DCONNTIMEOUT = "tds.http.conntimeout";
   static final String DSOTIMEOUT = "tds.http.sotimeout";
   static final String DMAXCONNS = "tds.http.maxconns";
+
+  static final String DEFAULT_COOKIESPEC = "standard";
 
   //////////////////////////////////////////////////////////////////////////
   // Type Declaration(s)
@@ -248,6 +276,7 @@ public class HTTPSession implements Closeable {
    */
   public enum Methods {
     Get("get"), Head("head"), Put("put"), Post("post"), Options("options");
+
     private final String name;
 
     Methods(String name) {
@@ -314,7 +343,7 @@ public class HTTPSession implements Closeable {
   ////////////////////////////////////////////////////////////////////////
   // Static variables
 
-  public static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(HTTPSession.class);
+  private static final Logger logger = LoggerFactory.getLogger(HTTPSession.class);
 
   // Define a settings object to hold all the
   // settable values; there will be one
@@ -398,6 +427,7 @@ public class HTTPSession implements Closeable {
     props.put(Prop.CONN_TIMEOUT, (Integer) DFALTCONNTIMEOUT);
     props.put(Prop.CONN_REQ_TIMEOUT, (Integer) DFALTCONNREQTIMEOUT);
     props.put(Prop.USER_AGENT, DFALTUSERAGENT);
+    props.put(Prop.COOKIE_SPEC, DEFAULT_COOKIESPEC);
   }
 
   static void buildsslfactory(AuthControls authcontrols) {
@@ -458,7 +488,10 @@ public class HTTPSession implements Closeable {
     } else if (uri.getScheme().equals("https")) {
       httpsproxy = new HttpHost(uri.getHost(), uri.getPort(), "https");
     }
-    String upw = uri.getUserInfo();
+    // User info may contain encoded characters (such as a username containing
+    // the @ symbol), and we want to preserve those, so use getRawAuthority()
+    // here.
+    String upw = uri.getRawUserInfo();
     if (upw != null) {
       String[] pieces = upw.split("[:]");
       if (pieces.length == 2 && HTTPUtil.nullify(pieces[0]) != null && HTTPUtil.nullify(pieces[1]) != null) {
@@ -510,7 +543,7 @@ public class HTTPSession implements Closeable {
         sslbuilder.loadKeyMaterial(keystore, keypassword.toCharArray());
       globalsslfactory = new SSLConnectionSocketFactory(sslbuilder.build(), new NoopHostnameVerifier());
     } catch (KeyStoreException | NoSuchAlgorithmException | KeyManagementException | UnrecoverableEntryException e) {
-      log.error("Failed to set key/trust store(s): " + e.getMessage());
+      logger.error("Failed to set key/trust store(s): " + e.getMessage());
       globalsslfactory = null;
     }
     if (globalsslfactory != null)
@@ -984,17 +1017,30 @@ public class HTTPSession implements Closeable {
 
   /**
    * This is used by HTTPMethod to set the in-url name+pwd into
-   * the credentials provider, if defined.
+   * the credentials provider, if defined. If a CredentialsProvider
+   * is not defined for the session, create a new BasicCredentialsProvider
    */
   protected synchronized void setCredentials(URI uri) throws HTTPException {
+    // create a BasicCredentialsProvider if current session
+    // does not have a provider
+    if (sessionprovider == null) {
+      sessionprovider = new BasicCredentialsProvider();
+    }
+
     if (sessionprovider != null) {
-      String userinfo = HTTPUtil.nullify(uri.getUserInfo());
+      // User info may contain encoded characters (such as a username containing
+      // the @ symbol), and we want to preserve those, so use getRawUserInfo()
+      // here.
+      String userinfo = HTTPUtil.nullify(uri.getRawUserInfo());
       if (userinfo != null) {
         // Construct an AuthScope from the uri
         AuthScope scope = HTTPAuthUtil.uriToAuthScope(uri);
         // Save the credentials
         sessionprovider.setCredentials(scope, new UsernamePasswordCredentials(userinfo));
       }
+    } else {
+      logger.warn(
+          "Cannot store credentials as no CredientialsProvier can be found for session. Connection will fail if authentication / authorization required");
     }
   }
 
@@ -1079,6 +1125,12 @@ public class HTTPSession implements Closeable {
       merged = HTTPUtil.merge(globalsettings, localsettings);
     }
     return Collections.unmodifiableMap(merged);
+  }
+
+  public ImmutableMap<String, String> getMergedSettings() {
+    ImmutableMap.Builder<String, String> builder = ImmutableMap.builder();
+    mergedSettings().forEach((key, value) -> builder.put(key.name(), value.toString()));
+    return builder.build();
   }
 
   //////////////////////////////////////////////////
@@ -1316,8 +1368,8 @@ public class HTTPSession implements Closeable {
   }
 
   // Obsolete
-
-  public static void validatestate() {
+  // make package private as only needed for testing
+  static void validatestate() {
     connmgr.validate();
   }
 }

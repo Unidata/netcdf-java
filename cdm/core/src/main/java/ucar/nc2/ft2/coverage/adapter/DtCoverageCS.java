@@ -5,11 +5,11 @@
 package ucar.nc2.ft2.coverage.adapter;
 
 import ucar.nc2.Attribute;
-import ucar.nc2.NCdumpW;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.dataset.*;
 import ucar.nc2.time.CalendarDateRange;
+import ucar.nc2.write.Ncdump;
 import ucar.unidata.geoloc.*;
 import java.io.IOException;
 import java.util.*;
@@ -247,12 +247,12 @@ public class DtCoverageCS {
       y = horiz2D.getCoordValue(yindex, xindex);
     }
 
-    return isLatLon() ? new LatLonPointImpl(y, x) : getLatLon(x, y);
+    return isLatLon() ? LatLonPoint.create(y, x) : getLatLon(x, y);
   }
 
   public LatLonPoint getLatLon(double xcoord, double ycoord) {
     Projection dataProjection = getProjection();
-    return dataProjection.projToLatLon(new ProjectionPointImpl(xcoord, ycoord), new LatLonPointImpl());
+    return dataProjection.projToLatLon(ProjectionPoint.create(xcoord, ycoord));
   }
 
   private LatLonRect llbb;
@@ -279,7 +279,7 @@ public class DtCoverageCS {
         double deltaLat = horizYaxis.getMaxValue() - startLat;
         double deltaLon = horizXaxis.getMaxValue() - startLon;
 
-        LatLonPoint llpt = new LatLonPointImpl(startLat, startLon);
+        LatLonPoint llpt = LatLonPoint.create(startLat, startLon);
         llbb = new LatLonRect(llpt, deltaLat, deltaLon);
 
       } else {
@@ -316,7 +316,7 @@ public class DtCoverageCS {
      * includesSouthPole = true;
      * 
      * if (includesNorthPole && !includesSouthPole) {
-     * llbb = new LatLonRect(llpt, new LatLonPointImpl(90.0, 0.0)); // ??? lon=???
+     * llbb = new LatLonRect(llpt, LatLonPoint.create(90.0, 0.0)); // ??? lon=???
      * llbb.extend(lrpt);
      * llbb.extend(urpt);
      * llbb.extend(ulpt);
@@ -326,7 +326,7 @@ public class DtCoverageCS {
      * //llbb.extend( new LatLonRect( urpt, ulpt ) );
      * //llbb.extend( new LatLonRect( ulpt, llpt ) );
      * } else if (includesSouthPole && !includesNorthPole) {
-     * llbb = new LatLonRect(llpt, new LatLonPointImpl(-90.0, -180.0)); // ??? lon=???
+     * llbb = new LatLonRect(llpt, LatLonPoint.create(-90.0, -180.0)); // ??? lon=???
      * llbb.extend(lrpt);
      * llbb.extend(urpt);
      * llbb.extend(ulpt);
@@ -396,7 +396,7 @@ public class DtCoverageCS {
           }
         }
       } else {
-        f.format("%s", NCdumpW.printVariableData(axis, null));
+        f.format("%s", Ncdump.printVariableData(axis, null));
       }
     } catch (IOException ioe) {
       f.format(ioe.getMessage());

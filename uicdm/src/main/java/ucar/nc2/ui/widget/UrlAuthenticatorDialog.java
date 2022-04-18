@@ -8,7 +8,6 @@ import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.Credentials;
 import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.client.CredentialsProvider;
 import ucar.httpservices.HTTPAuthUtil;
 import ucar.httpservices.HTTPCredentialsProvider;
 import ucar.httpservices.HTTPSession;
@@ -20,7 +19,6 @@ import java.awt.event.ActionListener;
 import java.net.Authenticator;
 import java.net.PasswordAuthentication;
 import ucar.ui.widget.IndependentDialog;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 

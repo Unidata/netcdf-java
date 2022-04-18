@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2018 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 2013-2018 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 
@@ -40,23 +40,20 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * Utilities for creating GRIB CDM index (ncx) files, both collections and partitions
- *
- * @author John
- * @since 12/5/13
+ * Utilities for creating GRIB CDM index (ncx) files, both collections and partitions.
+ * Can be used as a standalone program.
+ * TODO review - is this working?
  */
 public class GribCdmIndex implements IndexReader {
   public enum GribCollectionType {
     GRIB1, GRIB2, Partition1, Partition2, none
   }
 
-  public static final String NCX_SUFFIX = ".ncx4"; // LOOK this will have to be generalized, so different collections
-                                                   // (GRIB, BUFR, FMRC can use different suffix)
+  // LOOK this will have to be generalized, so different collections (GRIB, BUFR, FMRC can use different suffix)
+  public static final String NCX_SUFFIX = ".ncx4";
 
   private static final Logger classLogger = LoggerFactory.getLogger(GribCdmIndex.class);
 
-
-  /////////////////////////////////////////////////////////////////////////////
 
   // object cache for ncx files - these are opened only as GribCollection
   public static FileCacheIF gribCollectionCache;
@@ -81,7 +78,7 @@ public class GribCdmIndex implements IndexReader {
   static GribCollectionImmutable acquireGribCollection(FileFactory factory, Object hashKey, String location,
       int buffer_size, CancelTask cancelTask, Object spiObject) throws IOException {
     FileCacheable result;
-    DatasetUrl durl = new DatasetUrl(null, location);
+    DatasetUrl durl = DatasetUrl.create(null, location);
 
     if (gribCollectionCache != null) {
       // FileFactory factory, Object hashKey, String location, int buffer_size, CancelTask cancelTask, Object spiObject
@@ -287,7 +284,7 @@ public class GribCdmIndex implements IndexReader {
 
     boolean changed = updatePartition(isGrib1, dcm, updateType, logger, errlog);
     if (errlog != null)
-      errlog.format("PartitionCollection {} was recreated{}", dcm.getCollectionName(), changed);
+      errlog.format("PartitionCollection %s was recreated %s%n", dcm.getCollectionName(), changed);
     return changed;
   }
 
@@ -358,7 +355,7 @@ public class GribCdmIndex implements IndexReader {
       return false;
 
     boolean changed;
-    if (isGrib1) { // existing case handles correctly - make seperate index for each runtime (OR) partition == runtime
+    if (isGrib1) { // existing case handles correctly - make separate index for each runtime (OR) partition == runtime
       Grib1CollectionBuilder builder = new Grib1CollectionBuilder(dcm.getCollectionName(), dcm, logger);
       changed = builder.updateNeeded(updateType) && builder.createIndex(ptype, errlog);
     } else {
@@ -818,10 +815,8 @@ public class GribCdmIndex implements IndexReader {
     MCollection dcm = new CollectionSingleFile(mfile, logger);
     dcm.putAuxInfo(FeatureCollectionConfig.AUX_CONFIG, config);
     if (isGrib1) {
-      Grib1CollectionBuilder builder = new Grib1CollectionBuilder(dcm.getCollectionName(), dcm, logger); // LOOK
-                                                                                                         // ignoring
-                                                                                                         // partition
-                                                                                                         // type
+      // LOOK ignoring partition type
+      Grib1CollectionBuilder builder = new Grib1CollectionBuilder(dcm.getCollectionName(), dcm, logger);
       boolean changed =
           (builder.updateNeeded(updateType) && builder.createIndex(FeatureCollectionConfig.PartitionType.file, errlog));
     } else {
@@ -974,57 +969,6 @@ public class GribCdmIndex implements IndexReader {
       logger.error("Error reading index " + indexRaf.getLocation(), t);
       return false;
     }
-  }
-
-
-  public static void main2(String[] args) throws IOException {
-    org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("test");
-    PartitionManager partition = new PartitionManagerFromIndexDirectory("NCDC-gfs4_all", new FeatureCollectionConfig(),
-        new File("B:/ncdc/gfs4_all/"), NCX_SUFFIX, logger);
-    Grib1PartitionBuilder builder =
-        new Grib1PartitionBuilder("NCDC-gfs4_all", new File(partition.getRoot()), partition, logger);
-    builder.createPartitionedIndex(CollectionUpdateType.nocheck, new Formatter());
-  }
-
-  public static void main3(String[] args) throws IOException {
-    org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("test");
-
-    /*
-     * <featureCollection name="DGEX-CONUS_12km" featureType="GRIB" harvest="true" path="grib/NCEP/DGEX/CONUS_12km">
-     * <collection spec="F:/data/grib/idd/dgex/  /.*grib2$"
-     * dateFormatMark="#DGEX_CONUS_12km_#yyyyMMdd_HHmm"
-     * timePartition="directory"
-     * olderThan="5 min"/>
-     */
-
-    // String name, String path, FeatureCollectionType fcType, String spec, String dateFormatMark, String olderThan,
-    // String timePartition, String useIndexOnlyS, Element innerNcml
-    // FeatureCollectionConfig config = new FeatureCollectionConfig("DGEX-test", "grib/NCEP/DGEX/CONUS_12km",
-    // FeatureCollectionType.GRIB2,
-    // "Q:/cdmUnitTest/gribCollections/dgex/**/.*grib2$", "#DGEX_CONUS_12km_#yyyyMMdd_HHmm", null, "directory", null,
-    // null);
-
-    // FeatureCollectionConfig config = new FeatureCollectionConfig("GFS_CONUS_80km", "grib/NCEP/GFS/CONUS_80km",
-    // FeatureCollectionType.GRIB1,
-    // "Q:/cdmUnitTest/ncss/GFS/CONUS_80km/GFS_CONUS_80km_#yyyyMMdd_HHmm#.grib1", null, null, "file", null, null);
-
-    // FeatureCollectionConfig config = new FeatureCollectionConfig("ds083.2_Aggregation", "ds083.2/Aggregation",
-    // FeatureCollectionType.GRIB1,
-    // "Q:/cdmUnitTest/gribCollections/rdavm/ds083.2/grib1/**/.*grib1", "#fnl_#yyyyMMdd_HH_mm", null, "directory", null,
-    // null);
-    /*
-     * <pdsHash>
-     * <useTableVersion>false</useTableVersion>
-     * </pdsHash>
-     */
-
-    FeatureCollectionConfig config = new FeatureCollectionConfig("RFC", "grib/NPVU/RFC", FeatureCollectionType.GRIB1,
-        "B:/motherlode/rfc/**/.*grib1$", null, "yyyyMMdd#.grib1#", null, "directory", null);
-
-    // config.gribConfig.pdsHash.put("useTableVersion", false);
-
-    // boolean isGrib1, MCollection dcm, CollectionUpdateType updateType, Formatter errlog, org.slf4j.Logger logger
-    boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.test, logger);
   }
 
   ///////////////////////////////////////////////////////////////////////////////////////////////////////

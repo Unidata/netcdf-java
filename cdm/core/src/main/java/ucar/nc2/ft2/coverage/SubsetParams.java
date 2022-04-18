@@ -9,7 +9,7 @@ import com.google.common.net.UrlEscapers;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.time.CalendarPeriod;
-import ucar.unidata.geoloc.LatLonPointImpl;
+import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.ProjectionRect;
 import java.util.*;
@@ -29,7 +29,7 @@ public class SubsetParams {
   public static final String latlonBB = "latlonBB"; // value = LatLonRect
   public static final String projBB = "projBB"; // value = ProjectionRect
   public static final String horizStride = "horizStride"; // value = Integer
-  public static final String latlonPoint = "latlonPoint"; // value = LatLonPointImpl
+  public static final String latlonPoint = "latlonPoint"; // value = LatLonPoint
   public static final String stations = "stn"; // value = List<String>
 
   public static final String time = "time"; // value = CalendarDate
@@ -78,7 +78,7 @@ public class SubsetParams {
               projRect.getMaxY());
           break;
         case SubsetParams.latlonPoint:
-          LatLonPointImpl llPoint = (LatLonPointImpl) entry.getValue();
+          LatLonPoint llPoint = (LatLonPoint) entry.getValue();
           f.format("&lat=%s&lon=%s", llPoint.getLatitude(), llPoint.getLongitude());
           break;
         case SubsetParams.stations:
@@ -225,11 +225,11 @@ public class SubsetParams {
     return this;
   }
 
-  public LatLonPointImpl getLatLonPoint() {
-    return (LatLonPointImpl) get(latlonPoint);
+  public LatLonPoint getLatLonPoint() {
+    return (LatLonPoint) get(latlonPoint);
   }
 
-  public SubsetParams setLatLonPoint(LatLonPointImpl pt) {
+  public SubsetParams setLatLonPoint(LatLonPoint pt) {
     set(latlonPoint, pt);
     return this;
   }

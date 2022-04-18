@@ -395,7 +395,7 @@ public class NetcdfFileWriteable extends NetcdfFile {
    *
    * @param varName name of Variable, must be unique with the file.
    * @param dataType type of underlying element
-   * @param dims names of Dimensions for the variable, blank seperated.
+   * @param dims names of Dimensions for the variable, blank separated.
    *        Must already have been added. Use an empty string for a scalar variable.
    * @return the Variable that has been added
    */
@@ -513,7 +513,7 @@ public class NetcdfFileWriteable extends NetcdfFile {
       att = new Attribute(attName, att.getValues());
     }
 
-    Variable v = rootGroup.findVariable(varName);
+    Variable v = rootGroup.findVariableLocal(varName);
     if (null == v)
       throw new IllegalArgumentException("addVariableAttribute variable name not found = <" + varName + ">");
     v.addAttribute(att);

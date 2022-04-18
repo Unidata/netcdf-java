@@ -135,32 +135,16 @@ public class LatLonProjection extends ProjectionImpl {
     return result;
   }
 
-  /**
-   * Convert a LatLonPoint to projection coordinates
-   *
-   * @param latlon convert from these lat, lon coordinates
-   * @param result the object to write to
-   * @return the given result
-   */
   public ProjectionPoint latLonToProj(LatLonPoint latlon, ProjectionPointImpl result) {
-    result.setLocation(LatLonPointImpl.lonNormal(latlon.getLongitude(), centerLon), latlon.getLatitude());
+    result.setLocation(LatLonPoints.lonNormal(latlon.getLongitude(), centerLon), latlon.getLatitude());
     return result;
   }
 
-  /**
-   * Convert projection coordinates to a LatLonPoint
-   * Note: a new object is not created on each call for the return value.
-   *
-   * @param world convert from these projection coordinates
-   * @param result the object to write to
-   * @return LatLonPoint convert to these lat/lon coordinates
-   */
   public LatLonPoint projToLatLon(ProjectionPoint world, LatLonPointImpl result) {
     result.setLongitude(world.getX());
     result.setLatitude(world.getY());
     return result;
   }
-
 
   /**
    * Convert projection coordinates to lat/lon coordinate.
@@ -273,7 +257,7 @@ public class LatLonProjection extends ProjectionImpl {
    * @return centerLon normalized to +/- 180.
    */
   public double setCenterLon(double centerLon) {
-    this.centerLon = LatLonPointImpl.lonNormal(centerLon);
+    this.centerLon = LatLonPoints.lonNormal(centerLon);
     return this.centerLon;
   }
 
@@ -322,8 +306,8 @@ public class LatLonProjection extends ProjectionImpl {
     double lat0 = latlonR.getLowerLeftPoint().getLatitude();
     double height = Math.abs(latlonR.getUpperRightPoint().getLatitude() - lat0);
     double width = latlonR.getWidth();
-    double lon0 = LatLonPointImpl.lonNormal(latlonR.getLowerLeftPoint().getLongitude(), centerLon);
-    double lon1 = LatLonPointImpl.lonNormal(latlonR.getUpperRightPoint().getLongitude(), centerLon);
+    double lon0 = LatLonPoints.lonNormal(latlonR.getLowerLeftPoint().getLongitude(), centerLon);
+    double lon1 = LatLonPoints.lonNormal(latlonR.getUpperRightPoint().getLongitude(), centerLon);
 
     ProjectionRect[] rects = {new ProjectionRect(), new ProjectionRect()};
     if (lon0 < lon1) {
@@ -346,7 +330,7 @@ public class LatLonProjection extends ProjectionImpl {
     double deltaLat = world.getHeight();
     double deltaLon = world.getWidth();
 
-    LatLonPoint llpt = new LatLonPointImpl(startLat, startLon);
+    LatLonPoint llpt = LatLonPoint.create(startLat, startLon);
     return new LatLonRect(llpt, deltaLat, deltaLon);
   }
 
@@ -371,8 +355,8 @@ public class LatLonProjection extends ProjectionImpl {
     if (width < 1.0e-8) {
       width = 360.0; // assume its the whole thing
     }
-    lon0 = LatLonPointImpl.lonNormal(lon0, centerLon);
-    lon1 = LatLonPointImpl.lonNormal(lon1, centerLon);
+    lon0 = LatLonPoints.lonNormal(lon0, centerLon);
+    lon1 = LatLonPoints.lonNormal(lon1, centerLon);
 
     ProjectionRect[] rects = {new ProjectionRect(), new ProjectionRect()};
     if (width >= 360.0) {

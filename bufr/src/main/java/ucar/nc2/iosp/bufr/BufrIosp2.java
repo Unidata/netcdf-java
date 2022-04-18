@@ -1,18 +1,30 @@
 /*
- * Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2020 University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 package ucar.nc2.iosp.bufr;
 
+import java.io.IOException;
+import java.util.Formatter;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
 import org.jdom2.Element;
+import ucar.ma2.Array;
+import ucar.ma2.ArraySequence;
+import ucar.ma2.ArrayStructure;
+import ucar.ma2.Section;
+import ucar.ma2.StructureData;
+import ucar.ma2.StructureDataIterator;
+import ucar.nc2.Group;
+import ucar.nc2.NetcdfFile;
+import ucar.nc2.Sequence;
+import ucar.nc2.Structure;
+import ucar.nc2.Variable;
 import ucar.nc2.constants.DataFormatType;
-import ucar.ma2.*;
-import ucar.nc2.*;
 import ucar.nc2.iosp.AbstractIOServiceProvider;
 import ucar.nc2.util.CancelTask;
 import ucar.unidata.io.RandomAccessFile;
-import java.io.*;
-import java.util.*;
 
 /**
  * IOSP for BUFR data - version 2, using the preprocessor.
@@ -137,6 +149,7 @@ public class BufrIosp2 extends AbstractIOServiceProvider {
     isSingle = true;
 
     ncfile.finish();
+    this.ncfile = ncfile;
   }
 
   @Override

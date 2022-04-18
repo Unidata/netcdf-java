@@ -12,7 +12,7 @@ import ucar.nc2.util.Misc;
  * Longitude is always between -180 and +180 deg.
  * Latitude is always between -90 and +90 deg.
  *
- * @author John Caron
+ * TODO will be an Immutable class in ver6
  */
 public interface LatLonPoint {
 
@@ -46,4 +46,14 @@ public interface LatLonPoint {
    * @return {@code true} if this point is nearly equal to {@code that}.
    */
   boolean nearlyEquals(LatLonPoint that, double maxRelDiff);
+
+  /** Standard way to create a LatLonPoint. */
+  static LatLonPoint create(double lat, double lon) {
+    return new LatLonPointImpl(lat, lon);
+  }
+
+  /** Standard way to create a "default" LatLonPoint. */
+  static LatLonPoint create() {
+    return new LatLonPointImpl();
+  }
 }

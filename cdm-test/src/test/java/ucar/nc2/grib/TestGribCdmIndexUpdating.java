@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2021 University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 
@@ -18,6 +18,7 @@ import thredds.inventory.CollectionUpdateType;
 import ucar.nc2.Dimension;
 import ucar.nc2.Group;
 import ucar.nc2.NetcdfFile;
+import ucar.nc2.NetcdfFiles;
 import ucar.nc2.Variable;
 import ucar.nc2.grib.collection.GribCdmIndex;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
@@ -26,6 +27,7 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -47,9 +49,8 @@ public class TestGribCdmIndexUpdating {
     String dataDir = TestDir.cdmUnitTestDir + "gribCollections/changing/filePartition/";
     FeatureCollectionConfig config = new FeatureCollectionConfig("TestGribCdmIndex", "changing/filePartition",
         FeatureCollectionType.GRIB1, dataDir + "GFS_CONUS_80km_#yyyyMMdd_HHmm#.grib1", null, null, null, "file", null);
-    // String dataDir, String newModel, FeatureCollectionConfig config, String indexFile, String varIdValue, int orgLen
-    result.add(new Object[] {dataDir, "GFS_CONUS_80km_20141024_1200.grib1", config, "TestGribCdmIndex.ncx4",
-        "Relative_humidity_isobaric", 4, 3});
+    result
+        .add(new Object[] {dataDir, "GFS_CONUS_80km_20141024_1200.grib1", config, "Relative_humidity_isobaric", 4, 3});
 
     /*
      * directory partition
@@ -72,6 +73,12 @@ public class TestGribCdmIndexUpdating {
     return result;
   }
 
+  @Parameterized.AfterParam
+  public static void after(String dataDir, String newModel, FeatureCollectionConfig config, String varName, int orgLen,
+      int remLen) {
+    // cleanup index files created during test for a given parameter input
+    cleanUpIndexFiles(GribCdmIndex.getTopIndexFileFromConfig(config).getParent());
+  }
 
   ///////////////////////////////////////
 
@@ -82,15 +89,16 @@ public class TestGribCdmIndexUpdating {
   String varName;
   int orgLen, remLen;
 
-  public TestGribCdmIndexUpdating(String dataDir, String newModel, FeatureCollectionConfig config, String indexFile,
-      String varName, int orgLen, int remLen) {
+  public TestGribCdmIndexUpdating(String dataDir, String newModel, FeatureCollectionConfig config, String varName,
+      int orgLen, int remLen) throws IOException {
     this.dataDir = dataDir;
     this.newModel = newModel;
     this.config = config;
-    this.indexFile = indexFile;
     this.varName = varName;
     this.orgLen = orgLen;
     this.remLen = remLen;
+    GribCdmIndex.updateGribCollection(config, CollectionUpdateType.always, logger);
+    this.indexFile = GribCdmIndex.getTopIndexFileFromConfig(config).getAbsolutePath();
   }
 
   @Test
@@ -139,10 +147,11 @@ public class TestGribCdmIndexUpdating {
       System.out.printf("changed = %s%n", changed);
 
       // open the resulting index
-      try (NetcdfFile ncfile = NetcdfFile.open(dataDir + indexFile)) {
+      try (NetcdfFile ncfile = NetcdfFiles.open(indexFile)) {
         System.out.printf("opened = %s%n", ncfile.getLocation());
         Group g = ncfile.findGroup("TwoD");
-        Variable v = ncfile.findVariable(g, varName);
+        assert g != null;
+        Variable v = g.findVariableLocal(varName);
         Assert.assertNotNull(varName, v);
         Dimension dim0 = v.getDimension(0);
         Assert.assertEquals(v.getFullName(), remLen, dim0.getLength());
@@ -158,10 +167,11 @@ public class TestGribCdmIndexUpdating {
       System.out.printf("changed2 = %s%n", changed2);
 
       // open the resulting index
-      try (NetcdfFile ncfile = NetcdfFile.open(dataDir + indexFile)) {
+      try (NetcdfFile ncfile = NetcdfFiles.open(indexFile)) {
         System.out.printf("opened = %s%n", ncfile.getLocation());
         Group g = ncfile.findGroup("TwoD");
-        Variable v = ncfile.findVariable(g, varName);
+        assert g != null;
+        Variable v = g.findVariableLocal(varName);
         assert v != null;
 
         Dimension dim0 = v.getDimension(0);
@@ -171,8 +181,11 @@ public class TestGribCdmIndexUpdating {
     } finally { // leave it it the way we found it
       boolean ok = newModelFileSave.renameTo(newModelFile);
     }
-
   }
 
-
+  private static void cleanUpIndexFiles(String indexFile) {
+    File indexDir = new File(indexFile).getParentFile();
+    Arrays.stream(indexDir.listFiles()).filter(f -> f.getName().endsWith(GribCdmIndex.NCX_SUFFIX))
+        .forEach(File::delete);
+  }
 }

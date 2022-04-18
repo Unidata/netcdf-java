@@ -5,6 +5,8 @@
 
 package ucar.unidata.util;
 
+import com.google.common.base.CharMatcher;
+import com.google.common.base.Splitter;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -509,7 +511,9 @@ public class StringUtil2 {
    * @param match string to match
    * @param subst string to substitute
    * @return a new string with substitutions
+   * @deprecated use original.replace(match, subst)
    */
+  @Deprecated
   public static String substitute(String original, String match, String subst) {
     String s = original;
     int pos;
@@ -586,10 +590,16 @@ public class StringUtil2 {
    * Cover for String.split, because who can remember regexp?
    *
    * @param source split this string
-   * @return tokens that were seperated by whitespace
+   * @return tokens that were separated by whitespace
+   * @deprecated use StringUtil2.split()
    */
+  @Deprecated
   public static String[] splitString(String source) {
     return source.trim().split("\\s+"); // Separated by "whitespace"
+  }
+
+  public static Iterable<String> split(String source) {
+    return Splitter.on(CharMatcher.whitespace()).omitEmptyStrings().split(source);
   }
 
   /**

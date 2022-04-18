@@ -7,6 +7,7 @@ package ucar.nc2.iosp.hdf4;
 import java.nio.charset.StandardCharsets;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.iosp.NCheader;
+import ucar.nc2.write.Ncdump;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.nc2.*;
 import ucar.ma2.*;
@@ -91,6 +92,8 @@ public class H4header extends NCheader {
     return isEos;
   }
 
+  String version = "N/A";
+
   void read(RandomAccessFile myRaf, ucar.nc2.NetcdfFile ncfile) throws IOException {
     this.raf = myRaf;
     this.ncfile = ncfile;
@@ -131,7 +134,7 @@ public class H4header extends NCheader {
       isEos = HdfEos.amendFromODL(ncfile, ncfile.getRootGroup());
       if (isEos) {
         adjustDimensions();
-        String history = ncfile.getRootGroup().findAttValueIgnoreCase("_History", "");
+        String history = ncfile.getRootGroup().findAttributeString("_History", "");
         ncfile.addAttribute(null, new Attribute("_History", history + "; HDF-EOS StructMetadata information was read"));
 
       }
@@ -238,7 +241,7 @@ public class H4header extends NCheader {
     // not in a group
     Group root = ncfile.getRootGroup();
     for (Variable v : vars) {
-      if ((v.getParentGroup() == root) && root.findVariable(v.getShortName()) == null)
+      if ((v.getParentGroupOrRoot() == root) && root.findVariableLocal(v.getShortName()) == null)
         root.addVariable(v);
     }
 
@@ -258,7 +261,8 @@ public class H4header extends NCheader {
     ncfile.addAttribute(null, new Attribute("_History", "Direct read of HDF4 file through CDM library"));
     for (Tag t : alltags) {
       if (t.code == 30) {
-        ncfile.addAttribute(null, new Attribute("HDF4_Version", ((TagVersion) t).value()));
+        this.version = ((TagVersion) t).value();
+        ncfile.addAttribute(null, new Attribute("HDF4_Version", this.version));
         t.used = true;
 
       } else if (t.code == 100) {
@@ -292,9 +296,9 @@ public class H4header extends NCheader {
       List<Variable> vlist = dimUsedMap.get(dim);
       for (Variable v : vlist) {
         if (lowest == null)
-          lowest = v.getParentGroup();
+          lowest = v.getParentGroupOrRoot();
         else {
-          lowest = lowest.commonParent(v.getParentGroup());
+          lowest = lowest.commonParent(v.getParentGroupOrRoot());
         }
       }
       Group current = dim.getGroup();
@@ -564,7 +568,7 @@ public class H4header extends NCheader {
   }
 
   private void addVariableToGroup(Group g, Variable v, Tag tag) {
-    Variable varExisting = g.findVariable(v.getShortName());
+    Variable varExisting = g.findVariableLocal(v.getShortName());
     if (varExisting != null) {
       // Vinfo vinfo = (Vinfo) v.getSPobject();
       // varExisting.setName(varExisting.getShortName()+vinfo.refno);
@@ -574,7 +578,7 @@ public class H4header extends NCheader {
   }
 
   private void addGroupToGroup(Group parent, Group g, Tag tag) {
-    Group groupExisting = parent.findGroup(g.getShortName());
+    Group groupExisting = parent.findGroupLocal(g.getShortName());
     if (groupExisting != null) {
       g.setName(g.getShortName() + tag.refno);
     }
@@ -1355,7 +1359,7 @@ public class H4header extends NCheader {
           throw new IllegalStateException("cant parse " + chunkTableTag);
         ArrayStructure sdata = (ArrayStructure) s.read();
         if (debugChunkDetail)
-          System.out.println(NCdumpW.toString(sdata, "getChunkedTable", null));
+          System.out.println(Ncdump.printArray(sdata, "getChunkedTable", null));
 
         // construct the chunks
         StructureMembers members = sdata.getStructureMembers();

@@ -169,7 +169,7 @@ public abstract class TrajectoryObsDatasetImpl extends TypedDatasetImpl implemen
         && this.netcdfDataset.getUnlimitedDimension().equals(trajectoryDim)) {
       Object result = this.netcdfDataset.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
       if ((result != null) && (Boolean) result) {
-        this.recordVar = (Structure) this.netcdfDataset.getRootGroup().findVariable("record");
+        this.recordVar = (Structure) this.netcdfDataset.getRootGroup().findVariableLocal("record");
       } else {
         this.recordVar = new StructurePseudo(this.netcdfDataset, null, "record", trajectoryDim);
       }
@@ -1052,7 +1052,7 @@ public abstract class TrajectoryObsDatasetImpl extends TypedDatasetImpl implemen
      * @throws InvalidRangeException _more_
      */
     public Array getData(Range range, String parameterName) throws IOException, InvalidRangeException {
-      Variable variable = netcdfDataset.getRootGroup().findVariable(parameterName);
+      Variable variable = netcdfDataset.getRootGroup().findVariableLocal(parameterName);
       int varRank = variable.getRank();
       int[] varShape = variable.getShape();
       List section = new ArrayList(varRank);

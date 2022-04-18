@@ -19,9 +19,9 @@ import java.util.EnumSet;
 /**
  * Tiled Aggregation.
  *
- * @author caron
- * @since Aug 16, 2007
+ * @deprecated do not use
  */
+@Deprecated
 public class AggregationTiled extends Aggregation implements ProxyReader {
   private List<String> dimNames = new ArrayList<>();
   private List<Dimension> dims = new ArrayList<>();
@@ -87,7 +87,7 @@ public class AggregationTiled extends Aggregation implements ProxyReader {
     // run through all variables
     for (Variable v : typical.getVariables()) {
       if (isTiled(v)) {
-        Group newGroup = DatasetConstructor.findGroup(ncDataset, v.getParentGroup());
+        Group newGroup = DatasetConstructor.findGroup(ncDataset, v.getParentGroupOrRoot());
         VariableDS vagg = new VariableDS(ncDataset, newGroup, null, v.getShortName(), v.getDataType(),
             v.getDimensionsString(), null, null); // LOOK what about anon dimensions?
         vagg.setProxyReader(this); // do the reading here
@@ -360,12 +360,12 @@ public class AggregationTiled extends Aggregation implements ProxyReader {
     // construct the Variable section pertaining to this Datatset by replacing the tiled dimensions
     Section makeVarSection(Variable mainv) {
       Section vSection = mainv.getShapeAsSection();
-      Section dataSection = new Section();
+      Section.Builder dataSection = Section.builder();
       for (Range r : vSection.getRanges()) {
         Range rr = section.find(r.getName());
         dataSection.appendRange(rr != null ? rr : r);
       }
-      return dataSection;
+      return dataSection.build();
     }
   }
 }

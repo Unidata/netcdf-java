@@ -1,0 +1,20 @@
+description = 'A collection of reusable classes to be used internally for testing across the various THREDDS projects.'
+ext.title = 'NetCDF-Java testing utilities'
+
+apply from: "$rootDir/gradle/any/dependencies.gradle"
+apply from: "$rootDir/gradle/any/java-library.gradle"
+
+dependencies {
+  api enforcedPlatform(project(':netcdf-java-platform'))
+  implementation enforcedPlatform(project(':netcdf-java-testing-platform'))
+
+  api project(':cdm:cdm-core')
+
+  implementation project(':httpservices')
+
+  implementation 'junit:junit'
+  implementation 'org.slf4j:slf4j-api'
+  implementation 'com.google.re2j:re2j'
+
+  testRuntimeOnly 'ch.qos.logback:logback-classic'
+}

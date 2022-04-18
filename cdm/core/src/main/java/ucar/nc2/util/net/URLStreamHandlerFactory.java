@@ -7,14 +7,19 @@ package ucar.nc2.util.net;
 
 import java.net.*;
 import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import ucar.httpservices.HTTPSession;
 
 /**
- * how do we know if URLStreamHandlerFactory has already been set?
+ * how do we know if URLStreamHandlerFactory has already been se
+ * 
+ * @deprecated do not use
  */
-
+@Deprecated
 public class URLStreamHandlerFactory implements java.net.URLStreamHandlerFactory {
 
-  public static org.slf4j.Logger log = ucar.httpservices.HTTPSession.log;
+  private static final Logger logger = LoggerFactory.getLogger(URLStreamHandlerFactory.class);
 
   //////////////////////////////////////////////////////////////////////////
   private static Map<String, URLStreamHandler> map = new java.util.HashMap<>();
@@ -27,7 +32,7 @@ public class URLStreamHandlerFactory implements java.net.URLStreamHandlerFactory
         installed = true;
       }
     } catch (Error e) {
-      log.error("Error installing URLStreamHandlerFactory " + e.getMessage());
+      logger.error("Error installing URLStreamHandlerFactory " + e.getMessage());
     }
   }
 

@@ -15,7 +15,7 @@ import ucar.unidata.io.RandomAccessFile;
 public final class BufrNumbers {
 
   // used to check missing values when value is packed with all 1's
-  private static final long[] missing_value = new long[65];
+  private static final long[] missing_value = new long[2049];
 
   static {
     long accum = 0;

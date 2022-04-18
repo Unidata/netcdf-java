@@ -1,6 +1,7 @@
 package ucar.nc2;
 
 import static com.google.common.truth.Truth.assertThat;
+import static ucar.nc2.TestUtils.makeDummyGroup;
 import com.google.common.collect.ImmutableList;
 import org.junit.Test;
 import ucar.ma2.DataType;
@@ -10,7 +11,8 @@ public class TestStructureBuilder {
   @Test
   public void testBuilder() {
     Variable.Builder var = Variable.builder().setName("member").setDataType(DataType.FLOAT);
-    Structure struct = Structure.builder().setName("name").setDataType(DataType.FLOAT).addMemberVariable(var).build();
+    Structure struct =
+        Structure.builder().setName("name").setDataType(DataType.FLOAT).addMemberVariable(var).build(makeDummyGroup());
     assertThat(struct.getDataType()).isEqualTo(DataType.STRUCTURE);
     assertThat(struct.getShortName()).isEqualTo("name");
     assertThat(struct.isScalar()).isTrue();
@@ -23,7 +25,8 @@ public class TestStructureBuilder {
 
   @Test
   public void testBuilderChain() {
-    Structure struct = Structure.builder().setName("struct").addMemberVariables(ImmutableList.of()).build();
+    Structure struct =
+        Structure.builder().setName("struct").addMemberVariables(ImmutableList.of()).build(makeDummyGroup());
     assertThat(struct.getDataType()).isEqualTo(DataType.STRUCTURE);
     assertThat(struct.getShortName()).isEqualTo("struct");
     assertThat(struct.getVariableNames()).hasSize(0);
@@ -33,8 +36,9 @@ public class TestStructureBuilder {
   @Test
   public void testToBuilderChain() {
     Variable.Builder var = Variable.builder().setName("member").setDataType(DataType.FLOAT);
-    Structure struct = Structure.builder().setName("name").setDataType(DataType.FLOAT).addMemberVariable(var).build();
-    Structure struct2 = struct.toBuilder().setName("s2").build();
+    Structure struct =
+        Structure.builder().setName("name").setDataType(DataType.FLOAT).addMemberVariable(var).build(makeDummyGroup());
+    Structure struct2 = struct.toBuilder().setName("s2").build(makeDummyGroup());
     assertThat(struct2.getDataType()).isEqualTo(DataType.STRUCTURE);
     assertThat(struct2.getShortName()).isEqualTo("s2");
 

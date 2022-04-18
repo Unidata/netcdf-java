@@ -12,7 +12,7 @@ import java.io.Serializable;
  * Universal Transverse Mercator.
  * Ellipsoidal earth.
  * <p/>
- * Origin of coordinate system is reletive to the point where the
+ * Origin of coordinate system is relative to the point where the
  * central meridian and the equator cross.
  * This point has x,y value = (500, 0) km for north hemisphere.
  * and (500, 10,0000) km for south hemisphere.
@@ -20,9 +20,7 @@ import java.io.Serializable;
  * <p/>
  * The central meridian = (zone * 6 - 183) degrees, where zone in [1,60].
  *
- * @author John Caron
  */
-
 public class UtmProjection extends ProjectionImpl {
   public static final String GRID_MAPPING_NAME = "universal_transverse_mercator";
   public static final String UTM_ZONE1 = "utm_zone_number";
@@ -31,6 +29,7 @@ public class UtmProjection extends ProjectionImpl {
   private final Utm_To_Gdc_Converter convert2latlon;
   private final Gdc_To_Utm_Converter convert2xy;
 
+  // TODO will noty implement Serializable in ver 6.
   private static class SaveParams implements Serializable {
     final double a;
     final double f;

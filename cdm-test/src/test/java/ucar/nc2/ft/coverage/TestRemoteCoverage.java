@@ -1,11 +1,12 @@
 /*
- * Copyright (c) 1998-2018 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 package ucar.nc2.ft.coverage;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.Ignore;
 import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,6 +28,7 @@ public class TestRemoteCoverage {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @Test
+  @Ignore("Depends on cdmrFeature service being available, which was removed in TDS 5 and never in an official stable release.")
   @Category(NeedsExternalResource.class)
   public void testCdmRemoteCoverage() throws Exception {
     String ds = "https://thredds-test.unidata.ucar.edu/thredds/catalog/grib/NCEP/GFS/Global_0p25deg_ana/latest.xml";
@@ -58,7 +60,7 @@ public class TestRemoteCoverage {
 
       int[] shape = geoCoordsys.getShape();
       logger.debug("grid_section.getShape = {}", new Section(shape));
-      int[] expectShape = new int[] {1, 31, 241, 480};
+      int[] expectShape = new int[] {1, 41, 241, 480};
       Assert.assertArrayEquals("subset shape", expectShape, shape);
     }
   }

@@ -6,13 +6,29 @@
 package ucar.httpservices;
 
 import static ucar.httpservices.HTTPSession.Prop;
+
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.ImmutableListMultimap;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMultimap;
+import com.google.common.collect.ImmutableSortedMap;
 import com.google.common.collect.Multimap;
+import java.io.Closeable;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.charset.Charset;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
-import org.apache.http.*;
+import javax.annotation.concurrent.NotThreadSafe;
+import org.apache.http.Header;
+import org.apache.http.HeaderElement;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpHost;
+import org.apache.http.HttpResponse;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.RequestConfig;
@@ -23,16 +39,8 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.util.EntityUtils;
-import javax.annotation.concurrent.NotThreadSafe;
-import java.io.Closeable;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.nio.charset.Charset;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * HTTPMethod is the encapsulation of specific
@@ -135,7 +143,9 @@ import java.util.Map;
 
 @NotThreadSafe
 public class HTTPMethod implements Closeable, Comparable<HTTPMethod> {
+
   static final boolean DEBUG = false;
+  private static final Logger logger = LoggerFactory.getLogger(HTTPMethod.class);
 
   //////////////////////////////////////////////////
   // Type Decl
@@ -217,7 +227,10 @@ public class HTTPMethod implements Closeable, Comparable<HTTPMethod> {
       localsession = true;
     }
     this.session = session;
-    this.userinfo = HTTPUtil.nullify(this.methodurl.getUserInfo());
+    // user info may contain encoded characters (such as a username containing
+    // the @ symbol), and we want to preserve those, so use getRawUserInfo()
+    // here.
+    this.userinfo = HTTPUtil.nullify(this.methodurl.getRawUserInfo());
     if (this.userinfo != null) {
       // convert userinfo to credentials
       this.session.setCredentials(this.methodurl);
@@ -349,12 +362,11 @@ public class HTTPMethod implements Closeable, Comparable<HTTPMethod> {
       setcontent(rb);
       setheaders(rb, this.headers);
       this.lastrequest = buildRequest(rb, this.settings);
-      AuthScope methodscope = HTTPAuthUtil.uriToAuthScope(this.methodurl);
-      AuthScope target = HTTPAuthUtil.authscopeUpgrade(session.getSessionScope(), methodscope);
       // AFAIK, targethost, httpclient, rb, and session
       // contain non-overlapping info => we cannot derive one
       // from any of the others.
-      HttpHost targethost = HTTPAuthUtil.authscopeToHost(target);
+      HttpHost targethost =
+          new HttpHost(this.methodurl.getHost(), this.methodurl.getPort(), this.methodurl.getScheme());
       HttpClientBuilder cb = HttpClients.custom();
       configClient(cb, this.settings);
       session.setAuthenticationAndProxy(cb);
@@ -394,6 +406,8 @@ public class HTTPMethod implements Closeable, Comparable<HTTPMethod> {
         rcb.setConnectTimeout((Integer) value);
       } else if (key == Prop.CONN_REQ_TIMEOUT) {
         rcb.setConnectionRequestTimeout((Integer) value);
+      } else if (key == Prop.COOKIE_SPEC) {
+        rcb.setCookieSpec(value.toString());
       } /* else ignore */
     }
     RequestConfig cfg = rcb.build();
@@ -497,7 +511,7 @@ public class HTTPMethod implements Closeable, Comparable<HTTPMethod> {
     if (!executed)
       throw new IllegalStateException("HTTPMethod: method has not been executed");
     if (this.methodstream != null) { // duplicate: caller's problem
-      HTTPSession.log.warn("HTTPRequest.getResponseBodyAsStream: Getting method stream multiple times");
+      logger.warn("HTTPRequest.getResponseBodyAsStream: Getting method stream multiple times");
     } else { // first time
       HTTPMethodStream stream = null;
       try {
@@ -615,15 +629,59 @@ public class HTTPMethod implements Closeable, Comparable<HTTPMethod> {
     return multimap;
   }
 
+  public ImmutableSortedMap<String, ImmutableList<HttpNameValue>> getRequestHeaderValues() {
+    if (this.lastrequest == null)
+      return ImmutableSortedMap.of();
+
+    ArrayListMultimap<String, ImmutableList<HttpNameValue>> multimap = ArrayListMultimap.create();
+    for (Header header : this.lastrequest.getAllHeaders()) {
+      ImmutableList.Builder<HttpNameValue> list = ImmutableList.builder();
+      for (HeaderElement element : header.getElements()) {
+        list.add(HttpNameValue.create(element.getName(), element.getValue()));
+      }
+      multimap.put(header.getName(), list.build());
+    }
+
+    ImmutableSortedMap.Builder<String, ImmutableList<HttpNameValue>> builder = ImmutableSortedMap.naturalOrder();
+    multimap.asMap().forEach((name, value) -> {
+      ImmutableList.Builder<HttpNameValue> listBuilder = ImmutableList.builder();
+      value.forEach(listBuilder::addAll);
+      builder.put(name, listBuilder.build());
+    });
+    return builder.build();
+  }
+
+  public ImmutableSortedMap<String, ImmutableList<HttpNameValue>> getResponseHeaderValues() {
+    if (this.lastresponse == null)
+      return ImmutableSortedMap.of();
+
+    ArrayListMultimap<String, ImmutableList<HttpNameValue>> multimap = ArrayListMultimap.create();
+    for (Header header : this.lastresponse.getAllHeaders()) {
+      ImmutableList.Builder<HttpNameValue> list = ImmutableList.builder();
+      for (HeaderElement element : header.getElements()) {
+        list.add(HttpNameValue.create(element.getName(), element.getValue()));
+      }
+      multimap.put(header.getName(), list.build());
+    }
+
+    ImmutableSortedMap.Builder<String, ImmutableList<HttpNameValue>> builder = ImmutableSortedMap.naturalOrder();
+    multimap.asMap().forEach((name, value) -> {
+      ImmutableList.Builder<HttpNameValue> listBuilder = ImmutableList.builder();
+      value.forEach(listBuilder::addAll);
+      builder.put(name, listBuilder.build());
+    });
+    return builder.build();
+  }
+
   @VisibleForTesting
   public HTTPMethod setRequestContent(HttpEntity content) {
     if (DEBUG)
       try {
         InputStream stream = content.getContent();
         String report = HTTPUtil.readtextfile(stream);
-        System.err.println("DEBUG: request content: " + report);
+        logger.debug("DEBUG: request content: {}", report);
       } catch (IOException | UnsupportedOperationException e) {
-        System.err.println("Cannot print content");
+        logger.debug("Cannot print content: ", e);
       }
 
     this.content = content;

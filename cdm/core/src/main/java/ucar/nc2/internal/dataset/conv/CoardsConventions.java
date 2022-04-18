@@ -1,5 +1,6 @@
 package ucar.nc2.internal.dataset.conv;
 
+import java.io.IOException;
 import javax.annotation.Nullable;
 import ucar.nc2.Attribute;
 import ucar.nc2.Variable;
@@ -19,6 +20,18 @@ import ucar.nc2.util.CancelTask;
 class CoardsConventions extends CoordSystemBuilder {
   private static final String CONVENTION_NAME = "COARDS";
 
+  public static class Factory implements CoordSystemBuilderFactory {
+    @Override
+    public String getConventionName() {
+      return CONVENTION_NAME;
+    }
+
+    @Override
+    public CoordSystemBuilder open(NetcdfDataset.Builder datasetBuilder) {
+      return new CoardsConventions(datasetBuilder);
+    }
+  }
+
   /*
    * The COARDS standard offers limited support for climatological time. For compatibility with COARDS, time coordinates
    * should also be
@@ -35,14 +48,14 @@ class CoardsConventions extends CoordSystemBuilder {
    * time in such cases.
    */
 
-  protected CoardsConventions(NetcdfDataset.Builder datasetBuilder) {
+  CoardsConventions(NetcdfDataset.Builder datasetBuilder) {
     super(datasetBuilder);
     this.conventionName = CONVENTION_NAME;
   }
 
-  protected boolean checkTimeVarForCalendar(VariableDS.Builder vb) {
+  boolean checkTimeVarForCalendar(VariableDS.Builder vb) {
     boolean hasChanged = false;
-    String unit = vb.units;
+    String unit = vb.getUnits();
     if (unit != null) {
       unit = unit.trim();
       if (SimpleUnit.isDateUnit(unit)) {
@@ -58,7 +71,7 @@ class CoardsConventions extends CoordSystemBuilder {
   }
 
   @Override
-  public void augmentDataset(CancelTask cancelTask) {
+  protected void augmentDataset(CancelTask cancelTask) throws IOException {
     for (Variable.Builder vb : rootGroup.vbuilders) {
       if (vb instanceof VariableDS.Builder) {
         checkTimeVarForCalendar((VariableDS.Builder) vb);
@@ -71,9 +84,8 @@ class CoardsConventions extends CoordSystemBuilder {
   // we assume that coordinate axes get identified by being coordinate variables
   @Override
   @Nullable
-  public AxisType getAxisType(VariableDS.Builder vb) {
-
-    String unit = vb.units;
+  protected AxisType getAxisType(VariableDS.Builder vb) {
+    String unit = vb.getUnits();
     if (unit == null) {
       return null;
     }
@@ -102,7 +114,7 @@ class CoardsConventions extends CoordSystemBuilder {
       return AxisType.GeoZ;
     }
 
-    String positive = vb.getAttributeContainer().findAttValueIgnoreCase(CF.POSITIVE, null);
+    String positive = vb.getAttributeContainer().findAttributeString(CF.POSITIVE, null);
     if (positive != null) {
       if (SimpleUnit.isCompatible("m", unit)) {
         return AxisType.Height;
@@ -119,19 +131,6 @@ class CoardsConventions extends CoordSystemBuilder {
     // return AxisType.Height;
 
     return null;
-  }
-
-  public static class Factory implements CoordSystemBuilderFactory {
-
-    @Override
-    public String getConventionName() {
-      return CONVENTION_NAME;
-    }
-
-    @Override
-    public CoordSystemBuilder open(NetcdfDataset.Builder datasetBuilder) {
-      return new CoardsConventions(datasetBuilder);
-    }
   }
 
 }

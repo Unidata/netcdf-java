@@ -5,18 +5,19 @@
 
 package ucar.nc2.ui.grib;
 
+import com.google.common.collect.ImmutableList;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.CollectionAbstract;
 import thredds.inventory.MCollection;
 import thredds.inventory.MFile;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
-import ucar.nc2.NCdumpW;
 import ucar.nc2.grib.GribData;
 import ucar.nc2.grib.collection.Grib1Iosp;
 import ucar.nc2.grib.grib1.*;
 import ucar.nc2.grib.grib1.tables.Grib1Customizer;
 import ucar.nc2.time.CalendarDate;
+import ucar.nc2.write.Ncdump;
 import ucar.ui.widget.*;
 import ucar.ui.widget.PopupMenu;
 import ucar.nc2.util.Misc;
@@ -369,7 +370,7 @@ public class Grib1DataTable extends JPanel {
     MCollection dc = null;
     try {
       dc = CollectionAbstract.open(spec, spec, null, f);
-      fileList = (List<MFile>) Misc.getList(dc.getFilesSorted());
+      fileList = ImmutableList.copyOf(dc.getFilesSorted());
       return dc;
 
     } catch (Exception e) {
@@ -631,7 +632,7 @@ public class Grib1DataTable extends JPanel {
     } else {
       int[] shape = {bean.gdss.getNy(), bean.gdss.getNx()};
       Array dataA = Array.factory(DataType.FLOAT, shape, data);
-      f.format("%s%n", NCdumpW.toString(dataA));
+      f.format("%s%n", Ncdump.printArray(dataA));
     }
 
     float max = -Float.MAX_VALUE;

@@ -33,7 +33,7 @@ import java.util.Date;
  * </ol>
  *
  * @author john caron
- * @see "http://www.unidata.ucar.edu/projects/THREDDS/tech/catalog/InvCatalogSpec.html#durationType"
+ * @see "https://www.unidata.ucar.edu/projects/THREDDS/tech/catalog/InvCatalogSpec.html#durationType"
  */
 
 

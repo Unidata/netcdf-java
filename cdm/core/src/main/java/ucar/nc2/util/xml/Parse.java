@@ -14,9 +14,9 @@ import java.io.IOException;
  * created Jul 3, 2007
  *
  * @author caron
+ *         TODO will move to internal.ncml in ver6
  */
 public class Parse {
-
   /**
    * Read an XML Document from a URL and return the root element.
    *
@@ -28,6 +28,7 @@ public class Parse {
     org.jdom2.Document doc;
     try {
       SAXBuilder builder = new SAXBuilder();
+      builder.setExpandEntities(false);
       doc = builder.build(location);
     } catch (JDOMException e) {
       throw new IOException(e.getMessage());

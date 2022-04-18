@@ -13,7 +13,6 @@ import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.*;
 import ucar.nc2.ft2.coverage.*;
-import ucar.nc2.util.Misc;
 import ucar.unidata.util.Parameter;
 import java.io.IOException;
 import java.util.*;
@@ -246,7 +245,7 @@ public class DtCoverageAdapter implements CoverageReader, CoordAxisReader {
       builder.description = description;
       builder.dataType = dataType;
       builder.axisType = axisType;
-      builder.attributes = atts;
+      builder.attributes = AttributeContainerMutable.copyFrom(atts);
       builder.dependenceType = dependenceType;
       builder.setDependsOn(dependsOn);
       builder.spacing = spacing;
@@ -311,7 +310,7 @@ public class DtCoverageAdapter implements CoverageReader, CoordAxisReader {
     builder.description = description;
     builder.dataType = dataType;
     builder.axisType = axisType;
-    builder.attributes = dtCoordAxis.attributes();
+    builder.attributes = AttributeContainerMutable.copyFrom(dtCoordAxis.attributes());
     builder.dependenceType = dependenceType;
     builder.setDependsOn(dependsOn);
     builder.spacing = spacing;
@@ -393,7 +392,7 @@ public class DtCoverageAdapter implements CoverageReader, CoordAxisReader {
     // Could use an Array composite here, if we had one
     Array result = Array.factory(coverage.getDataType(), subsetCoordSys.getShape());
     if (debug)
-      System.out.printf(" read %s result shape=%s%n", coverage.getName(), Misc.showInts(result.getShape()));
+      System.out.printf(" read %s result shape=%s%n", coverage.getName(), Arrays.toString(result.getShape()));
     int[] origin = new int[result.getRank()]; // all zeroes
 
     ranges.add(null); // make room for last

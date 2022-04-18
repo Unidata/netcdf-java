@@ -31,7 +31,6 @@ import ucar.nc2.stream.NcStream;
 import ucar.nc2.stream.NcStreamProto;
 import ucar.nc2.time.CalendarDateUnit;
 import ucar.unidata.geoloc.EarthLocation;
-import ucar.unidata.geoloc.EarthLocationImpl;
 import ucar.unidata.geoloc.Station;
 
 /**
@@ -206,7 +205,7 @@ public class PointStream {
         dateUnit = CalendarDateUnit.unixDateUnit;
       }
 
-      sm = new StructureMembers(pfc.getName());
+      StructureMembers.Builder builder = StructureMembers.builder().setName(pfc.getName());
       for (PointStreamProto.PointFeatureMember m : pfc.getMembersList()) {
         String name = m.getName();
         String desc = !m.getDesc().isEmpty() ? m.getDesc() : null;
@@ -214,8 +213,9 @@ public class PointStream {
         DataType dtype = NcStream.convertDataType(m.getDataType());
         int[] shape = NcStream.decodeSection(m.getSection()).getShape();
 
-        sm.addMember(name, desc, units, dtype, shape);
+        builder.addMember(name, desc, units, dtype, shape);
       }
+      sm = builder.build();
       ArrayStructureBB.setOffsets(sm);
     }
 
@@ -223,7 +223,7 @@ public class PointStream {
     public PointFeature make(DsgFeatureCollection dsg, byte[] rawBytes) throws InvalidProtocolBufferException {
       PointStreamProto.PointFeature pfp = PointStreamProto.PointFeature.parseFrom(rawBytes);
       PointStreamProto.Location locp = pfp.getLoc();
-      EarthLocationImpl location = new EarthLocationImpl(locp.getLat(), locp.getLon(), locp.getAlt());
+      EarthLocation location = EarthLocation.create(locp.getLat(), locp.getLon(), locp.getAlt());
       return new MyPointFeature(dsg, location, locp.getTime(), locp.getNomTime(), dateUnit, pfp);
     }
 

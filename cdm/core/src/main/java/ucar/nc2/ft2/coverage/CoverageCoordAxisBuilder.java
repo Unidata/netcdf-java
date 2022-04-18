@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2018 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 package ucar.nc2.ft2.coverage;
@@ -7,8 +7,10 @@ package ucar.nc2.ft2.coverage;
 import ucar.ma2.DataType;
 import ucar.ma2.Range;
 import ucar.ma2.RangeComposite;
+import ucar.ma2.RangeIterator;
 import ucar.nc2.Attribute;
 import ucar.nc2.AttributeContainer;
+import ucar.nc2.AttributeContainerMutable;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.time.CalendarDate;
@@ -24,14 +26,12 @@ import java.util.List;
  *
  * @author caron
  */
-
 public class CoverageCoordAxisBuilder {
-
   public String name;
   public String description;
   public DataType dataType;
   public AxisType axisType; // ucar.nc2.constants.AxisType ordinal
-  public AttributeContainer attributes;
+  public AttributeContainerMutable attributes;
   public CoverageCoordAxis.DependenceType dependenceType;
   public List<String> dependsOn;
 
@@ -43,14 +43,14 @@ public class CoverageCoordAxisBuilder {
   public CoordAxisReader reader;
   public boolean isSubset;
 
-  public TimeHelper timeHelper; // AxisType = Time, RunTime only
+  TimeHelper timeHelper; // AxisType = Time, RunTime only
   public String units;
 
   public double[] values;
 
   // 1D only
   public Range range; // set when its a subset
-  public RangeComposite crange;
+  RangeComposite crange;
 
   // int minIndex, maxIndex; // closed interval [minIndex, maxIndex] ie minIndex to maxIndex are included, nvalues =
   // max-min+1.
@@ -59,6 +59,7 @@ public class CoverageCoordAxisBuilder {
 
   // 2d only
   public int[] shape;
+  public List<RangeIterator> ranges; // like range, but for 2D subsets
   public Object userObject;
 
   public CoverageCoordAxisBuilder() {}
@@ -72,7 +73,7 @@ public class CoverageCoordAxisBuilder {
     this.description = description;
     this.dataType = dataType;
     this.axisType = axisType;
-    this.attributes = atts;
+    this.attributes = AttributeContainerMutable.copyFrom(atts);
     this.dependenceType = dependenceType;
     this.setDependsOn(dependsOnS);
     this.spacing = spacing;
@@ -90,7 +91,7 @@ public class CoverageCoordAxisBuilder {
     this.description = from.description;
     this.dataType = from.dataType;
     this.axisType = from.axisType;
-    this.attributes = from.attributes;
+    this.attributes = AttributeContainerMutable.copyFrom(from.attributes);
     this.dependenceType = from.dependenceType;
     this.spacing = from.spacing;
     this.values = from.values;
@@ -108,6 +109,7 @@ public class CoverageCoordAxisBuilder {
       LatLonAxis2D latlon = (LatLonAxis2D) from;
       this.shape = latlon.getShape();
       this.userObject = latlon.getUserObject();
+      this.ranges = latlon.getRanges();
     }
   }
 
@@ -307,9 +309,7 @@ public class CoverageCoordAxisBuilder {
   void setReferenceDate(CalendarDate refDate) {
     this.timeHelper = timeHelper.setReferenceDate(refDate);
     this.units = timeHelper.getUdUnit();
-    if (attributes != null) {
-      attributes.addAttribute(new Attribute(CDM.UNITS, this.units));
-    }
+    this.attributes.addAttribute(new Attribute(CDM.UNITS, this.units));
   }
 
 }

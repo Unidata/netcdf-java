@@ -104,7 +104,7 @@ public class Float10TrajectoryObsDataset extends MultiTrajectoryObsDataset imple
     }
 
     // Check that has a trajectory coordinate variable.
-    Variable var = ds.getRootGroup().findVariable(trajVarNameDefault);
+    Variable var = ds.getRootGroup().findVariableLocal(trajVarNameDefault);
     if (var == null)
       return (false);
     list = var.getDimensions();
@@ -115,7 +115,7 @@ public class Float10TrajectoryObsDataset extends MultiTrajectoryObsDataset imple
       return (false);
 
     // Check that has a time coordinate variable with units that are udunits time
-    var = ds.getRootGroup().findVariable(timeVarNameDefault);
+    var = ds.getRootGroup().findVariableLocal(timeVarNameDefault);
     if (var == null)
       return (false);
     list = var.getDimensions();
@@ -130,7 +130,7 @@ public class Float10TrajectoryObsDataset extends MultiTrajectoryObsDataset imple
       return (false);
 
     // Check for variable latitude(time) with units of "deg".
-    var = ds.getRootGroup().findVariable(latVarNameDefault);
+    var = ds.getRootGroup().findVariableLocal(latVarNameDefault);
     if (var == null)
       return (false);
     list = var.getDimensions();
@@ -145,7 +145,7 @@ public class Float10TrajectoryObsDataset extends MultiTrajectoryObsDataset imple
     // if ( ! SimpleUnit.isCompatible( units, "degrees_north")) return( false);
 
     // Check for variable longitude(time) with units of "deg".
-    var = ds.getRootGroup().findVariable(lonVarNameDefault);
+    var = ds.getRootGroup().findVariableLocal(lonVarNameDefault);
     if (var == null)
       return (false);
     list = var.getDimensions();
@@ -160,7 +160,7 @@ public class Float10TrajectoryObsDataset extends MultiTrajectoryObsDataset imple
     // if ( ! SimpleUnit.isCompatible( units, "degrees_east")) return( false);
 
     // Check for variable altitude(time) with units of "m".
-    var = ds.getRootGroup().findVariable(elevVarNameDefault);
+    var = ds.getRootGroup().findVariableLocal(elevVarNameDefault);
     if (var == null)
       return (false);
     list = var.getDimensions();
@@ -208,15 +208,18 @@ public class Float10TrajectoryObsDataset extends MultiTrajectoryObsDataset imple
     lonVarName = lonVarNameDefault;
     elevVarName = elevVarNameDefault;
 
-    Variable latVar = ncd.getRootGroup().findVariable(latVarName);
+    Variable latVar = ncd.getRootGroup().findVariableLocal(latVarName);
     latVar.addAttribute(new Attribute("units", "degrees_north"));
 
-    Variable lonVar = ncd.getRootGroup().findVariable(lonVarName);
+    Variable lonVar = ncd.getRootGroup().findVariableLocal(lonVarName);
     lonVar.addAttribute(new Attribute("units", "degrees_east"));
 
     this.setTrajectoryInfo(netcdfDataset.getRootGroup().findDimension(trajDimName),
-        netcdfDataset.getRootGroup().findVariable(trajVarName), netcdfDataset.getRootGroup().findDimension(timeDimName),
-        netcdfDataset.getRootGroup().findVariable(timeVarName), netcdfDataset.getRootGroup().findVariable(latVarName),
-        netcdfDataset.getRootGroup().findVariable(lonVarName), netcdfDataset.getRootGroup().findVariable(elevVarName));
+        netcdfDataset.getRootGroup().findVariableLocal(trajVarName),
+        netcdfDataset.getRootGroup().findDimension(timeDimName),
+        netcdfDataset.getRootGroup().findVariableLocal(timeVarName),
+        netcdfDataset.getRootGroup().findVariableLocal(latVarName),
+        netcdfDataset.getRootGroup().findVariableLocal(lonVarName),
+        netcdfDataset.getRootGroup().findVariableLocal(elevVarName));
   }
 }

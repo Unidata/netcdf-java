@@ -45,9 +45,9 @@ public abstract class AbstractRadialAdapter implements RadialDatasetSweep, Featu
 
     this.title = netcdfDataset.getTitle();
     if (title == null)
-      title = netcdfDataset.getRootGroup().findAttValueIgnoreCase("title", null);
+      title = netcdfDataset.getRootGroup().findAttributeString("title", null);
     if (desc == null)
-      desc = netcdfDataset.getRootGroup().findAttValueIgnoreCase("description", null);
+      desc = netcdfDataset.getRootGroup().findAttributeString("description", null);
 
     // look for radial data variables
     parseInfo.append("RadialDatasetAdapter look for RadialVariables\n");
@@ -201,6 +201,8 @@ public abstract class AbstractRadialAdapter implements RadialDatasetSweep, Featu
   //////////////////////////////////////////////////
   // FileCacheable
 
+  /** @deprecated do not use */
+  @Deprecated
   @Override
   public synchronized void setFileCache(FileCacheIF fileCache) {
     this.fileCache = fileCache;
@@ -221,13 +223,15 @@ public abstract class AbstractRadialAdapter implements RadialDatasetSweep, Featu
     }
   }
 
-  // release any resources like file handles
+  /** @deprecated do not use */
+  @Deprecated
   public void release() throws IOException {
     if (netcdfDataset != null)
       netcdfDataset.release();
   }
 
-  // reacquire any resources like file handles
+  /** @deprecated do not use */
+  @Deprecated
   public void reacquire() throws IOException {
     if (netcdfDataset != null)
       netcdfDataset.reacquire();
@@ -260,12 +264,22 @@ public abstract class AbstractRadialAdapter implements RadialDatasetSweep, Featu
     return location;
   }
 
+  @Override
+  public AttributeContainer attributes() {
+    return netcdfDataset != null ? netcdfDataset.getRootGroup().attributes()
+        : new AttributeContainerMutable(getRadarName()).toImmutable();
+  }
+
+  /** @deprecated use attributes() */
+  @Deprecated
   public List<Attribute> getGlobalAttributes() {
     if (netcdfDataset == null)
       return new ArrayList<>();
     return netcdfDataset.getGlobalAttributes();
   }
 
+  /** @deprecated use attributes() */
+  @Deprecated
   public Attribute findGlobalAttributeIgnoreCase(String name) {
     if (netcdfDataset == null)
       return null;
@@ -298,10 +312,9 @@ public abstract class AbstractRadialAdapter implements RadialDatasetSweep, Featu
       sbuff.append("  bb   = ").append(getBoundingBox().toString2()).append("\n");
 
     sbuff.append("  has netcdf = ").append(getNetcdfFile() != null).append("\n");
-    List<Attribute> ga = getGlobalAttributes();
-    if (!ga.isEmpty()) {
+    if (!attributes().isEmpty()) {
       sbuff.append("  Attributes\n");
-      for (Attribute a : ga) {
+      for (Attribute a : attributes()) {
         sbuff.append("    ").append(a).append("\n");
       }
     }

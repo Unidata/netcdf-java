@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
+  ~  See LICENSE for license information.
+  -->
+
+<netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" enhance="all">
+    <variable name="unvar" shape="" type="short">
+        <attribute name="_FillValue" type="short" value="55555" isUnsigned="true" />
+        <attribute name="_Unsigned" value="true" />
+    </variable>
+    <variable name="scaledvar" shape="" type="short">
+        <attribute name="scale_factor" type="float" value="2.0" />
+        <attribute name="add_offset" type="float" value="10.0" />
+        <values>1</values>
+    </variable>
+</netcdf>

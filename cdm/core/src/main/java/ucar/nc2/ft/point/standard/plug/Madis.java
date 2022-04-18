@@ -172,9 +172,9 @@ public class Madis extends TableConfigurerImpl {
   protected VNames getVariableNames(NetcdfDataset ds, Formatter errlog) {
     VNames vn = new VNames();
 
-    String val = ds.getRootGroup().findAttValueIgnoreCase("stationLocationVariables", null);
+    String val = ds.getRootGroup().findAttributeString("stationLocationVariables", null);
     if (val == null)
-      val = ds.getRootGroup().findAttValueIgnoreCase("latLonVars", null);
+      val = ds.getRootGroup().findAttributeString("latLonVars", null);
     if (val == null) {
       if (errlog != null)
         errlog.format(" Cant find global attribute stationLocationVariables%n");
@@ -190,7 +190,7 @@ public class Madis extends TableConfigurerImpl {
         vn.elev = vals[2];
     }
 
-    val = ds.getRootGroup().findAttValueIgnoreCase("timeVariables", null);
+    val = ds.getRootGroup().findAttributeString("timeVariables", null);
     if (val == null) {
       if (errlog != null)
         errlog.format(" Cant find global attribute timeVariables%n");
@@ -204,7 +204,7 @@ public class Madis extends TableConfigurerImpl {
         vn.nominalTime = vals[1];
     }
 
-    val = ds.getRootGroup().findAttValueIgnoreCase("stationDescriptionVariable", null);
+    val = ds.getRootGroup().findAttributeString("stationDescriptionVariable", null);
     if (val == null) {
       if (errlog != null)
         errlog.format(" Cant find global attribute stationDescriptionVariable%n");
@@ -213,9 +213,9 @@ public class Madis extends TableConfigurerImpl {
       vn.stnDesc = val;
     }
 
-    val = ds.getRootGroup().findAttValueIgnoreCase("stationIdVariable", null);
+    val = ds.getRootGroup().findAttributeString("stationIdVariable", null);
     if (val == null)
-      val = ds.getRootGroup().findAttValueIgnoreCase("idVariables", null);
+      val = ds.getRootGroup().findAttributeString("idVariables", null);
     if (val == null) {
       if (errlog != null)
         errlog.format(" Cant find global attribute stationIdVariable%n");

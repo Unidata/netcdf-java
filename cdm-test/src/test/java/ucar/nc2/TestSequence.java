@@ -40,6 +40,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.*;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
 import java.io.File;
@@ -49,7 +50,7 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * Test Sequences constructed when reading NLDN and BUFR datasets.
+ * Test Sequences constructed when reading BUFR datasets.
  *
  * @author caron
  * @since Nov 10, 2009
@@ -59,35 +60,9 @@ public class TestSequence {
 
   @Test
   @Category(NeedsCdmUnitTest.class)
-  public void testRead() throws IOException {
-    try (NetcdfFile ncfile = NetcdfFile.open(TestDir.cdmUnitTestDir + "ft/point/200929100.ingest")) {
-      Sequence record = (Sequence) ncfile.findVariable("record");
-
-      List<String> expectedMemberNames = Arrays.asList("tsec", "nsec", "lat", "lon", "sgnl", "mult", "fill",
-          "majorAxis", "eccent", "ellipseAngle", "chisqr");
-      Assert.assertEquals(Sets.newHashSet(expectedMemberNames), Sets.newHashSet(record.getVariableNames()));
-
-      try (StructureDataIterator iter = record.getStructureIterator()) {
-        int recordCount = 0;
-        while (iter.hasNext()) {
-          StructureData data = iter.next();
-
-          // Assert that a single value from the first record equals an expected value.
-          // Kinda lazy, but checking all values would be impractical.
-          if (recordCount++ == 0) {
-            Assert.assertEquals(-700, data.getScalarShort("sgnl"));
-          }
-        }
-
-        Assert.assertEquals(1165, recordCount);
-      }
-    }
-  }
-
-  @Test
-  @Category(NeedsCdmUnitTest.class)
   public void testReadNestedSequence() throws IOException {
-    try (NetcdfFile ncfile = NetcdfFile.open(TestDir.cdmUnitTestDir + "formats/bufr/userExamples/5900.20030601.rass")) {
+    try (
+        NetcdfFile ncfile = NetcdfFiles.open(TestDir.cdmUnitTestDir + "formats/bufr/userExamples/5900.20030601.rass")) {
       Sequence obs = (Sequence) ncfile.findVariable("obs");
 
       List<String> expectedMemberNames = Arrays.asList("WMO_block_number", "WMO_station_number", "Type_of_station",
@@ -147,7 +122,7 @@ public class TestSequence {
     // Read the enhanced values of "obs.struct1.u-component". Of course, we could do this much more concisely with
     // "ncFile.findVariable("obs.struct1.u-component").read()", but we're trying to demonstrate a bug in
     // ArrayStructureMA.factoryMA() that only occurs when we iterate over a Sequence with unknown length ("obs").
-    try (NetcdfFile ncFile = NetcdfDataset.openDataset(dataset.getAbsolutePath())) {
+    try (NetcdfFile ncFile = NetcdfDatasets.openDataset(dataset.getAbsolutePath())) {
       /*
        * The structure of the file (with irrelevant bits removed) is:
        * netcdf {

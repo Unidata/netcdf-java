@@ -1,65 +1,127 @@
-if (name != "netcdf-java") {
-    throw new GradleException("This script plugin should only be applied to the root project, not '$name'.")
+buildscript {
+  // Add the "buildPlugins" ExtraProperty. It should be usable from the rest of this script as well.
+  // See http://goo.gl/9bixNV
+  apply from: "$rootDir/gradle/any/shared-mvn-coords.gradle"
+
+  // The buildscript {} block is odd: even though we applied dependencies.gradle above, the repositories therein
+  // do not get included here. Instead, we must explicitly define the repos again. Yay for duplication.
+  repositories {
+    gradlePluginPortal()
+    exclusiveContent {
+      forRepository {
+        maven {
+          url 'https://artifacts.unidata.ucar.edu/repository/unidata-all/'
+        }
+      }
+      // only look for unidata plugin related artifacts from the unidata-all repo
+      filter {
+        includeModule 'edu.ucar.unidata', 'unidata-nexus-gradle'
+      }
+    }
+  }
+
+  dependencies {
+    classpath buildPlugins.nexus
+  }
 }
 
-apply plugin: 'maven-publish'
+if (!name.equals(rootProject.name)) {
+  throw new GradleException("This script plugin should only be applied to the root project, not '$name'.")
+}
+
+apply plugin: 'maven-publish' // gives us the publish task even though we are not going to publish anything to maven
+apply plugin: 'com.github.johnrengelman.shadow'
 apply from: "$rootDir/gradle/any/properties.gradle"  // For Nexus credential properties.
 
-import edu.ucar.build.publishing.PublishingUtil
-import org.gradle.api.internal.artifacts.publish.ArchivePublishArtifact
+import edu.ucar.build.publishing.tasks.PublishToRawRepoTask
 
-publishing {
-    publications {
-        // Publish all artifacts we've added to the "archives" configuration of the root project. See fatJars.gradle.
-        rootProject.configurations.archives.allArtifacts.each {
-            if (it instanceof ArchivePublishArtifact) {
-                AbstractArchiveTask task = (it as ArchivePublishArtifact).archiveTask
-                
-                "$task.baseName"(MavenPublication) {
-                    artifactId task.baseName
-                    artifact task
-                }
-            }
+import java.nio.file.Files
+import java.nio.file.Paths
+import java.security.DigestInputStream
+import java.security.MessageDigest
+
+def createChecksumsTask = tasks.register('createChecksums') {
+  group = 'publishing'
+  description = 'Create .sha1, .sha256, and .md5 checksum files for the fatJars.'
+  doLast {
+    String sourceDir = "${rootProject.getBuildDir()}/libs"
+    def files = fileTree(dir: "${sourceDir}", include: '**/*.jar')
+    def algorithms = ["MD5", "SHA-1", "SHA-256"]
+    algorithms.each { algorithm ->
+      MessageDigest md = MessageDigest.getInstance(algorithm)
+      files.each { File jarFile ->
+        InputStream is = null
+        DigestInputStream dis = null
+        byte[] buffer = new byte[2048]
+        try {
+          is = Files.newInputStream(Paths.get(jarFile.absolutePath))
+          dis = new DigestInputStream(is, md)
+          while (dis.read(buffer) != -1) {
+            // just need to read through the file
+          }
+          dis.close()
+          is.close()
+        } finally {
+          if (dis != null) {
+            dis.close()
+          }
+          if (is != null) {
+            is.close()
+          }
         }
-        
-        ncjBom(MavenPublication) {  // Maven BOM publication
-            artifactId 'netcdf-java-bom'
 
-            pom.withXml{
-                List<Project> publishedProjects = allprojects*.findAll { it.plugins.withType(MavenPublishPlugin) }
-                List<MavenPublication> allPubs = publishedProjects.publishing.publications.flatten()
-
-                // Don't include ncjBom (and related), legacy, or any of the fatJar
-                // pubs in dependencyManagement.
-                def ignoreThesePubNames = ["dap4lib",
-                                           "ncIdv",
-                                           "ncjBom",
-                                           "toolsUI",
-                                           "legacy"]
-
-                List<MavenPublication> pubsToUseForBom = allPubs.findAll {
-                    !ignoreThesePubNames.contains(it.name)
-                }
-
-                asNode().append PublishingUtil.createDependencyManagement(pubsToUseForBom)
-            }
+        byte[] digest = md.digest()
+        StringBuilder sb = new StringBuilder()
+        for (int b = 0; b < digest.length; b++) {
+          sb.append(Integer.toString((digest[b] & 0xff) + 0x100, 16).substring(1))
         }
+        String checksum = sb.toString()
+        def ext = algorithm.toLowerCase().replace("-", "")
+        String outputFilename = "${buildDir}/libs/${jarFile.getName()}.${ext}"
+        new File(outputFilename).withWriter { writer ->
+          writer.write checksum
+        }
+      }
     }
+  }
+  dependsOn buildNcIdv, buildNetcdfAll, buildToolsUI
 }
 
-// The "publish" tasks require credentials for our Nexus server, which they look for in Gradle properties.
-// If those properties (i.e. NEXUS_USERNAME_KEY and NEXUS_PASSWORD_KEY) haven't been provided, the build will fail.
-// Therefore, we only want to configure credentials when a "publish" task is part of the execution plan. Otherwise,
-// unavailable credentials could cause a build to fail even if we aren't doing any publishing. The TaskExecutionGraph
-// allows us to do that.
-gradle.taskGraph.whenReady { TaskExecutionGraph taskGraph ->
-    // This won't find any publishToMavenLocal tasks. Those are of type PublishToMavenLocal
-    Collection<Task> mavenPublishTasks = taskGraph.allTasks.findAll { it instanceof PublishToMavenRepository }
-    
-    mavenPublishTasks.each {
-        it.repository.credentials.with {
-            username = getPropertyOrFailBuild NEXUS_USERNAME_KEY
-            password = getPropertyOrFailBuild NEXUS_PASSWORD_KEY
-        }
-    }
+def publishFatJarsTask = tasks.register('publishFatJars', PublishToRawRepoTask) {
+  group = 'publishing'
+  description = 'Publish fatJars to Nexus downloads under /version/.'
+  host = 'https://artifacts.unidata.ucar.edu/'
+  repoName = 'downloads-netcdf-java'
+
+  publishSrc = new File(rootProject.getBuildDir(), "libs")
+  destPath = "$project.cleanVersion/"
+  dependsOn createChecksumsTask
+
+  onlyIf {
+    // Will be evaluated at task execution time, not during configuration.
+    // Fails the build if the specified properties haven't been provided.
+    username = getPropertyOrFailBuild NEXUS_USERNAME_KEY
+    password = getPropertyOrFailBuild NEXUS_PASSWORD_KEY
+    return true
+  }
 }
+
+publish.dependsOn publishFatJarsTask
+
+// The "publish" tasks for all subprojects require credentials for our Nexus server, which they look for in Gradle
+// properties. If those properties (i.e. NEXUS_USERNAME_KEY and NEXUS_PASSWORD_KEY) haven't been provided, the build
+// will fail. Therefore, we only want to configure credentials when a "publish" task is part of the execution plan.
+// Otherwise, unavailable credentials could cause a build to fail even if we aren't doing any publishing. The
+// TaskExecutionGraph allows us to do that.
+gradle.taskGraph.whenReady {TaskExecutionGraph taskGraph ->
+  // This won't find any publishToMavenLocal tasks. Those are of type PublishToMavenLocal
+  Collection<Task> mavenPublishTasks = taskGraph.allTasks.findAll {
+    it instanceof PublishToMavenRepository
+  }
+  mavenPublishTasks.each {
+    it.repository.credentials.with {
+      username = getPropertyOrFailBuild NEXUS_USERNAME_KEY
+      password = getPropertyOrFailBuild NEXUS_PASSWORD_KEY
+    }
+  }
+ }

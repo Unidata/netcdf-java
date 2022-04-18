@@ -20,7 +20,7 @@ import java.util.List;
  * 1) ConstantForecast: runtime (ind), timeOffset (dep), time (scalar)
  * 1) Best: time (ind), runtime (dep)
  *
- * Grib: If theres a time offset, then there must be a runtime coordinate, and the time offset is reletive to that.
+ * Grib: If theres a time offset, then there must be a runtime coordinate, and the time offset is relative to that.
  * LOOK only used by Grib
  */
 @Immutable

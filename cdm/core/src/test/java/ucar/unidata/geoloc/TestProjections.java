@@ -1,7 +1,7 @@
 
 package ucar.unidata.geoloc;
 
-import com.google.common.truth.Truth;
+import static com.google.common.truth.Truth.assertThat;
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -9,6 +9,10 @@ import org.slf4j.LoggerFactory;
 import ucar.unidata.geoloc.projection.*;
 import ucar.unidata.geoloc.projection.proj4.CylindricalEqualAreaProjection;
 import ucar.unidata.geoloc.projection.proj4.EquidistantAzimuthalProjection;
+import ucar.unidata.geoloc.projection.proj4.PolyconicProjection;
+import ucar.unidata.geoloc.projection.proj4.StereographicAzimuthalProjection;
+import ucar.unidata.geoloc.projection.proj4.TransverseMercatorProjection;
+import ucar.unidata.geoloc.projection.sat.Geostationary;
 import ucar.unidata.geoloc.projection.sat.MSGnavigation;
 import ucar.unidata.geoloc.projection.proj4.AlbersEqualAreaEllipse;
 import ucar.unidata.geoloc.projection.proj4.LambertConformalConicEllipse;
@@ -33,12 +37,12 @@ public class TestProjections {
       return LatLonPointImmutable.INVALID;
     if (Double.isInfinite(p.getX()) || Double.isInfinite(p.getY()))
       return LatLonPointImmutable.INVALID;
-    LatLonPointImpl endL = (LatLonPointImpl) proj.projToLatLon(p);
+    LatLonPoint endL = proj.projToLatLon(p);
 
     if (show) {
       System.out.println("start  = " + startL.toString(8));
       System.out.println("projection point  = " + p.toString());
-      System.out.println("end  = " + endL.toString(8));
+      System.out.println("end  = " + endL.toString());
     }
     return endL;
   }
@@ -78,9 +82,8 @@ public class TestProjections {
     }
 
     int countT2 = 0;
-    ProjectionPointImpl startP = new ProjectionPointImpl();
     for (int i = 0; i < NTRIALS; i++) {
-      startP.setLocation(10000.0 * (r.nextDouble() - .5), // random proj point
+      ProjectionPoint startP = ProjectionPoint.create(10000.0 * (r.nextDouble() - .5), // random proj point
           10000.0 * (r.nextDouble() - .5));
 
       LatLonPoint ll = proj.projToLatLon(startP);
@@ -138,18 +141,14 @@ public class TestProjections {
 
     startL.setLatitude(latMax / 2);
     startL.setLongitude(lonMax / 2);
-    ProjectionPointImpl base = new ProjectionPointImpl();
-    proj.latLonToProj(startL, base);
-    ProjectionPointImpl startP = new ProjectionPointImpl();
     for (int i = 0; i < NTRIALS; i++) {
       double x = minx + rangex * r.nextDouble();
       double y = miny + rangey * r.nextDouble();
-      startP.setLocation(x, y);
+      ProjectionPoint startP = ProjectionPoint.create(x, y);
 
       try {
         LatLonPoint ll = proj.projToLatLon(startP);
         ProjectionPoint endP = proj.latLonToProj(ll);
-
 
         if (show) {
           System.out.println("start  = " + startP);
@@ -171,11 +170,10 @@ public class TestProjections {
   // must have x within +/- xMax, y within +/- yMax
   private void testProjectionProjMax(ProjectionImpl proj, double xMax, double yMax) {
     java.util.Random r = new java.util.Random((long) this.hashCode());
-    ProjectionPointImpl startP = new ProjectionPointImpl();
     for (int i = 0; i < NTRIALS; i++) {
       double x = xMax * (2 * r.nextDouble() - 1);
       double y = yMax * (2 * r.nextDouble() - 1);
-      startP.setLocation(x, y);
+      ProjectionPoint startP = ProjectionPoint.create(x, y);
       try {
         LatLonPoint ll = proj.projToLatLon(startP);
         ProjectionPoint endP = proj.latLonToProj(ll);
@@ -201,17 +199,15 @@ public class TestProjections {
     testProjection(new LambertConformal());
     LambertConformal p = new LambertConformal();
     LambertConformal p2 = (LambertConformal) p.constructCopy();
-    Truth.assertThat(p).isEqualTo(p2);
+    assertThat(p).isEqualTo(p2);
   }
 
   @Test
   public void testLCseam() {
     // test seam crossing
     LambertConformal lc = new LambertConformal(40.0, 180.0, 20.0, 60.0);
-    ProjectionPointImpl p1 =
-        (ProjectionPointImpl) lc.latLonToProj(new LatLonPointImpl(0.0, -1.0), new ProjectionPointImpl());
-    ProjectionPointImpl p2 =
-        (ProjectionPointImpl) lc.latLonToProj(new LatLonPointImpl(0.0, 1.0), new ProjectionPointImpl());
+    ProjectionPoint p1 = lc.latLonToProj(LatLonPoint.create(0.0, -1.0));
+    ProjectionPoint p2 = lc.latLonToProj(LatLonPoint.create(0.0, 1.0));
     if (show) {
       System.out.printf(" p1= x=%f y=%f%n", p1.getX(), p1.getY());
       System.out.printf(" p2= x=%f y=%f%n", p2.getX(), p2.getY());
@@ -225,7 +221,7 @@ public class TestProjections {
 
     TransverseMercator p = new TransverseMercator();
     TransverseMercator p2 = (TransverseMercator) p.constructCopy();
-    Truth.assertThat(p).isEqualTo(p2);
+    assertThat(p).isEqualTo(p2);
   }
 
   @Test
@@ -233,7 +229,7 @@ public class TestProjections {
     testProjection(new Stereographic());
     Stereographic p = new Stereographic();
     Stereographic p2 = (Stereographic) p.constructCopy();
-    Truth.assertThat(p).isEqualTo(p2);
+    assertThat(p).isEqualTo(p2);
   }
 
   @Test
@@ -241,7 +237,7 @@ public class TestProjections {
     testProjection(new LambertAzimuthalEqualArea());
     LambertAzimuthalEqualArea p = new LambertAzimuthalEqualArea();
     LambertAzimuthalEqualArea p2 = (LambertAzimuthalEqualArea) p.constructCopy();
-    Truth.assertThat(p).isEqualTo(p2);
+    assertThat(p).isEqualTo(p2);
   }
 
   @Test
@@ -249,7 +245,7 @@ public class TestProjections {
     testProjectionLonMax(new Orthographic(), 10, 10);
     Orthographic p = new Orthographic();
     Orthographic p2 = (Orthographic) p.constructCopy();
-    Truth.assertThat(p).isEqualTo(p2);
+    assertThat(p).isEqualTo(p2);
   }
 
   @Test
@@ -257,7 +253,7 @@ public class TestProjections {
     testProjection(new AlbersEqualArea());
     AlbersEqualArea p = new AlbersEqualArea();
     AlbersEqualArea p2 = (AlbersEqualArea) p.constructCopy();
-    Truth.assertThat(p).isEqualTo(p2);
+    assertThat(p).isEqualTo(p2);
   }
 
   @Test
@@ -265,7 +261,7 @@ public class TestProjections {
     testProjection(new CylindricalEqualAreaProjection());
     CylindricalEqualAreaProjection p = new CylindricalEqualAreaProjection();
     CylindricalEqualAreaProjection p2 = (CylindricalEqualAreaProjection) p.constructCopy();
-    Truth.assertThat(p).isEqualTo(p2);
+    assertThat(p).isEqualTo(p2);
   }
 
   @Test
@@ -273,21 +269,21 @@ public class TestProjections {
     testProjection(new EquidistantAzimuthalProjection());
     EquidistantAzimuthalProjection p = new EquidistantAzimuthalProjection();
     EquidistantAzimuthalProjection p2 = (EquidistantAzimuthalProjection) p.constructCopy();
-    Truth.assertThat(p).isEqualTo(p2);
+    assertThat(p).isEqualTo(p2);
   }
 
   public void utestAEAE() {
     testProjectionLonMax(new AlbersEqualAreaEllipse(), 180, 80);
     AlbersEqualAreaEllipse p = new AlbersEqualAreaEllipse();
     AlbersEqualAreaEllipse p2 = (AlbersEqualAreaEllipse) p.constructCopy();
-    Truth.assertThat(p).isEqualTo(p2);
+    assertThat(p).isEqualTo(p2);
   }
 
   public void utestLCCE() {
     testProjectionLonMax(new LambertConformalConicEllipse(), 360, 80);
     LambertConformalConicEllipse p = new LambertConformalConicEllipse();
     LambertConformalConicEllipse p2 = (LambertConformalConicEllipse) p.constructCopy();
-    Truth.assertThat(p).isEqualTo(p2);
+    assertThat(p).isEqualTo(p2);
   }
 
   @Test
@@ -295,7 +291,7 @@ public class TestProjections {
     testProjectionProjMax(new FlatEarth(), 5000, 5000);
     FlatEarth p = new FlatEarth();
     FlatEarth p2 = (FlatEarth) p.constructCopy();
-    Truth.assertThat(p).isEqualTo(p2);
+    assertThat(p).isEqualTo(p2);
   }
 
   @Test
@@ -303,11 +299,11 @@ public class TestProjections {
     testProjection(new Mercator());
     Mercator p = new Mercator();
     Mercator p2 = (Mercator) p.constructCopy();
-    Truth.assertThat(p).isEqualTo(p2);
+    assertThat(p).isEqualTo(p2);
   }
 
   private void showProjVal(ProjectionImpl proj, double lat, double lon) {
-    LatLonPointImpl startL = new LatLonPointImpl(lat, lon);
+    LatLonPoint startL = LatLonPoint.create(lat, lon);
     ProjectionPoint p = proj.latLonToProj(startL);
     if (show)
       System.out.printf("lat,lon= (%f, %f) x, y= (%f, %f) %n", lat, lon, p.getX(), p.getY());
@@ -331,7 +327,7 @@ public class TestProjections {
     testProjectionLonMax(new RotatedPole(37, 177), 360, 88);
     RotatedPole p = new RotatedPole();
     RotatedPole p2 = (RotatedPole) p.constructCopy();
-    Truth.assertThat(p).isEqualTo(p2);
+    assertThat(p).isEqualTo(p2);
   }
 
   /*
@@ -344,7 +340,7 @@ public class TestProjections {
     testProjectionLonMax(new RotatedLatLon(-30, -15, 0), 360, 88);
     RotatedLatLon p = new RotatedLatLon();
     RotatedLatLon p2 = (RotatedLatLon) p.constructCopy();
-    Truth.assertThat(p).isEqualTo(p2);
+    assertThat(p).isEqualTo(p2);
   }
 
   @Test
@@ -353,7 +349,7 @@ public class TestProjections {
     testProjection(new Sinusoidal(0, 0, 0, 6371.007));
     Sinusoidal p = new Sinusoidal();
     Sinusoidal p2 = (Sinusoidal) p.constructCopy();
-    Truth.assertThat(p).isEqualTo(p2);
+    assertThat(p).isEqualTo(p2);
   }
 
   @Test
@@ -368,14 +364,11 @@ public class TestProjections {
 
     UtmProjection p = new UtmProjection();
     UtmProjection p2 = (UtmProjection) p.constructCopy();
-    Truth.assertThat(p).isEqualTo(p2); // */
+    assertThat(p).isEqualTo(p2); // */
   }
 
   private void testProjectionUTM(double lat, double lon) {
-    LatLonPointImpl startL = new LatLonPointImpl();
-
-    startL.setLatitude(lat);
-    startL.setLongitude(lon);
+    LatLonPoint startL = LatLonPoint.create(lat, lon);
     int zone = (int) ((lon + 183) / 6);
     UtmProjection proj = new UtmProjection(zone, lat >= 0.0);
 
@@ -388,8 +381,8 @@ public class TestProjections {
       System.out.println("endL  = " + endL);
     }
 
-    Assert.assertEquals(startL.toString(8), startL.getLatitude(), endL.getLatitude(), 1.3e-4);
-    Assert.assertEquals(startL.toString(8), startL.getLongitude(), endL.getLongitude(), 1.3e-4);
+    Assert.assertEquals(startL.toString(), startL.getLatitude(), endL.getLatitude(), 1.3e-4);
+    Assert.assertEquals(startL.toString(), startL.getLongitude(), endL.getLongitude(), 1.3e-4);
   }
 
   private void testProjectionUTM(int n) {
@@ -419,7 +412,7 @@ public class TestProjections {
     }
 
     /*
-     * ProjectionPointImpl startP = new ProjectionPointImpl();
+     * ProjectionPointImpl startP = ProjectionPoint.create();
      * for (int i = 0; i < NTRIALS; i++) {
      * startP.setLocation(10000.0 * (r.nextDouble() - .5), // random proj point
      * 10000.0 * (r.nextDouble() - .5));
@@ -438,6 +431,85 @@ public class TestProjections {
 
     if (show)
       System.out.println("Tested " + n + " pts for UTM projection ");
+  }
+
+  @Test
+  // Test known values for the port to 6.
+  public void makeSanityTest() {
+    ProjectionPoint ppt = ProjectionPoint.create(-4000, -2000);
+    LatLonPoint lpt = LatLonPoint.create(11, -22);
+
+    makeSanityTest(new AlbersEqualArea(), ppt, lpt);
+    makeSanityTest(new FlatEarth(), ppt, lpt);
+    makeSanityTest(new LambertAzimuthalEqualArea(), ppt, lpt);
+    makeSanityTest(new LambertConformal(), ppt, lpt);
+    makeSanityTest(new Mercator(), ppt, lpt);
+    makeSanityTest(new Orthographic(), ppt, lpt);
+    makeSanityTest(new RotatedLatLon(), ppt, lpt);
+    makeSanityTest(new RotatedPole(), ProjectionPoint.create(-105, -40), lpt);
+    makeSanityTest(new Sinusoidal(), ppt, lpt);
+    makeSanityTest(new Stereographic(90.0, 255.0, 0.9330127018922193, 0, 0, 6371229.0), ppt, lpt);
+    makeSanityTest(new UtmProjection(), ppt, lpt);
+    makeSanityTest(new VerticalPerspectiveView(), ppt, lpt);
+  }
+
+  @Test
+  // Test known values for the port to 6.
+  public void makeSatSanityTest() {
+    ProjectionPoint ppt = ProjectionPoint.create(1000, -1000);
+    LatLonPoint lpt = LatLonPoint.create(11, -22);
+
+    makeSanityTest(new Geostationary(), ProjectionPoint.create(-.07, .04), lpt);
+    makeSanityTest(new MSGnavigation(), ppt, lpt);
+  }
+
+  @Test
+  // Test known values for the port to 6.
+  public void makeProj4SanityTest() {
+    ProjectionPoint ppt = ProjectionPoint.create(999, 666);
+    LatLonPoint lpt = LatLonPoint.create(11.1, -222);
+
+    makeSanityTest(new AlbersEqualAreaEllipse(), ppt, lpt);
+    makeSanityTest(new AlbersEqualAreaEllipse(23.0, -96.0, 29.5, 45.5, 0, 0, new Earth()), ppt, lpt);
+    makeSanityTest(new CylindricalEqualAreaProjection(), ppt, lpt);
+    makeSanityTest(new CylindricalEqualAreaProjection(0, 1, 0, 0, new Earth()), ppt, lpt);
+
+    makeSanityTest(new EquidistantAzimuthalProjection(0, 0, 0, 0, EarthEllipsoid.WGS84), ppt, lpt);
+    makeSanityTest(new EquidistantAzimuthalProjection(45, 0, 0, 0, EarthEllipsoid.WGS84), ppt, lpt);
+    makeSanityTest(new EquidistantAzimuthalProjection(90, 0, 0, 0, EarthEllipsoid.WGS84), ppt, lpt);
+    makeSanityTest(new EquidistantAzimuthalProjection(-90, 0, 0, 0, EarthEllipsoid.WGS84), ppt, lpt);
+    makeSanityTest(new EquidistantAzimuthalProjection(0, 0, 0, 0, new Earth()), ppt, lpt);
+    makeSanityTest(new EquidistantAzimuthalProjection(45, 0, 0, 0, new Earth()), ppt, lpt);
+    makeSanityTest(new EquidistantAzimuthalProjection(90, 0, 0, 0, new Earth()), ppt, lpt);
+    makeSanityTest(new EquidistantAzimuthalProjection(-90, 0, 0, 0, new Earth()), ppt, lpt);
+
+    makeSanityTest(new LambertConformalConicEllipse(), ppt, lpt);
+    makeSanityTest(new PolyconicProjection(), ppt, lpt);
+
+    makeSanityTest(new StereographicAzimuthalProjection(0, 0, 0.9330127018922193, 60., 0, 0, EarthEllipsoid.WGS84), ppt,
+        lpt);
+    makeSanityTest(new StereographicAzimuthalProjection(45, 0, 0.9330127018922193, 60., 0, 0, EarthEllipsoid.WGS84),
+        ppt, lpt);
+    makeSanityTest(new StereographicAzimuthalProjection(90, 0, 0.9330127018922193, 60., 0, 0, EarthEllipsoid.WGS84),
+        ppt, lpt);
+    makeSanityTest(new StereographicAzimuthalProjection(-90, 0, 0.9330127018922193, 60., 0, 0, EarthEllipsoid.WGS84),
+        ppt, lpt);
+    makeSanityTest(new StereographicAzimuthalProjection(0, 0, 0.9330127018922193, 60., 0, 0, new Earth()), ppt, lpt);
+    makeSanityTest(new StereographicAzimuthalProjection(45, 0, 0.9330127018922193, 60., 0, 0, new Earth()), ppt, lpt);
+    makeSanityTest(new StereographicAzimuthalProjection(90, 0, 0.9330127018922193, 60., 0, 0, new Earth()), ppt, lpt);
+    makeSanityTest(new StereographicAzimuthalProjection(-90, 0, 0.9330127018922193, 60., 0, 0, new Earth()), ppt, lpt);
+
+    makeSanityTest(new TransverseMercatorProjection(), ppt, lpt);
+    makeSanityTest(new TransverseMercatorProjection(new Earth(), 0, 0, 0.9996, 0, 0), ppt, lpt);
+  }
+
+  private void makeSanityTest(Projection p, ProjectionPoint ppt, LatLonPoint lpt) {
+    System.out.printf("%s%n", p);
+    LatLonPoint pr = p.projToLatLon(ppt);
+    System.out.printf(" projToLatLon %s -> %s%n", ppt, pr);
+
+    ProjectionPoint lr = p.latLonToProj(lpt);
+    System.out.printf(" latLonToProj %s -> %s%n", lpt, lr);
   }
 
 }

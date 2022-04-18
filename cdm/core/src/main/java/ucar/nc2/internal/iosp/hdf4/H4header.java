@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -31,15 +32,14 @@ import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
 import ucar.nc2.Group;
 import ucar.nc2.Group.Builder;
-import ucar.nc2.NCdumpW;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFiles;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.CDM;
-import ucar.nc2.internal.iosp.netcdf3.NetcdfFileFormat;
 import ucar.nc2.iosp.hdf4.H4type;
 import ucar.nc2.iosp.hdf4.TagEnum;
+import ucar.nc2.write.Ncdump;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.Format;
 
@@ -53,12 +53,28 @@ import ucar.unidata.util.Format;
 public class H4header implements HdfHeaderIF {
   private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(H4header.class);
 
-  private static final byte[] head = {0x0e, 0x03, 0x13, 0x01};
-  private static final String shead = new String(head, StandardCharsets.UTF_8);
+  private static final byte[] H4HEAD = {(byte) 0x0e, (byte) 0x03, (byte) 0x13, (byte) 0x01};
+  private static final String H4HEAD_STRING = new String(H4HEAD, StandardCharsets.UTF_8);
   private static final long maxHeaderPos = 500000; // header's gotta be within this
 
-  public static boolean isValidFile(ucar.unidata.io.RandomAccessFile raf) throws IOException {
-    return NetcdfFileFormat.findNetcdfFormatType(raf) == NetcdfFileFormat.HDF4;
+  static boolean isValidFile(ucar.unidata.io.RandomAccessFile raf) throws IOException {
+    // fail fast on directory
+    if (raf.isDirectory()) {
+      return false;
+    }
+    long pos = 0;
+    long size = raf.length();
+
+    // search forward for the header
+    while ((pos < (size - H4HEAD.length)) && (pos < maxHeaderPos)) {
+      raf.seek(pos);
+      String magic = raf.readString(H4HEAD.length);
+      if (magic.equals(H4HEAD_STRING))
+        return true;
+      pos = (pos == 0) ? 512 : 2 * pos;
+    }
+
+    return false;
   }
 
   private static boolean debugDD; // DDH/DD
@@ -98,13 +114,36 @@ public class H4header implements HdfHeaderIF {
   RandomAccessFile raf;
   private Group.Builder root;
   private boolean isEos;
+  String version = "N/A";
 
   private List<Tag> alltags;
   private Map<Integer, Tag> tagMap = new HashMap<>();
   private Map<Short, Vinfo> refnoMap = new HashMap<>();
 
   private MemTracker memTracker;
-  private PrintWriter debugOut = new PrintWriter(new OutputStreamWriter(System.out, StandardCharsets.UTF_8));
+  private PrintWriter debugOut;
+
+  private final Charset valueCharset;
+
+  public H4header() {
+    valueCharset = StandardCharsets.UTF_8;
+    debugOut = new PrintWriter(new OutputStreamWriter(System.out, StandardCharsets.UTF_8));
+  }
+
+  H4header(H4iosp h4iosp) {
+    valueCharset = h4iosp.getValueCharset().orElse(StandardCharsets.UTF_8);
+    debugOut = new PrintWriter(new OutputStreamWriter(System.out, StandardCharsets.UTF_8));
+  }
+
+  /**
+   * Return defined {@link Charset value charset} that
+   * will be used by reading HDF4 header.
+   * 
+   * @return {@link Charset value charset}
+   */
+  protected Charset getValueCharset() {
+    return valueCharset;
+  }
 
   public boolean isEos() {
     return isEos;
@@ -146,10 +185,10 @@ public class H4header implements HdfHeaderIF {
     construct(alltags);
 
     if (useHdfEos) {
-      isEos = HdfEos.amendFromODL(this, root);
+      isEos = HdfEos.amendFromODL(raf.getLocation(), this, root);
       if (isEos) {
         adjustDimensions();
-        String history = root.getAttributeContainer().findAttValueIgnoreCase("_History", "");
+        String history = root.getAttributeContainer().findAttributeString("_History", "");
         root.addAttribute(new Attribute("_History", history + "; HDF-EOS StructMetadata information was read"));
       }
     }
@@ -164,7 +203,7 @@ public class H4header implements HdfHeaderIF {
   }
 
   public void getEosInfo(Formatter f) throws IOException {
-    HdfEos.getEosInfo(this, root, f);
+    HdfEos.getEosInfo(raf.getLocation(), this, root, f);
   }
 
   private static int tagid(short refno, short code) {
@@ -248,7 +287,7 @@ public class H4header implements HdfHeaderIF {
     for (Variable.Builder v : vars) {
       Vinfo vinfo = (Vinfo) v.spiObject;
       // if (vinfo.group == null) {
-      if (vinfo.group == null && !root.findVariable(v.shortName).isPresent()) {
+      if (vinfo.group == null && !root.findVariableLocal(v.shortName).isPresent()) {
         root.addVariable(v);
         vinfo.group = root;
       }
@@ -270,7 +309,8 @@ public class H4header implements HdfHeaderIF {
     root.addAttribute(new Attribute("_History", "Direct read of HDF4 file through CDM library"));
     for (Tag t : alltags) {
       if (t.code == 30) {
-        root.addAttribute(new Attribute("HDF4_Version", ((TagVersion) t).value()));
+        this.version = ((TagVersion) t).value();
+        root.addAttribute(new Attribute("HDF4_Version", this.version));
         t.used = true;
 
       } else if (t.code == 100) {
@@ -291,7 +331,7 @@ public class H4header implements HdfHeaderIF {
     Set<Dimension> dimUsed = dimUsedMap.keySet();
 
     // remove unused dimensions from root group
-    Iterator iter = root.getDimensionIterator();
+    Iterator iter = root.getDimensions().iterator();
     while (iter.hasNext()) {
       Dimension dim = (Dimension) iter.next();
       if (!dimUsed.contains(dim)) {
@@ -317,7 +357,7 @@ public class H4header implements HdfHeaderIF {
         }
       }
       if (lowest != null) {
-        root.removeFromAny(root, dim);
+        root.removeDimensionFromAllGroups(root, dim);
         lowest.addDimensionIfNotExists(dim);
       }
     }
@@ -375,7 +415,7 @@ public class H4header implements HdfHeaderIF {
     }
 
     boolean isUnlimited = (length == 0);
-    Dimension dim = Dimension.builder(group.name, length).setIsUnlimited(isUnlimited).build();
+    Dimension dim = Dimension.builder().setName(group.name).setIsUnlimited(isUnlimited).setLength(length).build();
     root.addDimension(dim);
   }
 
@@ -429,11 +469,11 @@ public class H4header implements HdfHeaderIF {
       case 3:
       case 4:
         if (nelems == 1)
-          att = new Attribute(name, raf.readStringMax(size));
+          att = new Attribute(name, raf.readStringMax(size, valueCharset));
         else {
           String[] vals = new String[nelems];
           for (int i = 0; i < nelems; i++)
-            vals[i] = raf.readStringMax(size);
+            vals[i] = raf.readStringMax(size, valueCharset);
           att = new Attribute(name, Array.factory(DataType.STRING, new int[] {nelems}, vals));
         }
         break;
@@ -512,7 +552,7 @@ public class H4header implements HdfHeaderIF {
     if (tagGroup.nelems < 1)
       return Optional.empty();
 
-    Group.Builder group = Group.builder(parent).setName(tagGroup.name);
+    Group.Builder group = Group.builder().setName(tagGroup.name);
     parent.addGroup(group);
     tagGroup.used = true;
     tagGroup.group = group;
@@ -564,7 +604,7 @@ public class H4header implements HdfHeaderIF {
 
       if (tag.code == 1965) { // VGroup - prob a Group
         TagVGroup vg = (TagVGroup) tag;
-        if ((vg.group != null) && (vg.group.parentGroup == root)) {
+        if ((vg.group != null) && (vg.group.getParentGroup() == root)) {
           addGroupToGroup(group, vg.group, vg);
         } else {
           // makeGroup adds the nested group.
@@ -581,7 +621,7 @@ public class H4header implements HdfHeaderIF {
   }
 
   private void addVariableToGroup(Group.Builder g, Variable.Builder v, Tag tag) {
-    g.findVariable(v.shortName).ifPresent(varExisting -> v.setName(v.shortName + tag.refno)); // disambiguate
+    g.findVariableLocal(v.shortName).ifPresent(varExisting -> v.setName(v.shortName + tag.refno)); // disambiguate
     g.addVariable(v);
     tag.vinfo.group = g;
   }
@@ -590,7 +630,8 @@ public class H4header implements HdfHeaderIF {
     // may have to reparent the group
     root.removeGroup(g.shortName);
 
-    parent.findGroup(g.shortName).ifPresent(groupExisting -> g.setName(g.shortName + tag.refno)); // disambiguate name
+    parent.findGroupLocal(g.shortName).ifPresent(groupExisting -> g.setName(g.shortName + tag.refno)); // disambiguate
+                                                                                                       // name
 
     parent.addGroup(g);
   }
@@ -886,7 +927,7 @@ public class H4header implements HdfHeaderIF {
     // apparently the 701 SDDimension tag overrides the VGroup dimensions
     assert dim.shape.length == vb.getRank();
     boolean ok = true;
-    List<Dimension> vdimensions = vb.getDimensions(null);
+    List<Dimension> vdimensions = vb.getDimensions();
     for (int i = 0; i < dim.shape.length; i++) {
       Dimension vdim = vdimensions.get(i);
       if (dim.shape[i] != vdim.getLength()) {
@@ -1139,7 +1180,7 @@ public class H4header implements HdfHeaderIF {
 
     String read() throws IOException {
       raf.seek(data.offset);
-      return raf.readString(data.length);
+      return raf.readString(data.length, valueCharset);
     }
 
     public String toString() {
@@ -1416,7 +1457,7 @@ public class H4header implements HdfHeaderIF {
           throw new IllegalStateException("cant parse " + chunkTableTag);
         ArrayStructure sdata = (ArrayStructure) s.read();
         if (debugChunkDetail)
-          System.out.println(NCdumpW.toString(sdata, "getChunkedTable", null));
+          System.out.println(Ncdump.printArray(sdata, "getChunkedTable", null));
 
         // construct the chunks
         StructureMembers members = sdata.getStructureMembers();
@@ -1661,7 +1702,7 @@ public class H4header implements HdfHeaderIF {
 
     protected void read() throws IOException {
       raf.seek(offset);
-      text = raf.readStringMax(length);
+      text = raf.readStringMax(length, valueCharset);
     }
 
     public String detail() {
@@ -1683,7 +1724,7 @@ public class H4header implements HdfHeaderIF {
       raf.seek(offset);
       obj_tagno = raf.readShort();
       obj_refno = raf.readShort();
-      text = raf.readStringMax(length - 4).trim();
+      text = raf.readStringMax(length - 4, valueCharset).trim();
     }
 
     public String detail() {
@@ -1840,7 +1881,7 @@ public class H4header implements HdfHeaderIF {
       int start = 0;
       for (int i = 0; i < length; i++) {
         if (b[i] == 0) {
-          text[count] = new String(b, start, i - start, StandardCharsets.UTF_8);
+          text[count] = new String(b, start, i - start, valueCharset);
           count++;
           if (count == n)
             break;

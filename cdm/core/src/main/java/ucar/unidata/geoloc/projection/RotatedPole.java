@@ -35,7 +35,7 @@ public class RotatedPole extends ProjectionImpl {
   private static final double DEG_PER_RAD = 1. / RAD_PER_DEG;
 
   /* Coordinates of north pole for rotated pole. */
-  private final ProjectionPointImpl northPole;
+  private final ProjectionPoint northPole;
 
   /* Y-axis rotation matrix. */
   private final double[][] rotY = new double[3][3];
@@ -56,7 +56,7 @@ public class RotatedPole extends ProjectionImpl {
   public RotatedPole(double northPoleLat, double northPoleLon) {
     super("RotatedPole", false);
 
-    northPole = new ProjectionPointImpl(northPoleLon, northPoleLat);
+    northPole = ProjectionPoint.create(northPoleLon, northPoleLat);
     buildRotationMatrices();
 
     addParameter(CF.GRID_MAPPING_NAME, CF.ROTATED_LATITUDE_LONGITUDE);
@@ -104,8 +104,8 @@ public class RotatedPole extends ProjectionImpl {
     rotZ[2][2] = 1.;
   }
 
-  public ProjectionPointImpl getNorthPole() {
-    return new ProjectionPointImpl(northPole);
+  public ProjectionPoint getNorthPole() {
+    return northPole;
   }
 
   @Override
@@ -148,18 +148,16 @@ public class RotatedPole extends ProjectionImpl {
     // rotY[2][0] * p1[0] + rotY[2][1] * p1[1] + rotY[2][2] * p1[2]};
     double[] p2 = {rotY[0][0] * p1[0] + rotY[0][2] * p1[2], p1[1], rotY[2][0] * p1[0] + rotY[2][2] * p1[2]};
 
-    double lonR = LatLonPointImpl.range180(Math.atan2(p2[1], p2[0]) * DEG_PER_RAD);
+    double lonR = LatLonPoints.range180(Math.atan2(p2[1], p2[0]) * DEG_PER_RAD);
     double latR = Math.asin(p2[2]) * DEG_PER_RAD;
 
     if (destPoint == null) {
-      destPoint = new ProjectionPointImpl(lonR, latR);
+      return ProjectionPoint.create(lonR, latR);
     } else {
       destPoint.setLocation(lonR, latR);
+      return destPoint;
     }
 
-    log.debug("LatLon= " + latlon + ", proj= " + destPoint);
-
-    return destPoint;
   }
 
   /**
@@ -168,7 +166,7 @@ public class RotatedPole extends ProjectionImpl {
    */
   public LatLonPoint projToLatLon(ProjectionPoint ppt, LatLonPointImpl destPoint) {
     // "x" and "y" input for rotated pole coords are actually a lon-lat pair
-    double lonR = LatLonPointImpl.range180(ppt.getX()); // LOOK guessing -- shouldn't matter
+    double lonR = LatLonPoints.range180(ppt.getX()); // LOOK guessing -- shouldn't matter
     double latR = ppt.getY();
 
     if (Math.abs(latR) > 90.) {
@@ -198,15 +196,12 @@ public class RotatedPole extends ProjectionImpl {
     double lon = Math.atan2(p2[1], p2[0]) * DEG_PER_RAD;
     double lat = Math.asin(p2[2]) * DEG_PER_RAD;
 
-    if (destPoint == null) {
-      destPoint = new LatLonPointImpl(lat, lon);
-    } else {
+    if (destPoint == null)
+      return LatLonPoint.create(lat, lon);
+    else {
       destPoint.set(lat, lon);
+      return destPoint;
     }
-
-    log.debug("Proj= " + ppt + ", latlon= " + destPoint);
-
-    return destPoint;
   }
 
   /**

@@ -25,7 +25,7 @@ public class AttributeContainerHelper implements AttributeContainer {
    * @param atts Start with this set of Attributes.
    * @param remove Remove any whose name starts with one of these.
    * @return new AttributeContainer with attributes removed.
-   * @deprecated Do not use.
+   * @deprecated use AttributeContainer.filter().
    */
   @Deprecated
   public static AttributeContainer filter(AttributeContainer atts, String... remove) {
@@ -76,6 +76,11 @@ public class AttributeContainerHelper implements AttributeContainer {
   }
 
   @Override
+  public boolean isEmpty() {
+    return atts.isEmpty();
+  }
+
+  @Override
   public List<Attribute> getAttributes() {
     return atts;
   }
@@ -120,7 +125,7 @@ public class AttributeContainerHelper implements AttributeContainer {
   }
 
   @Override
-  public String findAttValueIgnoreCase(String attName, String defaultValue) {
+  public String findAttributeString(String attName, String defaultValue) {
     String attValue = null;
     Attribute att = findAttributeIgnoreCase(attName);
 
@@ -237,7 +242,7 @@ public class AttributeContainerHelper implements AttributeContainer {
     }
 
     @Override
-    public String findAttValueIgnoreCase(String attName, String defaultValue) {
+    public String findAttributeString(String attName, String defaultValue) {
       return atts.stream().filter(a -> a.getShortName().equals(attName)).findFirst().map(Attribute::getStringValue)
           .orElse(defaultValue);
     }
@@ -277,6 +282,11 @@ public class AttributeContainerHelper implements AttributeContainer {
     @Override
     public String getName() {
       return name;
+    }
+
+    @Override
+    public boolean isEmpty() {
+      return atts.isEmpty();
     }
 
     @Deprecated

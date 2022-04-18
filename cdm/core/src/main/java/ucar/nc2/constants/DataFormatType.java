@@ -4,13 +4,9 @@
  */
 package ucar.nc2.constants;
 
-/**
- * redo thredds.catalog.DataFormatType as enum
- * break dependency of ucar.nc2 on server catalog
- *
- * @author caron
- * @since 1/7/2015
- */
+import javax.annotation.Nullable;
+
+/** Redo thredds.catalog.DataFormatType as enum in order to break dependency of ucar.nc2 on server catalog */
 public enum DataFormatType {
   BUFR(null), ESML(null), GEMPAK(null), GINI(null), GRIB1("GRIB-1"), GRIB2("GRIB-2"), HDF4(null), HDF5(
       null), MCIDAS_AREA("McIDAS-AREA"), NCML("NcML"), NETCDF("NetCDF"), NETCDF4("NetCDF-4"), NEXRAD2(null), NIDS(null),
@@ -27,7 +23,8 @@ public enum DataFormatType {
     this.desc = (desc == null) ? toString() : desc;
   }
 
-  // case insensitive
+  /** case insensitive name lookup. */
+  @Nullable
   public static DataFormatType getType(String name) {
     if (name == null)
       return null;
@@ -40,6 +37,7 @@ public enum DataFormatType {
     return null;
   }
 
+  @Nullable
   public String getDescription() {
     return desc;
   }

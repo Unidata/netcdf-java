@@ -5,6 +5,7 @@
 
 package ucar.nc2.util;
 
+import java.nio.Buffer;
 import java.nio.charset.StandardCharsets;
 import ucar.nc2.constants.CDM;
 import java.io.*;
@@ -19,7 +20,7 @@ import java.util.Map;
 import java.util.zip.GZIPInputStream;
 
 /**
- * Input/Output utilities.
+ * Input/Output static utilities.
  *
  * @author John Caron
  * @see "http://stackoverflow.com/questions/12552863/correct-idiom-for-managing-multiple-chained-resources-in-try-with-resources-bloc"
@@ -147,7 +148,7 @@ public class IO {
       if (n == -1)
         break;
       totalBytesRead += n;
-      buffer.flip();
+      ((Buffer) buffer).flip();
     }
     return totalBytesRead;
   }
@@ -171,7 +172,7 @@ public class IO {
       for (int i = 0; i < buffersize; i++)
         touch += result[i];
 
-      buffer.flip();
+      ((Buffer) buffer).flip();
     }
     return touch;
   }
@@ -209,15 +210,21 @@ public class IO {
     return totalBytesRead;
   }
 
+  /** @deprecated use copyMaxBytes() */
+  @Deprecated
+  public static void copy(InputStream in, OutputStream out, int n) throws IOException {
+    copyMaxBytes(in, out, n);
+  }
+
   /**
-   * copy n bytes from in to out.
+   * Copy up to maxBytes bytes from in to out.
    *
    * @param in InputStream
    * @param out OutputStream
-   * @param n number of bytes to copy
+   * @param maxBytes number of bytes to copy
    * @throws java.io.IOException on io error
    */
-  public static void copy(InputStream in, OutputStream out, int n) throws IOException {
+  public static void copyMaxBytes(InputStream in, OutputStream out, int maxBytes) throws IOException {
     byte[] buffer = new byte[default_file_buffersize];
     int count = 0;
     while (true) {
@@ -226,7 +233,7 @@ public class IO {
         break;
       out.write(buffer, 0, bytesRead);
       count += bytesRead;
-      if (count > n)
+      if (count > maxBytes)
         return;
     }
     out.flush();
@@ -347,6 +354,17 @@ public class IO {
   }
 
   /**
+   * copy file to output stream
+   *
+   * @param fileIn copy this file
+   * @param out copy here
+   * @throws java.io.IOException on io error
+   */
+  public static void copyFile(File fileIn, OutputStream out) throws IOException {
+    copyFileB(fileIn, out, default_file_buffersize);
+  }
+
+  /**
    * copy file to output stream, specify internal buffer size
    *
    * @param fileIn copy this file
@@ -391,7 +409,7 @@ public class IO {
    * // The read() call leaves the buffer in "fill mode". To prepare
    * // to write bytes from the bufferwe have to put it in "drain mode"
    * // by flipping it: setting limit to position and position to zero
-   * buffer.flip();
+   * ((Buffer) buffer).flip();
    * 
    * // Now write some or all of the bytes out to the output channel
    * out.write(buffer);
@@ -404,6 +422,21 @@ public class IO {
    * }
    * }
    */
+
+  /**
+   * Copy part of a RandomAccessFile to output stream
+   *
+   * @param raf copy this file
+   * @param offset start here (byte offset)
+   * @param length number of bytes to copy
+   * @param out copy to this stream
+   * @return number of bytes copied
+   * @throws java.io.IOException on io error
+   */
+  public static long copyRafB(ucar.unidata.io.RandomAccessFile raf, long offset, long length, OutputStream out)
+      throws IOException {
+    return copyRafB(raf, offset, length, out, new byte[default_file_buffersize]);
+  }
 
   /**
    * Copy part of a RandomAccessFile to output stream, specify internal buffer size

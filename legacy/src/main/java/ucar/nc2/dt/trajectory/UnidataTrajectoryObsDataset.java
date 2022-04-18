@@ -20,7 +20,7 @@ import java.util.*;
  * Unidata Observation Dataset convention version 1.0.
  *
  * Documentation on this convention is available at
- * http://www.unidata.ucar.edu/software/netcdf-java/formats/UnidataObsConvention.html
+ * https://www.unidata.ucar.edu/software/netcdf-java/formats/UnidataObsConvention.html
  *
  * @deprecated use ucar.nc2.ft.point
  * @author edavis
@@ -107,8 +107,8 @@ public class UnidataTrajectoryObsDataset extends SingleTrajectoryObsDataset impl
 
 
     Config trajConfig = new Config("1Hz data", ncd.getRootGroup().findDimension(timeDimName),
-        ncd.getRootGroup().findVariable(timeVarName), ncd.getRootGroup().findVariable(latVarName),
-        ncd.getRootGroup().findVariable(lonVarName), ncd.getRootGroup().findVariable(elevVarName));
+        ncd.getRootGroup().findVariableLocal(timeVarName), ncd.getRootGroup().findVariableLocal(latVarName),
+        ncd.getRootGroup().findVariableLocal(lonVarName), ncd.getRootGroup().findVariableLocal(elevVarName));
     this.setTrajectoryInfo(trajConfig);
 
   }

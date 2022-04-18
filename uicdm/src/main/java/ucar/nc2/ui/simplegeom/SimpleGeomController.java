@@ -28,7 +28,7 @@ import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridDatasetInfo;
-import ucar.nc2.ncml.NcMLWriter;
+import ucar.nc2.write.NcmlWriter;
 import ucar.ui.event.ActionCoordinator;
 import ucar.ui.event.ActionSourceListener;
 import ucar.ui.event.ActionValueEvent;
@@ -47,6 +47,7 @@ import ucar.ui.widget.BAMutil;
 import ucar.nc2.ui.widget.ScaledPanel;
 import ucar.nc2.util.NamedObject;
 import ucar.unidata.geoloc.ProjectionImpl;
+import ucar.unidata.geoloc.ProjectionPoint;
 import ucar.unidata.geoloc.ProjectionPointImpl;
 import ucar.unidata.geoloc.ProjectionRect;
 import ucar.util.prefs.PreferencesExt;
@@ -114,7 +115,7 @@ public class SimpleGeomController {
   private boolean startOK;
 
   // optimize GC
-  private ProjectionPointImpl projPoint = new ProjectionPointImpl();
+  private ProjectionPoint projPoint = ProjectionPoint.create();
 
   // debugging
   private final boolean debugThread = false;
@@ -451,7 +452,7 @@ public class SimpleGeomController {
     // get Pick events from the navigated panel
     np.addPickEventListener(new PickEventListener() {
       public void actionPerformed(PickEvent e) {
-        projPoint.setLocation(e.getLocation());
+        projPoint = e.getLocation();
         int slice = renderGrid.findSliceFromPoint(projPoint);
         if (Debug.isSet("pick/event"))
           System.out.println("pick.event: " + projPoint + " " + slice);
@@ -466,7 +467,7 @@ public class SimpleGeomController {
     // get Move events from the navigated panel
     np.addCursorMoveEventListener(new CursorMoveEventListener() {
       public void actionPerformed(CursorMoveEvent e) {
-        projPoint.setLocation(e.getLocation());
+        projPoint = e.getLocation();
         String valueS = renderGrid.getXYvalueStr(projPoint);
         dataValueLabel.setText(valueS);
       }
@@ -519,7 +520,7 @@ public class SimpleGeomController {
     if (gridDataset == null)
       return "Null gridset";
 
-    NcMLWriter ncmlWriter = new NcMLWriter();
+    NcmlWriter ncmlWriter = new NcmlWriter();
     Element netcdfElement = ncmlWriter.makeNetcdfElement(gridDataset.getNetcdfFile(), null);
     return ncmlWriter.writeToString(netcdfElement);
   }

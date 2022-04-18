@@ -15,8 +15,7 @@ import java.util.Iterator;
  * // do stuff
  * }
  *
- * @author caron
- * @since 11/20/13
+ * TODO will move to thredds.inventory in ver6
  */
 public interface CloseableIterator<T> extends Iterator<T>, Closeable {
 }

@@ -9,6 +9,7 @@ import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
 import java.io.*;
 import java.nio.ByteOrder;
+import ucar.nc2.write.ChunkingIndex;
 
 /**
  * Write a NetcdfFile to an OutputStream using ncstream protocol
@@ -77,7 +78,11 @@ public class NcStreamWriter {
     if ((v.getDataType() != DataType.STRING) && (v.getDataType() != DataType.OPAQUE) && !v.isVariableLength())
       uncompressedLength *= v.getElementSize(); // nelems for vdata, else nbytes
 
-    ByteOrder bo = ByteOrder.nativeOrder(); // reader makes right
+    // TODO prefer ByteOrder.nativeOrder(); : reader makes right
+    // But we would need an OutputStream that knows how to switch LE and BE.
+    // IospHelper uses DataOutputStream which assumes BE
+    // So just use fixed BE for now.
+    ByteOrder bo = ByteOrder.BIG_ENDIAN;
     long size = 0;
     size += writeBytes(out, NcStream.MAGIC_DATA); // magic
     NcStreamProto.Data dataProto = NcStream.encodeDataProto(v, section, compress.type, bo, (int) uncompressedLength);
@@ -195,7 +200,7 @@ public class NcStreamWriter {
   private long copyChunks(OutputStream out, Variable oldVar, long maxChunkSize, NcStreamCompression compress)
       throws IOException {
     long maxChunkElems = maxChunkSize / oldVar.getElementSize();
-    FileWriter2.ChunkingIndex index = new FileWriter2.ChunkingIndex(oldVar.getShape());
+    ChunkingIndex index = new ChunkingIndex(oldVar.getShape());
     long size = 0;
     while (index.currentElement() < index.getSize()) {
       try {

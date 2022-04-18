@@ -8,8 +8,8 @@ package ucar.nc2.util;
 /**
  * Interface for global debug flags.
  * Allows decoupling of packages.
- *
- * @author John Caron
+ * 
+ * TODO will move in ver 6
  */
 public interface DebugFlags {
 

@@ -1,11 +1,14 @@
 /*
- * Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2020 University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 
 package thredds.filesystem;
 
+import java.io.OutputStream;
 import thredds.inventory.MFile;
+import ucar.nc2.util.IO;
+import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.StringUtil2;
 import javax.annotation.concurrent.ThreadSafe;
 import java.io.IOException;
@@ -74,6 +77,11 @@ public class MFileOS7 implements MFile {
   }
 
   @Override
+  public boolean isReadable() {
+    return Files.isReadable(path);
+  }
+
+  @Override
   public String getPath() {
     // no microsnot
     return StringUtil2.replace(path.toString(), '\\', "/");
@@ -107,6 +115,18 @@ public class MFileOS7 implements MFile {
   @Override
   public String toString() {
     return getPath();
+  }
+
+  @Override
+  public void writeToStream(OutputStream outputStream) throws IOException {
+    IO.copyFile(path.toFile(), outputStream);
+  }
+
+  @Override
+  public void writeToStream(OutputStream outputStream, long offset, long maxBytes) throws IOException {
+    try (RandomAccessFile randomAccessFile = RandomAccessFile.acquire(path.toString())) {
+      IO.copyRafB(randomAccessFile, offset, maxBytes, outputStream);
+    }
   }
 
   public Path getNioPath() {

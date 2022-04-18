@@ -14,10 +14,10 @@ public class TestNetcdfDatasetBuilder {
   public void testBuilder() {
     Attribute att = new Attribute("attName", "value");
     Dimension dim = new Dimension("dimName", 42);
-    Group.Builder nested = Group.builder(null).setName("child");
+    Group.Builder nested = Group.builder().setName("child");
     VariableDS.Builder<?> vb = VariableDS.builder().setName("varName").setDataType(DataType.STRING);
     Group.Builder groupb =
-        Group.builder(null).setName("name").addAttribute(att).addDimension(dim).addGroup(nested).addVariable(vb);
+        Group.builder().setName("name").addAttribute(att).addDimension(dim).addGroup(nested).addVariable(vb);
     nested.setParentGroup(groupb);
 
     NetcdfDataset.Builder builder =
@@ -32,10 +32,10 @@ public class TestNetcdfDatasetBuilder {
     assertThat(group.getNetcdfFile()).isEqualTo(ncfile);
     assertThat(group.getShortName()).isEqualTo("name");
     assertThat(group.isRoot()).isTrue();
-    assertThat(group.getAttributes()).isNotEmpty();
-    assertThat(group.getAttributes()).hasSize(1);
+    assertThat(group.attributes()).isNotEmpty();
+    assertThat(group.attributes()).hasSize(1);
     assertThat(group.findAttribute("attName")).isEqualTo(att);
-    assertThat(group.findAttValueIgnoreCase("attName", null)).isEqualTo("value");
+    assertThat(group.findAttributeString("attName", null)).isEqualTo("value");
 
     assertThat(group.getDimensions()).isNotEmpty();
     assertThat(group.getDimensions()).hasSize(1);
@@ -43,12 +43,12 @@ public class TestNetcdfDatasetBuilder {
 
     assertThat(group.getGroups()).isNotEmpty();
     assertThat(group.getGroups()).hasSize(1);
-    Group child = group.findGroup("child");
+    Group child = group.findGroupLocal("child");
     assertThat(child.getParentGroup()).isEqualTo(group);
 
     assertThat(group.getVariables()).isNotEmpty();
     assertThat(group.getVariables()).hasSize(1);
-    Variable v = group.findVariable("varName");
+    Variable v = group.findVariableLocal("varName");
     assertThat(v.getParentGroup()).isEqualTo(group);
     assertThat(v.getNetcdfFile()).isEqualTo(ncfile);
   }

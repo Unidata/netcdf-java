@@ -241,7 +241,7 @@ public class GridVertCoord implements Comparable<GridVertCoord> {
     int nlevs = levels.size();
     if (coordValues != null)
       nlevs = coordValues.length;
-    ncfile.addDimension(g, new Dimension(getVariableName(), nlevs, true));
+    ncfile.addDimension(g, new Dimension(getVariableName(), nlevs));
   }
 
   protected String getLevelDesc() {
@@ -339,7 +339,7 @@ public class GridVertCoord implements Comparable<GridVertCoord> {
       if (g == null) {
         g = ncfile.getRootGroup();
       }
-      if (g.findVariable("hybrida") != null)
+      if (g.findVariableLocal("hybrida") != null)
         return;
       v.addAttribute(new Attribute("standard_name", "atmosphere_hybrid_sigma_pressure_coordinate"));
       v.addAttribute(new Attribute("formula_terms", "ap: hybrida b: hybridb ps: Pressure"));

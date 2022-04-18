@@ -26,7 +26,7 @@ import dap4.core.util.DapUtil;
 import dap4.dap4lib.AbstractDSP;
 import dap4.dap4lib.DapCodes;
 import dap4.dap4lib.XURI;
-import ucar.nc2.jni.netcdf.Nc4Iosp;
+import ucar.nc2.ffi.netcdf.NetcdfClibrary;
 import ucar.nc2.jni.netcdf.Nc4prototypes;
 import ucar.nc2.jni.netcdf.SizeTByReference;
 import java.net.URISyntaxException;
@@ -61,6 +61,8 @@ public class Nc4DSP extends AbstractDSP {
   static int NC_LONG_BYTES = (Native.LONG_SIZE);
   static int NC_POINTER_BYTES = (Native.POINTER_SIZE);
   static int NC_SIZET_BYTES = (Native.SIZE_T_SIZE);
+
+  protected static Nc4prototypes nc4 = NetcdfClibrary.getForeignFunctionInterface();
 
   //////////////////////////////////////////////////
   // com.sun.jna.Memory control
@@ -274,8 +276,6 @@ public class Nc4DSP extends AbstractDSP {
   //////////////////////////////////////////////////
   // Instance Variables
 
-  protected Nc4prototypes nc4 = null;
-
   protected boolean trace = false;
   protected boolean closed = false;
 
@@ -291,10 +291,8 @@ public class Nc4DSP extends AbstractDSP {
 
   public Nc4DSP() throws DapException {
     super();
-    if (this.nc4 == null) {
-      this.nc4 = Nc4Iosp.getCLibrary();
-      if (this.nc4 == null)
-        throw new DapException("Could not load libnetcdf");
+    if (nc4 == null) {
+      throw new DapException("Could not load libnetcdf");
     }
     dmrfactory = new DMRFactory();
     allnotesInit();
@@ -383,7 +381,7 @@ public class Nc4DSP extends AbstractDSP {
 
 
   public Nc4prototypes getJNI() {
-    return this.nc4;
+    return nc4;
   }
 
   @Override

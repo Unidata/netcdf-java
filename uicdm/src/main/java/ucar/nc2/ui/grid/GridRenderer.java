@@ -5,13 +5,13 @@
 package ucar.nc2.ui.grid;
 
 import ucar.ma2.*;
-import ucar.nc2.NCdumpW;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dataset.CoordinateAxis2D;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDatatype;
+import ucar.nc2.write.Ncdump;
 import ucar.unidata.geoloc.*;
 import ucar.unidata.geoloc.projection.LatLonProjection;
 import ucar.unidata.util.Format;
@@ -59,7 +59,7 @@ public class GridRenderer {
   private LatLonProjection projectll; // special handling for LatLonProjection
 
   // working objects to minimize excessive gc
-  private ProjectionPointImpl ptP1 = new ProjectionPointImpl();
+  private ProjectionPoint ptP1 = ProjectionPoint.create();
 
   private static final boolean debugHorizDraw = false, debugSeam = false, debugLatLon = false, debugMiss = false;
   private static boolean debugPathShape, debugArrayShape, debugPts;
@@ -416,7 +416,7 @@ public class GridRenderer {
     if ((wantx >= 0) && (wanty >= 0)) {
       LatLonPoint lpt;
       if (dataProjection.isLatLon())
-        lpt = new LatLonPointImpl(yaxis.getCoordValue(wanty), xaxis.getCoordValue(wantx));
+        lpt = LatLonPoint.create(yaxis.getCoordValue(wanty), xaxis.getCoordValue(wantx));
       else
         lpt = dataProjection.projToLatLon(xaxis.getCoordValue(wantx), yaxis.getCoordValue(wanty));
 
@@ -436,14 +436,14 @@ public class GridRenderer {
       }
     } else if (wantx >= 0) {
       if (dataProjection.isLatLon())
-        sbuff.append(LatLonPointImpl.latToString(xaxis.getCoordValue(wantx), 3));
+        sbuff.append(LatLonPoints.latToString(xaxis.getCoordValue(wantx), 3));
       else {
         sbuff.append(" ").append(Format.d(xaxis.getCoordValue(wantx), 3));
         sbuff.append(" ").append(xaxis.getUnitsString());
       }
     } else if (wanty >= 0) {
       if (dataProjection.isLatLon())
-        sbuff.append(LatLonPointImpl.latToString(yaxis.getCoordValue(wanty), 3));
+        sbuff.append(LatLonPoints.latToString(yaxis.getCoordValue(wanty), 3));
       else {
         sbuff.append(" ").append(Format.d(yaxis.getCoordValue(wanty), 3));
         sbuff.append(" ").append(yaxis.getUnitsString());
@@ -763,8 +763,8 @@ public class GridRenderer {
             System.out.printf("%f %f %f %f %n", edgex.get(y, x), edgex.get(y, x + 1), edgex.get(y + 1, x),
                 edgex.get(y + 1, x + 1));
 
-            System.out.printf("%n%s", NCdumpW.toString(edgex.slice(0, y + 1), "row " + y, null));
-            System.out.printf("%n%s", NCdumpW.toString(edgex.slice(0, y + 1), "row " + (y + 1), null));
+            System.out.printf("%n%s", Ncdump.printArray(edgex.slice(0, y + 1), "row " + y, null));
+            System.out.printf("%n%s", Ncdump.printArray(edgex.slice(0, y + 1), "row " + (y + 1), null));
           }
         }
 
@@ -1040,7 +1040,7 @@ public class GridRenderer {
     if (debugPts)
       System.out.println("** moveTo = " + pt.getX() + " " + pt.getY());
     gpRun.moveTo((float) pt.getX(), (float) pt.getY());
-    ptP1.setLocation(pt);
+    ptP1 = pt;
 
     for (int e = x1 + 1; e <= x2 + 1; e++) {
       llp = dataProjection.projToLatLon(xaxis.getCoordEdge(e), y1);
@@ -1057,7 +1057,7 @@ public class GridRenderer {
       if (debugPts)
         System.out.println("  lineTo = " + pt.getX() + " " + pt.getY());
       gpRun.lineTo((float) pt.getX(), (float) pt.getY());
-      ptP1.setLocation(pt);
+      ptP1 = pt;
     }
 
     for (int e = x2 + 1; e >= x1; e--) {
@@ -1075,7 +1075,7 @@ public class GridRenderer {
       if (debugPts)
         System.out.println("  lineTo = " + pt.getX() + " " + pt.getY());
       gpRun.lineTo((float) pt.getX(), (float) pt.getY());
-      ptP1.setLocation(pt);
+      ptP1 = pt;
     }
 
     g.setColor(cs.getColor(color));

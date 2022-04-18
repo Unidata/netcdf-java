@@ -676,14 +676,14 @@ public class MAMath {
       while (iter1.hasNext() && iter2.hasNext()) {
         double v1 = iter1.getDoubleNext();
         double v2 = iter2.getDoubleNext();
-        if (!Misc.nearlyEquals(v1, v2, Misc.defaultMaxRelativeDiffDouble))
+        if (!Misc.nearlyEquals(v1, v2))
           return false;
       }
     } else if (dt == DataType.FLOAT) {
       while (iter1.hasNext() && iter2.hasNext()) {
         float v1 = iter1.getFloatNext();
         float v2 = iter2.getFloatNext();
-        if (!Misc.nearlyEquals(v1, v2, Misc.defaultMaxRelativeDiffFloat))
+        if (!Misc.nearlyEquals(v1, v2))
           return false;
       }
     } else if (dt.getPrimitiveClassType() == int.class) {

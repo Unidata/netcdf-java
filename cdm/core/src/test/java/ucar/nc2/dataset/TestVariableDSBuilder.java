@@ -3,6 +3,7 @@ package ucar.nc2.dataset;
 
 import static com.google.common.truth.Truth.assertThat;
 import static org.junit.Assert.fail;
+import static ucar.nc2.TestUtils.makeDummyGroup;
 import java.io.IOException;
 import java.util.List;
 import org.junit.Test;
@@ -21,7 +22,7 @@ public class TestVariableDSBuilder {
 
   @Test
   public void testVarBuilder() {
-    VariableDS var = VariableDS.builder().setName("name").setDataType(DataType.FLOAT).build();
+    VariableDS var = VariableDS.builder().setName("name").setDataType(DataType.FLOAT).build(makeDummyGroup());
     assertThat(var.getDataType()).isEqualTo(DataType.FLOAT);
     assertThat(var.getShortName()).isEqualTo("name");
     assertThat(var.isScalar()).isTrue();
@@ -30,19 +31,19 @@ public class TestVariableDSBuilder {
   @Test
   public void testVarDSBuilder() {
     VariableDS var = VariableDS.builder().setName("name").setDataType(DataType.FLOAT).setUnits("units").setDesc("desc")
-        .setEnhanceMode(NetcdfDataset.getEnhanceAll()).build();
+        .setEnhanceMode(NetcdfDataset.getEnhanceAll()).build(makeDummyGroup());
     assertThat(var.getUnitsString()).isEqualTo("units");
     assertThat(var.getDescription()).isEqualTo("desc");
     assertThat(var.getEnhanceMode()).isEqualTo(NetcdfDataset.getEnhanceAll());
-    assertThat(var.findAttValueIgnoreCase(CDM.UNITS, "")).isEqualTo("units");
-    assertThat(var.findAttValueIgnoreCase(CDM.LONG_NAME, "")).isEqualTo("desc");
+    assertThat(var.findAttributeString(CDM.UNITS, "")).isEqualTo("units");
+    assertThat(var.findAttributeString(CDM.LONG_NAME, "")).isEqualTo("desc");
   }
 
   @Test
   public void testVarDSBuilderOrgValues() {
-    Variable orgVar = Variable.builder().setName("orgName").setDataType(DataType.INT).build();
+    Variable orgVar = Variable.builder().setName("orgName").setDataType(DataType.INT).build(makeDummyGroup());
     VariableDS var = VariableDS.builder().setName("name").setDataType(DataType.FLOAT).setOriginalName("orgName")
-        .setOriginalDataType(DataType.INT).setOriginalVariable(orgVar).build();
+        .setOriginalDataType(DataType.INT).setOriginalVariable(orgVar).build(makeDummyGroup());
     assertThat(var.getOriginalDataType()).isEqualTo(DataType.INT);
     assertThat(var.getOriginalName()).isEqualTo("orgName");
     assertThat((Object) var.getOriginalVariable()).isEqualTo(orgVar);
@@ -52,19 +53,20 @@ public class TestVariableDSBuilder {
   public void testWithDims() {
     try {
       // Must set dimension first
-      VariableDS.builder().setName("name").setDataType(DataType.FLOAT).setDimensionsByName("dim1 dim2").build();
+      VariableDS.builder().setName("name").setDataType(DataType.FLOAT).setDimensionsByName("dim1 dim2")
+          .build(makeDummyGroup());
       fail();
     } catch (Exception e) {
       // ok
     }
 
     Group group =
-        Group.builder(null).addDimension(Dimension.builder().setName("dim1").setLength(7).setIsUnlimited(true).build())
-            .addDimension(Dimension.builder().setName("dim2").setLength(27).build()).build(null);
+        Group.builder().addDimension(Dimension.builder().setName("dim1").setLength(7).setIsUnlimited(true).build())
+            .addDimension(Dimension.builder().setName("dim2").setLength(27).build()).build();
     List<Dimension> varDims = group.makeDimensionsList("dim1 dim2");
 
     VariableDS var =
-        VariableDS.builder().setName("name").setDataType(DataType.FLOAT).setGroup(group).addDimensions(varDims).build();
+        VariableDS.builder().setName("name").setDataType(DataType.FLOAT).addDimensions(varDims).build(group);
     assertThat(var.getDataType()).isEqualTo(DataType.FLOAT);
     assertThat(var.getShortName()).isEqualTo("name");
     assertThat(var.isScalar()).isFalse();
@@ -78,8 +80,8 @@ public class TestVariableDSBuilder {
   public void testWithAnonymousDims() {
     // No parent group needed
     int[] shape = new int[] {3, 6, -1};
-    VariableDS var =
-        VariableDS.builder().setName("name").setDataType(DataType.FLOAT).setDimensionsAnonymous(shape).build();
+    VariableDS var = VariableDS.builder().setName("name").setDataType(DataType.FLOAT).setDimensionsAnonymous(shape)
+        .build(makeDummyGroup());
     assertThat(var.getDataType()).isEqualTo(DataType.FLOAT);
     assertThat(var.getShortName()).isEqualTo("name");
     assertThat(var.isScalar()).isFalse();
@@ -91,32 +93,33 @@ public class TestVariableDSBuilder {
 
   @Test
   public void testCopyFrom() {
-    Group group =
-        Group.builder(null).addDimension(Dimension.builder().setName("dim1").setLength(7).setIsUnlimited(true).build())
-            .addDimension(Dimension.builder().setName("dim2").setLength(27).build()).build(null);
-    Variable.Builder vb = Variable.builder().setName("name").setDataType(DataType.FLOAT).setGroup(group)
+    Group.Builder gb =
+        Group.builder().addDimension(Dimension.builder().setName("dim1").setLength(7).setIsUnlimited(true).build())
+            .addDimension(Dimension.builder().setName("dim2").setLength(27).build());
+    Variable.Builder vb = Variable.builder().setName("name").setDataType(DataType.FLOAT).setParentGroupBuilder(gb)
         .setDimensionsByName("dim1 dim2").addAttribute(new Attribute("units", "flower"));
     vb.getAttributeContainer().addAttribute(new Attribute("attName", "AttValue"));
-    Variable v = vb.build();
+    Group group = gb.build();
+    Variable v = vb.build(group);
 
     VariableDS.Builder builder = VariableDS.builder().copyFrom(v);
-    assertThat(builder.units).isEqualTo("flower");
+    assertThat(builder.getUnits()).isEqualTo("flower");
 
-    VariableDS varDS = builder.build();
+    VariableDS varDS = builder.build(group);
     assertThat(varDS.getShortName()).isEqualTo("name");
     assertThat(varDS.getDataType()).isEqualTo(DataType.FLOAT);
-    assertThat(varDS.findAttValueIgnoreCase("attname", null)).isEqualTo("AttValue");
+    assertThat(varDS.findAttributeString("attname", null)).isEqualTo("AttValue");
     assertThat(varDS.getUnitsString()).isEqualTo("flower");
   }
 
   @Test
   public void testMissingData() throws IOException {
-    Group parent = Group.builder(null).addDimension(Dimension.builder("dim1", 7).setIsUnlimited(true).build())
-        .addDimension(new Dimension("dim2", 27)).build(null);
+    Group.Builder parent = Group.builder().addDimension(Dimension.builder("dim1", 7).setIsUnlimited(true).build())
+        .addDimension(new Dimension("dim2", 27));
 
     VariableDS vds = VariableDS.builder().setName("name").setDataType(DataType.FLOAT).setUnits("units").setDesc("desc")
         .setEnhanceMode(NetcdfDataset.getEnhanceAll()).addAttribute(new Attribute("missing_value", 0.0f))
-        .setDimensionsByName("dim1").setGroup(parent).build();
+        .setParentGroupBuilder(parent).setDimensionsByName("dim1").build(parent.build());
 
     Array data = vds.read();
     System.out.printf("data = %s%n", data);

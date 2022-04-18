@@ -46,6 +46,12 @@ public class DapNetcdfFile extends NetcdfFile {
       return false;
     }
 
+    public boolean isDone() {
+      return false;
+    }
+
+    public void setDone(boolean done) {}
+
     public void setError(String msg) {}
 
     public void setProgress(String msg, int progress) {}

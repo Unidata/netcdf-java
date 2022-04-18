@@ -273,7 +273,7 @@ public class InvCatalogRef extends InvDatasetImpl {
       return;
     }
 
-    // may be reletive
+    // may be relative
     String hrefResolved;
     try {
       java.net.URI uri = getParentCatalog().resolveUri(href);

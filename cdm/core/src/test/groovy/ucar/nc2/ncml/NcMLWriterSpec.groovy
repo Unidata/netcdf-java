@@ -1,7 +1,5 @@
 package ucar.nc2.ncml
 
-import com.google.common.base.Predicate
-import com.google.common.base.Predicates
 import org.jdom2.Element
 import org.jdom2.Namespace
 import org.jdom2.output.Format
@@ -13,6 +11,9 @@ import ucar.ma2.Array
 import ucar.ma2.DataType
 import ucar.nc2.*
 import ucar.nc2.dataset.NetcdfDataset
+import ucar.nc2.write.NcmlWriter
+
+import java.util.function.Predicate
 
 /**
  * @author cwardgar
@@ -135,7 +136,7 @@ recordsGroup/recordsStruct = UNREADABLE
   <dimension name="time" length="3" isUnlimited="true" />
   <variable name="dessert" shape="time" type="enum2" typedef="dessertType">
     <attribute name="zero" type="ulong" />
-    <values>18.0 268.0 3284.0</values>
+    <values>18 268 3284</values>
   </variable>
   <variable name="time" shape="time" type="short">
     <values start="4.0" increment="1.0" npts="3" />
@@ -156,46 +157,37 @@ recordsGroup/recordsStruct = UNREADABLE
 </netcdf>
 '''
 
-    NcMLWriter ncmlWriter
+    NcmlWriter ncmlWriter
     def setup() {
-        ncmlWriter = new NcMLWriter();
+        ncmlWriter = new NcmlWriter();
     }
 
     def "set NetcdfFile properties and exercise namespace and xmlFormat getters/setters"() {
-        setup:
+        Namespace namespace = Namespace.NO_NAMESPACE   // Exercise setter.
+        Format xmlFormat = Format.rawFormat.setOmitDeclaration(true)
+        NcmlWriter ncmlWriterO = new NcmlWriter(namespace, xmlFormat, null);
+
         NetcdfFile emptyNcFile = new NetcdfFileSubclass()
         emptyNcFile.setLocation("file:SOME_FILE");
         emptyNcFile.setId("SOME_ID")
-        emptyNcFile.setTitle("NcMLWriter Test")
+        emptyNcFile.setTitle("NcmlWriter Test")
         emptyNcFile.finish()
 
-        when: "set NcMLWriter namespace"
-        // Causes:
-        //     <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" />
-        // to become:
-        //     <netcdf />
-        ncmlWriter.namespace = Namespace.NO_NAMESPACE   // Exercise setter.
-
-        then: "getter returns instance just set"
-        ncmlWriter.namespace == Namespace.NO_NAMESPACE  // Exercise getter.
-
-        when: "set NcMLWriter XMLFormat"
-        // Omits the '<?xml version="1.0" encoding="UTF-8"?>' declaration.
-        Format xmlFormat = Format.rawFormat.setOmitDeclaration(true)
-        ncmlWriter.xmlFormat = xmlFormat   // Exercise setter.
-
-        then: "getter returns instance just set"
-        ncmlWriter.xmlFormat == xmlFormat  // Exercise getter.
-
         expect:
-        Element netcdfElem = ncmlWriter.makeNetcdfElement(emptyNcFile, null)
-        ncmlWriter.writeToString(netcdfElem) ==
-                '<netcdf location="file:SOME_FILE" id="SOME_ID" title="NcMLWriter Test" />\r\n'
+        Element netcdfElem = ncmlWriterO.makeNetcdfElement(emptyNcFile, null)
+        ncmlWriterO.writeToString(netcdfElem) ==
+                '<netcdf location="file:SOME_FILE" id="SOME_ID" title="NcmlWriter Test" />\r\n'
+
+        and: "getter returns namespace"
+        ncmlWriterO.getNamespace() == namespace  // Exercise getter.
+
+        and: "getter returns format"
+        ncmlWriterO.getXmlFormat() == xmlFormat  // Exercise getter.
     }
 
     def "makeDimensionElement() throws exception for private Dimension"() {
         when:
-        ncmlWriter.makeDimensionElement(new Dimension("private", 8, false))
+        ncmlWriter.makeDimensionElement(Dimension.builder("private", 8).setIsShared(false).build());
 
         then:
         IllegalArgumentException e = thrown()
@@ -204,64 +196,65 @@ recordsGroup/recordsStruct = UNREADABLE
 
     def "'time' is a coordinate variable"() {
         expect:
-        NcMLWriter.writeCoordinateVariablesPredicate.apply(ncFile.findVariable("time"))
+        NcmlWriter.writeCoordinateVariablesPredicate.test(ncFile.findVariable("time"))
     }
 
     def "'charVar', 'stringVar', and 'dessert' are metadata variables"() {
         expect:
         ['charVar', 'stringVar', 'dessert'].every {
-            NcMLWriter.writeMetadataVariablesPredicate.apply(ncFile.findVariable(it))
+            NcmlWriter.writeMetadataVariablesPredicate.test(ncFile.findVariable(it))
         }
     }
 
     def "'recordsGroup/recordsStruct' can be selected with WriteVariablesWithNamesPredicate"() {
         setup:
         Predicate<Variable> writeVarsPred =
-                new NcMLWriter.WriteVariablesWithNamesPredicate(['recordsGroup/recordsStruct'])
+                new NcmlWriter.WriteVariablesWithNamesPredicate(['recordsGroup/recordsStruct'])
 
         expect:
-        writeVarsPred.apply(ncFile.findVariable('recordsGroup/recordsStruct'))
+        writeVarsPred.test(ncFile.findVariable('recordsGroup/recordsStruct'))
     }
 
     def "write to String using compound writeVariablesPredicate"() {
-        setup: "configure NcMLWriter"
-        Predicate<Variable> compoundPred = Predicates.or(
-                NcMLWriter.writeCoordinateVariablesPredicate,   // "time"
-                NcMLWriter.writeMetadataVariablesPredicate,     // "charVar", "stringVar", "dessert"
-                new NcMLWriter.WriteVariablesWithNamesPredicate(['recordsGroup/recordsStruct']));
+        Predicate<? super Variable> compoundPred =
+                NcmlWriter.writeCoordinateVariablesPredicate   // "time"
+                .or(NcmlWriter.writeMetadataVariablesPredicate)     // "charVar", "stringVar", "dessert"
+                .or(new NcmlWriter.WriteVariablesWithNamesPredicate(['recordsGroup/recordsStruct']));
 
-        when: "set NcMLWriter writeVariablesPredicate"
-        ncmlWriter.writeVariablesPredicate = compoundPred   // Exercise setter.
+        NcmlWriter ncmlWriterO = new NcmlWriter(null, null, compoundPred);
 
-        then: "getter returns instance just set"
-        ncmlWriter.writeVariablesPredicate == compoundPred  // Exercise getter.
+        for (Variable v : ncFile.variables) {
+            printf "%s == %s isCoord = %s%n", v.getName(), compoundPred.test(v), NcmlWriter.writeCoordinateVariablesPredicate.test(v)
+        }
 
-        expect: "compoundPred applies to every Variable in ncFile"
-        ncFile.variables.every { ncmlWriter.writeVariablesPredicate.apply(it) }
+        expect: "getter returns instance just set"
+        ncmlWriterO.getWriteValuesPredicate() == compoundPred  // Exercise getter.
+
+        and: "compoundPred applies to every Variable in ncFile"
+        ncFile.variables.every { compoundPred.test(it) }
 
         and: "generated NcML string will match expectedNcmlResult"
-        Element netcdfElem = ncmlWriter.makeExplicitNetcdfElement(ncFile, null)
-        println ncmlWriter.writeToString(netcdfElem)
+        Element netcdfElem = ncmlWriterO.makeExplicitNetcdfElement(ncFile, null)
+        println ncmlWriterO.writeToString(netcdfElem)
         println "\n\n" + expectedNcmlResult
-        ncmlWriter.writeToString(netcdfElem) == expectedNcmlResult
+        ncmlWriterO.writeToString(netcdfElem) == expectedNcmlResult
     }
 
     // TODO: This is an integration test and probably runs much slower than the other tests in this class.
     // How to categorize it and only execute it in certain environments?
     def "round-trip: write to File and read back in, using NcMLReader"() {
-        setup: "create temporary file to write NcML to"
-        File outFile = File.createTempFile("NcMLWriterSpec", ".ncml")
-
-        and: "configure NcMLWriter"
         // Don't try to write values 'recordsGroup/recordsStruct' this time; that already failed in previous method.
         // Also, the NetcdfDataset that NcMLReader returns will try to generate missing values, which we don't want.
-        ncmlWriter.writeVariablesPredicate = Predicates.or(
-                NcMLWriter.writeCoordinateVariablesPredicate,   // "time"
-                NcMLWriter.writeMetadataVariablesPredicate)     // "charVar", "stringVar", "dessert"
+        Predicate<? super Variable> compoundPred =
+                NcmlWriter.writeCoordinateVariablesPredicate   // "time"
+                .or(NcmlWriter.writeMetadataVariablesPredicate)     // "charVar", "stringVar", "dessert"
+
+        NcmlWriter ncmlWriterO = new NcmlWriter(null, null, compoundPred);
+        File outFile = File.createTempFile("NcMLWriterSpec", ".ncml")
 
         when: "write NcML to file"
-        Element netcdfElem = ncmlWriter.makeExplicitNetcdfElement(ncFile, null)
-        ncmlWriter.writeToFile(netcdfElem, outFile)
+        Element netcdfElem = ncmlWriterO.makeExplicitNetcdfElement(ncFile, null)
+        ncmlWriterO.writeToFile(netcdfElem, outFile)
 
         then: "file's content matches expectedNcmlResult"
         outFile.text == expectedNcmlResult
@@ -271,10 +264,10 @@ recordsGroup/recordsStruct = UNREADABLE
 
         and: "get the NcML representation of the dataset"
         readerDataset.setLocation(null)  // Leaving this non-null would screw up our comparison.
-        Element readerNetcdfElem = ncmlWriter.makeExplicitNetcdfElement(readerDataset, null)
+        Element readerNetcdfElem = ncmlWriterO.makeExplicitNetcdfElement(readerDataset, null)
 
         then: "it matches expectedNcmlResult"
-        ncmlWriter.writeToString(readerNetcdfElem) == expectedNcmlResult
+        ncmlWriterO.writeToString(readerNetcdfElem) == expectedNcmlResult
 
         cleanup:
         readerDataset?.close()

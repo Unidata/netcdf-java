@@ -17,6 +17,7 @@ import ucar.nc2.Dimension;
 import ucar.ma2.*;
 import java.io.IOException;
 import java.util.*;
+import ucar.unidata.geoloc.EarthLocation;
 
 public class NsslRadialAdapter extends AbstractRadialAdapter {
   private NetcdfDataset ds;
@@ -25,7 +26,7 @@ public class NsslRadialAdapter extends AbstractRadialAdapter {
 
   /////////////////////////////////////////////////
   public Object isMine(FeatureType wantFeatureType, NetcdfDataset ncd, Formatter errlog) {
-    String format = ncd.getRootGroup().findAttValueIgnoreCase("format", null);
+    String format = ncd.getRootGroup().findAttributeString("format", null);
     if (format != null) {
       if (format.startsWith("nssl/netcdf"))
         return this;
@@ -91,7 +92,7 @@ public class NsslRadialAdapter extends AbstractRadialAdapter {
 
     if (sp == null) {
       // add Elevation
-      ds.addDimension(null, new Dimension("Elevation", 1, true));
+      ds.addDimension(null, new Dimension("Elevation", 1));
       String lName = "elevation angle in degres: 0 = parallel to pedestal base, 90 = perpendicular";
       CoordinateAxis v = new CoordinateAxis1D(ds, null, "Elevation", DataType.DOUBLE, "Elevation", "degrees", lName);
       ds.setValues(v, 1, ele, 0);
@@ -104,7 +105,7 @@ public class NsslRadialAdapter extends AbstractRadialAdapter {
       int spsize = spd.length;
 
       // add Elevation
-      ds.addDimension(null, new Dimension("Elevation", spsize, true));
+      ds.addDimension(null, new Dimension("Elevation", spsize));
       String lName = "elevation angle in degres: 0 = parallel to pedestal base, 90 = perpendicular";
       CoordinateAxis v = new CoordinateAxis1D(ds, null, "Elevation", DataType.DOUBLE, "Elevation", "degrees", lName);
       v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.RadialElevation.toString()));
@@ -149,7 +150,7 @@ public class NsslRadialAdapter extends AbstractRadialAdapter {
   }
 
   public void setIsVolume(NetcdfDataset nds) {
-    String format = nds.getRootGroup().findAttValueIgnoreCase("volume", null);
+    String format = nds.getRootGroup().findAttributeString("volume", null);
     if (format == null) {
       isVolume = false;
       return;
@@ -181,7 +182,7 @@ public class NsslRadialAdapter extends AbstractRadialAdapter {
     else
       elev = 0.0;
 
-    origin = new ucar.unidata.geoloc.EarthLocationImpl(latv, lonv, elev);
+    origin = EarthLocation.create(latv, lonv, elev);
   }
 
   protected void setTimeUnits() throws Exception {
@@ -197,7 +198,7 @@ public class NsslRadialAdapter extends AbstractRadialAdapter {
   }
 
   protected void setStartDate() {
-    String start_datetime = ds.getRootGroup().findAttValueIgnoreCase("time_coverage_start", null);
+    String start_datetime = ds.getRootGroup().findAttributeString("time_coverage_start", null);
     if (start_datetime != null)
       startDate = DateUnit.getStandardOrISO(start_datetime);
     else
@@ -205,7 +206,7 @@ public class NsslRadialAdapter extends AbstractRadialAdapter {
   }
 
   protected void setEndDate() {
-    String end_datetime = ds.getRootGroup().findAttValueIgnoreCase("time_coverage_end", null);
+    String end_datetime = ds.getRootGroup().findAttributeString("time_coverage_end", null);
     if (end_datetime != null)
       endDate = DateUnit.getStandardOrISO(end_datetime);
     else

@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Iterator;
 import java.util.List;
+import ucar.unidata.util.Format;
 
 /**
  * Write client side catalogs out as XML.
@@ -187,7 +188,7 @@ public class CatalogXmlWriter {
     return dsElem;
   }
 
-  private void writeDatasetInfo(Dataset ds, Element dsElem, boolean doNestedDatasets, boolean showNcML) {
+  private void writeDatasetInfo(Dataset ds, Element dsElem, boolean doNestedDatasets, boolean showNcml) {
     String name = ds.getName();
     if (name == null)
       name = ""; // eg catrefs
@@ -432,7 +433,7 @@ public class CatalogXmlWriter {
     }
 
     sizeElem.setAttribute("units", unit);
-    sizeElem.setText(ucar.unidata.util.Format.d(size, 4));
+    sizeElem.setText(Format.d(size, 4));
 
     return sizeElem;
   }

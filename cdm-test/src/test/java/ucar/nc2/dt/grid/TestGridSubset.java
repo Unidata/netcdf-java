@@ -11,26 +11,22 @@ import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.Array;
-import ucar.ma2.DataType;
-import ucar.ma2.Index;
 import ucar.ma2.Range;
-import ucar.nc2.NCdumpW;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.grib.collection.Grib;
 import ucar.nc2.util.CompareNetcdf2;
+import ucar.nc2.write.Ncdump;
 import ucar.unidata.geoloc.*;
-import ucar.unidata.geoloc.projection.LatLonProjection;
 import ucar.unidata.geoloc.vertical.VerticalTransform;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import java.lang.invoke.MethodHandles;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 public class TestGridSubset {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
@@ -143,14 +139,14 @@ public class TestGridSubset {
       assert grid.getRank() == 3;
 
       // bbox = ll: 16.79S 20.5W+ ur: 14.1N 20.09E
-      LatLonRect bbox = new LatLonRect(new LatLonPointImpl(-16.79, -20.5), new LatLonPointImpl(14.1, 20.9));
+      LatLonRect bbox = new LatLonRect(LatLonPoint.create(-16.79, -20.5), LatLonPoint.create(14.1, 20.9));
 
       ProjectionImpl p = gcs.getProjection();
       ProjectionRect prect = p.latLonToProjBB(bbox); // must override default implementation
       logger.debug("{} -> {}", bbox, prect);
 
       ProjectionRect expected =
-          new ProjectionRect(new ProjectionPointImpl(-2129.5688, -1793.0041), 4297.8453, 3308.3885);
+          new ProjectionRect(ProjectionPoint.create(-2129.5688, -1793.0041), 4297.8453, 3308.3885);
       assert prect.nearlyEquals(expected);
 
       LatLonRect bb2 = p.projToLatLonBB(prect);
@@ -193,9 +189,9 @@ public class TestGridSubset {
       assert data.getShape()[2] == 32 : data.getShape()[2];
       assert data.getShape()[3] == 64 : data.getShape()[3];
 
-      logger.debug(NCdumpW.toString(data, "grid_section", null));
+      logger.debug(Ncdump.printArray(data, "grid_section", null));
 
-      LatLonPoint p0 = new LatLonPointImpl(29.0, -90.0);
+      LatLonPoint p0 = LatLonPoint.create(29.0, -90.0);
       LatLonRect bbox = new LatLonRect(p0, 1.0, 2.0);
       grid_section = grid.subset(null, null, bbox, 1, 1, 1);
       data = grid_section.readDataSlice(-1, -1, -1, -1);
@@ -209,7 +205,7 @@ public class TestGridSubset {
       ProjectionRect rect = gcs.getBoundingBox();
       logger.debug(" rect = {}", rect);
 
-      p0 = new LatLonPointImpl(30.0, -90.0);
+      p0 = LatLonPoint.create(30.0, -90.0);
       bbox = new LatLonRect(p0, 1.0, 2.0);
       grid_section = grid.subset(null, null, bbox, 1, 1, 1);
       data = grid_section.readDataSlice(-1, -1, -1, -1);
@@ -229,7 +225,7 @@ public class TestGridSubset {
   @Category(NeedsCdmUnitTest.class)
   public void testLatLonSubset() throws Exception {
     try (GridDataset dataset =
-        GridDataset.open(TestDir.cdmUnitTestDir + "conventions/cf/SUPER-NATIONAL_latlon_IR_20070222_1600.nc")) {
+        GridDataset.open(TestDir.cdmUnitTestDir + "conventions/problem/SUPER-NATIONAL_latlon_IR_20070222_1600.nc")) {
       GeoGrid grid = dataset.findGridByName("micron11");
       assert null != grid;
       GridCoordSystem gcs = grid.getCoordinateSystem();
@@ -238,10 +234,10 @@ public class TestGridSubset {
 
       logger.debug("original bbox = {}", gcs.getBoundingBox());
 
-      LatLonRect bbox = new LatLonRect(new LatLonPointImpl(40.0, -100.0), 10.0, 20.0);
+      LatLonRect bbox = new LatLonRect(LatLonPoint.create(40.0, -100.0), 10.0, 20.0);
       testLatLonSubset(grid, bbox, new int[] {141, 281});
 
-      bbox = new LatLonRect(new LatLonPointImpl(-40.0, -180.0), 120.0, 300.0);
+      bbox = new LatLonRect(LatLonPoint.create(-40.0, -180.0), 120.0, 300.0);
       testLatLonSubset(grid, bbox, new int[] {800, 1300});
     }
   }
@@ -279,7 +275,7 @@ public class TestGridSubset {
       logger.debug("original bbox = {}", gcs.getBoundingBox());
       logger.debug("lat/lon bbox = {}", gcs.getLatLonBoundingBox().toString2());
 
-      LatLonRect bbox = new LatLonRect(new LatLonPointImpl(40.0, -100.0), 10.0, 20.0);
+      LatLonRect bbox = new LatLonRect(LatLonPoint.create(40.0, -100.0), 10.0, 20.0);
       logger.debug("constrain bbox = {}", bbox.toString2());
 
       GeoGrid grid_section = grid.subset(null, null, bbox, 1, 1, 1);
@@ -297,53 +293,6 @@ public class TestGridSubset {
       assert dataShape.length == 2;
       assert dataShape[0] == 11 : data.getShape()[0];
       assert dataShape[1] == 21 : data.getShape()[1];
-    }
-  }
-
-  @Test
-  @Category(NeedsCdmUnitTest.class)
-  public void testGiniSubsetStride() throws Exception {
-    try (GridDataset dataset =
-        GridDataset.open(TestDir.cdmUnitTestDir + "formats/gini/WEST-CONUS_4km_IR_20070216_1500.gini")) {
-      GeoGrid grid = dataset.findGridByName("IR");
-      assert null != grid;
-      GridCoordSystem gcs = grid.getCoordinateSystem();
-      assert null != gcs;
-      assert grid.getRank() == 3;
-      int[] org_shape = grid.getShape();
-
-      Array data_org = grid.readDataSlice(0, 0, -1, -1);
-      assert data_org != null;
-      assert data_org.getRank() == 2;
-      int[] data_shape = data_org.getShape();
-      assert org_shape[1] == data_shape[0];
-      assert org_shape[2] == data_shape[1];
-
-      logger.debug("original bbox = {}" + gcs.getBoundingBox());
-
-      LatLonRect bbox = new LatLonRect(new LatLonPointImpl(40.0, -100.0), 10.0, 20.0);
-
-      LatLonProjection llproj = new LatLonProjection();
-      ucar.unidata.geoloc.ProjectionRect[] prect = llproj.latLonToProjRect(bbox);
-      logger.debug("constrain bbox = {}", prect[0]);
-
-      GeoGrid grid_section = grid.subset(null, null, bbox, 1, 2, 3);
-      GridCoordSystem gcs2 = grid_section.getCoordinateSystem();
-      assert null != gcs2;
-      assert grid_section.getRank() == 3;
-
-      ucar.unidata.geoloc.ProjectionRect subset_prect = gcs2.getBoundingBox();
-      logger.debug("resulting bbox = {}", subset_prect);
-
-      // test stride
-      grid_section = grid.subset(null, null, null, 1, 2, 3);
-      Array data = grid_section.readDataSlice(0, 0, -1, -1);
-      assert data != null;
-      assert data.getRank() == 2;
-
-      int[] shape = data.getShape();
-      assert Math.abs(org_shape[1] - 2 * shape[0]) < 2 : org_shape[2] + " != " + (2 * shape[0]);
-      assert Math.abs(org_shape[2] - 3 * shape[1]) < 3 : org_shape[2] + " != " + (3 * shape[1]);
     }
   }
 
@@ -392,7 +341,7 @@ public class TestGridSubset {
       logger.debug("original bbox = {}", gcs.getBoundingBox());
       logger.debug("lat/lon bbox = {}", gcs.getLatLonBoundingBox());
 
-      ucar.unidata.geoloc.LatLonRect llbb_subset = new LatLonRect(new LatLonPointImpl(), 20.0, 40.0);
+      ucar.unidata.geoloc.LatLonRect llbb_subset = new LatLonRect(LatLonPoint.create(), 20.0, 40.0);
       logger.debug("subset lat/lon bbox = {}", llbb_subset);
 
       GeoGrid grid_section = grid.subset(null, null, llbb_subset, 1, 1, 1);
@@ -420,19 +369,19 @@ public class TestGridSubset {
       GridCoordSystem gcs = grid.getCoordinateSystem();
       assert null != gcs;
 
-      logger.debug("original bbox = {}", gcs.getBoundingBox());
-      logger.debug("lat/lon bbox = {}", gcs.getLatLonBoundingBox());
+      System.out.printf("original bbox = %s%n", gcs.getBoundingBox());
+      System.out.printf("lat/lon bbox = %s%n", gcs.getLatLonBoundingBox());
 
       ucar.unidata.geoloc.LatLonRect llbb_subset =
-          new LatLonRect(new LatLonPointImpl(38, -110), new LatLonPointImpl(42, -90));
+          new LatLonRect(LatLonPoint.create(38, -110), LatLonPoint.create(42, -90));
       logger.debug("subset lat/lon bbox = {}", llbb_subset);
 
       GeoGrid grid_section = grid.subset(null, null, llbb_subset, 1, 1, 1);
       GridCoordSystem gcs2 = grid_section.getCoordinateSystem();
       assert null != gcs2;
 
-      logger.debug("result lat/lon bbox = {}", gcs2.getLatLonBoundingBox());
-      logger.debug("result bbox = {}", gcs2.getBoundingBox());
+      System.out.printf("result lat/lon bbox = %s%n", gcs2.getLatLonBoundingBox());
+      System.out.printf("result bbox = %s%n", gcs2.getBoundingBox());
 
       ProjectionRect pr = gcs2.getProjection().getDefaultMapArea();
       logger.debug("projection mapArea = {}", pr);
@@ -441,57 +390,6 @@ public class TestGridSubset {
       CoordinateAxis xaxis = gcs.getXHorizAxis();
       CoordinateAxis yaxis = gcs.getYHorizAxis();
       logger.debug("(nx,ny)= {}, {}", xaxis.getSize(), yaxis.getSize());
-    }
-  }
-
-  @Test
-  @Category(NeedsCdmUnitTest.class)
-  public void testAggByteGiniSubsetStride() throws Exception {
-    try (GridDataset dataset = GridDataset.open(TestDir.cdmUnitTestDir + "formats/gini/giniAggByte.ncml")) {
-      logger.debug("Test {}", dataset.getLocation());
-      GeoGrid grid = dataset.findGridByName("IR");
-      assert null != grid;
-      GridCoordSystem gcs = grid.getCoordinateSystem();
-      assert null != gcs;
-      assert grid.getRank() == 3;
-      int[] org_shape = grid.getShape();
-      assert grid.getDataType() == DataType.UINT;
-
-      Array data_org = grid.readDataSlice(0, 0, -1, -1);
-      assert data_org != null;
-      assert data_org.getRank() == 2;
-      int[] data_shape = data_org.getShape();
-      assert org_shape[1] == data_shape[0];
-      assert org_shape[2] == data_shape[1];
-      assert data_org.getElementType() == int.class : data_org.getElementType();
-
-      logger.debug("original bbox = {}", gcs.getBoundingBox());
-
-      LatLonRect bbox = new LatLonRect(new LatLonPointImpl(40.0, -100.0), 10.0, 20.0);
-
-      LatLonProjection llproj = new LatLonProjection();
-      ucar.unidata.geoloc.ProjectionRect[] prect = llproj.latLonToProjRect(bbox);
-      logger.debug("constrain bbox = {}", prect[0]);
-
-      GeoGrid grid_section = grid.subset(null, null, bbox, 1, 2, 3);
-      GridCoordSystem gcs2 = grid_section.getCoordinateSystem();
-      assert null != gcs2;
-      assert grid_section.getRank() == 3;
-      assert grid_section.getDataType() == DataType.UINT;
-
-      ucar.unidata.geoloc.ProjectionRect subset_prect = gcs2.getBoundingBox();
-      logger.debug("resulting bbox = {}", subset_prect);
-
-      // test stride
-      grid_section = grid.subset(null, null, null, 2, 2, 3);
-      Array data = grid_section.readVolumeData(1);
-      assert data != null;
-      assert data.getRank() == 2;
-      assert data.getElementType() == int.class;
-
-      int[] shape = data.getShape();
-      assert Math.abs(org_shape[1] - 2 * shape[0]) < 2 : org_shape[2] + " != " + (2 * shape[0]);
-      assert Math.abs(org_shape[2] - 3 * shape[1]) < 3 : org_shape[2] + " != " + (3 * shape[1]);
     }
   }
 
@@ -509,7 +407,7 @@ public class TestGridSubset {
       logger.debug("original bbox = {}", gcs.getBoundingBox());
       logger.debug("lat/lon bbox = {}", gcs.getLatLonBoundingBox());
 
-      ucar.unidata.geoloc.LatLonRect llbb_subset = new LatLonRect(new LatLonPointImpl(), 20.0, 40.0);
+      ucar.unidata.geoloc.LatLonRect llbb_subset = new LatLonRect(LatLonPoint.create(), 20.0, 40.0);
       logger.debug("subset lat/lon bbox = {}", llbb_subset);
 
       GeoGrid grid_section = grid.subset(null, null, llbb_subset, 1, 1, 1);
@@ -529,7 +427,7 @@ public class TestGridSubset {
   @Test
   public void testSubsetCoordEdges() throws Exception {
     try (NetcdfDataset fooDataset =
-        NetcdfDataset.openDataset(TestDir.cdmLocalFromTestDataDir + "ncml/subsetCoordEdges.ncml")) {
+        NetcdfDatasets.openDataset(TestDir.cdmLocalFromTestDataDir + "ncml/subsetCoordEdges.ncml")) {
       logger.debug("Open {}", fooDataset.getLocation());
       CompareNetcdf2 compare = new CompareNetcdf2();
       boolean ok = true;
@@ -609,30 +507,6 @@ public class TestGridSubset {
     }
   }
 
-  @Test
-  @Ignore("Does this file exist in a shared location?")
-  public void testAaron() throws Exception {
-    // different scale/offset in aggregation
-    try (GridDataset dataset = GridDataset.open("G:/work/braekel/dataset.ncml")) {
-      GridDatatype grid = null;
-      for (GridDatatype thisGrid : dataset.getGrids()) {
-        if (thisGrid.getName().equals("cref")) {
-          grid = thisGrid;
-        }
-      }
-      List<Range> ranges = new ArrayList<Range>();
-      ranges.add(new Range(0, 0));
-      ranges.add(new Range(0, 0));
-      ranges.add(new Range(638, 638));
-      ranges.add(new Range(3750, 4622));
-
-      Array arr = grid.getVariable().read(ranges);
-      Index index = arr.getIndex();
-      index.set(new int[] {0, 0, 0, 834});
-      logger.debug("index {} value {}", index.currentElement(), arr.getDouble(index));
-    }
-  }
-
   // has runtime(time), time(time)
   @Test
   @Category(NeedsCdmUnitTest.class)
@@ -667,10 +541,11 @@ public class TestGridSubset {
       Array data = grid.readDataSlice(1, 0, 10, 20);
       Array data2 = grid2.readDataSlice(0, 0, 10, 20);
 
-      logger.debug(NCdumpW.toString(data, "org", null));
-      logger.debug(NCdumpW.toString(data2, "subset", null));
+      logger.debug(Ncdump.printArray(data, "org", null));
+      logger.debug(Ncdump.printArray(data2, "subset", null));
 
-      ucar.unidata.util.test.CompareNetcdf.compareData(data, data2);
+      Assert.assertTrue(CompareNetcdf2.compareData("slice", data, data2));
+
     }
   }
 }

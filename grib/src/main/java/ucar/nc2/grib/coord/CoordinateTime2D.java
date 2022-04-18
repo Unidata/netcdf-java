@@ -43,9 +43,8 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
   private final int[] offset; // list all offsets from the base/first runtime, length nruns (LOOK can we use
                               // SmartArrayInt ?)
 
-  private final boolean isRegular; // all offsets are the same for each "runtime hour of day"
-  private final boolean isOrthogonal; // all offsets are the same for all runtimes, so 2d time array is (runtime X
-                                      // otime)
+  private final boolean isRegular; // offsets are the same for each "runtime hour of day"
+  private final boolean isOrthogonal; // offsets same for all runtimes, so 2d time array is (runtime X otime)
   private final boolean isTimeInterval;
   private final int nruns;
   private final int ntimes;
@@ -59,7 +58,7 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
    * @param timeUnit time duration, based on code
    * @param vals complete set of Time2D values, may be null (used only during creation)
    * @param runtime list of runtimes
-   * @param times list of times, one for each runtime, offsets reletive to its runtime, may not be null
+   * @param times list of times, one for each runtime, offsets relative to its runtime, may not be null
    */
   public CoordinateTime2D(int code, CalendarPeriod timeUnit, List<Time2D> vals, CoordinateRuntime runtime,
       List<Coordinate> times, int[] time2runtime) {
@@ -92,7 +91,7 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
    * @param vals complete set of Time2D values, may be null (used only during creation)
    * @param runtime list of runtimes
    * @param otime list of offsets, all the same for each runtime
-   * @param times list of times, one for each runtime, offsets reletive to its runtime, may be null (Only available
+   * @param times list of times, one for each runtime, offsets relative to its runtime, may be null (Only available
    *        during creation, not stored in index)
    */
   public CoordinateTime2D(int code, CalendarPeriod timeUnit, List<Time2D> vals, CoordinateRuntime runtime,
@@ -124,7 +123,7 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
    * @param vals complete set of Time2D values, may be null (used only during creation)
    * @param runtime list of runtimes
    * @param regList list of offsets, one each for each possible runtime hour of day.
-   * @param times list of times, one for each runtime, offsets reletive to its runtime, may be null (Only available
+   * @param times list of times, one for each runtime, offsets relative to its runtime, may be null (Only available
    *        during creation, not stored in index)
    */
   public CoordinateTime2D(int code, CalendarPeriod timeUnit, List<Time2D> vals, CoordinateRuntime runtime,
@@ -222,6 +221,13 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
 
   public int getOffset(int runIndex) {
     return offset[runIndex];
+  }
+
+  public Iterable<Integer> getRegularHourOffsets() {
+    if (!isRegular) {
+      return null;
+    }
+    return regTimes.keySet();
   }
 
   @Override
@@ -438,8 +444,8 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
 
   public CoordinateTimeAbstract getTimeCoordinate(int runIdx) {
     if (isOrthogonal)
-      return factory(otime, getRefDate(runIdx)); // LOOK problem is cant use time.getRefDate(), must use
-                                                 // time2D.getRefDate(runIdx) !!
+      // LOOK problem is cant use time.getRefDate(), must use time2D.getRefDate(runIdx) !!
+      return factory(otime, getRefDate(runIdx));
 
     if (isRegular) {
       CalendarDate ref = getRefDate(runIdx);
@@ -448,6 +454,10 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
     }
 
     return (CoordinateTimeAbstract) times.get(runIdx);
+  }
+
+  public CoordinateTimeAbstract getRegularTimeCoordinate(int hour) {
+    return regTimes.get(hour);
   }
 
   public CalendarDate getRefDate(int runIdx) {
@@ -756,7 +766,7 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
     CoordinateTimeAbstract time = getTimeCoordinate(runIdx);
     if (time.getNCoords() == 1)
       return 0;
-    return time.getIndex(val); // not sure if its reletive to runtime ??
+    return time.getIndex(val); // not sure if its relative to runtime ??
   }
 
   /**

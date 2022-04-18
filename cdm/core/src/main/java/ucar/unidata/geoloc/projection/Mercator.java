@@ -163,6 +163,7 @@ public class Mercator extends ProjectionImpl {
    *
    * @param par the first standard parallel
    */
+  @Deprecated
   public void setParallel(double par) {
     this.par = par;
     this.par_r = Math.toRadians(par);
@@ -174,6 +175,7 @@ public class Mercator extends ProjectionImpl {
    *
    * @param lon the origin longitude.
    */
+  @Deprecated
   public void setOriginLon(double lon) {
     lon0 = lon;
     precalculate();
@@ -185,6 +187,7 @@ public class Mercator extends ProjectionImpl {
    *
    * @param falseEasting x offset
    */
+  @Deprecated
   public void setFalseEasting(double falseEasting) {
     this.falseEasting = falseEasting;
   }
@@ -195,6 +198,7 @@ public class Mercator extends ProjectionImpl {
    *
    * @param falseNorthing y offset
    */
+  @Deprecated
   public void setFalseNorthing(double falseNorthing) {
     this.falseNorthing = falseNorthing;
   }
@@ -227,7 +231,7 @@ public class Mercator extends ProjectionImpl {
   @Override
   public boolean crossSeam(ProjectionPoint pt1, ProjectionPoint pt2) {
     // either point is infinite
-    if (ProjectionPointImpl.isInfinite(pt1) || ProjectionPointImpl.isInfinite(pt2)) {
+    if (LatLonPoints.isInfinite(pt1) || LatLonPoints.isInfinite(pt2)) {
       return true;
     }
 
@@ -277,13 +281,6 @@ public class Mercator extends ProjectionImpl {
     return result;
   }
 
-  /**
-   * Convert a LatLonPoint to projection coordinates
-   *
-   * @param latLon convert from these lat, lon coordinates
-   * @param result the object to write to
-   * @return the given result
-   */
   @Override
   public ProjectionPoint latLonToProj(LatLonPoint latLon, ProjectionPointImpl result) {
     double toX, toY;
@@ -296,7 +293,7 @@ public class Mercator extends ProjectionImpl {
       toX = Double.POSITIVE_INFINITY;
       toY = Double.POSITIVE_INFINITY;
     } else {
-      toX = A * Math.toRadians(LatLonPointImpl.range180(fromLon - this.lon0));
+      toX = A * Math.toRadians(LatLonPoints.range180(fromLon - this.lon0));
       toY = A * SpecialMathFunction.atanh(Math.sin(fromLat_r)); // p 41 Snyder
     }
 
@@ -304,14 +301,6 @@ public class Mercator extends ProjectionImpl {
     return result;
   }
 
-  /**
-   * Convert projection coordinates to a LatLonPoint
-   * Note: a new object is not created on each call for the return value.
-   *
-   * @param world convert from these projection coordinates
-   * @param result the object to write to
-   * @return LatLonPoint convert to these lat/lon coordinates
-   */
   @Override
   public LatLonPoint projToLatLon(ProjectionPoint world, LatLonPointImpl result) {
     double fromX = world.getX() - falseEasting;

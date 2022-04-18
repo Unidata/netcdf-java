@@ -34,7 +34,7 @@ import ucar.nc2.dataset.VariableEnhanced;
 import ucar.nc2.iosp.netcdf3.N3iosp;
 import ucar.nc2.units.SimpleUnit;
 import ucar.nc2.util.CancelTask;
-import ucar.unidata.geoloc.LatLonPointImpl;
+import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.ProjectionPointImpl;
 import ucar.unidata.geoloc.projection.LambertConformal;
 import ucar.unidata.geoloc.projection.Stereographic;
@@ -135,7 +135,7 @@ public class AWIPSConvention extends CoordSysBuilder {
     // kludge in fixing the units
     List<Variable> vlist = ds.getVariables();
     for (Variable v : vlist) {
-      String units = v.attributes().findAttValueIgnoreCase(CDM.UNITS, null);
+      String units = v.attributes().findAttributeString(CDM.UNITS, null);
       if (units != null) {
         v.addAttribute(new Attribute(CDM.UNITS, normalize(units))); // removes the old
       }
@@ -236,7 +236,7 @@ public class AWIPSConvention extends CoordSysBuilder {
     if (null != (dim = ds.getRootGroup().findDimension(name))) {
       if (dim.getLength() == len) {
         // check against actual values
-        Variable coord = ds.getRootGroup().findVariable(name);
+        Variable coord = ds.getRootGroup().findVariableLocal(name);
         Array coordData = coord.read();
         Array newData = Array.makeArray(coord.getDataType(), values);
         if (MAMath.nearlyEquals(coordData, newData)) {
@@ -329,7 +329,6 @@ public class AWIPSConvention extends CoordSysBuilder {
   }
 
   // create new variables as sections of ncVar
-
   private void createNewVariables(NetcdfDataset ds, Variable ncVar, List<Dimension> newDims, Dimension levelDim)
       throws InvalidRangeException {
 
@@ -438,7 +437,7 @@ public class AWIPSConvention extends CoordSysBuilder {
     LambertConformal lc = new LambertConformal(rotation, centralLon, centralLat, centralLat);
     double lat0 = findAttributeDouble(ds, "lat00");
     double lon0 = findAttributeDouble(ds, "lon00");
-    ProjectionPointImpl start = (ProjectionPointImpl) lc.latLonToProj(new LatLonPointImpl(lat0, lon0));
+    ProjectionPointImpl start = (ProjectionPointImpl) lc.latLonToProj(LatLonPoint.create(lat0, lon0));
     if (debugProj)
       parseInfo.format("getLCProjection start at proj coord %s%n", start);
     startx = start.getX();
@@ -463,7 +462,7 @@ public class AWIPSConvention extends CoordSysBuilder {
     // we have to project in order to find the origin
     double lat0 = findAttributeDouble(ds, "lat00");
     double lon0 = findAttributeDouble(ds, "lon00");
-    ProjectionPointImpl start = (ProjectionPointImpl) proj.latLonToProj(new LatLonPointImpl(lat0, lon0));
+    ProjectionPointImpl start = (ProjectionPointImpl) proj.latLonToProj(LatLonPoint.create(lat0, lon0));
     startx = start.getX();
     starty = start.getY();
 
@@ -472,7 +471,7 @@ public class AWIPSConvention extends CoordSysBuilder {
 
     double latN = findAttributeDouble(ds, "latNxNy");
     double lonN = findAttributeDouble(ds, "lonNxNy");
-    ProjectionPointImpl pt = (ProjectionPointImpl) proj.latLonToProj(new LatLonPointImpl(latN, lonN));
+    ProjectionPointImpl pt = (ProjectionPointImpl) proj.latLonToProj(LatLonPoint.create(latN, lonN));
     parseInfo.format("                        end at proj coord %s%n", pt);
     parseInfo.format("                        scale= %f%n", scale);
 

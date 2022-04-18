@@ -12,51 +12,56 @@ import ucar.unidata.util.Parameter;
  * a projective cartesian surface.
  * 
  * @author John Caron
+ *         LOOK will be immutable AutoValue in ver6
  */
 
 public interface Projection {
 
-  /**
-   * The name of this class of projections, eg "Transverse Mercator".
-   *
-   * @return the class name
-   */
+  /** The name of this class of projections, eg "Transverse Mercator". */
   String getClassName();
 
-  /**
-   * The name of this projection.
-   *
-   * @return the name of this projection
-   */
+  /** The name of this projection. */
   String getName();
 
-  /**
-   * String representation of the projection parameters.
-   *
-   * @return String representation of the projection parameters.
-   */
+  /** Is this the lat/lon Projection ? */
+  boolean isLatLon();
+
+  /** String representation of the projection parameters. */
   String paramsToString();
 
+  /** @deprecated use latLonToProj(LatLonPoint latlon) */
+  @Deprecated
+  ProjectionPoint latLonToProj(LatLonPoint latlon, ProjectionPointImpl result);
+
+  /** Convert lat, lon to Projection point. */
+  default ProjectionPoint latLonToProj(double lat, double lon) {
+    return latLonToProj(LatLonPoint.create(lat, lon));
+  }
+
   /**
-   * Convert a LatLonPoint to projection coordinates. Note: do not assume
-   * a new object is created on each call for the return value.
+   * Convert a LatLonPoint to projection coordinates.
    *
    * @param latlon convert from these lat, lon coordinates
-   * @param result point to put result in
    * @return ProjectionPoint convert to these projection coordinates
    */
-  ProjectionPoint latLonToProj(LatLonPoint latlon, ProjectionPointImpl result);
+  ProjectionPoint latLonToProj(LatLonPoint latlon);
+
+  /** @deprecated use projToLatLon(ProjectionPoint ppt) */
+  @Deprecated
+  LatLonPoint projToLatLon(ProjectionPoint ppt, LatLonPointImpl result);
+
+  /** Convert projection x, y to LatLonPoint point. */
+  default LatLonPoint projToLatLon(double x, double y) {
+    return projToLatLon(ProjectionPoint.create(x, y));
+  }
 
   /**
    * Convert projection coordinates to a LatLonPoint.
-   * Note: do not assume a new object is created on each call for the
-   * return value.
    *
    * @param ppt convert from these projection coordinates
-   * @param result return result here, or null
    * @return lat/lon coordinates
    */
-  LatLonPoint projToLatLon(ProjectionPoint ppt, LatLonPointImpl result);
+  LatLonPoint projToLatLon(ProjectionPoint ppt);
 
   /**
    * Does the line between these two points cross the projection "seam", which
@@ -74,7 +79,9 @@ public interface Projection {
    * theres no bounding box that works for all projections.
    *
    * @return a reasonable bounding box in this projection.
+   * @deprecated Do not use.
    */
+  @Deprecated
   ProjectionRect getDefaultMapArea();
 
   /**
@@ -89,6 +96,7 @@ public interface Projection {
    * Get parameters as list of ucar.unidata.util.Parameter
    *
    * @return List of parameters
+   *         TODO will return ImmutableList in ver6
    */
   java.util.List<Parameter> getProjectionParameters();
 
@@ -102,6 +110,15 @@ public interface Projection {
    *         plane
    */
   ProjectionRect latLonToProjBB(LatLonRect latlonRect);
+
+  /**
+   * Compute lat/lon bounding box from projection bounding box.
+   *
+   * @param bb projection bounding box
+   * @return lat, lon bounding box.
+   * @deprecated use Projections.projToLatLonBB(Projection proj, ...)
+   */
+  LatLonRect projToLatLonBB(ProjectionRect bb);
 
 }
 

@@ -72,13 +72,14 @@ public class UFiosp extends AbstractIOServiceProvider {
     // .toDateTimeStringISO(d)));
     ncfile.addAttribute(null,
         new Attribute("time_coverage_end", formatter.toDateTimeStringISO(headerParser.getEndDate())));
-    double latRadiusDegrees = Math.toDegrees(radarRadius / ucar.unidata.geoloc.Earth.getRadius());
+    double latRadiusDegrees = Math.toDegrees(radarRadius / ucar.unidata.geoloc.Earth.WGS84_EARTH_RADIUS_METERS);
     ncfile.addAttribute(null,
         new Attribute("geospatial_lat_min", headerParser.getStationLatitude() - latRadiusDegrees));
     ncfile.addAttribute(null,
         new Attribute("geospatial_lat_max", headerParser.getStationLatitude() + latRadiusDegrees));
     double cosLat = Math.cos(Math.toRadians(headerParser.getStationLatitude()));
-    double lonRadiusDegrees = Math.toDegrees(radarRadius / cosLat / ucar.unidata.geoloc.Earth.getRadius());
+    double lonRadiusDegrees =
+        Math.toDegrees(radarRadius / cosLat / ucar.unidata.geoloc.Earth.WGS84_EARTH_RADIUS_METERS);
     ncfile.addAttribute(null,
         new Attribute("geospatial_lon_min", headerParser.getStationLongitude() - lonRadiusDegrees));
     ncfile.addAttribute(null,
@@ -123,7 +124,7 @@ public class UFiosp extends AbstractIOServiceProvider {
     String radialDimName = "radial" + abbrev;
     Dimension scanDim = new Dimension(scanDimName, nscans);
     Dimension gateDim = new Dimension(gateDimName, ngates);
-    Dimension radialDim = new Dimension(radialDimName, headerParser.getMaxRadials(), true);
+    Dimension radialDim = new Dimension(radialDimName, headerParser.getMaxRadials());
     ncfile.addDimension(null, scanDim);
     ncfile.addDimension(null, gateDim);
     ncfile.addDimension(null, radialDim);

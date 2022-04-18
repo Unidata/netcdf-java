@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import ucar.nc2.Dimension;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.grib.collection.GribCdmIndex;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
@@ -43,16 +44,16 @@ public class TestGribCreationOptions {
      * olderThan="5 min"/>
      * 
      * <tdm rewrite="test" rescan="0 0/15 * * * ? *"/>
-     * <gribConfig>
+     * <gribConfig>TestRotatedPole
      * <option name="timeUnit" value="1 minute" />
      * </gribConfig>
      * </featureCollection>
      */
 
     String dataset = TestDir.cdmUnitTestDir + "gribCollections/hrrr/DewpointTempFromGsdHrrrrConus3surface.grib2";
-    try (NetcdfDataset ds = NetcdfDataset.openDataset(dataset)) {
-      Variable v = ds.findVariable("Dewpoint_temperature_height_above_ground");
-      Assert.assertNotNull("Dewpoint_temperature_height_above_ground", v);
+    try (NetcdfDataset ds = NetcdfDatasets.openDataset(dataset)) {
+      Variable v = ds.findVariable("DPT_P0_L103_GLC0_height_above_ground");
+      Assert.assertNotNull("DPT_P0_L103_GLC0_height_above_ground", v);
       Dimension d = v.getDimension(0);
       Assert.assertEquals(57, d.getLength());
     }

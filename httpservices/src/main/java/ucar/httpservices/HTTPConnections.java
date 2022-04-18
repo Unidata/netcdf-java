@@ -16,6 +16,8 @@ import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import javax.annotation.concurrent.ThreadSafe;
 import java.util.HashMap;
 import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Centralized management of the connections used by HTTPSession/HTTPMethod.
@@ -94,7 +96,7 @@ abstract class HTTPConnections {
     return this.protocolregistry;
   }
 
-  public void validate() {
+  void validate() {
     assert actualconnections == 0;
   }
 
@@ -170,7 +172,10 @@ class HTTPConnectionSimple extends HTTPConnections {
       mgrmap.remove(mgr, method);
       methodmap.remove(method);
       ((BasicHttpClientConnectionManager) mgr).close();
-      actualconnections--;
+      if (method.executed) {
+        // only decrement if method was executed
+        this.actualconnections--;
+      }
       if (TRACE)
         System.err.println("HTTPConnections: close connection: " + method.hashCode());
     }
@@ -193,7 +198,7 @@ class HTTPConnectionSimple extends HTTPConnections {
   }
 
   @Override
-  public void validate() {
+  void validate() {
     assert methodmap.size() == 0;
     assert mgrmap.size() == 0;
     super.validate();
@@ -239,7 +244,10 @@ class HTTPConnectionPool extends HTTPConnections {
   public void freeManager(HTTPMethod m) {
     if (TRACE)
       System.err.println("HTTPConnections: close connection: " + m.hashCode());
-    this.actualconnections--;
+    if (m.executed) {
+      // only decrement if method was executed
+      this.actualconnections--;
+    }
     // Do notneed to reclaim anything for pooling manager
   }
 

@@ -35,8 +35,17 @@ public class RangeScatter implements RangeIterator {
     return name;
   }
 
+  /** @deprecated use copyWithName() */
+  @Deprecated
   @Override
   public RangeIterator setName(String name) {
+    if (name.equals(this.getName()))
+      return this;
+    return new RangeScatter(name, vals);
+  }
+
+  @Override
+  public RangeIterator copyWithName(String name) {
     if (name.equals(this.getName()))
       return this;
     return new RangeScatter(name, vals);
@@ -169,7 +178,7 @@ public class RangeScatter implements RangeIterator {
 
   @Override
   public String toString() {
-    return "{" + Misc.showInts(vals) + "}";
+    return "{" + Arrays.toString(vals) + "}";
   }
 
   @Override

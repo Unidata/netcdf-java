@@ -39,7 +39,7 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
     // somewhat duplicated in Nexrad2RadialAdapter - so if changing something here, also
     // look in cdm-core module's Nexrad2RadialAdapter.isNEXRAD2Format
     if (format != null && (format.equals("ARCHIVE2") || format.startsWith("AR2V"))) {
-      if (Integer.parseInt(format.substring(4)) > 8)
+      if (format.startsWith("AR2V") && Integer.parseInt(format.substring(4)) > 8)
         logger.warn("Trying to handle unknown but valid-looking format: " + format);
       return true;
     }
@@ -130,11 +130,12 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
       ncfile.addAttribute(null, new Attribute("StationLongitude", volScan.getStationLongitude()));
       ncfile.addAttribute(null, new Attribute("StationElevationInMeters", volScan.getStationElevation()));
 
-      double latRadiusDegrees = Math.toDegrees(radarRadius / ucar.unidata.geoloc.Earth.getRadius());
+      double latRadiusDegrees = Math.toDegrees(radarRadius / ucar.unidata.geoloc.Earth.WGS84_EARTH_RADIUS_METERS);
       ncfile.addAttribute(null, new Attribute("geospatial_lat_min", volScan.getStationLatitude() - latRadiusDegrees));
       ncfile.addAttribute(null, new Attribute("geospatial_lat_max", volScan.getStationLatitude() + latRadiusDegrees));
       double cosLat = Math.cos(Math.toRadians(volScan.getStationLatitude()));
-      double lonRadiusDegrees = Math.toDegrees(radarRadius / cosLat / ucar.unidata.geoloc.Earth.getRadius());
+      double lonRadiusDegrees =
+          Math.toDegrees(radarRadius / cosLat / ucar.unidata.geoloc.Earth.WGS84_EARTH_RADIUS_METERS);
       ncfile.addAttribute(null, new Attribute("geospatial_lon_min", volScan.getStationLongitude() - lonRadiusDegrees));
       ncfile.addAttribute(null, new Attribute("geospatial_lon_max", volScan.getStationLongitude() + lonRadiusDegrees));
 
@@ -271,7 +272,7 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
     String radialDimName = "radial" + abbrev;
     Dimension scanDim = new Dimension(scanDimName, nscans);
     Dimension gateDim = new Dimension(gateDimName, ngates);
-    Dimension radialDim = new Dimension(radialDimName, volScan.getMaxRadials(rd), true);
+    Dimension radialDim = new Dimension(radialDimName, volScan.getMaxRadials(rd));
     ncfile.addDimension(null, scanDim);
     ncfile.addDimension(null, gateDim);
     ncfile.addDimension(null, radialDim);
@@ -282,7 +283,7 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
     dims.add(gateDim);
 
     Variable v = new Variable(ncfile, null, null, shortName);
-    if (datatype == DIFF_PHASE) {
+    if (firstRecord.getDataWordSize(datatype) == 16) {
       v.setDataType(DataType.USHORT);
     } else {
       v.setDataType(DataType.UBYTE);

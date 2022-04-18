@@ -20,6 +20,7 @@ public class TableC {
     tableCdesc[4] = "add associated field";
     tableCdesc[5] = "signify character";
     tableCdesc[6] = "signify data width for next descriptor";
+    tableCdesc[7] = "increase scale, reference value, and data width";
     tableCdesc[21] = "data not present";
     tableCdesc[22] = "quality information follows";
     tableCdesc[23] = "substituted values operator";

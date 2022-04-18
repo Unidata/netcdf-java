@@ -1,15 +1,17 @@
 /*
- * Copyright (c) 1998-2018 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 package ucar.nc2.dataset;
 
+import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.DataFormatType;
+import ucar.nc2.dataset.NetcdfDataset.Enhance;
 import ucar.nc2.iosp.netcdf3.N3iosp;
 import ucar.nc2.util.Misc;
 import javax.annotation.Nonnull;
@@ -34,7 +36,7 @@ class EnhanceScaleMissingUnsignedImpl implements EnhanceScaleMissingUnsigned {
   private boolean fillValueIsMissing = NetcdfDataset.fillValueIsMissing;
   private boolean missingDataIsMissing = NetcdfDataset.missingDataIsMissing;
 
-  private boolean hasScaleOffset;
+  private boolean useScaleOffset;
   private double scale = 1.0, offset;
 
   private boolean hasValidRange, hasValidMin, hasValidMax;
@@ -59,8 +61,8 @@ class EnhanceScaleMissingUnsignedImpl implements EnhanceScaleMissingUnsigned {
    *
    * @param forVar the Variable to decorate.
    */
-  EnhanceScaleMissingUnsignedImpl(VariableDS forVar) {
-    this(forVar, NetcdfDataset.fillValueIsMissing, NetcdfDataset.invalidDataIsMissing,
+  EnhanceScaleMissingUnsignedImpl(VariableDS forVar, Set<Enhance> enhancements) {
+    this(forVar, enhancements, NetcdfDataset.fillValueIsMissing, NetcdfDataset.invalidDataIsMissing,
         NetcdfDataset.missingDataIsMissing);
   }
 
@@ -73,8 +75,8 @@ class EnhanceScaleMissingUnsignedImpl implements EnhanceScaleMissingUnsigned {
    * @param invalidDataIsMissing use valid_range for isMissing()
    * @param missingDataIsMissing use missing_value for isMissing()
    */
-  EnhanceScaleMissingUnsignedImpl(VariableDS forVar, boolean fillValueIsMissing, boolean invalidDataIsMissing,
-      boolean missingDataIsMissing) {
+  EnhanceScaleMissingUnsignedImpl(VariableDS forVar, Set<Enhance> enhancements, boolean fillValueIsMissing,
+      boolean invalidDataIsMissing, boolean missingDataIsMissing) {
     this.fillValueIsMissing = fillValueIsMissing;
     this.invalidDataIsMissing = invalidDataIsMissing;
     this.missingDataIsMissing = missingDataIsMissing;
@@ -92,7 +94,7 @@ class EnhanceScaleMissingUnsignedImpl implements EnhanceScaleMissingUnsigned {
     // 1. origDataType is unsigned, but variable has "_Unsigned == false" attribute.
     // 2. origDataType is signed, but variable has "_Unsigned == true" attribute.
     if (signedness == Signedness.SIGNED) {
-      String unsignedAtt = forVar.attributes().findAttValueIgnoreCase(CDM.UNSIGNED, null);
+      String unsignedAtt = forVar.attributes().findAttributeString(CDM.UNSIGNED, null);
       if (unsignedAtt != null && unsignedAtt.equalsIgnoreCase("true")) {
         this.signedness = Signedness.UNSIGNED;
       }
@@ -111,15 +113,15 @@ class EnhanceScaleMissingUnsignedImpl implements EnhanceScaleMissingUnsigned {
     if (scaleAtt != null && !scaleAtt.isString()) {
       scaleType = getAttributeDataType(scaleAtt);
       scale = convertUnsigned(scaleAtt.getNumericValue(), scaleType).doubleValue();
-      hasScaleOffset = true;
-      logger.debug("scale = {}    type = {}", scale, scaleType);
+      useScaleOffset = enhancements.contains(Enhance.ApplyScaleOffset);
+      logger.debug("scale = {}  type = {}", scale, scaleType);
     }
 
     Attribute offsetAtt = forVar.findAttribute(CDM.ADD_OFFSET);
     if (offsetAtt != null && !offsetAtt.isString()) {
       offsetType = getAttributeDataType(offsetAtt);
       offset = convertUnsigned(offsetAtt.getNumericValue(), offsetType).doubleValue();
-      hasScaleOffset = true;
+      useScaleOffset = enhancements.contains(Enhance.ApplyScaleOffset);
       logger.debug("offset = {}", offset);
     }
 
@@ -167,13 +169,14 @@ class EnhanceScaleMissingUnsignedImpl implements EnhanceScaleMissingUnsigned {
     } else {
       // No _FillValue attribute found. Instead, if file is NetCDF and variable is numeric, use the default fill value.
       String fileTypeId = forVar.orgFileTypeId;
-
       boolean isNetcdfIosp = DataFormatType.NETCDF.getDescription().equals(fileTypeId)
           || DataFormatType.NETCDF4.getDescription().equals(fileTypeId);
 
-      if (isNetcdfIosp && unsignedConversionType.isNumeric()) {
-        fillValue = applyScaleOffset(N3iosp.getFillValueDefault(unsignedConversionType));
-        hasFillValue = true;
+      if (isNetcdfIosp) {
+        if (unsignedConversionType.isNumeric()) {
+          fillValue = applyScaleOffset(N3iosp.getFillValueDefault(unsignedConversionType));
+          hasFillValue = true;
+        }
       }
     }
 
@@ -220,7 +223,7 @@ class EnhanceScaleMissingUnsignedImpl implements EnhanceScaleMissingUnsigned {
     }
 
     /// assign convertedDataType if needed
-    if (hasScaleOffset) {
+    if (useScaleOffset) {
       scaledOffsetType = largestOf(unsignedConversionType, scaleType, offsetType).withSignedness(signedness);
       logger.debug("assign scaledOffsetType = {}", scaledOffsetType);
 
@@ -240,6 +243,14 @@ class EnhanceScaleMissingUnsignedImpl implements EnhanceScaleMissingUnsigned {
           if (hasValidRange || hasValidMax) {
             validMax = applyScaleOffset(validMax);
           }
+        }
+        // During the scaling process, it is possible that the valid minimum and maximum values have effectively been
+        // swapped (for example, when the scale value is negative). Go ahead and check to make sure the valid min is
+        // actually less than the valid max, and if not, fix it. See https://github.com/Unidata/netcdf-java/issues/572.
+        if (validMin > validMax) {
+          double tmp = validMin;
+          validMin = validMax;
+          validMax = tmp;
         }
       }
     }
@@ -465,7 +476,7 @@ class EnhanceScaleMissingUnsignedImpl implements EnhanceScaleMissingUnsigned {
 
   @Override
   public boolean hasScaleOffset() {
-    return hasScaleOffset;
+    return useScaleOffset;
   }
 
   @Override
@@ -549,7 +560,7 @@ class EnhanceScaleMissingUnsignedImpl implements EnhanceScaleMissingUnsigned {
   @Override
   public double applyScaleOffset(Number value) {
     double convertedValue = value.doubleValue();
-    return hasScaleOffset ? scale * convertedValue + offset : convertedValue;
+    return useScaleOffset ? scale * convertedValue + offset : convertedValue;
   }
 
   @Override

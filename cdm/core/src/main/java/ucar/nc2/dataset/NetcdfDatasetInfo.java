@@ -36,14 +36,14 @@ public class NetcdfDatasetInfo implements Closeable {
   private CoordSysBuilderIF builder;
 
   public NetcdfDatasetInfo(String location) throws IOException {
-    ds = NetcdfDataset.openDataset(location, false, null);
+    ds = NetcdfDatasets.openDataset(location, false, null);
     builder = ds.enhance();
   }
 
   public NetcdfDatasetInfo(NetcdfDataset ds) throws IOException {
     File loc = new File(ds.getLocation());
     if (loc.exists()) {
-      this.ds = NetcdfDataset.openDataset(ds.getLocation(), false, null); // fresh enhancement
+      this.ds = NetcdfDatasets.openDataset(ds.getLocation(), false, null); // fresh enhancement
       builder = this.ds.enhance();
     } else { // Aggregation, fc may not exist
       this.ds = ds; // LOOK what can we do thats better ?

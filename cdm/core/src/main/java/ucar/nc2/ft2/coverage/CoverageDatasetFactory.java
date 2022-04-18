@@ -6,10 +6,10 @@ package ucar.nc2.ft2.coverage;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.DatasetUrl;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.ft2.coverage.adapter.DtCoverageAdapter;
 import ucar.nc2.ft2.coverage.adapter.DtCoverageDataset;
-import ucar.nc2.ncml.NcMLReader;
 import ucar.nc2.util.Optional;
 import java.io.IOException;
 import java.io.StringReader;
@@ -126,7 +126,7 @@ public class CoverageDatasetFactory {
   }
 
   public static Optional<FeatureDatasetCoverage> openNcmlString(String ncml) throws IOException {
-    NetcdfDataset ncd = NcMLReader.readNcML(new StringReader(ncml), null);
+    NetcdfDataset ncd = NetcdfDatasets.openNcmlDataset(new StringReader(ncml), null, null);
 
     DtCoverageDataset gds = new DtCoverageDataset(ncd);
     if (!gds.getGrids().isEmpty()) {

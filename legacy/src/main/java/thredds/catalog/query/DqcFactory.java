@@ -68,6 +68,7 @@ public class DqcFactory {
   public DqcFactory(boolean validate) {
     XMLEntityResolver jaxp = new XMLEntityResolver(validate);
     builder = jaxp.getSAXBuilder();
+    builder.setExpandEntities(false);
     warnMessages = jaxp.getWarningMessages();
     errMessages = jaxp.getErrorMessages();
     fatalMessages = jaxp.getFatalMessages();
@@ -220,7 +221,7 @@ public class DqcFactory {
    * check dqc.isValid, dqc.getErrorMessages() to see if ok.
    *
    * @param docIs : the InputStream to read from
-   * @param uri : the URI of the document, used for resolving reletive references.
+   * @param uri : the URI of the document, used for resolving relative references.
    * @return an QueryCapability object
    * @throws IOException on failure
    */
@@ -246,7 +247,7 @@ public class DqcFactory {
    * check dqc.isValid, dqc.getErrorMessages() to see if ok.
    *
    * @param doc parse this document
-   * @param uri : the URI of the document, used for resolving reletive references.
+   * @param uri : the URI of the document, used for resolving relative references.
    * @return an InvCatalogImpl object
    * @throws IOException on failure
    */

@@ -1,10 +1,10 @@
 /*
- * Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 2014-2018 University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
+
 package ucar.nc2.ui.grib;
 
-import com.google.common.base.MoreObjects;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.*;
 import ucar.nc2.grib.coord.SparseArray;
@@ -17,12 +17,7 @@ import ucar.util.prefs.PreferencesExt;
 import java.io.*;
 import java.util.*;
 
-/**
- * Run through GRIB ncx indices and make reports
- *
- * @author caron
- * @since 5/15/2014
- */
+/** Run through GRIB ncx indices and make reports */
 public class CdmIndexReportPanel extends ReportPanel {
   private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib2ReportPanel.class);
 
@@ -67,8 +62,12 @@ public class CdmIndexReportPanel extends ReportPanel {
 
     @Override
     public String toString() {
-      return MoreObjects.toStringHelper(this).add("nrecords", nrecords).add("ndups", ndups).add("nmissing", nmissing)
-          .toString();
+      Formatter f = new Formatter();
+      f.format("Accum{nrecords=%d, ", nrecords);
+      double fn = (float) nrecords / 100.0;
+      f.format("ndups=%d (%3.1f %%), ", ndups, ndups / fn);
+      f.format("nmissing=%d (%3.1f %%)}", nmissing, nmissing / fn);
+      return f.toString();
     }
   }
 
@@ -79,10 +78,10 @@ public class CdmIndexReportPanel extends ReportPanel {
         doDupAndMissingEach(f, iter.next(), eachFile, extra, total);
       }
     }
-    f.format("total %s%n", total);
+    f.format("%n Grand Total %s%n", total);
   }
 
-  // seperate report for each file in collection
+  // separate report for each file in collection
   private void doDupAndMissingEach(Formatter f, MFile mfile, boolean each, boolean extra, Accum accum)
       throws IOException {
 
@@ -113,7 +112,7 @@ public class CdmIndexReportPanel extends ReportPanel {
             accum.add(v);
           }
           if (each) {
-            f.format("total %s%n", groupAccum);
+            f.format(" total %s%n", groupAccum);
           }
         }
       }
@@ -159,7 +158,7 @@ public class CdmIndexReportPanel extends ReportPanel {
     }
   }
 
-  // seperate report for each file in collection
+  // separate report for each file in collection
   private void doMisplacedFieldsEach(Formatter f2, MFile mfile, Set<String> filenames, boolean extra)
       throws IOException {
     Formatter f = new Formatter(System.out);
@@ -258,7 +257,7 @@ public class CdmIndexReportPanel extends ReportPanel {
 
           for (GribCollectionImmutable.VariableIndex vi : g.getVariables()) {
             String name = vi.makeVariableName(); // LOOK not actually right - some are partitioned by level
-            int nrecords = vi.getNRecords();
+            int nrecords = vi.countNRecords();
             f.format("  %7d: %s%n", nrecords, name);
             int hash = vi.hashCode() + g.getGdsHash().hashCode(); // must be both group and var
             VarInfo vinfo = varCount.get(hash);
@@ -300,11 +299,12 @@ public class CdmIndexReportPanel extends ReportPanel {
           for (GribCollectionImmutable.VariableIndex vi : g.getVariables()) {
             int hash = vi.hashCode() + g.getGdsHash().hashCode();
             VarInfo vinfo = varCount.get(hash);
-            if (vinfo == null)
+            if (vinfo == null) {
               f.format("ERROR on vi %s%n", vi);
-            else {
-              if (!vinfo.ok)
-                countMisplaced += vi.getNRecords();
+            } else {
+              if (!vinfo.ok) {
+                countMisplaced += vi.countNRecords();
+              }
             }
           }
         }

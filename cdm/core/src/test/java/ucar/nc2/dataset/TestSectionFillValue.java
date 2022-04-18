@@ -31,7 +31,7 @@ public class TestSectionFillValue {
   @Test
   public void testExplicitFillValue() throws Exception {
     String filename = TestDir.cdmLocalTestDataDir + "standardVar.nc";
-    try (NetcdfDataset ncfile = NetcdfDataset.openDataset(filename)) {
+    try (NetcdfDataset ncfile = NetcdfDatasets.openDataset(filename)) {
       VariableDS v = (VariableDS) ncfile.findVariable("t3");
       Assert.assertNotNull("t3", v);
       Assert.assertTrue(v.hasFillValue());
@@ -55,8 +55,8 @@ public class TestSectionFillValue {
   public void testImplicitFillValue() throws Exception {
     String filename = TestDir.cdmLocalTestDataDir + "testWriteFill.nc";
     List<String> varWithFill = Lists.newArrayList("temperature", "rtemperature");
-    try (NetcdfFile ncfile = NetcdfDataset.openFile(filename, null);
-        NetcdfDataset ncd = NetcdfDataset.openDataset(filename)) {
+    try (NetcdfFile ncfile = NetcdfDatasets.openFile(filename, null);
+        NetcdfDataset ncd = NetcdfDatasets.openDataset(filename)) {
 
       for (Variable v : ncfile.getVariables()) {
         if (!v.getDataType().isNumeric())

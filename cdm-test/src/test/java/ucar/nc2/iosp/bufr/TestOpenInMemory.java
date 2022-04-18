@@ -5,6 +5,7 @@ import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.nc2.NetcdfFile;
+import ucar.nc2.NetcdfFiles;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
@@ -32,7 +33,7 @@ public class TestOpenInMemory {
         if (m == null)
           continue;
         byte[] mbytes = scan.getMessageBytes(m);
-        try (NetcdfFile ncfile = NetcdfFile.openInMemory("test", mbytes, "ucar.nc2.iosp.bufr.BufrIosp2")) {
+        try (NetcdfFile ncfile = NetcdfFiles.openInMemory("test", mbytes, "ucar.nc2.iosp.bufr.BufrIosp2")) {
           NetcdfDataset ncd = new NetcdfDataset(ncfile);
         }
       }

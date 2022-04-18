@@ -13,6 +13,7 @@ import thredds.client.catalog.tools.CatalogXmlWriter;
 import thredds.client.catalog.tools.ThreddsMetadataAcdd;
 import ucar.nc2.Attribute;
 import ucar.nc2.NetcdfFile;
+import ucar.nc2.NetcdfFiles;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.units.DateRange;
@@ -38,7 +39,7 @@ public class TestMetadataExtractor {
   public void testMetadataExtractorAcdd() throws IOException, URISyntaxException {
     String filename =
         TestDir.cdmUnitTestDir + "agg/pointFeatureCollection/netCDFbuoydata/BOD001_000_20050627_20051109.nc";
-    NetcdfFile ncfile = NetcdfFile.open(filename);
+    NetcdfFile ncfile = NetcdfFiles.open(filename);
 
     CatalogBuilder catb = new CatalogBuilder();
     DatasetBuilder dsb = new DatasetBuilder(null);

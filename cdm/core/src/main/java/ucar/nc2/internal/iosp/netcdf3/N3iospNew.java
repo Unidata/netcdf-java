@@ -1,10 +1,14 @@
 /* Copyright Unidata */
 package ucar.nc2.internal.iosp.netcdf3;
 
+import static ucar.nc2.NetcdfFile.IOSP_MESSAGE_GET_NETCDF_FILE_FORMAT;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.channels.WritableByteChannel;
+import java.nio.charset.Charset;
 import java.util.Formatter;
+import java.util.Optional;
 import ucar.ma2.Array;
 import ucar.ma2.ArrayStructureBB;
 import ucar.ma2.DataType;
@@ -13,6 +17,7 @@ import ucar.ma2.Range;
 import ucar.ma2.Section;
 import ucar.ma2.StructureMembers;
 import ucar.nc2.Group;
+import ucar.nc2.NetcdfFile;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.DataFormatType;
@@ -24,16 +29,21 @@ import ucar.nc2.iosp.LayoutRegular;
 import ucar.nc2.iosp.LayoutRegularSegmented;
 import ucar.nc2.internal.iosp.netcdf3.N3headerNew.Vinfo;
 import ucar.nc2.util.CancelTask;
+import ucar.nc2.write.NetcdfFileFormat;
 import ucar.unidata.io.RandomAccessFile;
+import javax.annotation.Nullable;
 
 /**
- * Read-only using Builders for immutability.
+ * Netcdf 3 version iosp, using Builders for immutability.
  *
  * @author caron
  * @since 9/29/2019.
  */
 public class N3iospNew extends AbstractIOServiceProvider implements IOServiceProvider {
-  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(N3iospNew.class);
+  protected static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(N3iospNew.class);
+
+  // NetCDF File Format Type (defined in netcdf.h from the C library)
+  private static final String NC_FORMATX_NC3 = String.valueOf(NetcdfFileFormat.NETCDF3.version());
 
   /*
    * CLASSIC
@@ -75,7 +85,9 @@ public class N3iospNew extends AbstractIOServiceProvider implements IOServicePro
 
   protected N3headerNew header;
   protected long lastModified; // used by sync
-  protected boolean debug, debugRecord, debugRead;
+  private boolean debugRecord = false;
+
+  private Charset valueCharset;
 
   @Override
   public boolean isValidFile(ucar.unidata.io.RandomAccessFile raf) throws IOException {
@@ -98,14 +110,14 @@ public class N3iospNew extends AbstractIOServiceProvider implements IOServicePro
   }
 
   // properties
-  protected boolean useRecordStructure;
+  boolean useRecordStructure;
 
   //////////////////////////////////////////////////////////////////////////////////////
   // read existing file
 
+  @Deprecated
   @Override
-  public void open(ucar.unidata.io.RandomAccessFile raf, ucar.nc2.NetcdfFile ncfile,
-      ucar.nc2.util.CancelTask cancelTask) throws IOException {
+  public void open(RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask) throws IOException {
     super.open(raf, ncfile, cancelTask);
 
     String location = raf.getLocation();
@@ -116,11 +128,11 @@ public class N3iospNew extends AbstractIOServiceProvider implements IOServicePro
     }
 
     raf.order(RandomAccessFile.BIG_ENDIAN);
-    header = new N3headerNew();
+    header = createHeader();
 
-    Group.Builder rootGroup = Group.builder(null).setName("").setNcfile(ncfile);
+    Group.Builder rootGroup = Group.builder().setName("").setNcfile(ncfile);
     header.read(raf, rootGroup, null);
-    ncfile.setRootGroup(rootGroup.build(null));
+    ncfile.setRootGroup(rootGroup.build());
     ncfile.finish();
   }
 
@@ -141,8 +153,13 @@ public class N3iospNew extends AbstractIOServiceProvider implements IOServicePro
     }
 
     raf.order(RandomAccessFile.BIG_ENDIAN);
-    header = new N3headerNew();
+    header = createHeader();
     header.read(raf, rootGroup, null);
+  }
+
+  /** Create header for reading netcdf file. */
+  private N3headerNew createHeader() throws IOException {
+    return new N3headerNew(this);
   }
 
   /////////////////////////////////////////////////////////////////////////////
@@ -167,138 +184,6 @@ public class N3iospNew extends AbstractIOServiceProvider implements IOServicePro
     return Array.factory(dataType, section.getShape(), data);
   }
 
-  /**
-   * Read data from record structure. For N3, this is the only possible structure, and there can be no nesting.
-   * Read all variables for each record, put in ByteBuffer.
-   *
-   * @param s the record structure
-   * @param section the record range to read
-   * @return an ArrayStructure, with all the data read in.
-   * @throws IOException on error
-   */
-  private ucar.ma2.Array readRecordData(ucar.nc2.Structure s, Section section) throws java.io.IOException {
-    // if (s.isSubset())
-    // return readRecordDataSubset(s, section);
-
-    // has to be 1D
-    Range recordRange = section.getRange(0);
-
-    // create the ArrayStructure
-    StructureMembers members = s.makeStructureMembers();
-    for (StructureMembers.Member m : members.getMembers()) {
-      Variable v2 = s.findVariable(m.getName());
-      Vinfo vinfo = (Vinfo) v2.getSPobject();
-      m.setDataParam((int) (vinfo.begin - header.recStart));
-    }
-
-    // protect agains too large of reads
-    if (header.recsize > Integer.MAX_VALUE)
-      throw new IllegalArgumentException("Cant read records when recsize > " + Integer.MAX_VALUE);
-    long nrecs = section.computeSize();
-    if (nrecs * header.recsize > Integer.MAX_VALUE)
-      throw new IllegalArgumentException(
-          "Too large read: nrecs * recsize= " + (nrecs * header.recsize) + "bytes exceeds " + Integer.MAX_VALUE);
-
-    members.setStructureSize((int) header.recsize);
-    ArrayStructureBB structureArray = new ArrayStructureBB(members, new int[] {recordRange.length()});
-
-    // note dependency on raf; should probably defer to subclass
-    // loop over records
-    byte[] result = structureArray.getByteBuffer().array();
-    int count = 0;
-    for (int recnum : recordRange) {
-      if (debugRecord)
-        System.out.println(" read record " + recnum);
-      raf.seek(header.recStart + recnum * header.recsize); // where the record starts
-
-      if (recnum != header.numrecs - 1)
-        raf.readFully(result, (int) (count * header.recsize), (int) header.recsize);
-      else
-        raf.read(result, (int) (count * header.recsize), (int) header.recsize); // "wart" allows file to be one byte
-      // short. since its always padding, we
-      // allow
-      count++;
-    }
-
-    return structureArray;
-  }
-
-  /**
-   * Read data from record structure, that has been subsetted.
-   * Read one record at at time, put requested variable into ArrayStructureMA.
-   *
-   * @param s the record structure
-   * @param section the record range to read
-   * @return an ArrayStructure, with all the data read in.
-   */
-  private ucar.ma2.Array readRecordDataSubset(ucar.nc2.Structure s, Section section) {
-    Range recordRange = section.getRange(0);
-    int nrecords = recordRange.length();
-
-    // create the ArrayStructureMA
-    StructureMembers members = s.makeStructureMembers();
-    for (StructureMembers.Member m : members.getMembers()) {
-      Variable v2 = s.findVariable(m.getName());
-      Vinfo vinfo = (Vinfo) v2.getSPobject();
-      m.setDataParam((int) (vinfo.begin - header.recStart)); // offset from start of record
-
-      // construct the full shape
-      int rank = m.getShape().length;
-      int[] fullShape = new int[rank + 1];
-      fullShape[0] = nrecords; // the first dimension
-      System.arraycopy(m.getShape(), 0, fullShape, 1, rank); // the remaining dimensions
-
-      Array data = Array.factory(m.getDataType(), fullShape);
-      m.setDataArray(data);
-      m.setDataObject(data.getIndexIterator());
-    }
-
-    // LOOK this is all wrong - why using recsize ???
-    return null;
-    /*
-     * members.setStructureSize(recsize);
-     * ArrayStructureMA structureArray = new ArrayStructureMA(members, new int[]{nrecords});
-     *
-     * // note dependency on raf; should probably defer to subclass
-     * // loop over records
-     * byte[] record = new byte[ recsize];
-     * ByteBuffer bb = ByteBuffer.wrap(record);
-     * for (int recnum = recordRange.first(); recnum <= recordRange.last(); recnum += recordRange.stride()) {
-     * if (debugRecord) System.out.println(" readRecordDataSubset recno= " + recnum);
-     *
-     * // read one record
-     * raf.seek(recStart + recnum * recsize); // where the record starts
-     * if (recnum != numrecs - 1)
-     * raf.readFully(record, 0, recsize);
-     * else
-     * raf.read(record, 0, recsize); // "wart" allows file to be one byte short. since its always padding, we allow
-     *
-     * // transfer desired variable(s) to result array(s)
-     * for (StructureMembers.Member m : members.getMembers()) {
-     * IndexIterator dataIter = (IndexIterator) m.getDataObject();
-     * IospHelper.copyFromByteBuffer(bb, m, dataIter);
-     * }
-     * }
-     *
-     * return structureArray;
-     */
-  }
-
-  private ucar.ma2.Array readNestedData(ucar.nc2.Variable v2, Section section)
-      throws java.io.IOException, ucar.ma2.InvalidRangeException {
-    Vinfo vinfo = (Vinfo) v2.getSPobject();
-    DataType dataType = v2.getDataType();
-
-    // construct the full shape for use by RegularIndexer
-    int[] fullShape = new int[v2.getRank() + 1];
-    fullShape[0] = header.numrecs; // the first dimension
-    System.arraycopy(v2.getShape(), 0, fullShape, 1, v2.getRank()); // the remaining dimensions
-
-    Layout layout = new LayoutRegularSegmented(vinfo.begin, v2.getElementSize(), header.recsize, fullShape, section);
-    Object dataObject = readData(layout, dataType);
-    return Array.factory(dataType, section.getShape(), dataObject);
-  }
-
   @Override
   public long readToByteChannel(ucar.nc2.Variable v2, Section section, WritableByteChannel channel)
       throws java.io.IOException, ucar.ma2.InvalidRangeException {
@@ -315,6 +200,7 @@ public class N3iospNew extends AbstractIOServiceProvider implements IOServicePro
     return readData(layout, dataType, channel);
   }
 
+  // TODO
   private long readRecordData(ucar.nc2.Structure s, Section section, WritableByteChannel out)
       throws java.io.IOException {
     long count = 0;
@@ -364,15 +250,16 @@ public class N3iospNew extends AbstractIOServiceProvider implements IOServicePro
   public void flush() throws java.io.IOException {
     if (raf != null) {
       raf.flush();
-      // raf.flush();
     }
   }
 
   @Override
   public void close() throws java.io.IOException {
     if (raf != null) {
-      long size = header.calcFileSize();
-      raf.setMinLength(size);
+      if (header != null) {
+        long size = header.calcFileSize();
+        raf.setMinLength(size);
+      }
       raf.close();
     }
     raf = null;
@@ -384,9 +271,6 @@ public class N3iospNew extends AbstractIOServiceProvider implements IOServicePro
     header.raf = this.raf;
   }
 
-  /**
-   * Debug info for this object.
-   */
   @Override
   public String toStringDebug(Object o) {
     return null;
@@ -394,16 +278,37 @@ public class N3iospNew extends AbstractIOServiceProvider implements IOServicePro
 
   @Override
   public Object sendIospMessage(Object message) {
-    if (null == header)
+    if (message instanceof Charset) {
+      setValueCharset((Charset) message);
+    }
+    if (message == NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE) {
+      this.useRecordStructure = true;
       return null;
-    /*
-     * if (message == NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE)
-     * return header.makeRecordStructure();
-     * else if (message == NetcdfFile.IOSP_MESSAGE_REMOVE_RECORD_STRUCTURE)
-     * return header.removeRecordStructure();
-     */
-
+    }
+    if (message.equals(IOSP_MESSAGE_GET_NETCDF_FILE_FORMAT)) {
+      return header.useLongOffset ? NetcdfFileFormat.NETCDF3_64BIT_OFFSET : NetcdfFileFormat.NETCDF3;
+    }
     return super.sendIospMessage(message);
+  }
+
+  /**
+   * Return {@link Charset value charset} if it was defined. Definition of charset
+   * occurs by sending a charset as a message using the {@link #sendIospMessage}
+   * method.
+   * 
+   * @return {@link Charset value charset} if it was defined.
+   */
+  Optional<Charset> getValueCharset() {
+    return Optional.ofNullable(valueCharset);
+  }
+
+  /**
+   * Define {@link Charset value charset}.
+   * 
+   * @param charset may be null.
+   */
+  private void setValueCharset(@Nullable Charset charset) {
+    this.valueCharset = charset;
   }
 
   @Override
@@ -416,6 +321,11 @@ public class N3iospNew extends AbstractIOServiceProvider implements IOServicePro
     return "NetCDF-3/CDM";
   }
 
+  @Override
+  public String getFileTypeVersion() {
+    return NC_FORMATX_NC3;
+  }
+
   /**
    * Read data subset from file for a variable, create primitive array.
    *
@@ -423,7 +333,7 @@ public class N3iospNew extends AbstractIOServiceProvider implements IOServicePro
    * @param dataType dataType of the variable
    * @return primitive array with data read in
    */
-  protected Object readData(Layout index, DataType dataType) throws java.io.IOException {
+  private Object readData(Layout index, DataType dataType) throws java.io.IOException {
     return IospHelper.readDataFill(raf, index, dataType, null, -1);
   }
 
@@ -434,7 +344,7 @@ public class N3iospNew extends AbstractIOServiceProvider implements IOServicePro
    * @param index handles skipping around in the file.
    * @param dataType dataType of the variable
    */
-  protected long readData(Layout index, DataType dataType, WritableByteChannel out) throws java.io.IOException {
+  private long readData(Layout index, DataType dataType, WritableByteChannel out) throws java.io.IOException {
     long count = 0;
     if (dataType.getPrimitiveClassType() == byte.class || dataType == DataType.CHAR) {
       while (index.hasNext()) {
@@ -464,4 +374,56 @@ public class N3iospNew extends AbstractIOServiceProvider implements IOServicePro
     return count;
   }
 
+  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  /**
+   * Read data from record structure. For N3, this is the only possible structure, and there can be no nesting.
+   * Read all variables for each record, put in ByteBuffer.
+   *
+   * @param s the record structure
+   * @param section the record range to read
+   * @return an ArrayStructure, with all the data read in.
+   * @throws IOException on error
+   */
+  private ucar.ma2.Array readRecordData(ucar.nc2.Structure s, Section section) throws java.io.IOException {
+    // has to be 1D
+    Range recordRange = section.getRange(0);
+
+    // create the ArrayStructure
+    StructureMembers members = s.makeStructureMembers();
+    for (StructureMembers.Member m : members.getMembers()) {
+      Variable v2 = s.findVariable(m.getName());
+      Vinfo vinfo = (Vinfo) v2.getSPobject();
+      m.setDataParam((int) (vinfo.begin - header.recStart));
+    }
+
+    // protect against too large of reads
+    if (header.recsize > Integer.MAX_VALUE)
+      throw new IllegalArgumentException("Cant read records when recsize > " + Integer.MAX_VALUE);
+    long nrecs = section.computeSize();
+    if (nrecs * header.recsize > Integer.MAX_VALUE)
+      throw new IllegalArgumentException(
+          "Too large read: nrecs * recsize= " + (nrecs * header.recsize) + "bytes exceeds " + Integer.MAX_VALUE);
+
+    members.setStructureSize((int) header.recsize);
+    ArrayStructureBB structureArray = new ArrayStructureBB(members, new int[] {recordRange.length()});
+
+    // loop over records
+    byte[] result = structureArray.getByteBuffer().array();
+    int count = 0;
+    for (int recnum : recordRange) {
+      if (debugRecord)
+        System.out.println(" read record " + recnum);
+      raf.seek(header.recStart + recnum * header.recsize); // where the record starts
+
+      if (recnum != header.numrecs - 1) {
+        raf.readFully(result, (int) (count * header.recsize), (int) header.recsize);
+      } else {
+        // "wart" allows file to be one byte short. since its always padding, we allow
+        raf.read(result, (int) (count * header.recsize), (int) header.recsize);
+      }
+      count++;
+    }
+
+    return structureArray;
+  }
 }

@@ -13,9 +13,9 @@ import ucar.ma2.Range;
  * A transformation to a vertical reference coordinate system,
  * such as height or pressure.
  *
- * @author Unidata Development Team
+ * @deprecated will move to ucar.unidata.geoloc in ver6
  */
-
+@Deprecated
 public interface VerticalTransform {
 
   /**

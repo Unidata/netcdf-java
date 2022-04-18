@@ -50,7 +50,7 @@ import java.util.Vector;
 
 
 /**
- * a class to load and scale an image either immediately or in a seperate thread.
+ * a class to load and scale an image either immediately or in a separate thread.
  */
 
 public class ScalablePicture implements SourcePictureListener {

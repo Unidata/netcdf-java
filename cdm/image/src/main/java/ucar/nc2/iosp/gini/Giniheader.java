@@ -28,6 +28,11 @@ import java.nio.*;
  */
 
 class Giniheader {
+  // Unidata Gini table:
+  // https://github.com/Unidata/gempak/blob/master/gempak/tables/unidata/nex2gini.tbl
+  // Special instructions for handling negative numbers
+  // https://github.com/Unidata/gempak/blob/master/gempak/source/gemlib/mv/Linux/mvitob.c
+  //
   private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Giniheader.class);
 
   private static final int GINI_PIB_LEN = 21; // gini product identification block
@@ -480,9 +485,9 @@ class Giniheader {
     // we have to project in order to find the origin
     ProjectionPoint start;
     if (projection != null)
-      start = projection.latLonToProj(new LatLonPointImpl(lat1, lon1));
+      start = projection.latLonToProj(LatLonPoint.create(lat1, lon1));
     else
-      start = new ProjectionPointImpl();
+      start = ProjectionPoint.create();
     if (debug)
       log.warn("start at proj coord " + start);
 
@@ -494,6 +499,7 @@ class Giniheader {
     xaxis.setDataType(DataType.DOUBLE);
     xaxis.setDimensions("x");
     xaxis.addAttribute(new Attribute(CDM.LONG_NAME, "projection x coordinate"));
+    xaxis.addAttribute(new Attribute(CF.STANDARD_NAME, "projection_x_coordinate"));
     xaxis.addAttribute(new Attribute(CDM.UNITS, "km"));
     xaxis.addAttribute(new Attribute(_Coordinate.AxisType, "GeoX"));
     double[] data = new double[nx];
@@ -508,7 +514,7 @@ class Giniheader {
 
       for (int i = 0; i < data.length; i++) {
         double ln = lon1 + i * dx;
-        ProjectionPoint pt = projection.latLonToProj(new LatLonPointImpl(lat1, ln));
+        ProjectionPoint pt = projection.latLonToProj(LatLonPoint.create(lat1, ln));
         data[i] = pt.getX(); // startx + i*dx;
       }
     } else {
@@ -524,6 +530,7 @@ class Giniheader {
     yaxis.setDataType(DataType.DOUBLE);
     yaxis.setDimensions("y");
     yaxis.addAttribute(new Attribute(CDM.LONG_NAME, "projection y coordinate"));
+    yaxis.addAttribute(new Attribute(CF.STANDARD_NAME, "projection_y_coordinate"));
     yaxis.addAttribute(new Attribute(CDM.UNITS, "km"));
     yaxis.addAttribute(new Attribute(_Coordinate.AxisType, "GeoY"));
     data = new double[ny];
@@ -533,7 +540,7 @@ class Giniheader {
       double dy = (lat2 - lat1) / (ny - 1);
       for (int i = 0; i < data.length; i++) {
         double la = lat2 - i * dy;
-        ProjectionPoint pt = projection.latLonToProj(new LatLonPointImpl(la, lon1));
+        ProjectionPoint pt = projection.latLonToProj(LatLonPoint.create(la, lon1));
         data[i] = pt.getY(); // endyy - i*dy;
       }
     } else {
@@ -589,10 +596,35 @@ class Giniheader {
         for (int i = 0; i < calcod; i++) {
 
           bos.position(56 + i * 16);
+          // We expect these to always be positive, so just read the int as-is
           int minb = bos.getInt() / 10000; /* min brightness values */
           int maxb = bos.getInt() / 10000; /* max brightness values */
+
+          // Since these are data values, we need to consider the case of them being positive or negative
+          // Careful though, it's not that easy. Step one is to read the 32-bits like before...
           int mind = bos.getInt(); /* min data values */
+          // Now for the fun.
+          // According to https://github.com/Unidata/gempak/blob/master/gempak/source/gemlib/mv/Linux/mvitob.c,
+          // which is used when writing gini files, if the first bit is set, that indicates that we have a negative
+          // value and need to do a bit more work.
+          // Check if left-most bit is 1. Right shift bit pattern of value 31 times. This will make all bits 0, or
+          // all bits 1. If all 0, then the result will equal zero. If all 1's, then the result will equal -1, and
+          // that's how we know we need to do more work.
+          if ((mind >> 31) == -1) {
+            // Set the first bit to zero, and negate the value (again, described in mvitob.c from gempak)
+            // 0x7FFFFFFF -> left-most bit is zero, all the rest are 1's.
+            // The bit-wise & results in flipping the first bit of "mind" (because we know it is 1 at this point, and
+            // 1 & 0 -> 0) while retaining the rest of the pattern of mind (because 0 & 1 -> 0, 1 & 1 -> 1).
+            // To negate, just use the negative sign...we could do ~(mind & 0x7FFFFFFF) + 1, but let's not hang out
+            // in bit operator land longer than we need to.
+            mind = -(mind & 0x7FFFFFFF);
+          }
+
+          // same thing as above
           int maxd = bos.getInt(); /* max data values */
+          if ((maxd >> 31) == -1) {
+            maxd = -(maxd & 0x7FFFFFFF);
+          }
 
           int idscal = 1;
           while (mind % idscal == 0 && maxd % idscal == 0) {

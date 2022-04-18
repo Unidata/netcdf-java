@@ -1,6 +1,7 @@
 package ucar.nc2.dataset;
 
 import static com.google.common.truth.Truth.assertThat;
+import static ucar.nc2.TestUtils.makeDummyGroup;
 import com.google.common.collect.ImmutableList;
 import org.junit.Test;
 import ucar.ma2.DataType;
@@ -13,8 +14,8 @@ public class TestStructureDSBuilder {
   @Test
   public void testBuilder() {
     Variable.Builder var = Variable.builder().setName("member").setDataType(DataType.FLOAT);
-    StructureDS struct =
-        StructureDS.builder().setName("name").setDataType(DataType.FLOAT).addMemberVariable(var).build();
+    StructureDS struct = StructureDS.builder().setName("name").setDataType(DataType.FLOAT).addMemberVariable(var)
+        .build(makeDummyGroup());
     assertThat(struct.getDataType()).isEqualTo(DataType.STRUCTURE);
     assertThat(struct.getShortName()).isEqualTo("name");
     assertThat(struct.isScalar()).isTrue();
@@ -27,16 +28,17 @@ public class TestStructureDSBuilder {
 
   @Test
   public void testBuilder2() {
-    StructureDS var = StructureDS.builder().setName("name").setUnits("units").setDesc("desc").build();
+    StructureDS var = StructureDS.builder().setName("name").setUnits("units").setDesc("desc").build(makeDummyGroup());
     assertThat(var.getUnitsString()).isEqualTo("units");
     assertThat(var.getDescription()).isEqualTo("desc");
-    assertThat(var.findAttValueIgnoreCase(CDM.UNITS, "")).isEqualTo("units");
-    assertThat(var.findAttValueIgnoreCase(CDM.LONG_NAME, "")).isEqualTo("desc");
+    assertThat(var.findAttributeString(CDM.UNITS, "")).isEqualTo("units");
+    assertThat(var.findAttributeString(CDM.LONG_NAME, "")).isEqualTo("desc");
   }
 
   @Test
   public void testBuilderChain() {
-    StructureDS struct = StructureDS.builder().setName("struct").addMemberVariables(ImmutableList.of()).build();
+    StructureDS struct =
+        StructureDS.builder().setName("struct").addMemberVariables(ImmutableList.of()).build(makeDummyGroup());
     assertThat(struct.getDataType()).isEqualTo(DataType.STRUCTURE);
     assertThat(struct.getShortName()).isEqualTo("struct");
     assertThat(struct.getVariableNames()).hasSize(0);
@@ -46,9 +48,10 @@ public class TestStructureDSBuilder {
   @Test
   public void testToBuilderChain() {
     Variable.Builder var = Variable.builder().setName("member").setDataType(DataType.FLOAT);
-    StructureDS struct = StructureDS.builder().setName("name").setUnits("units").addMemberVariable(var).build();
+    StructureDS struct =
+        StructureDS.builder().setName("name").setUnits("units").addMemberVariable(var).build(makeDummyGroup());
 
-    StructureDS struct2 = struct.toBuilder().setName("s2").build();
+    StructureDS struct2 = struct.toBuilder().setName("s2").build(makeDummyGroup());
     assertThat(struct2.getDataType()).isEqualTo(DataType.STRUCTURE);
     assertThat(struct2.getShortName()).isEqualTo("s2");
     assertThat(struct2.getUnitsString()).isEqualTo("units");
@@ -62,9 +65,9 @@ public class TestStructureDSBuilder {
 
   @Test
   public void testBuilderOrgValues() {
-    Structure orgVar = Structure.builder().setName("orgName").setDataType(DataType.INT).build();
-    StructureDS var =
-        StructureDS.builder().setName("name").setOriginalName("orgName").setOriginalVariable(orgVar).build();
+    Structure orgVar = Structure.builder().setName("orgName").setDataType(DataType.INT).build(makeDummyGroup());
+    StructureDS var = StructureDS.builder().setName("name").setOriginalName("orgName").setOriginalVariable(orgVar)
+        .build(makeDummyGroup());
     assertThat(var.getOriginalDataType()).isEqualTo(DataType.STRUCTURE);
     assertThat(var.getOriginalName()).isEqualTo("orgName");
     assertThat((Object) var.getOriginalVariable()).isEqualTo(orgVar);

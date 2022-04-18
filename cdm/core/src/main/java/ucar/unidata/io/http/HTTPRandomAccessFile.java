@@ -1,57 +1,66 @@
 /*
- * Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2019 University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
-
 package ucar.unidata.io.http;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import ucar.httpservices.HTTPFactory;
 import ucar.httpservices.HTTPMethod;
 import ucar.httpservices.HTTPSession;
+import ucar.unidata.io.RandomAccessFile;
+import ucar.unidata.io.RemoteRandomAccessFile;
+import ucar.unidata.io.spi.RandomAccessFileProvider;
 import ucar.unidata.util.Urlencoded;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.ByteBuffer;
-import java.nio.channels.WritableByteChannel;
 
 /**
  * Gives access to files over HTTP, using "Accept-Ranges" HTTP header to do random access.
  *
  * @author John Caron, based on work by Donald Denbo
  */
+public final class HTTPRandomAccessFile extends RemoteRandomAccessFile {
 
-public class HTTPRandomAccessFile extends ucar.unidata.io.RandomAccessFile {
-  public static final int defaultHTTPBufferSize = 20 * 1000; // 20K
-  public static final int maxHTTPBufferSize = // was 10 * 1000 * 1000 - 10 M
-      Integer.parseInt(System.getProperty("ucar.unidata.io.http.maxHttpBufferSize", "10000000"));
+  // deprecate ucar.unidata.io.http.maxHttpBufferSize
+  // simplifies determination of buffer size, which might not need to be
+  // so complex now that we have a read cache.
+  // however, if it is set, use it (but change default to defaultRemoteFileBufferSize)
+  private static final int maxHttpBufferSize = Integer.parseInt(
+      System.getProperty("ucar.unidata.io.http.maxHttpBufferSize", String.valueOf(defaultRemoteFileBufferSize)));
+  // if ucar.unidata.io.http.httpBufferSize is set, use it over the deprecated ucar.unidata.io.http.maxHttpBufferSize
+  private static final int httpBufferSize =
+      Integer.parseInt(System.getProperty("ucar.unidata.io.http.httpBufferSize", String.valueOf(maxHttpBufferSize)));
+
+  private static final long httpMaxCacheSize = Long
+      .parseLong(System.getProperty("ucar.unidata.io.http.maxReadCacheSize", String.valueOf(defaultMaxReadCacheSize)));
+
   private static final boolean debug = false, debugDetails = false;
 
   ///////////////////////////////////////////////////////////////////////////////////
 
-  private String url;
   private HTTPSession session;
   private long total_length;
 
   public HTTPRandomAccessFile(String url) throws IOException {
-    this(url, defaultHTTPBufferSize);
-    location = url;
+    this(url, httpBufferSize, httpMaxCacheSize);
   }
 
+  // TODO make private in 6?
   @Urlencoded
-  public HTTPRandomAccessFile(String url, int bufferSize) throws IOException {
-    super(bufferSize);
-    file = null;
-    this.url = url;
-    location = url;
+  public HTTPRandomAccessFile(String url, int bufferSize, long maxRemoteCacheSize) throws IOException {
+    super(url, bufferSize, maxRemoteCacheSize);
 
     if (debugLeaks)
       allFiles.add(location);
 
     session = HTTPFactory.newSession(url);
+    session.setConnectionTimeout(defaultRemoteFileTimeout);
 
     boolean needtest = true;
 
@@ -60,14 +69,10 @@ public class HTTPRandomAccessFile extends ucar.unidata.io.RandomAccessFile {
       doConnect(method);
 
       Optional<String> acceptRangesOpt = method.getResponseHeaderValue("Accept-Ranges");
-      if (!acceptRangesOpt.isPresent()) {
-        needtest = true; // header is optional - need more testing
-
-      } else {
+      if (acceptRangesOpt.isPresent()) {
         String acceptRanges = acceptRangesOpt.get();
         if (acceptRanges.equalsIgnoreCase("bytes")) {
           needtest = false;
-
         } else if (acceptRanges.equalsIgnoreCase("none")) {
           throw new IOException("Server does not support byte Ranges");
         }
@@ -91,18 +96,11 @@ public class HTTPRandomAccessFile extends ucar.unidata.io.RandomAccessFile {
     if (needtest && !rangeOk(url))
       throw new IOException("Server does not support byte Ranges");
 
-    if (total_length > 0) {
-      // this means that we will read the file in one gulp then deal with it in memory
-      int useBuffer = (int) Math.min(total_length, maxHTTPBufferSize); // entire file size if possible
-      useBuffer = Math.max(useBuffer, defaultHTTPBufferSize); // minimum buffer
-      setBufferSize(useBuffer);
-    }
-
     if (debugLeaks)
       openFiles.add(location);
   }
 
-  public void close() {
+  public void closeRemote() {
     if (debugLeaks)
       openFiles.remove(location);
 
@@ -158,8 +156,7 @@ public class HTTPRandomAccessFile extends ucar.unidata.io.RandomAccessFile {
   }
 
   /**
-   * Read directly from file, without going through the buffer.
-   * All reading goes through here or readToByteChannel;
+   * Read directly from remote file, without going through the buffer.
    *
    * @param pos start here in the file
    * @param buff put data into this buffer
@@ -169,7 +166,7 @@ public class HTTPRandomAccessFile extends ucar.unidata.io.RandomAccessFile {
    * @throws IOException on io error
    */
   @Override
-  protected int read_(long pos, byte[] buff, int offset, int len) throws IOException {
+  public int readRemote(long pos, byte[] buff, int offset, int len) throws IOException {
     long end = pos + len - 1;
     if (end >= total_length)
       end = total_length - 1;
@@ -210,15 +207,6 @@ public class HTTPRandomAccessFile extends ucar.unidata.io.RandomAccessFile {
     return done;
   }
 
-  @Override
-  public long readToByteChannel(WritableByteChannel dest, long offset, long nbytes) throws IOException {
-    int n = (int) nbytes;
-    byte[] buff = new byte[n];
-    int done = read_(offset, buff, 0, n);
-    dest.write(ByteBuffer.wrap(buff));
-    return done;
-  }
-
   // override selected RandomAccessFile public methods
 
   @Override
@@ -239,5 +227,33 @@ public class HTTPRandomAccessFile extends ucar.unidata.io.RandomAccessFile {
   @Override
   public long getLastModified() {
     return 0;
+  }
+
+  /**
+   * Hook into service provider interface for RandomAccessFileProvider.
+   */
+  public static class Provider implements RandomAccessFileProvider {
+
+    private static final List<String> possibleSchemes = Arrays.asList("http", "https", "nodods", "httpserver");
+
+    @Override
+    public boolean isOwnerOf(String location) {
+      String scheme = location.split(":")[0].toLowerCase();
+      return possibleSchemes.contains(scheme);
+    }
+
+    @Override
+    public RandomAccessFile open(String location) throws IOException {
+      return this.open(location, httpBufferSize);
+    }
+
+    @Override
+    public RandomAccessFile open(String location, int bufferSize) throws IOException {
+      String scheme = location.split(":")[0];
+      if (!scheme.equalsIgnoreCase("https") && !scheme.equalsIgnoreCase("http")) {
+        location = location.replace(scheme, "http");
+      }
+      return new HTTPRandomAccessFile(location, bufferSize, httpMaxCacheSize);
+    }
   }
 }

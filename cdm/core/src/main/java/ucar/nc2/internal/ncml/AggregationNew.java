@@ -11,7 +11,6 @@ import java.util.Optional;
 import ucar.ma2.DataType;
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
-import ucar.nc2.Dimensions;
 import ucar.nc2.Group;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
@@ -52,13 +51,13 @@ public class AggregationNew extends AggregationOuter {
     List<String> aggVarNames = getAggVariableNames();
 
     // Look for a variable matching the new aggregation dimension
-    Optional<Variable.Builder<?>> joinAggCoord = root.findVariable(dimName);
+    Optional<Variable.Builder<?>> joinAggCoord = root.findVariableLocal(dimName);
 
     // Not found, create the aggregation coordinate variable
     if (!joinAggCoord.isPresent()) {
       DataType coordType = getCoordinateType();
-      VariableDS.Builder joinAggCoordVar =
-          VariableDS.builder().setName(dimName).setDataType(coordType).setDimensionsByName(dimName);
+      VariableDS.Builder joinAggCoordVar = VariableDS.builder().setName(dimName).setDataType(coordType)
+          .setParentGroupBuilder(root).setDimensionsByName(dimName);
       root.addVariable(joinAggCoordVar);
       joinAggCoordVar.setProxyReader(this);
       if (isDate)
@@ -67,7 +66,7 @@ public class AggregationNew extends AggregationOuter {
       // if speced externally, this variable will get replaced
       // LOOK was CacheVar cv = new CoordValueVar(joinAggCoordVar.getFullName(), joinAggCoordVar.dataType,
       // joinAggCoordVar.units);
-      CacheVar cv = new CoordValueVar(joinAggCoordVar.shortName, joinAggCoordVar.dataType, joinAggCoordVar.units);
+      CacheVar cv = new CoordValueVar(joinAggCoordVar.shortName, joinAggCoordVar.dataType, joinAggCoordVar.getUnits());
       joinAggCoordVar.setSPobject(cv);
       cacheList.add(cv);
     } else {
@@ -98,7 +97,7 @@ public class AggregationNew extends AggregationOuter {
     // now we can create all the aggNew variables
     // use only named variables
     for (String varname : aggVarNames) {
-      Optional<Variable.Builder<?>> aggVarOpt = root.findVariable(varname);
+      Optional<Variable.Builder<?>> aggVarOpt = root.findVariableLocal(varname);
       if (!aggVarOpt.isPresent()) {
         logger.error(ncDataset.location + " aggNewDimension cant find variable " + varname);
         continue;
@@ -108,7 +107,7 @@ public class AggregationNew extends AggregationOuter {
       // construct new variable, replace old one LOOK what about Structures?
       // LOOK was Group.Builder newGroup = BuilderHelper.findGroup(ncDataset, aggVar.getParentGroup());
       VariableDS.Builder vagg = VariableDS.builder().setName(aggVar.shortName).setDataType(aggVar.dataType)
-          .setDimensionsByName(dimName + " " + aggVar.makeDimensionsString());
+          .setParentGroupBuilder(root).setDimensionsByName(dimName + " " + aggVar.makeDimensionsString());
       vagg.setProxyReader(this);
       BuilderHelper.transferAttributes(aggVar.getAttributeContainer(), vagg.getAttributeContainer());
 
@@ -130,7 +129,7 @@ public class AggregationNew extends AggregationOuter {
     typicalDataset.close(typical); // close it because we use DatasetProxyReader to acquire
 
     if (isDate && timeUnitsChange) {
-      root.findVariable(dimName).ifPresent(v -> {
+      root.findVariableLocal(dimName).ifPresent(v -> {
         try {
           readTimeCoordinates(v, cancelTask);
         } catch (IOException e) {

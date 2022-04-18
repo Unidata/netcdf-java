@@ -25,10 +25,10 @@ public class EnsCoordValue implements Comparable<EnsCoordValue> {
 
   @Override
   public int compareTo(@Nonnull EnsCoordValue o) {
-    int r = Misc.compare(code, o.code);
+    int r = Integer.compare(code, o.code);
     if (r != 0)
       return r;
-    return Misc.compare(ensMember, o.ensMember);
+    return Integer.compare(ensMember, o.ensMember);
   }
 
   @Override

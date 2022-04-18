@@ -248,7 +248,7 @@ public class GeoGrid implements NamedObject, ucar.nc2.dt.GridDatatype {
    * @return Attribute string value, or default if not found.
    */
   public String findAttValueIgnoreCase(String attName, String defaultValue) {
-    return vs.attributes().findAttValueIgnoreCase(attName, defaultValue);
+    return vs.attributes().findAttributeString(attName, defaultValue);
   }
 
   // implementation of GridDatatype interface
@@ -279,6 +279,12 @@ public class GeoGrid implements NamedObject, ucar.nc2.dt.GridDatatype {
     return vs.getDataType();
   }
 
+  public AttributeContainer attributes() {
+    return vs.attributes();
+  }
+
+  /** @deprecated use attributes() */
+  @Deprecated
   public List<Attribute> getAttributes() {
     return vs.getAttributes();
   }
@@ -317,14 +323,18 @@ public class GeoGrid implements NamedObject, ucar.nc2.dt.GridDatatype {
 
   /**
    * @return ArrayList of thredds.util.NamedObject, from the GridCoordSys.
+   * @deprecated will move in ver 6
    */
+  @Deprecated
   public List<NamedObject> getLevels() {
     return gcs.getLevels();
   }
 
   /**
    * @return ArrayList of thredds.util.NamedObject, from the GridCoordSys.
+   * @deprecated will move in ver 6
    */
+  @Deprecated
   public List<NamedObject> getTimes() {
     return gcs.getTimes();
   }

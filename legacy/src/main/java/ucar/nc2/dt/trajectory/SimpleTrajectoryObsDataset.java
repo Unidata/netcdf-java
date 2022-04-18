@@ -57,7 +57,7 @@ public class SimpleTrajectoryObsDataset extends SingleTrajectoryObsDataset imple
     trajConfig.setTimeDim(d);
 
     // Check that have variable time(time) with units that are udunits time
-    Variable var = ncd.getRootGroup().findVariable(timeVarName);
+    Variable var = ncd.getRootGroup().findVariableLocal(timeVarName);
     if (var == null)
       return null;
     list = var.getDimensions();
@@ -74,7 +74,7 @@ public class SimpleTrajectoryObsDataset extends SingleTrajectoryObsDataset imple
     trajConfig.setTimeVar(var);
 
     // Check for variable latitude(time) with units of "deg".
-    var = ncd.getRootGroup().findVariable(latVarName);
+    var = ncd.getRootGroup().findVariableLocal(latVarName);
     if (var == null)
       return null;
     list = var.getDimensions();
@@ -90,7 +90,7 @@ public class SimpleTrajectoryObsDataset extends SingleTrajectoryObsDataset imple
     trajConfig.setLatVar(var);
 
     // Check for variable longitude(time) with units of "deg".
-    var = ncd.getRootGroup().findVariable(lonVarName);
+    var = ncd.getRootGroup().findVariableLocal(lonVarName);
     if (var == null)
       return null;
     list = var.getDimensions();
@@ -106,7 +106,7 @@ public class SimpleTrajectoryObsDataset extends SingleTrajectoryObsDataset imple
     trajConfig.setLonVar(var);
 
     // Check for variable altitude(time) with units of "m".
-    var = ncd.getRootGroup().findVariable(elevVarName);
+    var = ncd.getRootGroup().findVariableLocal(elevVarName);
     if (var == null)
       return null;
     list = var.getDimensions();

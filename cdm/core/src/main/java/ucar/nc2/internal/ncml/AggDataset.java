@@ -9,8 +9,8 @@ import java.util.Set;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import org.jdom2.Element;
-import thredds.filesystem.MFileOS;
 import thredds.inventory.MFile;
+import thredds.inventory.MFiles;
 import ucar.ma2.Array;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Range;
@@ -22,7 +22,6 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.NetcdfDataset.Enhance;
 import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.dataset.VariableDS;
-import ucar.nc2.dataset.VariableEnhanced;
 import ucar.nc2.util.CancelTask;
 
 /** Encapsolates a NetcdfFile, used by AggProxyReader. */
@@ -42,7 +41,7 @@ class AggDataset implements Comparable<AggDataset> {
   @Nullable
   protected final ucar.nc2.util.cache.FileFactory reader;
   @Nullable
-  protected final Object spiObject; // pass to NetcdfFile.open()
+  protected final Object spiObject; // pass to NetcdfFiles.open()
 
   // deferred opening LOOK
   protected DatasetUrl durl;
@@ -67,12 +66,12 @@ class AggDataset implements Comparable<AggDataset> {
    * @param location attribute "location" on the netcdf element
    * @param id attribute "id" on the netcdf element
    * @param wantEnhance open dataset in enhance mode, may be null
-   * @param reader factory for reading this netcdf dataset; if null, use NetcdfDataset.open( location)
+   * @param reader factory for reading this netcdf dataset; if null, use NetcdfDatasets.open( location)
    */
   protected AggDataset(String cacheLocation, String location, @Nullable String id,
       @Nullable EnumSet<Enhance> wantEnhance, @Nullable ucar.nc2.util.cache.FileFactory reader,
       @Nullable Object spiObject, @Nullable Element ncmlElem) {
-    this.mfile = MFileOS.getExistingFile(location); // may be null
+    this.mfile = MFiles.create(location); // may be null
     this.cacheLocation = cacheLocation;
     this.id = id;
     this.enhance = (wantEnhance == null) ? NetcdfDataset.getEnhanceNone() : wantEnhance;
@@ -106,14 +105,16 @@ class AggDataset implements Comparable<AggDataset> {
       System.out.println(" try to acquire " + cacheLocation);
     long start = System.currentTimeMillis();
 
-    if (durl == null)
-      durl = DatasetUrl.findDatasetUrl(cacheLocation); // cache the ServiceType so we dont have to keep figuring it
-    // out
+    if (durl == null) {
+      // cache the ServiceType so we dont have to keep figuring it out
+      durl = DatasetUrl.findDatasetUrl(cacheLocation);
+    }
+
     NetcdfFile ncfile = NetcdfDatasets.acquireFile(reader, null, durl, -1, cancelTask, spiObject);
     if (ncmlElem == null && (enhance.isEmpty()))
       return ncfile;
 
-    NetcdfDataset.Builder builder = NcMLReaderNew.mergeNcML(ncfile, ncmlElem); // create new dataset
+    NetcdfDataset.Builder builder = NcmlReader.mergeNcml(ncfile, ncmlElem); // create new dataset
     builder.setEnhanceMode(enhance);
 
     if (debugOpenFile)
@@ -158,7 +159,7 @@ class AggDataset implements Comparable<AggDataset> {
    *
    * @param mainv aggregated Variable
    * @param cancelTask let user cancel
-   * @param section reletive to the local Variable
+   * @param section relative to the local Variable
    * @return the complete Array for mainv
    * @throws IOException on I/O error
    * @throws InvalidRangeException on section error

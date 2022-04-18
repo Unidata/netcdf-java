@@ -13,9 +13,7 @@ import java.io.IOException;
  * 1. hashCode() must return Object.hashCode()
  * 2. close() must call cache.release(this) if cache is not null.
  * 3. must be able to detect changes in underlying object, and indicate whether it has changed.
- *
- * @author caron
- * @since Jun 2, 2008
+ * THIS IS AN INTERNAL CLASS, DO NOT USE DIRECTLY.
  */
 public interface FileCacheable {
   /**

@@ -12,8 +12,8 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants._Coordinate;
 import ucar.ma2.DataType;
+import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.LatLonRect;
-import ucar.unidata.geoloc.LatLonPointImpl;
 import java.util.List;
 
 /**
@@ -61,7 +61,7 @@ public class UnidataPointDatasetHelper {
     double lon_max = getAttAsDouble(ds, "geospatial_lon_max");
     double lon_min = getAttAsDouble(ds, "geospatial_lon_min");
 
-    return new LatLonRect(new LatLonPointImpl(lat_min, lon_min), lat_max - lat_min, lon_max - lon_min);
+    return new LatLonRect(LatLonPoint.create(lat_min, lon_min), lat_max - lat_min, lon_max - lon_min);
   }
 
   private static double getAttAsDouble(NetcdfDataset ds, String attname) {
@@ -89,12 +89,12 @@ public class UnidataPointDatasetHelper {
       if (v instanceof Structure) {
         List<Variable> vars = ((Structure) v).getVariables();
         for (Variable vs : vars) {
-          String axisType = vs.findAttValueIgnoreCase(_Coordinate.AxisType, null);
+          String axisType = vs.findAttributeString(_Coordinate.AxisType, null);
           if ((axisType != null) && axisType.equals(a.toString()))
             return vs.getShortName();
         }
       } else {
-        String axisType = v.findAttValueIgnoreCase(_Coordinate.AxisType, null);
+        String axisType = v.findAttributeString(_Coordinate.AxisType, null);
         if ((axisType != null) && axisType.equals(a.toString()))
           return v.getShortName();
       }
@@ -160,12 +160,12 @@ public class UnidataPointDatasetHelper {
       if (v instanceof Structure) {
         List<Variable> vars = ((Structure) v).getVariables();
         for (Variable vs : vars) {
-          String axisType = vs.findAttValueIgnoreCase(_Coordinate.AxisType, null);
+          String axisType = vs.findAttributeString(_Coordinate.AxisType, null);
           if ((axisType != null) && axisType.equals(a.toString()))
             return vs;
         }
       } else {
-        String axisType = v.findAttValueIgnoreCase(_Coordinate.AxisType, null);
+        String axisType = v.findAttributeString(_Coordinate.AxisType, null);
         if ((axisType != null) && axisType.equals(a.toString()))
           return v;
       }
@@ -199,11 +199,11 @@ public class UnidataPointDatasetHelper {
   public static Variable findVariable(NetcdfFile ds, String name) {
     Variable result = ds.findVariable(name);
     if (result == null) {
-      String aname = ds.getRootGroup().findAttValueIgnoreCase(name + "_coordinate", null);
+      String aname = ds.getRootGroup().findAttributeString(name + "_coordinate", null);
       if (aname != null)
         result = ds.findVariable(aname);
       else {
-        aname = ds.getRootGroup().findAttValueIgnoreCase(name + "_variable", null);
+        aname = ds.getRootGroup().findAttributeString(name + "_variable", null);
         if (aname != null)
           result = ds.findVariable(aname);
       }
@@ -215,7 +215,7 @@ public class UnidataPointDatasetHelper {
   public static Dimension findDimension(NetcdfFile ds, String name) {
     Dimension result = ds.findDimension(name); // LOOK use group
     if (result == null) {
-      String aname = ds.getRootGroup().findAttValueIgnoreCase(name + "Dimension", null);
+      String aname = ds.getRootGroup().findAttributeString(name + "Dimension", null);
       if (aname != null)
         result = ds.findDimension(aname); // LOOK use group
     }
@@ -224,7 +224,7 @@ public class UnidataPointDatasetHelper {
 
   public static Dimension findObsDimension(NetcdfFile ds) {
     Dimension result = null;
-    String aname = ds.getRootGroup().findAttValueIgnoreCase("observationDimension", null);
+    String aname = ds.getRootGroup().findAttributeString("observationDimension", null);
     if (aname != null)
       result = ds.findDimension(aname); // LOOK use group
     if (result == null)

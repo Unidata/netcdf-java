@@ -31,7 +31,7 @@ public class TestUriCreate {
   }
 
   @Test
-  public void testReletiveFile() throws MalformedURLException, URISyntaxException {
+  public void testRelativeFile() throws MalformedURLException, URISyntaxException {
     new URL("file:src/test/data/ncml/nc/");
 
     showUri("src/test/data/ncml/nc/");

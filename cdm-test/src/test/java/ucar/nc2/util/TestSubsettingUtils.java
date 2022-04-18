@@ -7,6 +7,7 @@ import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Range;
 import ucar.ma2.Section;
 import ucar.nc2.NetcdfFile;
+import ucar.nc2.NetcdfFiles;
 import ucar.nc2.Variable;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
@@ -26,7 +27,7 @@ public class TestSubsettingUtils {
     // varName = NetcdfFile.makeValidCdmObjectName(varName);
     System.out.println("testVariableSubset=" + filename + "," + varName);
 
-    try (NetcdfFile ncfile = NetcdfFile.open(filename)) {
+    try (NetcdfFile ncfile = NetcdfFiles.open(filename)) {
 
       Variable v = ncfile.findVariable(varName);
       if (v == null) {
@@ -68,14 +69,14 @@ public class TestSubsettingUtils {
       throws InvalidRangeException, IOException {
     System.out.println("testVariableSubset=" + filename + "," + varName);
 
-    try (NetcdfFile ncfile = NetcdfFile.open(filename)) {
+    try (NetcdfFile ncfile = NetcdfFiles.open(filename)) {
       Variable v = ncfile.findVariable(varName);
       assert (null != v);
       subsetVariable(v, s, v.read());
     }
   }
 
-  public static void subsetVariable(Variable v, Section s, Array fullData) throws IOException, InvalidRangeException {
+  private static void subsetVariable(Variable v, Section s, Array fullData) throws IOException, InvalidRangeException {
     System.out.println("   section=" + s);
 
     // read just that
@@ -92,17 +93,17 @@ public class TestSubsettingUtils {
     for (int i = 0; i < ashape.length; i++)
       assert sshape[i] == ashape[i];
 
-    ucar.unidata.util.test.CompareNetcdf.compareData(sdata, Asection);
+    CompareNetcdf2.compareData(v.getShortName(), sdata, Asection);
   }
 
   private static Section randomSubset(Section all, int stride) throws InvalidRangeException {
-    Section s = new Section();
+    Section.Builder sb = Section.builder();
     for (Range r : all.getRanges()) {
       int first = random(r.first(), r.last() / 2);
       int last = random(r.last() / 2, r.last());
-      s.appendRange(first, last, stride);
+      sb.appendRange(first, last, stride);
     }
-    return s;
+    return sb.build();
   }
 
   private static Random r = new Random(System.currentTimeMillis());

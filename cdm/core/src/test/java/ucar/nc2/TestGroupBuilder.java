@@ -12,17 +12,17 @@ public class TestGroupBuilder {
   public void testBuilder() {
     Attribute att = new Attribute("attName", "value");
     Dimension dim = new Dimension("dimName", 42);
-    Group.Builder nested = Group.builder(null).setName("child");
+    Group.Builder nested = Group.builder().setName("child");
     Variable.Builder vb = Variable.builder().setName("varName").setDataType(DataType.STRING);
-    Group group = Group.builder(null).setName("name").addAttribute(att).addDimension(dim).addGroup(nested)
-        .addVariable(vb).build(null);
+    Group group =
+        Group.builder().setName("name").addAttribute(att).addDimension(dim).addGroup(nested).addVariable(vb).build();
 
     assertThat(group.getShortName()).isEqualTo("name");
     assertThat(group.isRoot()).isTrue();
-    assertThat(group.getAttributes()).isNotEmpty();
-    assertThat(group.getAttributes()).hasSize(1);
+    assertThat(group.attributes()).isNotEmpty();
+    assertThat(group.attributes()).hasSize(1);
     assertThat(group.findAttribute("attName")).isEqualTo(att);
-    assertThat(group.findAttValueIgnoreCase("attName", null)).isEqualTo("value");
+    assertThat(group.findAttributeString("attName", null)).isEqualTo("value");
 
     assertThat(group.getDimensions()).isNotEmpty();
     assertThat(group.getDimensions()).hasSize(1);
@@ -30,19 +30,19 @@ public class TestGroupBuilder {
 
     assertThat(group.getGroups()).isNotEmpty();
     assertThat(group.getGroups()).hasSize(1);
-    Group child = group.findGroup("child");
+    Group child = group.findGroupLocal("child");
     assertThat(child.getParentGroup()).isEqualTo(group);
 
     assertThat(group.getVariables()).isNotEmpty();
     assertThat(group.getVariables()).hasSize(1);
-    Variable v = group.findVariable("varName");
+    Variable v = group.findVariableLocal("varName");
     assertThat(v.getParentGroup()).isEqualTo(group);
   }
 
   @Test
   public void testReplaceDimension() {
     Dimension dim = new Dimension("dimName", 42);
-    Group.Builder builder = Group.builder(null).setName("name");
+    Group.Builder builder = Group.builder().setName("name");
 
     assertThat(builder.replaceDimension(dim)).isFalse();
     assertThat(builder.findDimension("dimName")).isEqualTo(Optional.of(dim));
@@ -55,7 +55,7 @@ public class TestGroupBuilder {
   @Test
   public void testDuplicateDimension() {
     Dimension dim = new Dimension("dimName", 42);
-    Group.Builder builder = Group.builder(null).setName("name").addDimension(dim);
+    Group.Builder builder = Group.builder().setName("name").addDimension(dim);
 
     try {
       builder.addDimension(dim);
@@ -67,34 +67,55 @@ public class TestGroupBuilder {
 
   @Test
   public void testRemoveGroup() {
-    Group.Builder child = Group.builder(null).setName("child");
-    Group.Builder child2 = Group.builder(null).setName("child2");
-    Group.Builder builder = Group.builder(null).setName("name").addGroup(child).addGroup(child2);
+    Group.Builder child = Group.builder().setName("child");
+    Group.Builder child2 = Group.builder().setName("child2");
+    Group.Builder builder = Group.builder().setName("name").addGroup(child).addGroup(child2);
 
     assertThat(builder.gbuilders).hasSize(2);
     assertThat(builder.removeGroup("child")).isTrue();
     assertThat(builder.gbuilders).hasSize(1);
-    assertThat(builder.findGroup("child").isPresent()).isFalse();
-    assertThat(builder.findGroup("child2").isPresent()).isTrue();
+    assertThat(builder.findGroupLocal("child").isPresent()).isFalse();
+    assertThat(builder.findGroupLocal("child2").isPresent()).isTrue();
+  }
+
+  @Test
+  public void testSetDimensionsByNameNeedsParent() {
+    try {
+      Variable.builder().setName("varName").setDimensionsByName("dim");
+      fail();
+    } catch (Exception e) {
+      assertThat(e instanceof NullPointerException);
+    }
+  }
+
+  @Test
+  public void testDimNotExist() {
+    Group.Builder gb = Group.builder().setName("name");
+    try {
+      Variable.Builder vb = Variable.builder().setName("varName").setParentGroupBuilder(gb).setDimensionsByName("dim");
+      fail();
+    } catch (Exception e) {
+      assertThat(e.getMessage()).contains("Dimension dim does not exist");
+    }
   }
 
   @Test
   public void testReplaceVariable() {
     Variable.Builder vb = Variable.builder().setName("varName");
-    Group.Builder builder = Group.builder(null).setName("name");
+    Group.Builder gb = Group.builder().setName("name").addDimension(new Dimension("dim", 42));
 
-    assertThat(builder.replaceVariable(vb)).isFalse();
-    assertThat(builder.findVariable("varName")).isEqualTo(Optional.of(vb));
+    assertThat(gb.replaceVariable(vb)).isFalse();
+    assertThat(gb.findVariableLocal("varName")).isEqualTo(Optional.of(vb));
 
-    Variable.Builder vb2 = Variable.builder().setName("varName").setDimensionsByName("dim");
-    assertThat(builder.replaceVariable(vb2)).isTrue();
-    assertThat(builder.findVariable("varName")).isEqualTo(Optional.of(vb2));
+    Variable.Builder vb2 = Variable.builder().setName("varName").setParentGroupBuilder(gb).setDimensionsByName("dim");
+    assertThat(gb.replaceVariable(vb2)).isTrue();
+    assertThat(gb.findVariableLocal("varName")).isEqualTo(Optional.of(vb2));
   }
 
   @Test
   public void testDuplicateVariable() {
     Variable.Builder vb = Variable.builder().setName("varName");
-    Group.Builder builder = Group.builder(null).setName("name").addVariable(vb);
+    Group.Builder builder = Group.builder().setName("name").addVariable(vb);
 
     try {
       builder.addVariable(vb);
@@ -108,14 +129,14 @@ public class TestGroupBuilder {
   public void testAttributes() {
     Attribute att1 = new Attribute("attName", "value");
     Attribute att2 = new Attribute("attName2", "value2");
-    Group.Builder builder = Group.builder(null).setName("name").addAttribute(att1).addAttribute(att2);
+    Group.Builder builder = Group.builder().setName("name").addAttribute(att1).addAttribute(att2);
 
     AttributeContainer atts = builder.getAttributeContainer();
     assertThat(atts.getAttributes()).isNotEmpty();
     assertThat(atts.getAttributes()).hasSize(2);
     assertThat(atts.findAttribute("attName")).isEqualTo(att1);
-    assertThat(atts.findAttValueIgnoreCase("attName", null)).isEqualTo("value");
-    assertThat(atts.findAttValueIgnoreCase("attName2", null)).isEqualTo("value2");
+    assertThat(atts.findAttributeString("attName", null)).isEqualTo("value");
+    assertThat(atts.findAttributeString("attName2", null)).isEqualTo("value2");
   }
 
 }

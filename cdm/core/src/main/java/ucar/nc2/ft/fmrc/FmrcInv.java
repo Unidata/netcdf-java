@@ -168,8 +168,8 @@ public class FmrcInv {
   }
 
   // not really needed
-  private final TimeCoord tcOffAll; // all offsets in this collection, reletive to baseDate
-  private final TimeCoord tcIntAll; // all intervals in this collection, reletive to baseDate
+  private final TimeCoord tcOffAll; // all offsets in this collection, relative to baseDate
+  private final TimeCoord tcIntAll; // all intervals in this collection, relative to baseDate
 
   // public for debugging
   public List<FmrInv> getFmrList() {
@@ -258,7 +258,7 @@ public class FmrcInv {
     double result = diff / 1000.0 / 60.0 / 60.0; // LOOK why convert to double? precision may be lost ??
     long testRoundoff = (long) (result * 1000.0 * 60.0 * 60.0);
     if (diff != testRoundoff)
-      log.debug("HEY getOffsetInHours");
+      log.debug("getOffsetInHours");
     return result;
   }
 

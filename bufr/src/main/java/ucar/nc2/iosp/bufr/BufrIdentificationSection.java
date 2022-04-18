@@ -169,7 +169,9 @@ public class BufrIdentificationSection {
 
       // Optional section octet 10
       int optional = raf.read();
-      hasOptionalSection = (optional & 0x40) != 0;
+      // Most Sig. Bit = 1 : has optional section
+      // 0 : does not have an optional section
+      hasOptionalSection = (optional & 0x80) != 0;
 
       // Category octet 11
       category = raf.read();

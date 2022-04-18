@@ -12,17 +12,17 @@ import org.junit.runners.Parameterized;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.InvalidRangeException;
-import ucar.nc2.NetcdfFileWriter;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.ft.*;
-import ucar.nc2.ft.point.writer.CFPointWriter;
+import ucar.nc2.ft.point.writer2.CFPointWriter;
 import ucar.nc2.ft2.coverage.FeatureDatasetCoverage;
 import ucar.nc2.ft2.coverage.CoverageCollection;
 import ucar.nc2.ft2.coverage.CoverageDatasetFactory;
 import ucar.nc2.ft2.coverage.SubsetParams;
 import ucar.nc2.ft2.coverage.writer.CoverageAsPoint;
-import ucar.unidata.geoloc.LatLonPointImpl;
+import ucar.nc2.write.NetcdfFileFormat;
+import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
 import java.io.File;
@@ -32,12 +32,7 @@ import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.List;
 
-/**
- * Test CoverageAsPoint
- *
- * @author caron
- * @since 7/8/2015
- */
+/** Test CoverageAsPoint */
 @RunWith(Parameterized.class)
 @Category(NeedsCdmUnitTest.class)
 public class TestCoverageAsPointFileWriter {
@@ -47,20 +42,19 @@ public class TestCoverageAsPointFileWriter {
   public static List<Object[]> getTestParameters() {
     List<Object[]> result = new ArrayList<>();
     result.add(new Object[] {TestDir.cdmUnitTestDir + "ft/coverage/03061219_ruc.nc",
-        Lists.newArrayList("P_sfc", "P_trop"), NetcdfFileWriter.Version.netcdf3});
+        Lists.newArrayList("P_sfc", "P_trop"), NetcdfFileFormat.NETCDF3});
     return result;
   }
 
-  String endpoint;
-  List<String> covList;
-  NetcdfFileWriter.Version version;
+  private String endpoint;
+  private List<String> covList;
+  private NetcdfFileFormat version;
 
-  public TestCoverageAsPointFileWriter(String endpoint, List<String> covList, NetcdfFileWriter.Version version) {
+  public TestCoverageAsPointFileWriter(String endpoint, List<String> covList, NetcdfFileFormat version) {
     this.endpoint = endpoint;
     this.covList = covList;
     this.version = version;
   }
-
 
   @Rule
   public final TemporaryFolder tempFolder = new TemporaryFolder();
@@ -82,7 +76,7 @@ public class TestCoverageAsPointFileWriter {
 
       SubsetParams params = new SubsetParams();
       params.setVariables(covList);
-      params.setLatLonPoint(new LatLonPointImpl(35.0, -140.0));
+      params.setLatLonPoint(LatLonPoint.create(35.0, -140.0));
 
       CoverageAsPoint writer = new CoverageAsPoint(gds, covList, params);
       FeatureDatasetPoint fdp = writer.asFeatureDatasetPoint();
@@ -90,7 +84,7 @@ public class TestCoverageAsPointFileWriter {
 
       DsgFeatureCollection fc = fdp.getPointFeatureCollectionList().get(0);
 
-      CFPointWriter.writeFeatureCollection(fdp, tempFile.getAbsolutePath(), NetcdfFileWriter.Version.netcdf3);
+      CFPointWriter.writeFeatureCollection(fdp, tempFile.getAbsolutePath(), NetcdfFileFormat.NETCDF3);
     }
 
     // open the new file as a Coverage

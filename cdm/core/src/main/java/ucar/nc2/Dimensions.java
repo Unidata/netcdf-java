@@ -2,13 +2,13 @@
 package ucar.nc2;
 
 import com.google.common.collect.ImmutableList;
-import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.List;
 import java.util.StringTokenizer;
 import javax.annotation.Nullable;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Range;
+import ucar.ma2.Section;
 
 /**
  * Static helper methods for Dimension.
@@ -18,45 +18,52 @@ import ucar.ma2.Range;
  */
 public class Dimensions {
 
+  private Dimensions() {}
+
   /** A Function that finds a Dimension by name. */
-  public interface Find {
+  public interface FindDimensionByName {
     @Nullable
     Dimension findByName(String dimName);
   }
 
-  /**
-   * Make a ucar.ma2.Section from an ordered set of Dimension objects.
-   */
-  public static ucar.ma2.Section makeSectionFromDimensions(Iterable<Dimension> dimensions) {
+  /** Make a ucar.ma2.Section.Builder from an ordered set of Dimension objects. */
+  public static ucar.ma2.Section.Builder makeSectionFromDimensions(Iterable<Dimension> dimensions) {
     try {
-      List<Range> list = new ArrayList<>();
+      Section.Builder builder = Section.builder();
       for (Dimension d : dimensions) {
         int len = d.getLength();
         if (len > 0)
-          list.add(new Range(d.getShortName(), 0, len - 1));
+          builder.appendRange(new Range(d.getShortName(), 0, len - 1));
         else if (len == 0)
-          list.add(Range.EMPTY); // LOOK empty not named
+          builder.appendRange(Range.EMPTY); // LOOK empty not named
         else {
           assert d.isVariableLength();
-          list.add(Range.VLEN); // LOOK vlen not named
+          builder.appendRange(Range.VLEN); // LOOK vlen not named
         }
       }
-      return new ucar.ma2.Section(list).makeImmutable();
+      return builder;
 
     } catch (InvalidRangeException e) {
       throw new IllegalStateException(e.getMessage());
     }
   }
 
-  public static int[] makeShape(Iterable<Dimension> dimensions) {
-    return makeSectionFromDimensions(dimensions).getShape();
+  /** Get the total number of elements the dimensions represent. */
+  public static long getSize(Iterable<Dimension> dimensions) {
+    long size = 1;
+    for (Dimension dim : dimensions) {
+      if (dim.getLength() >= 0)
+        size *= dim.getLength();
+    }
+    return size;
   }
 
-  /**
-   * Make a space-delineated String from a list of Dimension names. Inverse of makeDimensionsList().
-   *
-   * @return space-delineated String of Dimension names.
-   */
+  /** Make an array of Dimension lengths. */
+  public static int[] makeShape(Iterable<Dimension> dimensions) {
+    return makeSectionFromDimensions(dimensions).build().getShape();
+  }
+
+  /** Make a space-delineated String from a list of Dimension names, inverse of makeDimensionsList(). */
   public static String makeDimensionsString(List<Dimension> dimensions) {
     if (dimensions == null)
       return "";
@@ -90,7 +97,7 @@ public class Dimensions {
    * @return equivalent list of Dimension objects.
    * @throws IllegalArgumentException if cant find or parse the name.
    */
-  public static ImmutableList<Dimension> makeDimensionsList(Find finder, String dimString)
+  public static ImmutableList<Dimension> makeDimensionsList(FindDimensionByName finder, String dimString)
       throws IllegalArgumentException {
     if (dimString == null) // scalar
       return ImmutableList.of(); // empty list

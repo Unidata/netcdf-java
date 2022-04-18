@@ -12,6 +12,7 @@ import java.net.URL;
 import java.util.*;
 
 /** @deprecated Will be moved to opendap package in 6. */
+@Deprecated
 public class RC {
   static boolean showlog; /* do not do any logging */
   public static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(RC.class);

@@ -13,9 +13,9 @@ import ucar.nc2.units.SimpleUnit;
 import ucar.nc2.dataset.*;
 import ucar.ma2.Array;
 import ucar.ma2.MAMath;
+import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.Earth;
-import ucar.unidata.geoloc.LatLonPointImpl;
 import java.util.*;
 import java.io.IOException;
 
@@ -188,13 +188,13 @@ public class RadialCoordSys {
     if (origin == null)
       return null;
 
-    double dLat = Math.toDegrees(getMaximumRadial() / Earth.getRadius());
+    double dLat = Math.toDegrees(getMaximumRadial() / Earth.WGS84_EARTH_RADIUS_METERS);
     double latRadians = Math.toRadians(origin.getLatitude());
     double dLon = dLat * Math.cos(latRadians);
 
     double lat1 = origin.getLatitude() - dLat / 2;
     double lon1 = origin.getLongitude() - dLon / 2;
-    bb = new LatLonRect(new LatLonPointImpl(lat1, lon1), dLat, dLon);
+    bb = new LatLonRect(LatLonPoint.create(lat1, lon1), dLat, dLon);
 
     return bb;
   }

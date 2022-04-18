@@ -5,69 +5,69 @@
 package ucar.ma2;
 
 import com.google.common.base.MoreObjects;
-import ucar.nc2.NetcdfFile;
+import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableList;
+import java.util.ArrayList;
+import java.util.Formatter;
+import java.util.List;
+import java.util.stream.Collectors;
+import javax.annotation.Nullable;
 import ucar.nc2.util.Indent;
-import java.util.*;
 
 /**
  * A Collection of members contained in a StructureData.
- *
- * @author caron
+ * TODO make immutable
  */
-// Effective Java 2nd Edition, Item 17: Design and document for inheritance or else prohibit it.
 public final class StructureMembers {
-  private String name;
-  private Map<String, Member> memberHash;
-  private List<Member> members;
-  private int structureSize = -1;
 
+  /** @deprecated use Builder */
+  @Deprecated
   public StructureMembers(String name) {
     this.name = name;
     members = new ArrayList<>();
   }
 
+  /** @deprecated use toBuilder().build(false) to make a copy with no data */
+  @Deprecated
   public StructureMembers(StructureMembers from) {
     this.name = from.name;
     members = new ArrayList<>(from.getMembers().size());
     for (Member m : from.members) {
       Member nm = new Member(m); // make copy - without the data info
       addMember(nm);
-      if (m.members != null) // recurse
-        nm.members = new StructureMembers(m.members);
+      if (m.members != null) { // recurse
+        nm.members = m.members.toBuilder(false).build();
+      }
     }
   }
 
-  /**
-   * Get the name.
-   *
-   * @return the name.
-   */
+  /** Get the StructureMembers' name. */
   public String getName() {
     return name;
   }
 
   /**
    * Add a member.
-   *
-   * @param m member to add
+   * 
+   * @deprecated use Builder
    */
+  @Deprecated
   public void addMember(Member m) {
     members.add(m);
-    if (memberHash != null)
-      memberHash.put(m.getName(), m);
   }
 
   /**
    * Add a member at the given position.
-   *
-   * @param m member to add
+   * 
+   * @deprecated use Builder
    */
+  @Deprecated
   public void addMember(int pos, Member m) {
     members.add(pos, m);
-    if (memberHash != null)
-      memberHash.put(m.getName(), m);
   }
 
+  /** @deprecated use Builder */
+  @Deprecated
   public Member addMember(String name, String desc, String units, DataType dtype, int[] shape) {
     Member m = new Member(name, desc, units, dtype, shape);
     addMember(m);
@@ -79,14 +79,14 @@ public final class StructureMembers {
    * 
    * @param m member
    * @return position that it used to occupy, or -1 if not found
+   * @deprecated use Builder
    */
+  @Deprecated
   public int hideMember(Member m) {
     if (m == null)
       return -1;
     int index = members.indexOf(m);
     members.remove(m);
-    if (memberHash != null)
-      memberHash.remove(m.getName());
     return index;
   }
 
@@ -96,48 +96,38 @@ public final class StructureMembers {
    * @return the total size of the Structure in bytes.
    */
   public int getStructureSize() {
-    if (structureSize < 0)
-      calcStructureSize();
+    if (structureSize < 0) {
+      structureSize = calcStructureSize();
+    }
     return structureSize;
   }
 
-  private void calcStructureSize() {
-    structureSize = 0;
+  private int calcStructureSize() {
+    int sum = 0;
     for (Member member : members) {
-      structureSize += member.getSizeBytes();
+      sum += member.getSizeBytes();
     }
+    return sum;
   }
 
   /**
    * Set the total size of the Structure in bytes.
-   *
-   * @param structureSize set to this value
+   * 
+   * @deprecated use Builder
    */
+  @Deprecated
   public void setStructureSize(int structureSize) {
     this.structureSize = structureSize;
   }
 
-  /**
-   * Get the list of Member objects.
-   *
-   * @return the list of Member objects.
-   */
-  public java.util.List<Member> getMembers() {
-    return members;
+  /** Get the list of Member objects. */
+  public ImmutableList<Member> getMembers() {
+    return ImmutableList.copyOf(members);
   }
 
-
-  /**
-   * Get the names of the members.
-   *
-   * @return List of type String.
-   */
-  public java.util.List<String> getMemberNames() {
-    List<String> memberNames = new ArrayList<>();
-    for (Member m : members) {
-      memberNames.add(m.getName());
-    }
-    return memberNames;
+  /** Get the names of the members. */
+  public ImmutableList<String> getMemberNames() {
+    return members.stream().map(m -> m.getName()).collect(ImmutableList.toImmutableList());
   }
 
   /**
@@ -150,23 +140,13 @@ public final class StructureMembers {
     return members.get(index);
   }
 
-  /**
-   * Find the member by its name.
-   *
-   * @param memberName find by this name
-   * @return Member matching the name, or null if not found
-   */
+  /** Find the member by its name. */
+  @Nullable
   public Member findMember(String memberName) {
     if (memberName == null)
       return null;
 
-    if (memberHash == null) { // delay making the hash table until needed
-      int initial_capacity = (int) (members.size() / .75) + 1;
-      memberHash = new HashMap<>(initial_capacity);
-      for (Member m : members)
-        memberHash.put(m.getName(), m);
-    }
-    return memberHash.get(memberName);
+    return members.stream().filter(m -> m.name.equals(memberName)).findFirst().orElse(null);
   }
 
   @Override
@@ -175,12 +155,9 @@ public final class StructureMembers {
         .add("structureSize", structureSize).toString();
   }
 
-
-  /**
-   * A member of a StructureData.
-   */
-  // Effective Java 2nd Edition, Item 17: Design and document for inheritance or else prohibit it.
-  public final class Member {
+  /** A member of a StructureData. */
+  public final static class Member {
+    // TODO make these final and immutable in 6.
     private String name, desc, units;
     private DataType dtype;
     private int size = 1;
@@ -193,14 +170,46 @@ public final class StructureMembers {
     private Object dataObject;
     private int dataParam;
 
+    private Member(MemberBuilder builder) {
+      this.name = Preconditions.checkNotNull(builder.name);
+      this.desc = builder.desc;
+      this.units = builder.units;
+      this.dtype = Preconditions.checkNotNull(builder.dtype);
+      this.shape = builder.shape;
+      this.members = builder.members;
+      this.dataArray = builder.dataArray;
+      this.dataObject = builder.dataObject;
+      this.dataParam = builder.dataParam;
+
+      this.size = (int) Index.computeSize(shape);
+      this.isVariableLength = (shape.length > 0 && shape[shape.length - 1] < 0);
+    }
+
+    /** Turn into a mutable Builder. Can use toBuilder().build() to copy. */
+    public MemberBuilder toBuilder(boolean wantsData) {
+      MemberBuilder b = new MemberBuilder().setName(this.name).setDesc(this.desc).setUnits(this.units)
+          .setDataType(this.dtype).setShape(this.shape);
+      if (wantsData) {
+        b.setDataArray(this.dataArray).setDataObject(this.dataObject).setDataParam(this.dataParam)
+            .setStructureMembers(this.members);
+      } else if (this.members != null) {
+        b.setStructureMembers(this.members.toBuilder(wantsData).build());
+      }
+      return b;
+    }
+
+    /** @deprecated use MemberBuilder */
+    @Deprecated
     public Member(String name, String desc, String units, DataType dtype, int[] shape) {
-      this.name = Objects.requireNonNull(name);
+      this.name = Preconditions.checkNotNull(name);
       this.desc = desc;
       this.units = units;
-      this.dtype = Objects.requireNonNull(dtype);
+      this.dtype = Preconditions.checkNotNull(dtype);
       setShape(shape);
     }
 
+    /** @deprecated use MemberBuilder */
+    @Deprecated
     public Member(Member from) {
       this.name = from.name;
       this.desc = from.desc;
@@ -215,12 +224,10 @@ public final class StructureMembers {
      *
      * @param members set to this value
      * @throws IllegalArgumentException if {@code members} is this Member's enclosing class instance.
+     * @deprecated use MemberBuilder
      */
+    @Deprecated
     public void setStructureMembers(StructureMembers members) {
-      if (members == StructureMembers.this) {
-        throw new IllegalArgumentException(
-            String.format("%s is already the parent of this Member '%s'; it cannot also be the child.", members, this));
-      }
       this.members = members;
     }
 
@@ -228,27 +235,25 @@ public final class StructureMembers {
       return members;
     }
 
+    /** @deprecated use MemberBuilder */
+    @Deprecated
     public void setShape(int[] shape) {
-      this.shape = Objects.requireNonNull(shape);
+      this.shape = Preconditions.checkNotNull(shape);
       this.size = (int) Index.computeSize(shape);
       this.isVariableLength = (shape.length > 0 && shape[shape.length - 1] < 0);
     }
 
-    /**
-     * Get the short name.
-     *
-     * @return the short name.
-     */
+    /** Get the StructureMembers name. */
     public String getName() {
       return name;
     }
 
     public String getFullNameEscaped() {
-      return NetcdfFile.makeValidPathName(StructureMembers.this.getName()) + "." + NetcdfFile.makeValidPathName(name);
+      return name;
     }
 
     public String getFullName() {
-      return StructureMembers.this.getName() + "." + name;
+      return name;
     }
 
     /**
@@ -348,7 +353,9 @@ public final class StructureMembers {
      * Set the data parameter value, for use behind the scenes.
      *
      * @param dataParam set to this value
+     * @deprecated use MemberBuilder
      */
+    @Deprecated
     public void setDataParam(int dataParam) {
       this.dataParam = dataParam;
     }
@@ -366,7 +373,9 @@ public final class StructureMembers {
      * Set the data array. Used for implementation, DO NOT USE DIRECTLY!
      * 
      * @param data set to this Array. must not be a logical view
+     * @deprecated use MemberBuilder
      */
+    @Deprecated
     public void setDataArray(Array data) {
       this.dataArray = data;
     }
@@ -384,16 +393,16 @@ public final class StructureMembers {
      * Set an opaque data object, for use behind the scenes.
      * 
      * @param o set to this value
+     * @deprecated use MemberBuilder
      */
+    @Deprecated
     public void setDataObject(Object o) {
       this.dataObject = o;
     }
 
+    /** @deprecated use MemberBuilder */
+    @Deprecated
     public void setVariableInfo(String vname, String desc, String unitString, DataType dtype) {
-      if (!this.name.equals(vname) && (memberHash != null)) {
-        memberHash.remove(name);
-        memberHash.put(vname, this);
-      }
       name = vname;
 
       if (dtype != null)
@@ -404,7 +413,7 @@ public final class StructureMembers {
         this.desc = desc;
     }
 
-    public void showInternal(Formatter f, Indent indent) {
+    void showInternal(Formatter f, Indent indent) {
       f.format("%sname='%s' desc='%s' units='%s' dtype=%s size=%d dataObject=%s dataParam=%d", indent, name, desc,
           units, dtype, size, dataObject, dataParam);
       if (members != null) {
@@ -421,4 +430,194 @@ public final class StructureMembers {
       return name;
     }
   }
+
+  public static class MemberBuilder {
+    private String name, desc, units;
+    private DataType dtype;
+    private int[] shape;
+    private StructureMembers members; // only if member is type Structure
+
+    // optional, use depends on ArrayStructure subclass
+    private Array dataArray;
+    private Object dataObject;
+    private int dataParam;
+    private boolean built;
+
+    private MemberBuilder() {}
+
+    public MemberBuilder setName(String name) {
+      this.name = name;
+      return this;
+    }
+
+    public MemberBuilder setDesc(String desc) {
+      this.desc = desc;
+      return this;
+    }
+
+    public MemberBuilder setUnits(String units) {
+      this.units = units;
+      return this;
+    }
+
+    public MemberBuilder setDataType(DataType dtype) {
+      this.dtype = dtype;
+      return this;
+    }
+
+    public MemberBuilder setDataArray(Array data) {
+      this.dataArray = data;
+      return this;
+    }
+
+    public MemberBuilder setDataObject(Object o) {
+      this.dataObject = o;
+      return this;
+    }
+
+    public MemberBuilder setDataParam(int dataParam) {
+      this.dataParam = dataParam;
+      return this;
+    }
+
+    public MemberBuilder setStructureMembers(StructureMembers members) {
+      this.members = members;
+      return this;
+    }
+
+    public MemberBuilder setShape(int[] shape) {
+      this.shape = Preconditions.checkNotNull(shape);
+      return this;
+    }
+
+    public Member build() {
+      if (built)
+        throw new IllegalStateException("already built");
+      built = true;
+      return new Member(this);
+    }
+  }
+
+  ///////////////////////////////////////////////////////////////////////////////
+
+  // TODO make these final and immutable in 6.
+  private String name;
+  private List<Member> members;
+  private int structureSize = -1;
+
+  private StructureMembers(Builder builder) {
+    this.name = builder.name == null ? "" : builder.name;
+    this.members = builder.members.stream().map(mb -> mb.build()).collect(Collectors.toList());
+    this.structureSize = builder.structureSize < 0 ? calcStructureSize() : builder.structureSize;
+  }
+
+  /** Turn into a mutable Builder. Can use toBuilder().build(wantsData) to copy. */
+  public Builder toBuilder(boolean wantsData) {
+    Builder b = builder().setName(this.name).setStructureSize(this.structureSize);
+    this.members.forEach(m -> b.addMember(m.toBuilder(wantsData)));
+    return b;
+  }
+
+  /** Create an StructureMembers builder. */
+  public static Builder builder() {
+    return new Builder();
+  }
+
+  /** A builder for StructureMembers */
+  public static class Builder {
+    private String name;
+    private ArrayList<MemberBuilder> members = new ArrayList<>();
+    private int structureSize = -1;
+    private boolean built;
+
+    private Builder() {}
+
+    public Builder setName(String name) {
+      this.name = name;
+      return this;
+    }
+
+    public Builder addMember(MemberBuilder m) {
+      members.add(m);
+      return this;
+    }
+
+    public Builder addMember(int pos, MemberBuilder m) {
+      members.add(pos, m);
+      return this;
+    }
+
+    public MemberBuilder addMember(String name, String desc, String units, DataType dtype, int[] shape) {
+      MemberBuilder m =
+          new MemberBuilder().setName(name).setDesc(desc).setUnits(units).setDataType(dtype).setShape(shape);
+      addMember(m);
+      return m;
+    }
+
+    /** Add a Member, creating a scalar DataArray from the val. Use with StructureDataFromMember. */
+    public MemberBuilder addMemberScalar(String name, String desc, String units, DataType dtype, Number val) {
+      MemberBuilder mb = addMember(name, desc, units, dtype, new int[0]);
+      Array data = null;
+      switch (dtype) {
+        case UBYTE:
+        case BYTE:
+        case ENUM1:
+          data = new ArrayByte.D0(dtype.isUnsigned());
+          data.setByte(0, val.byteValue());
+          break;
+        case SHORT:
+        case USHORT:
+        case ENUM2:
+          data = new ArrayShort.D0(dtype.isUnsigned());
+          data.setShort(0, val.shortValue());
+          break;
+        case INT:
+        case UINT:
+        case ENUM4:
+          data = new ArrayInt.D0(dtype.isUnsigned());
+          data.setInt(0, val.intValue());
+          break;
+        case LONG:
+        case ULONG:
+          data = new ArrayLong.D0(dtype.isUnsigned());
+          data.setDouble(0, val.longValue());
+          break;
+        case FLOAT:
+          data = new ArrayFloat.D0();
+          data.setFloat(0, val.floatValue());
+          break;
+        case DOUBLE:
+          data = new ArrayDouble.D0();
+          data.setDouble(0, val.doubleValue());
+          break;
+      }
+      mb.setDataArray(data);
+      return mb;
+    }
+
+    /** Add a Member, creating a CHAR DataArray from the String val. Use with StructureDataFromMember. */
+    public MemberBuilder addMemberString(String name, String desc, String units, String val, int max_len) {
+      MemberBuilder mb = addMember(name, desc, units, DataType.CHAR, new int[] {max_len});
+      Array data = ArrayChar.makeFromString(val, max_len);
+      mb.setDataArray(data);
+      return mb;
+    }
+
+    public boolean hasMember(String memberName) {
+      return members.stream().anyMatch(m -> m.name.equals(memberName));
+    }
+
+    public Builder setStructureSize(int structureSize) {
+      this.structureSize = structureSize;
+      return this;
+    }
+
+    public StructureMembers build() {
+      if (built)
+        throw new IllegalStateException("already built");
+      built = true;
+      return new StructureMembers(this);
+    }
+  }
+
 }

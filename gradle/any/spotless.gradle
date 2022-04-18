@@ -1,12 +1,11 @@
-apply plugin: "java"
-apply plugin: "com.diffplug.gradle.spotless"
+apply plugin: 'java'
+apply plugin: 'com.diffplug.gradle.spotless'
 
 spotless {
   java {
-    target '**/*.java'
-    targetExclude 'waterml/src/main/java/ucar/nc2/ogc/erddap/**/*.java'
-    eclipse().configFile 'eclipse-style-guide.xml'
+    // target java files in source directories (will not pick up generated sources)
+    target 'src/*/java/**/*.java'
+    eclipse().configFile "$rootDir/project-files/code-styles/eclipse-style-guide.xml"
     encoding 'UTF-8'
   }
 }
-

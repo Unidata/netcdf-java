@@ -8,11 +8,11 @@ import static java.net.HttpURLConnection.HTTP_FORBIDDEN;
 import static java.net.HttpURLConnection.HTTP_NOT_ACCEPTABLE;
 import static java.net.HttpURLConnection.HTTP_OK;
 import static java.net.HttpURLConnection.HTTP_UNAUTHORIZED;
+import com.google.common.annotations.VisibleForTesting;
+import javax.annotation.Nullable;
 import thredds.client.catalog.ServiceType;
-import thredds.client.catalog.tools.DataFactory;
 import ucar.httpservices.HTTPFactory;
 import ucar.httpservices.HTTPMethod;
-import ucar.nc2.stream.CdmRemote;
 import ucar.nc2.util.EscapeStrings;
 import ucar.unidata.util.StringUtil2;
 import ucar.unidata.util.Urlencoded;
@@ -21,17 +21,17 @@ import java.util.*;
 
 /**
  * Detection of the protocol from a location string.
- * TODO: Break this up so that each protocol is responsible for itself. We still need to disambiguate http:
+ * TODO: Review and refactor as needed. Perhaps BiMap\<ServiceType, String>?
  *
  * @author caron
  * @since 10/20/2015.
  */
 public class DatasetUrl {
-  protected static final String alpha = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-  protected static final String slashalpha = "\\/" + alpha;
+  private static final String alpha = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  private static final String slashalpha = "\\/" + alpha;
 
-  static final String[] FRAGPROTOCOLS = {"dap4", "dap2", "dods", "cdmremote", "thredds", "ncml"};
-  static final ServiceType[] FRAGPROTOSVCTYPE = {ServiceType.DAP4, ServiceType.OPENDAP, ServiceType.OPENDAP,
+  private static final String[] FRAGPROTOCOLS = {"dap4", "dap2", "dods", "cdmremote", "thredds", "ncml"};
+  private static final ServiceType[] FRAGPROTOSVCTYPE = {ServiceType.DAP4, ServiceType.OPENDAP, ServiceType.OPENDAP,
       ServiceType.THREDDS, ServiceType.THREDDS, ServiceType.NCML};
 
   /**
@@ -45,6 +45,7 @@ public class DatasetUrl {
    * @param url the url whose protocols to return
    * @return list of leading protocols without the trailing :
    */
+  @VisibleForTesting
   public static List<String> getProtocols(String url) {
     List<String> allprotocols = new ArrayList<>(); // all leading protocols upto path or host
 
@@ -180,7 +181,7 @@ public class DatasetUrl {
       }
       trueUrl = buf.toString();
     }
-    return new DatasetUrl(serviceType, trueUrl);
+    return DatasetUrl.create(serviceType, trueUrl);
   }
 
   /**
@@ -318,9 +319,9 @@ public class DatasetUrl {
       case "httpserver":
       case "nodods":
         return ServiceType.HTTPServer;
-      case CdmRemote.PROTOCOL:
+      case "cdmremote":
         return ServiceType.CdmRemote;
-      case DataFactory.PROTOCOL: // thredds
+      case "thredds":
         return ServiceType.THREDDS;
     }
 
@@ -532,9 +533,24 @@ public class DatasetUrl {
   }
 
   /////////////////////////////////////////////////////////////////////
+  // TODO this could be an @AutoValue
+  @Deprecated // use getServiceType()()
   public final ServiceType serviceType;
+  @Deprecated // use getTrueurl()
   public final String trueurl;
 
+  /**
+   * Create a DatasetUrl, which annotates a url with its service type.
+   * 
+   * @param serviceType The serviceType, may be null if not known.
+   * @param trueurl The actual URL
+   */
+  public static DatasetUrl create(@Nullable ServiceType serviceType, String trueurl) {
+    return new DatasetUrl(serviceType, trueurl);
+  }
+
+  /** @deprecated use create() */
+  @Deprecated
   public DatasetUrl(ServiceType serviceType, String trueurl) {
     this.serviceType = serviceType;
     this.trueurl = trueurl;
@@ -555,5 +571,13 @@ public class DatasetUrl {
   @Override
   public int hashCode() {
     return Objects.hash(serviceType, trueurl);
+  }
+
+  public ServiceType getServiceType() {
+    return serviceType;
+  }
+
+  public String getTrueurl() {
+    return trueurl;
   }
 }

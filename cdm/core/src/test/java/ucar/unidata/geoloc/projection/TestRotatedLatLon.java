@@ -6,8 +6,10 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.Projection;
+import ucar.unidata.geoloc.ProjectionPoint;
 import ucar.unidata.geoloc.ProjectionPointImpl;
 import java.lang.invoke.MethodHandles;
 
@@ -36,9 +38,8 @@ public class TestRotatedLatLon {
    */
   @Test
   public void testLatLonToProj() {
-    LatLonPointImpl latlon = new LatLonPointImpl(54, 254);
-    ProjectionPointImpl result = new ProjectionPointImpl();
-    proj.latLonToProj(latlon, result);
+    LatLonPoint latlon = LatLonPoint.create(54, 254);
+    ProjectionPoint result = proj.latLonToProj(latlon);
     Assert.assertEquals("Unexpected rotated longitude", 0, result.getX(), TOLERANCE);
     Assert.assertEquals("Unexpected rotated latitude", 0, result.getY(), TOLERANCE);
   }
@@ -49,9 +50,8 @@ public class TestRotatedLatLon {
    */
   @Test
   public void testProjToLatLon() {
-    ProjectionPointImpl p = new ProjectionPointImpl(0, 0);
-    LatLonPointImpl latlonResult = new LatLonPointImpl();
-    proj.projToLatLon(p, latlonResult);
+    ProjectionPoint p = ProjectionPoint.create(0, 0);
+    LatLonPoint latlonResult = proj.projToLatLon(p);
     Assert.assertEquals("Unexpected longitude", 254 - 360, latlonResult.getLongitude(), TOLERANCE);
     Assert.assertEquals("Unexpected latitude", 54, latlonResult.getLatitude(), TOLERANCE);
   }

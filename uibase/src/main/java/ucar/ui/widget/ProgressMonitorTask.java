@@ -98,4 +98,8 @@ public abstract class ProgressMonitorTask implements Runnable {
     if (progress > 0)
       this.progress = progress;
   }
+
+  public void setDone(boolean done) {
+    this.done = done;
+  }
 }

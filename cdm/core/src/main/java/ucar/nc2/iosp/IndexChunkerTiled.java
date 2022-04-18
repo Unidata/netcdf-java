@@ -66,7 +66,7 @@ public class IndexChunkerTiled {
     int varRank = intersect.getRank();
 
     // create the List<Dim>
-    // Section shifted = intersect.shiftOrigin(dataSection); // want reletive to dataSection
+    // Section shifted = intersect.shiftOrigin(dataSection); // want relative to dataSection
     int wantStride = 1;
     int dataStride = 1;
     for (int ii = varRank - 1; ii >= 0; ii--) {

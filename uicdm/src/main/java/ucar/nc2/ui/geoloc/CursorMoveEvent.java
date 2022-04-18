@@ -23,7 +23,7 @@ public class CursorMoveEvent extends java.util.EventObject {
 
   public CursorMoveEvent(Object source, Point2D location) {
     super(source);
-    this.world = new ProjectionPointImpl(location.getX(), location.getY());
+    this.world = ProjectionPoint.create(location.getX(), location.getY());
   }
 
   public Point2D getLocationPoint() {

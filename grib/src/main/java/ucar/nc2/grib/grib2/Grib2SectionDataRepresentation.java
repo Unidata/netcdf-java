@@ -82,4 +82,10 @@ public class Grib2SectionDataRepresentation {
     raf.seek(startingPosition + 11);
     return Grib2Drs.factory(dataTemplate, raf);
   }
+
+  @Override
+  public String toString() {
+    return "Grib2SectionDataRepresentation{" + "startingPosition=" + startingPosition + ", dataPoints=" + dataPoints
+        + ", dataTemplate=" + dataTemplate + ", length=" + length + '}';
+  }
 }

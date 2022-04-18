@@ -4,6 +4,7 @@
  */
 package ucar.nc2.grib.coord;
 
+import java.util.Arrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.nc2.grib.GribUtils;
@@ -99,7 +100,7 @@ public class CoordinateTime extends CoordinateTimeAbstract implements Coordinate
       info.format(" %3d,", cd);
     info.format(" (%d) %n", offsetSorted.size());
     if (time2runtime != null)
-      info.format("%stime2runtime: %s", indent, Misc.showInts(time2runtime));
+      info.format("%stime2runtime: %s", indent, Arrays.toString(time2runtime));
   }
 
   @Override

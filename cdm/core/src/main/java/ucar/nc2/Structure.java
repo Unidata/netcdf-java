@@ -4,6 +4,7 @@
  */
 package ucar.nc2;
 
+import com.google.common.collect.ImmutableList;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -279,31 +280,19 @@ public class Structure extends Variable {
     return this;
   }
 
-  /**
-   * Get the variables contained directly in this Structure.
-   * 
-   * @return List of type Variable.
-   */
-  public java.util.List<Variable> getVariables() {
-    return isImmutable() ? members : new ArrayList<>(members);
+  /** Get the variables contained directly in this Structure. */
+  public ImmutableList<Variable> getVariables() {
+    return ImmutableList.copyOf(members);
   }
 
-  /**
-   * Get the number of variables contained directly in this Structure.
-   * 
-   * @return number of member variables
-   */
+  /** Get the number of variables contained directly in this Structure. */
   public int getNumberOfMemberVariables() {
     return members.size();
   }
 
-  /**
-   * Get the (short) names of the variables contained directly in this Structure.
-   * 
-   * @return List of type String.
-   */
-  public java.util.List<String> getVariableNames() {
-    return new ArrayList<>(memberHash.keySet());
+  /** Get the (short) names of the variables contained directly in this Structure. */
+  public ImmutableList<String> getVariableNames() {
+    return members.stream().map(m -> m.getShortName()).collect(ImmutableList.toImmutableList());
   }
 
   /**
@@ -326,16 +315,16 @@ public class Structure extends Variable {
    * @return a StructureMembers object that describes this Structure.
    */
   public StructureMembers makeStructureMembers() {
-    StructureMembers smembers = new StructureMembers(getShortName());
-    for (Variable v2 : getVariables()) {
-      StructureMembers.Member m = smembers.addMember(v2.getShortName(), v2.getDescription(), v2.getUnitsString(),
+    StructureMembers.Builder builder = StructureMembers.builder().setName(getShortName());
+    for (Variable v2 : this.getVariables()) {
+      StructureMembers.MemberBuilder m = builder.addMember(v2.getShortName(), v2.getDescription(), v2.getUnitsString(),
           v2.getDataType(), v2.getShape());
-      if (v2 instanceof Structure)
+      if (v2 instanceof Structure) {
         m.setStructureMembers(((Structure) v2).makeStructureMembers());
+      }
     }
-    return smembers;
+    return builder.build();
   }
-  // protected StructureMembers smembers = null;
 
   /**
    * Get the size of one element of the Structure.
@@ -344,7 +333,7 @@ public class Structure extends Variable {
    */
   @Override
   public int getElementSize() {
-    if (elementSize == -1)
+    if (elementSize <= 0)
       calcElementSize();
     return elementSize;
   }
@@ -352,7 +341,10 @@ public class Structure extends Variable {
   /**
    * Force recalculation of size of one element of this structure - equals the sum of sizes of its members.
    * This is used only by low level classes like IOSPs.
+   * 
+   * @deprecated will be private in ver6, where Structure will be immutable.
    */
+  @Deprecated
   public void calcElementSize() {
     int total = 0;
     for (Variable v : members) {
@@ -367,7 +359,9 @@ public class Structure extends Variable {
    * 
    * @return StructureData for a scalar
    * @throws java.io.IOException on read error
+   * @deprecated use readStructure(0)
    */
+  @Deprecated
   public StructureData readStructure() throws IOException {
     if (getRank() != 0)
       throw new java.lang.UnsupportedOperationException("not a scalar structure");
@@ -386,21 +380,20 @@ public class Structure extends Variable {
    * @throws ucar.ma2.InvalidRangeException if index out of range
    */
   public StructureData readStructure(int index) throws IOException, ucar.ma2.InvalidRangeException {
-    Section section = null; // works for scalars i think
+    Section.Builder sb = Section.builder();
 
     if (getRank() == 1) {
-      section = new Section().appendRange(index, index);
+      sb.appendRange(index, index);
 
     } else if (getRank() > 1) {
       Index ii = Index.factory(shape); // convert to nD index
       ii.setCurrentCounter(index);
       int[] origin = ii.getCurrentCounter();
-      section = new Section();
       for (int anOrigin : origin)
-        section.appendRange(anOrigin, anOrigin);
+        sb.appendRange(anOrigin, anOrigin);
     }
 
-    Array dataArray = read(section);
+    Array dataArray = read(sb.build());
     ArrayStructure data = (ArrayStructure) dataArray;
     return data.getStructureData(0);
   }
@@ -478,7 +471,7 @@ public class Structure extends Variable {
     private int readAtaTime;
     private ArrayStructure as;
 
-    protected IteratorRank1(int bufferSize) {
+    IteratorRank1(int bufferSize) {
       setBufferSize(bufferSize);
     }
 
@@ -553,7 +546,7 @@ public class Structure extends Variable {
     private int outerCount; // over the outer Dimension
     private ArrayStructure as;
 
-    protected Iterator(int bufferSize) {
+    Iterator(int bufferSize) {
       reset();
     }
 
@@ -589,10 +582,10 @@ public class Structure extends Variable {
     private void readNextGeneralRank() throws IOException {
 
       try {
-        Section section = new Section(shape);
-        section.setRange(0, new Range(outerCount, outerCount));
+        Section.Builder sb = Section.builder().appendRanges(shape);
+        sb.setRange(0, new Range(outerCount, outerCount));
 
-        as = (ArrayStructure) read(section);
+        as = (ArrayStructure) read(sb.build());
 
         if (NetcdfFile.debugStructureIterator)
           System.out.println("readNext inner=" + outerCount + " total=" + outerCount);
@@ -657,17 +650,21 @@ public class Structure extends Variable {
   ////////////////////////////////////////////////////////
   // TODO make private final and Immutable in release 6.
   protected List<Variable> members;
-  protected HashMap<String, Variable> memberHash;
+  private HashMap<String, Variable> memberHash;
   protected boolean isSubset;
 
-  protected Structure(Builder<?> builder) {
-    super(builder);
-    builder.vbuilders.forEach(v -> v.setParentStructure(this).setNcfile(builder.ncfile).setGroup(builder.parent));
-    this.members = builder.vbuilders.stream().map(Variable.Builder::build).collect(Collectors.toList());
+  protected Structure(Builder<?> builder, Group parentGroup) {
+    super(builder, parentGroup);
+    builder.vbuilders.forEach(v -> v.setParentStructure(this).setNcfile(builder.ncfile));
+    this.members = builder.vbuilders.stream().map(vb -> vb.build(parentGroup)).collect(Collectors.toList());
     memberHash = new HashMap<>();
     this.members.forEach(m -> memberHash.put(m.getShortName(), m));
+    if (elementSize <= 0) {
+      calcElementSize();
+    }
   }
 
+  /** Turn into a mutable Builder. Can use toBuilder().build() to copy. */
   @Override
   public Builder<?> toBuilder() {
     return addLocalFieldsToBuilder(builder());
@@ -695,37 +692,47 @@ public class Structure extends Variable {
     }
   }
 
+  /** A builder of Structures. */
   public static abstract class Builder<T extends Builder<T>> extends Variable.Builder<T> {
-    public List<Variable.Builder> vbuilders = new ArrayList<>();
+    public List<Variable.Builder<?>> vbuilders = new ArrayList<>();
     private boolean built;
 
-    public T addMemberVariable(Variable.Builder v) {
+    public T addMemberVariable(Variable.Builder<?> v) {
       vbuilders.add(v);
+      v.setParentStructureBuilder(this);
       return self();
     }
 
-    public T addMemberVariables(List<Variable.Builder> vars) {
+    public T addMemberVariables(List<Variable.Builder<?>> vars) {
       vbuilders.addAll(vars);
       return self();
     }
 
+    /** Remove memeber variable, if present. Return whether it was present */
     public boolean removeMemberVariable(String memberName) {
-      Optional<Variable.Builder> want = vbuilders.stream().filter(v -> v.shortName.equals(memberName)).findFirst();
+      Optional<Variable.Builder<?>> want = vbuilders.stream().filter(v -> v.shortName.equals(memberName)).findFirst();
       want.ifPresent(v -> vbuilders.remove(v));
       return want.isPresent();
     }
 
-    public Optional<Variable.Builder> findMemberVariable(String name) {
+    /** Remove member variable, if present. Return whether it was present */
+    public boolean replaceMemberVariable(Variable.Builder<?> replacement) {
+      boolean wasPresent = removeMemberVariable(replacement.shortName);
+      addMemberVariable(replacement);
+      return wasPresent;
+    }
+
+    public Optional<Variable.Builder<?>> findMemberVariable(String name) {
       return vbuilders.stream().filter(d -> d.shortName.equals(name)).findFirst();
     }
 
-    /** Normally this is called by Group.build() */
-    public Structure build() {
+    /** Normally this is only called by Group.build() */
+    public Structure build(Group parentGroup) {
       if (built)
         throw new IllegalStateException("already built");
       built = true;
       this.setDataType(DataType.STRUCTURE);
-      return new Structure(this);
+      return new Structure(this, parentGroup);
     }
   }
 

@@ -328,9 +328,9 @@ public class NcStreamReader {
       ncfile.setTitle(proto.getTitle());
 
     NcStreamProto.Group root = proto.getRoot();
-    Group.Builder rootBuilder = Group.builder(null).setNcfile(ncfile).setName("");
+    Group.Builder rootBuilder = Group.builder().setNcfile(ncfile).setName("");
     NcStream.readGroup(root, rootBuilder);
-    ncfile.setRootGroup(rootBuilder.build(null));
+    ncfile.setRootGroup(rootBuilder.build());
     ncfile.finish();
     return ncfile;
   }

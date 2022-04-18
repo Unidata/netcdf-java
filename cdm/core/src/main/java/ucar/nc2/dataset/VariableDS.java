@@ -4,13 +4,14 @@
  */
 package ucar.nc2.dataset;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.dataset.NetcdfDataset.Enhance;
+import ucar.nc2.internal.dataset.CoordinatesHelper;
 import ucar.nc2.util.CancelTask;
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -61,7 +62,7 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
       throw new IllegalArgumentException("VariableDS must not wrap a Structure; name=" + shortName);
 
     if (units != null)
-      addAttribute(new Attribute(CDM.UNITS, units));
+      addAttribute(new Attribute(CDM.UNITS, units.trim()));
     if (desc != null)
       addAttribute(new Attribute(CDM.LONG_NAME, desc));
 
@@ -136,6 +137,12 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
     if (enhance) {
       enhance(NetcdfDataset.getDefaultEnhanceMode());
     }
+
+    // Add this so that old VariableDS units agrees with new VariableDS units.
+    String units = orgVar.getUnitsString();
+    if (units != null) {
+      setUnitsString(units.trim());
+    }
   }
 
   /**
@@ -157,6 +164,12 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
 
     this.enhanceProxy = new EnhancementsImpl(this); // decouple coordinate systems
     this.scaleMissingUnsignedProxy = vds.scaleMissingUnsignedProxy;
+
+    // Add this so that old VariableDS units agrees with new VariableDS units.
+    String units = vds.getUnitsString();
+    if (units != null) {
+      setUnitsString(units.trim());
+    }
 
     if (!isCopy) {
       createNewCache(); // dont share cache unless its a copy
@@ -205,12 +218,15 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
 
     // enhance() may have been called previously, with a different enhancement set.
     // So, we need to reset to default before we process this new set.
-    setDataType(orgDataType);
+    // LOOK this seems bogus
+    if (orgDataType != null) {
+      setDataType(orgDataType);
+    }
 
     // Initialize EnhanceScaleMissingUnsignedImpl. We can't do this in the constructors because this object may not
     // contain all of the relevant attributes at that time. NcMLReader is an example of this: the VariableDS is
     // constructed first, and then Attributes are added to it later.
-    this.scaleMissingUnsignedProxy = new EnhanceScaleMissingUnsignedImpl(this);
+    this.scaleMissingUnsignedProxy = new EnhanceScaleMissingUnsignedImpl(this, this.enhanceMode);
 
     if (this.enhanceMode.contains(Enhance.ConvertEnums) && dataType.isEnum()) {
       setDataType(DataType.STRING); // LOOK promote data type to STRING ????
@@ -391,6 +407,8 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
     return null;
   }
 
+  /** @deprecated Removed in v6 */
+  @Deprecated
   public boolean hasCachedDataRecurse() {
     return super.hasCachedData() || ((orgVar != null) && orgVar.hasCachedData());
   }
@@ -416,15 +434,6 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
     return convert(result);
   }
 
-  // do not call directly
-  @Override
-  public Array reallyRead(Variable client, CancelTask cancelTask) throws IOException {
-    if (orgVar == null)
-      return getMissingDataArray(shape);
-
-    return orgVar.read();
-  }
-
   // section of regular Variable
   @Override
   protected Array _read(Section section) throws IOException, InvalidRangeException {
@@ -439,6 +448,15 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
       result = proxyReader.reallyRead(this, section, null);
 
     return convert(result);
+  }
+
+  // do not call directly
+  @Override
+  public Array reallyRead(Variable client, CancelTask cancelTask) throws IOException {
+    if (orgVar == null)
+      return getMissingDataArray(shape);
+
+    return orgVar.read();
   }
 
   // do not call directly
@@ -509,7 +527,9 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
     }
 
     Array array = Array.factoryConstant(getDataType(), shape, storage);
-    array.setObject(0, scaleMissingUnsignedProxy.getFillValue());
+    if (scaleMissingUnsignedProxy.hasFillValue()) {
+      array.setObject(0, scaleMissingUnsignedProxy.getFillValue());
+    }
     return array;
   }
 
@@ -565,7 +585,7 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
   }
 
   @Override
-  public List<CoordinateSystem> getCoordinateSystems() {
+  public ImmutableList<CoordinateSystem> getCoordinateSystems() {
     return enhanceProxy.getCoordinateSystems();
   }
 
@@ -739,28 +759,42 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
 
   // TODO make these final and immutable in 6.
   private EnhanceScaleMissingUnsignedImpl scaleMissingUnsignedProxy = new EnhanceScaleMissingUnsignedImpl();
-  private Set<Enhance> enhanceMode = EnumSet.noneOf(Enhance.class);
+  private Set<Enhance> enhanceMode = EnumSet.noneOf(Enhance.class); // The set of enhancements that were made.
 
   protected Variable orgVar; // wrap this Variable : use it for the I/O
   protected DataType orgDataType; // keep separate for the case where there is no orgVar.
   protected String orgName; // in case Variable was renamed, and we need to keep track of the original name
   String orgFileTypeId; // the original fileTypeId.
 
-  protected VariableDS(Builder<?> builder) {
-    super(builder);
+  protected VariableDS(Builder<?> builder, Group parentGroup) {
+    super(builder, parentGroup);
+
     this.enhanceMode = builder.enhanceMode;
     this.orgVar = builder.orgVar;
     this.orgDataType = builder.orgDataType;
     this.orgName = builder.orgName;
 
+    // Make sure that units has been trimmed.
+    // Replace with correct case
+    // TODO Can simplify when doesnt have to agree with old VariableDS
+    Attribute units = builder.getAttributeContainer().findAttributeIgnoreCase(CDM.UNITS);
+    if (units != null && units.isString()) {
+      builder.getAttributeContainer()
+          .addAttribute(Attribute.builder(CDM.UNITS).setStringValue(units.getStringValue().trim()).build());
+    }
+
     this.orgFileTypeId = builder.orgFileTypeId;
-    this.enhanceProxy = new EnhancementsImpl(this, builder.units, builder.desc);
-    this.scaleMissingUnsignedProxy = new EnhanceScaleMissingUnsignedImpl(this);
+    this.enhanceProxy = new EnhancementsImpl(this, builder.units, builder.getDescription());
+    this.scaleMissingUnsignedProxy = new EnhanceScaleMissingUnsignedImpl(this, this.enhanceMode);
     this.scaleMissingUnsignedProxy.setFillValueIsMissing(builder.fillValueIsMissing);
     this.scaleMissingUnsignedProxy.setInvalidDataIsMissing(builder.invalidDataIsMissing);
     this.scaleMissingUnsignedProxy.setMissingDataIsMissing(builder.missingDataIsMissing);
 
-    if (this.enhanceMode.contains(Enhance.ConvertUnsigned)) {
+    if (this.enhanceMode.contains(Enhance.ConvertEnums) && dataType.isEnum()) {
+      this.dataType = DataType.STRING; // LOOK promote enum data type to STRING ????
+    }
+
+    if (this.enhanceMode.contains(Enhance.ConvertUnsigned) && !dataType.isEnum()) {
       // We may need a larger data type to hold the results of the unsigned conversion.
       this.dataType = scaleMissingUnsignedProxy.getUnsignedConversionType();
     }
@@ -783,9 +817,12 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
     builder.setOriginalVariable(this.orgVar).setOriginalDataType(this.orgDataType).setOriginalName(this.orgName)
         .setOriginalFileTypeId(this.orgFileTypeId).setEnhanceMode(this.enhanceMode).setUnits(this.enhanceProxy.units)
         .setDesc(this.enhanceProxy.desc);
+
     return (VariableDS.Builder<?>) super.addLocalFieldsToBuilder(builder);
   }
 
+  /** @deprecated do not use */
+  @Deprecated
   void setCoordinateSystems(CoordinatesHelper coords) {
     for (String name : this.coordSysNames) {
       coords.findCoordSystem(name).ifPresent(cs -> this.enhanceProxy.addCoordinateSystem(cs));
@@ -814,8 +851,8 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
     public DataType orgDataType; // keep separate for the case where there is no orgVar.
     public String orgFileTypeId; // the original fileTypeId.
     String orgName; // in case Variable was renamed, and we need to keep track of the original name
-    public String units;
-    public String desc;
+    private String units;
+    private String desc;
     public List<String> coordSysNames = new ArrayList<>();
 
     private boolean invalidDataIsMissing = NetcdfDataset.invalidDataIsMissing;
@@ -856,14 +893,11 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
       return self();
     }
 
-    public String getUnits() {
-      return units;
-    }
-
     public T setUnits(String units) {
       this.units = units;
       if (units != null) {
-        addAttribute(new Attribute(CDM.UNITS, units));
+        this.units = units.trim();
+        addAttribute(new Attribute(CDM.UNITS, this.units));
       }
       return self();
     }
@@ -876,7 +910,7 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
       return self();
     }
 
-    public void addCoordinateSystem(String coordSysName) {
+    public void addCoordinateSystemName(String coordSysName) {
       coordSysNames.add(coordSysName);
     }
 
@@ -892,7 +926,14 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
       this.missingDataIsMissing = b;
     }
 
+    /** Copy of this builder. */
+    @Override
+    public Variable.Builder<?> copy() {
+      return new Builder2().copyFrom(this);
+    }
+
     /** Copy metadata from orgVar. */
+    @Override
     public T copyFrom(Variable orgVar) {
       super.copyFrom(orgVar);
       setSPobject(null);
@@ -901,32 +942,56 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
       setOriginalDataType(orgVar.getDataType());
       setOriginalName(orgVar.getShortName());
 
-      // We need units during build.
-      this.units = getUnitsString(orgVar);
       this.orgFileTypeId = orgVar.getFileTypeId();
       return self();
     }
 
-    private String getUnitsString(Variable orgVar) {
+    public T copyFrom(VariableDS.Builder<?> builder) {
+      super.copyFrom(builder);
+
+      builder.coordSysNames.forEach(name -> this.addCoordinateSystemName(name));
+      setDesc(builder.desc);
+      setEnhanceMode(builder.enhanceMode);
+      setFillValueIsMissing(builder.fillValueIsMissing);
+      setInvalidDataIsMissing(builder.invalidDataIsMissing);
+      setMissingDataIsMissing(builder.missingDataIsMissing);
+      this.orgVar = builder.orgVar;
+      this.orgDataType = builder.orgDataType;
+      this.orgFileTypeId = builder.orgFileTypeId;
+      this.orgName = builder.orgName;
+      setUnits(builder.units);
+
+      return self();
+    }
+
+    public String getUnits() {
       String result = units;
-      if ((result == null) && (orgVar != null)) {
-        Attribute att = orgVar.attributes().findAttributeIgnoreCase(CDM.UNITS);
-        if ((att != null) && att.isString())
-          result = att.getStringValue();
+      if (result == null) {
+        result = getAttributeContainer().findAttributeString(CDM.UNITS, null);
+      }
+      if (result == null && orgVar != null) {
+        result = orgVar.attributes().findAttributeString(CDM.UNITS, null);
       }
       return (result == null) ? null : result.trim();
     }
 
-    public String getFullName() {
-      return this.shortName; // TODO
+    public String getDescription() {
+      String result = desc;
+      if (result == null) {
+        result = getAttributeContainer().findAttributeString(CDM.LONG_NAME, null);
+      }
+      if (result == null && orgVar != null) {
+        result = orgVar.attributes().findAttributeString(CDM.LONG_NAME, null);
+      }
+      return (result == null) ? null : result.trim();
     }
 
     /** Normally this is called by Group.build() */
-    public VariableDS build() {
+    public VariableDS build(Group parentGroup) {
       if (built)
         throw new IllegalStateException("already built");
       built = true;
-      return new VariableDS(this);
+      return new VariableDS(this, parentGroup);
     }
   }
 }

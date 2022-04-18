@@ -141,6 +141,11 @@ public class FeatureDatasetCoverage implements FeatureDataset, Closeable {
   }
 
   @Override
+  public AttributeContainer attributes() {
+    return gatts;
+  }
+
+  @Override
   public List<Attribute> getGlobalAttributes() {
     return gatts.getAttributes();
   }
@@ -195,16 +200,22 @@ public class FeatureDatasetCoverage implements FeatureDataset, Closeable {
 
   private FileCacheIF fileCache; // LOOK mutable
 
+  /** @deprecated do not use */
+  @Deprecated
   @Override
   public synchronized void setFileCache(FileCacheIF fileCache) {
     this.fileCache = fileCache;
   }
 
+  /** @deprecated do not use */
+  @Deprecated
   @Override
   public void release() {
     // reader.release()
   }
 
+  /** @deprecated do not use */
+  @Deprecated
   @Override
   public void reacquire() {
     // reader.reacquire()

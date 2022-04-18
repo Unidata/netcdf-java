@@ -16,7 +16,8 @@ import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateUnit;
 import ucar.nc2.units.DateUnit;
 import ucar.unidata.geoloc.Earth;
-import ucar.unidata.geoloc.LatLonPointImpl;
+import ucar.unidata.geoloc.EarthLocation;
+import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.LatLonRect;
 import java.io.IOException;
 import java.util.*;
@@ -44,7 +45,7 @@ public class CFRadialAdapter extends AbstractRadialAdapter {
   // TypedDatasetFactoryIF
 
   public Object isMine(FeatureType wantFeatureType, NetcdfDataset ncd, Formatter errlog) {
-    String convStr = ncd.getRootGroup().findAttValueIgnoreCase("Conventions", null);
+    String convStr = ncd.getRootGroup().findAttributeString("Conventions", null);
     if ((null != convStr) && convStr.startsWith("CF/Radial"))
       return this;
     return null;
@@ -128,13 +129,13 @@ public class CFRadialAdapter extends AbstractRadialAdapter {
       return;
     }
 
-    double dLat = Math.toDegrees(getMaximumRadialDist() / Earth.getRadius());
+    double dLat = Math.toDegrees(getMaximumRadialDist() / Earth.WGS84_EARTH_RADIUS_METERS);
     double latRadians = Math.toRadians(origin.getLatitude());
     double dLon = dLat * Math.cos(latRadians);
 
     double lat1 = origin.getLatitude() - dLat / 2;
     double lon1 = origin.getLongitude() - dLon / 2;
-    bb = new LatLonRect(new LatLonPointImpl(lat1, lon1), dLat, dLon);
+    bb = new LatLonRect(LatLonPoint.create(lat1, lon1), dLat, dLon);
 
     boundingBox = bb;
   }
@@ -197,7 +198,7 @@ public class CFRadialAdapter extends AbstractRadialAdapter {
       throw new RuntimeException(e);
     }
 
-    origin = new ucar.unidata.geoloc.EarthLocationImpl(latv, lonv, elev);
+    origin = EarthLocation.create(latv, lonv, elev);
   }
 
   @Override
@@ -279,7 +280,7 @@ public class CFRadialAdapter extends AbstractRadialAdapter {
   }
 
   protected void setStartDate() {
-    String datetime = ds.getRootGroup().findAttValueIgnoreCase("time_coverage_start", null);
+    String datetime = ds.getRootGroup().findAttributeString("time_coverage_start", null);
     if (datetime != null) {
       startDate = CalendarDate.parseISOformat(null, datetime).toDate();
     } else {
@@ -288,7 +289,7 @@ public class CFRadialAdapter extends AbstractRadialAdapter {
   }
 
   protected void setEndDate() {
-    String datetime = ds.getRootGroup().findAttValueIgnoreCase("time_coverage_end", null);
+    String datetime = ds.getRootGroup().findAttributeString("time_coverage_end", null);
     if (datetime != null) {
       endDate = CalendarDate.parseISOformat(null, datetime).toDate();
     } else {

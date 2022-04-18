@@ -16,6 +16,7 @@ import ucar.nc2.units.DateUnit;
 import ucar.nc2.units.DateFormatter;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.dt.*;
+import ucar.unidata.geoloc.EarthLocation;
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.LatLonPoint;
@@ -242,7 +243,7 @@ public class SequenceHelper {
       }
 
       nomTime = obsTime;
-      location = new ucar.unidata.geoloc.EarthLocationImpl(lat, lon, alt);
+      location = EarthLocation.create(lat, lon, alt);
     }
 
     public LatLonPoint getLatLon() {

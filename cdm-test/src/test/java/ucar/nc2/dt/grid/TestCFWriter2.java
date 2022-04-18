@@ -14,13 +14,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFileWriter;
+import ucar.nc2.NetcdfFiles;
 import ucar.nc2.Variable;
 import ucar.nc2.grib.collection.Grib;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.util.DebugFlagsImpl;
-import ucar.unidata.geoloc.LatLonPointImpl;
+import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.LatLonRect;
+import ucar.unidata.geoloc.ProjectionPoint;
 import ucar.unidata.geoloc.ProjectionPointImpl;
 import ucar.unidata.geoloc.ProjectionRect;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
@@ -54,7 +56,7 @@ public class TestCFWriter2 {
       gridList.add(varName);
 
       NetcdfFileWriter writer = NetcdfFileWriter.createNew(NetcdfFileWriter.Version.netcdf3, fileOut);
-      CFGridWriter2.writeFile(gds, gridList, new LatLonRect(new LatLonPointImpl(30, -109), 10, 50), null, 1, null, null,
+      CFGridWriter2.writeFile(gds, gridList, new LatLonRect(LatLonPoint.create(30, -109), 10, 50), null, 1, null, null,
           1, true, writer);
     }
 
@@ -70,7 +72,7 @@ public class TestCFWriter2 {
     System.out.printf("Open %s%n", fileIn);
 
     try (ucar.nc2.dt.grid.GridDataset gds = GridDataset.open(fileIn)) {
-      LatLonRect llbb = new LatLonRect(new LatLonPointImpl(30, -109), 10, 50);
+      LatLonRect llbb = new LatLonRect(LatLonPoint.create(30, -109), 10, 50);
 
       long totalSize = CFGridWriter2.makeSizeEstimate(gds, null, null, null, 1, null, null, 1, true);
       long subsetSize = CFGridWriter2.makeSizeEstimate(gds, null, llbb, null, 1, null, null, 1, true);
@@ -177,7 +179,7 @@ public class TestCFWriter2 {
   @Test
   public void testWriteFileOnNarr3() throws Exception {
     Grib.setDebugFlags(new DebugFlagsImpl("Grib/indexOnly"));
-    ProjectionRect rect = new ProjectionRect(new ProjectionPointImpl(-5645, -4626), 11329, 8992);
+    ProjectionRect rect = new ProjectionRect(ProjectionPoint.create(-5645, -4626), 11329, 8992);
     testFileSize("B:/ncdc/0409/narr/Narr_A_fc.ncx4",
         "Accum_snow_surface,Convective_cloud_cover_entire_atmosphere_3_Hour_Average", "2014-10-01T21:00:00Z",
         "2014-10-02T21:00:00Z", rect, true);
@@ -188,7 +190,7 @@ public class TestCFWriter2 {
   @Test
   public void testWriteFileOnNarr4() throws Exception {
     Grib.setDebugFlags(new DebugFlagsImpl("Grib/indexOnly"));
-    ProjectionRect rect = new ProjectionRect(new ProjectionPointImpl(-5645, -4626), 11329, 8992);
+    ProjectionRect rect = new ProjectionRect(ProjectionPoint.create(-5645, -4626), 11329, 8992);
     testFileSize("B:/ncdc/0409/narr/Narr_A_fc.ncx4",
         "Convective_cloud_cover_entire_atmosphere_3_Hour_Average,Accum_snow_surface", "2014-10-01T21:00:00Z",
         "2014-10-02T21:00:00Z", rect, true);
@@ -236,11 +238,11 @@ public class TestCFWriter2 {
         return;
     }
 
-    try (NetcdfFile ncfile = NetcdfFile.open(fileOut)) {
+    try (NetcdfFile ncfile = NetcdfFiles.open(fileOut)) {
 
       long total = 0;
       for (String grid : grids) {
-        Variable w = ncfile.findVariable(null, grid);
+        Variable w = ncfile.getRootGroup().findVariableLocal(grid);
         assert w != null;
         total += w.getSize() * w.getElementSize();
         System.out.printf(" actual size of %s = %d%n", grid, w.getSize() * w.getElementSize());

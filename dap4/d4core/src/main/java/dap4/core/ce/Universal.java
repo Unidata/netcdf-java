@@ -44,8 +44,8 @@ public class Universal extends CEConstraint {
    * Finish creating this Constraint; for Universal,
    * this does nothing; the important stuff is in build().
    *
+   * @return this - fluent interface
    * @throws DapException
-   * @returns this - fluent interface
    */
   @Override
   public CEConstraint finish() throws DapException {

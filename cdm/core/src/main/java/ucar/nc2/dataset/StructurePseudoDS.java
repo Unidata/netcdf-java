@@ -79,7 +79,7 @@ public class StructurePseudoDS extends StructureDS {
     }
 
     for (String name : varNames) {
-      Variable orgV = group.findVariable(name);
+      Variable orgV = group.findVariableLocal(name);
       if (orgV == null) {
         log.warn("StructurePseudoDS cannot find variable " + name);
         continue;
@@ -115,14 +115,14 @@ public class StructurePseudoDS extends StructureDS {
 
   @Override
   public Structure select(List<String> memberNames) {
-    StructurePseudoDS result =
-        new StructurePseudoDS((NetcdfDataset) ncfile, getParentGroup(), getShortName(), memberNames, getDimension(0));
+    StructurePseudoDS result = new StructurePseudoDS((NetcdfDataset) ncfile, getParentGroupOrRoot(), getShortName(),
+        memberNames, getDimension(0));
     result.isSubset = true;
     return result;
   }
 
-  @Override
   /** @deprecated Use StructurePseudoDS.builder() */
+  @Override
   @Deprecated
   public boolean removeMemberVariable(Variable v) {
     if (super.removeMemberVariable(v)) {
@@ -186,8 +186,8 @@ public class StructurePseudoDS extends StructureDS {
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////
   protected List<Variable> orgVariables = new ArrayList<>(); // the underlying original variables
 
-  protected StructurePseudoDS(Builder<?> builder) {
-    super(builder);
+  protected StructurePseudoDS(Builder<?> builder, Group parentGroup) {
+    super(builder, parentGroup);
     this.orgVariables = builder.orgVariables;
   }
 
@@ -228,12 +228,12 @@ public class StructurePseudoDS extends StructureDS {
     }
 
     /** Normally this is called by Group.build() */
-    public StructurePseudoDS build() {
+    public StructurePseudoDS build(Group parentGroup) {
       if (built)
         throw new IllegalStateException("already built");
       built = true;
       this.setDataType(DataType.STRUCTURE);
-      return new StructurePseudoDS(this);
+      return new StructurePseudoDS(this, parentGroup);
     }
   }
 

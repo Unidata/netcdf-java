@@ -2,6 +2,7 @@
  * Copyright (c) 1998-2018 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
+
 package ucar.nc2.ft2.coverage;
 
 import com.google.common.collect.ImmutableList;
@@ -87,7 +88,7 @@ public class HorizCoordSys {
     }
 
     if (!isProjection && isLatLon2D && !(this instanceof HorizCoordSys2D))
-      logger.warn("HEY Should be HorizCoordSys2D");
+      logger.warn("Should be HorizCoordSys2D");
 
     if (isLatLon1D) {
       this.latAxis = (CoverageCoordAxis1D) latAxis;
@@ -179,7 +180,7 @@ public class HorizCoordSys {
           CoordAxisHelper xhelper = new CoordAxisHelper(lonAxis);
           CoordAxisHelper yhelper = new CoordAxisHelper(latAxis);
 
-          double lonNormal = LatLonPointImpl.lonNormalFrom(latlon.getLongitude(), lonAxis.getStartValue());
+          double lonNormal = LatLonPoints.lonNormalFrom(latlon.getLongitude(), lonAxis.getStartValue());
           optb = xhelper.subsetContaining(lonNormal);
           if (optb.isPresent())
             lonaxisSubset = new CoverageCoordAxis1D(optb.get());
@@ -260,26 +261,26 @@ public class HorizCoordSys {
 
       } else if (horizStride > 1) { // no bounding box, just horiz stride
         if (isProjection) {
-          opt = xAxis.subsetByIndex(xAxis.getRange().setStride(horizStride));
+          opt = xAxis.subsetByIndex(xAxis.getRange().copyWithStride(horizStride));
           if (opt.isPresent())
             xaxisSubset = (CoverageCoordAxis1D) opt.get();
           else
             errMessages.format("xaxis: %s;%n", opt.getErrorMessage());
 
-          opt = yAxis.subsetByIndex(yAxis.getRange().setStride(horizStride));
+          opt = yAxis.subsetByIndex(yAxis.getRange().copyWithStride(horizStride));
           if (opt.isPresent())
             yaxisSubset = (CoverageCoordAxis1D) opt.get();
           else
             errMessages.format("yaxis: %s;%n", opt.getErrorMessage());
 
         } else {
-          opt = lonAxis.subsetByIndex(lonAxis.getRange().setStride(horizStride));
+          opt = lonAxis.subsetByIndex(lonAxis.getRange().copyWithStride(horizStride));
           if (opt.isPresent())
             lonaxisSubset = opt.get();
           else
             errMessages.format("lonaxis: %s;%n", opt.getErrorMessage());
 
-          opt = latAxis.subsetByIndex(latAxis.getRange().setStride(horizStride));
+          opt = latAxis.subsetByIndex(latAxis.getRange().copyWithStride(horizStride));
           if (opt.isPresent())
             lataxisSubset = opt.get();
           else
@@ -316,14 +317,14 @@ public class HorizCoordSys {
     } else {
       double lat = latAxis.getCoordMidpoint(yindex);
       double lon = lonAxis.getCoordMidpoint(xindex);
-      return new LatLonPointImpl(lat, lon);
+      return LatLonPoint.create(lat, lon);
     }
   }
 
   // here's where to deal with crossing seam
   private Optional<CoverageCoordAxis> subsetLon(LatLonRect llbb, int stride) {
-    double wantMin = LatLonPointImpl.lonNormalFrom(llbb.getLonMin(), lonAxis.getStartValue());
-    double wantMax = LatLonPointImpl.lonNormalFrom(llbb.getLonMax(), lonAxis.getStartValue());
+    double wantMin = LatLonPoints.lonNormalFrom(llbb.getLonMin(), lonAxis.getStartValue());
+    double wantMax = LatLonPoints.lonNormalFrom(llbb.getLonMax(), lonAxis.getStartValue());
     double start = lonAxis.getStartValue();
     double end = lonAxis.getEndValue();
 
@@ -354,39 +355,26 @@ public class HorizCoordSys {
    * cases:
    * A. wantMin < wantMax
    * 1 wantMin, wantMax > end : empty
-   * 2 wantMin, wantMax < end : [wantMin, wantMax]
-   * 3 wantMin < end, wantMax > end : [wantMin, end]
+   * 2 wantMin < end : [wantMin, min(wantMax,end)]
    * 
    * B. wantMin > wantMax
    * 1 wantMin, wantMax > end : all [start, end]
    * 2 wantMin, wantMax < end : 2 pieces: [wantMin, end] + [start, max]
-   * 3 wantMin < end, wantMax > end : [wantMin, end]
    */
   private List<MAMath.MinMax> subsetLonIntervals(double wantMin, double wantMax, double start, double end) {
     if (wantMin <= wantMax) {
-      if (wantMin > end && wantMax > end) // none A.1
+      if (wantMin > end) { // none A.1
         return ImmutableList.of();
-
-      if (wantMin < end && wantMax < end) // A.2
-        return Lists.newArrayList(new MAMath.MinMax(wantMin, wantMax));
-
-      if (wantMin < end && wantMax > end) // A.3
-        return Lists.newArrayList(new MAMath.MinMax(wantMin, end));
-
-    } else {
-      if (wantMin > end && wantMax > end) // all B.1
-        return Lists.newArrayList(new MAMath.MinMax(start, end));
-
-      if (wantMin < end && wantMax < end) { // B.2
+      } else { // A.2
+        return Lists.newArrayList(new MAMath.MinMax(wantMin, Math.min(wantMax, end)));
+      }
+    } else { // wantMin > wantMax
+      if (wantMax > end) { // all B.1
+        return Lists.newArrayList(new MAMath.MinMax(start, end)); // LOOK is this correct?!
+      } else {
         return Lists.newArrayList(new MAMath.MinMax(wantMin, end), new MAMath.MinMax(start, wantMax));
       }
-      if (wantMin < end && wantMax > end) // B.3
-        return Lists.newArrayList(new MAMath.MinMax(wantMin, end));
     }
-
-    // otherwise shouldnt get to this
-    logger.error("longitude want [{},{}] does not intersect axis [{},{}]", wantMin, wantMax, start, end);
-    return ImmutableList.of();
   }
 
   // return y, x range
@@ -441,7 +429,7 @@ public class HorizCoordSys {
     } else { // 1D lat lon case
       CoordAxisHelper xhelper = new CoordAxisHelper(lonAxis);
       CoordAxisHelper yhelper = new CoordAxisHelper(latAxis);
-      double lon = LatLonPointImpl.lonNormalFrom(x, lonAxis.getStartValue());
+      double lon = LatLonPoints.lonNormalFrom(x, lonAxis.getStartValue());
       result.x = xhelper.findCoordElement(lon, false);
       result.y = yhelper.findCoordElement(y, false);
 
@@ -470,7 +458,7 @@ public class HorizCoordSys {
     double minY = Math.min(yAxis.getCoordEdgeFirst(), yAxis.getCoordEdgeLast());
     double width = Math.abs(xAxis.getCoordEdgeLast() - xAxis.getCoordEdgeFirst());
     double height = Math.abs(yAxis.getCoordEdgeLast() - yAxis.getCoordEdgeFirst());
-    return new ProjectionRect(new ProjectionPointImpl(minX, minY), width, height);
+    return new ProjectionRect(ProjectionPoint.create(minX, minY), width, height);
   }
 
   /**
@@ -497,7 +485,7 @@ public class HorizCoordSys {
       maxLon = Math.max(maxLon, boundaryPoint.getLongitude());
     }
 
-    return new LatLonRect(new LatLonPointImpl(minLat, minLon), new LatLonPointImpl(maxLat, maxLon));
+    return new LatLonRect(LatLonPoint.create(minLat, minLon), LatLonPoint.create(maxLat, maxLon));
   }
 
   /**
@@ -594,22 +582,22 @@ public class HorizCoordSys {
 
     // Bottom boundary points
     for (int i = 0; i < numXtotal; i += strideX) {
-      points.add(new ProjectionPointImpl(xAxis.getCoordEdge1(i), yAxis.getCoordEdgeFirst()));
+      points.add(ProjectionPoint.create(xAxis.getCoordEdge1(i), yAxis.getCoordEdgeFirst()));
     }
 
     // Right boundary points
     for (int j = 0; j < numYtotal; j += strideY) {
-      points.add(new ProjectionPointImpl(xAxis.getCoordEdgeLast(), yAxis.getCoordEdge1(j)));
+      points.add(ProjectionPoint.create(xAxis.getCoordEdgeLast(), yAxis.getCoordEdge1(j)));
     }
 
     // Top boundary points
     for (int i = numXtotal - 1; i >= 0; i -= strideX) {
-      points.add(new ProjectionPointImpl(xAxis.getCoordEdge2(i), yAxis.getCoordEdgeLast()));
+      points.add(ProjectionPoint.create(xAxis.getCoordEdge2(i), yAxis.getCoordEdgeLast()));
     }
 
     // Left boundary points
     for (int j = numYtotal - 1; j >= 0; j -= strideY) {
-      points.add(new ProjectionPointImpl(xAxis.getCoordEdgeFirst(), yAxis.getCoordEdge2(j)));
+      points.add(ProjectionPoint.create(xAxis.getCoordEdgeFirst(), yAxis.getCoordEdge2(j)));
     }
 
     assertNotExceedingMaxBoundaryPoints(points.size(), maxPointsInYEdge, maxPointsInXEdge);
@@ -631,22 +619,22 @@ public class HorizCoordSys {
 
     // Bottom boundary points
     for (int i = 0; i < numXtotal; i += strideX) {
-      points.add(new LatLonPointImpl(latAxis.getCoordEdgeFirst(), lonAxis.getCoordEdge1(i)));
+      points.add(LatLonPoint.create(latAxis.getCoordEdgeFirst(), lonAxis.getCoordEdge1(i)));
     }
 
     // Right boundary points
     for (int j = 0; j < numYtotal; j += strideY) {
-      points.add(new LatLonPointImpl(latAxis.getCoordEdge1(j), lonAxis.getCoordEdgeLast()));
+      points.add(LatLonPoint.create(latAxis.getCoordEdge1(j), lonAxis.getCoordEdgeLast()));
     }
 
     // Top boundary points
     for (int i = numXtotal - 1; i >= 0; i -= strideX) {
-      points.add(new LatLonPointImpl(latAxis.getCoordEdgeLast(), lonAxis.getCoordEdge2(i)));
+      points.add(LatLonPoint.create(latAxis.getCoordEdgeLast(), lonAxis.getCoordEdge2(i)));
     }
 
     // Left boundary points
     for (int j = numYtotal - 1; j >= 0; j -= strideY) {
-      points.add(new LatLonPointImpl(latAxis.getCoordEdge2(j), lonAxis.getCoordEdgeFirst()));
+      points.add(LatLonPoint.create(latAxis.getCoordEdge2(j), lonAxis.getCoordEdgeFirst()));
     }
 
     assertNotExceedingMaxBoundaryPoints(points.size(), maxPointsInYEdge, maxPointsInXEdge);
@@ -691,24 +679,24 @@ public class HorizCoordSys {
 
     // Bottom boundary points: y = 0
     for (int i = 0; i < numXtotal; i += strideX) {
-      points.add(new LatLonPointImpl(latEdges.get(0, i), lonEdges.get(0, i)));
+      points.add(LatLonPoint.create(latEdges.get(0, i), lonEdges.get(0, i)));
     }
 
     // Right boundary points: x = numXtotal
     // numXtotal is not OOB, because edgesShape is 1 bigger than midpointsShape in each dim, and numXtotal
     // is relative to midpointsShape.
     for (int j = 0; j < numYtotal; j += strideY) {
-      points.add(new LatLonPointImpl(latEdges.get(j, numXtotal), lonEdges.get(j, numXtotal)));
+      points.add(LatLonPoint.create(latEdges.get(j, numXtotal), lonEdges.get(j, numXtotal)));
     }
 
     // Top boundary points: y = numYtotal
     for (int i = numXtotal; i > 0; i -= strideX) {
-      points.add(new LatLonPointImpl(latEdges.get(numYtotal, i), lonEdges.get(numYtotal, i)));
+      points.add(LatLonPoint.create(latEdges.get(numYtotal, i), lonEdges.get(numYtotal, i)));
     }
 
     // Left boundary points: x = 0
     for (int j = numYtotal; j > 0; j -= strideY) {
-      points.add(new LatLonPointImpl(latEdges.get(j, 0), lonEdges.get(j, 0)));
+      points.add(LatLonPoint.create(latEdges.get(j, 0), lonEdges.get(j, 0)));
     }
 
     assertNotExceedingMaxBoundaryPoints(points.size(), maxPointsInYEdge, maxPointsInXEdge);
@@ -747,7 +735,7 @@ public class HorizCoordSys {
    * Returns a list of points that is equivalent to the input list, but with longitude values adjusted to ensure that
    * adjacent elements are "connected".
    * <p>
-   * Two points are "connected" if the absolute difference of their {@link LatLonPointImpl#lonNormal normalized
+   * Two points are "connected" if the absolute difference of their {@link LatLonPoints#lonNormal normalized
    * longitudes} is {@code ≤180}. For example, the longitudes {@code 112} and {@code 124} are connected. So are
    * {@code 15} and {@code -27}.
    * <p>
@@ -777,7 +765,7 @@ public class HorizCoordSys {
 
       if (!connectedPoints.isEmpty()) {
         double prevLon = connectedPoints.getLast().getLongitude();
-        curLon = LatLonPointImpl.lonNormal(curLon, prevLon);
+        curLon = LatLonPoints.lonNormal(curLon, prevLon);
       }
       connectedPoints.add(new LatLonPointNoNormalize(curLat, curLon));
     }

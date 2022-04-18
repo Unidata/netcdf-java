@@ -32,21 +32,15 @@ import ucar.unidata.geoloc.*;
 public class FlatEarth extends ProjectionImpl {
   public static final String ROTATIONANGLE = "rotationAngle";
 
-  /**
-   * constants from Snyder's equations
-   */
+  /** constants from Snyder's equations */
   private final double rotAngle, radius;
   private final double lat0, lon0; // center lat/lon in radians
 
-  /**
-   * some constants
-   */
-  private double cosRot, sinRot;
+  // values passed in through the constructor
+  // need for constructCopy
+  private final double _lat0, _lon0;
 
-  /**
-   * origin
-   */
-  // private LatLonPointImpl origin; // why are we keeping this?
+  private double cosRot, sinRot;
 
   @Override
   public ProjectionImpl constructCopy() {
@@ -83,6 +77,9 @@ public class FlatEarth extends ProjectionImpl {
    */
   public FlatEarth(double lat0, double lon0, double rotAngle, double radius) {
     super("FlatEarth", false);
+
+    this._lat0 = lat0;
+    this._lon0 = lon0;
 
     this.lat0 = Math.toRadians(lat0);
     this.lon0 = Math.toRadians(lon0);
@@ -147,21 +144,21 @@ public class FlatEarth extends ProjectionImpl {
   // bean properties
 
   /**
-   * Get the origin longitude.
+   * Get the origin longitude in degrees.
    *
-   * @return the origin longitude.
+   * @return the origin longitude in degrees.
    */
   public double getOriginLon() {
-    return Math.toDegrees(lon0);
+    return _lon0;
   }
 
   /**
-   * Get the origin latitude.
+   * Get the origin latitude in degrees.
    *
-   * @return the origin latitude.
+   * @return the origin latitude in degrees.
    */
   public double getOriginLat() {
-    return Math.toDegrees(lat0);
+    return _lat0;
   }
 
   /**
@@ -193,7 +190,7 @@ public class FlatEarth extends ProjectionImpl {
 
   @Override
   public String toString() {
-    return "FlatEarth{" + "rotAngle=" + rotAngle + ", radius=" + radius + ", lat0=" + lat0 + ", lon0=" + lon0 + '}';
+    return "FlatEarth{" + "rotAngle=" + rotAngle + ", radius=" + radius + ", lat0=" + _lat0 + ", lon0=" + _lon0 + '}';
   }
 
   /**
@@ -224,15 +221,6 @@ public class FlatEarth extends ProjectionImpl {
     return result;
   }
 
-  /**
-   * Convert projection coordinates to a LatLonPoint
-   * Note: a new object is not created on each call for the return value.
-   *
-   * @param world convert from these projection coordinates
-   * @param result the object to write to
-   * @return LatLonPoint convert to these lat/lon coordinates
-   */
-
   public LatLonPoint projToLatLon(ProjectionPoint world, LatLonPointImpl result) {
     double toLat, toLon;
     double x = world.getX();
@@ -254,7 +242,7 @@ public class FlatEarth extends ProjectionImpl {
       toLon = Math.toDegrees(lon0) + Math.toDegrees(xp / cosl / radius);
     }
 
-    toLon = LatLonPointImpl.lonNormal(toLon);
+    toLon = LatLonPoints.lonNormal(toLon);
 
     result.setLatitude(toLat);
     result.setLongitude(toLon);
@@ -352,7 +340,7 @@ public class FlatEarth extends ProjectionImpl {
         toLon = Math.toDegrees(lon0) + Math.toDegrees(xp / cosl / radius);
       }
 
-      toLon = LatLonPointImpl.lonNormal(toLon);
+      toLon = LatLonPoints.lonNormal(toLon);
 
       toLatA[i] = (float) toLat;
       toLonA[i] = (float) toLon;
@@ -437,7 +425,7 @@ public class FlatEarth extends ProjectionImpl {
         toLon = Math.toDegrees(lon0) + Math.toDegrees(xp / cosl / radius);
       }
 
-      toLon = LatLonPointImpl.lonNormal(toLon);
+      toLon = LatLonPoints.lonNormal(toLon);
 
       toLatA[i] = toLat;
       toLonA[i] = toLon;

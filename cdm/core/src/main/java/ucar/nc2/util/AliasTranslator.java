@@ -7,9 +7,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Handle textual substitution for dataroots.
- *
- * @author caron
- * @since 4/16/2015
+ * This needs to be accessible to NcML, thredds catalogs, feature collecion config.
+ * Good candidate for dependency injection.
  */
 public class AliasTranslator {
 

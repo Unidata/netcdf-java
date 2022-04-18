@@ -157,9 +157,9 @@ public class TableAnalyzer {
     String convUsed = null;
 
     // search for the Conventions attribute
-    String convName = ds.getRootGroup().findAttValueIgnoreCase(CDM.CONVENTIONS, null);
+    String convName = ds.getRootGroup().findAttributeString(CDM.CONVENTIONS, null);
     if (convName == null)
-      convName = ds.getRootGroup().findAttValueIgnoreCase("Convention", null);
+      convName = ds.getRootGroup().findAttributeString("Convention", null);
 
     // now search for TableConfigurer using that Convention
     Configurator anal = null;
@@ -384,7 +384,8 @@ public class TableAnalyzer {
    */
   private void analyze(FeatureType wantFeatureType) throws IOException {
     // for netcdf-3 files, convert record dimension to structure
-    // LOOK may be problems when served via opendap
+    // LOOK may be problems when served via opendap.
+    // LOOK this wont work in ver6.
     boolean structAdded = (Boolean) ds.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
 
     if (tc == null) {

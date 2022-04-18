@@ -201,7 +201,7 @@ public class PartitionCollectionMutable extends GribCollectionMutable {
       File file = new File(directory, filename);
       File existingFile = GribIndexCache.getExistingFileOrCache(file.getPath());
       if (existingFile == null) {
-        // try reletive to index file
+        // try relative to index file
         File parent = getIndexParentFile();
         if (parent == null)
           return null;
@@ -232,7 +232,7 @@ public class PartitionCollectionMutable extends GribCollectionMutable {
 
       // LOOK not cached
       return (GribCollectionImmutable) PartitionCollectionImmutable.partitionCollectionFactory
-          .open(new DatasetUrl(null, path), -1, null, this);
+          .open(DatasetUrl.create(null, path), -1, null, this);
     }
 
     // the children must already exist

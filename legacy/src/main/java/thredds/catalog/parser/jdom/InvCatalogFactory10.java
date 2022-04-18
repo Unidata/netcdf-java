@@ -1171,8 +1171,10 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
   private SAXBuilder saxBuilder;
 
   private Element readContentFromURL(java.net.URI uri) throws java.io.IOException {
-    if (saxBuilder == null)
+    if (saxBuilder == null) {
       saxBuilder = new SAXBuilder();
+      saxBuilder.setExpandEntities(false);
+    }
     Document doc;
     try {
       doc = saxBuilder.build(uri.toURL());

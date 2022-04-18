@@ -203,7 +203,7 @@ public class ProjectionManager {
    * 
    * 
    * public void saveProjection(ProjectionImpl proj) {
-   * //setVisible(true); how to make this work? seperate Thread ?
+   * //setVisible(true); how to make this work? separate Thread ?
    * 
    * // force new name
    * ProjectionImpl newProj = proj.constructCopy();

@@ -54,7 +54,7 @@ public class CoordinateAxis extends VariableDS {
    * @param ncd the containing dataset
    * @param vds an existing Variable in dataset.
    * @return CoordinateAxis or one of its subclasses (CoordinateAxis1D, CoordinateAxis2D, or CoordinateAxis1DTime).
-   * @deprecated Use CoordinateAxis.builder()
+   * @deprecated Use CoordinateAxis.fromVariableDS()
    */
   @Deprecated
   public static CoordinateAxis factory(NetcdfDataset ncd, VariableDS vds) {
@@ -66,15 +66,21 @@ public class CoordinateAxis extends VariableDS {
       return new CoordinateAxis(ncd, vds);
   }
 
-  // experimental
-  public static CoordinateAxis.Builder fromVariableDS(VariableDS.Builder vdsBuilder) {
+  /**
+   * Create a coordinate axis from an existing Variable.Builder.
+   *
+   * @param vdsBuilder an existing Variable in dataset.
+   * @return CoordinateAxis or one of its subclasses (CoordinateAxis1D, CoordinateAxis2D, or CoordinateAxis1DTime).
+   */
+  public static CoordinateAxis.Builder fromVariableDS(VariableDS.Builder<?> vdsBuilder) {
     if ((vdsBuilder.getRank() == 0) || (vdsBuilder.getRank() == 1)
         || (vdsBuilder.getRank() == 2 && vdsBuilder.dataType == DataType.CHAR)) {
-      return new CoordinateAxis1D(vdsBuilder).toBuilder();
-    } else if (vdsBuilder.getRank() == 2)
-      return new CoordinateAxis2D(vdsBuilder).toBuilder();
-    else
-      return new CoordinateAxis(vdsBuilder).toBuilder();
+      return CoordinateAxis1D.builder().copyFrom(vdsBuilder);
+    } else if (vdsBuilder.getRank() == 2) {
+      return CoordinateAxis2D.builder().copyFrom(vdsBuilder);
+    } else {
+      return CoordinateAxis.builder().copyFrom(vdsBuilder);
+    }
   }
 
   /**
@@ -126,7 +132,7 @@ public class CoordinateAxis extends VariableDS {
    * @return copy of this CoordinateAxis
    */
   public CoordinateAxis copyNoCache() {
-    CoordinateAxis axis = new CoordinateAxis(ncd, getParentGroup(), getShortName(), getDataType(),
+    CoordinateAxis axis = new CoordinateAxis(ncd, getParentGroupOrRoot(), getShortName(), getDataType(),
         getDimensionsString(), getUnitsString(), getDescription());
 
     // other state
@@ -207,7 +213,7 @@ public class CoordinateAxis extends VariableDS {
   public boolean isIndependentCoordinate() {
     if (isCoordinateVariable())
       return true;
-    return null != attributes.findAttribute(_Coordinate.AliasForDimension);
+    return attributes.hasAttribute(_Coordinate.AliasForDimension);
   }
 
   /*
@@ -395,10 +401,9 @@ public class CoordinateAxis extends VariableDS {
 
   // needed by time coordinates
   public ucar.nc2.time.Calendar getCalendarFromAttribute() {
-    Attribute cal = attributes.findAttribute(CF.CALENDAR);
-    String s = (cal == null) ? null : cal.getStringValue();
-    if (s == null) { // default for CF and COARDS
-      Attribute convention = (ncd == null) ? null : ncd.findGlobalAttribute(CDM.CONVENTIONS);
+    String cal = attributes.findAttributeString(CF.CALENDAR, null);
+    if (cal == null) { // default for CF and COARDS
+      Attribute convention = (ncd == null) ? null : ncd.getRootGroup().findAttribute(CDM.CONVENTIONS);
       if (convention != null && convention.isString()) {
         String hasName = convention.getStringValue();
         int version = CF1Convention.getVersion(hasName);
@@ -411,7 +416,7 @@ public class CoordinateAxis extends VariableDS {
           return Calendar.gregorian;
       }
     }
-    return ucar.nc2.time.Calendar.get(s);
+    return ucar.nc2.time.Calendar.get(cal);
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////
@@ -422,8 +427,8 @@ public class CoordinateAxis extends VariableDS {
   protected String boundaryRef;
   protected boolean isContiguous = true;
 
-  protected CoordinateAxis(Builder<?> builder) {
-    super(builder);
+  protected CoordinateAxis(Builder<?> builder, Group parentGroup) {
+    super(builder, parentGroup);
     this.ncd = (NetcdfDataset) this.ncfile;
     this.axisType = builder.axisType;
     this.positive = builder.positive;
@@ -435,16 +440,11 @@ public class CoordinateAxis extends VariableDS {
     return addLocalFieldsToBuilder(builder());
   }
 
-  public CoordinateAxis(VariableDS.Builder<?> builder) {
-    super(builder);
-  }
-
   // Add local fields to the passed - in builder.
   protected Builder<?> addLocalFieldsToBuilder(Builder<? extends Builder<?>> b) {
     b.setAxisType(this.axisType).setPositive(this.positive).setBoundary(this.boundaryRef)
         .setIsContiguous(this.isContiguous);
     return (Builder<?>) super.addLocalFieldsToBuilder(b);
-
   }
 
   /**
@@ -464,7 +464,7 @@ public class CoordinateAxis extends VariableDS {
   }
 
   public static abstract class Builder<T extends Builder<T>> extends VariableDS.Builder<T> {
-    protected AxisType axisType;
+    public AxisType axisType;
     protected String positive;
     protected String boundaryRef;
     protected boolean isContiguous = true;
@@ -492,11 +492,17 @@ public class CoordinateAxis extends VariableDS {
       return self();
     }
 
-    public CoordinateAxis build() {
+    @Override
+    public T copyFrom(VariableDS.Builder<?> vds) {
+      super.copyFrom(vds);
+      return self();
+    }
+
+    public CoordinateAxis build(Group parentGroup) {
       if (built)
         throw new IllegalStateException("already built");
       built = true;
-      return new CoordinateAxis(this);
+      return new CoordinateAxis(this, parentGroup);
     }
   }
 

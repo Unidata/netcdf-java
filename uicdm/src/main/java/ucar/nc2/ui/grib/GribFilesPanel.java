@@ -5,6 +5,7 @@
 
 package ucar.nc2.ui.grib;
 
+import com.google.common.collect.Iterables;
 import javax.annotation.Nullable;
 import thredds.inventory.CollectionAbstract;
 import thredds.inventory.MCollection;
@@ -271,7 +272,7 @@ public class GribFilesPanel extends JPanel {
     }
 
     public int getN() {
-      return Misc.getSize(fileList);
+      return Iterables.size(fileList);
     }
 
     public String getSpec() {

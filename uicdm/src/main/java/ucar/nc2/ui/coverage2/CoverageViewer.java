@@ -15,6 +15,7 @@ import ucar.nc2.ui.grid.*;
 import ucar.ui.widget.*;
 import ucar.nc2.util.NamedObject;
 import ucar.unidata.geoloc.ProjectionImpl;
+import ucar.unidata.geoloc.ProjectionPoint;
 import ucar.unidata.geoloc.ProjectionPointImpl;
 import ucar.unidata.geoloc.ProjectionRect;
 import ucar.unidata.geoloc.projection.LatLonProjection;
@@ -858,8 +859,7 @@ public class CoverageViewer extends JPanel {
     // get Move events from the navigated panel
     navPanel.addCursorMoveEventListener(new CursorMoveEventListener() {
       public void actionPerformed(CursorMoveEvent e) {
-        ProjectionPointImpl projPoint = new ProjectionPointImpl(e.getLocation());
-        String valueS = coverageRenderer.getXYvalueStr(projPoint);
+        String valueS = coverageRenderer.getXYvalueStr(e.getLocation());
         dataValueLabel.setText(valueS);
       }
     });

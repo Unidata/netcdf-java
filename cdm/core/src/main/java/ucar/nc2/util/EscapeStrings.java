@@ -40,10 +40,10 @@ import java.util.List;
  * 3) PercentEscaper
  * PercentEscaper(String safeChars, boolean plusForSpace)
  * Constructs a percent escaper with the specified safe characters and optional handling of the space character.
+ * 
+ * TODO replace with standard escape libraries
  */
-
 public class EscapeStrings {
-
   protected static final String alpha = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
   protected static final String numeric = "0123456789";
   protected static final String alphaNumeric = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -158,14 +158,13 @@ public class EscapeStrings {
     return xunescapeString(in, _URIEscape, false);
   }
 
-  static final byte hexa = (byte) 'a';
-  static final byte hexf = (byte) 'f';
-  static final byte hexA = (byte) 'A';
-  static final byte hexF = (byte) 'F';
-  static final byte hex0 = (byte) '0';
-  static final byte hex9 = (byte) '9';
-  static final byte ten = (byte) 10;
-
+  static private final byte hexa = (byte) 'a';
+  static private final byte hexf = (byte) 'f';
+  static private final byte hexA = (byte) 'A';
+  static private final byte hexF = (byte) 'F';
+  static private final byte hex0 = (byte) '0';
+  static private final byte hex9 = (byte) '9';
+  static private final byte ten = (byte) 10;
 
   private static byte fromHex(byte b) throws NumberFormatException {
     if (b >= hex0 && b <= hex9) {
@@ -199,6 +198,8 @@ public class EscapeStrings {
 
   private static final Pattern p = Pattern.compile("([\\w]+)://([.\\w]+(:[\\d]+)?)([/][^?#])?([?][^#]*)?([#].*)?");
 
+  /** @deprecated do not use */
+  @Deprecated
   public static String escapeURL(String url) {
     String protocol;
     String authority;
@@ -442,7 +443,7 @@ public class EscapeStrings {
       if (pos <= 0) {
         break;
       }
-      if ((pos > 0) && escapedName.charAt(pos - 1) != '\\') {
+      if (escapedName.charAt(pos - 1) != '\\') {
         result.add(escapedName.substring(start, pos));
         start = pos + 1;
       }
@@ -467,19 +468,21 @@ public class EscapeStrings {
       if (pos <= 0) {
         return pos;
       }
-      if ((pos > 0) && escapedName.charAt(pos - 1) != '\\') {
+      if (escapedName.charAt(pos - 1) != '\\') {
         return pos;
       }
     }
   }
 
   // Some handy definitons.
-  static final String xmlGT = "&gt;";
-  static final String xmlLT = "&lt;";
-  static final String xmlAmp = "&amp;";
-  static final String xmlApos = "&apos;";
-  static final String xmlQuote = "&quot;";
+  static private final String xmlGT = "&gt;";
+  static private final String xmlLT = "&lt;";
+  static private final String xmlAmp = "&amp;";
+  static private final String xmlApos = "&apos;";
+  static private final String xmlQuote = "&quot;";
 
+  /** @deprecated do not use */
+  @Deprecated
   public static String normalizeToXML(String s) {
     StringBuilder sb = new StringBuilder(s);
     for (int offset = 0; offset < sb.length(); offset++) {
@@ -526,7 +529,7 @@ public class EscapeStrings {
       if (_allowableInDAP.indexOf(c) < 0) {
         buf.append(_URIEscape);
         // convert the char to hex
-        String ashex = Integer.toHexString((int) c);
+        String ashex = Integer.toHexString(c);
         if (ashex.length() < 2) {
           buf.append('0');
         }

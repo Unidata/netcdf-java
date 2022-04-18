@@ -5,6 +5,9 @@
 package ucar.nc2;
 
 import junit.framework.TestCase;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.*;
@@ -16,19 +19,15 @@ import java.lang.invoke.MethodHandles;
 
 /** Test reading record data */
 
-public class TestStructureArray2 extends TestCase {
+public class TestStructureArray2 {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  UtilsTestStructureArray test;
+  private UtilsTestStructureArray test = new UtilsTestStructureArray();
 
-  public TestStructureArray2(String name) {
-    super(name);
-    test = new UtilsTestStructureArray();
-  }
-
+  @Test
   public void testBB() throws IOException, InvalidRangeException {
-    NetcdfFile ncfile = TestDir.openFileLocal("testWriteRecord.nc");
-    ncfile.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
+    NetcdfFile ncfile = NetcdfFiles.open(TestDir.cdmLocalTestDataDir + "testWriteRecord.nc", -1, null,
+        NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
 
     Structure v = (Structure) ncfile.findVariable("record");
     assert v != null;
@@ -45,6 +44,7 @@ public class TestStructureArray2 extends TestCase {
     ncfile.close();
   }
 
+  @Test
   public void testMA() throws IOException, InvalidRangeException {
     NetcdfFile ncfile = TestDir.openFileLocal("jan.nc");
     NetcdfDataset ncd = new NetcdfDataset(ncfile);

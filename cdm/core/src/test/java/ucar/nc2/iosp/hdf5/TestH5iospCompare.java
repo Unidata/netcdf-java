@@ -3,12 +3,16 @@ package ucar.nc2.iosp.hdf5;
 
 import static org.junit.Assert.fail;
 import com.google.common.collect.ImmutableList;
+import java.io.File;
+import java.io.FileFilter;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Formatter;
 import java.util.List;
+import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
@@ -25,9 +29,7 @@ import ucar.nc2.util.CompareNetcdf2.ObjFilter;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
-/**
- * Compare objects in original N3iosp vs N3iospNew using builders.
- */
+/** Compare objects in original H5iosp vs H5iospNew using builders. */
 @Category(NeedsCdmUnitTest.class)
 @RunWith(Parameterized.class)
 public class TestH5iospCompare {
@@ -38,7 +40,7 @@ public class TestH5iospCompare {
   public static Collection<Object[]> getTestParameters() {
     Collection<Object[]> filenames = new ArrayList<>();
     try {
-      TestDir.actOnAllParameterized(testDir, (file) -> !file.getPath().endsWith(".xml"), filenames, true);
+      TestDir.actOnAllParameterized(testDir, new MyFileFilter(), filenames, true);
     } catch (IOException e) {
       filenames.add(new Object[] {e.getMessage()});
     }
@@ -57,7 +59,7 @@ public class TestH5iospCompare {
     try (NetcdfFile org = NetcdfFile.open(filename)) {
       try (NetcdfFile withBuilder = NetcdfFiles.open(filename)) {
         Formatter f = new Formatter();
-        CompareNetcdf2 compare = new CompareNetcdf2(f, false, false, true);
+        CompareNetcdf2 compare = new CompareNetcdf2(f);
         if (!compare.compare(org, withBuilder, new DimensionsFilter())) {
           System.out.printf("Compare %s%n%s%n", filename, f);
           fail();
@@ -66,7 +68,19 @@ public class TestH5iospCompare {
     }
   }
 
-  // These files the new iosp does it ci=orrectly, so we need to skip comparing dimensions.
+  private static class MyFileFilter implements FileFilter {
+    @Override
+    public boolean accept(File file) {
+      if (file.getPath().endsWith(".xml"))
+        return false;
+      // These are too big, skip
+      if (file.getName().endsWith("IASI.h5"))
+        return false;
+      return true;
+    }
+  }
+
+  // These files the new iosp does it correctly, so we need to skip comparing dimensions.
   static List<String> skipNames = ImmutableList.of();
   // "PR1B0000-2000101203_010_001.hdf",
   // "MISR_AM1_AGP_P040_F01_24.subset.eos", "MISR_AM1_GRP_TERR_GM_P040_AN.eos",

@@ -20,6 +20,7 @@ import ucar.nc2.constants.DataFormatType;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.DatasetUrl;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
 import ucar.nc2.ft.remote.CdmrFeatureDataset;
@@ -27,12 +28,7 @@ import ucar.nc2.util.Optional;
 import ucar.unidata.util.StringUtil2;
 import javax.annotation.Nonnull;
 
-/**
- * DataFactory for THREDDS client catalogs
- *
- * @author caron
- * @since 1/8/2015
- */
+/** DataFactory for THREDDS client catalogs */
 public class DataFactory {
   public static final String PROTOCOL = "thredds";
   public static final String SCHEME = PROTOCOL + ":";
@@ -466,9 +462,9 @@ public class DataFactory {
     }
 
     // ready to open it through netcdf API
-    DatasetUrl durl = new DatasetUrl(serviceType, datasetLocation);
-    NetcdfDataset ncd = acquire ? NetcdfDataset.acquireDataset(durl, true, task)
-        : NetcdfDataset.openDataset(durl, null, -1, task, null);
+    DatasetUrl durl = DatasetUrl.create(serviceType, datasetLocation);
+    NetcdfDataset ncd = acquire ? NetcdfDatasets.acquireDataset(durl, true, task)
+        : NetcdfDatasets.openDataset(durl, null, -1, task, null);
 
     /*
      * String prefix = null;

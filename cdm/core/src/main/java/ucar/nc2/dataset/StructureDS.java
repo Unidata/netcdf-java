@@ -5,6 +5,7 @@
 
 package ucar.nc2.dataset;
 
+import com.google.common.collect.ImmutableList;
 import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.util.CancelTask;
@@ -129,14 +130,14 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
 
   @Override
   protected StructureDS copy() {
-    return new StructureDS(getParentGroup(), this);
+    return new StructureDS(getParentGroupOrRoot(), this);
   }
 
   // copy() doesnt work because convert gets called twice
 
   @Override
   public Structure select(List<String> memberNames) {
-    StructureDS result = new StructureDS(getParentGroup(), orgVar);
+    StructureDS result = new StructureDS(getParentGroupOrRoot(), orgVar);
     List<Variable> members = new ArrayList<>();
     for (String name : memberNames) {
       Variable m = findVariable(name);
@@ -189,6 +190,8 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
   }
 
   @Override
+  /** @deprecated use builder */
+  @Deprecated
   public String setName(String newName) {
     this.orgName = getShortName();
     setShortName(newName);
@@ -333,7 +336,7 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
     for (Variable v : getVariables()) {
       if (!varHasData(v, sm)) {
         try {
-          Variable completeVar = getParentGroup().findVariable(v.getShortName()); // LOOK BAD
+          Variable completeVar = getParentGroupOrRoot().findVariableLocal(v.getShortName()); // LOOK BAD
           Array mdata = completeVar.read(section);
           StructureMembers.Member m =
               sm.addMember(v.getShortName(), v.getDescription(), v.getUnitsString(), v.getDataType(), v.getShape());
@@ -357,7 +360,7 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
     }
 
     // otherwise we create a new StructureData and convert to it. expensive
-    StructureMembers smResult = new StructureMembers(orgData.getStructureMembers());
+    StructureMembers smResult = orgData.getStructureMembers().toBuilder(false).build();
     StructureDataW result = new StructureDataW(smResult);
 
     for (StructureMembers.Member m : orgData.getMembers()) {
@@ -427,8 +430,8 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
     for (Variable v : getVariables()) {
       if (!varHasData(v, sm)) {
         try {
-          Variable completeVar = getParentGroup().findVariable(v.getShortName()); // LOOK BAD
-          Array mdata = completeVar.read(new Section().appendRange(recno, recno));
+          Variable completeVar = getParentGroupOrRoot().findVariableLocal(v.getShortName()); // LOOK BAD
+          Array mdata = completeVar.read(Section.builder().appendRange(recno, recno).build());
           StructureMembers.Member m =
               sm.addMember(v.getShortName(), v.getDescription(), v.getUnitsString(), v.getDataType(), v.getShape());
           result.setMemberData(m, mdata);
@@ -503,7 +506,7 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
       this.nelems = orgSeq.getStructureDataCount();
 
       // copy and convert the members
-      members = new StructureMembers(orgSeq.getStructureMembers());
+      members = orgSeq.getStructureMembers().toBuilder(false).build();
       orgStruct.convertMemberInfo(members);
     }
 
@@ -590,7 +593,7 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
     proxy.removeCoordinateSystem(p0);
   }
 
-  public java.util.List<CoordinateSystem> getCoordinateSystems() {
+  public ImmutableList<CoordinateSystem> getCoordinateSystems() {
     return proxy.getCoordinateSystems();
   }
 
@@ -609,12 +612,12 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
   }
 
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  private EnhancementsImpl proxy; // API relies that this cant be null
+  protected EnhancementsImpl proxy; // API relies that this cant be null
   protected Structure orgVar; // wrap this Variable
-  private String orgName; // in case Variable wwas renamed, and we need the original name for aggregation
+  protected String orgName; // in case Variable was renamed, and we need the original name for aggregation
 
-  protected StructureDS(Builder<?> builder) {
-    super(builder);
+  protected StructureDS(Builder<?> builder, Group parentGroup) {
+    super(builder, parentGroup);
     this.orgVar = builder.orgVar;
     this.orgName = builder.orgName;
     this.proxy = new EnhancementsImpl(this, builder.units, builder.desc);
@@ -645,9 +648,9 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
 
   public static abstract class Builder<T extends Builder<T>> extends Structure.Builder<T> {
     private Structure orgVar; // wrap this Variable
-    private String orgName; // in case Variable was renamed, and we need the original name for aggregation
-    private String units;
-    private String desc;
+    protected String orgName; // in case Variable was renamed, and we need the original name for aggregation
+    protected String units;
+    protected String desc;
     private boolean built;
 
     public T setOriginalVariable(Structure orgVar) {
@@ -680,26 +683,28 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
     public T copyFrom(Structure orgVar) {
       super.copyFrom(orgVar);
       for (Variable v : orgVar.getVariables()) {
-        Variable.Builder newVar;
+        Variable.Builder<?> newVar;
         if (v instanceof Sequence) {
           newVar = SequenceDS.builder().copyFrom((Sequence) v);
         } else if (v instanceof Structure) {
-          newVar = StructureDS.builder().copyFrom((StructureDS) v);
+          newVar = StructureDS.builder().copyFrom((Structure) v);
         } else {
           newVar = VariableDS.builder().copyFrom(v);
         }
         addMemberVariable(newVar);
       }
+      setOriginalVariable(orgVar);
+      setOriginalName(orgVar.getShortName());
       return self();
     }
 
     /** Normally this is called by Group.build() */
-    public StructureDS build() {
+    public StructureDS build(Group parentGroup) {
       if (built)
         throw new IllegalStateException("already built");
       built = true;
       this.setDataType(DataType.STRUCTURE);
-      return new StructureDS(this);
+      return new StructureDS(this, parentGroup);
     }
   }
 

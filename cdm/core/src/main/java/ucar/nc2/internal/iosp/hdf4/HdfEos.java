@@ -85,19 +85,20 @@ public class HdfEos {
    * @return true if HDF-EOS info was found
    * @throws IOException on read error
    */
-  public static boolean amendFromODL(HdfHeaderIF header, Group.Builder eosGroup) throws IOException {
+  public static boolean amendFromODL(String location, HdfHeaderIF header, Group.Builder eosGroup) throws IOException {
     String smeta = getStructMetadata(header, eosGroup);
     if (smeta == null) {
       return false;
     }
 
-    HdfEos fixer = new HdfEos();
+    HdfEos fixer = new HdfEos(location, header);
     fixer.fixAttributes(eosGroup);
-    fixer.amendFromODL(header, header.getRootGroup(), smeta);
+    fixer.amendFromODL(header.getRootGroup(), smeta);
     return true;
   }
 
-  public static boolean getEosInfo(HdfHeaderIF header, Group.Builder eosGroup, Formatter f) throws IOException {
+  public static boolean getEosInfo(String location, HdfHeaderIF header, Group.Builder eosGroup, Formatter f)
+      throws IOException {
     String smeta = getStructMetadata(header, eosGroup);
     if (smeta == null) {
       f.format("No StructMetadata variables in group %s %n", eosGroup.shortName);
@@ -118,7 +119,7 @@ public class HdfEos {
 
     int n = 0;
     while (true) {
-      Variable.Builder<?> structMetadataVar = eosGroup.findVariable("StructMetadata." + n).orElse(null);
+      Variable.Builder<?> structMetadataVar = eosGroup.findVariableLocal("StructMetadata." + n).orElse(null);
       if (structMetadataVar == null) {
         break;
       }
@@ -139,8 +140,13 @@ public class HdfEos {
   }
 
   ///////////////////////////////////////////
-  private String location;
+  private String location; // for debug messages
   private HdfHeaderIF header;
+
+  private HdfEos(String location, HdfHeaderIF header) {
+    this.location = location;
+    this.header = header;
+  }
 
   /**
    * Amend the given NetcdfFile with metadata from HDF-EOS structMetadata
@@ -148,8 +154,7 @@ public class HdfEos {
    * @param rootg Amend this
    * @param structMetadata structMetadata as String
    */
-  private void amendFromODL(HdfHeaderIF header, Group.Builder rootg, String structMetadata) {
-    this.header = header;
+  private void amendFromODL(Group.Builder rootg, String structMetadata) {
     ODLparser parser = new ODLparser();
     Element root = parser.parseFromString(structMetadata); // now we have the ODL in JDOM elements
     FeatureType featureType = null;
@@ -288,11 +293,11 @@ public class HdfEos {
 
       // make new variable for this dimension map
       Variable.Builder v = Variable.builder().setName(dataDimName);
+      parent.addVariable(v);
       v.setDimensionsByName(geoDimName);
       v.setDataType(DataType.INT);
       v.setAutoGen(offset, incr);
       v.addAttribute(new Attribute("_DimensionMap", ""));
-      parent.addVariable(v);
       header.makeVinfoForDimensionMapVariable(parent, v);
 
       if (showWork) {
@@ -301,7 +306,8 @@ public class HdfEos {
     }
 
     // Geolocation Variables
-    Group.Builder geoFieldsG = parent.findGroup(GEOLOC_FIELDS).orElse(parent.findGroup(GEOLOC_FIELDS2).orElse(null));
+    Group.Builder geoFieldsG =
+        parent.findGroupLocal(GEOLOC_FIELDS).orElse(parent.findGroupLocal(GEOLOC_FIELDS2).orElse(null));
     if (geoFieldsG != null) {
       Variable.Builder<?> latAxis = null;
       Variable.Builder<?> lonAxis = null;
@@ -310,7 +316,7 @@ public class HdfEos {
       Element floc = swathElem.getChild("GeoField");
       for (Element elem : floc.getChildren()) {
         String varname = elem.getChild("GeoFieldName").getText().trim();
-        Variable.Builder<?> vb = geoFieldsG.findVariable(varname).orElse(null);
+        Variable.Builder<?> vb = geoFieldsG.findVariableLocal(varname).orElse(null);
         if (vb != null) {
           AxisType axis = addAxisType(vb);
           if (axis == AxisType.Lat) {
@@ -337,7 +343,7 @@ public class HdfEos {
         // This could/should be expanded to consider other FTs.
         if ((latAxis != null) && (lonAxis != null)) {
           log.debug("found lonAxis and latAxis -- testing XY domain");
-          int xyDomainSize = CoordSystemBuilder.countDomainSize(geoFieldsG, latAxis, lonAxis);
+          int xyDomainSize = CoordSystemBuilder.countDomainSize(latAxis, lonAxis);
           log.debug("xyDomain size {}", xyDomainSize);
           if (xyDomainSize < 2) {
             if (timeAxis != null) {
@@ -360,7 +366,7 @@ public class HdfEos {
     }
 
     // Data Variables
-    Group.Builder dataG = parent.findGroup(DATA_FIELDS).orElse(parent.findGroup(DATA_FIELDS2).orElse(null));
+    Group.Builder dataG = parent.findGroupLocal(DATA_FIELDS).orElse(parent.findGroupLocal(DATA_FIELDS2).orElse(null));
     if (dataG != null) {
       Element f = swathElem.getChild("DataField");
       List<Element> vars = f.getChildren();
@@ -370,7 +376,7 @@ public class HdfEos {
           continue;
         }
         String varname = NetcdfFile.makeValidCdmObjectName(dataFieldNameElem.getText().trim());
-        Variable.Builder v = dataG.findVariable(varname).orElse(null);
+        Variable.Builder v = dataG.findVariableLocal(varname).orElse(null);
         if (v == null) {
           log.error("Cant find variable {} {}", varname, location);
           continue;
@@ -503,13 +509,14 @@ public class HdfEos {
     }
 
     // Geolocation Variables
-    Group.Builder geoFieldsG = parent.findGroup(GEOLOC_FIELDS).orElse(parent.findGroup(GEOLOC_FIELDS2).orElse(null));
+    Group.Builder geoFieldsG =
+        parent.findGroupLocal(GEOLOC_FIELDS).orElse(parent.findGroupLocal(GEOLOC_FIELDS2).orElse(null));
     if (geoFieldsG != null) {
       Element floc = gridElem.getChild("GeoField");
       List<Element> varsLoc = floc.getChildren();
       for (Element elem : varsLoc) {
         String varname = elem.getChild("GeoFieldName").getText().trim();
-        geoFieldsG.findVariable(varname).ifPresent(vb -> {
+        geoFieldsG.findVariableLocal(varname).ifPresent(vb -> {
           Element dimList = elem.getChild("DimList");
           List<Element> values = dimList.getChildren("value");
           setSharedDimensions(geoFieldsG, vb, values, unknownDims, location);
@@ -518,14 +525,14 @@ public class HdfEos {
     }
 
     // Data Variables
-    Group.Builder dataG = parent.findGroup(DATA_FIELDS).orElse(parent.findGroup(DATA_FIELDS2).orElse(null));
+    Group.Builder dataG = parent.findGroupLocal(DATA_FIELDS).orElse(parent.findGroupLocal(DATA_FIELDS2).orElse(null));
     if (dataG != null) {
       Element f = gridElem.getChild("DataField");
       List<Element> vars = f.getChildren();
       for (Element elem : vars) {
         String varname = elem.getChild("DataFieldName").getText().trim();
         varname = NetcdfFiles.makeValidCdmObjectName(varname);
-        dataG.findVariable(varname).ifPresent(vb -> {
+        dataG.findVariableLocal(varname).ifPresent(vb -> {
           Element dimList = elem.getChild("DimList");
           List<Element> values = dimList.getChildren("value");
           setSharedDimensions(dataG, vb, values, unknownDims, location);
@@ -602,7 +609,7 @@ public class HdfEos {
     }
 
     // gotta have same number of dimensions
-    List<Dimension> oldDims = v.getDimensions(group);
+    List<Dimension> oldDims = v.getDimensions();
     if (oldDims.size() != values.size()) {
       log.error("Different number of dimensions for {} {}", v.shortName, location);
       return;
@@ -639,6 +646,7 @@ public class HdfEos {
   }
 
   // look if the wanted dimension is in the unknownDims list.
+  // TODO this must be rewritten, stop using deprecated methods
   private Dimension checkUnknownDims(String wantDim, List<Dimension> unknownDims, Dimension oldDim, String location) {
     for (Dimension dim : unknownDims) {
       if (dim.getShortName().equals(wantDim)) {
@@ -677,7 +685,7 @@ public class HdfEos {
   private void fixAttributes(Group.Builder g) {
     for (Variable.Builder v : g.vbuilders) {
       AttributeContainerMutable attHelper = v.getAttributeContainer();
-      for (Attribute a : ImmutableList.copyOf(attHelper.getAttributes())) {
+      for (Attribute a : ImmutableList.copyOf(attHelper)) {
         if (a.getShortName().equalsIgnoreCase("UNIT") || a.getShortName().equalsIgnoreCase("UNITS")) {
           attHelper.replace(a, CDM.UNITS);
         }

@@ -6,19 +6,23 @@
 package ucar.nc2;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableBiMap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import javax.annotation.Nullable;
 import ucar.ma2.DataType;
 import ucar.nc2.util.Indent;
 import javax.annotation.concurrent.Immutable;
 import java.util.*;
 
 /**
- * Enumeration Typedef is a map from integers to Strings.
+ * A named map from integers to Strings; a user-defined Enum used as a Variable's data type.
  * For ENUM1, ENUM2, ENUM4 enumeration types.
  * Immutable.
  *
- * @author caron
+ * TODO EnumTypedef will not extend CDMNode in 6.
+ * TODO EnumTypedef will not have a reference to its owning Group in 6.
+ * TODO EnumTypedef.getFullName() will not exist in 6.
  */
 @Immutable
 public class EnumTypedef extends CDMNode {
@@ -30,10 +34,12 @@ public class EnumTypedef extends CDMNode {
   private final ImmutableList<String> enumStrings;
   private final DataType basetype;
 
+  /** Make an EnumTypedef with base type ENUM4. */
   public EnumTypedef(String name, Map<Integer, String> map) {
     this(name, map, DataType.ENUM4); // default basetype
   }
 
+  /** Make an EnumTypedef setting the base type (must be ENUM1, ENUM2, ENUM4). */
   public EnumTypedef(String name, Map<Integer, String> map, DataType basetype) {
     super(name);
     Preconditions.checkArgument(validateMap(map, basetype));
@@ -45,13 +51,13 @@ public class EnumTypedef extends CDMNode {
     this.basetype = basetype;
   }
 
+  /** @deprecated use getMap() */
   @Deprecated
   public ImmutableList<String> getEnumStrings() {
     return enumStrings;
   }
 
-  /** Will return ImmutableMap in version 6. */
-  public Map<Integer, String> getMap() {
+  public ImmutableMap<Integer, String> getMap() {
     return map;
   }
 
@@ -84,12 +90,13 @@ public class EnumTypedef extends CDMNode {
   }
 
   /** Get the name corresponding to the enum value. */
+  @Nullable
   public String lookupEnumString(int e) {
-    String result = map.get(e);
-    return (result == null) ? "Unknown enum value=" + e : result;
+    return map.get(e);
   }
 
   /** Get the enum value corresponding to the name. */
+  @Nullable
   public Integer lookupEnumInt(String name) {
     for (Map.Entry<Integer, String> entry : map.entrySet()) {
       if (entry.getValue().equalsIgnoreCase(name))
@@ -103,13 +110,17 @@ public class EnumTypedef extends CDMNode {
    *
    * @param strict if true, write in strict adherence to CDL definition.
    * @return CDL representation.
+   * @deprecated use CDLWriter
    */
+  @Deprecated
   public String writeCDL(boolean strict) {
     Formatter out = new Formatter();
     writeCDL(out, new Indent(2), strict);
     return out.toString();
   }
 
+  /** @deprecated use CDLWriter */
+  @Deprecated
   protected void writeCDL(Formatter out, Indent indent, boolean strict) {
     String name = strict ? NetcdfFile.makeValidCDLName(getShortName()) : getShortName();
     String basetype = "";
@@ -162,6 +173,18 @@ public class EnumTypedef extends CDMNode {
     String thatname = that.getShortName();
     return Objects.equals(name, thatname);
 
+  }
+
+  // Needed for netCDF4 wierdness
+  public boolean equalsMapOnly(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    EnumTypedef that = (EnumTypedef) o;
+    return com.google.common.base.Objects.equal(map, that.map);
   }
 
   @Override

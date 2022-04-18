@@ -10,7 +10,7 @@ import java.util.*;
 
 /**
  * Helper class to create logical subsets.
- * Used by CFGridCoverageWriter2
+ * Used by CFGridCoverageWriter
  *
  * @author caron
  * @since 7/12/2015
@@ -40,11 +40,11 @@ public class CoverageSubsetter2 {
     Map<String, CoverageCoordAxis> subsetCoordAxes = new HashMap<>();
     Map<String, CoverageCoordSys> subsetCFCoordSys = new HashMap<>();
     for (CoverageCoordSys orgCs : orgCoordSys.values()) {
-      ucar.nc2.util.Optional<CoverageCoordSys> opt = orgCs.subset(params, true, false); // subsetCF make do some CF
-                                                                                        // tweaks, not needed in regular
-                                                                                        // subset
-      if (!opt.isPresent())
+      // subsetCF make do some CF tweaks, not needed in regular subset
+      ucar.nc2.util.Optional<CoverageCoordSys> opt = orgCs.subset(params, true, false);
+      if (!opt.isPresent()) {
         return ucar.nc2.util.Optional.empty(opt.getErrorMessage());
+      }
 
       CoverageCoordSys subsetCoordSys = opt.get();
       subsetCFCoordSys.put(orgCs.getName(), subsetCoordSys);

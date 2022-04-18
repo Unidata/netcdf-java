@@ -5,8 +5,8 @@
 
 package ucar.nc2.iosp.hdf5;
 
+import java.util.Arrays;
 import ucar.ma2.Section;
-import ucar.nc2.Variable;
 import ucar.nc2.iosp.LayoutTiled;
 import ucar.nc2.util.Misc;
 import ucar.unidata.io.RandomAccessFile;
@@ -240,7 +240,7 @@ public class DataBTree {
         for (currentEntry = 0; currentEntry < nentries; currentEntry++) {
           if (debugChunkOrder)
             System.out.printf(" Entry=%3d offset [%-15s]: Tile order %d-%d%n", currentEntry,
-                Misc.showInts(offset[currentEntry]), tiling.order(offset[currentEntry]),
+                Arrays.toString(offset[currentEntry]), tiling.order(offset[currentEntry]),
                 tiling.order(offset[currentEntry + 1]));
           if ((wantOrigin == null) || tiling.compare(wantOrigin, offset[currentEntry + 1]) < 0) {
             currentNode = new Node(childPointer[currentEntry], this.address);
@@ -297,7 +297,7 @@ public class DataBTree {
   public class DataChunk {
     public final int size; // size of chunk in bytes; need storage layout dimensions to interpret
     public final int filterMask; // bitfield indicating which filters have been skipped for this chunk
-    public final int[] offset; // offset index of this chunk, reletive to entire array
+    public final int[] offset; // offset index of this chunk, relative to entire array
     public final long filePos; // filePos of a single raw data chunk, already shifted by the offset if needed
 
     DataChunk(int ndim, boolean last) throws IOException {

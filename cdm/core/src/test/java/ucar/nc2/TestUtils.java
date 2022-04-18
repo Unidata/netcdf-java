@@ -10,16 +10,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.Array;
 
-/**
- * Static utilities for testing
- *
- * @author Russ Rew
- */
+/** Static utilities for testing */
 public class TestUtils {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   /** read all data, make sure variable metadata matches the array */
-  static public void testReadData(NetcdfFile ncfile, boolean showStatus) {
+  public static void testReadData(NetcdfFile ncfile, boolean showStatus) {
     try {
       for (Variable v : ncfile.getVariables()) {
         testVarMatchesData(v, showStatus);
@@ -33,7 +29,7 @@ public class TestUtils {
       logger.debug("**** testReadData done on {}", ncfile.getLocation());
   }
 
-  static public void testVarMatchesData(Variable v, boolean showStatus) throws IOException {
+  public static void testVarMatchesData(Variable v, boolean showStatus) throws IOException {
     Array data = v.read();
     assert data.getSize() == v.getSize();
     assert data.getElementType() == v.getDataType().getPrimitiveClassType();
@@ -46,5 +42,9 @@ public class TestUtils {
 
     if (showStatus)
       logger.debug("**** testReadData done on {}", v.getFullName());
+  }
+
+  public static Group makeDummyGroup() {
+    return Group.builder().setName("").build();
   }
 }

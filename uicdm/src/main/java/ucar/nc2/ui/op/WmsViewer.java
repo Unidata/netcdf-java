@@ -190,6 +190,7 @@ public class WmsViewer extends JPanel {
       }
 
       SAXBuilder builder = new SAXBuilder();
+      builder.setExpandEntities(false);
       Document tdoc = builder.build(method.getResponseAsStream());
       Element root = tdoc.getRootElement();
       parseGetCapabilities(root);

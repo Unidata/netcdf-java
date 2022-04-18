@@ -10,6 +10,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 import ucar.ma2.DataType;
 import ucar.nc2.NetcdfFile;
+import ucar.nc2.NetcdfFiles;
 import ucar.nc2.Variable;
 import java.io.IOException;
 
@@ -19,7 +20,7 @@ public class TestDataTemplate {
   @Test
   public void testDrs0() throws IOException {
     final String testfile = "../grib/src/test/data/Eumetsat.VerticalPerspective.grib2";
-    try (NetcdfFile nc = NetcdfFile.open(testfile)) {
+    try (NetcdfFile nc = NetcdfFiles.open(testfile)) {
       Variable var = nc.findVariable("Pixel_scene_type");
       float[] data = (float[]) var.read().get1DJavaArray(DataType.FLOAT);
 
@@ -32,7 +33,7 @@ public class TestDataTemplate {
   @Test
   public void testDrs2() throws IOException {
     final String testfile = "../grib/src/test/data/ds.snow.grib2";
-    try (NetcdfFile nc = NetcdfFile.open(testfile)) {
+    try (NetcdfFile nc = NetcdfFiles.open(testfile)) {
       Variable var = nc.findVariable("Total_snowfall_surface_6_Hour_Accumulation");
       float[] data = (float[]) var.read().get1DJavaArray(DataType.FLOAT);
 
@@ -45,7 +46,7 @@ public class TestDataTemplate {
   @Test
   public void testDrs3() throws IOException {
     final String testfile = "../grib/src/test/data/ds.sky.grib2";
-    try (NetcdfFile nc = NetcdfFile.open(testfile)) {
+    try (NetcdfFile nc = NetcdfFiles.open(testfile)) {
       Variable var = nc.findVariable("Total_cloud_cover_surface");
       float[] data = (float[]) var.read().get1DJavaArray(DataType.FLOAT);
 
@@ -58,7 +59,7 @@ public class TestDataTemplate {
   @Test
   public void testDrs40() throws IOException {
     final String testfile = "../grib/src/test/data/pdsScale.pds1.grib2";
-    try (NetcdfFile nc = NetcdfFile.open(testfile)) {
+    try (NetcdfFile nc = NetcdfFiles.open(testfile)) {
       Variable var = nc.findVariable("Temperature_isobaric_ens");
       float[] data = (float[]) var.read().get1DJavaArray(DataType.FLOAT);
 
@@ -71,7 +72,7 @@ public class TestDataTemplate {
   @Test
   public void testPng() throws IOException {
     final String testfile = "../grib/src/test/data/MRMS_LowLevelCompositeReflectivity_00.50_20141207-072038.grib2";
-    try (NetcdfFile nc = NetcdfFile.open(testfile)) {
+    try (NetcdfFile nc = NetcdfFiles.open(testfile)) {
       Variable var = nc.findVariable("LowLevelCompositeReflectivity_altitude_above_msl");
       float[] data = (float[]) var.read().get1DJavaArray(DataType.FLOAT);
 
@@ -84,7 +85,7 @@ public class TestDataTemplate {
   @Test
   public void testPngBitmap() throws IOException {
     final String testfile = "../grib/src/test/data/HLYA10.grib2";
-    try (NetcdfFile nc = NetcdfFile.open(testfile)) {
+    try (NetcdfFile nc = NetcdfFiles.open(testfile)) {
       Variable var = nc.findVariable("VAR0-19-223_FROM_7-212--1_isobaric");
       float[] data = (float[]) var.read().get1DJavaArray(DataType.FLOAT);
 

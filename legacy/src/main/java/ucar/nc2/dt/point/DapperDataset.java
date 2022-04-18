@@ -14,6 +14,7 @@ import ucar.nc2.util.CancelTask;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.StructureDS;
+import ucar.unidata.geoloc.EarthLocation;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.LatLonPoint;
@@ -372,7 +373,7 @@ public class DapperDataset extends PointObsDatasetImpl implements TypedDatasetFa
       }
 
       nomTime = obsTime;
-      location = new ucar.unidata.geoloc.EarthLocationImpl(lat, lon, alt);
+      location = EarthLocation.create(lat, lon, alt);
     }
 
     public LatLonPoint getLatLon() {

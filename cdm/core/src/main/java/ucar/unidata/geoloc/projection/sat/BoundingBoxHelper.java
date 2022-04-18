@@ -28,10 +28,10 @@ public class BoundingBoxHelper {
 
   public ProjectionRect latLonToProjBB(LatLonRect rect) {
 
-    ProjectionPoint llpt = proj.latLonToProj(rect.getLowerLeftPoint(), new ProjectionPointImpl());
-    ProjectionPoint urpt = proj.latLonToProj(rect.getUpperRightPoint(), new ProjectionPointImpl());
-    ProjectionPoint lrpt = proj.latLonToProj(rect.getLowerRightPoint(), new ProjectionPointImpl());
-    ProjectionPoint ulpt = proj.latLonToProj(rect.getUpperLeftPoint(), new ProjectionPointImpl());
+    ProjectionPoint llpt = proj.latLonToProj(rect.getLowerLeftPoint());
+    ProjectionPoint urpt = proj.latLonToProj(rect.getUpperRightPoint());
+    ProjectionPoint lrpt = proj.latLonToProj(rect.getLowerRightPoint());
+    ProjectionPoint ulpt = proj.latLonToProj(rect.getUpperLeftPoint());
 
     // how many are bad?
     List<ProjectionPoint> goodPts = new ArrayList<>(4);
@@ -50,17 +50,17 @@ public class BoundingBoxHelper {
     // case: only 2 good ones : extend to edge of the limit circle
     if (countBad == 2) {
 
-      if (!ProjectionPointImpl.isInfinite(llpt) && !ProjectionPointImpl.isInfinite(lrpt)) {
-        addGoodPts(goodPts, new ProjectionPointImpl(0, maxR));
+      if (!LatLonPoints.isInfinite(llpt) && !LatLonPoints.isInfinite(lrpt)) {
+        addGoodPts(goodPts, ProjectionPoint.create(0, maxR));
 
-      } else if (!ProjectionPointImpl.isInfinite(ulpt) && !ProjectionPointImpl.isInfinite(llpt)) {
-        addGoodPts(goodPts, new ProjectionPointImpl(maxR, 0));
+      } else if (!LatLonPoints.isInfinite(ulpt) && !LatLonPoints.isInfinite(llpt)) {
+        addGoodPts(goodPts, ProjectionPoint.create(maxR, 0));
 
-      } else if (!ProjectionPointImpl.isInfinite(ulpt) && !ProjectionPointImpl.isInfinite(urpt)) {
-        addGoodPts(goodPts, new ProjectionPointImpl(0, -maxR));
+      } else if (!LatLonPoints.isInfinite(ulpt) && !LatLonPoints.isInfinite(urpt)) {
+        addGoodPts(goodPts, ProjectionPoint.create(0, -maxR));
 
-      } else if (!ProjectionPointImpl.isInfinite(urpt) && !ProjectionPointImpl.isInfinite(lrpt)) {
-        addGoodPts(goodPts, new ProjectionPointImpl(-maxR, 0));
+      } else if (!LatLonPoints.isInfinite(urpt) && !LatLonPoints.isInfinite(lrpt)) {
+        addGoodPts(goodPts, ProjectionPoint.create(-maxR, 0));
 
       } else {
         throw new IllegalStateException();
@@ -68,30 +68,30 @@ public class BoundingBoxHelper {
 
     } else if (countBad == 3) { // case: only 1 good one : extend to wedge of the limit circle
 
-      if (!ProjectionPointImpl.isInfinite(llpt)) {
+      if (!LatLonPoints.isInfinite(llpt)) {
         double xcoord = llpt.getX();
-        addGoodPts(goodPts, new ProjectionPointImpl(xcoord, getLimitCoord(xcoord)));
+        addGoodPts(goodPts, ProjectionPoint.create(xcoord, getLimitCoord(xcoord)));
 
         double ycoord = llpt.getY();
-        addGoodPts(goodPts, new ProjectionPointImpl(getLimitCoord(ycoord), ycoord));
-      } else if (!ProjectionPointImpl.isInfinite(urpt)) {
+        addGoodPts(goodPts, ProjectionPoint.create(getLimitCoord(ycoord), ycoord));
+      } else if (!LatLonPoints.isInfinite(urpt)) {
         double xcoord = urpt.getX();
-        addGoodPts(goodPts, new ProjectionPointImpl(xcoord, -getLimitCoord(xcoord)));
+        addGoodPts(goodPts, ProjectionPoint.create(xcoord, -getLimitCoord(xcoord)));
 
         double ycoord = urpt.getY();
-        addGoodPts(goodPts, new ProjectionPointImpl(-getLimitCoord(ycoord), ycoord));
-      } else if (!ProjectionPointImpl.isInfinite(ulpt)) {
+        addGoodPts(goodPts, ProjectionPoint.create(-getLimitCoord(ycoord), ycoord));
+      } else if (!LatLonPoints.isInfinite(ulpt)) {
         double xcoord = ulpt.getX();
-        addGoodPts(goodPts, new ProjectionPointImpl(xcoord, -getLimitCoord(xcoord)));
+        addGoodPts(goodPts, ProjectionPoint.create(xcoord, -getLimitCoord(xcoord)));
 
         double ycoord = ulpt.getY();
-        addGoodPts(goodPts, new ProjectionPointImpl(getLimitCoord(ycoord), ycoord));
-      } else if (!ProjectionPointImpl.isInfinite(lrpt)) {
+        addGoodPts(goodPts, ProjectionPoint.create(getLimitCoord(ycoord), ycoord));
+      } else if (!LatLonPoints.isInfinite(lrpt)) {
         double xcoord = lrpt.getX();
-        addGoodPts(goodPts, new ProjectionPointImpl(xcoord, getLimitCoord(xcoord)));
+        addGoodPts(goodPts, ProjectionPoint.create(xcoord, getLimitCoord(xcoord)));
 
         double ycoord = lrpt.getY();
-        addGoodPts(goodPts, new ProjectionPointImpl(-getLimitCoord(ycoord), ycoord));
+        addGoodPts(goodPts, ProjectionPoint.create(-getLimitCoord(ycoord), ycoord));
 
       } else {
         throw new IllegalStateException();
@@ -103,7 +103,7 @@ public class BoundingBoxHelper {
   }
 
   private boolean addGoodPts(List<ProjectionPoint> goodPts, ProjectionPoint pt) {
-    if (!ProjectionPointImpl.isInfinite(pt)) {
+    if (!LatLonPoints.isInfinite(pt)) {
       goodPts.add(pt);
       return true;
     } else

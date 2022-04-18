@@ -15,7 +15,10 @@ import ucar.nc2.jni.netcdf.Nc4prototypes;
 import ucar.nc2.jni.netcdf.SizeT;
 import java.lang.reflect.Array;
 import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import static dap4.dap4lib.netcdf.Nc4DSP.Nc4Pointer;
 import static dap4.dap4lib.netcdf.Nc4Notes.*;
@@ -26,6 +29,10 @@ public class Nc4Cursor extends AbstractCursor {
   //////////////////////////////////////////////////
 
   public static boolean DEBUG = false;
+
+  // if the default charset being used by java isn't UTF-8, then we will
+  // need to transcode any string read into netCDf-Java via netCDF-C
+  private static final boolean transcodeStrings = Charset.defaultCharset() != StandardCharsets.UTF_8;
 
   //////////////////////////////////////////////////
   // Instance variables
@@ -204,7 +211,7 @@ public class Nc4Cursor extends AbstractCursor {
    *
    * @param vi
    * @param ti
-   * @return
+   * @return Object scalar
    * @throws DapException
    */
   protected Object readAtomicScalar(VarNotes vi, TypeNotes ti) throws DapException {
@@ -223,6 +230,9 @@ public class Nc4Cursor extends AbstractCursor {
     } else if (basetype.isStringType()) {
       String[] s = new String[1];
       readcheck(nc4, ret = nc4.nc_get_var_string(vi.gid, vi.id, s));
+      if (transcodeStrings) {
+        s = transcodeString(s);
+      }
       result = s;
     } else if (basetype.isOpaqueType()) {
       Nc4Pointer mem = Nc4Pointer.allocate(ti.getSize());
@@ -274,6 +284,9 @@ public class Nc4Cursor extends AbstractCursor {
       } else if (basetype.isStringType()) {
         String[] ss = new String[(int) edgecount];
         readcheck(nc4, ret = nc4.nc_get_vars_string(vi.gid, vi.id, startp, countp, stridep, ss));
+        if (transcodeStrings) {
+          ss = transcodeString(ss);
+        }
         partialresult = ss;
       } else if (basetype.isOpaqueType()) {
         long elemsize = ti.getSize();
@@ -611,6 +624,28 @@ public class Nc4Cursor extends AbstractCursor {
     DapVariable f0 = ds.getField(0);
     DapType f0type = f0.getBaseType();
     return (TypeNotes) ((Nc4DSP) this.dsp).find(f0type);
+  }
+
+  /**
+   * By default, JNA assumes strings coming into java from the C side are using
+   * the system encoding. However, netCDF-C encodes using UTF-8. Because of this,
+   * if we are on a platform where java is not using UTF-8 as the default encoding,
+   * we will need to transcode the incoming strings fix the incorrect assumption
+   * made by JNA.
+   *
+   * Note, we could set the system property jna.encode=UTF-8, but would impact the
+   * behavior of other libraries that use JNA, and would not be very nice of us to
+   * set globally (and often times isn't the right thing to set anyways, since the
+   * default in C to use the system encoding).
+   *
+   * @param systemStrings String array encoded using the default charset
+   * @return String array encoded using the UTF-8 charset
+   */
+  private String[] transcodeString(String[] systemStrings) {
+    return Arrays.stream(systemStrings).map(systemString -> {
+      byte[] byteArray = systemString.getBytes(Charset.defaultCharset());
+      return new String(byteArray, StandardCharsets.UTF_8);
+    }).toArray(String[]::new);
   }
 
   protected void debug() {

@@ -1,9 +1,10 @@
 /*
- * Copyright (c) 1998-2018 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 package ucar.nc2.dataset;
 
+import com.google.common.collect.ImmutableList;
 import java.util.Formatter;
 import ucar.nc2.AttributeContainer;
 import ucar.nc2.AttributeContainerMutable;
@@ -14,13 +15,30 @@ import java.util.List;
 
 /**
  * A CoordinateTransform is an abstraction of a function from a CoordinateSystem to a
- * "reference" CoordinateSystem, such as lat, lon.
+ * "reference" CoordinateSystem.
  *
- * @author caron
+ * CoordinateTransform is the superclass for ProjectionCT and VerticalCT.
+ * It contains the Attributes/Parameters needed to make a "Coordinate Transform Variable" which
+ * is just a container for the Transform parameters.
+ * LOOK this should be abstract.
  */
-
 @ThreadSafe
 public class CoordinateTransform implements Comparable<CoordinateTransform> {
+  /**
+   * Create a Coordinate Transform.
+   *
+   * @param name name of transform, must be unique within the Coordinate System.
+   * @param authority naming authority
+   * @param transformType type of transform.
+   * @param params list of Parameters.
+   */
+  protected CoordinateTransform(String name, String authority, TransformType transformType, List<Parameter> params) {
+    this.name = name;
+    this.authority = authority;
+    this.transformType = transformType;
+    this.params = ImmutableList.copyOf(params);
+  }
+
   /**
    * Create a Coordinate Transform.
    *
@@ -48,40 +66,24 @@ public class CoordinateTransform implements Comparable<CoordinateTransform> {
     params.add(param);
   }
 
-  /**
-   * get the name
-   * 
-   * @return the name
-   */
   public String getName() {
     return name;
   }
 
-  /**
-   * get the naming authority
-   * 
-   * @return the naming authority
-   */
+  public AttributeContainer getAttributeContainer() {
+    return attributeContainer;
+  }
+
   public String getAuthority() {
     return authority;
   }
 
-  /**
-   * get the transform type
-   * 
-   * @return the transform type
-   */
   public TransformType getTransformType() {
     return transformType;
   }
 
-  /**
-   * get list of ProjectionParameter objects.
-   * 
-   * @return list of ProjectionParameter objects.
-   */
-  public List<Parameter> getParameters() {
-    return params;
+  public ImmutableList<Parameter> getParameters() {
+    return ImmutableList.copyOf(params);
   }
 
   /**
@@ -166,7 +168,7 @@ public class CoordinateTransform implements Comparable<CoordinateTransform> {
   protected List<Parameter> params;
   private AttributeContainerMutable attributeContainer;
 
-  // not needed?
+  // LOOK this is wrong, should create a ProjectionCT or a VerticalCT.
   protected CoordinateTransform(Builder<?> builder, NetcdfDataset ncd) {
     this.name = builder.name;
     this.authority = builder.authority;
@@ -242,10 +244,9 @@ public class CoordinateTransform implements Comparable<CoordinateTransform> {
       return self();
     }
 
-
     public CoordinateTransform build(NetcdfDataset ncd) {
       if (built)
-        throw new IllegalStateException("already built");
+        throw new IllegalStateException("already built " + name);
       built = true;
 
       if (this.preBuilt != null) {
@@ -256,7 +257,8 @@ public class CoordinateTransform implements Comparable<CoordinateTransform> {
       CoordinateTransform ct =
           CoordTransBuilder.makeCoordinateTransform(ncd, attributeContainer, new Formatter(), new Formatter());
       if (ct != null) {
-        ct.name = this.name;
+        // ct.name = this.name; // LOOK why is this commented out? Dont know name until this point? Not going to
+        // work....
         ct.attributeContainer = new AttributeContainerMutable(this.name);
         ct.attributeContainer.addAll(attributeContainer);
       }

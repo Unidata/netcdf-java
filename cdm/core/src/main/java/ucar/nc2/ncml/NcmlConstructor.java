@@ -25,10 +25,10 @@ import java.util.StringTokenizer;
 /**
  * Populate a NetcdfFile directly from NcML, can be used by IOSPs.
  * All ncml elements are new, not modified.
- * 
- * @author caron
- * @since Feb 26, 2011
+ *
+ * @deprecated do not use
  */
+@Deprecated
 public class NcmlConstructor {
   // static private final boolean validate = false;
   private static final boolean debugConstruct = false;
@@ -63,6 +63,7 @@ public class NcmlConstructor {
     org.jdom2.Document doc;
     try {
       SAXBuilder builder = new SAXBuilder();
+      builder.setExpandEntities(false);
       doc = builder.build(ncml);
     } catch (JDOMException e) {
       throw new IOException(e.getMessage());

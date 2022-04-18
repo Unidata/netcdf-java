@@ -15,7 +15,7 @@ import java.util.Map;
 
 /**
  * Implements CF calendar attribute.
- * Uses joda-time, may switch to JSP 310 at a later date.
+ * Uses joda-time, will switch to java.time at a later date.
  * So joda-time classes are not exposed.
  *
  * @author caron
@@ -136,7 +136,7 @@ public enum Calendar {
 
 /*
  * 
- * http://www.unidata.ucar.edu/software/udunits/udunits-2/udunits2lib.html#Time
+ * https://www.unidata.ucar.edu/software/udunits/udunits-2/udunits2lib.html#Time
  * 
  * You should use a true calendar package rather than the UDUNITS-2 package to handle time. Having said that, many
  * people use

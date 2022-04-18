@@ -27,13 +27,11 @@ import javax.annotation.concurrent.Immutable;
 public class CalendarPeriod {
   private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CalendarPeriod.class);
 
-  private static final Cache<CalendarPeriod, CalendarPeriod> cache = CacheBuilder.newBuilder().maximumSize(100) // limit
-                                                                                                                // cache
-                                                                                                                // size....
-      .build();
+  private static final Cache<CalendarPeriod, CalendarPeriod> cache = CacheBuilder.newBuilder().maximumSize(100).build();
 
   public static final CalendarPeriod Hour = CalendarPeriod.of(1, Field.Hour);
 
+  /** Fields that can be set on a CalendarPeriod, used to prevent exposure of underlying implementation. */
   public enum Field {
     Millisec(PeriodType.millis()), Second(PeriodType.seconds()), Minute(PeriodType.minutes()), Hour(
         PeriodType.hours()), Day(PeriodType.days()), Month(PeriodType.months()), Year(PeriodType.years());

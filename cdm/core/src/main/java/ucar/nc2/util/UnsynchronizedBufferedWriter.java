@@ -11,7 +11,10 @@ import java.io.*;
  * 
  * @author com.elharo.io
  * @since Nov 4, 2007
+ * @deprecated do not use
+ *             TODO move to inner class of IO if needed.
  */
+@Deprecated
 public class UnsynchronizedBufferedWriter extends Writer {
 
   private static final int CAPACITY = 8192;

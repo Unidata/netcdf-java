@@ -38,6 +38,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFile;
+import ucar.nc2.NetcdfFiles;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.GridDatatype;
@@ -58,7 +59,7 @@ public class TestGribEnsembles {
 
     String filename = TestDir.cdmUnitTestDir + "ft/grid/ensemble/jitka/MOEASURGEENS20100709060002.grib";
     System.out.printf("Open %s%n", filename);
-    try (NetcdfFile datafile = NetcdfFile.open(filename)) {
+    try (NetcdfFile datafile = NetcdfFiles.open(filename)) {
       NetcdfDataset netcdfDataset = new NetcdfDataset(datafile);
       GridDataset gridDataset = new GridDataset(netcdfDataset);
 
@@ -112,7 +113,7 @@ public class TestGribEnsembles {
     String filename = TestDir.cdmUnitTestDir + "ft/grid/ensemble/jitka/ECME_RIZ_201201101200_00600_GB";
     System.out.printf("Open %s%n", filename);
 
-    try (NetcdfFile datafile = NetcdfFile.open(filename)) {
+    try (NetcdfFile datafile = NetcdfFiles.open(filename)) {
       NetcdfDataset netcdfDataset = new NetcdfDataset(datafile);
       GridDataset gridDataset = new GridDataset(netcdfDataset);
 

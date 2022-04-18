@@ -9,7 +9,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.*;
 import ucar.nc2.*;
-import ucar.nc2.ncml.NcMLReader;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 
@@ -25,7 +24,7 @@ public class TestNcMLModifyVars extends TestCase {
   NetcdfFile ncfile = null;
 
   public void setUp() {
-    String filename = "file:" + TestNcMLRead.topDir + "modifyVars.xml";
+    String filename = "file:" + TestNcmlRead.topDir + "modifyVars.xml";
 
     try {
       ncfile = NcMLReader.readNcML(filename, null);

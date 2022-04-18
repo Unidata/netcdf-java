@@ -6,6 +6,7 @@ package ucar.nc2.iosp.bufr.tables;
 
 import javax.annotation.concurrent.Immutable;
 import java.util.*;
+import ucar.nc2.iosp.bufr.DataDescriptor;
 
 /**
  * BUFR Table B - Data descriptors
@@ -128,7 +129,7 @@ public class TableB {
       this.units = units.trim().intern();
       this.desc = desc;
 
-      this.numeric = !this.units.startsWith("CCITT");
+      this.numeric = !DataDescriptor.isInternationalAlphabetUnit(units);
     }
 
     public int getScale() {

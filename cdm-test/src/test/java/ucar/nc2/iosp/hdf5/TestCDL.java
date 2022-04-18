@@ -5,19 +5,18 @@
 
 package ucar.nc2.iosp.hdf5;
 
-import java.nio.charset.StandardCharsets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.nc2.NCdumpW;
 import ucar.nc2.NetcdfFile;
-import ucar.nc2.constants.CDM;
+import ucar.nc2.NetcdfFiles;
 import ucar.nc2.util.Misc;
 import java.io.*;
 import java.lang.invoke.MethodHandles;
+import ucar.nc2.write.Ncdump;
 import ucar.unidata.util.test.TestDir;
 
 /**
- * Compare CDL from NCDump to ncdump -h
+ * Compare CDL from Ncdump to ncdump -h
  *
  * @author caron
  */
@@ -43,13 +42,10 @@ public class TestCDL {
   }
 
   private void testCDL(String filename, boolean show) throws IOException, InterruptedException {
-    NetcdfFile ncfile = NetcdfFile.open(filename, null);
+    NetcdfFile ncfile = NetcdfFiles.open(filename, null);
     System.out.println("File " + filename);
 
-    ByteArrayOutputStream bout = new ByteArrayOutputStream(30 * 1000);
-    PrintWriter pw = new PrintWriter(new OutputStreamWriter(bout, StandardCharsets.UTF_8));
-    NCdumpW.print(ncfile, pw, false, false, false, true, null, null);
-    String njCDL = bout.toString();
+    String njCDL = Ncdump.builder(ncfile).setStrict(true).build().print();
     if (show)
       System.out.println("============================================");
     if (show)

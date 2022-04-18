@@ -11,7 +11,7 @@ package ucar.nc2.constants;
  * @author john caron
  * @author wchen@usgs.gov
  * @see <a href=
- *      "http://www.unidata.ucar.edu/software/thredds/current/netcdf-java/reference/FeatureDatasets/Overview.html">CDM
+ *      "https://www.unidata.ucar.edu/software/thredds/current/netcdf-java/reference/FeatureDatasets/Overview.html">CDM
  *      Feature Types</a>
  */
 /*
@@ -92,7 +92,7 @@ public enum FeatureType {
   public boolean isPointFeatureType() {
     return (this == FeatureType.POINT) || (this == FeatureType.STATION) || (this == FeatureType.TRAJECTORY)
         || (this == FeatureType.PROFILE) || (this == FeatureType.STATION_PROFILE)
-        || (this == FeatureType.TRAJECTORY_PROFILE);
+        || (this == FeatureType.TRAJECTORY_PROFILE) || (this == FeatureType.ANY_POINT);
   }
 
   public boolean isCoverageFeatureType() {

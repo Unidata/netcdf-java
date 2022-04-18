@@ -5,6 +5,7 @@
 
 package ucar.nc2.iosp;
 
+import javax.annotation.Nullable;
 import ucar.ma2.Array;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Section;
@@ -25,11 +26,9 @@ import java.util.Formatter;
 /**
  * Abstract base class for IOSP implementations that provides default implementations
  * of readToByteChannel(...) and readSection(...).
- *
  * <p>
  * Implementations should make sure to handle the RandomAccessFile properly by
  * doing one of the following:
- *
  * <ol>
  * <li>Write your own open(...) and close() methods that keep track of the
  * RandomAccessFile, be sure to close the RandomAccessFile in your close()
@@ -40,7 +39,6 @@ import java.util.Formatter;
  * <li>Don't write an open(...) or close() method, so that those defined
  * here are used.</li>
  * </ol>
- *
  */
 public abstract class AbstractIOServiceProvider implements IOServiceProvider {
   /**
@@ -141,7 +139,8 @@ public abstract class AbstractIOServiceProvider implements IOServiceProvider {
   }
 
   @Override
-  public Object sendIospMessage(Object message) {
+  @Nullable
+  public Object sendIospMessage(@Nullable Object message) {
     if (message == NetcdfFile.IOSP_MESSAGE_RANDOM_ACCESS_FILE) {
       return raf;
     }

@@ -37,10 +37,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.Array;
 import ucar.ma2.InvalidRangeException;
-import ucar.nc2.NCdumpW;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.write.Ncdump;
 import ucar.unidata.util.test.TestDir;
 import java.io.IOException;
 import java.io.StringReader;
@@ -75,7 +75,7 @@ public class TestAggMisc {
       Variable v = ncfile.findVariable("time");
       Array data = v.read();
       assert data.getSize() == 20;
-      logger.debug(NCdumpW.toString(data));
+      logger.debug(Ncdump.printArray(data));
     }
   }
 
@@ -89,13 +89,13 @@ public class TestAggMisc {
       Variable v = ncfile.findVariable("time");
       Array data = v.read();
       assert data.getSize() == 59;
-      logger.debug(NCdumpW.toString(data));
+      logger.debug(Ncdump.printArray(data));
     }
   }
 
   @Test
   public void testNestedScan() throws IOException, InvalidRangeException, InterruptedException {
-    String filename = "file:./" + TestNcMLRead.topDir + "nested/TestNestedDirs.ncml";
+    String filename = "file:./" + TestNcmlRead.topDir + "nested/TestNestedDirs.ncml";
 
     try (NetcdfFile ncfile = NetcdfDataset.openFile(filename, null)) {
       TestDir.readAllData(ncfile);
@@ -103,7 +103,7 @@ public class TestAggMisc {
       Variable v = ncfile.findVariable("time");
       Array data = v.read();
       assert data.getSize() == 3;
-      logger.debug(NCdumpW.toString(data));
+      logger.debug(Ncdump.printArray(data));
     }
   }
 }

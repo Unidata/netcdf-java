@@ -21,7 +21,7 @@ public class CDM {
   public static final String FIELD_ATTS = "_field_atts"; // netcdf4 compound atts
 
   // from the Netcdf Users Guide
-  // http://www.unidata.ucar.edu/software/netcdf/docs/netcdf.html#Attribute-Conventions
+  // https://www.unidata.ucar.edu/software/netcdf/docs/netcdf.html#Attribute-Conventions
   public static final String ABBREV = "abbreviation";
   public static final String ADD_OFFSET = "add_offset";
   public static final String CONVENTIONS = "Conventions";
@@ -52,8 +52,10 @@ public class CDM {
   public static final String LON_UNITS = "degrees_east";
   public static final String RLATLON_UNITS = "degrees";
   public static final String TIME_OFFSET = "time offset from runtime";
+  public static final String TIME_OFFSET_HOUR = "hoursFrom0z";
+  public static final String RUNTIME_COORDINATE = "runtimeCoordinate";
 
-  // Special Attribute Names
+  // Special Attribute Names used in jni.Nc4Iosp
   public static final String NCPROPERTIES = "_NCProperties";
   public static final String ISNETCDF4 = "_IsNetcdf4";
   public static final String SUPERBLOCKVERSION = "_SuperblockVersion";

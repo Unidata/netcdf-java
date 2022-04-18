@@ -30,7 +30,7 @@ public class TestDiskCache {
     assert !file.canWrite();
   }
 
-  public void testReletivePath() throws Exception {
+  public void testRelativePath() throws Exception {
     String org = System.getProperty("user.dir");
     try {
       System.setProperty("user.dir", TestDir.cdmUnitTestDir);

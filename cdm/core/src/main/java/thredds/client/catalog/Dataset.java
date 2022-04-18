@@ -123,13 +123,16 @@ public class Dataset extends DatasetNode implements ThreddsMetadataContainer {
   }
 
   private void addAllAccess(Access a, List<Access> result) {
-    if (a.getService().getType() == ServiceType.Compound) {
-      for (Service nested : a.getService().getNestedServices()) {
-        Access nestedAccess = new Access(this, a.getUrlPath(), nested, a.getDataFormatName(), a.getDataSize());
-        addAllAccess(nestedAccess, result); // i guess it could recurse
+    Service service = a.getService();
+    if (service != null) {
+      if (a.getService().getType() == ServiceType.Compound) {
+        for (Service nested : a.getService().getNestedServices()) {
+          Access nestedAccess = new Access(this, a.getUrlPath(), nested, a.getDataFormatName(), a.getDataSize());
+          addAllAccess(nestedAccess, result); // i guess it could recurse
+        }
+      } else {
+        result.add(a);
       }
-    } else {
-      result.add(a);
     }
   }
 

@@ -39,18 +39,13 @@ public class ArraySequence extends ArrayStructure {
     this.nelems = nelems;
   }
 
-  /**
-   * n
-   *
-   * @return StructureDataIterator.class
-   */
   @Override
   public Class getElementType() {
     return StructureDataIterator.class;
   }
 
   @Override
-  public StructureDataIterator getStructureDataIterator() { // throws java.io.IOException {
+  public StructureDataIterator getStructureDataIterator() {
     iter = iter.reset();
     return iter;
   }
@@ -90,7 +85,8 @@ public class ArraySequence extends ArrayStructure {
     // create an empty array to hold the result
     Array result;
     if (dataType == DataType.STRUCTURE) {
-      StructureMembers membersw = new StructureMembers(proxym.getStructureMembers()); // no data arrays get propagated
+      StructureMembers membersw = proxym.getStructureMembers().toBuilder(false).build(); // no data arrays get
+                                                                                         // propagated
       result = new ArrayStructureW(membersw, rshape);
     } else {
       result = Array.factory(dataType, rshape);
@@ -362,8 +358,7 @@ public class ArraySequence extends ArrayStructure {
           }
 
           rshape[0] = count;
-          StructureMembers membersw = new StructureMembers(proxym.getStructureMembers()); // no data arrays get
-                                                                                          // propagated
+          StructureMembers membersw = proxym.getStructureMembers().toBuilder(false).build();
           return new ArrayStructureW(membersw, rshape, result.toArray(new StructureData[0]));
         }
       }

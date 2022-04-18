@@ -12,21 +12,26 @@ import java.util.Formatter;
 /**
  * Defines the shape of the earth ellipsoid.
  *
- * @author Russ Rew
+ * LOOK will not implement Serializable in ver6
  */
 @Immutable
 public class Earth implements Serializable {
   public static final Earth DEFAULT = new Earth();
 
-  private static final double earthRadius = 6371229.; // canonical radius of the spherical earth in meters "WGS 84"
+  /** Get canonical radius of the spherical earth in meters from "WGS 84" */
+  public static final double WGS84_EARTH_RADIUS_METERS = 6371229.;
+
+  /** Get canonical radius of the spherical earth in km from "WGS 84" */
+  public static final double WGS84_EARTH_RADIUS_KM = 6371.229;
 
   /**
    * Get canonical radius of spherical earth, in meters
-   *
-   * @return canonical radius of spherical earth in meters
+   * 
+   * @deprecated use WGS84_EARTH_RADIUS_METERS
    */
+  @Deprecated
   public static double getRadius() {
-    return earthRadius;
+    return WGS84_EARTH_RADIUS_METERS;
   }
 
   ///////////////////////////////////////////////////////////////////////////////////
@@ -41,7 +46,7 @@ public class Earth implements Serializable {
    * Spherical earth with canonical radius.
    */
   public Earth() {
-    this(earthRadius);
+    this(WGS84_EARTH_RADIUS_METERS);
   }
 
   /**

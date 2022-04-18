@@ -5,6 +5,7 @@
 package ucar.nc2.stream;
 
 import com.google.protobuf.ByteString;
+import java.util.Arrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.*;
@@ -81,7 +82,7 @@ public class NcStreamDataCol {
         ArrayChar cdata = (ArrayChar) data;
         for (String s : cdata)
           builder.addStringdata(s);
-        Section ssection = section.removeLast();
+        Section ssection = section.toBuilder().removeLast().build();
         builder.setSection(NcStream.encodeSection(ssection));
 
       } else if (data instanceof ArrayObject) {
@@ -131,7 +132,7 @@ public class NcStreamDataCol {
         count++;
       }
       builder.setNelems(nelems);
-      Section ssection = section.removeVlen();
+      Section ssection = section.toBuilder().removeVlen().build();
       builder.setSection(NcStream.encodeSection(ssection));
       assert ssection.computeSize() == count;
 
@@ -166,7 +167,7 @@ public class NcStreamDataCol {
     int nbytes = (int) data.getSizeBytes();
     if (nbytes < 0) {
       logger.error("copyArrayToByteString neg byte size {} dataType = {} data size {} shape = {}", nbytes,
-          data.getDataType().getSize(), data.getSize(), Misc.showInts(data.getShape()));
+          data.getDataType().getSize(), data.getSize(), Arrays.toString(data.getShape()));
     }
     ByteBuffer bb = ByteBuffer.allocate(nbytes);
     bb.order(ByteOrder.nativeOrder());
@@ -242,17 +243,15 @@ public class NcStreamDataCol {
 
     MemberData(StructureMembers.Member member, int[] parent) {
       this.member = member;
-      this.section = new Section(parent);
-      int[] mshape = member.getShape();
-      // if (mshape.length == 0) // scalar
-      // this.section.appendRange(Range.ONE);
-      // else
       // compose with the parent
+      Section.Builder sb = Section.builder().appendRanges(parent);
+      int[] mshape = member.getShape();
       for (int s : mshape) {
-        if (s < 0)
-          continue;
-        this.section.appendRange(s);
+        if (s >= 0) {
+          sb.appendRange(s);
+        }
       }
+      this.section = sb.build();
 
       this.dtype = member.getDataType();
       this.isVlen = member.isVariableLength();
@@ -642,7 +641,7 @@ public class NcStreamDataCol {
     int psize = (int) parentSection.computeSize();
 
     Section section = NcStream.decodeSection(dproto.getSection());
-    Section vsection = section.removeFirst(parentSection);
+    Section vsection = section.toBuilder().removeFirst(parentSection.getRank()).build();
     int vsectionSize = (int) vsection.computeSize(); // the # of varlen Arrays at the inner structure
     // LOOK check for scalar
 
@@ -677,26 +676,27 @@ public class NcStreamDataCol {
     // accumulate parent sections
     parentSection = section.prepend(parentSection);
 
-    StructureMembers members = new StructureMembers(dproto.getName());
+    StructureMembers.Builder members = StructureMembers.builder().setName(dproto.getName());
     for (NcStreamProto.DataCol memberData : structData.getMemberDataList()) {
       decodeMemberData(members, memberData, parentSection);
     }
 
-    return new ArrayStructureMA(members, section.getShape());
+    return new ArrayStructureMA(members.build(), section.getShape());
   }
 
-  private void decodeMemberData(StructureMembers members, NcStreamProto.DataCol memberData, Section parentSection)
-      throws IOException {
+  private void decodeMemberData(StructureMembers.Builder members, NcStreamProto.DataCol memberData,
+      Section parentSection) throws IOException {
     String name = memberData.getName();
     DataType dataType = NcStream.convertDataType(memberData.getDataType());
     Section section = NcStream.decodeSection(memberData.getSection());
     assert memberData.getIsVlen() || memberData.getNelems() == section.computeSize();
     // the dproto section includes parents, remove them
-    Section msection = section.removeFirst(parentSection);
+    Section msection = section.toBuilder().removeFirst(parentSection.getRank()).build();
+
     if (memberData.getIsVlen())
       msection = msection.appendRange(Range.VLEN);
 
-    StructureMembers.Member result = members.addMember(name, null, null, dataType, msection.getShape());
+    StructureMembers.MemberBuilder result = members.addMember(name, null, null, dataType, msection.getShape());
     Array data = decode(memberData, parentSection);
     result.setDataArray(data);
   }

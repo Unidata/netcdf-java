@@ -80,14 +80,13 @@ public class TimeCdmRemote {
     return new Section(shape);
   }
 
-
   static void testRead(String filename, Stat stat, boolean readData) throws IOException, InvalidRangeException {
     long bytes = 0;
     long start = System.nanoTime();
     if (show)
       System.out.printf("%n------Reading filename %s (%s)%n", filename, stat.getName());
 
-    try (NetcdfFile ncfile = NetcdfDataset.openFile(filename, null)) {
+    try (NetcdfFile ncfile = NetcdfDatasets.openFile(filename, null)) {
       if (readData)
         bytes = readAllData(ncfile);
       long end = System.nanoTime();

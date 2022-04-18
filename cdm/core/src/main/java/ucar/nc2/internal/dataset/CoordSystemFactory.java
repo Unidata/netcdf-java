@@ -1,5 +1,6 @@
 package ucar.nc2.internal.dataset;
 
+import com.google.common.collect.ImmutableList;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Formatter;
@@ -13,14 +14,16 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import ucar.nc2.Attribute;
 import ucar.nc2.Group;
+import ucar.nc2.NetcdfFile;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.spi.CoordSystemBuilderFactory;
 import ucar.nc2.internal.dataset.conv.CF1Convention;
 import ucar.nc2.internal.dataset.conv.DefaultConventions;
-import ucar.nc2.internal.ncml.NcMLReaderNew;
+import ucar.nc2.internal.ncml.NcmlReader;
 import ucar.nc2.util.CancelTask;
+import ucar.unidata.util.StringUtil2;
 
 /** Static methods for managing CoordSystemBuilderFactory classes */
 public class CoordSystemFactory {
@@ -50,9 +53,11 @@ public class CoordSystemFactory {
 
   // These get precedence
   static {
-    registerConvention(_Coordinate.Convention, new DefaultConventions.Factory());
+    registerConvention(_Coordinate.Convention, new CoordSystemBuilder.Factory());
     registerConvention("CF-1.", new CF1Convention.Factory(), String::startsWith);
     registerConvention("CDM-Extended-CF", new CF1Convention.Factory());
+    // this is to test DefaultConventions, not needed when we remove old convention builders.
+    registerConvention("MARS", new DefaultConventions.Factory());
   }
 
   /**
@@ -61,9 +66,8 @@ public class CoordSystemFactory {
    *
    * @param conventionName name of Convention, must be in the "Conventions" global attribute.
    * @param ncmlLocation location of NcML file, may be local file or URL.
-   * @see ucar.nc2.ncml.NcMLReader#wrapNcML
    */
-  public static void registerNcML(String conventionName, String ncmlLocation) {
+  public static void registerNcml(String conventionName, String ncmlLocation) {
     ncmlHash.put(conventionName, ncmlLocation);
   }
 
@@ -144,11 +148,7 @@ public class CoordSystemFactory {
         names.add(name.trim());
       }
     } else {
-      StringTokenizer stoke = new StringTokenizer(convAttValue, " ");
-      while (stoke.hasMoreTokens()) {
-        String name = stoke.nextToken();
-        names.add(name.trim());
-      }
+      return ImmutableList.of(convAttValue);
     }
     return names;
   }
@@ -157,7 +157,7 @@ public class CoordSystemFactory {
    * Build a list of Conventions
    *
    * @param mainConv this is the main convention
-   * @param convAtts list of others, onbly use "extra" Conventions
+   * @param convAtts list of others, only use "extra" Conventions
    * @return comma separated list of Conventions
    */
   public static String buildConventionAttribute(String mainConv, String... convAtts) {
@@ -195,106 +195,123 @@ public class CoordSystemFactory {
    * @throws java.io.IOException on io error
    */
   @Nonnull
-  static Optional<CoordSystemBuilder> factory(NetcdfDataset.Builder ds, CancelTask cancelTask) throws IOException {
+  public static Optional<CoordSystemBuilder> factory(NetcdfDataset.Builder ds, CancelTask cancelTask)
+      throws IOException {
 
     // look for the Conventions attribute
     Group.Builder root = ds.rootGroup;
-    String convName = root.getAttributeContainer().findAttValueIgnoreCase(CDM.CONVENTIONS, null);
-    if (convName == null)
-      convName = root.getAttributeContainer().findAttValueIgnoreCase("Convention", null); // common mistake Convention
-                                                                                          // instead of
-    // Conventions
+    String convName = root.getAttributeContainer().findAttributeString(CDM.CONVENTIONS, null);
+    if (convName == null) {
+      // common mistake Convention instead of Conventions
+      convName = root.getAttributeContainer().findAttributeString("Convention", null);
+    }
     if (convName != null) {
       convName = convName.trim();
     }
 
     // look for ncml first
     if (convName != null) {
-      String convNcML = ncmlHash.get(convName);
-      if (convNcML != null) {
+      String convNcml = ncmlHash.get(convName);
+      if (convNcml != null) {
         CoordSystemBuilder csb = new CoordSystemBuilder(ds);
-        NcMLReaderNew.wrapNcML(ds, convNcML, cancelTask);
+        NcmlReader.wrapNcml(ds, convNcml, cancelTask);
         return Optional.of(csb);
       }
     }
-
-    // Try to match on convention name
     CoordSystemBuilderFactory coordSysFactory = null;
+
+    // Try to match on convention name. Must be first in case NcML has set Convention name.
     if (convName != null) {
-      List<String> names = breakupConventionNames(convName);
-      for (String name : names) {
-        coordSysFactory = findRegisteredConventionByName(name);
-        if (coordSysFactory != null) {
-          break;
-        }
-      }
-      if (coordSysFactory == null) {
-        for (String name : names) {
-          coordSysFactory = findLoadedConventionByName(name);
-          if (coordSysFactory != null) {
-            break;
-          }
-        }
-      }
+      coordSysFactory = findConventionByName(convName);
     }
 
-    // Look for Convention using isMine()
-    if (coordSysFactory == null) {
-      for (Convention conv : conventionList) {
-        CoordSystemBuilderFactory candidate = conv.factory;
-        if (candidate.isMine(ds.orgFile)) {
-          coordSysFactory = candidate;
-          break;
-        }
-      }
+    // Try to match on isMine() TODO: why use orgFile instead of ds?
+    if (coordSysFactory == null && ds.orgFile != null) {
+      coordSysFactory = findConventionByIsMine(ds.orgFile);
     }
 
-    // Use service loader mechanism isMine()
-    if (coordSysFactory == null) {
-      for (CoordSystemBuilderFactory csb : ServiceLoader.load(CoordSystemBuilderFactory.class)) {
-        if (csb.isMine(ds.orgFile)) {
-          coordSysFactory = csb;
-          break;
-        }
-      }
-    }
-
-    // TODO, if convention not explicitly found, bail out to use the old one.
-    // This will go away once all are ported to use Builders.
     boolean isDefault = false;
+    // if no convention class found, use the default
     if (coordSysFactory == null) {
-      return Optional.empty();
-      // if no convention class found, use the default
-      // coordSysFactory = new DefaultConventions.Factory();
-      // isDefault = true;
+      coordSysFactory = new DefaultConventions.Factory();
+      isDefault = true;
     }
 
-    // Now that youve done all this work, what about storing the CoordSystemBuilderFactory in the
-    // NetcdfDataset.Builder, and calling it with ncd at build time???
-
+    // Now process it.
     CoordSystemBuilder coordSystemBuilder = coordSysFactory.open(ds);
-
     if (convName == null)
       coordSystemBuilder.addUserAdvice("No 'Conventions' global attribute.");
     else if (isDefault)
       coordSystemBuilder.addUserAdvice("No CoordSystemBuilder is defined for Conventions= '" + convName + "'\n");
     else {
       coordSystemBuilder.setConventionUsed(coordSysFactory.getConventionName());
-      root.getAttributeContainer()
-          .addAttribute(new Attribute(_Coordinate._CoordSysBuilder, coordSysFactory.getConventionName()));
     }
 
     ds.rootGroup.addAttribute(new Attribute(_Coordinate._CoordSysBuilder, coordSystemBuilder.getClass().getName()));
     return Optional.of(coordSystemBuilder);
   }
 
+  private static CoordSystemBuilderFactory findConventionByIsMine(NetcdfFile orgFile) {
+    // Look for Convention using isMine()
+    for (Convention conv : conventionList) {
+      CoordSystemBuilderFactory candidate = conv.factory;
+      if (candidate.isMine(orgFile)) {
+        return candidate;
+      }
+    }
+
+    // Use service loader mechanism isMine()
+    for (CoordSystemBuilderFactory csb : ServiceLoader.load(CoordSystemBuilderFactory.class)) {
+      if (csb.isMine(orgFile)) {
+        return csb;
+      }
+    }
+
+    return null;
+  }
+
+  private static CoordSystemBuilderFactory findConventionByName(String convName) {
+    // Try to match on convention name as is
+    CoordSystemBuilderFactory coordSysFactory = findRegisteredConventionByName(convName);
+    if (coordSysFactory != null)
+      return coordSysFactory;
+
+    coordSysFactory = findLoadedConventionByName(convName);
+    if (coordSysFactory != null)
+      return coordSysFactory;
+
+    // Try splitting up the Convention string.
+    List<String> names = breakupConventionNames(convName);
+    for (String name : names) {
+      coordSysFactory = findRegisteredConventionByName(name);
+      if (coordSysFactory != null)
+        return coordSysFactory;
+    }
+    for (String name : names) {
+      coordSysFactory = findLoadedConventionByName(name);
+      if (coordSysFactory != null)
+        return coordSysFactory;
+    }
+
+    // last ditch desperate - split on white space
+    Iterable<String> tokens = StringUtil2.split(convName);
+    for (String name : tokens) {
+      coordSysFactory = findRegisteredConventionByName(name);
+      if (coordSysFactory != null)
+        return coordSysFactory;
+    }
+    for (String name : tokens) {
+      coordSysFactory = findLoadedConventionByName(name);
+      if (coordSysFactory != null)
+        return coordSysFactory;
+    }
+
+    return null;
+  }
+
   private static CoordSystemBuilderFactory findRegisteredConventionByName(String convName) {
     // look for registered conventions using convention name
-    CoordSystemBuilderFactory coordSysFactory = matchConvention(convName);
-    if (coordSysFactory != null) {
-      return coordSysFactory;
-    }
-    return null;
+    return matchConvention(convName);
   }
 
   private static CoordSystemBuilderFactory findLoadedConventionByName(String convName) {

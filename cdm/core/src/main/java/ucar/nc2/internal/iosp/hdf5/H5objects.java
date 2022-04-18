@@ -6,6 +6,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Formatter;
 import java.util.HashMap;
@@ -120,7 +121,7 @@ public class H5objects {
         isTypedef = true;
 
       } else if (warnings) { // we dont know what it is
-        log.debug("WARNING Unknown DataObjectFacade = {}", this);
+        log.warn("WARNING Unknown DataObjectFacade = {}", this);
         // return;
       }
 
@@ -1184,19 +1185,21 @@ public class H5objects {
         f.format(" %d", flags[i]);
       f.format(" endian= %s", endian == RandomAccessFile.BIG_ENDIAN ? "BIG" : "LITTLE");
 
-      if (type == 2)
+      if (type == 2) {
         f.format(" timeType= %s", timeType);
-      else if (type == 6) {
+      } else if (type == 6) {
         f.format("%n  members%n");
         for (StructureMember mm : members)
           f.format("   %s%n", mm);
-      } else if (type == 7)
+      } else if (type == 7) {
         f.format(" referenceType= %s", referenceType);
-      else if (type == 9) {
+      } else if (type == 8) {
+        f.format(" enumTypeName= %s", enumTypeName);
+      } else if (type == 9) {
         f.format(" isVString= %s", isVString);
         f.format(" isVlen= %s", isVlen);
       }
-      if ((type == 9) || (type == 10))
+      if ((type == 8) || (type == 9) || (type == 10))
         f.format(" parent base= {%s}", base);
       return f.toString();
     }
@@ -1323,8 +1326,7 @@ public class H5objects {
         base.read(objectName);
         debugDetail = saveDebugDetail;
 
-        // read the enums
-
+        // read the enum names
         String[] enumName = new String[nmembers];
         for (int i = 0; i < nmembers; i++) {
           if (version < 3)
@@ -1333,7 +1335,7 @@ public class H5objects {
             enumName[i] = readString(raf); // no padding
         }
 
-        // read the values; must switch to base byte order (!)
+        // read the enum values; must switch to base byte order (!)
         if (base.endian >= 0) {
           raf.order(base.endian);
         }
@@ -1345,9 +1347,9 @@ public class H5objects {
 
         enumTypeName = objectName;
         map = new TreeMap<>();
-        for (int i = 0; i < nmembers; i++)
+        for (int i = 0; i < nmembers; i++) {
           map.put(enumValue[i], enumName[i]);
-
+        }
         if (debugEnum) {
           for (int i = 0; i < nmembers; i++) {
             log.debug("   " + enumValue[i] + "=" + enumName[i]);
@@ -1396,7 +1398,7 @@ public class H5objects {
         base.read(objectName);
 
       } else if (warnings) {
-        log.debug(" WARNING not dealing with type= {}", type);
+        log.warn(" WARNING not dealing with type= {}", type);
       }
     }
 
@@ -1957,9 +1959,7 @@ public class H5objects {
               attMessage.read(dh.getPos());
               f.format(" %-30s", trunc(attMessage.getName(), 30));
             }
-            f.format(" heapId=:");
-            Misc.showBytes(heapId, f);
-            f.format("%n");
+            f.format(" heapId=:%s%n", Arrays.toString(heapId));
           }
 
         } catch (IOException e) {
@@ -2519,7 +2519,7 @@ public class H5objects {
     // the heap id is has already been read into a byte array at given pos
     HeapIdentifier(ByteBuffer bb, int pos) {
       bb.order(ByteOrder.LITTLE_ENDIAN); // header information is in le byte order
-      bb.position(pos); // reletive reading
+      bb.position(pos); // relative reading
       nelems = bb.getInt();
       heapAddress = header.isOffsetLong ? bb.getLong() : (long) bb.getInt();
       index = bb.getInt();
@@ -2626,6 +2626,8 @@ public class H5objects {
         long startPos = raf.getFilePointer();
         GlobalHeap.HeapObject o = new GlobalHeap.HeapObject();
         o.id = raf.readShort();
+        if (o.id == 0)
+          break; // ?? look
         o.refCount = raf.readShort();
         raf.skipBytes(4);
         o.dataSize = header.readLength();
@@ -2634,8 +2636,6 @@ public class H5objects {
         int dsize = ((int) o.dataSize) + padding((int) o.dataSize, 8);
         countBytes += dsize + 16;
 
-        if (o.id == 0)
-          break; // ?? look
         if (o.dataSize < 0)
           break; // ran off the end, must be done
         if (countBytes < 0)

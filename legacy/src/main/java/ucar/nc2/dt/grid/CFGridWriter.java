@@ -706,7 +706,7 @@ public class CFGridWriter {
 
   private void writeGlobalAttributes(NetcdfFileWriter writer, ucar.nc2.dt.GridDataset gds, LatLonRect llbb) {
     // global attributes
-    for (Attribute att : gds.getGlobalAttributes()) {
+    for (Attribute att : gds.attributes()) {
       if (att.getShortName().equals(CDM.FILE_FORMAT))
         continue;
       if (att.getShortName().equals(_Coordinate._CoordSysBuilder))

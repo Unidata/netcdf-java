@@ -1,14 +1,25 @@
 /*
- * Copyright (c) 1998-2018 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
+
 package ucar.nc2.dataset;
 
-import ucar.nc2.*;
+import com.google.common.collect.ImmutableCollection;
+import com.google.common.collect.ImmutableList;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Formatter;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.StringTokenizer;
+import ucar.nc2.Dimension;
+import ucar.nc2.Dimensions;
+import ucar.nc2.Variable;
 import ucar.nc2.constants.AxisType;
-import ucar.unidata.geoloc.*;
-import ucar.unidata.geoloc.projection.*;
-import java.util.*;
+import ucar.unidata.geoloc.ProjectionImpl;
+import ucar.unidata.geoloc.projection.LatLonProjection;
 
 /**
  * A CoordinateSystem specifies the coordinates of a Variable's values.
@@ -44,7 +55,8 @@ import java.util.*;
  * ucar.nc2.ft2.coverage.grid.GridCoordSys.
  *
  * @author caron
- * @see <a href="http://www.unidata.ucar.edu/software/netcdf-java/reference/CSObjectModel.html">Coordinate System Object
+ * @see <a href="https://www.unidata.ucar.edu/software/netcdf-java/reference/CSObjectModel.html">Coordinate System
+ *      Object
  *      Model</a>
  */
 public class CoordinateSystem {
@@ -64,7 +76,7 @@ public class CoordinateSystem {
       CoordinateAxis axis = axesSorted.get(i);
       if (i > 0)
         buff.append(" ");
-      buff.append(axis.getFullNameEscaped());
+      buff.append(axis.getFullName());
     }
     return buff.toString();
   }
@@ -162,22 +174,14 @@ public class CoordinateSystem {
       coordTrans.addAll(ct);
   }
 
-  /**
-   * get the List of CoordinateAxis objects
-   * 
-   * @return the List of CoordinateAxis objects
-   */
-  public List<CoordinateAxis> getCoordinateAxes() {
-    return coordAxes;
+  /** Get the List of CoordinateAxis objects */
+  public ImmutableList<CoordinateAxis> getCoordinateAxes() {
+    return ImmutableList.copyOf(coordAxes);
   }
 
-  /**
-   * get the List of CoordinateTransform objects
-   * 
-   * @return the List of CoordinateTransform objects
-   */
-  public List<CoordinateTransform> getCoordinateTransforms() {
-    return coordTrans;
+  /** Get the List of CoordinateTransform objects */
+  public ImmutableList<CoordinateTransform> getCoordinateTransforms() {
+    return ImmutableList.copyOf(coordTrans);
   }
 
   /**
@@ -198,13 +202,9 @@ public class CoordinateSystem {
     return ds;
   }
 
-  /**
-   * List of Dimensions that constitute the domain.
-   * 
-   * @return the List of Dimensions that constitute the domain.
-   */
-  public Collection<Dimension> getDomain() {
-    return domain;
+  /** get the Collection of Dimensions that constitute the domain. */
+  public ImmutableCollection<Dimension> getDomain() {
+    return ImmutableList.copyOf(domain);
   }
 
   /**
@@ -385,6 +385,7 @@ public class CoordinateSystem {
    * projection from any ProjectionCT CoordinateTransform.
    * 
    * @return ProjectionImpl or null if none.
+   *         TODO return Projection in ver6
    */
   public ProjectionImpl getProjection() {
     if (projection == null) {
@@ -499,6 +500,14 @@ public class CoordinateSystem {
    */
   public static boolean isSubset(Collection<Dimension> subset, Collection<Dimension> set) {
     for (Dimension d : subset) {
+      if (!(set.contains(d)))
+        return false;
+    }
+    return true;
+  }
+
+  public static boolean isSubset(Set<String> subset, Set<String> set) {
+    for (String d : subset) {
       if (!(set.contains(d)))
         return false;
     }
@@ -655,7 +664,7 @@ public class CoordinateSystem {
 
   ////////////////////////////////////////////////////////////////////////////
   /**
-   * Instances which have same name are equal.
+   * Instances which have same name, axes and transforms are equal.
    */
   public boolean equals(Object oo) {
     if (this == oo)
@@ -724,9 +733,12 @@ public class CoordinateSystem {
     StringTokenizer stoker = new StringTokenizer(builder.coordAxesNames);
     while (stoker.hasMoreTokens()) {
       String vname = stoker.nextToken();
-      CoordinateAxis axis = axes.stream().filter(a -> a.getShortName().equals(vname)).findFirst()
-          .orElseThrow(() -> new IllegalStateException("Cant find vname " + vname));
-      axesList.add(axis);
+      for (CoordinateAxis a : axes) {
+        String aname = a.getFullName();
+        if (aname.equals(vname)) {
+          axesList.add(a);
+        }
+      }
     }
     this.coordAxes = axesList;
 
@@ -766,11 +778,15 @@ public class CoordinateSystem {
       // collect dimensions
       List<Dimension> dims = axis.getDimensionsAll();
       domain.addAll(dims);
+    }
 
-      // Find the named coordinate transforms in allTransforms.
-      for (String wantTrans : builder.transNames) {
-        CoordinateTransform got = allTransforms.stream().filter(ct -> ct.name.equals(wantTrans)).findFirst()
-            .orElseThrow(() -> new IllegalStateException("Cant find transform " + wantTrans));
+    // Find the named coordinate transforms in allTransforms.
+    for (String wantTransName : builder.transNames) {
+      CoordinateTransform got = allTransforms.stream()
+          .filter(ct -> (wantTransName.equals(ct.getName())
+              || ct.getAttributeContainer() != null && wantTransName.equals(ct.getAttributeContainer().getName())))
+          .findFirst().orElse(null);
+      if (got != null) {
         coordTrans.add(got);
       }
 

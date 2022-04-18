@@ -1,26 +1,28 @@
-import edu.ucar.build.publishing.PublishingUtil
-
+// safe to apply to root project.
 apply plugin: 'maven-publish'
 
-// These are safe to apply to the root project. They'll basically have no effect.
-PublishingUtil.addMavenPublicationsForSoftwareComponents(project)
-PublishingUtil.adjustMavenPublicationPomScopes(project)
+// keeps track of any project with published components
+publishedProjects.add(project)
+
+tasks.withType(GenerateModuleMetadata) {
+  enabled = false
+}
 
 publishing {
-    repositories {
-        String version = rootProject.version as String
-        if (version.endsWith('SNAPSHOT')) {
-            maven {
-                name = 'snapshots'
-                url = 'https://artifacts.unidata.ucar.edu/repository/unidata-snapshots/'
-                // Set credentials in root/publishing.gradle.
-            }
-        } else {
-            maven {
-                name = 'releases'
-                url = 'https://artifacts.unidata.ucar.edu/repository/unidata-releases/'
-                // Set credentials in root/publishing.gradle.
-            }
-        }
+  repositories {
+    String version = rootProject.version as String
+    if (version.endsWith('SNAPSHOT')) {
+      maven {
+        name = 'snapshots'
+        url = 'https://artifacts.unidata.ucar.edu/repository/unidata-snapshots/'
+        // Set credentials in root/publishing.gradle.
+      }
+    } else {
+      maven {
+        name = 'releases'
+        url = 'https://artifacts.unidata.ucar.edu/repository/unidata-releases/'
+        // Set credentials in root/publishing.gradle.
+      }
     }
+  }
 }

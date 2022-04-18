@@ -8,8 +8,9 @@ package ucar.unidata.geoloc;
  * A location on the Earth.
  *
  * @author caron
- * @deprecated only use EarthLocation in 6.
+ * @deprecated only use EarthLocation in 6. This class will be renamed.
  */
+@Deprecated
 public class EarthLocationImpl implements EarthLocation {
   protected double lat, lon, alt;
 
@@ -26,7 +27,7 @@ public class EarthLocationImpl implements EarthLocation {
   }
 
   public LatLonPoint getLatLon() {
-    return new LatLonPointImpl(lat, lon);
+    return LatLonPoint.create(lat, lon);
   }
 
   public boolean isMissing() {
@@ -35,6 +36,8 @@ public class EarthLocationImpl implements EarthLocation {
 
   protected EarthLocationImpl() {}
 
+  /** @deprecated use EarthLocation.create */
+  @Deprecated
   public EarthLocationImpl(double lat, double lon, double alt) {
     this.lat = lat;
     this.lon = lon;

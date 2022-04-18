@@ -31,11 +31,12 @@ public class CatalogRef extends Dataset {
     return xlink;
   }
 
-  // LOOK not so sure about this, prevents immutable
+  @Deprecated
   public boolean isRead() {
     return isRead;
   }
 
+  @Deprecated
   public void setRead(boolean isRead) {
     this.isRead = isRead;
   }
@@ -74,7 +75,7 @@ public class CatalogRef extends Dataset {
     if (!dsPath.startsWith(configPath))
       return null;
 
-    // remove the matching part, the rest is the "reletive location"
+    // remove the matching part, the rest is the "relative location"
     String dataDir = dsPath.substring(configPath.length());
     if (dataDir.startsWith("/"))
       dataDir = dataDir.substring(1);

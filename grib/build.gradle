@@ -1,24 +1,28 @@
-description = "Decoder for the GRIB format."
-ext.title = "GRIB IOSP and Feature Collection"
+description = 'Decoder for the GRIB 1 and 2 formats.'
+ext.title = 'GRIB 1 and 2 IOSPs and Feature Collections'
 
 apply from: "$rootDir/gradle/any/dependencies.gradle"
-apply from: "$rootDir/gradle/any/java.gradle"
-apply from: "$rootDir/gradle/any/testing.gradle"
-apply from: "$rootDir/gradle/any/coverage.gradle"
-apply from: "$rootDir/gradle/any/archiving.gradle"
-apply from: "$rootDir/gradle/any/publishing.gradle"
+apply from: "$rootDir/gradle/any/java-library.gradle"
+apply from: "$rootDir/gradle/any/protobuf.gradle"
 
 dependencies {
-    compile project(':cdm:cdm-core')
-    compile libraries["protobuf-java"]
-    compile libraries["jdom2"]
-    compile libraries["jsr305"]
-    compile libraries["jj2000"]
-    compile libraries["guava"]
-    compile libraries["jcommander"]
-    compile libraries["re2j"]
-    compile libraries["slf4j-api"]
-    testCompile libraries["truth"]
-    testCompile libraries["jsoup"]
-    testRuntime libraries["logback-classic"]
+  api enforcedPlatform(project(':netcdf-java-platform'))
+  testImplementation enforcedPlatform(project(':netcdf-java-testing-platform'))
+
+  api project(':cdm:cdm-core')
+
+  compile 'com.google.protobuf:protobuf-java'
+  compile 'org.jdom:jdom2'
+  compile 'com.google.code.findbugs:jsr305'
+  compile 'edu.ucar:jj2000'
+  compile 'com.google.guava:guava'
+  compile 'com.beust:jcommander'
+  compile 'com.google.re2j:re2j'
+  compile 'org.slf4j:slf4j-api'
+
+  testImplementation project(':cdm-test-utils')
+
+  testImplementation 'com.google.truth:truth'
+  testImplementation 'org.jsoup:jsoup'
+  testRuntimeOnly 'ch.qos.logback:logback-classic'
 }

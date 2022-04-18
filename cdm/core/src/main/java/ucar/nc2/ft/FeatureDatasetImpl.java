@@ -4,6 +4,8 @@
  */
 package ucar.nc2.ft;
 
+import ucar.nc2.AttributeContainer;
+import ucar.nc2.AttributeContainerMutable;
 import ucar.nc2.Dimension;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.VariableSimpleIF;
@@ -11,7 +13,6 @@ import ucar.nc2.NetcdfFile;
 import ucar.nc2.Attribute;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
-// import ucar.nc2.units.DateRange;
 import ucar.nc2.util.cache.FileCacheIF;
 import ucar.unidata.geoloc.LatLonRect;
 import java.io.IOException;
@@ -75,9 +76,9 @@ public abstract class FeatureDatasetImpl implements FeatureDataset {
 
     this.title = netcdfDataset.getTitle();
     if (title == null)
-      title = netcdfDataset.getRootGroup().findAttValueIgnoreCase("title", null);
+      title = netcdfDataset.getRootGroup().findAttributeString("title", null);
     if (desc == null)
-      desc = netcdfDataset.getRootGroup().findAttValueIgnoreCase("description", null);
+      desc = netcdfDataset.getRootGroup().findAttributeString("description", null);
   }
 
   protected void setTitle(String title) {
@@ -130,12 +131,22 @@ public abstract class FeatureDatasetImpl implements FeatureDataset {
     return location;
   }
 
+  @Override
+  public AttributeContainer attributes() {
+    return netcdfDataset != null ? netcdfDataset.getRootGroup().attributes()
+        : new AttributeContainerMutable(title).toImmutable();
+  }
+
+  /** @deprecated use attributes() */
+  @Deprecated
   public List<Attribute> getGlobalAttributes() {
     if (netcdfDataset == null)
       return new ArrayList<>();
     return netcdfDataset.getGlobalAttributes();
   }
 
+  /** @deprecated use attributes() */
+  @Deprecated
   public Attribute findGlobalAttributeIgnoreCase(String name) {
     if (netcdfDataset == null)
       return null;
@@ -143,7 +154,6 @@ public abstract class FeatureDatasetImpl implements FeatureDataset {
   }
 
   public void getDetailInfo(java.util.Formatter sf) {
-
     sf.format("FeatureDataset on location= %s%n", getLocation());
     sf.format("  featureType= %s%n", getFeatureType());
     sf.format("  title= %s%n", getTitle());
@@ -157,10 +167,9 @@ public abstract class FeatureDatasetImpl implements FeatureDataset {
       sf.format("  bb   = %s%n", getBoundingBox().toString2());
 
     sf.format("  has netcdf = %b%n", (getNetcdfFile() != null));
-    List<Attribute> ga = getGlobalAttributes();
-    if (!ga.isEmpty()) {
+    if (!attributes().isEmpty()) {
       sf.format("  Attributes%n");
-      for (Attribute a : ga)
+      for (Attribute a : attributes())
         sf.format("    %s%n", a);
     }
 
@@ -232,13 +241,15 @@ public abstract class FeatureDatasetImpl implements FeatureDataset {
     }
   }
 
-  // release any resources like file handles
+  /** @deprecated do not use */
+  @Deprecated
   public void release() throws IOException {
     if (netcdfDataset != null)
       netcdfDataset.release();
   }
 
-  // reacquire any resources like file handles
+  /** @deprecated do not use */
+  @Deprecated
   public void reacquire() throws IOException {
     if (netcdfDataset != null)
       netcdfDataset.reacquire();
@@ -249,6 +260,8 @@ public abstract class FeatureDatasetImpl implements FeatureDataset {
     return (netcdfDataset != null) ? netcdfDataset.getLastModified() : 0;
   }
 
+  /** @deprecated do not use */
+  @Deprecated
   @Override
   public synchronized void setFileCache(FileCacheIF fileCache) {
     this.fileCache = fileCache;

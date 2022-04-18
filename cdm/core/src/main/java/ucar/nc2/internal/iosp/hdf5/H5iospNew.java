@@ -4,9 +4,13 @@
  */
 package ucar.nc2.internal.iosp.hdf5;
 
+import static ucar.nc2.NetcdfFile.IOSP_MESSAGE_GET_NETCDF_FILE_FORMAT;
+
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.charset.Charset;
+import java.util.Optional;
 import ucar.ma2.Array;
 import ucar.ma2.ArrayStructure;
 import ucar.ma2.ArrayStructureBB;
@@ -32,7 +36,9 @@ import ucar.nc2.iosp.LayoutRegular;
 import ucar.nc2.iosp.netcdf3.N3iosp;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.util.CancelTask;
+import ucar.nc2.write.NetcdfFileFormat;
 import ucar.unidata.io.RandomAccessFile;
+import javax.annotation.Nullable;
 
 /**
  * HDF5 I/O
@@ -105,6 +111,7 @@ public class H5iospNew extends AbstractIOServiceProvider {
   private H5headerNew header;
   private boolean isEos;
   boolean includeOriginalAttributes;
+  private Charset valueCharset;
 
   @Override
   public void build(RandomAccessFile raf, Group.Builder rootGroup, CancelTask cancelTask) throws IOException {
@@ -116,9 +123,9 @@ public class H5iospNew extends AbstractIOServiceProvider {
 
     // check if its an HDF5-EOS file
     if (useHdfEos) {
-      rootGroup.findGroup(HdfEos.HDF5_GROUP).ifPresent(eosGroup -> {
+      rootGroup.findGroupLocal(HdfEos.HDF5_GROUP).ifPresent(eosGroup -> {
         try {
-          isEos = HdfEos.amendFromODL(header, eosGroup);
+          isEos = HdfEos.amendFromODL(raf.getLocation(), header, eosGroup);
         } catch (IOException e) {
           log.warn(" HdfEos.amendFromODL failed");
         }
@@ -127,18 +134,52 @@ public class H5iospNew extends AbstractIOServiceProvider {
   }
 
   @Override
+  public Object sendIospMessage(Object message) {
+    if (message instanceof Charset) {
+      setValueCharset((Charset) message);
+    }
+    if (message.equals(IOSP_MESSAGE_GET_NETCDF_FILE_FORMAT)) {
+      if (!header.isNetcdf4()) {
+        return null;
+      }
+      return header.isClassic() ? NetcdfFileFormat.NETCDF4_CLASSIC : NetcdfFileFormat.NETCDF4;
+    }
+    return super.sendIospMessage(message);
+  }
+
+  /**
+   * Return {@link Charset value charset} if it was defined. Definition of charset
+   * occurs by sending a charset as a message using the {@link #sendIospMessage}
+   * method.
+   * 
+   * @return {@link Charset value charset} if it was defined.
+   */
+  protected Optional<Charset> getValueCharset() {
+    return Optional.ofNullable(valueCharset);
+  }
+
+  /**
+   * Define {@link Charset value charset}.
+   * 
+   * @param charset may be null.
+   */
+  protected void setValueCharset(@Nullable Charset charset) {
+    this.valueCharset = charset;
+  }
+
+  @Override
   public void open(RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask) throws IOException {
     super.open(raf, ncfile, cancelTask);
-    Group.Builder rootGroup = Group.builder(null).setName("").setNcfile(ncfile);
+    Group.Builder rootGroup = Group.builder().setName("").setNcfile(ncfile);
     header = new H5headerNew(raf, rootGroup, this);
     header.read(null);
-    ncfile.setRootGroup(rootGroup.build(null));
+    ncfile.setRootGroup(rootGroup.build());
 
     // check if its an HDF5-EOS file
     if (useHdfEos) {
-      rootGroup.findGroup(HdfEos.HDF5_GROUP).ifPresent(eosGroup -> {
+      rootGroup.findGroupLocal(HdfEos.HDF5_GROUP).ifPresent(eosGroup -> {
         try {
-          isEos = HdfEos.amendFromODL(header, eosGroup);
+          isEos = HdfEos.amendFromODL(raf.getLocation(), header, eosGroup);
         } catch (IOException e) {
           log.warn(" HdfEos.amendFromODL failed");
         }
@@ -402,7 +443,7 @@ public class H5iospNew extends AbstractIOServiceProvider {
       assert v2 != null;
       H5headerNew.Vinfo vm = (H5headerNew.Vinfo) v2.getSPobject();
 
-      // apparently each member may have seperate byte order (!!!??)
+      // apparently each member may have separate byte order (!!!??)
       if (vm.typeInfo.endian >= 0)
         m.setDataObject(
             vm.typeInfo.endian == RandomAccessFile.LITTLE_ENDIAN ? ByteOrder.LITTLE_ENDIAN : ByteOrder.BIG_ENDIAN);
@@ -492,7 +533,6 @@ public class H5iospNew extends AbstractIOServiceProvider {
    * @param endian byte order
    * @return primitive array with data read in
    * @throws java.io.IOException if read error
-   * @throws ucar.ma2.InvalidRangeException if invalid section
    */
   Object readDataPrimitive(Layout layout, DataType dataType, int[] shape, Object fillValue, int endian,
       boolean convertChar) throws IOException {

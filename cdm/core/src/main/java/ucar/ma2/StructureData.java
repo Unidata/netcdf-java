@@ -70,29 +70,10 @@ import java.util.List;
  */
 
 public abstract class StructureData {
+  public static final StructureData EMPTY = new StructureDataW(StructureMembers.builder().setName("empty").build());
 
-  public static final StructureData EMPTY = new StructureDataScalar("empty");
-
-  /*
-   * Copy all the data out of 'from' and into a new StructureData.
-   * 
-   * @param from copy from here
-   * 
-   * @return a new StructureData object.
-   *
-   * public static StructureData copy( StructureData from) {
-   * return new StructureDataW( from);
-   * }
-   */
-
-  /////////////////////////////////////////////////////////
   protected StructureMembers members;
 
-  /**
-   * Constructor.
-   *
-   * @param members StructureData is always contained in a StructureArray.
-   */
   protected StructureData(StructureMembers members) {
     this.members = members;
   }

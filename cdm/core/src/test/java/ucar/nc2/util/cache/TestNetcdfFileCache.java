@@ -10,6 +10,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.nc2.dataset.DatasetUrl;
+import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.NetcdfFile;
@@ -36,7 +37,7 @@ public class TestNetcdfFileCache {
   static public class MyFileFactory implements FileFactory {
     public FileCacheable open(DatasetUrl location, int buffer_size, CancelTask cancelTask, Object iospMessage)
         throws IOException {
-      return NetcdfDataset.openFile(location, buffer_size, cancelTask, iospMessage);
+      return NetcdfDatasets.openFile(location, buffer_size, cancelTask, iospMessage);
     }
   }
 
@@ -55,7 +56,7 @@ public class TestNetcdfFileCache {
         // System.out.println(" open "+f.getPath());
         try {
           String want = StringUtil2.replace(f.getPath(), '\\', "/");
-          DatasetUrl durl = new DatasetUrl(null, want);
+          DatasetUrl durl = DatasetUrl.create(null, want);
           cache.acquire(factory, durl);
           count++;
         } catch (IOException e) {
@@ -340,7 +341,7 @@ public class TestNetcdfFileCache {
     }
 
     public FileCacheable call() throws Exception {
-      DatasetUrl durl = new DatasetUrl(null, location);
+      DatasetUrl durl = DatasetUrl.create(null, location);
       return cache.acquire(factory, durl);
     }
   }

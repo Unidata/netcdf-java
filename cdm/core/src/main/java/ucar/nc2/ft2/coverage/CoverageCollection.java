@@ -6,7 +6,6 @@ package ucar.nc2.ft2.coverage;
 
 import ucar.nc2.Attribute;
 import ucar.nc2.AttributeContainer;
-import ucar.nc2.AttributeContainerMutable;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.util.Indent;
@@ -140,18 +139,31 @@ public class CoverageCollection implements Closeable, CoordSysContainer {
     return name;
   }
 
+  /** Get the global attributes. */
+  public AttributeContainer attributes() {
+    return atts;
+  }
+
+  /** @deprecated use attributes() */
+  @Deprecated
   public List<Attribute> getGlobalAttributes() {
     return atts.getAttributes();
   }
 
+  /** @deprecated use attributes() */
+  @Deprecated
   public String findAttValueIgnoreCase(String attName, String defaultValue) {
-    return atts.findAttValueIgnoreCase(attName, defaultValue);
+    return atts.findAttributeString(attName, defaultValue);
   }
 
+  /** @deprecated use attributes() */
+  @Deprecated
   public Attribute findAttribute(String attName) {
     return atts.findAttribute(attName);
   }
 
+  /** @deprecated use attributes() */
+  @Deprecated
   public Attribute findAttributeIgnoreCase(String attName) {
     return atts.findAttributeIgnoreCase(attName);
   }

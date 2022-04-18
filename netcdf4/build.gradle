@@ -1,25 +1,27 @@
-description = "An IOSP for NetCDF-4 that loads the C library to read and write files."
-ext.title = "NetCDF-4 IOSP"
-ext.url = "https://www.unidata.ucar.edu/software/netcdf/"
+description = 'An IOSP for NetCDF-4 that loads the C library to read and write files.'
+ext.title = 'NetCDF-4 IOSP'
+ext.url = 'https://www.unidata.ucar.edu/software/netcdf/'
 
 apply from: "$rootDir/gradle/any/dependencies.gradle"
-apply from: "$rootDir/gradle/any/java.gradle"
-apply from: "$rootDir/gradle/any/testing.gradle"
-apply from: "$rootDir/gradle/any/coverage.gradle"
-apply from: "$rootDir/gradle/any/archiving.gradle"
-apply from: "$rootDir/gradle/any/publishing.gradle"
-
+apply from: "$rootDir/gradle/any/java-library.gradle"
 apply plugin: 'groovy'  // For Spock tests.
+apply plugin: 'jacoco'
 
 dependencies {
-    compile project(':cdm:cdm-core')
-    compile libraries["jna"]
-    compile libraries["slf4j-api"]
-    testRuntime libraries["logback-classic"]
-    
-    // These are for Spock.
-    testCompile libraries["groovy-all"]
-    testCompile libraries["spock-core"]
+  api enforcedPlatform(project(':netcdf-java-platform'))
+  testImplementation enforcedPlatform(project(':netcdf-java-testing-platform'))
+
+  compile project(':cdm:cdm-core')
+  compile 'net.java.dev.jna:jna'
+  compile 'org.slf4j:slf4j-api'
+
+  testImplementation project(':cdm-test-utils')
+
+  testImplementation 'com.google.truth:truth'
+  testImplementation 'org.codehaus.groovy:groovy-all' // for spock
+  testImplementation 'org.spockframework:spock-core'
+
+  testRuntimeOnly 'ch.qos.logback:logback-classic'
 }
 
 // Most of the tests in this subproject require that the native C library be loaded. However, there are a handful
@@ -28,26 +30,68 @@ dependencies {
 // the tests (using SourceSets) and run them in different tasks.
 
 sourceSets {
-    unloadedTest {
-        groovy.srcDir file('src/unloadedTest/groovy')
-        resources.srcDir file('src/unloadedTest/resources')
-        compileClasspath += sourceSets.main.output + configurations.testCompile
-        runtimeClasspath += output + sourceSets.main.output + configurations.testRuntime
+  unloadedTest {
+    groovy.srcDir file('src/unloadedTest/groovy')
+    resources.srcDir file('src/unloadedTest/resources')
+    compileClasspath += sourceSets.main.output + configurations.testCompileClasspath
+    runtimeClasspath += output + sourceSets.main.output + configurations.testRuntimeClasspath
+  }
+}
+
+// unloaded test task using "configuration avoidance"
+def unloadedTest = tasks.register('unloadedTest', Test) {
+  group = 'verification'
+  description = 'Runs tests without the native C library loaded.'
+  testClassesDirs = sourceSets.unloadedTest.output.classesDirs
+  classpath = sourceSets.unloadedTest.runtimeClasspath
+}
+
+// unloaded test task using "configuration avoidance"
+def jacocoFullTestReport = tasks.register('jacocoFullTestReport', JacocoReport) {
+  group = 'reports'
+  description = 'Creates report for tests with and without the native C library loaded.'
+}
+
+jacocoFullTestReport.configure {
+  dependsOn test, unloadedTest
+
+  // The jacoco plugin adds the "jacocoTestReport" task and it only reports on "test" by default.
+  // Here we add "unloadedTest" to that report as well. We could create a separate JacocoReport task for
+  // "unloadedTest", but meh. The report will be saved at "netcdf4/build/reports/jacoco/test/html/index.html".
+  Closure isExtendedByJacoco = {Task task -> task.extensions.findByType(JacocoTaskExtension)
+  }
+  Collection<Task> tasksExtendedByJacoco = project.tasks.matching(isExtendedByJacoco).flatten()
+  Collection<File> subprojectExeData = tasksExtendedByJacoco*.jacoco*.destinationFile
+
+  // because this has two sets of tests, we need to combine their source and class directories
+  additionalSourceDirs.from
+      sourceSets.main*.allSource*.srcDirs.flatten() + sourceSets.unloadedTest*.allSource*.srcDirs.flatten()
+  classDirectories.from = files(sourceSets.main*.output + sourceSets.unloadedTest*.output)
+
+  executionData.from = files(subprojectExeData.findAll {
+    it.exists()
+  })
+
+  // By default, JacocoReport runs onlyIf ALL of the executionData exist. We want it to run if ANY exists.
+  setOnlyIf {
+    executionData.any {
+      it.exists()
     }
+  }
+
+  // just the html here, as it's only for devs and not something that gets submitted elsewhere
+  reports {
+    xml.enabled = false
+    html.destination file("${buildDir}/reports/allTests")
+    csv.enabled = false
+  }
 }
 
-task unloadedTest(type: Test, group: "verification") {
-    description = 'Runs tests without the native C library loaded.'
-    testClassesDir = sourceSets.unloadedTest.output.classesDir
-    classpath = sourceSets.unloadedTest.runtimeClasspath
-    mustRunAfter tasks.test
+check.configure {
+  dependsOn test, unloadedTest
+  finalizedBy jacocoFullTestReport
 }
 
-check.dependsOn tasks.unloadedTest
-
-jacocoTestReport {
-    // The jacoco plugin adds the "jacocoTestReport" task and it only reports on "test" by default.
-    // Here we add "unloadedTest" to that report as well. We could create a separate JacocoReport task for
-    // "unloadedTest", but meh. The report will be saved at "netcdf4/build/reports/jacoco/test/html/index.html".
-    executionData tasks.unloadedTest
+unloadedTest.configure {
+  mustRunAfter test
 }

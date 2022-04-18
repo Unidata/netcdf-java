@@ -1,0 +1,48 @@
+apply plugin: 'java-library'
+apply from: "$rootDir/gradle/any/javadoc.gradle"
+apply from: "$rootDir/gradle/any/testing.gradle"
+apply from: "$rootDir/gradle/any/archiving.gradle"
+apply from: "$rootDir/gradle/any/coverage.gradle"
+apply from: "$rootDir/gradle/any/publishing.gradle"
+apply from: "$rootDir/gradle/any/spotless.gradle"
+
+apply plugin: 'maven-publish'
+
+java {
+  sourceCompatibility = JavaVersion.VERSION_1_8
+  targetCompatibility = JavaVersion.VERSION_1_8
+}
+
+def sourceJar = tasks.register('sourceJar', Jar) {
+  classifier 'sources'
+  from sourceSets.main.allJava
+}
+
+def javadocJar = tasks.register('javadocJar', Jar) {
+  dependsOn javadoc
+  classifier 'javadoc'
+  from files(javadoc.destinationDir)
+}
+
+publish.configure {
+  dependsOn sourceJar
+  dependsOn javadocJar
+}
+
+publishing {
+  publications {
+    mavenSources(MavenPublication) {
+      from components.java
+      artifact tasks.sourceJar
+      artifact tasks.javadocJar
+    }
+  }
+}
+
+// Will apply to "compileJava", "compileTestJava", "compileSourceSetJava", etc.
+tasks.withType(JavaCompile).all {
+  options.encoding = 'UTF-8'
+
+  // show deprecation details
+  //options.compilerArgs = ['-Xlint:deprecation']
+}

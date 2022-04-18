@@ -1,6 +1,13 @@
+/*
+ * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
+ * See LICENSE for license information.
+ */
+
 package ucar.nc2.internal.dataset;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Multimap;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -16,6 +23,7 @@ import ucar.ma2.DataType;
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
 import ucar.nc2.Group;
+import ucar.nc2.NetcdfFiles;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.CF;
@@ -23,10 +31,12 @@ import ucar.nc2.constants._Coordinate;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.CoordinateSystem;
 import ucar.nc2.dataset.CoordinateTransform;
-import ucar.nc2.dataset.CoordinatesHelper;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.StructureDS;
 import ucar.nc2.dataset.VariableDS;
+import ucar.nc2.dataset.spi.CoordSystemBuilderFactory;
 import ucar.nc2.util.CancelTask;
+import ucar.nc2.util.EscapeStrings;
 import ucar.unidata.util.Parameter;
 
 /**
@@ -55,7 +65,21 @@ import ucar.unidata.util.Parameter;
  * B. You could explicitly add it by overriding assignCoordinateTransforms()
  */
 public class CoordSystemBuilder {
+  protected static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CoordSystemBuilder.class);
   private static boolean useMaximalCoordSys = true;
+  private static final String CONVENTION_NAME = _Coordinate.Convention;
+
+  public static class Factory implements CoordSystemBuilderFactory {
+    @Override
+    public String getConventionName() {
+      return CONVENTION_NAME;
+    }
+
+    @Override
+    public CoordSystemBuilder open(NetcdfDataset.Builder datasetBuilder) {
+      return new CoordSystemBuilder(datasetBuilder);
+    }
+  }
 
   /**
    * Calculate if this is a classic coordinate variable: has same name as its first dimension.
@@ -65,7 +89,7 @@ public class CoordSystemBuilder {
    */
   public static boolean isCoordinateVariable(Variable.Builder<?> vb) {
     // Structures and StructureMembers cant be coordinate variables
-    if ((vb.dataType == DataType.STRUCTURE) || vb.parentStruct != null)
+    if ((vb.dataType == DataType.STRUCTURE) || vb.getParentStructureBuilder() != null)
       return false;
 
     int rank = vb.getRank();
@@ -84,10 +108,10 @@ public class CoordSystemBuilder {
     return false;
   }
 
-  public static int countDomainSize(Group.Builder gb, Variable.Builder<?>... axes) {
+  public static int countDomainSize(Variable.Builder<?>... axes) {
     Set<Dimension> domain = new HashSet<>();
     for (Variable.Builder<?> axis : axes) {
-      domain.addAll(axis.getDimensions(gb));
+      domain.addAll(axis.getDimensions());
     }
     return domain.size();
   }
@@ -97,21 +121,27 @@ public class CoordSystemBuilder {
    * the variable. If char variable, last dimension is left out.
    *
    * @param axis check if this axis is ok for the given variable
-   * @param vb the given variable
+   * @param vp the given variable
    * @return true if all of the dimensions in the axis also appear in the variable.
    */
-  private static boolean isCoordinateAxisForVariable(CoordinateAxis.Builder<?> axis, VariableDS.Builder<?> vb) {
-    List<Dimension> varDims = vb.getDimensionsAll();
-    List<Dimension> axisDims = axis.getDimensionsAll();
+  protected boolean isCoordinateAxisForVariable(CoordinateAxis.Builder<?> axis, VarProcess vp) {
+    ImmutableList<Dimension> varDims = vp.vb.getDimensions();
+    ImmutableList<Dimension> axisDims = axis.getDimensions();
 
     // a CHAR variable must really be a STRING, so leave out the last (string length) dimension
     int checkDims = axisDims.size();
-    if (axis.dataType == DataType.CHAR) {
+    if (axis.dataType == DataType.CHAR)
       checkDims--;
-    }
 
     for (int i = 0; i < checkDims; i++) {
       Dimension axisDim = axisDims.get(i);
+      // added in 6, but causes the following tests to fail:
+      // ucar.nc2.dataset.TestCoordSysCompareMore.compareCoordSysBuilders:
+      // --> cdmUnitTest/formats/hdf4/ssec/CAL_LID_L1-Launch-V1-06.2006-07-07T21-20-40ZD.hdf
+      // --> cdmUnitTest/formats/hdf5/SMAP_L4_SM_aup_20140115T030000_V05007_001.h5
+      // if (!axisDim.isShared()) { // anon dimensions dont count. TODO does this work?
+      // continue;
+      // }
       if (!varDims.contains(axisDim)) {
         return false;
       }
@@ -126,10 +156,10 @@ public class CoordSystemBuilder {
   protected CoordinatesHelper.Builder coords;
 
   protected List<VarProcess> varList = new ArrayList<>();
-  protected Multimap<String, VarProcess> coordVarsForDimension = ArrayListMultimap.create(); // coordinate variables for
-                                                                                             // Dimension (name)
-
-  protected String conventionName = _Coordinate.Convention; // default name of Convention, override in subclass
+  // coordinate variables for Dimension (full name)
+  protected Multimap<String, VarProcess> coordVarsForDimension = ArrayListMultimap.create();
+  // default name of Convention, override in subclass
+  protected String conventionName = _Coordinate.Convention;
   protected Formatter parseInfo = new Formatter();
   protected Formatter userAdvice = new Formatter();
   protected boolean debug;
@@ -141,7 +171,7 @@ public class CoordSystemBuilder {
     this.coords = datasetBuilder.coords;
   }
 
-  public void setConventionUsed(String convName) {
+  protected void setConventionUsed(String convName) {
     this.conventionName = convName;
   }
 
@@ -149,7 +179,7 @@ public class CoordSystemBuilder {
     return conventionName;
   }
 
-  public void addUserAdvice(String advice) {
+  protected void addUserAdvice(String advice) {
     userAdvice.format("%s", advice);
   }
 
@@ -206,21 +236,28 @@ public class CoordSystemBuilder {
   }
 
   private void addVariables(Group.Builder group) {
-    for (Variable.Builder v : group.vbuilders) {
-      if (v instanceof VariableDS.Builder) {
-        varList.add(new VarProcess(group, (VariableDS.Builder) v));
+    for (Variable.Builder vb : group.vbuilders) {
+      if (vb instanceof VariableDS.Builder) {
+        varList.add(new VarProcess(group, (VariableDS.Builder) vb));
+      } else if (vb instanceof StructureDS.Builder) {
+        addStructure(group, (StructureDS.Builder) vb);
       }
-
-      // TODO
-      /*
-       * if (v instanceof Structure.Builder) {
-       * List<Variable.Builder> nested = ((Structure.Builder v).vbuilders();
-       * addVariables(nested, varProcessList);
-       * }
-       */
     }
 
-    // TODO recurse?
+    for (Group.Builder nested : group.gbuilders) {
+      addVariables(nested);
+    }
+  }
+
+  private void addStructure(Group.Builder group, StructureDS.Builder<?> structure) {
+    List<Variable.Builder<?>> nested = structure.vbuilders;
+    for (Variable.Builder<?> vb : nested) {
+      if (vb instanceof VariableDS.Builder) {
+        varList.add(new VarProcess(group, (VariableDS.Builder) vb));
+      } else if (vb instanceof StructureDS.Builder) { // LOOK the actual Structure isnt in the VarProcess list.
+        addStructure(group, (StructureDS.Builder) vb);
+      }
+    }
   }
 
   /** Everything named in the coordinateAxes or coordinates attribute are Coordinate axes. */
@@ -242,10 +279,10 @@ public class CoordSystemBuilder {
       String vname = stoker.nextToken();
       VarProcess ap = findVarProcess(vname, vp);
       if (ap == null) {
-        Group g = vp.vb.parent; // LOOK is the group heirarchy in place ?
-        Variable v = g.findVariableOrInParent(vname);
-        if (v != null) {
-          ap = findVarProcess(v.getFullName(), vp);
+        Group.Builder gb = vp.vb.getParentGroupBuilder();
+        Optional<Variable.Builder<?>> vopt = gb.findVariableOrInParent(vname);
+        if (vopt.isPresent()) {
+          ap = findVarProcess(vopt.get().getFullName(), vp);
         } else {
           parseInfo.format("***Cant find coordAxis %s referenced from var= %s%n", vname, vp);
           userAdvice.format("***Cant find coordAxis %s referenced from var= %s%n", vname, vp);
@@ -374,8 +411,8 @@ public class CoordSystemBuilder {
             parseInfo.format("***Not a Coordinate System variable %s referenced from var= %s%n", vname, vp);
             userAdvice.format("***Not a Coordinate System variable %s referenced from var= %s%n", vname, vp);
           } else {
-            String sysName = coords.makeCanonicalName(ap.cs.coordAxesNames);
-            vp.vb.addCoordinateSystem(sysName);
+            String sysName = coords.makeCanonicalName(vp.vb, ap.cs.coordAxesNames);
+            vp.vb.addCoordinateSystemName(sysName);
           }
         }
       }
@@ -388,13 +425,13 @@ public class CoordSystemBuilder {
       }
 
       // get list of dimensions from '_CoordinateSystemFor' attribute
-      List<Dimension> dimList = new ArrayList<>(6);
+      Set<String> dimList = new HashSet<>();
       StringTokenizer stoker = new StringTokenizer(csVar.coordinateSystemsFor);
       while (stoker.hasMoreTokens()) {
         String dname = stoker.nextToken();
         Optional<Dimension> dimOpt = rootGroup.findDimension(dname);
         if (dimOpt.isPresent()) {
-          dimList.add(dimOpt.get());
+          dimList.add(dimOpt.get().getShortName());
         } else {
           parseInfo.format("***Cant find Dimension %s referenced from CoordSys var= %s%n", dname, csVar);
           userAdvice.format("***Cant find Dimension %s referenced from CoordSys var= %s%n", dname, csVar);
@@ -406,7 +443,7 @@ public class CoordSystemBuilder {
         if (!vp.hasCoordinateSystem() && vp.isData() && (csVar.cs != null)) {
           if (CoordinateSystem.isSubset(dimList, vp.vb.getDimensionsAll())
               && CoordinateSystem.isSubset(vp.vb.getDimensionsAll(), dimList)) {
-            vp.vb.addCoordinateSystem(csVar.cs.coordAxesNames);
+            vp.vb.addCoordinateSystemName(csVar.cs.coordAxesNames);
           }
         }
       }
@@ -415,15 +452,15 @@ public class CoordSystemBuilder {
     // look for explicit listings of coordinate axes
     for (VarProcess vp : varList) {
       if (!vp.hasCoordinateSystem() && (vp.coordinateAxes != null) && vp.isData()) {
-        String coordSysName = coords.makeCanonicalName(vp.coordinateAxes);
+        String coordSysName = coords.makeCanonicalName(vp.vb, vp.coordinateAxes);
         Optional<CoordinateSystem.Builder> cso = coords.findCoordinateSystem(coordSysName);
         if (cso.isPresent()) {
-          vp.vb.addCoordinateSystem(coordSysName);
+          vp.vb.addCoordinateSystemName(coordSysName);
           parseInfo.format(" assigned explicit CoordSystem '%s' for var= %s%n", coordSysName, vp);
         } else {
           CoordinateSystem.Builder csnew = CoordinateSystem.builder().setCoordAxesNames(coordSysName);
           coords.addCoordinateSystem(csnew);
-          vp.vb.addCoordinateSystem(coordSysName);
+          vp.vb.addCoordinateSystemName(coordSysName);
           parseInfo.format(" created explicit CoordSystem '%s' for var= %s%n", coordSysName, vp);
         }
       }
@@ -449,12 +486,12 @@ public class CoordSystemBuilder {
         String csName = coords.makeCanonicalName(dataAxesList);
         Optional<CoordinateSystem.Builder> csOpt = coords.findCoordinateSystem(csName);
         if (csOpt.isPresent() && coords.isComplete(csOpt.get(), vp.vb)) {
-          vp.vb.addCoordinateSystem(csName);
+          vp.vb.addCoordinateSystemName(csName);
           parseInfo.format(" assigned implicit CoordSystem '%s' for var= %s%n", csName, vp);
         } else {
           CoordinateSystem.Builder csnew = CoordinateSystem.builder().setCoordAxesNames(csName).setImplicit(true);
           if (coords.isComplete(csnew, vp.vb)) {
-            vp.vb.addCoordinateSystem(csName);
+            vp.vb.addCoordinateSystemName(csName);
             coords.addCoordinateSystem(csnew);
             parseInfo.format(" created implicit CoordSystem '%s' for var= %s%n", csName, vp);
           }
@@ -471,7 +508,7 @@ public class CoordSystemBuilder {
   private void makeCoordinateSystemsMaximal() {
 
     boolean requireCompleteCoordSys =
-        !datasetBuilder.enhanceMode.contains(NetcdfDataset.Enhance.IncompleteCoordSystems);
+        !datasetBuilder.getEnhanceMode().contains(NetcdfDataset.Enhance.IncompleteCoordSystems);
 
     for (VarProcess vp : varList) {
       if (vp.hasCoordinateSystem() || !vp.isData()) {
@@ -481,7 +518,7 @@ public class CoordSystemBuilder {
       // look through all axes that fit
       List<CoordinateAxis.Builder> axisList = new ArrayList<>();
       for (CoordinateAxis.Builder axis : coords.coordAxes) {
-        if (isCoordinateAxisForVariable(axis, vp.vb)) {
+        if (isCoordinateAxisForVariable(axis, vp)) {
           axisList.add(axis);
         }
       }
@@ -507,7 +544,7 @@ public class CoordSystemBuilder {
       }
 
       if (csOpt.isPresent() && okToBuild) {
-        vp.vb.addCoordinateSystem(csName);
+        vp.vb.addCoordinateSystemName(csName);
         parseInfo.format(" assigned maximal CoordSystem '%s' for var= %s%n", csName, vp);
 
       } else {
@@ -520,7 +557,7 @@ public class CoordSystemBuilder {
         }
         if (okToBuild) {
           csnew.setImplicit(true);
-          vp.vb.addCoordinateSystem(csName);
+          vp.vb.addCoordinateSystemName(csName);
           coords.addCoordinateSystem(csnew);
           parseInfo.format(" created maximal CoordSystem '%s' for var= %s%n", csnew.coordAxesNames, vp);
         }
@@ -535,27 +572,20 @@ public class CoordSystemBuilder {
   protected void makeCoordinateTransforms() {
     for (VarProcess vp : varList) {
       if (vp.isCoordinateTransform && vp.ct == null) { // TODO dont have ncd
-        vp.ct =
-            CoordinateTransform.builder().setName(vp.vb.shortName).setAttributeContainer(vp.vb.getAttributeContainer());
-        coords.addCoordinateTransform(vp.ct);
-        // vp.ct = CoordTransBuilder.makeCoordinateTransform(null, vp.vb.getAttributeContainer(), parseInfo,
-        // userAdvice);
+        vp.ct = makeCoordinateTransform(vp.vb);
+        if (vp.ct != null) {
+          coords.addCoordinateTransform(vp.ct);
+        }
       }
     }
   }
 
-  /*
-   * Apparently never called ??
-   * protected CoordinateTransform makeCoordinateTransform(NetcdfDataset ds, Variable ctv) {
-   * return CoordTransBuilder.makeCoordinateTransform(ds, ctv, parseInfo, userAdvice);
-   * }
-   */
+  protected CoordinateTransform.Builder makeCoordinateTransform(VariableDS.Builder<?> vb) {
+    return CoordinateTransform.builder().setName(vb.getFullName()).setAttributeContainer(vb.getAttributeContainer());
+  }
 
-  /**
-   * Assign CoordinateTransform objects to Variables and Coordinate Systems.
-   */
+  /** Assign CoordinateTransform objects to Variables and Coordinate Systems. */
   protected void assignCoordinateTransforms() {
-
     // look for explicit transform assignments on the coordinate systems
     for (VarProcess vp : varList) {
       if (vp.isCoordinateSystem && vp.coordinateTransforms != null) {
@@ -610,6 +640,7 @@ public class CoordSystemBuilder {
         if (!dataAxesList.isEmpty()) {
           for (CoordinateSystem.Builder cs : coords.coordSys) {
             if (coords.containsAxes(cs, dataAxesList)) {
+              coords.addCoordinateTransform(vp.ct);
               cs.addCoordinateTransformByName(vp.ct.name);
               parseInfo.format("***assign (implicit coordAxes) coordTransform %s to CoordSys=  %s%n", vp.ct, cs);
             }
@@ -658,7 +689,10 @@ public class CoordSystemBuilder {
     // prefer ones in the same group
     if (from != null) {
       for (VarProcess vp : varList) {
-        if (name.equals(vp.vb.shortName) && vp.vb.parent.equals(from.vb.parent)) {
+        if (vp.vb == null || vp.vb.getParentGroupBuilder() == null || from.vb == null) {
+          continue;
+        }
+        if (name.equals(vp.vb.shortName) && vp.vb.getParentGroupBuilder().equals(from.vb.getParentGroupBuilder())) {
           return vp;
         }
       }
@@ -717,8 +751,41 @@ public class CoordSystemBuilder {
     return v;
   }
 
+  @Nullable
+  private String findDimFullName(Variable.Builder vb, String dimShortName) {
+    String dimFullName = null;
+    String dimName = EscapeStrings.backslashEscape(dimShortName, NetcdfFiles.reservedFullName);
+    // In order to get the "full" dimension name, we need to know what group it lives in. We will start in the group
+    // that the variable belongs to and work our way up the group tree. If we don't find the dimension, we get null.
+    Group.Builder gb = vb.getParentGroupBuilder();
+    while (gb != null) {
+      Optional<Dimension> dim = gb.findDimensionLocal(dimName);
+      if (dim.isPresent()) {
+        dimFullName = makeDimFullName(gb, dimName);
+        break;
+      } else {
+        gb = gb.getParentGroup();
+      }
+    }
+    return dimFullName;
+  }
+
+  @Nullable
+  private String makeDimFullName(Variable.Builder vb, Dimension d) {
+    Preconditions.checkNotNull(d, "Cannot construct the full name of a null Dimension.");
+    Group.Builder gb = vb.getParentGroupBuilder();
+    return (gb != null) && gb.contains(d) ? makeDimFullName(gb, d.getShortName()) : null;
+  }
+
+  private String makeDimFullName(Group.Builder gb, String dimShortName) {
+    Preconditions.checkNotNull(dimShortName, "Cannot construct the full name of a Dimension if its short name is null");
+    String dimName = EscapeStrings.backslashEscape(dimShortName, NetcdfFiles.reservedFullName);
+    return gb != null ? gb.makeFullName() + dimName : dimName;
+  }
+
   /** Classifications of Variables into axis, systems and transforms */
   protected class VarProcess {
+    public Group.Builder gb;
     public VariableDS.Builder<?> vb;
 
     // attributes
@@ -736,7 +803,7 @@ public class CoordSystemBuilder {
     public boolean isCoordinateVariable; // classic coordinate variable
     public boolean isCoordinateAxis;
     public AxisType axisType;
-    public CoordinateAxis.Builder axis; // if its made into a Coordinate Axis, this is not null
+    public CoordinateAxis.Builder<?> axis; // if its made into a Coordinate Axis, this is not null
 
     // coord systems
     public boolean isCoordinateSystem;
@@ -752,11 +819,13 @@ public class CoordSystemBuilder {
      * @param v wrap this Variable
      */
     private VarProcess(Group.Builder gb, VariableDS.Builder<?> v) {
+      this.gb = gb;
       this.vb = v;
       isCoordinateVariable =
           isCoordinateVariable(v) || (null != v.getAttributeContainer().findAttribute(_Coordinate.AliasForDimension));
       if (isCoordinateVariable) {
-        coordVarsForDimension.put(v.getFirstDimensionName(), this);
+        String dimFullName = makeDimFullName(v.getParentGroupBuilder(), v.getFirstDimensionName());
+        coordVarsForDimension.put(dimFullName, this);
       }
 
       Attribute att = v.getAttributeContainer().findAttributeIgnoreCase(_Coordinate.AxisType);
@@ -767,7 +836,7 @@ public class CoordSystemBuilder {
         parseInfo.format(" Coordinate Axis added = %s type= %s%n", v.getFullName(), axisName);
       }
 
-      coordVarAlias = v.getAttributeContainer().findAttValueIgnoreCase(_Coordinate.AliasForDimension, null);
+      coordVarAlias = v.getAttributeContainer().findAttributeString(_Coordinate.AliasForDimension, null);
       if (coordVarAlias != null) {
         coordVarAlias = coordVarAlias.trim();
         if (v.getRank() != 1) {
@@ -784,17 +853,25 @@ public class CoordSystemBuilder {
                   coordVarAlias);
             } else {
               isCoordinateAxis = true;
-              coordVarsForDimension.put(coordDim.getShortName(), this);
-              parseInfo.format(" Coordinate Variable Alias added = %s for dimension= %s%n", v.getFullName(),
-                  coordVarAlias);
+              String dimFullName = makeDimFullName(v, coordDim);
+              if (dimFullName != null) {
+                coordVarsForDimension.put(dimFullName, this);
+                parseInfo.format(" Coordinate Variable Alias added = %s for dimension= %s%n", v.getFullName(),
+                    coordVarAlias);
+              } else {
+                parseInfo.format("Can't find dimension %s in a Group or parent Group of variable %s%n",
+                    coordDim.getShortName(), vb);
+                userAdvice.format("Can't find dimension %s in a Group or parent Group of variable %s%n",
+                    coordDim.getShortName(), vb);
+              }
             }
           });
         }
       }
 
-      positive = v.getAttributeContainer().findAttValueIgnoreCase(_Coordinate.ZisPositive, null);
+      positive = v.getAttributeContainer().findAttributeString(_Coordinate.ZisPositive, null);
       if (positive == null) {
-        positive = v.getAttributeContainer().findAttValueIgnoreCase(CF.POSITIVE, null);
+        positive = v.getAttributeContainer().findAttributeString(CF.POSITIVE, null);
       } else {
         isCoordinateAxis = true;
         positive = positive.trim();
@@ -802,14 +879,14 @@ public class CoordSystemBuilder {
             coordVarAlias);
       }
 
-      coordinateAxes = v.getAttributeContainer().findAttValueIgnoreCase(_Coordinate.Axes, null);
-      coordinateSystems = v.getAttributeContainer().findAttValueIgnoreCase(_Coordinate.Systems, null);
-      coordinateSystemsFor = v.getAttributeContainer().findAttValueIgnoreCase(_Coordinate.SystemFor, null);
-      coordinateTransforms = v.getAttributeContainer().findAttValueIgnoreCase(_Coordinate.Transforms, null);
+      coordinateAxes = v.getAttributeContainer().findAttributeString(_Coordinate.Axes, null);
+      coordinateSystems = v.getAttributeContainer().findAttributeString(_Coordinate.Systems, null);
+      coordinateSystemsFor = v.getAttributeContainer().findAttributeString(_Coordinate.SystemFor, null);
+      coordinateTransforms = v.getAttributeContainer().findAttributeString(_Coordinate.Transforms, null);
       isCoordinateSystem = (coordinateTransforms != null) || (coordinateSystemsFor != null);
 
-      coordAxisTypes = v.getAttributeContainer().findAttValueIgnoreCase(_Coordinate.AxisTypes, null);
-      coordTransformType = v.getAttributeContainer().findAttValueIgnoreCase(_Coordinate.TransformType, null);
+      coordAxisTypes = v.getAttributeContainer().findAttributeString(_Coordinate.AxisTypes, null);
+      coordTransformType = v.getAttributeContainer().findAttributeString(_Coordinate.TransformType, null);
       isCoordinateTransform = (coordTransformType != null) || (coordAxisTypes != null);
     }
 
@@ -842,25 +919,27 @@ public class CoordSystemBuilder {
 
       if (vb instanceof CoordinateAxis.Builder) {
         axis = (CoordinateAxis.Builder) vb;
-        return axis;
+      } else {
+        // Create a CoordinateAxis out of this variable.
+        vb = axis = CoordinateAxis.fromVariableDS(vb);
       }
 
-      // Create a CoordinateAxis out of this variable.
-      CoordinateAxis.Builder builder = CoordinateAxis.fromVariableDS(vb); // experimental
-
       if (axisType != null) {
-        builder.setAxisType(axisType);
-        builder.addAttribute(new Attribute(_Coordinate.AxisType, axisType.toString()));
+        axis.setAxisType(axisType);
+        axis.addAttribute(new Attribute(_Coordinate.AxisType, axisType.toString()));
 
         if (((axisType == AxisType.Height) || (axisType == AxisType.Pressure) || (axisType == AxisType.GeoZ))
             && (positive != null)) {
-          builder.setPositive(positive);
-          builder.addAttribute(new Attribute(_Coordinate.ZisPositive, positive));
+          axis.setPositive(positive);
+          axis.addAttribute(new Attribute(_Coordinate.ZisPositive, positive));
         }
       }
-      vb = axis = builder;
-      coords.addCoordinateAxis(axis);
-      rootGroup.replaceVariable(axis);
+      coords.replaceCoordinateAxis(axis);
+      if (axis.getParentStructureBuilder() != null) {
+        axis.getParentStructureBuilder().replaceMemberVariable(axis);
+      } else {
+        gb.replaceVariable(axis);
+      }
       return axis;
     }
 
@@ -885,7 +964,7 @@ public class CoordSystemBuilder {
     /** For explicit coordinate system variables, make a CoordinateSystem. */
     protected void makeCoordinateSystem() {
       if (coordinateAxes != null) {
-        String sysName = coords.makeCanonicalName(coordinateAxes);
+        String sysName = coords.makeCanonicalName(vb, coordinateAxes);
         this.cs = CoordinateSystem.builder().setCoordAxesNames(sysName);
         parseInfo.format(" Made Coordinate System '%s'", sysName);
         coords.addCoordinateSystem(this.cs);
@@ -929,8 +1008,9 @@ public class CoordSystemBuilder {
       }
 
       if (addCoordVariables) {
-        for (String d : vb.getDimensionNames()) {
-          for (VarProcess vp : coordVarsForDimension.get(d)) {
+        for (String d : vb.getDimensionsAll()) {
+          String dimFullName = findDimFullName(vb, d);
+          for (VarProcess vp : coordVarsForDimension.get(dimFullName)) {
             CoordinateAxis.Builder axis = vp.makeIntoCoordinateAxis();
             if (!axesList.contains(axis)) {
               axesList.add(axis);

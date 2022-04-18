@@ -41,7 +41,7 @@ public class GeoTiffWriter2 extends GeotiffWriter {
       ProjectionImpl proj = grid.getProjection();
 
       if (!gcs.isRegularSpatial()) {
-        Attribute att = dataset.findGlobalAttributeIgnoreCase("datasetId");
+        Attribute att = dataset.attributes().findAttribute("datasetId");
         if (att != null && att.getStringValue().contains("DMSP")) { // LOOK!!
           writeSwathGrid(gridDataset_filename, gridName, time, level, greyScale, pt);
           return;
@@ -76,8 +76,8 @@ public class GeoTiffWriter2 extends GeotiffWriter {
       }
       // now it is time to subset the data out of latlonrect
       // it is assumed that latlonrect pt is in +-180
-      LatLonPointImpl llp0 = pt.getLowerLeftPoint();
-      LatLonPointImpl llpn = pt.getUpperRightPoint();
+      LatLonPoint llp0 = pt.getLowerLeftPoint();
+      LatLonPoint llpn = pt.getUpperRightPoint();
       double minLon = llp0.getLongitude();
       double minLat = llp0.getLatitude();
       double maxLon = llpn.getLongitude();
@@ -198,16 +198,16 @@ public class GeoTiffWriter2 extends GeotiffWriter {
       y2 = (int) ((maxLat - minLat) / yInc + 0.5);
 
     } else { // assign the special area surrounded by the llr
-      LatLonPointImpl llp0 = llr.getLowerLeftPoint();
-      LatLonPointImpl llpn = llr.getUpperRightPoint();
+      LatLonPoint llp0 = llr.getLowerLeftPoint();
+      LatLonPoint llpn = llr.getUpperRightPoint();
       minLon = (llp0.getLongitude() < swathInfo[4]) ? swathInfo[4] : llp0.getLongitude();
       minLat = (llp0.getLatitude() < swathInfo[2]) ? swathInfo[2] : llp0.getLatitude();
       maxLon = (llpn.getLongitude() > swathInfo[5]) ? swathInfo[5] : llpn.getLongitude();
       maxLat = (llpn.getLatitude() > swathInfo[3]) ? swathInfo[3] : llpn.getLatitude();
 
       // construct the swath LatLonRect
-      LatLonPointImpl pUpLeft = new LatLonPointImpl(swathInfo[3], swathInfo[4]);
-      LatLonPointImpl pDownRight = new LatLonPointImpl(swathInfo[2], swathInfo[5]);
+      LatLonPoint pUpLeft = LatLonPoint.create(swathInfo[3], swathInfo[4]);
+      LatLonPoint pDownRight = LatLonPoint.create(swathInfo[2], swathInfo[5]);
       LatLonRect swathLLR = new LatLonRect(pUpLeft, pDownRight);
       LatLonRect bIntersect = swathLLR.intersect(llr);
       if (bIntersect == null) {
@@ -309,7 +309,7 @@ public class GeoTiffWriter2 extends GeotiffWriter {
     int count = 0;
     int isInd = 0;
 
-    // LatLonPoint p0 = new LatLonPointImpl(lat.getFloat(ind.set(0)), 0);
+    // LatLonPoint p0 = LatLonPoint.create(lat.getFloat(ind.set(0)), 0);
 
     double xlat = latIter.getFloatNext();
     if (xlat == value) {
@@ -676,8 +676,8 @@ public class GeoTiffWriter2 extends GeotiffWriter {
     ArrayFloat slon = new ArrayFloat(new int[] {lonShape[0]});
     Index slonIndex = slon.getIndex();
     IndexIterator lonIter = lon.getIndexIterator();
-    LatLonPoint p0 = new LatLonPointImpl(0, lon.getFloat(lonIndex.set(lonShape[0] - 1)));
-    LatLonPoint pN = new LatLonPointImpl(0, lon.getFloat(lonIndex.set(0)));
+    LatLonPoint p0 = LatLonPoint.create(0, lon.getFloat(lonIndex.set(lonShape[0] - 1)));
+    LatLonPoint pN = LatLonPoint.create(0, lon.getFloat(lonIndex.set(0)));
 
     while (lonIter.hasNext()) {
       float l = lonIter.getFloatNext();
@@ -704,12 +704,12 @@ public class GeoTiffWriter2 extends GeotiffWriter {
         }
 
         float dd = lon.getFloat(lonIndex.set(jj));
-        slon.setFloat(slonIndex.set(j), (float) LatLonPointImpl.lonNormal(dd));
+        slon.setFloat(slonIndex.set(j), (float) LatLonPoints.lonNormal(dd));
       }
 
       if (p0.getLongitude() == pN.getLongitude()) {
         float dd = slon.getFloat(slonIndex.set(lonShape[0] - 1));
-        slon.setFloat(slonIndex.set(0), -(float) LatLonPointImpl.lonNormal(dd));
+        slon.setFloat(slonIndex.set(0), -(float) LatLonPoints.lonNormal(dd));
       }
       return slon;
 
@@ -728,8 +728,8 @@ public class GeoTiffWriter2 extends GeotiffWriter {
     Index imaa = adata.getIndex();
     IndexIterator lonIter = lon.getIndexIterator();
 
-    LatLonPoint p0 = new LatLonPointImpl(0, lon.getFloat(ilon.set(lonShape[0] - 1)));
-    LatLonPoint pN = new LatLonPointImpl(0, lon.getFloat(ilon.set(0)));
+    LatLonPoint p0 = LatLonPoint.create(0, lon.getFloat(ilon.set(lonShape[0] - 1)));
+    LatLonPoint pN = LatLonPoint.create(0, lon.getFloat(ilon.set(0)));
 
     while (lonIter.hasNext()) {
       float l = lonIter.getFloatNext();

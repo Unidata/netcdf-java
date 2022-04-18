@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 
@@ -18,16 +18,17 @@ import com.sun.jna.ptr.IntByReference;
  *
  * @author dmh
  * @since June 11, 2018
+ * @deprecated do not use directly.
  */
+@Deprecated
 public class Nc4wrapper implements Nc4prototypes {
-
   public static boolean TRACE;
 
   private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Nc4wrapper.class);
 
   static int counter;
 
-  protected static void trace(Object ret, String fcn, Object... args) {
+  private static void trace(Object ret, String fcn, Object... args) {
     if (!TRACE) {
       return;
     }

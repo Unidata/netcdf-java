@@ -8,12 +8,12 @@ package ucar.nc2.ui.op;
 import ucar.ma2.Array;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.IsMissingEvaluator;
-import ucar.nc2.NCdumpW;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.ParsedSectionSpec;
 import ucar.nc2.Variable;
 import ucar.nc2.dt.image.ImageArrayAdapter;
 import ucar.nc2.ui.image.ImageViewPanel;
+import ucar.nc2.write.Ncdump;
 import ucar.ui.widget.*;
 import ucar.util.prefs.PreferencesExt;
 import ucar.ui.prefs.ComboBox;
@@ -55,9 +55,6 @@ public class NCdumpPane extends TextHistoryPane {
   private IndependentWindow imageWindow;
   private ImageViewPanel imageView;
 
-  /**
-   *
-   */
   public NCdumpPane(PreferencesExt prefs) {
     super(true);
     this.prefs = prefs;
@@ -110,17 +107,11 @@ public class NCdumpPane extends TextHistoryPane {
     // add( new JScrollPane(ta), BorderLayout.CENTER);
   }
 
-  /**
-   *
-   */
   public void setContext(NetcdfFile ds, String command) {
     this.ds = ds;
     cb.addItem(command);
   }
 
-  /**
-   *
-   */
   private void ncdump(String command) {
     if (ds == null) {
       return;
@@ -135,9 +126,6 @@ public class NCdumpPane extends TextHistoryPane {
     }
   }
 
-  /**
-   *
-   */
   private void showImage(String command) {
     if (ds == null) {
       return;
@@ -156,8 +144,6 @@ public class NCdumpPane extends TextHistoryPane {
     }
   }
 
-  /**
-   */
   private void writeBinaryData(String variableSection, File name) {
     ParsedSectionSpec cer;
     try {
@@ -183,9 +169,6 @@ public class NCdumpPane extends TextHistoryPane {
     }
   }
 
-  /**
-   *
-   */
   private void makeImageViewer() {
     imageWindow = new IndependentWindow("Image Viewer", BAMutil.getImage("nj22/ImageData"));
     imageView = new ImageViewPanel(null);
@@ -196,9 +179,6 @@ public class NCdumpPane extends TextHistoryPane {
     imageWindow.setBounds(b);
   }
 
-  /**
-   *
-   */
   public void save() {
     cb.save();
     fileChooser.save();
@@ -209,46 +189,28 @@ public class NCdumpPane extends TextHistoryPane {
     }
   }
 
-  /**
-   *
-   */
   public void clear() {
     ta.setText(null);
   }
 
-  /**
-   *
-   */
   public String getText() {
     return ta.getText();
   }
 
-  /**
-   *
-   */
   public void gotoTop() {
     ta.setCaretPosition(0);
   }
 
-  /**
-   *
-   */
   public void setText(String text) {
     ta.setText(text);
   }
 
-  /**
-   *
-   */
   private abstract class CommonTask extends ProgressMonitorTask implements ucar.nc2.util.CancelTask {
     String contents, command;
     Variable v;
     Array data;
     IsMissingEvaluator eval;
 
-    /**
-     *
-     */
     CommonTask(String command) {
       this.command = command;
       try {
@@ -266,20 +228,12 @@ public class NCdumpPane extends TextHistoryPane {
     }
   }
 
-  /**
-   *
-   */
   private class GetContentsTask extends CommonTask {
-    /**
-     *
-     */
+
     GetContentsTask(String command) {
       super(command);
     }
 
-    /**
-     *
-     */
     public void run() {
       StringWriter sw = new StringWriter(100000);
       PrintWriter ps = new PrintWriter(sw);
@@ -310,25 +264,16 @@ public class NCdumpPane extends TextHistoryPane {
     }
   }
 
-  /**
-   *
-   */
   private class NCdumpTask extends CommonTask {
-    /**
-     *
-     */
 
     NCdumpTask(String command) {
       super(command);
     }
 
-    /**
-     *
-     */
     public void run() {
       try {
         data = ds.readSection(command);
-        contents = NCdumpW.toString(data, null, this);
+        contents = Ncdump.printArray(data, null, this);
       } catch (Exception e) {
         e.printStackTrace();
         StringWriter sw = new StringWriter(100000);

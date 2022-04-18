@@ -44,7 +44,7 @@ public class HTTPFactory {
 
   @Deprecated
   public static HTTPSession newSession(AuthScope scope) throws HTTPException {
-    HttpHost hh = new HttpHost(scope.getHost(), scope.getPort(), null);
+    HttpHost hh = new HttpHost(scope.getHost(), scope.getPort(), HttpHost.DEFAULT_SCHEME_NAME);
     return new HTTPSession(hh);
   }
 
@@ -111,13 +111,7 @@ public class HTTPFactory {
     return Options(null, legalurl);
   }
 
-  /**
-   * Common method creation code so we can isolate mocking
-   *
-   * @param session
-   * @return
-   * @throws HTTPException
-   */
+  /** Common method creation code so we can isolate mocking */
   protected static HTTPMethod makemethod(HTTPSession.Methods m, HTTPSession session, String url) throws HTTPException {
     HTTPMethod meth = null;
     if (MOCKMETHODCLASS == null) { // do the normal case

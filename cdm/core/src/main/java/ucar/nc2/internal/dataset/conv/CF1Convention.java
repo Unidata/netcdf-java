@@ -1,15 +1,23 @@
 /*
- * Copyright (c) 1998-2018 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
+
 package ucar.nc2.internal.dataset.conv;
 
 import static ucar.nc2.internal.dataset.CoordSystemFactory.breakupConventionNames;
+
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
+import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import ucar.ma2.Array;
 import ucar.nc2.Attribute;
+import ucar.nc2.Group;
 import ucar.nc2.Variable;
+import ucar.nc2.Variable.Builder;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.CF;
 import ucar.nc2.constants._Coordinate;
@@ -115,26 +123,41 @@ public class CF1Convention extends CSMConvention {
   protected CF1Convention(NetcdfDataset.Builder datasetBuilder) {
     super(datasetBuilder);
     this.conventionName = CONVENTION_NAME;
-    String conv = rootGroup.getAttributeContainer().findAttValueIgnoreCase(CF.CONVENTIONS, null);
+    String conv = rootGroup.getAttributeContainer().findAttributeString(CF.CONVENTIONS, null);
     if (conv != null) {
       this.cfVersion = getVersion(conv);
     }
   }
 
   @Override
-  public void augmentDataset(CancelTask cancelTask) {
+  protected void augmentDataset(CancelTask cancelTask) throws IOException {
+    augmentGroups(rootGroup, cancelTask);
+  }
+
+  protected void augmentGroups(Group.Builder gb, CancelTask cancelTask) throws IOException {
+    // We have to augment the variables in every group, not just the root group. This is super critical for
+    // grib collections, where Best and TwoD are contained within their own group. A dataset could have hundreds
+    // of groups, but I have not seen a dataset with groups nested at hundreds of levels (most that I have seen are
+    // two levels deep or less), so recursion is probably ok here for now.
+    augmentGroup(gb, cancelTask);
+    for (Group.Builder subGb : gb.gbuilders) {
+      augmentGroups(subGb, cancelTask);
+    }
+  }
+
+  protected void augmentGroup(Group.Builder gb, CancelTask cancelTask) throws IOException {
     boolean got_grid_mapping = false;
 
     // look for transforms
-    for (Variable.Builder<?> vb : rootGroup.vbuilders) {
+    for (Variable.Builder<?> vb : gb.vbuilders) {
       // look for special standard_names
-      String sname = vb.getAttributeContainer().findAttValueIgnoreCase(CF.STANDARD_NAME, null);
+      String sname = vb.getAttributeContainer().findAttributeString(CF.STANDARD_NAME, null);
       if (sname != null) {
         sname = sname.trim();
 
         /*
-         * if (sname.equalsIgnoreCase(CF.atmosphere_ln_pressure_coordinate)) { // TODO why isnt this with other
-         * Transforms?
+         * // TODO why isnt this with other Transforms?
+         * if (sname.equalsIgnoreCase(CF.atmosphere_ln_pressure_coordinate)) {
          * makeAtmLnCoordinate(vds);
          * continue;
          * }
@@ -174,15 +197,15 @@ public class CF1Convention extends CSMConvention {
       }
 
       // look for horiz transforms. only ones that are referenced by another variable.
-      String grid_mapping = vb.getAttributeContainer().findAttValueIgnoreCase(CF.GRID_MAPPING, null);
+      String grid_mapping = vb.getAttributeContainer().findAttributeString(CF.GRID_MAPPING, null);
       if (grid_mapping != null) {
-        Optional<Variable.Builder<?>> gridMapOpt = rootGroup.findVariable(grid_mapping);
+        Optional<Variable.Builder<?>> gridMapOpt = gb.findVariableLocal(grid_mapping);
         if (gridMapOpt.isPresent()) {
           // TODO might be group relative - CF does not specify - see original version
           Variable.Builder<?> gridMap = gridMapOpt.get();
           gridMap.addAttribute(new Attribute(_Coordinate.TransformType, TransformType.Projection.toString()));
 
-          String grid_mapping_name = gridMap.getAttributeContainer().findAttValueIgnoreCase(CF.GRID_MAPPING_NAME, null);
+          String grid_mapping_name = gridMap.getAttributeContainer().findAttributeString(CF.GRID_MAPPING_NAME, null);
           if (CF.LATITUDE_LONGITUDE.equals(grid_mapping_name)) {
             // "grid_mapping_name == latitude_longitude" is special in CF: it's applied to variables that describe
             // properties of lat/lon CRSes.
@@ -191,6 +214,14 @@ public class CF1Convention extends CSMConvention {
             gridMap.addAttribute(new Attribute(_Coordinate.AxisTypes, AxisType.GeoX + " " + AxisType.GeoY));
           }
 
+          // check for CF-ish GOES-16/17 grid mappings
+          Attribute productionLocation = gb.getAttributeContainer().findAttributeIgnoreCase("production_location");
+          Attribute icdVersion = gb.getAttributeContainer().findAttributeIgnoreCase("ICD_version");
+          if (productionLocation != null && icdVersion != null) {
+            // the fact that those two global attributes are not null means we should check to see
+            // if the grid mapping variable has attributes that need corrected.
+            correctGoes16(productionLocation, icdVersion, gridMap);
+          }
           got_grid_mapping = true;
         }
       }
@@ -200,8 +231,8 @@ public class CF1Convention extends CSMConvention {
       if (cfVersion >= 8) { // only acknowledge simple geometry standard extension if CF-1.8 or higher
 
         if (vb.getAttributeContainer().findAttribute(CF.GEOMETRY) != null) {
-          String geomValue = vb.getAttributeContainer().findAttValueIgnoreCase(CF.GEOMETRY, null);
-          rootGroup.findVariable(geomValue).ifPresent(coordsvar -> {
+          String geomValue = vb.getAttributeContainer().findAttributeString(CF.GEOMETRY, null);
+          gb.findVariableLocal(geomValue).ifPresent(coordsvar -> {
             vb.addAttribute(findAttributeIn(coordsvar, CF.GEOMETRY_TYPE));
             vb.addAttribute(findAttributeIn(coordsvar, CF.NODE_COORDINATES));
             vb.addAttribute(findAttributeIn(coordsvar, CF.PART_NODE_COUNT));
@@ -211,17 +242,17 @@ public class CF1Convention extends CSMConvention {
             addOptionalAttributeIn(coordsvar, vb, CF.NODE_COUNT);
 
             if (CF.POLYGON
-                .equalsIgnoreCase(coordsvar.getAttributeContainer().findAttValueIgnoreCase(CF.GEOMETRY_TYPE, ""))) {
+                .equalsIgnoreCase(coordsvar.getAttributeContainer().findAttributeString(CF.GEOMETRY_TYPE, ""))) {
               addOptionalAttributeIn(coordsvar, vb, CF.INTERIOR_RING);
             }
 
             if (vb.getAttributeContainer().findAttribute(CF.NODE_COORDINATES) != null) {
 
-              String nodeCoords = coordsvar.getAttributeContainer().findAttValueIgnoreCase(CF.NODE_COORDINATES, "");
+              String nodeCoords = coordsvar.getAttributeContainer().findAttributeString(CF.NODE_COORDINATES, "");
               String[] coords = nodeCoords.split(" ");
               final StringBuilder cds = new StringBuilder();
               for (String coord : coords) {
-                rootGroup.findVariable(coord).ifPresent(temp -> {
+                gb.findVariableLocal(coord).ifPresent(temp -> {
                   Attribute axis = temp.getAttributeContainer().findAttribute(CF.AXIS);
                   if (axis != null) {
                     if ("x".equalsIgnoreCase(axis.getStringValue())) {
@@ -239,10 +270,6 @@ public class CF1Convention extends CSMConvention {
                 });
               }
 
-              if (vb.shortName.equals("et")) {
-                System.out.println("WTF");
-              }
-
               List<String> dimNames = ImmutableList.copyOf(vb.getDimensionNames());
               // Append any geometry dimensions as axis
               final StringBuilder pre = new StringBuilder();
@@ -250,7 +277,7 @@ public class CF1Convention extends CSMConvention {
               for (int i = dimNames.size() - 1; i >= 0; i--) {
                 String dimName = dimNames.get(i);
                 if (!dimName.equals("time")) {
-                  rootGroup.findVariable(dimName).ifPresent(coordvar -> {
+                  gb.findVariableLocal(dimName).ifPresent(coordvar -> {
                     coordvar.getAttributeContainer()
                         .addAttribute(new Attribute(_Coordinate.AxisType, AxisType.SimpleGeometryID.toString()));
                   });
@@ -269,8 +296,8 @@ public class CF1Convention extends CSMConvention {
     }
 
     if (!got_grid_mapping) { // see if there are any grid mappings anyway
-      for (Variable.Builder vds : rootGroup.vbuilders) {
-        String grid_mapping_name = vds.getAttributeContainer().findAttValueIgnoreCase(CF.GRID_MAPPING_NAME, null);
+      for (Variable.Builder vds : gb.vbuilders) {
+        String grid_mapping_name = vds.getAttributeContainer().findAttributeString(CF.GRID_MAPPING_NAME, null);
         if (grid_mapping_name != null) {
           vds.addAttribute(new Attribute(_Coordinate.TransformType, TransformType.Projection.toString()));
 
@@ -284,15 +311,15 @@ public class CF1Convention extends CSMConvention {
     }
 
     // make corrections for specific datasets
-    String src = rootGroup.getAttributeContainer().findAttValueIgnoreCase("Source", "");
+    String src = gb.getAttributeContainer().findAttributeString("Source", "");
     if (src.equals("NOAA/National Climatic Data Center")) {
-      String title = rootGroup.getAttributeContainer().findAttValueIgnoreCase("title", "");
+      String title = gb.getAttributeContainer().findAttributeString("title", "");
       avhrr_oiv2 = title.indexOf("OI-V2") > 0;
     }
   }
 
   Attribute findAttributeIn(Variable.Builder coordsvar, String attName) {
-    return new Attribute(attName, coordsvar.getAttributeContainer().findAttValueIgnoreCase(attName, ""));
+    return new Attribute(attName, coordsvar.getAttributeContainer().findAttributeString(attName, ""));
   }
 
   void addOptionalAttributeIn(Variable.Builder src, Variable.Builder dest, String attName) {
@@ -302,6 +329,31 @@ public class CF1Convention extends CSMConvention {
     }
   }
 
+  private void correctGoes16(Attribute productionLocation, Attribute icdVersion, Builder<?> gridMappingVar) {
+    String prodLoc = productionLocation.getStringValue();
+    String icdVer = icdVersion.getStringValue();
+    if (prodLoc != null && icdVer != null) {
+      prodLoc = prodLoc.toLowerCase().trim();
+      icdVer = icdVer.toLowerCase().trim();
+      boolean mightNeedCorrected = prodLoc.contains("wcdas");
+      mightNeedCorrected = mightNeedCorrected && icdVer.contains("ground segment");
+      mightNeedCorrected = mightNeedCorrected && icdVer.contains("awips");
+      if (mightNeedCorrected) {
+        Map<String, String> possibleCorrections =
+            ImmutableMap.of("semi_minor", CF.SEMI_MINOR_AXIS, "semi_major", CF.SEMI_MAJOR_AXIS);
+        possibleCorrections.forEach((incorrect, correct) -> {
+          Attribute attr = gridMappingVar.getAttributeContainer().findAttributeIgnoreCase(incorrect);
+          if (attr != null) {
+            Array vals = attr.getValues();
+            if (vals != null) {
+              gridMappingVar.getAttributeContainer().replace(attr, correct);
+              log.debug("Renamed {} attribute {} to {}", gridMappingVar, incorrect, correct);
+            }
+          }
+        });
+      }
+    }
+  }
 
   private boolean avhrr_oiv2;
 
@@ -396,9 +448,8 @@ public class CF1Convention extends CSMConvention {
    */
   @Override
   public AxisType getAxisType(VariableDS.Builder vb) {
-
     // standard names for unitless vertical coords
-    String sname = vb.getAttributeContainer().findAttValueIgnoreCase(CF.STANDARD_NAME, null);
+    String sname = vb.getAttributeContainer().findAttributeString(CF.STANDARD_NAME, null);
     if (sname != null) {
       sname = sname.trim();
 
@@ -449,10 +500,10 @@ public class CF1Convention extends CSMConvention {
     }
 
     // check axis attribute - only for X, Y, Z
-    String axis = vb.getAttributeContainer().findAttValueIgnoreCase(CF.AXIS, null);
+    String axis = vb.getAttributeContainer().findAttributeString(CF.AXIS, null);
     if (axis != null) {
       axis = axis.trim();
-      String unit = vb.units;
+      String unit = vb.getUnits();
 
       if (axis.equalsIgnoreCase("X")) {
         if (SimpleUnit.isCompatible("m", unit)) {
@@ -485,7 +536,7 @@ public class CF1Convention extends CSMConvention {
     }
 
     try {
-      String units = vb.units;
+      String units = vb.getUnits();
       CalendarDateUnit cd = CalendarDateUnit.of(null, units);
       // parsed successfully, what could go wrong?
       return AxisType.Time;

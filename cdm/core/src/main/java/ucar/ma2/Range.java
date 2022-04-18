@@ -27,15 +27,13 @@ import java.util.Iterator;
  *    ...
  *  }
  * </pre>
- *
- * @author caron
  */
 
 @Immutable
 public class Range implements RangeIterator {
   public static final Range EMPTY = new Range(); // used for unlimited dimension = 0
-  public static final Range ONE = new Range(1);
-  public static final Range VLEN = new Range(-1);
+  public static final Range ONE = new Range("ONE", 1);
+  public static final Range VLEN = new Range("VLEN", -1);
 
   public static Range make(String name, int len) {
     try {
@@ -45,23 +43,39 @@ public class Range implements RangeIterator {
     }
   }
 
+  public static Range make(int first, int last) {
+    try {
+      return new Range(first, last);
+    } catch (InvalidRangeException e) {
+      throw new RuntimeException(e); // cant happen if len > 0
+    }
+  }
+
   ////////////////////////////////////////////////////////
 
-  protected final int length; // number of elements
+  private final int length; // number of elements
   private final int first; // first value in range
   private final int last; // last value in range, inclusive
   private final int stride; // stride, must be >= 1
-  protected final String name; // optional name
+  private final String name; // optional name
 
-  /**
-   * Used for EMPTY
-   */
+  /** Used for EMPTY */
   private Range() {
     this.length = 0;
     this.first = 0;
     this.last = 0;
     this.stride = 1;
-    this.name = null;
+    this.name = "EMPTY";
+  }
+
+  /** Used for ONE, VLEN */
+  private Range(String name, int length) {
+    assert (length != 0);
+    this.name = name;
+    this.first = 0;
+    this.last = length - 1;
+    this.stride = 1;
+    this.length = length;
   }
 
   /**
@@ -136,7 +150,6 @@ public class Range implements RangeIterator {
     this.length = 1 + (last - first) / stride;
     this.last = first + (this.length - 1) * stride;
     assert stride != 1 || this.last == last;
-    assert this.length != 0;
   }
 
   protected Range(String name, int first, int last, int stride, int length) throws InvalidRangeException {
@@ -156,13 +169,35 @@ public class Range implements RangeIterator {
     this.length = length;
   }
 
-  // copy on change
+  /** @deprecated use copyWithStride() */
+  @Deprecated
   public Range setStride(int stride) throws InvalidRangeException {
     return new Range(this.first(), this.last(), stride);
   }
 
+  /** Make a copy with a different stride. */
+  public Range copyWithStride(int stride) throws InvalidRangeException {
+    if (stride == this.stride)
+      return this;
+    return new Range(this.first(), this.last(), stride);
+  }
+
+  /** @deprecated use copyWithName() */
+  @Deprecated
   @Override
   public Range setName(String name) {
+    if (name.equals(this.getName()))
+      return this;
+    try {
+      return new Range(name, first, last, stride, length);
+    } catch (InvalidRangeException e) {
+      throw new RuntimeException(e); // cant happen
+    }
+  }
+
+  /** Make a copy with a different name. */
+  @Override
+  public Range copyWithName(String name) {
     if (name.equals(this.getName()))
       return this;
     try {
@@ -227,12 +262,12 @@ public class Range implements RangeIterator {
   }
 
   /**
-   * Create a new Range by composing a Range that is reletive to this Range.
+   * Create a new Range by composing a Range that is relative to this Range.
    * Revised 2013/04/19 by Dennis Heimbigner to handle edge cases.
    * See the commentary associated with the netcdf-c file dceconstraints.h,
    * function dceslicecompose().
    *
-   * @param r range reletive to base
+   * @param r range relative to base
    * @return combined Range, may be EMPTY
    * @throws InvalidRangeException elements must be nonnegative, 0 <= first <= last
    */
@@ -254,7 +289,7 @@ public class Range implements RangeIterator {
     int sr_stride = this.stride * r.stride;
     int sr_first = element(r.first()); // MAP(this,i) == element(i)
     int lastx = element(r.last());
-    int sr_last = (last() < lastx ? last() : lastx); // min(last(),lastx)
+    int sr_last = Math.min(last(), lastx);
     // unused int sr_length = (sr_last + 1) - sr_first;
     return new Range(name, sr_first, sr_last, sr_stride);
   }
@@ -547,9 +582,7 @@ public class Range implements RangeIterator {
     }
   }
 
-  /**
-   * Get ith element; skip checking, for speed.
-   */
+  /** Get ith element; skip checking, for speed. */
   private int elementNC(int i) {
     return first + i * stride;
   }

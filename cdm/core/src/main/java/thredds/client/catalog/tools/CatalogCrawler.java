@@ -13,7 +13,6 @@ import thredds.client.catalog.*;
 import thredds.client.catalog.builder.CatalogBuilder;
 import ucar.ma2.Array;
 import ucar.ma2.InvalidRangeException;
-import ucar.nc2.NCdumpW;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.ft2.coverage.*;
@@ -23,6 +22,7 @@ import ucar.nc2.util.Misc;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.*;
+import ucar.nc2.write.Ncdump;
 
 /**
  * Crawl client catalogs
@@ -528,7 +528,7 @@ public class CatalogCrawler {
     SubsetParams subset = new SubsetParams().setTimePresent();
     GeoReferencedArray geo = randomCov.readData(subset);
     Array data = geo.getData();
-    System.out.printf(" read data from %s shape = %s%n", randomCov.getName(), Misc.showInts(data.getShape()));
+    System.out.printf(" read data from %s shape = %s%n", randomCov.getName(), Arrays.toString(data.getShape()));
     return true;
   }
 
@@ -565,7 +565,7 @@ public class CatalogCrawler {
 
     Array data = randomVariable.read(origin, size);
     pw.format(" read data from %s origin = %s return = %s%n", randomVariable.getNameAndDimensions(),
-        Misc.showInts(origin), NCdumpW.toString(data));
+        Arrays.toString(origin), Ncdump.printArray(data));
     return true;
 
   }

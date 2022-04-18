@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import ucar.nc2.Attribute;
+import ucar.nc2.AttributeContainer;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.VariableSimpleIF;
@@ -186,16 +187,16 @@ public class GridDataset implements ucar.nc2.dt.GridDataset, FeatureDataset {
   public String getTitle() {
     String title = ncd.getTitle();
     if (title == null)
-      title = ncd.getRootGroup().findAttValueIgnoreCase(CDM.TITLE, null);
+      title = ncd.getRootGroup().findAttributeString(CDM.TITLE, null);
     if (title == null)
       title = getName();
     return title;
   }
 
   public String getDescription() {
-    String desc = ncd.getRootGroup().findAttValueIgnoreCase("description", null);
+    String desc = ncd.getRootGroup().findAttributeString("description", null);
     if (desc == null)
-      desc = ncd.getRootGroup().findAttValueIgnoreCase(CDM.HISTORY, null);
+      desc = ncd.getRootGroup().findAttributeString(CDM.HISTORY, null);
     return (desc == null) ? getName() : desc;
   }
 
@@ -261,14 +262,22 @@ public class GridDataset implements ucar.nc2.dt.GridDataset, FeatureDataset {
     // not needed
   }
 
+  @Override
+  public AttributeContainer attributes() {
+    return ncd.getRootGroup().attributes();
+  }
+
+  @Override
   public List<Attribute> getGlobalAttributes() {
     return ncd.getGlobalAttributes();
   }
 
+  @Override
   public Attribute findGlobalAttributeIgnoreCase(String name) {
     return ncd.findGlobalAttributeIgnoreCase(name);
   }
 
+  @Override
   public List<VariableSimpleIF> getDataVariables() {
     List<VariableSimpleIF> result = new ArrayList<>(grids.size());
     for (GridDatatype grid : getGrids()) {
@@ -278,10 +287,12 @@ public class GridDataset implements ucar.nc2.dt.GridDataset, FeatureDataset {
     return result;
   }
 
+  @Override
   public VariableSimpleIF getDataVariable(String shortName) {
-    return ncd.getRootGroup().findVariable(shortName);
+    return ncd.getRootGroup().findVariableLocal(shortName);
   }
 
+  @Override
   public NetcdfFile getNetcdfFile() {
     return ncd;
   }
@@ -506,13 +517,15 @@ public class GridDataset implements ucar.nc2.dt.GridDataset, FeatureDataset {
     }
   }
 
-  // release any resources like file handles
+  /** @deprecated do not use */
+  @Deprecated
   public void release() throws IOException {
     if (ncd != null)
       ncd.release();
   }
 
-  // reacquire any resources like file handles
+  /** @deprecated do not use */
+  @Deprecated
   public void reacquire() throws IOException {
     if (ncd != null)
       ncd.reacquire();
@@ -525,6 +538,8 @@ public class GridDataset implements ucar.nc2.dt.GridDataset, FeatureDataset {
 
   protected FileCacheIF fileCache;
 
+  /** @deprecated do not use */
+  @Deprecated
   @Override
   public synchronized void setFileCache(FileCacheIF fileCache) {
     this.fileCache = fileCache;

@@ -8,7 +8,6 @@ import ucar.nc2.dataset.DatasetUrl;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateFormatter;
 import ucar.nc2.util.CancelTask;
-import ucar.nc2.util.Misc;
 import javax.annotation.concurrent.GuardedBy;
 import javax.annotation.concurrent.ThreadSafe;
 import java.io.IOException;
@@ -467,8 +466,15 @@ public class FileCache implements FileCacheIF {
       }
       file.lastAccessed = System.currentTimeMillis();
       file.countAccessed++;
-      file.isLocked.set(false);
-      file.ncfile.release();
+
+      try {
+        file.ncfile.release();
+        file.isLocked.set(false);
+      } catch (IOException ioe) {
+        cacheLog.error("FileCache {} release failed on {} - will try to remove from cache. Failure due to:", name,
+            file.getCacheName(), ioe);
+        remove(file);
+      }
 
       if (cacheLog.isDebugEnabled())
         cacheLog.debug("FileCache " + name + " release " + ncfile.getLocation() + "; hash= " + ncfile.hashCode());
@@ -677,7 +683,7 @@ public class FileCache implements FileCacheIF {
 
     @Override
     public int compareTo(Tracker o) {
-      return Misc.compare(hit + miss, o.hit + o.miss);
+      return Integer.compare(hit + miss, o.hit + o.miss);
     }
   }
 

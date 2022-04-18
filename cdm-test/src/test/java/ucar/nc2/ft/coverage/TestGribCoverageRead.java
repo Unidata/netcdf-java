@@ -4,6 +4,7 @@
  */
 package ucar.nc2.ft.coverage;
 
+import java.util.Arrays;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -55,7 +56,7 @@ public class TestGribCoverageRead {
       SubsetParams subset = new SubsetParams().setVertCoord(300.0).setTime(useDate);
       GeoReferencedArray geo = cover.readData(subset);
       Array data = geo.getData();
-      logger.debug("{}", Misc.showInts(data.getShape()));
+      logger.debug("{}", Arrays.toString(data.getShape()));
       Assert.assertArrayEquals(new int[] {1, 1, 1, 65, 93}, data.getShape());
 
       float first = data.getFloat(0);
@@ -86,7 +87,7 @@ public class TestGribCoverageRead {
       SubsetParams subset = new SubsetParams().setVertCoord(300.0).setTime(useDate);
       GeoReferencedArray geo = cover.readData(subset);
       Array data = geo.getData();
-      logger.debug("{}", Misc.showInts(data.getShape()));
+      logger.debug("{}", Arrays.toString(data.getShape()));
       Assert.assertArrayEquals(new int[] {1, 1, 65, 93}, data.getShape());
 
       float first = data.getFloat(0);
@@ -118,7 +119,7 @@ public class TestGribCoverageRead {
       SubsetParams subset = new SubsetParams().setVertCoord(200.0).setTimeOffset(42.0);
       GeoReferencedArray geo = cover.readData(subset);
       Array data = geo.getData();
-      logger.debug("{}", Misc.showInts(data.getShape()));
+      logger.debug("{}", Arrays.toString(data.getShape()));
       Assert.assertArrayEquals(new int[] {1, 1, 65, 93}, data.getShape());
 
       float first = data.getFloat(0);
@@ -149,7 +150,7 @@ public class TestGribCoverageRead {
       SubsetParams subset = new SubsetParams().setVertCoord(70000).setTimeOffset(2);
       GeoReferencedArray geo = cover.readData(subset);
       Array data = geo.getData();
-      logger.debug("{}", Misc.showInts(data.getShape()));
+      logger.debug("{}", Arrays.toString(data.getShape()));
       Assert.assertArrayEquals(new int[] {1, 1, 1377, 2145}, data.getShape());
 
       float val = data.getFloat(40600);
@@ -182,7 +183,7 @@ public class TestGribCoverageRead {
       SubsetParams subset = new SubsetParams().setTimeOffset(6);
       GeoReferencedArray geo = cover.readData(subset);
       Array data = geo.getData();
-      logger.debug("{}", Misc.showInts(data.getShape()));
+      logger.debug("{}", Arrays.toString(data.getShape()));
       Assert.assertArrayEquals(new int[] {1, 1, 181, 360}, data.getShape());
 
       float val = data.getFloat(3179);
@@ -216,7 +217,7 @@ public class TestGribCoverageRead {
           .setTimeOffset(42).setVertCoord(500);
       GeoReferencedArray geo = cover.readData(subset);
       Array data = geo.getData();
-      logger.debug("{}", Misc.showInts(data.getShape()));
+      logger.debug("{}", Arrays.toString(data.getShape()));
       Assert.assertArrayEquals(new int[] {1, 1, 1, 65, 93}, data.getShape());
 
       float val = data.getFloat(0);

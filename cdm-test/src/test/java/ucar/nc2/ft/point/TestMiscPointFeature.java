@@ -34,7 +34,6 @@ package ucar.nc2.ft.point;
 
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
-import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.List;
 import java.util.Set;
@@ -51,12 +50,14 @@ import ucar.ma2.StructureMembers;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.ft.*;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
-import ucar.unidata.geoloc.LatLonPointImpl;
+import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.Station;
+import ucar.unidata.util.test.CheckPointFeatureDataset;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
 
@@ -67,59 +68,53 @@ public class TestMiscPointFeature {
   @Test
   public void testProblemProfile() throws IOException {
     String location = TestDir.cdmLocalFromTestDataDir + "point/profileMultidimZJoin.ncml";
-    Assert.assertEquals("npoints", 50, TestPointDatasets.checkPointFeatureDataset(location, FeatureType.PROFILE, true));
+    CheckPointFeatureDataset checker = new CheckPointFeatureDataset(location, FeatureType.PROFILE, true);
+    Assert.assertEquals("npoints", 50, checker.check());
   }
 
   @Test
   @Category(NeedsCdmUnitTest.class)
   public void testProblemTraj() throws IOException {
     String location = TestDir.cdmUnitTestDir + "ft/trajectory/cosmic/wetPrf_C005.2007.294.16.22.G17_0001.0002_nc";
-    Assert.assertEquals("npoints", 383,
-        TestPointDatasets.checkPointFeatureDataset(location, FeatureType.TRAJECTORY, true));
+    CheckPointFeatureDataset checker = new CheckPointFeatureDataset(location, FeatureType.TRAJECTORY, true);
+    Assert.assertEquals("npoints", 383, checker.check());
   }
 
   @Test
   public void testProblemStation() throws IOException {
     String location = TestDir.cdmLocalFromTestDataDir + "cfDocDsgExamples/H.2.4.1.ncml";
-    Assert.assertEquals("npoints", 100,
-        TestPointDatasets.checkPointFeatureDataset(location, FeatureType.STATION, true));
+    CheckPointFeatureDataset checker = new CheckPointFeatureDataset(location, FeatureType.STATION, true);
+    Assert.assertEquals("npoints", 100, checker.check());
   }
 
   @Test
   @Ignore("Dont support multiple lat/lon coordinates for now")
   public void testProblemStationWithPreciseCoords() throws IOException {
     String location = TestDir.cdmLocalFromTestDataDir + "cfDocDsgExamples/H.2.3.2.ncml";
-    Assert.assertEquals("npoints", 100,
-        TestPointDatasets.checkPointFeatureDataset(location, FeatureType.STATION, true));
-  }
-
-  @Test
-  @Category(NeedsCdmUnitTest.class)
-  public void testGempakStationProfile() throws IOException {
-    String location = TestDir.cdmUnitTestDir + "ft/sounding/gempak/19580807_upa.ncml";
-    Assert.assertEquals("npoints", 8769,
-        TestPointDatasets.checkPointFeatureDataset(location, FeatureType.STATION_PROFILE, true));
+    CheckPointFeatureDataset checker = new CheckPointFeatureDataset(location, FeatureType.STATION, true);
+    Assert.assertEquals("npoints", 100, checker.check());
   }
 
   @Test
   public void testProblemStationProfile() throws IOException {
     String location = TestDir.cdmLocalFromTestDataDir + "point/stationProfileSingle.ncml";
-    Assert.assertEquals("npoints", 9,
-        TestPointDatasets.checkPointFeatureDataset(location, FeatureType.STATION_PROFILE, true));
+    CheckPointFeatureDataset checker = new CheckPointFeatureDataset(location, FeatureType.STATION_PROFILE, true);
+    Assert.assertEquals("npoints", 9, checker.check());
   }
 
   @Test
   public void testProblemSection() throws IOException {
     String location = TestDir.cdmLocalFromTestDataDir + "cfDocDsgExamples/H.6.3.1.ncml";
-    Assert.assertEquals("npoints", 145,
-        TestPointDatasets.checkPointFeatureDataset(location, FeatureType.TRAJECTORY_PROFILE, true));
+    CheckPointFeatureDataset checker = new CheckPointFeatureDataset(location, FeatureType.TRAJECTORY_PROFILE, true);
+    Assert.assertEquals("npoints", 145, checker.check());
   }
 
   @Test
   @Category(NeedsCdmUnitTest.class)
   public void testProblem3() throws IOException {
     String location = TestDir.cdmUnitTestDir + "ft/stationProfile/PROFILER_RASS_01hr_20091027_1500.nc";
-    assert 198 == TestPointDatasets.checkPointFeatureDataset(location, FeatureType.STATION_PROFILE, true);
+    CheckPointFeatureDataset checker = new CheckPointFeatureDataset(location, FeatureType.STATION_PROFILE, true);
+    Assert.assertEquals("npoints", 198, checker.check());
   }
 
   @Test
@@ -309,12 +304,12 @@ public class TestMiscPointFeature {
   @Test
   public void testTryWithWrap() throws IOException {
     String location = TestDir.cdmLocalFromTestDataDir + "testWrite.nc";
-    NetcdfDataset ncd = NetcdfDataset.openDataset(location);
-    Formatter errlog = new Formatter();
-    try (FeatureDataset fdataset = FeatureDatasetFactoryManager.wrap(null, ncd, null, errlog)) {
-      assert (fdataset == null);
+    try (NetcdfDataset ncd = NetcdfDatasets.openDataset(location)) {
+      Formatter errlog = new Formatter();
+      try (FeatureDataset fdataset = FeatureDatasetFactoryManager.wrap(null, ncd, null, errlog)) {
+        assert (fdataset == null);
+      }
     }
-    ncd.close();
   }
 
   // This is a regression test for TDS-513: https://bugtracking.unidata.ucar.edu/browse/TDS-513
@@ -357,7 +352,7 @@ public class TestMiscPointFeature {
           // subset criteria not important, just want to get data
           // into flattened representation
           PointFeatureCollection pfc =
-              stsfc.flatten(new LatLonRect(new LatLonPointImpl(-90, -180), new LatLonPointImpl(90, 180)),
+              stsfc.flatten(new LatLonRect(LatLonPoint.create(-90, -180), LatLonPoint.create(90, 180)),
                   CalendarDateRange.of(CalendarDate.parseISOformat(null, "1900-01-01"),
                       CalendarDate.parseISOformat(null, "2100-01-01")));
 
@@ -378,64 +373,6 @@ public class TestMiscPointFeature {
         }
       }
     }
-  }
-
-  @Test
-  @Category(NeedsCdmUnitTest.class)
-  public void testGempak() throws Exception {
-    String file = TestDir.cdmUnitTestDir + "formats/gempak/surface/09052812.sf"; // Q:/cdmUnitTest/formats/gempak/surface/09052812.sf
-    Formatter buf = new Formatter();
-    FeatureDatasetPoint pods =
-        (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(ucar.nc2.constants.FeatureType.POINT, file, null, buf);
-    if (pods == null) { // try as ANY_POINT
-      pods = (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(ucar.nc2.constants.FeatureType.ANY_POINT, file,
-          null, buf);
-    }
-    if (pods == null) {
-      System.out.printf("can't open file=%s%n error=%s%n", file, buf);
-      throw new Exception("can't open file " + file);
-    }
-    List<DsgFeatureCollection> collectionList = pods.getPointFeatureCollectionList();
-    if (collectionList.size() > 1) {
-      throw new IllegalArgumentException("Can't handle point data with multiple collections");
-    }
-    boolean sample;
-    for (int time = 0; time < 2; time++) {
-      sample = time < 1;
-      DsgFeatureCollection fc = collectionList.get(0);
-      PointFeatureCollection collection = null;
-      LatLonRect llr = new LatLonRect(new LatLonPointImpl(33.4, -92.2), new LatLonPointImpl(47.9, -75.89));
-      System.out.println("llr = " + llr);
-      if (fc instanceof PointFeatureCollection) {
-        collection = (PointFeatureCollection) fc;
-        collection = collection.subset(llr, null);
-
-      } else if (fc instanceof StationTimeSeriesFeatureCollection) {
-        StationTimeSeriesFeatureCollection npfc = (StationTimeSeriesFeatureCollection) fc;
-        npfc = npfc.subset(llr);
-        collection = npfc.flatten(llr, null);
-
-      } else {
-        throw new IllegalArgumentException("Can't handle collection of type " + fc.getClass().getName());
-      }
-
-      List<PointFeature> pos = new ArrayList<>(100000);
-      List<CalendarDate> times = new ArrayList<>(100000);
-      for (PointFeature po : collection) {
-        pos.add(po);
-        times.add(po.getNominalTimeAsCalendarDate());
-        if (sample) {
-          break;
-        }
-      }
-      int size = pos.size();
-
-      for (PointFeature po : pos) {
-        ucar.unidata.geoloc.EarthLocation el = po.getLocation();
-        System.out.println("el = " + el);
-      }
-    }
-    pods.close();
   }
 
 }

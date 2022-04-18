@@ -216,6 +216,7 @@ public class Grib1Customizer implements GribTables {
   protected synchronized Map<Integer, VertCoordType> readTable3(String path) {
     try (InputStream is = GribResourceReader.getInputStream(path)) {
       SAXBuilder builder = new SAXBuilder();
+      builder.setExpandEntities(false);
       org.jdom2.Document doc = builder.build(is);
       Element root = doc.getRootElement();
 

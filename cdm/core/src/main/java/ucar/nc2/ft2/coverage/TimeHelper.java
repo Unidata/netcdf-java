@@ -25,9 +25,9 @@ public class TimeHelper {
 
   public static TimeHelper factory(String units, AttributeContainer atts) {
     if (units == null)
-      units = atts.findAttValueIgnoreCase(CDM.UDUNITS, null);
+      units = atts.findAttributeString(CDM.UDUNITS, null);
     if (units == null)
-      units = atts.findAttValueIgnoreCase(CDM.UNITS, null);
+      units = atts.findAttributeString(CDM.UNITS, null);
     if (units == null)
       throw new IllegalStateException("No units");
 
@@ -70,6 +70,8 @@ public class TimeHelper {
     return dateUnit.makeOffsetFromRefDate(date);
   }
 
+  /** @deprecated will be moved in ver6 */
+  @Deprecated
   public List<NamedObject> getCoordValueNames(CoverageCoordAxis1D axis) {
     axis.loadValuesIfNeeded();
     List<NamedObject> result = new ArrayList<>();
@@ -117,7 +119,7 @@ public class TimeHelper {
   }
 
   public static ucar.nc2.time.Calendar getCalendarFromAttribute(AttributeContainer atts) {
-    String cal = atts.findAttValueIgnoreCase(CF.CALENDAR, null);
+    String cal = atts.findAttributeString(CF.CALENDAR, null);
     if (cal == null)
       return null;
     return ucar.nc2.time.Calendar.get(cal);

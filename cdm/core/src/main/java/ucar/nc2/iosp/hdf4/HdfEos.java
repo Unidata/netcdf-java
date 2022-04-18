@@ -116,7 +116,7 @@ public class HdfEos {
 
     int n = 0;
     while (true) {
-      Variable structMetadataVar = eosGroup.findVariable("StructMetadata." + n);
+      Variable structMetadataVar = eosGroup.findVariableLocal("StructMetadata." + n);
       if (structMetadataVar == null) {
         break;
       }
@@ -133,6 +133,8 @@ public class HdfEos {
       } else if (A instanceof ArrayObject.D0) {
         ArrayObject ao = (ArrayObject) A;
         structMetadata = (String) ao.getObject(0);
+      } else if (A instanceof ArrayObject.D1) {
+        structMetadata = (String) A.getObject(0);
       } else {
         log.error("Unsupported array type {} for StructMetadata", A.getElementType());
       }
@@ -307,9 +309,9 @@ public class HdfEos {
     }
 
     // Geolocation Variables
-    Group geoFieldsG = parent.findGroup(GEOLOC_FIELDS);
+    Group geoFieldsG = parent.findGroupLocal(GEOLOC_FIELDS);
     if (geoFieldsG == null) {
-      geoFieldsG = parent.findGroup(GEOLOC_FIELDS2);
+      geoFieldsG = parent.findGroupLocal(GEOLOC_FIELDS2);
     }
     if (geoFieldsG != null) {
       Variable latAxis = null, lonAxis = null, timeAxis = null;
@@ -317,7 +319,7 @@ public class HdfEos {
       List<Element> varsLoc = floc.getChildren();
       for (Element elem : varsLoc) {
         String varname = elem.getChild("GeoFieldName").getText().trim();
-        Variable v = geoFieldsG.findVariable(varname);
+        Variable v = geoFieldsG.findVariableLocal(varname);
         // if (v == null)
         // v = geoFieldsG.findVariable( H4header.createValidObjectName(varname));
         assert v != null : varname;
@@ -368,9 +370,9 @@ public class HdfEos {
     }
 
     // Data Variables
-    Group dataG = parent.findGroup(DATA_FIELDS);
+    Group dataG = parent.findGroupLocal(DATA_FIELDS);
     if (dataG == null) {
-      dataG = parent.findGroup(DATA_FIELDS2);
+      dataG = parent.findGroupLocal(DATA_FIELDS2);
     }
     if (dataG != null) {
       Element f = swathElem.getChild("DataField");
@@ -381,7 +383,7 @@ public class HdfEos {
           continue;
         }
         String varname = NetcdfFile.makeValidCdmObjectName(dataFieldNameElem.getText().trim());
-        Variable v = dataG.findVariable(varname);
+        Variable v = dataG.findVariableLocal(varname);
         // if (v == null)
         // v = dataG.findVariable( H4header.createValidObjectName(varname));
         if (v == null) {
@@ -521,16 +523,16 @@ public class HdfEos {
     }
 
     // Geolocation Variables
-    Group geoFieldsG = parent.findGroup(GEOLOC_FIELDS);
+    Group geoFieldsG = parent.findGroupLocal(GEOLOC_FIELDS);
     if (geoFieldsG == null) {
-      geoFieldsG = parent.findGroup(GEOLOC_FIELDS2);
+      geoFieldsG = parent.findGroupLocal(GEOLOC_FIELDS2);
     }
     if (geoFieldsG != null) {
       Element floc = gridElem.getChild("GeoField");
       List<Element> varsLoc = floc.getChildren();
       for (Element elem : varsLoc) {
         String varname = elem.getChild("GeoFieldName").getText().trim();
-        Variable v = geoFieldsG.findVariable(varname);
+        Variable v = geoFieldsG.findVariableLocal(varname);
         // if (v == null)
         // v = geoFieldsG.findVariable( H4header.createValidObjectName(varname));
         assert v != null : varname;
@@ -542,9 +544,9 @@ public class HdfEos {
     }
 
     // Data Variables
-    Group dataG = parent.findGroup(DATA_FIELDS);
+    Group dataG = parent.findGroupLocal(DATA_FIELDS);
     if (dataG == null) {
-      dataG = parent.findGroup(DATA_FIELDS2); // eg C:\data\formats\hdf4\eos\mopitt\MOP03M-200501-L3V81.0.1.hdf
+      dataG = parent.findGroupLocal(DATA_FIELDS2); // eg C:\data\formats\hdf4\eos\mopitt\MOP03M-200501-L3V81.0.1.hdf
     }
     if (dataG != null) {
       Element f = gridElem.getChild("DataField");
@@ -552,7 +554,7 @@ public class HdfEos {
       for (Element elem : vars) {
         String varname = elem.getChild("DataFieldName").getText().trim();
         varname = NetcdfFile.makeValidCdmObjectName(varname);
-        Variable v = dataG.findVariable(varname);
+        Variable v = dataG.findVariableLocal(varname);
         // if (v == null)
         // v = dataG.findVariable( H4header.createValidObjectName(varname));
         assert v != null : varname;
@@ -638,7 +640,7 @@ public class HdfEos {
     }
 
     List<Dimension> newDims = new ArrayList<>();
-    Group group = v.getParentGroup();
+    Group group = v.getParentGroupOrRoot();
 
     for (int i = 0; i < values.size(); i++) {
       Element value = values.get(i);

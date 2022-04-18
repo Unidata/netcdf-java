@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998-2017 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
+ * See LICENSE.txt for license information.
  */
 package ucar.nc2.ncml;
 
@@ -79,8 +80,10 @@ import java.util.concurrent.Executor;
  * <li> If not, the coordinate value(s) is cached when the dataset is opened.
  * <li> agg.read() uses those if they exist, else reads and caches.
  * </ol>
- * 
+ *
+ * @deprecated do not use
  */
+@Deprecated
 public abstract class Aggregation implements AggregationIF {
 
   protected enum Type {
@@ -675,7 +678,7 @@ public abstract class Aggregation implements AggregationIF {
      *
      * @param mainv aggregated Variable
      * @param cancelTask let user cancel
-     * @param section reletive to the local Variable
+     * @param section relative to the local Variable
      * @return the complete Array for mainv
      * @throws IOException on I/O error
      * @throws InvalidRangeException on section error

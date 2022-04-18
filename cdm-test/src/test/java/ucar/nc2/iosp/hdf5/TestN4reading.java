@@ -5,15 +5,18 @@
 package ucar.nc2.iosp.hdf5;
 
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.*;
 import ucar.nc2.*;
-import ucar.nc2.constants.CDM;
 import ucar.nc2.iosp.netcdf3.N3iosp;
 import ucar.nc2.util.Misc;
+import ucar.nc2.write.Ncdump;
 import ucar.unidata.util.test.Assert2;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
@@ -88,8 +91,7 @@ public class TestN4reading {
     String filename = testDir + "globalHeapOverrun.nc4";
     try (NetcdfFile ncfile = NetcdfFile.open(filename)) {
       logger.debug("**** testGlobalHeapOverun done\n{}", ncfile);
-      List<Variable> vars = ncfile.getVariables();
-      Collections.sort(vars);
+      List<Variable> vars = ncfile.getVariables().stream().sorted().collect(Collectors.toList());
       for (Variable v : vars)
         logger.debug("  {}", v.getFullName());
       logger.debug("nvars = {}", ncfile.getVariables().size());
@@ -102,8 +104,7 @@ public class TestN4reading {
     String filename = testDir + "tst/tst_enums.nc";
     try (NetcdfFile ncfile = NetcdfFile.open(filename)) {
       logger.debug("**** testReadNetcdf4 done\n{}", ncfile);
-      List<Variable> vars = ncfile.getVariables();
-      Collections.sort(vars);
+      List<Variable> vars = ncfile.getVariables().stream().sorted().collect(Collectors.toList());
       for (Variable v : vars)
         logger.debug("  {}", v.getFullName());
       logger.debug("nvars = {}", ncfile.getVariables().size());
@@ -119,7 +120,7 @@ public class TestN4reading {
       logger.debug("**** testReadNetcdf4 done\n{}", ncfile);
       Variable v = ncfile.findVariable("measure_for_measure_var");
       Array data = v.read();
-      logger.debug(NCdumpW.toString(data, "measure_for_measure_var", null));
+      logger.debug(Ncdump.printArray(data, "measure_for_measure_var", null));
     }
   }
 
@@ -132,21 +133,21 @@ public class TestN4reading {
       logger.debug("**** testVlen open\n{}", ncfile);
       Variable v = ncfile.findVariable("levels");
       Array data = v.read();
-      logger.debug(NCdumpW.toString(data, "read()", null));
+      logger.debug(Ncdump.printArray(data, "read()", null));
 
       int count = 0;
       while (data.hasNext()) {
         Array as = (Array) data.next();
-        logger.debug(NCdumpW.toString(as, " " + count, null));
+        logger.debug(Ncdump.printArray(as, " " + count, null));
         count++;
       }
 
       // try subset
       data = v.read("0:9:2, :");
-      logger.debug(NCdumpW.toString(data, "read(0:9:2,:)", null));
+      logger.debug(Ncdump.printArray(data, "read(0:9:2,:)", null));
 
-      data = v.read(new Section().appendRange(0, 9, 2).appendRange(null));
-      logger.debug(NCdumpW.toString(data, "read(Section)", null));
+      data = v.read(Section.builder().appendRange(0, 9, 2).appendRangeAll().build());
+      logger.debug(Ncdump.printArray(data, "read(Section)", null));
 
       // fail
       // int[] origin = new int[] {0, 0};
@@ -157,7 +158,6 @@ public class TestN4reading {
       int initialIndex = 5;
       int finalIndex = 5;
       data = v.read(initialIndex + ":" + finalIndex + ",:");
-      // NCdumpW.printArray(data, "read()", new PrintWriter(System.out), null);
 
       logger.debug("Size: {}", data.getSize());
       logger.debug("Data: {}", data);
@@ -179,7 +179,7 @@ public class TestN4reading {
       logger.debug("**** testVlen2 open\n{}", ncfile);
       Variable v = ncfile.findVariable("ragged_array");
       Array data = v.read();
-      logger.debug(NCdumpW.toString(data, "read()", null));
+      logger.debug(Ncdump.printArray(data, "read()", null));
 
       assert data instanceof ArrayObject;
       int row = 0;
@@ -193,7 +193,7 @@ public class TestN4reading {
 
       // try subset
       data = v.read("0:4:2,:");
-      logger.debug(NCdumpW.toString(data, "read(0:4:2,:)", null));
+      logger.debug(Ncdump.printArray(data, "read(0:4:2,:)", null));
       assert data instanceof ArrayObject;
       row = 0;
       while (data.hasNext()) {
@@ -247,7 +247,7 @@ public class TestN4reading {
       assert m != null;
       assert (m.getDataType() == DataType.STRUCTURE);
 
-      logger.debug("{}", NCdumpW.toString(data, "", null));
+      logger.debug("{}", Ncdump.printArray(data, "", null));
 
     }
     logger.debug("*** testNestedStructure ok");
@@ -260,11 +260,8 @@ public class TestN4reading {
     try (NetcdfFile ncfile = NetcdfFile.open(filename)) {
       logger.debug("**** testReadNetcdf4 done\n{}", ncfile);
       Variable v = ncfile.findVariable("d");
-      String attValue = v.findAttValueIgnoreCase("c", null);
-      String s = Misc.showBytes(attValue.getBytes(StandardCharsets.UTF_8));
-      logger.debug(" d:c = ({}) = {}", attValue, s);
-      // Array data = v.read();
-      // NCdumpW.printArray(data, "cr", System.out, null);
+      String attValue = v.findAttributeString("c", null);
+      logger.debug(" d:c = ({}) = {}", attValue, Arrays.toString(attValue.getBytes(StandardCharsets.UTF_8)));
     }
   }
 
@@ -329,7 +326,7 @@ public class TestN4reading {
       logger.debug("**** testReadNetcdf4 done\n{}", ncfile);
       Variable v = ncfile.findVariable("fun_soundings");
       Array data = v.read();
-      logger.debug(NCdumpW.toString(data, "fun_soundings", null));
+      logger.debug(Ncdump.printArray(data, "fun_soundings", null));
 
       assert data instanceof ArrayStructure;
       ArrayStructure as = (ArrayStructure) data;
@@ -381,14 +378,14 @@ public class TestN4reading {
       Variable v = ncfile.findVariable("tim_records");
       int[] vshape = v.getShape();
       Array data = v.read();
-      logger.debug(NCdumpW.toString(data, v.getFullName(), null));
+      logger.debug(Ncdump.printArray(data, v.getFullName(), null));
 
       assert data instanceof ArrayStructure;
       ArrayStructure as = (ArrayStructure) data;
       assert as.getSize() == vshape[0]; // int loopDataA(1, *, *);
       StructureData sdata = as.getStructureData(0);
       Array vdata = sdata.getArray("loopDataA");
-      logger.debug(NCdumpW.toString(vdata, "loopDataA", null));
+      logger.debug(Ncdump.printArray(vdata, "loopDataA", null));
 
       assert vdata instanceof ArrayObject;
       Object o1 = vdata.getObject(0);

@@ -262,12 +262,13 @@ class Construct2 {
         log.warn("dataDesc.units == null for " + uname);
     } else {
       String units = fld.getUnits();
-      if (units.equalsIgnoreCase("Code_Table") || units.equalsIgnoreCase("Code Table"))
+      if (DataDescriptor.isCodeTableUnit(units)) {
         v.addAttribute(new Attribute(CDM.UNITS, "CodeTable " + fld.dds.getFxyName()));
-      else if (units.equalsIgnoreCase("Flag_Table") || units.equalsIgnoreCase("Flag Table"))
+      } else if (DataDescriptor.isFlagTableUnit(units)) {
         v.addAttribute(new Attribute(CDM.UNITS, "FlagTable " + fld.dds.getFxyName()));
-      else if (!units.startsWith("CCITT") && !units.startsWith("Numeric"))
+      } else if (!DataDescriptor.isInternationalAlphabetUnit(units) && !units.startsWith("Numeric")) {
         v.addAttribute(new Attribute(CDM.UNITS, units));
+      }
     }
 
     DataDescriptor dataDesc = fld.dds;
@@ -295,7 +296,9 @@ class Construct2 {
       // v.removeAttribute(CDM.UNITS);
       v.addAttribute(new Attribute("BUFR:CodeTable", ct.getName() + " (" + dataDesc.getFxyName() + ")"));
 
-      Group g = struct.getParentGroup();
+      Group g = struct.getParentGroupOrRoot();
+      if (g == null)
+        log.warn("Struct parent group is null.");
       EnumTypedef enumTypedef = g.findEnumeration(ct.getName());
       if (enumTypedef == null) {
         enumTypedef = new EnumTypedef(ct.getName(), ct.getMap());

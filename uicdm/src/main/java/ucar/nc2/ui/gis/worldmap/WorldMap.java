@@ -13,6 +13,7 @@ import ucar.nc2.ui.gis.GisFeature;
 import ucar.nc2.ui.gis.GisFeatureRenderer;
 import ucar.nc2.ui.gis.GisPart;
 import ucar.ui.util.Resource;
+import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.ProjectionImpl;
@@ -145,7 +146,7 @@ public class WorldMap extends GisFeatureRenderer {
     dataProjection = new LatLonProjection("Cylindrical Equidistant");
   }
 
-  private LatLonRect defaultLLBB = new LatLonRect(new LatLonPointImpl(-180., -90.), 360., 180.);
+  private LatLonRect defaultLLBB = new LatLonRect(LatLonPoint.create(-180., -90.), 360., 180.);
 
   public LatLonRect getPreferredArea() {
     return defaultLLBB;

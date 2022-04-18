@@ -3,12 +3,16 @@ package ucar.nc2.iosp.hdf4;
 
 import static org.junit.Assert.fail;
 import com.google.common.collect.ImmutableList;
+import java.io.File;
+import java.io.FileFilter;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Formatter;
 import java.util.List;
+import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
@@ -25,9 +29,7 @@ import ucar.nc2.util.CompareNetcdf2.ObjFilter;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
-/**
- * Compare objects in original N3iosp vs N3iospNew using builders.
- */
+/** Compare objects in original H4iosp vs H4iospNew using builders. */
 @Category(NeedsCdmUnitTest.class)
 @RunWith(Parameterized.class)
 public class TestH4iospCompare {
@@ -38,7 +40,7 @@ public class TestH4iospCompare {
   public static Collection<Object[]> getTestParameters() {
     Collection<Object[]> filenames = new ArrayList<>();
     try {
-      TestDir.actOnAllParameterized(testDir, (file) -> !file.getPath().endsWith(".txt"), filenames);
+      TestDir.actOnAllParameterized(testDir, new MyFileFilter(), filenames);
     } catch (IOException e) {
       filenames.add(new Object[] {e.getMessage()});
     }
@@ -57,12 +59,24 @@ public class TestH4iospCompare {
     try (NetcdfFile org = NetcdfFile.open(filename)) {
       try (NetcdfFile withBuilder = NetcdfFiles.open(filename)) {
         Formatter f = new Formatter();
-        CompareNetcdf2 compare = new CompareNetcdf2(f, false, false, true);
+        CompareNetcdf2 compare = new CompareNetcdf2(f);
         if (!compare.compare(org, withBuilder, new DimensionsFilter())) {
           System.out.printf("Compare %s%n%s%n", filename, f);
           fail();
         }
       }
+    }
+  }
+
+  private static class MyFileFilter implements FileFilter {
+    @Override
+    public boolean accept(File file) {
+      if (file.getPath().endsWith(".txt"))
+        return false;
+      // These are too big, skip
+      if (file.getName().endsWith("MISR_AM1_GRP_TERR_GM_P040_AN.eos"))
+        return false;
+      return true;
     }
   }
 

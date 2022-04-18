@@ -4,7 +4,7 @@
  */
 package ucar.nc2.ft.point;
 
-import ucar.unidata.geoloc.LatLonPointImpl;
+import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.Station;
 import java.util.ArrayList;
@@ -49,16 +49,14 @@ public class StationHelper {
         return null;
 
       Station s = stations.get(0);
-      LatLonPointImpl llpt = new LatLonPointImpl();
-      llpt.set(s.getLatitude(), s.getLongitude());
+      LatLonPoint llpt = LatLonPoint.create(s.getLatitude(), s.getLongitude());
       rect = new LatLonRect(llpt, 0, 0);
       if (debug)
         System.out.println("start=" + s.getLatitude() + " " + s.getLongitude() + " rect= " + rect.toString2());
 
       for (int i = 1; i < stations.size(); i++) {
         s = stations.get(i);
-        llpt.set(s.getLatitude(), s.getLongitude());
-        rect.extend(llpt);
+        rect.extend(LatLonPoint.create(s.getLatitude(), s.getLongitude()));
         if (debug)
           System.out.println("add=" + s.getLatitude() + " " + s.getLongitude() + " rect= " + rect.toString2());
       }
@@ -66,17 +64,17 @@ public class StationHelper {
     if (rect.crossDateline() && rect.getWidth() > 350.0) { // call it global - less confusing
       double lat_min = rect.getLowerLeftPoint().getLatitude();
       double deltaLat = rect.getUpperLeftPoint().getLatitude() - lat_min;
-      rect = new LatLonRect(new LatLonPointImpl(lat_min, -180.0), deltaLat, 360.0);
+      rect = new LatLonRect(LatLonPoint.create(lat_min, -180.0), deltaLat, 360.0);
     }
 
     // To give a little "wiggle room", we're going to slightly expand the bounding box.
     double newLowerLeftLat = rect.getLowerLeftPoint().getLatitude() - .0005;
     double newLowerLeftLon = rect.getLowerLeftPoint().getLongitude() - .0005;
-    LatLonPointImpl newLowerLeftPoint = new LatLonPointImpl(newLowerLeftLat, newLowerLeftLon);
+    LatLonPoint newLowerLeftPoint = LatLonPoint.create(newLowerLeftLat, newLowerLeftLon);
 
     double newUpperRightLat = rect.getUpperRightPoint().getLatitude() + .0005;
     double newUpperRightLon = rect.getUpperRightPoint().getLongitude() + .0005;
-    LatLonPointImpl newUpperRightPoint = new LatLonPointImpl(newUpperRightLat, newUpperRightLon);
+    LatLonPoint newUpperRightPoint = LatLonPoint.create(newUpperRightLat, newUpperRightLon);
 
     rect.extend(newLowerLeftPoint);
     rect.extend(newUpperRightPoint);
@@ -88,10 +86,9 @@ public class StationHelper {
     if (boundingBox == null)
       return getStations();
 
-    LatLonPointImpl latlonPt = new LatLonPointImpl();
     List<Station> result = new ArrayList<>();
     for (StationFeature s : stations) {
-      latlonPt.set(s.getLatitude(), s.getLongitude());
+      LatLonPoint latlonPt = LatLonPoint.create(s.getLatitude(), s.getLongitude());
       if (boundingBox.contains(latlonPt))
         result.add(s);
     }
@@ -102,10 +99,9 @@ public class StationHelper {
     if (boundingBox == null)
       return stations;
 
-    LatLonPointImpl latlonPt = new LatLonPointImpl();
     List<StationFeature> result = new ArrayList<>();
     for (StationFeature s : stations) {
-      latlonPt.set(s.getLatitude(), s.getLongitude());
+      LatLonPoint latlonPt = LatLonPoint.create(s.getLatitude(), s.getLongitude());
       if (boundingBox.contains(latlonPt))
         result.add(s);
     }

@@ -110,6 +110,7 @@ public class Sinusoidal extends ProjectionImpl {
    *
    * @param centMeridian central Meridian in degrees
    */
+  @Deprecated
   public void setCentMeridian(double centMeridian) {
     this.centMeridian = centMeridian;
   }
@@ -120,6 +121,7 @@ public class Sinusoidal extends ProjectionImpl {
    *
    * @param falseEasting x offset
    */
+  @Deprecated
   public void setFalseEasting(double falseEasting) {
     this.falseEasting = falseEasting;
   }
@@ -130,6 +132,7 @@ public class Sinusoidal extends ProjectionImpl {
    *
    * @param falseNorthing y offset
    */
+  @Deprecated
   public void setFalseNorthing(double falseNorthing) {
     this.falseNorthing = falseNorthing;
   }
@@ -203,7 +206,7 @@ public class Sinusoidal extends ProjectionImpl {
   @Override
   public boolean crossSeam(ProjectionPoint pt1, ProjectionPoint pt2) {
     // either point is infinite
-    if (ProjectionPointImpl.isInfinite(pt1) || ProjectionPointImpl.isInfinite(pt2)) {
+    if (LatLonPoints.isInfinite(pt1) || LatLonPoints.isInfinite(pt2)) {
       return true;
     }
 
@@ -222,7 +225,7 @@ public class Sinusoidal extends ProjectionImpl {
    */
   @Override
   public ProjectionPoint latLonToProj(LatLonPoint latLon, ProjectionPointImpl result) {
-    double deltaLon_d = LatLonPointImpl.range180(latLon.getLongitude() - centMeridian);
+    double deltaLon_d = LatLonPoints.range180(latLon.getLongitude() - centMeridian);
     double fromLat_r = Math.toRadians(latLon.getLatitude());
 
     double toX = earthRadius * Math.toRadians(deltaLon_d) * Math.cos(fromLat_r);
@@ -271,18 +274,18 @@ public class Sinusoidal extends ProjectionImpl {
   public LatLonRect projToLatLonBB(ProjectionRect projBB) {
     List<ProjectionPoint> pointsOfInterest = new LinkedList<>();
 
-    ProjectionPoint northPole = latLonToProj(new LatLonPointImpl(90, 0));
+    ProjectionPoint northPole = latLonToProj(LatLonPoint.create(90, 0));
     if (projBB.contains(northPole)) {
       pointsOfInterest.add(northPole);
     }
 
-    ProjectionPoint southPole = latLonToProj(new LatLonPointImpl(-90, 0));
+    ProjectionPoint southPole = latLonToProj(LatLonPoint.create(-90, 0));
     if (projBB.contains(southPole)) {
       pointsOfInterest.add(southPole);
     }
 
     if (pointsOfInterest.size() == 2) { // projBB contains both north and south poles, and thus, the entire map.
-      return new LatLonRect(new LatLonPointImpl(-90, -180), new LatLonPointImpl(90, 180));
+      return new LatLonRect(LatLonPoint.create(-90, -180), LatLonPoint.create(90, 180));
     }
 
     List<ProjectionPoint> corners = Arrays.asList(projBB.getLowerLeftPoint(), projBB.getLowerRightPoint(),
@@ -355,8 +358,8 @@ public class Sinusoidal extends ProjectionImpl {
     double minY = -earthRadius * Math.acos(x0natural / (earthRadius * deltaLon_r));
     double maxY = +earthRadius * Math.acos(x0natural / (earthRadius * deltaLon_r));
 
-    mapEdgeIntercepts.add(new ProjectionPointImpl(x0, minY + falseNorthing));
-    mapEdgeIntercepts.add(new ProjectionPointImpl(x0, maxY + falseNorthing));
+    mapEdgeIntercepts.add(ProjectionPoint.create(x0, minY + falseNorthing));
+    mapEdgeIntercepts.add(ProjectionPoint.create(x0, maxY + falseNorthing));
     return mapEdgeIntercepts;
   }
 
@@ -375,8 +378,8 @@ public class Sinusoidal extends ProjectionImpl {
     double minX = getXAt(y0, -PI);
     double maxX = getXAt(y0, +PI);
 
-    mapEdgeIntercepts.add(new ProjectionPointImpl(minX, y0));
-    mapEdgeIntercepts.add(new ProjectionPointImpl(maxX, y0));
+    mapEdgeIntercepts.add(ProjectionPoint.create(minX, y0));
+    mapEdgeIntercepts.add(ProjectionPoint.create(maxX, y0));
     return mapEdgeIntercepts;
   }
 
@@ -435,6 +438,6 @@ public class Sinusoidal extends ProjectionImpl {
       maxLon = Math.max(maxLon, latLonPoint.getLongitude());
     }
 
-    return new LatLonRect(new LatLonPointImpl(minLat, minLon), new LatLonPointImpl(maxLat, maxLon));
+    return new LatLonRect(LatLonPoint.create(minLat, minLon), LatLonPoint.create(maxLat, maxLon));
   }
 }

@@ -22,7 +22,7 @@ public class TestNcMLRenameVar extends TestCase {
   }
 
   NetcdfFile ncfile = null;
-  String filename = "file:./" + TestNcMLRead.topDir + "renameVar.xml";
+  String filename = "file:./" + TestNcmlRead.topDir + "renameVar.xml";
 
   public void setUp() {
     try {

@@ -17,6 +17,7 @@ import java.util.Formatter;
  * @see LatLonPoint
  * @deprecated only use LatLonPoint in 6.
  */
+@Deprecated
 public class LatLonPointImpl implements LatLonPoint, java.io.Serializable {
 
   /**
@@ -26,14 +27,17 @@ public class LatLonPointImpl implements LatLonPoint, java.io.Serializable {
    * @param lonBeg beginning longitude
    * @param lonEnd ending longitude
    * @return true if lon is between lonBeg and lonEnd.
-   * @deprecated
+   * @deprecated use LatLonPoints.betweenLon
    */
+  @Deprecated
   public static boolean betweenLon(double lon, double lonBeg, double lonEnd) {
-    lonBeg = lonNormal(lonBeg, lon);
-    lonEnd = lonNormal(lonEnd, lon);
+    lonBeg = LatLonPoints.lonNormal(lonBeg, lon);
+    lonEnd = LatLonPoints.lonNormal(lonEnd, lon);
     return (lon >= lonBeg) && (lon <= lonEnd);
   }
 
+  /** @deprecated use LatLonPoints.getClockwiseDistanceTo */
+  @Deprecated
   public static double getClockwiseDistanceTo(double from, double to) {
     double distance = to - from;
     while (distance < 0.0)
@@ -47,9 +51,11 @@ public class LatLonPointImpl implements LatLonPoint, java.io.Serializable {
    *
    * @param lon lon to normalize
    * @return longitude in range [-180, 180] deg
+   * @deprecated use LatLonPoints.range180
    */
+  @Deprecated
   public static double range180(double lon) {
-    return lonNormal(lon);
+    return LatLonPoints.lonNormal(lon);
   }
 
   /**
@@ -57,9 +63,11 @@ public class LatLonPointImpl implements LatLonPoint, java.io.Serializable {
    *
    * @param lon lon to normalize
    * @return longitude into the range [0, 360] deg
+   * @deprecated use LatLonPoints.lonNormal360
    */
+  @Deprecated
   public static double lonNormal360(double lon) {
-    return lonNormal(lon, 180.0);
+    return LatLonPoints.lonNormal(lon, 180.0);
   }
 
   /**
@@ -68,7 +76,9 @@ public class LatLonPointImpl implements LatLonPoint, java.io.Serializable {
    * @param lon lon to normalize
    * @param center center point
    * @return longitude into the range [center +/- 180] deg
+   * @deprecated use LatLonPoints.lonNormal
    */
+  @Deprecated
   public static double lonNormal(double lon, double center) {
     return center + Math.IEEEremainder(lon - center, 360.0);
   }
@@ -79,7 +89,9 @@ public class LatLonPointImpl implements LatLonPoint, java.io.Serializable {
    * @param lon lon to normalize
    * @param start starting point
    * @return longitude into the [start, start+360] deg
+   * @deprecated use LatLonPoints.lonNormalFrom
    */
+  @Deprecated
   public static double lonNormalFrom(double lon, double start) {
     while (lon < start)
       lon += 360;
@@ -93,7 +105,9 @@ public class LatLonPointImpl implements LatLonPoint, java.io.Serializable {
    *
    * @param lon east latitude in degrees
    * @return normalized lon
+   * @deprecated use LatLonPoints.lonNormal
    */
+  @Deprecated
   public static double lonNormal(double lon) {
     if ((lon < -180.) || (lon > 180.)) {
       return Math.IEEEremainder(lon, 360.0);
@@ -108,7 +122,9 @@ public class LatLonPointImpl implements LatLonPoint, java.io.Serializable {
    * @param lon1 start
    * @param lon2 end
    * @return normalized difference
+   * @deprecated use LatLonPoints.lonDiff
    */
+  @Deprecated
   public static double lonDiff(double lon1, double lon2) {
     return Math.IEEEremainder(lon1 - lon2, 360.0);
   }
@@ -118,7 +134,9 @@ public class LatLonPointImpl implements LatLonPoint, java.io.Serializable {
    *
    * @param lat north latitude in degrees
    * @return normalized lat
+   * @deprecated use LatLonPoints.latNormal
    */
+  @Deprecated
   public static double latNormal(double lat) {
     if (lat < -90.) {
       return -90.;
@@ -135,7 +153,9 @@ public class LatLonPointImpl implements LatLonPoint, java.io.Serializable {
    * @param lat the latitude.
    * @param ndec number of digits to right of decimal point
    * @return String representation.
+   * @deprecated use LatLonPoints.latToString
    */
+  @Deprecated
   public static String latToString(double lat, int ndec) {
     boolean is_north = (lat >= 0.0);
     if (!is_north)
@@ -156,9 +176,11 @@ public class LatLonPointImpl implements LatLonPoint, java.io.Serializable {
    * @param lon the longitude.
    * @param ndec number of digits to right of decimal point
    * @return String representation.
+   * @deprecated use LatLonPoints.lonToString
    */
+  @Deprecated
   public static String lonToString(double lon, int ndec) {
-    double wlon = lonNormal(lon);
+    double wlon = LatLonPoints.lonNormal(lon);
     boolean is_east = (wlon >= 0.0);
     if (!is_east)
       wlon = -wlon;
@@ -185,8 +207,9 @@ public class LatLonPointImpl implements LatLonPoint, java.io.Serializable {
   protected double lon;
 
   /**
-   * Default constructor with values 0,0.
+   * @deprecated use LatLonPoint.create
    */
+  @Deprecated
   public LatLonPointImpl() {
     // Don't initialize by calling setLatitude() and setLongitude(), as those methods throw
     // UnsupportedOperationException in LatLonPointImmutable, and this constructor is (implicitly) invoked in the
@@ -197,9 +220,10 @@ public class LatLonPointImpl implements LatLonPoint, java.io.Serializable {
 
   /**
    * Copy Constructor.
-   *
-   * @param pt point to copy
+   * 
+   * @deprecated use LatLonPoint.create
    */
+  @Deprecated
   public LatLonPointImpl(LatLonPoint pt) {
     this(pt.getLatitude(), pt.getLongitude());
   }
@@ -210,7 +234,9 @@ public class LatLonPointImpl implements LatLonPoint, java.io.Serializable {
    *
    * @param lat north latitude in degrees
    * @param lon east longitude in degrees
+   * @deprecated use LatLonPoint.create
    */
+  @Deprecated
   public LatLonPointImpl(double lat, double lon) {
     setLatitude(lat);
     setLongitude(lon);
@@ -272,7 +298,7 @@ public class LatLonPointImpl implements LatLonPoint, java.io.Serializable {
    * @param lon east longitude in degrees
    */
   public void setLongitude(double lon) {
-    this.lon = lonNormal(lon);
+    this.lon = LatLonPoints.lonNormal(lon);
   }
 
   /**
@@ -281,7 +307,7 @@ public class LatLonPointImpl implements LatLonPoint, java.io.Serializable {
    * @param lat north latitude in degrees
    */
   public void setLatitude(double lat) {
-    this.lat = latNormal(lat);
+    this.lat = LatLonPoints.latNormal(lat);
   }
 
   @Override
@@ -291,7 +317,8 @@ public class LatLonPointImpl implements LatLonPoint, java.io.Serializable {
       // We may be in a situation where "this.lon ≈ -180" and "that.lon ≈ +180", or vice versa.
       // Those longitudes are equivalent, but not "nearlyEquals()". So, we normalize them both to lie in
       // [0, 360] and compare them again.
-      lonOk = Misc.nearlyEquals(lonNormal360(that.getLongitude()), lonNormal360(this.lon), maxRelDiff);
+      lonOk = Misc.nearlyEquals(LatLonPoints.lonNormal360(that.getLongitude()), LatLonPoints.lonNormal360(this.lon),
+          maxRelDiff);
     }
     return lonOk && Misc.nearlyEquals(that.getLatitude(), this.lat, maxRelDiff);
   }
@@ -336,11 +363,12 @@ public class LatLonPointImpl implements LatLonPoint, java.io.Serializable {
    * String representation in the form, eg 40.23N 105.1W
    *
    * @param sigDigits significant digits
-   * @return String representation
+   * @deprecated use LatLonPoints.toString
    */
+  @Deprecated
   public String toString(int sigDigits) {
     Formatter sbuff = new Formatter();
-    sbuff.format("%s %s", latToString(lat, sigDigits), lonToString(lon, sigDigits));
+    sbuff.format("%s %s", LatLonPoints.latToString(lat, sigDigits), LatLonPoints.lonToString(lon, sigDigits));
     return sbuff.toString();
   }
 }

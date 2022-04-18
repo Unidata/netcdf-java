@@ -1,25 +1,29 @@
-ext.title = "HttpClient Wrappers"
+ext.title = 'HttpClient Wrappers'
 
 apply from: "$rootDir/gradle/any/dependencies.gradle"
-apply from: "$rootDir/gradle/any/java.gradle"
-apply from: "$rootDir/gradle/any/testing.gradle"
-apply from: "$rootDir/gradle/any/coverage.gradle"
-apply from: "$rootDir/gradle/any/archiving.gradle"
-apply from: "$rootDir/gradle/any/publishing.gradle"
+apply from: "$rootDir/gradle/any/java-library.gradle"
 apply from: "$rootDir/gradle/any/gretty.gradle"
 
 dependencies {
-    compile libraries["guava"]
-    compile libraries["jsr305"]
-    compile libraries["httpclient"]
-    compile libraries["httpcore"]
-    compile libraries["httpmime"]
-    compile libraries["re2j"]
-    compile libraries["slf4j-api"]
-    testRuntime libraries["logback-classic"]
+  api enforcedPlatform(project(':netcdf-java-platform'))
+  testImplementation enforcedPlatform(project(':netcdf-java-testing-platform'))
+
+  api 'com.google.guava:guava'
+  api 'org.apache.httpcomponents:httpclient'
+  api 'org.apache.httpcomponents:httpcore'
+
+  implementation 'org.apache.httpcomponents:httpmime'
+  implementation 'com.google.re2j:re2j'
+  implementation 'org.slf4j:slf4j-api'
+
+  testImplementation project(':cdm-test-utils')
+
+  testImplementation 'com.google.truth:truth'
+
+  testRuntimeOnly 'ch.qos.logback:logback-classic'
 }
 
 test {
-    dependsOn("farmBeforeIntegrationTest")
-    finalizedBy("farmAfterIntegrationTest")
+  dependsOn('farmBeforeIntegrationTest')
+  finalizedBy('farmAfterIntegrationTest')
 }

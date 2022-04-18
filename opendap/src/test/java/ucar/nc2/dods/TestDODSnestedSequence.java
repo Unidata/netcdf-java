@@ -7,11 +7,11 @@ package ucar.nc2.dods;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.*;
-import ucar.nc2.NCdumpW;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
+import ucar.nc2.write.Ncdump;
 
 /**
  * Test nc2 dods in the JUnit framework.
@@ -136,7 +136,7 @@ public class TestDODSnestedSequence {
     assert a.getRank() == 1;
     assert a.getSize() == 25 : a.getSize();
 
-    logger.debug(NCdumpW.toString(a, "stuff", null));
+    logger.debug(Ncdump.printArray(a, "stuff", null));
 
     int count = 0;
     IndexIterator iter = a.getIndexIterator();

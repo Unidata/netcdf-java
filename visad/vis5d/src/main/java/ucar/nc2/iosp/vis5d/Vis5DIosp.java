@@ -220,9 +220,9 @@ public class Vis5DIosp extends AbstractIOServiceProvider {
     int ntimes = sizes[3];
     int nvars = sizes[4];
 
-    Dimension time = new Dimension(TIME, ntimes, true);
-    Dimension row = new Dimension(ROW, nr, true);
-    Dimension col = new Dimension(COLUMN, nc, true);
+    Dimension time = new Dimension(TIME, ntimes);
+    Dimension row = new Dimension(ROW, nr);
+    Dimension col = new Dimension(COLUMN, nc);
     ncfile.addDimension(null, time);
     ncfile.addDimension(null, row);
     ncfile.addDimension(null, col);
@@ -280,7 +280,7 @@ public class Vis5DIosp extends AbstractIOServiceProvider {
     }
     Variable vert = null;
     if (have3D) {
-      Dimension lev = new Dimension(LEVEL, nl, true);
+      Dimension lev = new Dimension(LEVEL, nl);
       ncfile.addDimension(null, lev);
       vert = makeVerticalVariable(vert_sys[0], nl, vertargs);
       if (vert != null) {

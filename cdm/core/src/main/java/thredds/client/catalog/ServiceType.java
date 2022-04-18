@@ -4,7 +4,6 @@
  */
 package thredds.client.catalog;
 
-
 /**
  * Service Type enums
  *
@@ -13,48 +12,52 @@ package thredds.client.catalog;
  */
 public enum ServiceType {
   ADDE, // not used
-  Catalog("Provide subsetting and HTML conversion services for THREDDS catalogs.", AccessType.Catalog), //
-  CdmRemote("Provides index subsetting on remote CDM datasets, using ncstream.", AccessType.DataAccess), //
-  CdmrFeature("Provides coordinate subsetting on remote CDM Feature Datasets, using ncstream.", AccessType.DataAccess), //
+  Catalog("Provide subsetting and HTML conversion services for THREDDS catalogs.", AccessType.Catalog, null), //
+  CdmRemote("Provides index subsetting on remote CDM datasets, using ncstream.", AccessType.DataAccess, "cdmremote"), //
+  CdmrFeature("Provides coordinate subsetting on remote CDM Feature Datasets, using ncstream.", AccessType.DataAccess,
+      "cdmrFeature"), //
   Compound, //
-  DAP4("Access dataset through OPeNDAP using the DAP4 protocol.", AccessType.DataAccess), //
+  DAP4("Access dataset through OPeNDAP using the DAP4 protocol.", AccessType.DataAccess, "dap4"), //
   DODS, // deprecated
   File, // deprecated
   FTP, //
   GRIDFTP, //
   H5Service, //
-  HTTPServer("HTTP file download.", AccessType.DataAccess), //
-  JupyterNotebook("Generate a Jupyter Notebook that uses Siphon to access this dataset.", AccessType.DataAccess), //
-  ISO("Provide ISO 19115 metdata representation of a dataset's structure and metadata.", AccessType.Metadata), //
+  HTTPServer("HTTP file download.", AccessType.DataAccess, "httpserver"), //
+  JupyterNotebook("Generate a Jupyter Notebook that uses Siphon to access this dataset.", AccessType.DataViewer, null), //
+  ISO("Provide ISO 19115 metdata representation of a dataset's structure and metadata.", AccessType.Metadata, null), //
   LAS, //
   NcJSON, //
-  NCML("Provide NCML representation of a dataset.", AccessType.Metadata), //
-  NetcdfSubset("A web service for subsetting CDM scientific datasets.", AccessType.DataAccess), //
-  OPENDAP("Access dataset through OPeNDAP using the DAP2 protcol.", AccessType.DataAccess), //
+  NCML("Provide NCML representation of a dataset.", AccessType.Metadata, "ncml"), //
+  NetcdfSubset("A web service for subsetting CDM scientific datasets.", AccessType.DataAccess, null), //
+  OPENDAP("Access dataset through OPeNDAP using the DAP2 protcol.", AccessType.DataAccess, "dods"), //
   OPENDAPG, //
   Resolver, //
-  THREDDS, //
+  THREDDS("Access dataset through thredds calalog enty", AccessType.DataAccess, "thredds"), //
   UDDC("An evaluation of how well the metadata contained in the dataset"
-      + " conforms to the NetCDF Attribute Convention for Data Discovery (NACDD)", AccessType.Metadata), //
+      + " conforms to the NetCDF Attribute Convention for Data Discovery (NACDD)", AccessType.Metadata, null), //
   WebForm, // ??
-  WCS("Supports access to geospatial data as 'coverages'.", AccessType.DataAccess), //
+  WCS("Supports access to geospatial data as 'coverages'.", AccessType.DataAccess, null), //
   WFS("Supports access to geospatial data as simple geometry objects (such as polygons and lines).",
-      AccessType.DataAccess), //
-  WMS("Supports access to georegistered map images from geoscience datasets.", AccessType.DataAccess), //
+      AccessType.DataAccess, null), //
+  WMS("Supports access to georegistered map images from geoscience datasets.", AccessType.DataAccess, null), //
   WSDL, //
   ;
 
-  final String desc;
-  final AccessType accessType;
+  private final String desc;
+  private final String protocol;
+  private final AccessType accessType;
 
   ServiceType() {
     this.desc = null;
+    this.protocol = null;
     this.accessType = AccessType.Unknown;
   }
 
-  ServiceType(String desc, AccessType accessType) {
+  ServiceType(String desc, AccessType accessType, String protocol) {
     this.desc = desc;
     this.accessType = accessType;
+    this.protocol = protocol;
   }
 
   // ignore case
@@ -76,14 +79,18 @@ public enum ServiceType {
     return this.desc;
   }
 
+  public String getProtocol() {
+    return protocol;
+  }
+
   public String getAccessType() {
     return this.accessType.name;
   }
 
   public enum AccessType {
-    Catalog("Catalog"), Metadata("Metadata"), DataAccess("Data Access"), Unknown("Unknown");
+    Catalog("Catalog"), Metadata("Metadata"), DataAccess("Data Access"), DataViewer("Data Viewer"), Unknown("Unknown");
 
-    protected String name;
+    protected final String name;
 
     AccessType(String name) {
       this.name = name;

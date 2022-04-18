@@ -98,7 +98,7 @@ public abstract class GridEnsembleCoord {
    * @param g the group in the file
    */
   public void addDimensionsToNetcdfFile(NetcdfFile ncfile, Group g) {
-    ncfile.addDimension(g, new Dimension(getName(), getNEnsembles(), true));
+    ncfile.addDimension(g, new Dimension(getName(), getNEnsembles()));
   }
 
   protected void addToNetcdfFile(NetcdfFile ncfile, Group g) {

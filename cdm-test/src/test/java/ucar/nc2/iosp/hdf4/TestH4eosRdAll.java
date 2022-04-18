@@ -65,11 +65,11 @@ public class TestH4eosRdAll {
     System.out.printf("TestH4eosReadAll %s%n", filename);
     try (NetcdfFile ncfile = NetcdfFile.open(filename)) {
       Group root = ncfile.getRootGroup();
-      Group g = root.findGroup("HDFEOS INFORMATION");
+      Group g = root.findGroupLocal("HDFEOS INFORMATION");
       if (g == null)
         g = ncfile.getRootGroup();
 
-      Variable dset = g.findVariable("StructMetadata.0");
+      Variable dset = g.findVariableLocal("StructMetadata.0");
       assert (dset != null);
     }
   }

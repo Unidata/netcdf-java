@@ -1,9 +1,10 @@
 /*
- * Copyright (c) 1998-2018 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 package ucar.nc2.dataset.conv;
 
+import com.google.common.collect.ImmutableMap;
 import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants._Coordinate;
@@ -163,9 +164,10 @@ public class CF1Convention extends CSMConvention {
       if (grid_mapping != null) {
         Variable gridMap = ds.findVariable(grid_mapping);
         if (gridMap == null) {
-          Group g = v.getParentGroup(); // might be group relative - CF does not specify
-          gridMap = g.findVariable(grid_mapping);
+          Group g = v.getParentGroupOrRoot(); // might be group relative - CF does not specify
+          gridMap = g.findVariableLocal(grid_mapping);
         }
+
         if (gridMap != null) {
           gridMap.addAttribute(new Attribute(_Coordinate.TransformType, TransformType.Projection.toString()));
 
@@ -177,7 +179,14 @@ public class CF1Convention extends CSMConvention {
           } else {
             gridMap.addAttribute(new Attribute(_Coordinate.AxisTypes, AxisType.GeoX + " " + AxisType.GeoY));
           }
-
+          // check for CF-ish GOES-16/17 grid mappings
+          Attribute productionLocation = ds.findGlobalAttributeIgnoreCase("production_location");
+          Attribute icdVersion = ds.findGlobalAttributeIgnoreCase("ICD_version");
+          if (productionLocation != null && icdVersion != null) {
+            // the fact that those two global attributes are not null means we should check to see
+            // if the grid mapping variable has attributes that need corrected.
+            correctGoes16(productionLocation, icdVersion, gridMap);
+          }
           got_grid_mapping = true;
         }
       }
@@ -383,7 +392,6 @@ public class CF1Convention extends CSMConvention {
    * CF.AXIS attributes
    */
   protected AxisType getAxisType(NetcdfDataset ncDataset, VariableEnhanced v) {
-
     // standard names for unitless vertical coords
     String sname = ncDataset.findAttValueIgnoreCase((Variable) v, CF.STANDARD_NAME, null);
     if (sname != null) {
@@ -484,5 +492,35 @@ public class CF1Convention extends CSMConvention {
     return null;
   }
 
+  private void correctGoes16(Attribute productionLocation, Attribute icdVersion, Variable gridMappingVar) {
+    // Files with these global attributes might need corrected
+    // :ICD_version = "GROUND SEGMENT (GS) TO ADVANCED WEATHER INTERACTIVE PROCESSING SYSTEM (AWIPS) INTERFACE CONTROL
+    // DOCUMENT (ICD) Revision B" ;
+    // :production_location = "WCDAS" ;
+    String prodLoc = productionLocation.getStringValue();
+    String icdVer = icdVersion.getStringValue();
+    if (prodLoc != null && icdVer != null) {
+      prodLoc = prodLoc.toLowerCase().trim();
+      icdVer = icdVer.toLowerCase().trim();
+      boolean mightNeedCorrected = prodLoc.contains("wcdas");
+      mightNeedCorrected = mightNeedCorrected && icdVer.contains("ground segment");
+      mightNeedCorrected = mightNeedCorrected && icdVer.contains("awips");
+      if (mightNeedCorrected) {
+        Map<String, String> possibleCorrections =
+            ImmutableMap.of("semi_minor", CF.SEMI_MINOR_AXIS, "semi_major", CF.SEMI_MAJOR_AXIS);
+        possibleCorrections.forEach((incorrect, correct) -> {
+          Attribute attr = gridMappingVar.findAttributeIgnoreCase(incorrect);
+          if (attr != null) {
+            Array vals = attr.getValues();
+            if (vals != null) {
+              gridMappingVar.addAttribute(new Attribute(correct, vals));
+              gridMappingVar.remove(attr);
+              log.debug("Renamed {} attribute {} to {}", gridMappingVar, incorrect, correct);
+            }
+          }
+        });
+      }
+    }
+  }
 }
 

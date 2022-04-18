@@ -38,6 +38,7 @@ import ucar.nc2.constants.CF;
 import ucar.unidata.geoloc.Earth;
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.LatLonPointImpl;
+import ucar.unidata.geoloc.LatLonPoints;
 import ucar.unidata.geoloc.ProjectionImpl;
 import ucar.unidata.geoloc.ProjectionPoint;
 import ucar.unidata.geoloc.ProjectionPointImpl;
@@ -70,6 +71,10 @@ public class PolyconicProjection extends ProjectionImpl {
   private double falseNorthing;
   private double totalScale;
 
+  // values passed in through the constructor
+  // need for constructCopy
+  private double _lat0, _lon0;
+
   public PolyconicProjection() {
     this(23.56, 76.54);
   }
@@ -85,6 +90,9 @@ public class PolyconicProjection extends ProjectionImpl {
 
   public PolyconicProjection(double lat0, double lon0, double falseEasting, double falseNorthing, Earth ellipsoid) {
     super("Polyconic", false);
+
+    this._lat0 = lat0;
+    this._lon0 = lon0;
 
     // Initialization
     this.projectionLatitude = Math.toRadians(lat0);
@@ -112,17 +120,17 @@ public class PolyconicProjection extends ProjectionImpl {
     addParameter(CF.INVERSE_FLATTENING, 1.0 / ellipsoid.getFlattening());
   }
 
-  private ProjectionPoint project(double lplam, double lpphi, ProjectionPointImpl out) {
+  private ProjectionPoint project(double lplam, double lpphi) {
     if (spherical) {
       double cot, E;
 
       if (Math.abs(lpphi) <= TOL) {
-        out.setLocation(lplam, ml0);
+        return ProjectionPoint.create(lplam, ml0);
       } else {
         cot = 1. / Math.tan(lpphi);
         double x = Math.sin(E = lplam * Math.sin(lpphi)) * cot;
         double y = lpphi - projectionLatitude + cot * (1. - Math.cos(E));
-        out.setLocation(x, y);
+        return ProjectionPoint.create(x, y);
       }
     } else {
 
@@ -144,17 +152,16 @@ public class PolyconicProjection extends ProjectionImpl {
       double ms, sp, cp;
 
       if (Math.abs(lpphi) <= TOL) {
-        out.setLocation(lplam, -ml0);
+        return ProjectionPoint.create(lplam, -ml0);
       } else {
         sp = Math.sin(lpphi);
         ms = Math.abs(cp = Math.cos(lpphi)) > TOL ? MapMath.msfn(sp, cp, es) / sp : 0.;
         lplam *= sp; // LOOK
         double x = ms * Math.sin(lplam);
         double y = (MapMath.mlfn(lpphi, sp, cp, en) - ml0) + ms * (1. - Math.cos(lplam));
-        out.setLocation(x, y);
+        return ProjectionPoint.create(x, y);
       }
     }
-    return out;
   }
 
   private ProjectionPoint projectInverse(double xyx, double xyy, ProjectionPointImpl out) {
@@ -306,7 +313,9 @@ public class PolyconicProjection extends ProjectionImpl {
    *
    * @param lat the origin latitude.
    */
+  @Deprecated
   public void setOriginLatitude(double lat) { // suppply in degrees
+    _lat0 = lat;
     projectionLatitude = Math.toRadians(lat);
   }
 
@@ -316,7 +325,7 @@ public class PolyconicProjection extends ProjectionImpl {
    * @return the origin longitude in degrees
    */
   public double getOriginLatitude() {
-    return Math.toDegrees(projectionLatitude);
+    return _lat0;
   }
 
   /**
@@ -324,7 +333,9 @@ public class PolyconicProjection extends ProjectionImpl {
    *
    * @param lon the origin longitude.
    */
-  public void setOriginLongitude(double lon) {// suppply in degrees
+  @Deprecated
+  public void setOriginLongitude(double lon) {// supply in degrees
+    _lon0 = lon;
     projectionLongitude = Math.toRadians(lon);
   }
 
@@ -334,7 +345,7 @@ public class PolyconicProjection extends ProjectionImpl {
    * @return the origin longitude in degrees
    */
   public double getOriginLongitude() {
-    return Math.toDegrees(projectionLongitude);
+    return _lon0;
   }
 
   /**
@@ -352,6 +363,7 @@ public class PolyconicProjection extends ProjectionImpl {
    *
    * @param falseEasting x offset
    */
+  @Deprecated
   public void setFalseEasting(double falseEasting) {
     this.falseEasting = falseEasting;
   }
@@ -371,6 +383,7 @@ public class PolyconicProjection extends ProjectionImpl {
    *
    * @param falseNorthing y offset
    */
+  @Deprecated
   public void setFalseNorthing(double falseNorthing) {
     this.falseNorthing = falseNorthing;
   }
@@ -392,8 +405,7 @@ public class PolyconicProjection extends ProjectionImpl {
   @Override
   public String paramsToString() {
     Formatter f = new Formatter();
-    f.format("origin lat=%f, origin lon=%f earth=%s", Math.toDegrees(projectionLatitude),
-        Math.toDegrees(projectionLongitude), ellipsoid);
+    f.format("origin lat=%f, origin lon=%f earth=%s", _lat0, _lon0, ellipsoid);
     return f.toString();
   }
 
@@ -407,7 +419,7 @@ public class PolyconicProjection extends ProjectionImpl {
    */
   @Override
   public boolean crossSeam(ProjectionPoint pt1, ProjectionPoint pt2) {
-    if (ProjectionPointImpl.isInfinite(pt1) || ProjectionPointImpl.isInfinite(pt2)) {
+    if (LatLonPoints.isInfinite(pt1) || LatLonPoints.isInfinite(pt2)) {
       return true;
     }
 
@@ -433,8 +445,7 @@ public class PolyconicProjection extends ProjectionImpl {
       theta = MapMath.normalizeLongitude(theta - projectionLongitude);
     }
 
-    ProjectionPointImpl out = new ProjectionPointImpl();
-    project(theta, fromLat, out);
+    ProjectionPoint out = project(theta, fromLat);
     result.setLocation(totalScale * out.getX() + falseEasting, totalScale * out.getY() + falseNorthing);
     return result;
   }

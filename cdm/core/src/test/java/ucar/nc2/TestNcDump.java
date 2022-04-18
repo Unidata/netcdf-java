@@ -16,9 +16,7 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.lang.invoke.MethodHandles;
 
-/**
- * Test NcdumpW.
- */
+/** Test NcdumpW. */
 public class TestNcDump {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
@@ -51,7 +49,7 @@ public class TestNcDump {
     }
   }
 
-  public static String toUnixEOLs(String input) {
+  private static String toUnixEOLs(String input) {
     return input.replaceAll("\\r\\n", "\n").replaceAll("\\r", "\n");
   }
 }

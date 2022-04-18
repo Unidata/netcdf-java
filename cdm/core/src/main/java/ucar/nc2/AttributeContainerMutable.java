@@ -5,28 +5,43 @@ import com.google.common.collect.ImmutableList;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 
 /** A mutable collection of Attributes. */
 public class AttributeContainerMutable implements AttributeContainer {
-  private final String name;
+
+  /** Create mutable from immutable container. */
+  public static AttributeContainerMutable copyFrom(@Nullable AttributeContainer from) {
+    return from == null ? new AttributeContainerMutable(null) : new AttributeContainerMutable(from.getName(), from);
+  }
+
+  private @Nullable String name;
   private List<Attribute> atts;
 
-  public AttributeContainerMutable(String name) {
+  /** Constructor with container name. */
+  public AttributeContainerMutable(@Nullable String name) {
     this.name = name;
     this.atts = new ArrayList<>();
   }
 
-  public AttributeContainerMutable(String name, Iterable<Attribute> from) {
+  /** Constructor with container name and list of Attributes to copy in. */
+  public AttributeContainerMutable(@Nullable String name, Iterable<Attribute> from) {
     this(name);
     addAll(from);
   }
 
+  public void setName(@Nullable String name) {
+    this.name = name;
+  }
+
   @Override
+  @Nullable
   public String getName() {
     return name;
   }
 
+  /** @deprecated do not use. */
   @Deprecated
   public void setImmutable() {
     this.atts = Collections.unmodifiableList(atts);
@@ -77,7 +92,7 @@ public class AttributeContainerMutable implements AttributeContainer {
   }
 
   @Override
-  public String findAttValueIgnoreCase(String attName, String defaultValue) {
+  public String findAttributeString(String attName, String defaultValue) {
     String attValue = null;
     Attribute att = findAttributeIgnoreCase(attName);
 
@@ -105,7 +120,6 @@ public class AttributeContainerMutable implements AttributeContainer {
     return (result != null) ? result
         : atts.stream().filter(a -> a.getShortName().equalsIgnoreCase(name)).findFirst().orElse(null);
   }
-
 
   @Override
   public double findAttributeDouble(String attName, double defaultValue) {
@@ -172,8 +186,14 @@ public class AttributeContainerMutable implements AttributeContainer {
     return att != null && atts.remove(att);
   }
 
+  /** Turn into an immutable AttributeContainer */
   public AttributeContainer toImmutable() {
     return new AttributeContainerImmutable(name, atts);
+  }
+
+  @Override
+  public boolean isEmpty() {
+    return atts.isEmpty();
   }
 
   @Immutable
@@ -192,7 +212,7 @@ public class AttributeContainerMutable implements AttributeContainer {
     }
 
     @Override
-    public String findAttValueIgnoreCase(String attName, String defaultValue) {
+    public String findAttributeString(String attName, String defaultValue) {
       return atts.stream().filter(a -> a.getShortName().equals(attName)).findFirst().map(Attribute::getStringValue)
           .orElse(defaultValue);
     }
@@ -234,6 +254,11 @@ public class AttributeContainerMutable implements AttributeContainer {
     @Override
     public String getName() {
       return name;
+    }
+
+    @Override
+    public boolean isEmpty() {
+      return atts.isEmpty();
     }
 
     @Deprecated

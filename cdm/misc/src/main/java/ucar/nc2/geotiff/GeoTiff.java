@@ -10,6 +10,7 @@ import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.RandomAccessFile;
 import java.io.StringWriter;
+import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
@@ -203,7 +204,7 @@ public class GeoTiff implements Closeable {
     ByteBuffer direct = ByteBuffer.allocateDirect(4 * data.length);
     FloatBuffer buffer = direct.asFloatBuffer();
     buffer.put(data);
-    // buffer.flip();
+    // ((Buffer) buffer).flip();
     channel.write(direct);
 
     if (imageNumber == 1)
@@ -232,7 +233,7 @@ public class GeoTiff implements Closeable {
       if (debugRead)
         System.out.println("position before writing nextIFD= " + channel.position() + " IFD is " + firstIFD);
       buffer.putInt(firstIFD);
-      buffer.flip();
+      ((Buffer) buffer).flip();
       channel.write(buffer);
     }
     writeIFD(channel, firstIFD);
@@ -247,7 +248,7 @@ public class GeoTiff implements Closeable {
     buffer.putShort((short) 42);
     buffer.putInt(firstIFD);
 
-    buffer.flip();
+    ((Buffer) buffer).flip();
     channel.write(buffer);
 
     return firstIFD;
@@ -272,7 +273,7 @@ public class GeoTiff implements Closeable {
     ByteBuffer buffer = ByteBuffer.allocate(2);
     int n = tags.size();
     buffer.putShort((short) n);
-    buffer.flip();
+    ((Buffer) buffer).flip();
     channel.write(buffer);
 
     start += 2;
@@ -291,7 +292,7 @@ public class GeoTiff implements Closeable {
       System.out.println("pos before writing nextIFD= " + channel.position());
     buffer = ByteBuffer.allocate(4);
     buffer.putInt(0);
-    buffer.flip();
+    ((Buffer) buffer).flip();
     channel.write(buffer);
   }
 
@@ -308,18 +309,18 @@ public class GeoTiff implements Closeable {
       int done = writeValues(buffer, ifd);
       for (int k = 0; k < 4 - done; k++) // fill out to 4 bytes
         buffer.put((byte) 0);
-      buffer.flip();
+      ((Buffer) buffer).flip();
       channel.write(buffer);
 
     } else { // write offset
       buffer.putInt(nextOverflowData);
-      buffer.flip();
+      ((Buffer) buffer).flip();
       channel.write(buffer);
       // write data
       channel.position(nextOverflowData);
       ByteBuffer vbuffer = ByteBuffer.allocate(size);
       writeValues(vbuffer, ifd);
-      vbuffer.flip();
+      ((Buffer) vbuffer).flip();
       channel.write(vbuffer);
       nextOverflowData += size;
     }
@@ -417,7 +418,7 @@ public class GeoTiff implements Closeable {
     ByteBuffer buffer = ByteBuffer.allocate(8);
     int n = channel.read(buffer);
     assert n == 8;
-    buffer.flip();
+    ((Buffer) buffer).flip();
     if (showHeaderBytes) {
       printBytes(System.out, "header", buffer, 4);
       buffer.rewind();
@@ -443,7 +444,7 @@ public class GeoTiff implements Closeable {
 
     int n = channel.read(buffer);
     assert n == 2;
-    buffer.flip();
+    ((Buffer) buffer).flip();
     if (showBytes) {
       printBytes(System.out, "IFD", buffer, 2);
       buffer.rewind();
@@ -468,7 +469,7 @@ public class GeoTiff implements Closeable {
     buffer = ByteBuffer.allocate(4);
     buffer.order(byteOrder);
     assert 4 == channel.read(buffer);
-    buffer.flip();
+    ((Buffer) buffer).flip();
     int nextIFD = buffer.getInt();
     if (debugRead)
       System.out.println(" nextIFD == " + nextIFD);
@@ -484,7 +485,7 @@ public class GeoTiff implements Closeable {
     buffer.order(byteOrder);
     int n = channel.read(buffer);
     assert n == 12;
-    buffer.flip();
+    ((Buffer) buffer).flip();
     if (showBytes)
       printBytes(System.out, "IFDEntry bytes", buffer, 12);
 
@@ -509,7 +510,7 @@ public class GeoTiff implements Closeable {
       ByteBuffer vbuffer = ByteBuffer.allocate(ifd.count * ifd.type.size);
       vbuffer.order(byteOrder);
       assert ifd.count * ifd.type.size == channel.read(vbuffer);
-      vbuffer.flip();
+      ((Buffer) vbuffer).flip();
       readValues(vbuffer, ifd);
     }
 
@@ -656,10 +657,11 @@ public class GeoTiff implements Closeable {
     return sw.toString();
   }
 
+  /** @deprecated do not use */
+  @Deprecated
   public void compare(GeoTiff other, Formatter f) {
     CompareNetcdf2.compareLists(tags, other.getTags(), f);
   }
-
 
   //////////////////////////////////////////////////////////////////////////
 
@@ -669,7 +671,7 @@ public class GeoTiff implements Closeable {
     ByteBuffer buffer = ByteBuffer.allocate(size);
     buffer.order(byteOrder);
     assert size == channel.read(buffer);
-    buffer.flip();
+    ((Buffer) buffer).flip();
     return buffer;
   }
 }

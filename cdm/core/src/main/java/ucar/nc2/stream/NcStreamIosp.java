@@ -43,6 +43,10 @@ public class NcStreamIosp extends AbstractIOServiceProvider {
   private static final boolean debug = false;
 
   public boolean isValidFile(RandomAccessFile raf) throws IOException {
+    // fail fast on directory
+    if (raf.isDirectory()) {
+      return false;
+    }
     raf.seek(0);
     if (!readAndTest(raf, NcStream.MAGIC_START))
       return false; // must start with these 4 bytes
@@ -246,9 +250,9 @@ public class NcStreamIosp extends AbstractIOServiceProvider {
     version = proto.getVersion();
 
     NcStreamProto.Group root = proto.getRoot();
-    Group.Builder rootBuilder = Group.builder(null).setNcfile(ncfile).setName("");
+    Group.Builder rootBuilder = Group.builder().setNcfile(ncfile).setName("");
     NcStream.readGroup(root, rootBuilder);
-    ncfile.setRootGroup(rootBuilder.build(null));
+    ncfile.setRootGroup(rootBuilder.build());
     ncfile.finish();
 
     // then we have a stream of data messages with a final END or ERR
@@ -427,7 +431,7 @@ public class NcStreamIosp extends AbstractIOServiceProvider {
       ByteOrder bo = NcStream.decodeDataByteOrder(dproto); // LOOK not using bo !!
 
       List<DataStorage> storage;
-      Optional<Variable.Builder<?>> vbopt = rootBuilder.findVariable(dproto.getVarName());
+      Optional<Variable.Builder<?>> vbopt = rootBuilder.findVariableNested(dproto.getVarName());
       if (!vbopt.isPresent()) {
         logger.warn(" ERR cant find var {} {}", dproto.getVarName(), dproto);
         storage = new ArrayList<>(); // barf

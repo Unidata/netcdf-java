@@ -59,7 +59,7 @@ import thredds.catalog.parser.jdom.InvCatalogFactory10;
  * Uses a pluggable InvCatalogConvertIF to transform the JDOM tree to the thredds.catalog objects.
  * The converters are registered based on the namespace used. We are supporting:
  * <ul>
- * <li>the older "0.6" spec, namespace "http://www.unidata.ucar.edu/thredds"
+ * <li>the older "0.6" spec, namespace "https://www.unidata.ucar.edu/thredds"
  * <li>the current 1.0/1.1 spec, namespace "http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"
  * </ul>
  * The schemas are read from a local resource, see XMLEntityResolver
@@ -78,7 +78,7 @@ public class InvCatalogFactory {
 
   /**
    * Get new Factory for reading and writing catalogs.
-   * For multithreading, get seperate InvCatalogFactory for each thread.
+   * For multithreading, get separate InvCatalogFactory for each thread.
    *
    * @param validate : do XML validation or not.
    * @return default factory
@@ -122,6 +122,7 @@ public class InvCatalogFactory {
 
     XMLEntityResolver xml = new XMLEntityResolver(validate);
     saxBuilder = xml.getSAXBuilder();
+    saxBuilder.setExpandEntities(false);
     warnMessages = xml.getWarningMessages();
     errMessages = xml.getErrorMessages();
     fatalMessages = xml.getFatalMessages();
@@ -279,7 +280,7 @@ public class InvCatalogFactory {
    * by causing validate() to fail. Therefore, be sure to call validate() before trying
    * to use the InvCatalog object.
    *
-   * @param uri : the URI of the document, used for resolving reletive references.
+   * @param uri : the URI of the document, used for resolving relative references.
    * @return an InvCatalogImpl object
    */
   public InvCatalogImpl readXML(URI uri) {
@@ -330,7 +331,7 @@ public class InvCatalogFactory {
    * the InvCatalog object.
    *
    * @param catAsString : the String from which to read the catalog.
-   * @param baseUri : the base URI of the document, used for resolving reletive references.
+   * @param baseUri : the base URI of the document, used for resolving relative references.
    * @return an InvCatalogImpl object
    */
   public InvCatalogImpl readXML(String catAsString, URI baseUri) {
@@ -345,12 +346,13 @@ public class InvCatalogFactory {
    * the InvCatalog object.
    *
    * @param catAsStringReader : the StreamReader from which to read the catalog.
-   * @param baseUri : the base URI of the document, used for resolving reletive references.
+   * @param baseUri : the base URI of the document, used for resolving relative references.
    * @return an InvCatalogImpl object
    */
   public InvCatalogImpl readXML(StringReader catAsStringReader, URI baseUri) {
     XMLEntityResolver resolver = new XMLEntityResolver(false);
     SAXBuilder builder = resolver.getSAXBuilder();
+    builder.setExpandEntities(false);
 
     Document inDoc;
     try {
@@ -375,7 +377,7 @@ public class InvCatalogFactory {
    * to use the InvCatalog object.
    *
    * @param docIs : the InputStream to read from
-   * @param uri : the URI of the document, used for resolving reletive references.
+   * @param uri : the URI of the document, used for resolving relative references.
    * @return an InvCatalogImpl object
    */
   public InvCatalogImpl readXML(InputStream docIs, URI uri) {
@@ -413,7 +415,7 @@ public class InvCatalogFactory {
    * to use the InvCatalog object.
    *
    * @param jdomDoc a parsed JDOM Document
-   * @param uri : the URI of the document, used for resolving reletive references.
+   * @param uri : the URI of the document, used for resolving relative references.
    * @return an InvCatalogImpl object
    */
   public InvCatalogImpl readXML(org.jdom2.Document jdomDoc, URI uri) {

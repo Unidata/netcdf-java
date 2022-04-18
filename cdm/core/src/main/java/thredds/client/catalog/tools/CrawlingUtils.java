@@ -11,7 +11,7 @@ import ucar.ma2.Section;
 import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
-import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.util.CancelTask;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -46,7 +46,7 @@ public class CrawlingUtils {
       int count = 0;
       long total = 0, time = 0;
       System.out.printf("TDSdatasetReader %s started url=%s%n", who, datasetUrl);
-      try (NetcdfFile ncfile = NetcdfDataset.openFile(datasetUrl, cancel)) {
+      try (NetcdfFile ncfile = NetcdfDatasets.openFile(datasetUrl, cancel)) {
         for (Variable var : ncfile.getVariables()) {
           long start = System.currentTimeMillis();
           Array result = doLimitedRead(var);

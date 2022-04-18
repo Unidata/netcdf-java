@@ -2,14 +2,15 @@
 # center; subcenter; master; local; genProcess; Type; name; resource name (opt)
 #
 # center 7 subcenter 14 has non-standard time interval computation
-7;     14; 1; 0; -1;      nwsDev; NWS Meteorological Development Laboratory; resources/grib2/ncep/v21.0.0/
+7;     14; 1; 0; -1;      nwsDev; NWS Meteorological Development Laboratory; resources/grib2/ncep/v23.0.0/
 #
 # center 7 (ncep), 9 (usnws) and 54 (canandian met) all use ncep tables
-7;     -1; -1; -1; -1;    ncep; ncep;     resources/grib2/ncep/v21.0.0/
-9;     -1; -1; -1; -1;    ncep; usnws;    resources/grib2/ncep/v21.0.0/
-54;    -1; -1; -1; -1;    ncep; canadian met; resources/grib2/ncep/v21.0.0/
+7;     -1; -1; -1; -1;    ncep; ncep;     resources/grib2/ncep/v23.0.0/
+9;     -1; -1; -1; -1;    ncep; usnws;    resources/grib2/ncep/v23.0.0/
+54;    -1; -1; -1; -1;    ncep; canadian met; resources/grib2/ncep/v23.0.0/
 #
 # FSL HRRR
+59;     0;  2;  1;  -1;   gsd; FSL HRRR;  resources/grib2/noaa_gsd/Fsl-hrrr4.csv
 59;    -1; -1; -1; 125;   gsd; FSL HRRR;  resources/grib2/noaa_gsd/Fsl-hrrr2.csv
 # RDA CSFR
 60;    1; 2; 1; 197;   cfsr; RDA CFSR;  resources/grib2/local/cfsr.txt

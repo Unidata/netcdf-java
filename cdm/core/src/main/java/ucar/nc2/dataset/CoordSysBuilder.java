@@ -60,7 +60,7 @@ import java.util.*;
  * Implementation notes:
  * 
  * Generally, subclasses should add the _Coordinate conventions, see
- * http://www.unidata.ucar.edu/software/netcdf-java/CoordinateAttributes.html
+ * https://www.unidata.ucar.edu/software/netcdf-java/CoordinateAttributes.html
  * Then let this class do the rest of the work.
  * 
  * How to add Coordinate Transforms:
@@ -83,9 +83,8 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
   private static boolean useMaximalCoordSys = true;
   private static boolean userMode;
 
-  /**
-   * Allow plug-ins to determine if it owns a file based on the file's Convention attribute.
-   */
+  /** @deprecated do not use */
+  @Deprecated
   public interface ConventionNameOk {
 
     /**
@@ -332,9 +331,9 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
   public static CoordSysBuilderIF factory(NetcdfDataset ds, CancelTask cancelTask) throws IOException {
 
     // look for the Conventions attribute
-    String convName = ds.getRootGroup().findAttValueIgnoreCase(CDM.CONVENTIONS, null);
+    String convName = ds.getRootGroup().findAttributeString(CDM.CONVENTIONS, null);
     if (convName == null)
-      convName = ds.getRootGroup().findAttValueIgnoreCase("Convention", null); // common mistake Convention instead of
+      convName = ds.getRootGroup().findAttributeString("Convention", null); // common mistake Convention instead of
     // Conventions
     if (convName != null)
       convName = convName.trim();
@@ -591,7 +590,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
       String vname = stoker.nextToken();
       VarProcess ap = findVarProcess(vname, vp);
       if (ap == null) {
-        Group g = vp.v.getParentGroup();
+        Group g = vp.v.getParentGroupOrRoot();
         Variable v = g.findVariableOrInParent(vname);
         if (v != null)
           ap = findVarProcess(v.getFullName(), vp);
@@ -864,8 +863,9 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
       List<CoordinateAxis> axisList = new ArrayList<>();
       List<CoordinateAxis> axes = ncDataset.getCoordinateAxes();
       for (CoordinateAxis axis : axes) {
-        if (isCoordinateAxisForVariable(axis, vp.v))
+        if (isCoordinateAxisForVariable(axis, vp.v)) {
           axisList.add(axis);
+        }
       }
 
       if (axisList.size() < 2)
@@ -945,7 +945,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
   protected void makeCoordinateTransforms(NetcdfDataset ncDataset) {
     for (VarProcess vp : varList) {
       if (vp.isCoordinateTransform && vp.ct == null) {
-        vp.ct = CoordTransBuilder.makeCoordinateTransform(vp.ds, vp.v, parseInfo, userAdvice);
+        vp.ct = makeCoordinateTransform(vp.ds, vp.v);
       }
     }
   }
@@ -1138,14 +1138,14 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
         parseInfo.format(" Coordinate Variable added = %s for dimension %s%n", v.getFullName(), v.getDimension(0));
       }
 
-      String axisName = v.attributes().findAttValueIgnoreCase(_Coordinate.AxisType, null);
+      String axisName = v.attributes().findAttributeString(_Coordinate.AxisType, null);
       if (axisName != null) {
         axisType = AxisType.getType(axisName);
         isCoordinateAxis = true;
         parseInfo.format(" Coordinate Axis added = %s type= %s%n", v.getFullName(), axisName);
       }
 
-      coordVarAlias = v.attributes().findAttValueIgnoreCase(_Coordinate.AliasForDimension, null);
+      coordVarAlias = v.attributes().findAttributeString(_Coordinate.AliasForDimension, null);
       if (coordVarAlias != null) {
         coordVarAlias = coordVarAlias.trim();
         if (v.getRank() != 1) {

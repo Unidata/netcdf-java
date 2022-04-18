@@ -18,6 +18,7 @@ import java.util.Formatter;
  *
  * @author caron
  * @since 7/11/2015
+ *        TODO will not implement AttributeContainer, use attibutes()
  */
 @Immutable
 public class CoverageTransform implements AttributeContainer {
@@ -70,6 +71,7 @@ public class CoverageTransform implements AttributeContainer {
   //////////////////////////////////////////////////////////////////////////////////////////////////
   // Attribute
 
+  /** The attributes contained by this CoverageTransform. */
   public AttributeContainer attributes() {
     return attributes;
   }
@@ -78,6 +80,11 @@ public class CoverageTransform implements AttributeContainer {
   @Deprecated
   public java.util.List<Attribute> getAttributes() {
     return attributes.getAttributes();
+  }
+
+  /** @deprecated Use attributes() */
+  public boolean isEmpty() {
+    return attributes.isEmpty();
   }
 
   /** @deprecated Use attributes() */
@@ -94,8 +101,8 @@ public class CoverageTransform implements AttributeContainer {
 
   /** @deprecated Use attributes() */
   @Deprecated
-  public String findAttValueIgnoreCase(String attName, String defaultValue) {
-    return attributes.findAttValueIgnoreCase(attName, defaultValue);
+  public String findAttributeString(String attName, String defaultValue) {
+    return attributes.findAttributeString(attName, defaultValue);
   }
 
   /** @deprecated Use attributes() */

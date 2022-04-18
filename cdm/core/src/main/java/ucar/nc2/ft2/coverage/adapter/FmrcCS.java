@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2018 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 2012-2020 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 
@@ -20,12 +20,14 @@ public class FmrcCS extends DtCoverageCS {
     super(builder);
   }
 
-  @Override
-  public CoordinateAxis getTimeAxis() {
-    if (builder.timeOffsetAxis != null)
-      return builder.timeOffsetAxis;
-    return builder.timeAxis;
-  }
+  // 2D time coordinate system rework made this override unnecessary. Even though this class is now pointless, we'll
+  // keep it so that FMRC continue to have coordinate systems of type FmrcCS.
+  // @Override
+  // public CoordinateAxis getTimeAxis() {
+  // if (builder.timeOffsetAxis != null)
+  // return builder.timeOffsetAxis;
+  // return builder.timeAxis;
+  // }
 
   /*
    * public CoordinateAxis1DTime getTimeAxisForRun(CalendarDate runTime) {

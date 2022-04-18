@@ -18,7 +18,9 @@ import java.net.URL;
  * big- and little-endian representations.
  *
  * @author Russ Rew
+ * @deprecated not part of public API.
  */
+@Deprecated
 public class BeLeDataInputStream extends DataInputStream {
 
   private byte[] w = new byte[8]; // work array for buffering bytes

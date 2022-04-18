@@ -12,11 +12,12 @@ import org.slf4j.LoggerFactory;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
-import ucar.nc2.NCdumpW;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.util.Misc;
+import ucar.nc2.write.Ncdump;
 import ucar.unidata.util.test.Assert2;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
@@ -40,9 +41,9 @@ public class TestGribCollectionReadingIosp {
     String covName = "Best/Temperature_height_above_ground";
     logger.debug("open {} var={}", endpoint, covName);
 
-    try (NetcdfDataset ds = NetcdfDataset.openDataset(endpoint)) {
+    try (NetcdfDataset ds = NetcdfDatasets.openDataset(endpoint)) {
       assert ds != null;
-      Variable v = ds.findVariable(null, covName);
+      Variable v = ds.findVariable(covName);
       assert v != null;
       assert v instanceof VariableDS;
 
@@ -64,8 +65,8 @@ public class TestGribCollectionReadingIosp {
   @Test
   public void testReadMrutpTimeRange() throws IOException, InvalidRangeException {
     // read more than one time coordinate at a time in a MRUTP, no vertical
-    try (NetcdfDataset ds = NetcdfDataset.openDataset(TestDir.cdmUnitTestDir + "gribCollections/tp/GFSonedega.ncx4")) {
-      Variable v = ds.findVariable(null, "Pressure_surface");
+    try (NetcdfDataset ds = NetcdfDatasets.openDataset(TestDir.cdmUnitTestDir + "gribCollections/tp/GFSonedega.ncx4")) {
+      Variable v = ds.getRootGroup().findVariableLocal("Pressure_surface");
       assert v != null;
       Array data = v.read("0:1,50,50");
       assert data != null;
@@ -81,15 +82,15 @@ public class TestGribCollectionReadingIosp {
   @Test
   public void testReadMrutpTimeRangeWithSingleVerticalLevel() throws IOException, InvalidRangeException {
     // read more than one time coordinate at a time in a MRUTP, with vertical
-    try (NetcdfDataset ds = NetcdfDataset.openDataset(TestDir.cdmUnitTestDir + "gribCollections/tp/GFSonedega.ncx4")) {
-      Variable v = ds.findVariable(null, "Relative_humidity_sigma");
+    try (NetcdfDataset ds = NetcdfDatasets.openDataset(TestDir.cdmUnitTestDir + "gribCollections/tp/GFSonedega.ncx4")) {
+      Variable v = ds.getRootGroup().findVariableLocal("Relative_humidity_sigma");
       assert v != null;
       Array data = v.read("0:1, 0, 50, 50");
       assert data != null;
       assert data.getRank() == 4;
       assert data.getDataType() == DataType.FLOAT;
       assert data.getSize() == 2;
-      logger.debug("{}", NCdumpW.toString(data));
+      logger.debug("{}", Ncdump.printArray(data));
       while (data.hasNext()) {
         float val = data.nextFloat();
         assert !Float.isNaN(val);
@@ -103,15 +104,15 @@ public class TestGribCollectionReadingIosp {
   @Test
   public void testReadMrutpTimeRangeWithMultipleVerticalLevel() throws IOException, InvalidRangeException {
     // read more than one time coordinate at a time in a MRUTP. multiple verticals
-    try (NetcdfDataset ds = NetcdfDataset.openDataset(TestDir.cdmUnitTestDir + "gribCollections/tp/GFSonedega.ncx4")) {
-      Variable v = ds.findVariable(null, "Relative_humidity_isobaric");
+    try (NetcdfDataset ds = NetcdfDatasets.openDataset(TestDir.cdmUnitTestDir + "gribCollections/tp/GFSonedega.ncx4")) {
+      Variable v = ds.getRootGroup().findVariableLocal("Relative_humidity_isobaric");
       assert v != null;
       Array data = v.read("0:1, 10:20:2, 50, 50");
       assert data != null;
       assert data.getRank() == 4;
       assert data.getDataType() == DataType.FLOAT;
       assert data.getSize() == 12;
-      logger.debug("{}", NCdumpW.toString(data));
+      logger.debug("{}", Ncdump.printArray(data));
       while (data.hasNext()) {
         float val = data.nextFloat();
         assert !Float.isNaN(val);

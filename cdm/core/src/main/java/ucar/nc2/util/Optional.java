@@ -6,7 +6,10 @@ import java.util.Objects;
 
 /**
  * Optional with an error message when empty
+ * 
+ * @deprecated All uses will move to java.util.Optional in ver6
  */
+@Deprecated
 public class Optional<T> {
   private final T value;
   private final String errMessage;

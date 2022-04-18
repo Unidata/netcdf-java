@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2015-2018 University Corporation for Atmospheric Research/Unidata
+ * See LICENSE for license information.
+ */
+
 package ucar.nc2.ft.coverage;
 
 import java.io.IOException;

@@ -13,6 +13,7 @@ import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.util.DebugFlagsImpl;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
@@ -67,7 +68,7 @@ public class TestUserProblems {
     DODSNetcdfFile.setDebugFlags(new DebugFlagsImpl("DODS/serverCall"));
     /* The temperature is recorded */
     String testfile = "http://nomads.ncdc.noaa.gov/thredds/dodsC/cfsr1hr/200912/tmp2m.gdas.200912.grb2";
-    try (NetcdfFile ncfile = NetcdfDataset.openFile(testfile, null)) {
+    try (NetcdfFile ncfile = NetcdfDatasets.openFile(testfile, null)) {
       System.out.printf("The GRIB file %s, temperature is displayed.", testfile);
       System.out.println();
 

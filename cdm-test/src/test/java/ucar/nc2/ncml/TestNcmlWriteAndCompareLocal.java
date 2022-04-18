@@ -16,9 +16,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.DatasetUrl;
-import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.jni.netcdf.Nc4Iosp;
+import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.util.CompareNetcdf2;
+import ucar.nc2.write.NcmlWriter;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.StringUtil2;
 
@@ -36,14 +36,6 @@ public class TestNcmlWriteAndCompareLocal {
 
   @Rule
   public TemporaryFolder tempFolder = new TemporaryFolder();
-
-  @Before
-  public void setLibrary() {
-    // Ignore this class's tests if NetCDF-4 isn't present.
-    // We're using @Before because it shows these tests as being ignored.
-    // @BeforeClass shows them as *non-existent*, which is not what we want.
-    Assume.assumeTrue("NetCDF-4 C library not present.", Nc4Iosp.isClibraryPresent());
-  }
 
   @Parameterized.Parameters(name = "{0}")
   public static List<Object[]> getTestParameters() {
@@ -96,13 +88,11 @@ public class TestNcmlWriteAndCompareLocal {
     }
 
     NetcdfFile org;
+    Object iospMessage = useRecords ? NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE : null;
     if (openDataset)
-      org = NetcdfDataset.openDataset(location, false, null);
+      org = NetcdfDatasets.openDataset(durl, null, -1, null, iospMessage);
     else
-      org = NetcdfDataset.acquireFile(durl, null);
-
-    if (useRecords)
-      org.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
+      org = NetcdfDatasets.acquireFile(null, null, durl, -1, null, iospMessage);
 
     // create a file and write it out
     int pos = location.lastIndexOf("/");
@@ -111,7 +101,7 @@ public class TestNcmlWriteAndCompareLocal {
       System.out.println(" output filename= " + ncmlOut);
 
     try {
-      NcMLWriter ncmlWriter = new NcMLWriter();
+      NcmlWriter ncmlWriter = new NcmlWriter();
       Element netcdfElement;
 
       if (explicit) {
@@ -128,18 +118,16 @@ public class TestNcmlWriteAndCompareLocal {
 
     // read it back in
     NetcdfFile copy;
+    DatasetUrl durlcopy = DatasetUrl.findDatasetUrl(ncmlOut);
     if (openDataset)
-      copy = NetcdfDataset.openDataset(ncmlOut, false, null);
+      copy = NetcdfDatasets.openDataset(durlcopy, null, -1, null, iospMessage);
     else
-      copy = NetcdfDataset.acquireFile(durl, null);
-
-    if (useRecords)
-      copy.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
+      copy = NetcdfDatasets.acquireFile(null, null, durlcopy, -1, null, iospMessage);
 
     try {
       Formatter f = new Formatter();
       CompareNetcdf2 mind = new CompareNetcdf2(f, false, false, compareData);
-      boolean ok = mind.compare(org, copy, new CompareNetcdf2.Netcdf4ObjectFilter(), false, false, compareData);
+      boolean ok = mind.compare(org, copy, new CompareNetcdf2.Netcdf4ObjectFilter());
       if (!ok) {
         fail++;
         System.out.printf("--Compare %s, useRecords=%s explicit=%s openDataset=%s compareData=%s %n", location,

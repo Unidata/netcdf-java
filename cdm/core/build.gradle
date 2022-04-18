@@ -1,41 +1,41 @@
-description = "The Common Data Model (CDM) is a Java interface to NetCDF files, as well as to many other types of " +
-        "scientific data formats."
-ext.title = "CDM core library"
+description = 'The Common Data Model (CDM) is a Java interface to NetCDF files, as well as to many other types of ' +
+    'scientific data formats.'
+ext.title = 'CDM core library'
 
 apply from: "$rootDir/gradle/any/dependencies.gradle"
-apply from: "$rootDir/gradle/any/java.gradle"
-apply from: "$rootDir/gradle/any/testing.gradle"
-apply from: "$rootDir/gradle/any/coverage.gradle"
-apply from: "$rootDir/gradle/any/archiving.gradle"
-apply from: "$rootDir/gradle/any/publishing.gradle"
+apply from: "$rootDir/gradle/any/java-library.gradle"
+apply from: "$rootDir/gradle/any/protobuf.gradle"
 
 apply plugin: 'groovy'  // For Spock tests.
 
 dependencies {
-    compile project(':udunits')
-    compile project(':httpservices')
+  api enforcedPlatform(project(':netcdf-java-platform'))
+  testImplementation enforcedPlatform(project(':netcdf-java-testing-platform'))
 
-    compile libraries["joda-time"]
-    compile libraries["jdom2"]
-    compile libraries["jsr305"]
-    compile libraries["protobuf-java"]
-    compile libraries["guava"]
-    compile libraries["jcommander"]
-    compile libraries["httpcore"]
-    compile libraries["jsr305"]  // Nonnull
-    compile libraries["re2j"]
+  compile project(':udunits')
+  compile project(':httpservices')
 
-    compile libraries["slf4j-api"]
+  compile 'com.beust:jcommander'
+  compile 'com.google.guava:guava'
+  compile 'com.google.protobuf:protobuf-java'
+  compile 'com.google.re2j:re2j'
+  compile 'joda-time:joda-time'
+  compile 'org.jdom:jdom2'
+  compile 'org.slf4j:slf4j-api'
 
-    testRuntime libraries["logback-classic"]
+  implementation 'com.google.code.findbugs:jsr305'
 
-    // These are for Spock.
-    testCompile libraries["groovy-all"]
-    testCompile libraries["spock-core"]
+  testImplementation project(':cdm-test-utils')
 
-    testCompile libraries["commons-io"]
-    testCompile libraries["mockito"]
-    testCompile libraries["truth"]
+  testImplementation 'com.google.truth:truth'
+  testImplementation 'commons-io:commons-io'
+  testImplementation 'junit:junit'
+  testImplementation 'org.codehaus.groovy:groovy-all' // for Spock.
+  testImplementation 'org.mockito:mockito-core'
+  testImplementation 'org.spockframework:spock-core'
+
+  testRuntimeOnly 'ch.qos.logback:logback-classic'
 }
 
+// todo: move to ucar.nc2.write.Ncdump in 6?
 jar.manifest.attributes 'Main-Class': 'ucar.nc2.NCdumpW'

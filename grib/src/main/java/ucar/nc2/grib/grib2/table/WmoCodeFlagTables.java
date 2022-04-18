@@ -47,7 +47,7 @@ public class WmoCodeFlagTables {
 
   private static WmoCodeFlagTables instance;
 
-  public static WmoCodeFlagTables getInstance() {
+  public static synchronized WmoCodeFlagTables getInstance() {
     if (instance == null) {
       instance = new WmoCodeFlagTables();
       try {
@@ -165,6 +165,7 @@ public class WmoCodeFlagTables {
       org.jdom2.Document doc;
       try {
         SAXBuilder builder = new SAXBuilder();
+        builder.setExpandEntities(false);
         doc = builder.build(ios);
       } catch (JDOMException e) {
         throw new IOException(e.getMessage());

@@ -19,7 +19,7 @@ import java.util.List;
  * @author caron
  * @since May 8, 2008
  * @see <a href=
- *      "http://www.unidata.ucar.edu/software/netcdf-java/reference/SectionSpecification.html">SectionSpecification</a>
+ *      "https://www.unidata.ucar.edu/software/netcdf-java/reference/SectionSpecification.html">SectionSpecification</a>
  */
 public class ParsedSectionSpec {
   private static final boolean debugSelector = false;
@@ -177,5 +177,9 @@ public class ParsedSectionSpec {
   @Override
   public String toString() {
     return "ParsedSectionSpec{" + "v=" + v.getFullName() + ", section=" + section + ", child=" + child + '}';
+  }
+
+  public String makeSectionSpecString() {
+    return ParsedSectionSpec.makeSectionSpecString(this.v, this.section.getRanges());
   }
 }

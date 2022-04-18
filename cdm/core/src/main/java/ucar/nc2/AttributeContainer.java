@@ -5,41 +5,46 @@
 
 package ucar.nc2;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import javax.annotation.Nullable;
 
 /**
  * An immutable Container of Attributes.
- * Use AttributeContainerHelper if you want a mutable container.
+ * Use AttributeContainerMutable if you want a mutable container.
  */
 public interface AttributeContainer extends Iterable<Attribute> {
 
   /**
-   * Find a String-valued Attribute by name (ignore case), return the String value of the Attribute.
-   * 
-   * @return the attribute value, or defaultValue if not found
+   * Create a new AttributeContainer, removing any whose name starts with one in the given list.
+   *
+   * @param atts Start with this set of Attributes.
+   * @param remove Remove any whose name starts with one of these.
+   * @return new AttributeContainer with attributes removed.
    */
-  String findAttValueIgnoreCase(String attName, String defaultValue);
+  static AttributeContainer filter(AttributeContainer atts, String... remove) {
+    List<Attribute> result = new ArrayList<>();
+    for (Attribute att : atts.getAttributes()) {
+      boolean ok = true;
+      for (String s : remove) {
+        if (att.getShortName().startsWith(s)) {
+          ok = false;
+          break;
+        }
+      }
+      if (ok) {
+        result.add(att);
+      }
+    }
+    return new AttributeContainerHelper(atts.getName(), result);
+  }
 
-  /**
-   * Find a Numeric Attribute by name (ignore case), return the double value of the Attribute.
-   * 
-   * @return the attribute value, or defaultValue if not found
-   */
-  double findAttributeDouble(String attName, double defaultValue);
-
-  /**
-   * Find a Numeric Attribute by name (ignore case), return the integer value of the Attribute.
-   * 
-   * @return the attribute value, or defaultValue if not found
-   */
-  int findAttributeInteger(String attName, int defaultValue);
-
-  /** Find an Attribute by name */
+  /** Find an Attribute by exact match on name. */
   @Nullable
   Attribute findAttribute(String attName);
 
-  /** Determine if named attribute exists. */
+  /** Determine if named attribute exists (exact match). */
   default boolean hasAttribute(String attName) {
     return null != findAttribute(attName);
   }
@@ -48,17 +53,52 @@ public interface AttributeContainer extends Iterable<Attribute> {
   @Nullable
   Attribute findAttributeIgnoreCase(String attName);
 
+  /** Determine if named attribute exists, ignoring case. */
+  default boolean hasAttributeIgnoreCase(String attName) {
+    return null != findAttributeIgnoreCase(attName);
+  }
+
+  /**
+   * Find a Numeric Attribute by name (ignore case), return the double value of the Attribute.
+   *
+   * @return the attribute value, or defaultValue if not found
+   */
+  double findAttributeDouble(String attName, double defaultValue);
+
+  /**
+   * Find a Numeric Attribute by name (ignore case), return the integer value of the Attribute.
+   *
+   * @return the attribute value, or defaultValue if not found
+   */
+  int findAttributeInteger(String attName, int defaultValue);
+
+  /**
+   * Find a String Attribute by name (ignore case), return the String value of the Attribute.
+   *
+   * @return the attribute value, or defaultValue if not found
+   */
+  String findAttributeString(String attName, String defaultValue);
+
+  /** True is there are no attributes in the container. */
+  boolean isEmpty();
+
   /** Get the (optional) name of the AttributeContainer. */
   @Nullable
   String getName();
 
+  /** An unordered iterator over the contained attributes. */
   @Override
   default Iterator<Attribute> iterator() {
     return getAttributes().iterator();
   }
 
-  ///// will be removed in version 6 to make AttributeContainer immutable
+  /** @deprecated use findAttributeString(). */
+  @Deprecated
+  default String findAttValueIgnoreCase(String attName, String defaultValue) {
+    return findAttributeString(attName, defaultValue);
+  }
 
+  ///// will be removed in version 6 to make AttributeContainer immutable
   /**
    * Returns immutable list of attributes.
    *

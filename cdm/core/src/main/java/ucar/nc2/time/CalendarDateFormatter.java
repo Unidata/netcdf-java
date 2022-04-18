@@ -62,6 +62,10 @@ public class CalendarDateFormatter {
       return dtf_with_millis_of_second.print(cd.getDateTime());
   }
 
+  public static String toDateString(Date date) {
+    return toDateString(CalendarDate.of(date));
+  }
+
   public static String toDateTimeString(Date date) {
     return toDateTimeString(CalendarDate.of(date));
   }

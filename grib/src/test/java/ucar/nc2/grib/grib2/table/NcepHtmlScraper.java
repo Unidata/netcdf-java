@@ -6,6 +6,8 @@
 package ucar.nc2.grib.grib2.table;
 
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 import org.jsoup.Jsoup;
@@ -15,7 +17,6 @@ import org.jsoup.nodes.Node;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.nc2.constants.CDM;
 import ucar.unidata.util.StringUtil2;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -35,8 +36,7 @@ import java.util.List;
 public class NcepHtmlScraper {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  // String dirOut = "C:\\dev\\github\\thredds\\grib\\src\\main\\sources\\ncep\\temp\\";
-  private static final String dirOut = "C:/tmp/ncep/";
+  private static final String dirOut = "build/tables/grib2/";
 
   private static final boolean debugParam = false;
   private static final boolean debug = false;
@@ -44,10 +44,10 @@ public class NcepHtmlScraper {
 
 
   //////////////////////////////////////////////////////////////////
-  // http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_doc.shtml
+  // https://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_doc/
 
   void parseTopDoc() throws IOException {
-    String source = "http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_doc.shtml";
+    String source = "https://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_doc/";
     Document doc = Jsoup.parse(new URL(source), 5 * 1000); // 5 sec timeout
     // System.out.printf("%s%n", doc);
 
@@ -316,9 +316,7 @@ public class NcepHtmlScraper {
   // C:\dev\github\thredds\grib\src\main\resources\resources\grib2\ncep
 
   public static void main(String[] args) throws IOException {
-    File dir = new File(dirOut);
-    if (!dir.mkdirs())
-      System.out.printf("mkdir %s failed %n", dir.getPath());
+    Files.createDirectories(Paths.get(dirOut));
     NcepHtmlScraper scraper = new NcepHtmlScraper();
     scraper.parseTopDoc();
   }

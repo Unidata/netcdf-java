@@ -15,7 +15,9 @@ import java.util.Map;
  * 
  * @author caron
  * @see java.util.LinkedHashMap
+ * @deprecated do not use
  */
+@Deprecated
 public class HashMapLRU<K, V> extends LinkedHashMap<K, V> {
   private static final Logger logger = LoggerFactory.getLogger(HashMapLRU.class);
 

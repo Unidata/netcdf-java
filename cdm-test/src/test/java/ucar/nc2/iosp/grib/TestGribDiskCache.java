@@ -41,6 +41,7 @@ import org.junit.rules.TemporaryFolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.nc2.NetcdfFile;
+import ucar.nc2.NetcdfFiles;
 import ucar.nc2.grib.GribIndexCache;
 import ucar.nc2.util.DiskCache2;
 import ucar.unidata.util.StringUtil2;
@@ -85,7 +86,7 @@ public class TestGribDiskCache {
 
     for (File data : dd.listFiles()) {
       System.out.printf("Open %s%n", data.getPath());
-      NetcdfFile ncfile = NetcdfFile.open(data.getPath());
+      NetcdfFile ncfile = NetcdfFiles.open(data.getPath());
       ncfile.close();
     }
 

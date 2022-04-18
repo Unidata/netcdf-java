@@ -97,7 +97,7 @@ public class StandardPointFeatureIterator extends PointIteratorFromStructureData
 
     @Override
     public StationFeature getStation() {
-      return ft.makeStation(cursor.getParentStructure()); // LOOK is this always possible??
+      return ft.makeStation(cursor.tableData[ft.getStationNestingLevel()]);
     }
 
     @Override

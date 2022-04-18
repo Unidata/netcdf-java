@@ -33,7 +33,6 @@ public class CSMConvention extends COARDSConvention {
 
   @Override
   public void augmentDataset(NetcdfDataset ds, CancelTask cancelTask) throws IOException {
-
     List<Variable> vars = ds.getVariables();
     for (Variable var : vars) {
       String unit = var.getUnitsString();
@@ -53,7 +52,6 @@ public class CSMConvention extends COARDSConvention {
    * The attribute "coordinates" is an alias for _CoordinateAxes.
    */
   protected void findCoordinateAxes(NetcdfDataset ds) {
-
     // coordinates is an alias for _CoordinateAxes
     for (VarProcess vp : varList) {
       if (vp.coordAxes == null) { // dont override if already set
@@ -67,6 +65,7 @@ public class CSMConvention extends COARDSConvention {
     super.findCoordinateAxes(ds);
   }
 
+  @Override
   protected CoordinateTransform makeCoordinateTransform(NetcdfDataset ds, Variable ctv) {
     CoordinateTransform ct = null;
 
@@ -156,7 +155,7 @@ public class CSMConvention extends COARDSConvention {
   protected boolean addParameter2(CoordinateTransform rs, String paramName, NetcdfFile ds, AttributeContainer v,
       String attName, boolean readData) {
     String varName;
-    if (null == (varName = v.findAttValueIgnoreCase(attName, null))) {
+    if (null == (varName = v.findAttributeString(attName, null))) {
       parseInfo.format("CSMConvention No Attribute named %s%n", attName);
       return false;
     }

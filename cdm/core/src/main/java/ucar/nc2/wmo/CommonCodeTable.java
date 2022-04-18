@@ -39,9 +39,9 @@ import java.io.InputStream;
  * 
  * </pre>
  * 
- * @author caron
- * @since 3/29/11
+ * @deprecated will be moved in ver6
  */
+@Deprecated
 public class CommonCodeTable implements Comparable<CommonCodeTable> {
   private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(CommonCodeTable.class);
   private static final Map<Integer, CommonCodeTable> tableMap = new HashMap<>();
@@ -248,6 +248,7 @@ public class CommonCodeTable implements Comparable<CommonCodeTable> {
       org.jdom2.Document doc;
       try {
         SAXBuilder builder = new SAXBuilder();
+        builder.setExpandEntities(false);
         doc = builder.build(ios);
       } catch (JDOMException e) {
         throw new IOException(e.getMessage());

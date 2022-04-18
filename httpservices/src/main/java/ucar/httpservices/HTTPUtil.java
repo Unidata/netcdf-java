@@ -5,26 +5,43 @@
 
 package ucar.httpservices;
 
-import java.nio.charset.StandardCharsets;
-import java.util.Objects;
-import org.apache.http.*;
-import org.apache.http.client.utils.URIBuilder;
-import org.apache.http.message.BasicHeader;
-import org.apache.http.protocol.HttpContext;
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
+import org.apache.http.Header;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpEntityEnclosingRequest;
+import org.apache.http.HttpException;
+import org.apache.http.HttpRequest;
+import org.apache.http.HttpRequestInterceptor;
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpResponseInterceptor;
+import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.message.BasicHeader;
+import org.apache.http.protocol.HttpContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class HTTPUtil {
 
   //////////////////////////////////////////////////
   // Constants
+  private static final Logger logger = LoggerFactory.getLogger(HTTPUtil.class);
 
   public static final Charset UTF8 = StandardCharsets.UTF_8;
   public static final Charset ASCII = StandardCharsets.US_ASCII;
@@ -42,6 +59,8 @@ public abstract class HTTPUtil {
   // Interceptors
 
   abstract static class InterceptCommon {
+    private static final Logger logger = LoggerFactory.getLogger(InterceptCommon.class);
+
     protected HttpContext context = null;
     protected List<Header> headers = new ArrayList<Header>();
     protected HttpRequest request = null;
@@ -104,21 +123,20 @@ public abstract class HTTPUtil {
         Header[] hdrs = this.request.getAllHeaders();
         if (hdrs == null)
           hdrs = new Header[0];
-        System.err.println("Request Headers:");
+        logger.debug("Request Headers:");
         for (Header h : hdrs) {
-          System.err.println(h.toString());
+          logger.debug(h.toString());
         }
       }
       if (this.response != null) {
         Header[] hdrs = this.response.getAllHeaders();
         if (hdrs == null)
           hdrs = new Header[0];
-        System.err.println("Response Headers:");
+        logger.debug("Response Headers:");
         for (Header h : hdrs) {
-          System.err.println(h.toString());
+          logger.debug(h.toString());
         }
       }
-      System.err.flush();
     }
   }
 
@@ -271,7 +289,7 @@ public abstract class HTTPUtil {
           urib.setScheme(uri.getScheme());
           break;
         case USERINFO:
-          urib.setUserInfo(uri.getUserInfo());
+          urib.setUserInfo(uri.getRawUserInfo());
           break;
         case HOST:
           urib.setHost(uri.getHost());
@@ -367,14 +385,7 @@ public abstract class HTTPUtil {
     return buf.toString();
   }
 
-  /**
-   * Join two string together to form proper path
-   * WITHOUT trailing slash
-   *
-   * @param prefix
-   * @param suffix
-   * @return
-   */
+  /** Join two string together to form proper path WITHOUT trailing slash */
   public static String canonjoin(String prefix, String suffix) {
     if (prefix == null)
       prefix = "";

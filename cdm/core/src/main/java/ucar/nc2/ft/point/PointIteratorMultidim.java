@@ -36,7 +36,6 @@ public abstract class PointIteratorMultidim implements PointFeatureIterator {
   private int count, npts;
   private PointFeature feature;
 
-
   public PointIteratorMultidim(String name, List<Variable> vars, int outerIndex, Filter filter) {
     this.vars = vars;
     this.outerIndex = outerIndex;
@@ -45,13 +44,14 @@ public abstract class PointIteratorMultidim implements PointFeatureIterator {
     Variable v = vars.get(0);
     npts = v.getDimension(1).getLength();
 
-    members = new StructureMembers(name);
+    StructureMembers.Builder builder = StructureMembers.builder().setName(name);
     for (Variable var : vars) {
       int[] shape = var.getShape();
       int[] newShape = new int[shape.length - 2];
       System.arraycopy(shape, 2, newShape, 0, shape.length - 2);
-      members.addMember(var.getShortName(), var.getDescription(), var.getUnitsString(), var.getDataType(), newShape);
+      builder.addMember(var.getShortName(), var.getDescription(), var.getUnitsString(), var.getDataType(), newShape);
     }
+    members = builder.build();
   }
 
   @Override
@@ -77,13 +77,13 @@ public abstract class PointIteratorMultidim implements PointFeatureIterator {
     StructureDataW sdata = new StructureDataW(members);
 
     for (Variable var : vars) {
-      Section s = new Section();
+      Section.Builder sb = Section.builder();
       try {
-        s.appendRange(outerIndex, outerIndex);
-        s.appendRange(count, count);
+        sb.appendRange(outerIndex, outerIndex);
+        sb.appendRange(count, count);
         for (int i = 2; i < var.getRank(); i++)
-          s.appendRange(null);
-        Array data = var.read(s);
+          sb.appendRangeAll();
+        Array data = var.read(sb.build());
         sdata.setMemberData(var.getShortName(), data);
 
       } catch (InvalidRangeException | IOException e) {

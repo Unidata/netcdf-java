@@ -51,15 +51,16 @@ class BuilderHelper {
     // dimensions
     for (Dimension d : src.getDimensions()) {
       if (!targetGroup.findDimensionLocal(d.getShortName()).isPresent()) {
-        Dimension newd = Dimension.builder(d.getShortName(), d.getLength()).setIsShared(d.isShared())
-            .setIsUnlimited(unlimitedOK && d.isUnlimited()).setIsVariableLength(d.isVariableLength()).build();
+        Dimension newd = Dimension.builder().setName(d.getShortName()).setIsShared(d.isShared())
+            .setIsUnlimited(unlimitedOK && d.isUnlimited()).setIsVariableLength(d.isVariableLength())
+            .setLength(d.getLength()).build();
         targetGroup.addDimension(newd);
       }
     }
 
     // variables
     for (Variable v : src.getVariables()) {
-      Optional<Variable.Builder<?>> targetV = targetGroup.findVariable(v.getShortName());
+      Optional<Variable.Builder<?>> targetV = targetGroup.findVariableLocal(v.getShortName());
       boolean replace = (replaceCheck != null) && replaceCheck.replace(v); // replaceCheck not currently used
       if (replace || !targetV.isPresent()) { // replace it
         // LOOK not needed ??
@@ -90,9 +91,9 @@ class BuilderHelper {
 
     // nested groups - check if target already has it
     for (Group srcNested : src.getGroups()) {
-      Optional<Builder> existing = targetGroup.findGroup(srcNested.getShortName());
+      Optional<Builder> existing = targetGroup.findGroupLocal(srcNested.getShortName());
       if (!existing.isPresent()) {
-        Group.Builder nested = Group.builder(targetGroup).setName(srcNested.getShortName());
+        Group.Builder nested = Group.builder().setName(srcNested.getShortName());
         targetGroup.addGroup(nested);
         transferGroup(ds, targetDs, srcNested, nested, replaceCheck);
       } else {

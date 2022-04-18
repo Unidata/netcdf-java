@@ -7,6 +7,7 @@ package ucar.nc2.ft2.scan;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
 import ucar.nc2.ft2.coverage.adapter.DtCoverageCS;
@@ -25,8 +26,9 @@ import java.util.List;
  *
  * @author caron
  * @since Aug 15, 2009
+ * @deprecated do not use.
  */
-
+@Deprecated
 public class FeatureScan {
   private String top;
   private boolean subdirs;
@@ -154,9 +156,9 @@ public class FeatureScan {
 
       if (debug)
         System.out.printf(" featureScan=%s%n", f.getPath());
-      try (NetcdfDataset ds = NetcdfDataset.openDataset(f.getPath())) {
+      try (NetcdfDataset ds = NetcdfDatasets.openDataset(f.getPath())) {
         fileType = ds.getFileTypeId();
-        coordSysBuilder = ds.getRootGroup().findAttValueIgnoreCase(_Coordinate._CoordSysBuilder, "none");
+        coordSysBuilder = ds.getRootGroup().findAttributeString(_Coordinate._CoordSysBuilder, "none");
 
         Formatter errlog = new Formatter();
         builder = DtCoverageCSBuilder.classify(ds, errlog);
@@ -271,7 +273,7 @@ public class FeatureScan {
     public String runClassifier() {
       Formatter ff = new Formatter();
       String type = null;
-      try (NetcdfDataset ds = NetcdfDataset.openDataset(f.getPath())) {
+      try (NetcdfDataset ds = NetcdfDatasets.openDataset(f.getPath())) {
         type = DtCoverageCSBuilder.describe(ds, ff);
 
       } catch (IOException e) {

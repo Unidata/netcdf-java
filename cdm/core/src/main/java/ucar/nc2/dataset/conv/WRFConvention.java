@@ -19,7 +19,10 @@ import ucar.nc2.util.CancelTask;
 import ucar.nc2.dataset.*;
 import ucar.nc2.dataset.transform.WRFEtaTransformBuilder;
 import ucar.unidata.geoloc.*;
-import ucar.unidata.geoloc.projection.*;
+import ucar.unidata.geoloc.projection.FlatEarth;
+import ucar.unidata.geoloc.projection.LambertConformal;
+import ucar.unidata.geoloc.projection.Mercator;
+import ucar.unidata.geoloc.projection.Stereographic;
 import ucar.unidata.util.StringUtil2;
 import java.io.IOException;
 import java.util.*;
@@ -268,8 +271,8 @@ public class WRFConvention extends CoordSysBuilder {
       }
 
       if (proj != null) {
-        LatLonPointImpl lpt1 = new LatLonPointImpl(centralLat, centralLon); // center of the grid
-        ProjectionPoint ppt1 = proj.latLonToProj(lpt1, new ProjectionPointImpl());
+        LatLonPoint lpt1 = LatLonPoint.create(centralLat, centralLon); // center of the grid
+        ProjectionPoint ppt1 = proj.latLonToProj(lpt1);
         centerX = ppt1.getX();
         centerY = ppt1.getY();
         if (debug) {

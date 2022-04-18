@@ -138,13 +138,14 @@ public class LayoutTiled implements Layout {
     return sbuff.toString();
   }
 
-
+  /** An iterator over DataChunk's */
   public interface DataChunkIterator {
     boolean hasNext();
 
     DataChunk next() throws IOException;
   }
 
+  /** The chunks of a tiled layout. */
   public static class DataChunk {
     public int[] offset; // offset index of this chunk, relative to entire array
     public long filePos; // filePos of a single raw data chunk

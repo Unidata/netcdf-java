@@ -23,8 +23,10 @@ import java.util.Formatter;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
 import ucar.unidata.geoloc.Earth;
+import ucar.unidata.geoloc.EarthEllipsoid;
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.LatLonPointImpl;
+import ucar.unidata.geoloc.LatLonPoints;
 import ucar.unidata.geoloc.ProjectionImpl;
 import ucar.unidata.geoloc.ProjectionPoint;
 import ucar.unidata.geoloc.ProjectionPointImpl;
@@ -60,9 +62,16 @@ public class TransverseMercatorProjection extends ProjectionImpl {
   private double totalScale; // scale to convert cartesian coords in km
   private boolean spherical;
 
+  // values passed in through the constructor
+  // need for constructCopy
+  private final double _lat0;
+  private final double _lon0;
+
   public TransverseMercatorProjection() {
     super("TransverseMercatorProjection", false);
-    ellipsoid = new Earth();
+    ellipsoid = EarthEllipsoid.WGS84;
+    _lat0 = 0;
+    _lon0 = 0;
     projectionLatitude = Math.toRadians(0);
     projectionLongitude = Math.toRadians(0);
     initialize();
@@ -75,6 +84,10 @@ public class TransverseMercatorProjection extends ProjectionImpl {
   public TransverseMercatorProjection(Earth ellipsoid, double lon_0_deg, double lat_0_deg, double k, double falseEast,
       double falseNorth) {
     super("TransverseMercatorProjection", false);
+
+    this._lat0 = lat_0_deg;
+    this._lon0 = lon_0_deg;
+
     this.ellipsoid = ellipsoid;
     projectionLongitude = Math.toRadians(lon_0_deg);
     projectionLatitude = Math.toRadians(lat_0_deg);
@@ -106,7 +119,7 @@ public class TransverseMercatorProjection extends ProjectionImpl {
   public void initialize() {
     this.e = ellipsoid.getEccentricity();
     this.es = ellipsoid.getEccentricitySquared();
-    this.spherical = (e == 0.0);
+    this.spherical = ellipsoid.isSpherical();
     this.one_es = 1.0 - es;
     this.totalScale = ellipsoid.getMajor() * .001; // scale factor for cartesion coords in km.
 
@@ -233,8 +246,8 @@ public class TransverseMercatorProjection extends ProjectionImpl {
 
   @Override
   public ProjectionImpl constructCopy() {
-    ProjectionImpl result = new TransverseMercatorProjection(ellipsoid, Math.toDegrees(projectionLongitude),
-        Math.toDegrees(projectionLatitude), scaleFactor, falseEasting, falseNorthing);
+    ProjectionImpl result =
+        new TransverseMercatorProjection(ellipsoid, _lon0, _lat0, scaleFactor, falseEasting, falseNorthing);
     result.setDefaultMapArea(defaultMapArea);
     result.setName(name);
     return result;
@@ -243,8 +256,8 @@ public class TransverseMercatorProjection extends ProjectionImpl {
   @Override
   public String paramsToString() {
     Formatter f = new Formatter();
-    f.format("origin lat,lon=%f,%f scale=%f earth=%s falseEast/North=%f,%f", Math.toDegrees(projectionLatitude),
-        Math.toDegrees(projectionLongitude), scaleFactor, ellipsoid, falseEasting, falseNorthing);
+    f.format("origin lat,lon=%f,%f scale=%f earth=%s falseEast/North=%f,%f", _lat0, _lon0, scaleFactor, ellipsoid,
+        falseEasting, falseNorthing);
     return f.toString();
   }
 
@@ -286,7 +299,7 @@ public class TransverseMercatorProjection extends ProjectionImpl {
   public boolean crossSeam(ProjectionPoint pt1, ProjectionPoint pt2) {
     // TODO: check, taken from ucar.unidata.geoloc.projection.TransverseMercator
     // either point is infinite
-    if (ProjectionPointImpl.isInfinite(pt1) || ProjectionPointImpl.isInfinite(pt2)) {
+    if (LatLonPoints.isInfinite(pt1) || LatLonPoints.isInfinite(pt2)) {
       return true;
     }
 

@@ -39,8 +39,9 @@ import ucar.nc2.util.CancelTask;
 /**
  * JoinExisting Aggregation.
  *
- * @author caron
+ * @deprecated do not use
  */
+@Deprecated
 public class AggregationExisting extends AggregationOuterDimension {
 
   public AggregationExisting(NetcdfDataset ncd, String dimName, String recheckS) {
@@ -100,7 +101,7 @@ public class AggregationExisting extends AggregationOuterDimension {
         continue;
       }
 
-      Group newGroup = DatasetConstructor.findGroup(ncDataset, v.getParentGroup());
+      Group newGroup = DatasetConstructor.findGroup(ncDataset, v.getParentGroupOrRoot());
       VariableDS vagg = new VariableDS(ncDataset, newGroup, null, v.getShortName(), v.getDataType(),
           v.getDimensionsString(), null, null);
       vagg.setProxyReader(this);

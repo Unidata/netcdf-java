@@ -1,4 +1,8 @@
-/* Copyright Unidata */
+/*
+ * Copyright (c) 1998-2019 John Caron and University Corporation for Atmospheric Research/Unidata
+ * See LICENSE for license information.
+ */
+
 package ucar.nc2;
 
 import java.io.BufferedInputStream;
@@ -14,6 +18,7 @@ import java.net.URL;
 import java.nio.channels.FileLock;
 import java.nio.channels.OverlappingFileLockException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.ServiceLoader;
 import java.util.zip.GZIPInputStream;
@@ -29,9 +34,9 @@ import ucar.nc2.util.DiskCache;
 import ucar.nc2.util.EscapeStrings;
 import ucar.nc2.util.IO;
 import ucar.nc2.util.rc.RC;
-import ucar.unidata.io.InMemoryRandomAccessFile;
 import ucar.unidata.io.UncompressInputStream;
 import ucar.unidata.io.bzip2.CBZip2InputStream;
+import ucar.unidata.io.spi.RandomAccessFileProvider;
 import ucar.unidata.util.StringUtil2;
 
 /**
@@ -44,20 +49,22 @@ import ucar.unidata.util.StringUtil2;
 public class NetcdfFiles {
   private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NetcdfFile.class);
   private static final List<IOServiceProvider> registeredProviders = new ArrayList<>();
+  private static final List<RandomAccessFileProvider> registeredRandomAccessFileProviders = new ArrayList<>();
   private static final int default_buffersize = 8092;
   private static final StringLocker stringLocker = new StringLocker();
-
+  private static final List<String> possibleCompressedSuffixes = Arrays.asList("Z", "zip", "gzip", "gz", "bz2");
   private static boolean loadWarnings = false;
   private static boolean userLoads;
 
-  // IOSPs can be loaded by reflection.
-  // Most IOSPs are loaded using the ServiceLoader mechanism. One problem with this is that we no longer
-  // control the order which IOSPs try to open. So its harder to avoid mis-behaving and slow IOSPs from
-  // making open() slow.
+  // load core service providers
   static {
     // Make sure RC gets loaded
     RC.initialize();
 
+    // IOSPs can be loaded by reflection.
+    // Most IOSPs are loaded using the ServiceLoader mechanism. One problem with this is that we no longer
+    // control the order which IOSPs try to open. So its harder to avoid mis-behaving and slow IOSPs from
+    // making open() slow.
     // Register iosp's that are part of cdm-core. This ensures that they are tried first.
     try {
       registerIOProvider("ucar.nc2.internal.iosp.hdf5.H5iospNew");
@@ -78,6 +85,27 @@ public class NetcdfFiles {
         log.info("Cant load class H4iosp", e);
     }
 
+    // register RandomAccessFile providers that are part of cdm-core. This ensures that they are tried first.
+    try {
+      registerRandomAccessFileProvider("ucar.unidata.io.http.HTTPRandomAccessFile$Provider");
+    } catch (Throwable e) {
+      if (loadWarnings)
+        log.info("Cant load class HTTPRandomAccessFileProvider", e);
+    }
+
+    try {
+      registerRandomAccessFileProvider("ucar.unidata.io.InMemoryRandomAccessFile$Provider");
+    } catch (Throwable e) {
+      if (loadWarnings)
+        log.info("Cant load class InMemoryRandomAccessFileProvider", e);
+    }
+
+    // if a user explicitly registers an IOSP or RandomAccessFile implementation via
+    // registerIOProvider or registerRandomAccessFileProvider, this ensures they are tried first,
+    // even before the core implementations.
+    // if false, user registered implementations will be tried after the core implementations.
+    // Implementations loaded by the ServiceLoader mechanism are only tried after core and explicitly
+    // loaded implementations are tried.
     userLoads = true;
   }
 
@@ -128,6 +156,53 @@ public class NetcdfFiles {
       registeredProviders.add(spi);
   }
 
+  /**
+   * Register a RandomAccessFile Provider, using its class string name.
+   *
+   * @param className Class that implements RandomAccessFileProvider.
+   * @throws IllegalAccessException if class is not accessible.
+   * @throws InstantiationException if class doesnt have a no-arg constructor.
+   * @throws ClassNotFoundException if class not found.
+   */
+  public static void registerRandomAccessFileProvider(String className)
+      throws IllegalAccessException, InstantiationException, ClassNotFoundException {
+    Class rafClass = NetcdfFile.class.getClassLoader().loadClass(className);
+    registerRandomAccessFileProvider(rafClass);
+  }
+
+  /**
+   * Register a RandomAccessFile Provider. A new instance will be created when one of its files is opened.
+   *
+   * @param rafClass Class that implements RandomAccessFileProvider.
+   * @throws IllegalAccessException if class is not accessible.
+   * @throws InstantiationException if class doesnt have a no-arg constructor.
+   * @throws ClassCastException if class doesnt implement IOServiceProvider interface.
+   */
+  public static void registerRandomAccessFileProvider(Class rafClass)
+      throws IllegalAccessException, InstantiationException {
+    registerRandomAccessFileProvider(rafClass, false);
+  }
+
+  /**
+   * Register a RandomAccessFile Provider. A new instance will be created when one of its files is opened.
+   *
+   * @param rafClass Class that implements RandomAccessFileProvider.
+   * @param last true=>insert at the end of the list; otherwise front
+   * @throws IllegalAccessException if class is not accessible.
+   * @throws InstantiationException if class doesnt have a no-arg constructor.
+   * @throws ClassCastException if class doesnt implement IOServiceProvider interface.
+   */
+  private static void registerRandomAccessFileProvider(Class rafClass, boolean last)
+      throws IllegalAccessException, InstantiationException {
+    RandomAccessFileProvider rafProvider;
+    rafProvider = (RandomAccessFileProvider) rafClass.newInstance(); // fail fast
+    if (userLoads && !last) {
+      registeredRandomAccessFileProviders.add(0, rafProvider); // put user stuff first
+    } else {
+      registeredRandomAccessFileProviders.add(rafProvider);
+    }
+  }
+
   ///////////////////////////////////////////////////////////////////////////////////////////////
 
   /**
@@ -138,7 +213,7 @@ public class NetcdfFiles {
    * @throws java.io.IOException if error
    */
   public static NetcdfFile open(String location) throws IOException {
-    return open(location, null);
+    return open(location, -1, null);
   }
 
   /**
@@ -170,8 +245,7 @@ public class NetcdfFiles {
 
   /**
    * Open an existing file (read only), with option of cancelling, setting the RandomAccessFile buffer size for
-   * efficiency,
-   * with an optional special object for the iosp.
+   * efficiency, with an optional special object for the iosp.
    *
    * @param location location of file. This may be a
    *        <ol>
@@ -181,14 +255,13 @@ public class NetcdfFiles {
    *        <li>local hdf-5 filename (with a file: prefix or no prefix)
    *        <li>local iosp filename (with a file: prefix or no prefix)
    *        </ol>
-   *        http://thredds.ucar.edu/thredds/fileServer/grib/NCEP/GFS/Alaska_191km/files/GFS_Alaska_191km_20130416_0600.grib1
    *        If file ends with ".Z", ".zip", ".gzip", ".gz", or ".bz2", it will uncompress/unzip and write to new file
    *        without the suffix,
    *        then use the uncompressed file. It will look for the uncompressed file before it does any of that. Generally
    *        it prefers to
    *        place the uncompressed file in the same directory as the original file. If it does not have write permission
-   *        on that directory,
-   *        it will use the directory defined by ucar.nc2.util.DiskCache class.
+   *        on that directory, it will use the directory defined by ucar.nc2.util.DiskCache class.
+   *
    * @param buffer_size RandomAccessFile buffer size, if <= 0, use default size
    * @param cancelTask allow task to be cancelled; may be null.
    * @param iospMessage special iosp tweaking (sent before open is called), may be null
@@ -199,7 +272,6 @@ public class NetcdfFiles {
       Object iospMessage) throws IOException {
 
     ucar.unidata.io.RandomAccessFile raf = getRaf(location, buffer_size);
-
     try {
       return open(raf, location, cancelTask, iospMessage);
     } catch (Throwable t) {
@@ -248,6 +320,34 @@ public class NetcdfFiles {
   }
 
   /**
+   * Find out if the location can be opened, but dont actually open it.
+   *
+   * In order for a location to be openable by netCDF-java, we must have 1) a proper
+   * {@link ucar.unidata.io.RandomAccessFile} implementation, and 2) a proper {@link IOServiceProvider}
+   * implementation.
+   *
+   * @param location location of file
+   * @return true if can be opened
+   * @throws IOException on read error
+   */
+  public static boolean canOpen(String location) throws IOException {
+    boolean canOpen = false;
+    // do we have a RandomAccessFile class that will work?
+    try (ucar.unidata.io.RandomAccessFile raf = getRaf(location, -1)) {
+      if (raf != null) {
+        log.info(String.format("%s can be accessed with %s", raf.getLocation(), raf.getClass()));
+        // do we have an appropriate IOSP?
+        IOServiceProvider iosp = getIosp(raf);
+        if (iosp != null) {
+          canOpen = true;
+          log.info(String.format("%s can be opened by %s", raf.getLocation(), iosp.getClass()));
+        }
+      }
+    }
+    return canOpen;
+  }
+
+  /**
    * Removes the {@code "file:"} or {@code "file://"} prefix from the location, if necessary. Also replaces
    * back slashes with forward slashes.
    *
@@ -255,6 +355,9 @@ public class NetcdfFiles {
    * @return a canonical URI string.
    */
   public static String canonicalizeUriString(String location) {
+    if (location == null) {
+      return null;
+    }
     // get rid of file prefix, if any
     String uriString = location.trim();
     if (uriString.startsWith("file://"))
@@ -266,30 +369,72 @@ public class NetcdfFiles {
     return StringUtil2.replace(uriString, '\\', "/");
   }
 
-  private static ucar.unidata.io.RandomAccessFile getRaf(String location, int buffer_size) throws IOException {
-    String uriString = location.trim();
+  private static ucar.unidata.io.RandomAccessFile downloadAndDecompress(ucar.unidata.io.RandomAccessFile raf,
+      String uriString, int buffer_size) throws IOException {
+    int pos = uriString.lastIndexOf('/');
 
+    if (pos < 0)
+      pos = uriString.lastIndexOf(':');
+
+    String tmp = System.getProperty("java.io.tmpdir");
+    String filename = uriString.substring(pos + 1);
+    String sep = File.separator;
+
+    uriString = DiskCache.getFileStandardPolicy(tmp + sep + filename).getPath();
+    copy(raf, new FileOutputStream(uriString), 1 << 20);
+    try {
+      String uncompressedFileName = makeUncompressed(uriString);
+      // LOOK - this will only return one type of RandomAccessFile, which is OK for now,
+      // but needs to be addressed with RandomAccessDirectory
+      return ucar.unidata.io.RandomAccessFile.acquire(uncompressedFileName, buffer_size);
+    } catch (Exception e) {
+      throw new IOException();
+    }
+  }
+
+  /**
+   * Get the appropriate RandomAccessFile for accessing an object at the provided location
+   * 
+   * @param location a URI string.
+   * @param buffer_size size of the RandomAccessFileBuffer
+   * @return RandomAccessFile for the object at location
+   */
+  public static ucar.unidata.io.RandomAccessFile getRaf(String location, int buffer_size) throws IOException {
+    String uriString = location.trim();
     if (buffer_size <= 0)
       buffer_size = default_buffersize;
 
-    ucar.unidata.io.RandomAccessFile raf;
-    if (uriString.startsWith("http:") || uriString.startsWith("https:")) { // open through URL
-      raf = new ucar.unidata.io.http.HTTPRandomAccessFile(uriString);
+    ucar.unidata.io.RandomAccessFile raf = null;
 
-    } else if (uriString.startsWith("nodods:")) { // deprecated use httpserver
-      uriString = "http" + uriString.substring(6);
-      raf = new ucar.unidata.io.http.HTTPRandomAccessFile(uriString);
+    for (RandomAccessFileProvider provider : registeredRandomAccessFileProviders) {
+      if (provider.isOwnerOf(location)) {
+        raf = provider.open(location, buffer_size);
+        // might cause issues if the end of a resource location string
+        // cannot be reliably used to determine compression
+        if (looksCompressed(uriString) && !raf.isDirectory()) { // do not decompress directories all at once
+          raf = downloadAndDecompress(raf, uriString, buffer_size);
+        }
+        break;
+      }
+    }
 
-    } else if (uriString.startsWith("httpserver:")) { // open through URL
-      uriString = "http" + uriString.substring(10);
-      raf = new ucar.unidata.io.http.HTTPRandomAccessFile(uriString);
+    if (raf == null) {
+      // look for dynamically loaded RandomAccessFile Providers
+      for (RandomAccessFileProvider provider : ServiceLoader.load(RandomAccessFileProvider.class)) {
+        if (provider.isOwnerOf(location)) {
+          raf = provider.open(location, buffer_size);
+          // might cause issues if the end of a resource location string
+          // cannot be used to determine compression
+          if (looksCompressed(uriString) && !raf.isDirectory()) { // do not decompress directories all at once
+            raf = downloadAndDecompress(raf, uriString, buffer_size);
+          }
+          break;
+        }
+      }
+    }
 
-    } else if (uriString.startsWith("slurp:")) { // open through URL
-      uriString = "http" + uriString.substring(5);
-      byte[] contents = IO.readURLContentsToByteArray(uriString); // read all into memory
-      raf = new InMemoryRandomAccessFile(uriString, contents);
-
-    } else {
+    if (raf == null) {
+      // ok, treat as a local file
       // get rid of crappy microsnot \ replace with happy /
       uriString = StringUtil2.replace(uriString, '\\', "/");
 
@@ -299,52 +444,70 @@ public class NetcdfFiles {
       }
 
       String uncompressedFileName = null;
-      try {
-        stringLocker.control(uriString); // Avoid race condition where the decompressed file is trying to be read by one
-        // thread while another is decompressing it
-        uncompressedFileName = makeUncompressed(uriString);
-      } catch (Exception e) {
-        log.warn("Failed to uncompress {}, err= {}; try as a regular file.", uriString, e.getMessage());
-        // allow to fall through to open the "compressed" file directly - may be a misnamed suffix
-      } finally {
-        stringLocker.release(uriString);
+      if (looksCompressed(uriString)) {
+        try {
+          stringLocker.control(uriString); // Avoid race condition where the decompressed file is trying to be read by
+                                           // one thread while another is decompressing it
+          uncompressedFileName = makeUncompressed(uriString);
+        } catch (Exception e) {
+          log.warn("Failed to uncompress {}, err= {}; try as a regular file.", uriString, e.getMessage());
+          // allow to fall through to open the "compressed" file directly - may be a misnamed suffix
+        } finally {
+          stringLocker.release(uriString);
+        }
       }
 
       if (uncompressedFileName != null) {
         // open uncompressed file as a RandomAccessFile.
         raf = ucar.unidata.io.RandomAccessFile.acquire(uncompressedFileName, buffer_size);
-        // raf = new ucar.unidata.io.MMapRandomAccessFile(uncompressedFileName, "r");
-
       } else {
         // normal case - not compressed
         raf = ucar.unidata.io.RandomAccessFile.acquire(uriString, buffer_size);
-        // raf = new ucar.unidata.io.MMapRandomAccessFile(uriString, "r");
       }
+    }
+
+    if (raf == null) {
+      throw new IOException("Could not find an appropriate RandomAccessFileProvider to open " + location);
     }
 
     return raf;
   }
 
-  private static String makeUncompressed(String filename) throws IOException {
-    // see if its a compressed file
-    int pos = filename.lastIndexOf('.');
-    if (pos < 0)
-      return null;
+  private static boolean looksCompressed(String filename) {
+    // return true if filename ends with a compressed suffix or contains a compressed suffix followed by a delimiter
+    // (i.e. path to a compressed entry)
+    return possibleCompressedSuffixes.stream().anyMatch(compressedSuffix -> filename.endsWith("." + compressedSuffix))
+        || possibleCompressedSuffixes.stream()
+            .anyMatch(compressedSuffix -> filename.contains("." + compressedSuffix + "/"));
+  }
 
-    String suffix = filename.substring(pos + 1);
-    String uncompressedFilename = filename.substring(0, pos);
+  private static String findCompressedSuffix(String filename) {
+    if (possibleCompressedSuffixes.stream().anyMatch(compressedSuffix -> filename.endsWith("." + compressedSuffix))) {
+      return filename.substring(filename.lastIndexOf('.') + 1);
+    }
+    return possibleCompressedSuffixes.stream()
+        .filter(compressedSuffix -> filename.contains("." + compressedSuffix + "/")).findFirst().orElse("");
+  }
 
-    if (!suffix.equalsIgnoreCase("Z") && !suffix.equalsIgnoreCase("zip") && !suffix.equalsIgnoreCase("gzip")
-        && !suffix.equalsIgnoreCase("gz") && !suffix.equalsIgnoreCase("bz2"))
-      return null;
+  private static String makeUncompressed(String filename) throws Exception {
+    String suffix = findCompressedSuffix(filename);
+    int pos = filename.lastIndexOf(suffix);
+    String basepath = filename.substring(0, pos - 1);
+    String itempath = filename.substring(pos + suffix.length());
+    // rebuild filepath without suffix (same as base path if there is not item path)
+    String uncompressedFilename = basepath + itempath;
+    // name of parent file
+    String baseFilename = basepath + "." + suffix;
 
     // coverity claims resource leak, but attempts to fix break. so beware
     // see if already decompressed, check in cache as needed
     File uncompressedFile = DiskCache.getFileStandardPolicy(uncompressedFilename);
     if (uncompressedFile.exists() && uncompressedFile.length() > 0) {
       // see if its locked - another thread is writing it
+      FileInputStream stream = null;
       FileLock lock = null;
-      try (FileInputStream stream = new FileInputStream(uncompressedFile)) {
+      try {
+        stream = new FileInputStream(uncompressedFile);
         // obtain the lock
         while (true) { // loop waiting for the lock
           try {
@@ -352,7 +515,6 @@ public class NetcdfFiles {
             break;
 
           } catch (OverlappingFileLockException oe) { // not sure why lock() doesnt block
-            log.warn("OverlappingFileLockException", oe);
             try {
               Thread.sleep(100); // msecs
             } catch (InterruptedException e1) {
@@ -366,14 +528,16 @@ public class NetcdfFiles {
         return uncompressedFile.getPath();
 
       } finally {
-        if (lock != null && lock.isValid())
+        if (lock != null)
           lock.release();
+        if (stream != null)
+          stream.close();
       }
     }
 
     // ok gonna write it
     // make sure compressed file exists
-    File file = new File(filename);
+    File file = new File(baseFilename);
     if (!file.exists()) {
       return null; // bail out */
     }
@@ -388,7 +552,6 @@ public class NetcdfFiles {
           break;
 
         } catch (OverlappingFileLockException oe) { // not sure why lock() doesnt block
-          log.warn("OverlappingFileLockException2", oe);
           try {
             Thread.sleep(100); // msecs
           } catch (InterruptedException e1) {
@@ -398,33 +561,40 @@ public class NetcdfFiles {
 
       try {
         if (suffix.equalsIgnoreCase("Z")) {
-          try (InputStream in = new UncompressInputStream(new FileInputStream(filename))) {
+          // Z file can only contain one file - copy the whole thing
+          try (InputStream in = new UncompressInputStream(new FileInputStream(baseFilename))) {
             copy(in, fout, 100000);
           }
           if (NetcdfFile.debugCompress)
             log.info("uncompressed {} to {}", filename, uncompressedFile);
-
         } else if (suffix.equalsIgnoreCase("zip")) {
-
-          try (ZipInputStream zin = new ZipInputStream(new FileInputStream(filename))) {
+          // find specified zip entry, if it exists
+          try (ZipInputStream zin = new ZipInputStream(new FileInputStream(baseFilename))) {
             ZipEntry ze = zin.getNextEntry();
-            if (ze != null) {
-              copy(zin, fout, 100000);
-              if (NetcdfFile.debugCompress)
-                log.info("unzipped {} entry {} to {}", filename, ze.getName(), uncompressedFile);
+            String itemName = itempath.substring(1); // remove initial /
+            while (ze != null) {
+              if (itempath.isEmpty() || ze.getName().equals(itemName)) {
+                copy(zin, fout, 100000);
+                if (NetcdfFile.debugCompress)
+                  log.info("unzipped {} entry {} to {}", filename, ze.getName(), uncompressedFile);
+                break;
+              }
+              zin.closeEntry();
+              ze = zin.getNextEntry();
             }
           }
 
         } else if (suffix.equalsIgnoreCase("bz2")) {
-          try (InputStream in = new CBZip2InputStream(new FileInputStream(filename), true)) {
+          // bz2 can only contain one file - copy the whole thing
+          try (InputStream in = new CBZip2InputStream(new FileInputStream(baseFilename), true)) {
             copy(in, fout, 100000);
           }
           if (NetcdfFile.debugCompress)
             log.info("unbzipped {} to {}", filename, uncompressedFile);
 
         } else if (suffix.equalsIgnoreCase("gzip") || suffix.equalsIgnoreCase("gz")) {
-
-          try (InputStream in = new GZIPInputStream(new FileInputStream(filename))) {
+          // gzip/gz concatenates streams - copy the whole thing
+          try (InputStream in = new GZIPInputStream(new FileInputStream(baseFilename))) {
             copy(in, fout, 100000);
           }
 
@@ -432,7 +602,11 @@ public class NetcdfFiles {
             log.info("ungzipped {} to {}", filename, uncompressedFile);
         }
       } catch (Exception e) {
-        log.warn("Failed to uncompress file {}", filename, e);
+
+        // appears we have to close before we can delete LOOK
+        // fout.close();
+        // fout = null;
+
         // dont leave bad files around
         if (uncompressedFile.exists()) {
           if (!uncompressedFile.delete())
@@ -456,6 +630,23 @@ public class NetcdfFiles {
       int bytesRead = in.read(buffer);
       if (bytesRead == -1)
         break;
+      out.write(buffer, 0, bytesRead);
+    }
+  }
+
+  private static void copy(ucar.unidata.io.RandomAccessFile in, OutputStream out, int bufferSize) throws IOException {
+    long length = in.length();
+    byte[] buffer = new byte[bufferSize];
+    int bytesRead = 0;
+    while (length > 0) {
+      if (length > bufferSize) {
+        in.readFully(buffer, 0, bufferSize);
+        bytesRead = bufferSize;
+      } else if (length <= bufferSize) {
+        in.readFully(buffer, 0, (int) length);
+        bytesRead = (int) length;
+      }
+      length -= bufferSize;
       out.write(buffer, 0, bytesRead);
     }
   }
@@ -616,15 +807,15 @@ public class NetcdfFiles {
     NetcdfFile.Builder builder = NetcdfFile.builder().setIosp((AbstractIOServiceProvider) spi).setLocation(location);
 
     try {
-      Group.Builder root = Group.builder(null).setName("");
+      Group.Builder root = Group.builder().setName("");
       spi.build(raf, root, cancelTask);
       builder.setRootGroup(root);
 
-      String id = root.getAttributeContainer().findAttValueIgnoreCase("_Id", null);
+      String id = root.getAttributeContainer().findAttributeString("_Id", null);
       if (id != null) {
         builder.setId(id);
       }
-      String title = root.getAttributeContainer().findAttValueIgnoreCase("_Title", null);
+      String title = root.getAttributeContainer().findAttributeString("_Title", null);
       if (title != null) {
         builder.setTitle(title);
       }
@@ -662,7 +853,7 @@ public class NetcdfFiles {
 
   // reservedFullName defines the characters that must be escaped
   // when a short name is inserted into a full name
-  private static final String reservedFullName = ".\\";
+  public static final String reservedFullName = ".\\";
 
   // reservedSectionSpec defines the characters that must be escaped
   // when a short name is inserted into a section specification.
@@ -706,7 +897,7 @@ public class NetcdfFiles {
    * @param vname the name
    * @return escaped version of it
    */
-  public static String makeValidPathName(String vname) {
+  private static String makeValidPathName(String vname) {
     return EscapeStrings.backslashEscape(vname, reservedFullName);
   }
 
@@ -717,7 +908,7 @@ public class NetcdfFiles {
    * @param vname the name
    * @return escaped version of it
    */
-  public static String makeValidSectionSpecName(String vname) {
+  static String makeValidSectionSpecName(String vname) {
     return EscapeStrings.backslashEscape(vname, reservedSectionSpec);
   }
 
@@ -727,30 +918,41 @@ public class NetcdfFiles {
    * @param vname the escaped name
    * @return unescaped version of it
    */
-  public static String makeNameUnescaped(String vname) {
+  static String makeNameUnescaped(String vname) {
     return EscapeStrings.backslashUnescape(vname);
   }
 
+  /** Create a Groups's full name with appropriate backslash escaping. */
+  public static String makeFullName(Group g) {
+    // return makeFullName(g, reservedFullName);
+    Group parent = g.getParentGroup();
+    if ((parent == null) || parent.isRoot()) // common case?
+      return EscapeStrings.backslashEscape(g.getShortName(), reservedFullName);
+    StringBuilder sbuff = new StringBuilder();
+    appendGroupName(sbuff, parent, reservedFullName);
+    sbuff.append(EscapeStrings.backslashEscape(g.getShortName(), reservedFullName));
+    return sbuff.toString();
+  }
+
   /**
-   * Given a CDMNode, create its full name with
-   * appropriate backslash escaping.
+   * Create a Variable's full name with appropriate backslash escaping.
    * Warning: do not use for a section spec.
    *
-   * @param v the cdm node
+   * @param v the Variable
    * @return full name
    */
-  protected static String makeFullName(CDMNode v) {
+  public static String makeFullName(Variable v) {
     return makeFullName(v, reservedFullName);
   }
 
   /**
-   * Given a CDMNode, create its full name with
+   * Create a Variable's full name with
    * appropriate backslash escaping for use in a section spec.
    *
    * @param v the cdm node
    * @return full name
    */
-  static String makeFullNameSectionSpec(CDMNode v) {
+  public static String makeFullNameSectionSpec(Variable v) {
     return makeFullName(v, reservedSectionSpec);
   }
 
@@ -762,7 +964,7 @@ public class NetcdfFiles {
    * @param reservedChars the set of characters to escape
    * @return full name
    */
-  private static String makeFullName(CDMNode node, String reservedChars) {
+  private static String makeFullName(Variable node, String reservedChars) {
     Group parent = node.getParentGroup();
     if (((parent == null) || parent.isRoot()) && !node.isMemberOfStructure()) // common case?
       return EscapeStrings.backslashEscape(node.getShortName(), reservedChars);
@@ -782,7 +984,7 @@ public class NetcdfFiles {
     sbuff.append("/");
   }
 
-  private static void appendStructureName(StringBuilder sbuff, CDMNode n, String reserved) {
+  private static void appendStructureName(StringBuilder sbuff, Variable n, String reserved) {
     if (n.isMemberOfStructure()) {
       appendStructureName(sbuff, n.getParentStructure(), reserved);
       sbuff.append(".");

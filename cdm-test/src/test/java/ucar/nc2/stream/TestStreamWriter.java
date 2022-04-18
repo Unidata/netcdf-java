@@ -4,6 +4,7 @@
  */
 package ucar.nc2.stream;
 
+import java.util.Formatter;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -13,11 +14,14 @@ import org.junit.runners.Parameterized;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.InvalidRangeException;
-import ucar.nc2.FileWriter2;
 import ucar.nc2.NetcdfFile;
-import ucar.nc2.NetcdfFileWriter;
+import ucar.nc2.NetcdfFiles;
 import ucar.nc2.iosp.netcdf3.N3channelWriter;
 import ucar.nc2.iosp.netcdf3.N3outputStreamWriter;
+import ucar.nc2.util.CompareNetcdf2;
+import ucar.nc2.write.NetcdfCopier;
+import ucar.nc2.write.NetcdfFileFormat;
+import ucar.nc2.write.NetcdfFormatWriter;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
 import java.io.File;
@@ -27,9 +31,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * test FileWriting, then reading back and comparing to original.
+ * test N3outputStreamWriter, then reading back and comparing to original.
  */
-
 @Category(NeedsCdmUnitTest.class)
 @RunWith(Parameterized.class)
 public class TestStreamWriter {
@@ -57,20 +60,20 @@ public class TestStreamWriter {
   @Test
   public void testN3outputStreamWriter() throws IOException {
     System.out.println("\nFile= " + endpoint + " size=" + new File(endpoint).length());
+    long start = System.currentTimeMillis();
+    // LOOK fails if NetcdfFiles.open
     NetcdfFile fileIn = NetcdfFile.open(endpoint);
 
-    long start = System.currentTimeMillis();
     String fileOut = tempFolder.newFile().getAbsolutePath();
     N3outputStreamWriter.writeFromFile(fileIn, fileOut);
     long took = System.currentTimeMillis() - start;
     System.out.println("N3streamWriter took " + took + " msecs");
 
     NetcdfFile file2 = NetcdfFile.open(fileOut);
-    assert ucar.unidata.util.test.CompareNetcdf.compareFiles(fileIn, file2, true, false, false);
+    assert CompareNetcdf2.compareFiles(fileIn, file2, new Formatter(), true, false, false);
 
     fileIn.close();
     file2.close();
-    System.out.println("testFileWriter took " + took + " msecs");
   }
 
   @Test
@@ -82,37 +85,35 @@ public class TestStreamWriter {
     String fileOut = tempFolder.newFile().getAbsolutePath();
     N3channelWriter.writeFromFile(fileIn, fileOut);
     long took = System.currentTimeMillis() - start;
-    System.out.println("N3streamWriter took " + took + " msecs");
+    System.out.println("N3channelWriter took " + took + " msecs");
 
     NetcdfFile file2 = NetcdfFile.open(fileOut);
-    assert ucar.unidata.util.test.CompareNetcdf.compareFiles(fileIn, file2, true, false, false);
+    assert CompareNetcdf2.compareFiles(fileIn, file2, new Formatter(), true, false, false);
 
     fileIn.close();
     file2.close();
-    System.out.println("N3channelWriter took " + took + " msecs");
   }
 
   @Test
-  public void testFileWriter() throws IOException, InvalidRangeException {
+  public void testFormatWriter() throws IOException {
     System.out.println("\nFile= " + endpoint + " size=" + new File(endpoint).length());
     NetcdfFile fileIn = NetcdfFile.open(endpoint);
 
     long start = System.currentTimeMillis();
     String fileOut = tempFolder.newFile().getAbsolutePath();
-    // public FileWriter2(NetcdfFile fileIn, String fileOutName, NetcdfFileWriter.Version version, Nc4Chunking chunker)
-    // throws IOException {
-    FileWriter2 writer = new FileWriter2(fileIn, fileOut, NetcdfFileWriter.Version.netcdf3, null);
-    NetcdfFile ncout2 = writer.write();
-    ncout2.close();
+    NetcdfFormatWriter.Builder builder =
+        NetcdfFormatWriter.builder().setNewFile(true).setFormat(NetcdfFileFormat.NETCDF3).setLocation(fileOut);
+    NetcdfCopier copier = NetcdfCopier.create(fileIn, builder);
+    try (NetcdfFile ncout2 = copier.write(null)) {
+    }
     long took = System.currentTimeMillis() - start;
-    System.out.println("N3streamWriter took " + took + " msecs");
+    System.out.println("NetcdfCopier took " + took + " msecs");
 
-    NetcdfFile file2 = NetcdfFile.open(fileOut);
-    assert ucar.unidata.util.test.CompareNetcdf.compareFiles(fileIn, file2, true, false, false);
+    NetcdfFile file2 = NetcdfFiles.open(fileOut);
+    assert CompareNetcdf2.compareFiles(fileIn, file2, new Formatter(), true, false, false);
 
     fileIn.close();
     file2.close();
-    System.out.println("N3streamWriter took " + took + " msecs");
   }
 
 }

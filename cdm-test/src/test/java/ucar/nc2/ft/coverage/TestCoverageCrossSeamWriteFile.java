@@ -2,6 +2,7 @@
 package ucar.nc2.ft.coverage;
 
 import com.google.common.collect.Lists;
+import java.util.Arrays;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
@@ -10,16 +11,15 @@ import org.junit.rules.TemporaryFolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.InvalidRangeException;
-import ucar.nc2.NetcdfFileWriter;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.ft2.coverage.*;
-import ucar.nc2.ft2.coverage.writer.CFGridCoverageWriter2;
+import ucar.nc2.ft2.coverage.writer.CFGridCoverageWriter;
 import ucar.nc2.grib.collection.Grib;
-import ucar.nc2.util.Misc;
-import ucar.nc2.util.Optional;
-import ucar.unidata.geoloc.LatLonPointImpl;
+import ucar.nc2.write.NetcdfFormatWriter;
+import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
@@ -27,12 +27,7 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 
-/**
- * Test Coverage Cross-Seam subsetting by writing a file.
- *
- * @author caron
- * @since 9/12/2015.
- */
+/** Test Coverage Cross-Seam subsetting by writing a file. */
 public class TestCoverageCrossSeamWriteFile {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
@@ -52,12 +47,12 @@ public class TestCoverageCrossSeamWriteFile {
 
       CoverageCoordSys cs = coverage.getCoordSys();
       Assert.assertNotNull("coordSys", cs);
-      System.out.printf(" org coverage shape=%s%n", Misc.showInts(cs.getShape()));
+      System.out.printf(" org coverage shape=%s%n", Arrays.toString(cs.getShape()));
 
       HorizCoordSys hcs = cs.getHorizCoordSys();
       Assert.assertNotNull("HorizCoordSys", hcs);
 
-      LatLonRect bbox = new LatLonRect(new LatLonPointImpl(10.0, 40.0), 50.0, 120.0);
+      LatLonRect bbox = new LatLonRect(LatLonPoint.create(10.0, 40.0), 50.0, 120.0);
       writeTestFile(gcs, coverage, bbox, new int[] {1, 51, 121});
     }
   }
@@ -78,12 +73,12 @@ public class TestCoverageCrossSeamWriteFile {
 
       CoverageCoordSys cs = coverage.getCoordSys();
       Assert.assertNotNull("coordSys", cs);
-      System.out.printf(" org coverage shape=%s%n", Misc.showInts(cs.getShape()));
+      System.out.printf(" org coverage shape=%s%n", Arrays.toString(cs.getShape()));
 
       HorizCoordSys hcs = cs.getHorizCoordSys();
       Assert.assertNotNull("HorizCoordSys", hcs);
 
-      LatLonRect bbox = new LatLonRect(new LatLonPointImpl(40.0, -100.0), 10.0, 120.0);
+      LatLonRect bbox = new LatLonRect(LatLonPoint.create(40.0, -100.0), 10.0, 120.0);
       writeTestFile(gcs, coverage, bbox, new int[] {1, 11, 121});
     }
   }
@@ -105,13 +100,13 @@ public class TestCoverageCrossSeamWriteFile {
 
       CoverageCoordSys cs = coverage.getCoordSys();
       Assert.assertNotNull("coordSys", cs);
-      System.out.printf(" org coverage shape=%s%n", Misc.showInts(cs.getShape()));
+      System.out.printf(" org coverage shape=%s%n", Arrays.toString(cs.getShape()));
 
       HorizCoordSys hcs = cs.getHorizCoordSys();
       Assert.assertNotNull("HorizCoordSys", hcs);
       Assert.assertEquals("rank", 3, cs.getShape().length);
 
-      LatLonRect bbox = new LatLonRect(new LatLonPointImpl(40.0, -100.0), 10.0, 120.0);
+      LatLonRect bbox = new LatLonRect(LatLonPoint.create(40.0, -100.0), 10.0, 120.0);
       writeTestFile(gcs, coverage, bbox, new int[] {1, 21, 241});
     }
   }
@@ -119,8 +114,8 @@ public class TestCoverageCrossSeamWriteFile {
   @Rule
   public final TemporaryFolder tempFolder = new TemporaryFolder();
 
-  public void writeTestFile(CoverageCollection coverageDataset, Coverage coverage, LatLonRect bbox, int[] expectedShape)
-      throws IOException, InvalidRangeException {
+  private void writeTestFile(CoverageCollection coverageDataset, Coverage coverage, LatLonRect bbox,
+      int[] expectedShape) throws IOException, InvalidRangeException {
     String covName = coverage.getName();
     File tempFile = tempFolder.newFile();
     System.out.printf(" write %s to %s%n", covName, tempFile.getAbsolutePath());
@@ -128,13 +123,11 @@ public class TestCoverageCrossSeamWriteFile {
     SubsetParams params = new SubsetParams().set(SubsetParams.latlonBB, bbox).set(SubsetParams.timePresent, true);
     System.out.printf("params=%s%n", params);
 
-    try (NetcdfFileWriter writer =
-        NetcdfFileWriter.createNew(NetcdfFileWriter.Version.netcdf3, tempFile.getPath(), null)) {
-      Optional<Long> estimatedSizeo =
-          CFGridCoverageWriter2.write(coverageDataset, Lists.newArrayList(covName), params, false, writer);
-      if (!estimatedSizeo.isPresent())
-        throw new InvalidRangeException("Request contains no data: " + estimatedSizeo.getErrorMessage());
-    }
+    NetcdfFormatWriter.Builder writer = NetcdfFormatWriter.createNewNetcdf3(tempFile.getPath());
+    CFGridCoverageWriter.Result result =
+        CFGridCoverageWriter.write(coverageDataset, Lists.newArrayList(covName), params, false, writer, -1);
+    if (!result.wasWritten())
+      throw new InvalidRangeException("Request failed: " + result.getErrorMessage());
 
     // open the new file as a Coverage
     try (FeatureDatasetCoverage cc = CoverageDatasetFactory.open(tempFile.getPath())) {
@@ -146,8 +139,8 @@ public class TestCoverageCrossSeamWriteFile {
       Assert.assertNotNull(covName, coverage2);
 
       CoverageCoordSys gcs2 = coverage2.getCoordSys();
-      System.out.printf(" data cs shape=%s%n", Misc.showInts(gcs2.getShape()));
-      System.out.printf(" expected shape=%s%n", Misc.showInts(expectedShape));
+      System.out.printf(" data cs shape=%s%n", Arrays.toString(gcs2.getShape()));
+      System.out.printf(" expected shape=%s%n", Arrays.toString(expectedShape));
       Assert.assertArrayEquals("expected data shape", expectedShape, gcs2.getShape());
     }
 
@@ -158,7 +151,7 @@ public class TestCoverageCrossSeamWriteFile {
     }
 
     // open the file as old style Grid
-    try (NetcdfDataset nf = NetcdfDataset.openDataset(tempFile.getPath())) {
+    try (NetcdfDataset nf = NetcdfDatasets.openDataset(tempFile.getPath())) {
       ucar.nc2.dt.grid.GridDataset dtDataset = new ucar.nc2.dt.grid.GridDataset(nf);
       Assert.assertNotNull(covName, dtDataset.findGridByName(covName));
     }

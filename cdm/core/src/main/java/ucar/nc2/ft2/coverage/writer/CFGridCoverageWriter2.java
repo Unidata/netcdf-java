@@ -25,9 +25,9 @@ import java.util.*;
  * - The idea is to subset the coordsys, use that for the file's metadata.
  * - Then subset the grid, and write out the data. Check that the grid's metadata matches.
  *
- * @author caron
- * @since 5/8/2015
+ * @deprecated use CFGridCoverageWriter
  */
+@Deprecated
 public class CFGridCoverageWriter2 {
   private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(CFGridCoverageWriter2.class);
   private static final boolean show = false;
@@ -414,8 +414,6 @@ public class CFGridCoverageWriter2 {
     CoverageCoordAxis1D yAxis = horizCoordSys.getYAxis();
 
     Projection proj = horizCoordSys.getTransform().getProjection();
-    ProjectionPointImpl projPoint = new ProjectionPointImpl();
-    LatLonPointImpl latlonPoint = new LatLonPointImpl();
 
     double[] xData = (double[]) xAxis.getCoordsAsArray().get1DJavaArray(DataType.DOUBLE);
     double[] yData = (double[]) yAxis.getCoordsAsArray().get1DJavaArray(DataType.DOUBLE);
@@ -429,8 +427,8 @@ public class CFGridCoverageWriter2 {
     // create the data
     for (int i = 0; i < numY; i++) {
       for (int j = 0; j < numX; j++) {
-        projPoint.setLocation(xData[j], yData[i]);
-        proj.projToLatLon(projPoint, latlonPoint);
+        ProjectionPoint projPoint = ProjectionPoint.create(xData[j], yData[i]);
+        LatLonPoint latlonPoint = proj.projToLatLon(projPoint);
         latData[i * numX + j] = latlonPoint.getLatitude();
         lonData[i * numX + j] = latlonPoint.getLongitude();
       }

@@ -11,11 +11,12 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.nc2.FileWriter2;
 import ucar.nc2.NetcdfFile;
-import ucar.nc2.NetcdfFileWriter;
 import ucar.nc2.constants.FeatureType;
-import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.NetcdfDatasets;
+import ucar.nc2.write.NetcdfCopier;
+import ucar.nc2.write.NetcdfFormatWriter;
+import ucar.unidata.util.test.CheckPointFeatureDataset;
 import ucar.unidata.util.test.TestDir;
 import java.io.File;
 import java.io.FilenameFilter;
@@ -153,10 +154,10 @@ public class TestCFPointDatasets {
     return result;
   }
 
-  String location;
-  FeatureType ftype;
-  int countExpected;
-  boolean show = false;
+  private String location;
+  private FeatureType ftype;
+  private int countExpected;
+  private boolean show = false;
 
   public TestCFPointDatasets(String location, FeatureType ftype, int countExpected) {
     this.location = location;
@@ -166,12 +167,13 @@ public class TestCFPointDatasets {
 
   @Test
   public void checkPointDataset() throws IOException {
-    Assert.assertEquals("npoints", countExpected, TestPointDatasets.checkPointFeatureDataset(location, ftype, show));
+    CheckPointFeatureDataset checker = new CheckPointFeatureDataset(location, ftype, show);
+    Assert.assertEquals("npoints", countExpected, checker.check());
   }
 
   // Convert all NCML files in CFpointObs_topdir to NetCDF-3 files.
   public static void main(String[] args) throws IOException {
-    File examplesDir = new File(CFpointObs_topdir);
+    File examplesDir = new File("cdm/core/src/test/data/point/");
     File convertedDir = new File(examplesDir, "converted");
     convertedDir.mkdirs();
 
@@ -181,13 +183,11 @@ public class TestCFPointDatasets {
       String outputFilePath = new File(convertedDir, outputFileName).getCanonicalPath();
       System.out.printf("Writing %s to %s.%n", inputFilePath, outputFilePath);
 
-      try (NetcdfFile ncfileIn = NetcdfDataset.openFile(inputFilePath, null)) {
-        NetcdfFileWriter.Version version = NetcdfFileWriter.Version.netcdf3;
-        FileWriter2 writer = new FileWriter2(ncfileIn, outputFilePath, version, null);
-
-        NetcdfFile ncfileOut = writer.write(null);
-        if (ncfileOut != null) {
-          ncfileOut.close();
+      try (NetcdfFile ncfileIn = NetcdfDatasets.openFile(inputFilePath, null)) {
+        NetcdfFormatWriter.Builder builder = NetcdfFormatWriter.createNewNetcdf3(outputFilePath);
+        NetcdfCopier copier = NetcdfCopier.create(ncfileIn, builder);
+        try (NetcdfFile ncout2 = copier.write(null)) {
+          // empty
         }
       }
     }

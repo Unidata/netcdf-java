@@ -9,8 +9,6 @@ import java.util.Formatter;
 import java.util.List;
 import java.util.StringTokenizer;
 import javax.annotation.Nullable;
-import javax.annotation.concurrent.Immutable;
-import org.jdom2.Element;
 import thredds.inventory.MFile;
 import ucar.ma2.Array;
 import ucar.ma2.InvalidRangeException;
@@ -32,7 +30,7 @@ import ucar.nc2.util.CancelTask;
 class AggDatasetOuter extends AggDataset {
   private final AggregationOuter aggregationOuter;
   @Nullable
-  final String coordValue; // if theres a coordValue on the netcdf element - may be multiple, blank seperated
+  final String coordValue; // if theres a coordValue on the netcdf element - may be multiple, blank separated
   final Date coordValueDate; // if its a date
   final boolean isStringValued; // if coordinat is a String
 
@@ -51,7 +49,7 @@ class AggDatasetOuter extends AggDataset {
    * @param ncoordS attribute "ncoords" on the netcdf element
    * @param coordValueS attribute "coordValue" on the netcdf element
    * @param enhance open dataset in enhance mode NOT USED
-   * @param reader factory for reading this netcdf dataset; if null, use NetcdfDataset.open( location)
+   * @param reader factory for reading this netcdf dataset; if null, use NetcdfDatasets.open( location)
    */
   AggDatasetOuter(AggregationOuter aggregationOuter, String cacheName, String location, String id, String ncoordS,
       String coordValueS, EnumSet<Enhance> enhance, ucar.nc2.util.cache.FileFactory reader) {
@@ -86,7 +84,7 @@ class AggDatasetOuter extends AggDataset {
       }
     }
 
-    // allow coordValue attribute on JOIN_EXISTING, may be multiple values seperated by blanks or commas
+    // allow coordValue attribute on JOIN_EXISTING, may be multiple values separated by blanks or commas
     if ((aggregationOuter.type == Type.joinExisting) && (coordValueS != null)) {
       StringTokenizer stoker = new StringTokenizer(coordValueS, " ,");
       this.ncoord = stoker.countTokens();
@@ -210,13 +208,13 @@ class AggDatasetOuter extends AggDataset {
   }
 
   /**
-   * Get the desired Range, reletive to this Dataset, if no overlap, return null.
+   * Get the desired Range, relative to this Dataset, if no overlap, return null.
    * <p>
    * wantStart, wantStop are the indices in the aggregated dataset, wantStart <= i < wantEnd.
    * if this overlaps, set the Range required for the nested dataset.
    * note this should handle strides ok.
    *
-   * @param totalRange desired range, reletive to aggregated dimension.
+   * @param totalRange desired range, relative to aggregated dimension.
    * @return desired Range or null if theres nothing wanted from this datase.
    * @throws InvalidRangeException if invalid range request
    */

@@ -6,11 +6,13 @@
 package ucar.nc2.util;
 
 /**
- * Simple implementation of CancelTask, used in order to get status return.
+ * Default implementation of CancelTask, used in order to get status return.
  *
  * @author caron
  * @since 4/10/13
+ * @deprecated will move or be private in ver6
  */
+@Deprecated
 public class CancelTaskImpl implements CancelTask {
   protected boolean done;
   protected boolean success;
@@ -41,20 +43,6 @@ public class CancelTaskImpl implements CancelTask {
   }
 
   /**
-   * Application calls to see if task is done.
-   */
-  public boolean isDone() {
-    return done;
-  }
-
-  /**
-   * Application calls to see if task is done.
-   */
-  public void setDone(boolean done) {
-    this.done = done;
-  }
-
-  /**
    * Application will call this when the user cancels.
    */
   public void cancel() {
@@ -76,8 +64,24 @@ public class CancelTaskImpl implements CancelTask {
   }
 
   @Override
+  public boolean isDone() {
+    return done;
+  }
+
+  @Override
+  public void setDone(boolean done) {
+    this.done = done;
+  }
+
+  @Override
   public boolean isCancel() {
     return cancel;
+  }
+
+  @Override
+  public void setSuccess() {
+    this.success = true;
+    this.done = true;
   }
 
   @Override

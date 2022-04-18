@@ -23,7 +23,7 @@ public class TestAggSynGrid {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   static GridDataset gds = null;
-  static final String filename = "file:./" + TestNcMLRead.topDir + "aggSynGrid.xml";
+  static final String filename = "file:./" + TestNcmlRead.topDir + "aggSynGrid.xml";
 
   @BeforeClass
   public static void setUp() throws IOException {
@@ -54,7 +54,7 @@ public class TestAggSynGrid {
     assert gcsys.getTimeAxis() != null;
 
     CoordinateAxis1DTime taxis = gcsys.getTimeAxis1D();
-    assert taxis.getDataType() == DataType.STRING : taxis.getDataType();
+    assert taxis.getDataType() == DataType.DOUBLE : taxis.getDataType();
 
     List names = taxis.getNames();
     java.util.Date[] dates = taxis.getTimeDates();

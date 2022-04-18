@@ -31,7 +31,7 @@ public class PointFeatureCopyFactory {
 
   public PointFeatureCopyFactory(PointFeature proto) throws IOException {
     StructureData sdata = proto.getFeatureData();
-    sm = new StructureMembers(sdata.getStructureMembers());
+    sm = sdata.getStructureMembers().toBuilder(false).build();
     sizeInBytes = OBJECT_SIZE + POINTER_SIZE + // PointFeatureCopy - 1 pointer 48
         2 * 8 + 2 * POINTER_SIZE + // PointFeatureImpl - 2 doubles and 2 pointers 32
         OBJECT_SIZE + 3 * 8 + // Earth Location - 3 doubles 64

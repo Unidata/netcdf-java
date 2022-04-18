@@ -52,11 +52,11 @@ import static ucar.unidata.util.StringUtil2.getTokens;
  *
  * @author caron
  * @see <a href=
- *      "http://www.unidata.ucar.edu/software/netcdf/ncml/">http://www.unidata.ucar.edu/software/netcdf/ncml/</a>
+ *      "https://www.unidata.ucar.edu/software/netcdf/ncml/">https://www.unidata.ucar.edu/software/netcdf/ncml/</a>
+ * @deprecated read NcML using NetcdfDatasets.open()
  */
-
+@Deprecated
 public class NcMLReader {
-
   private static final Namespace ncNSHttp = thredds.client.catalog.Catalog.ncmlNS;
   private static final Namespace ncNSHttps = thredds.client.catalog.Catalog.ncmlNSHttps;
   private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NcMLReader.class);
@@ -76,8 +76,6 @@ public class NcMLReader {
     debugConstruct = debugFlag.isSet("NcML/debugConstruct");
     debugAggDetail = debugFlag.isSet("NcML/debugAggDetail");
   }
-
-  // private static boolean validate = false;
 
   /**
    * Use NCML to modify a dataset, getting the NcML document as a resource stream.
@@ -105,6 +103,7 @@ public class NcMLReader {
       org.jdom2.Document doc;
       try {
         SAXBuilder builder = new SAXBuilder();
+        builder.setExpandEntities(false);
         if (debugURL)
           System.out.println(" NetcdfDataset URL = <" + ncmlResourceLocation + ">");
         doc = builder.build(is);
@@ -141,6 +140,7 @@ public class NcMLReader {
     org.jdom2.Document doc;
     try {
       SAXBuilder builder = new SAXBuilder();
+      builder.setExpandEntities(false);
       if (debugURL)
         System.out.println(" NetcdfDataset URL = <" + ncmlLocation + ">");
       doc = builder.build(ncmlLocation);
@@ -239,6 +239,7 @@ public class NcMLReader {
     org.jdom2.Document doc;
     try {
       SAXBuilder builder = new SAXBuilder();
+      builder.setExpandEntities(false);
       if (debugURL)
         System.out.println(" NetcdfDataset URL = <" + url + ">");
       doc = builder.build(url);
@@ -284,6 +285,7 @@ public class NcMLReader {
     org.jdom2.Document doc;
     try {
       SAXBuilder builder = new SAXBuilder();
+      builder.setExpandEntities(false);
       doc = builder.build(ins);
     } catch (JDOMException e) {
       throw new IOException(e.getMessage());
@@ -320,7 +322,7 @@ public class NcMLReader {
    * eg: NcMLReader.readNcML(new StringReader(ncml), location, null);
    *
    * @param r the Reader containing the NcML document
-   * @param ncmlLocation the URL location string of the NcML document, used to resolve reletive path of the referenced
+   * @param ncmlLocation the URL location string of the NcML document, used to resolve relative path of the referenced
    *        dataset,
    *        or may be just a unique name for caching purposes.
    * @param cancelTask allow user to cancel the task; may be null
@@ -332,6 +334,7 @@ public class NcMLReader {
     org.jdom2.Document doc;
     try {
       SAXBuilder builder = new SAXBuilder();
+      builder.setExpandEntities(false);
       doc = builder.build(r);
     } catch (JDOMException e) {
       throw new IOException(e.getMessage());
@@ -354,7 +357,7 @@ public class NcMLReader {
   /**
    * Read NcML from a JDOM Document, and construct a NetcdfDataset.
    *
-   * @param ncmlLocation the URL location string of the NcML document, used to resolve reletive path of the referenced
+   * @param ncmlLocation the URL location string of the NcML document, used to resolve relative path of the referenced
    *        dataset,
    *        or may be just a unique name for caching purposes.
    * @param netcdfElem the JDOM Document's root (netcdf) element
@@ -382,7 +385,7 @@ public class NcMLReader {
    * @param netcdfElem the JDOM Document's root (netcdf) element
    * @param referencedDatasetUri the URL location string of the underlying dataset, which overrides anything in
    *        netcdfElem.
-   *        prepend with "file:" to eliminate reletive resolving against ncmlLocation
+   *        prepend with "file:" to eliminate relative resolving against ncmlLocation
    * @param cancelTask allow user to cancel the task; may be null
    * @return the resulting NetcdfDataset
    * @throws IOException on read error, or bad referencedDatasetUri URI
@@ -402,7 +405,7 @@ public class NcMLReader {
    * This sets up the target dataset and the referenced dataset.
    * only place that iospParam is processed, so everything must go through here
    *
-   * @param ncmlLocation the URL location string of the NcML document, used to resolve reletive path of the referenced
+   * @param ncmlLocation the URL location string of the NcML document, used to resolve relative path of the referenced
    *        dataset,
    *        or may be just a unique name for caching purposes.
    * @param referencedDatasetUri refers to this dataset (may be null)
@@ -454,11 +457,6 @@ public class NcMLReader {
         }
         refds = new NetcdfDataset(ncfile, false);
       } else {
-        // String location, boolean enhance, int buffer_size, ucar.nc2.util.CancelTask cancelTask, Object spiObject)
-        // throws IOException {
-        // (String location, EnumSet<Enhance> enhanceMode, int buffer_size, ucar.nc2.util.CancelTask cancelTask, Object
-        // spiObject) throws IOException {
-
         refds = NetcdfDataset.openDataset(referencedDatasetUri, false, buffer_size, cancelTask, iospParam);
         // refds.setEnhanceProcessed(false); // hasnt had enhance applied to it yet - wait till ncml mods have been
         // applied
@@ -471,7 +469,7 @@ public class NcMLReader {
     explicit = (elemE != null);
 
     // general idea is that we just modify the referenced dataset
-    // the exception is when explicit is specified, then we keep them seperate.
+    // the exception is when explicit is specified, then we keep them separate.
     // refds != null refds == null
     // explicit refds!=new new (ref=new)
     // readMetadata modify (new=ref) new (ref=new)
@@ -501,14 +499,14 @@ public class NcMLReader {
    * <p/>
    * This is a bit tricky, because it handles several cases
    * When targetDS == refds, we are just modifying targetDS.
-   * When targetDS != refds, we keep them seperate, and copy from refds to newds.
+   * When targetDS != refds, we keep them separate, and copy from refds to newds.
    * <p/>
    * The user may be defining new elements or modifying old ones. The only way to tell is by seeing
    * if the elements already exist.
    *
    * @param ncmlLocation NcML URL location, or may be just a unique name for caching purposes.
    * @param targetDS add the info to this one, never null
-   * @param refds the referenced dataset; may equal newds, never null
+   * @param refds the referenced dataset; may equal targetDS, never null
    * @param netcdfElem JDOM netcdf element
    * @param cancelTask allow user to cancel the task; may be null
    * @throws IOException on read error
@@ -563,7 +561,6 @@ public class NcMLReader {
     String addRecords = netcdfElem.getAttributeValue("addRecords");
     if ("true".equalsIgnoreCase(addRecords))
       targetDS.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
-
   }
 
   ////////////////////////////////////////////////////////////////////////
@@ -864,7 +861,7 @@ public class NcMLReader {
 
       // see if it exists in referenced dataset
       if (refParent != null)
-        refg = refParent.findGroup(nameInFile);
+        refg = refParent.findGroupLocal(nameInFile);
       if (refg == null) { // new
         g = new Group(newds, parent, name);
         parent.addGroup(g);
@@ -979,7 +976,7 @@ public class NcMLReader {
       nameInFile = name;
 
     // see if it already exists
-    Variable refv = (refg == null) ? null : refg.findVariable(nameInFile);
+    Variable refv = (refg == null) ? null : refg.findVariableLocal(nameInFile);
     if (refv == null) { // new
       if (debugConstruct)
         System.out.println(" add new var = " + name);
@@ -1258,8 +1255,10 @@ public class NcMLReader {
 
     /*
      * now that we have attributes finalized, redo the enhance
-     * if (enhance && (v instanceof VariableDS))
+     * LOOK enhance not set
+     * if (enhance && (v instanceof VariableDS)) {
      * ((VariableDS) v).enhance();
+     * }
      */
 
     return v;
@@ -1289,7 +1288,7 @@ public class NcMLReader {
     if (refv == null) { // new
       if (debugConstruct)
         System.out.println(" add new var = " + name);
-      Variable nested = readVariableNew(ds, parentS.getParentGroup(), parentS, varElem);
+      Variable nested = readVariableNew(ds, parentS.getParentGroupOrRoot(), parentS, varElem);
       if (nested != null)
         parentS.addMemberVariable(nested);
       return;
@@ -1302,11 +1301,11 @@ public class NcMLReader {
 
     } else { // explicit
       if (refv instanceof Structure) {
-        v = new StructureDS(parentS.getParentGroup(), (Structure) refv); // true
+        v = new StructureDS(parentS.getParentGroupOrRoot(), (Structure) refv); // true
         v.setName(name);
         v.setParentStructure(parentS);
       } else {
-        v = new VariableDS(parentS.getParentGroup(), refv, false);
+        v = new VariableDS(parentS.getParentGroupOrRoot(), refv, false);
         v.setName(name);
         v.setParentStructure(parentS);
       }
@@ -1383,7 +1382,7 @@ public class NcMLReader {
         if (pos > 0) {
           String varName = fromAttribute.substring(0, pos);
           String attName = fromAttribute.substring(pos + 1);
-          Variable vFrom = ds.getRootGroup().findVariable(varName); // LOOK groups
+          Variable vFrom = ds.getRootGroup().findVariableLocal(varName); // LOOK groups
           if (vFrom == null) {
             errlog.format("Cant find variable %s %n", fromAttribute);
             return;
@@ -1698,7 +1697,7 @@ public class NcMLReader {
 
         break;
       case "variable":
-        Variable v = g.findVariable(name);
+        Variable v = g.findVariableLocal(name);
         if (v != null) {
           g.remove(v);
           if (debugCmd)

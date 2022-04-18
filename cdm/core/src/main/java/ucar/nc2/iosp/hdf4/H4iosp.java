@@ -41,6 +41,11 @@ public class H4iosp extends AbstractIOServiceProvider {
     return DataFormatType.HDF4.getDescription();
   }
 
+  @Override
+  public String getFileTypeVersion() {
+    return header.version;
+  }
+
   public String getFileTypeDescription() {
     return "Hierarchical Data Format, version 4";
   }
@@ -383,7 +388,7 @@ public class H4iosp extends AbstractIOServiceProvider {
   }
 
   private class DataChunk implements LayoutBBTiled.DataChunk {
-    private int[] offset; // offset index of this chunk, reletive to entire array
+    private int[] offset; // offset index of this chunk, relative to entire array
     private H4header.SpecialComp compress;
     private ByteBuffer bb; // the data is placed into here
 

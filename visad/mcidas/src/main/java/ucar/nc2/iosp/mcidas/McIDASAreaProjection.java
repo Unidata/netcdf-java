@@ -351,7 +351,7 @@ public class McIDASAreaProjection extends ucar.unidata.geoloc.ProjectionImpl {
    */
   public boolean crossSeam(ProjectionPoint pt1, ProjectionPoint pt2) {
     // either point is infinite
-    if (ProjectionPointImpl.isInfinite(pt1) || ProjectionPointImpl.isInfinite(pt2)) {
+    if (LatLonPoints.isInfinite(pt1) || LatLonPoints.isInfinite(pt2)) {
       return true;
     }
     if (Double.isNaN(pt1.getX()) || Double.isNaN(pt1.getY()) || Double.isNaN(pt2.getX()) || Double.isNaN(pt2.getY())) {

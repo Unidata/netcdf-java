@@ -1,11 +1,12 @@
 /*
- * Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2020 University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 
 package thredds.inventory;
 
 import java.io.IOException;
+import java.io.OutputStream;
 
 /**
  * An abstraction for java.io.File / java.nio.file.Path
@@ -30,6 +31,10 @@ public interface MFile extends Comparable<MFile> {
   long getLength();
 
   boolean isDirectory();
+
+  default boolean isReadable() {
+    return true;
+  }
 
   /**
    * Get full path name, replace \\ with /
@@ -58,4 +63,20 @@ public interface MFile extends Comparable<MFile> {
   Object getAuxInfo();
 
   void setAuxInfo(Object info);
+
+  /**
+   * Write the MFile to an OutputStream
+   *
+   * @param outputStream the OutputStream the MFile contents should be written to
+   */
+  void writeToStream(OutputStream outputStream) throws IOException;
+
+  /**
+   * Write the MFile to an OutputStream
+   *
+   * @param outputStream the OutputStream the MFile contents should be written to
+   * @param offset the index of the first byte to write out
+   * @param maxBytes the maximum number of bytes to copy
+   */
+  void writeToStream(OutputStream outputStream, long offset, long maxBytes) throws IOException;
 }
