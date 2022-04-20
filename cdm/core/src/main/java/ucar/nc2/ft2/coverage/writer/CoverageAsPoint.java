@@ -197,7 +197,7 @@ public class CoverageAsPoint {
     }
 
     private StationFeature createStationFeature(String name) {
-      double stationZ = varGroup.zAxis != null ? varGroup.zAxis.getCoordEdgeFirst() : 0.0;
+      double stationZ = varGroup.zAxis != null ? varGroup.zAxis.getCoordMidpoint(0) : 0.0;
       return new CoverageAsStationFeature(name, name, null, nearestLatLonPoint.getLatitude(),
           nearestLatLonPoint.getLongitude(), stationZ, this.timeUnit, null, -1, varGroup);
     }
