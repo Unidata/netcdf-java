@@ -24,6 +24,9 @@ ext {
   testdataDirKey = 'unidata.testdata.path'
   isCdmUnitTestDirAvailable = isSystemPropertyAValidDirectory testdataDirKey
 
+  javaTestVerKey = 'JAVA_TEST_HOME'
+  javaTestVersion = System.env[javaTestVerKey]
+
   // We only care if props are defined, not their actual value.
   runSlowTests = System.properties['runSlowTests'] as boolean
   isRdaDataAvailable = System.properties['rdaDataAvailable'] as boolean
