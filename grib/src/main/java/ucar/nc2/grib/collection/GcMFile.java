@@ -114,6 +114,11 @@ public class GcMFile implements thredds.inventory.MFile {
   }
 
   @Override
+  public boolean exists() {
+    return new File(directory, name).exists();
+  }
+
+  @Override
   public void writeToStream(OutputStream outputStream) throws IOException {
     IO.copyFile(getPath(), outputStream);
   }

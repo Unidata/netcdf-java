@@ -118,6 +118,11 @@ public class MFileOS7 implements MFile {
   }
 
   @Override
+  public boolean exists() {
+    return Files.exists(path);
+  }
+
+  @Override
   public void writeToStream(OutputStream outputStream) throws IOException {
     IO.copyFile(path.toFile(), outputStream);
   }

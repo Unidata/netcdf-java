@@ -149,6 +149,11 @@ public class CollectionManagerCatalog extends CollectionManagerAbstract implemen
     }
 
     @Override
+    public boolean exists() {
+      return false;
+    }
+
+    @Override
     public void writeToStream(OutputStream outputStream) throws IOException {
       throw new IOException("Writing MFileRemote not implemented. Filename: " + getName());
     }

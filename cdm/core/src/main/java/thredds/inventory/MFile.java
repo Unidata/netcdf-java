@@ -65,6 +65,13 @@ public interface MFile extends Comparable<MFile> {
   void setAuxInfo(Object info);
 
   /**
+   * Check if the MFile exists
+   *
+   * @return true if the MFile exists, else false
+   */
+  boolean exists();
+
+  /**
    * Write the MFile to an OutputStream
    *
    * @param outputStream the OutputStream the MFile contents should be written to

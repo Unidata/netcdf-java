@@ -40,6 +40,7 @@ public class MFileS3 implements MFile {
 
   private long length;
   private long lastMod;
+  private Boolean exists;
 
   private Object auxInfo;
 
@@ -273,6 +274,25 @@ public class MFileS3 implements MFile {
 
     return (cdmS3Uri.equals(mFileS3.cdmS3Uri) && Objects.equals(key, mFileS3.key)
         && Objects.equals(delimiter, mFileS3.delimiter) && Objects.equals(auxInfo, mFileS3.auxInfo));
+  }
+
+  @Override
+  public boolean exists() {
+    if (exists == null) {
+      updateExists();
+    }
+
+    return exists;
+  }
+
+  // Update file exists by fetching from a head request
+  private void updateExists() {
+    try {
+      headObjectResponse.get();
+      exists = true;
+    } catch (NoSuchKeyException e) {
+      exists = false;
+    }
   }
 
   @Override

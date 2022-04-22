@@ -150,6 +150,11 @@ public class MFileZip implements MFile {
   }
 
   @Override
+  public boolean exists() {
+    return Files.exists(Paths.get(root.getName()));
+  }
+
+  @Override
   public void writeToStream(OutputStream outputStream) throws IOException {
     for (ZipEntry entry : leafEntries) {
       final File file = new File(entry.getName());
