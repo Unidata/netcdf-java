@@ -5,6 +5,7 @@
 
 package thredds.inventory.zarr;
 
+import java.io.InputStream;
 import java.io.OutputStream;
 import thredds.filesystem.MFileOS;
 import thredds.inventory.MFile;
@@ -152,6 +153,11 @@ public class MFileZip implements MFile {
   @Override
   public boolean exists() {
     return Files.exists(Paths.get(root.getName()));
+  }
+
+  @Override
+  public InputStream getInputStream() {
+    throw new UnsupportedOperationException("MFileZip::getInputStream not implemented");
   }
 
   @Override

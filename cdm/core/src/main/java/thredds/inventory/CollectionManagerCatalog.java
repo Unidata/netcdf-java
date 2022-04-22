@@ -5,6 +5,7 @@
 
 package thredds.inventory;
 
+import java.io.InputStream;
 import java.io.OutputStream;
 import thredds.client.catalog.Access;
 import thredds.client.catalog.Dataset;
@@ -151,6 +152,11 @@ public class CollectionManagerCatalog extends CollectionManagerAbstract implemen
     @Override
     public boolean exists() {
       return false;
+    }
+
+    @Override
+    public InputStream getInputStream() {
+      throw new UnsupportedOperationException("MFileRemote::getInputStream not implemented");
     }
 
     @Override

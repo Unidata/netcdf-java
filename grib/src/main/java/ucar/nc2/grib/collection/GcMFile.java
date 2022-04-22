@@ -5,6 +5,8 @@
 
 package ucar.nc2.grib.collection;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStream;
 import javax.annotation.Nullable;
@@ -116,6 +118,11 @@ public class GcMFile implements thredds.inventory.MFile {
   @Override
   public boolean exists() {
     return new File(directory, name).exists();
+  }
+
+  @Override
+  public FileInputStream getInputStream() throws FileNotFoundException {
+    return new FileInputStream(new File(directory, name));
   }
 
   @Override

@@ -296,15 +296,20 @@ public class MFileS3 implements MFile {
   }
 
   @Override
-  public void writeToStream(OutputStream outputStream) throws IOException {
+  public ResponseInputStream<GetObjectResponse> getInputStream() {
     S3Client client = getClient();
 
-    if (client == null)
-      return;
+    if (client == null) {
+      return null;
+    }
 
     GetObjectRequest getObjectRequest = GetObjectRequest.builder().bucket(cdmS3Uri.getBucket()).key(key).build();
+    return client.getObject(getObjectRequest);
+  }
 
-    ResponseInputStream<GetObjectResponse> responseInputStream = client.getObject(getObjectRequest);
+  @Override
+  public void writeToStream(OutputStream outputStream) throws IOException {
+    ResponseInputStream<GetObjectResponse> responseInputStream = getInputStream();
 
     IO.copy(responseInputStream, outputStream);
   }
