@@ -24,9 +24,8 @@ dependencies {
   testRuntimeOnly 'ch.qos.logback:logback-classic'
 }
 
-java {
-  sourceCompatibility = JavaVersion.VERSION_1_8
-  targetCompatibility = JavaVersion.VERSION_1_8
+compileJava {
+  options.release = 8
 }
 
 gradle.projectsEvaluated {  // Several statements below rely upon all subprojects having been evaluated.
