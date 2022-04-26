@@ -3,15 +3,17 @@ apply from: "$rootDir/gradle/any/testing.gradle"
 apply from: "$rootDir/gradle/any/coverage.gradle"
 apply from: "$rootDir/gradle/any/spotless.gradle"
 
-java {
-  sourceCompatibility = JavaVersion.VERSION_1_8
-  targetCompatibility = JavaVersion.VERSION_1_8
-}
-
-// Will apply to "compileJava", "compileTestJava", "compileSourceSetJava", etc.
-tasks.withType(JavaCompile).all {
+tasks.withType(JavaCompile).configureEach {
   options.encoding = 'UTF-8'
-
-  // show deprecation details
-  //options.compilerArgs = ['-Xlint:deprecation']
+  // whatever java is being used to run gradle will be used to compile java classes
+  // in src/main, but this makes sure it outputs bytecode compatible with Java 8
+  if (JavaVersion.current() != JavaVersion.VERSION_1_8) {
+    options.setRelease(8)
+  } else {
+    // java 8 does not have a release option, so use source and target compatibility
+    setSourceCompatibility(JavaVersion.VERSION_1_8)
+    setTargetCompatibility(JavaVersion.VERSION_1_8)
+  }
+//  // show deprecation details
+//  //options.compilerArgs = ['-Xlint:deprecation']
 }
