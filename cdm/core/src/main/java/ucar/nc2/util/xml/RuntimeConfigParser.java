@@ -278,7 +278,8 @@ public class RuntimeConfigParser {
            */
           String path = elem.getChildText("libraryPath");
           String name = elem.getChildText("libraryName");
-          errlog.append(String.format("Netcdf4Clibrary from NJ22CONFIG: libraryPath = '%s', libraryName = '%s' \n", path, name));
+          errlog.append(
+              String.format("Netcdf4Clibrary from NJ22CONFIG: libraryPath = '%s', libraryName = '%s' \n", path, name));
           if (path != null && name != null) {
             // reflection is used to decouple optional jars
             try {
