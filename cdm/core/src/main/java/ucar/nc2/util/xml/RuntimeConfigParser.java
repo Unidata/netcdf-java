@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2022 Antonio S. Cofiño, John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2018 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 
@@ -283,7 +283,7 @@ public class RuntimeConfigParser {
             // reflection is used to decouple optional jars
             try {
               Class netcdfClibraryClass = RuntimeConfigParser.class.getClassLoader().loadClass(netcdfClibraryClassName);
-              Method method = netcdfClibraryClass.getMethod("setLibraryNameAndPath", String.class, String.class);
+              Method method = netcdfClibraryClass.getMethod("setLibraryAndPath", String.class, String.class);
               method.invoke(null, path, name); // static method has null for object
             } catch (Throwable e) {
               errlog.append(netcdfClibraryClassName + " is not on classpath\n");
