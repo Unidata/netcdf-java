@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2018 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2022 Antonio S. Cofiño, John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 
@@ -9,7 +9,7 @@ import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
-import ucar.nc2.NetcdfFile;
+import ucar.nc2.NetcdfFiles;
 import ucar.nc2.constants.FeatureType;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -60,11 +60,11 @@ public class RuntimeConfigParser {
       switch (elem.getName()) {
         case "ioServiceProvider": {
           String className = elem.getAttributeValue("class");
-
+          errlog.append(String.format("Registering IOSP from NJ22CONFIG: class = '%s' \n", className));
           try {
-            NetcdfFile.registerIOProvider(className);
+            NetcdfFiles.registerIOProvider(className);
           } catch (ClassNotFoundException e) {
-            errlog.append("CoordSysBuilder class not found= " + className + "; check your classpath\n");
+            errlog.append("IOServiceProvider class not found= " + className + "; check your classpath\n");
           } catch (Exception e) {
             errlog.append("IOServiceProvider " + className + " failed= " + e.getMessage() + "\n");
           }
@@ -92,7 +92,7 @@ public class RuntimeConfigParser {
           try {
             CoordTransBuilder.registerTransform(transformName, className);
           } catch (ClassNotFoundException e) {
-            errlog.append("CoordSysBuilder class not found= " + className + "; check your classpath\n");
+            errlog.append("CoordTransBuilder class not found= " + className + "; check your classpath\n");
           } catch (Exception e) {
             errlog.append("CoordTransBuilder " + className + " failed= " + e.getMessage() + "\n");
           }
@@ -264,9 +264,11 @@ public class RuntimeConfigParser {
         }
         case "Netcdf4Clibrary":
           // cdm does not have a dependency on netcdf4 (and we don't want to introduce one),
-          // so we cannot refer to the Nc4Iosp.class object.
+          // so we cannot refer to the Nc4Iosp.class and NetcdfClibrary.class object.
           String nc4IospClassName = "ucar.nc2.jni.netcdf.Nc4Iosp";
-
+          // The setLibraryAndPath method from Nc4Iosp has been deprecated
+          // and splited into separated class: NetcdfClibrary
+          String netcdfClibraryClassName = "ucar.nc2.ffi.netcdf.NetcdfClibrary";
           /*
            * <Netcdf4Clibrary>
            * <libraryPath>/usr/local/lib</libraryPath>
@@ -276,24 +278,25 @@ public class RuntimeConfigParser {
            */
           String path = elem.getChildText("libraryPath");
           String name = elem.getChildText("libraryName");
-
+          errlog.append(String.format("Netcdf4Clibrary from NJ22CONFIG: libraryPath = '%s', libraryName = '%s' \n", path, name));
           if (path != null && name != null) {
             // reflection is used to decouple optional jars
             try {
-              Class nc4IospClass = RuntimeConfigParser.class.getClassLoader().loadClass(nc4IospClassName);
-              Method method = nc4IospClass.getMethod("setLibraryAndPath", String.class, String.class);
+              Class netcdfClibraryClass = RuntimeConfigParser.class.getClassLoader().loadClass(netcdfClibraryClassName);
+              Method method = netcdfClibraryClass.getMethod("setLibraryNameAndPath", String.class, String.class);
               method.invoke(null, path, name); // static method has null for object
             } catch (Throwable e) {
-              errlog.append(nc4IospClassName + " is not on classpath\n");
+              errlog.append(netcdfClibraryClassName + " is not on classpath\n");
             }
           }
 
           boolean useForReading = Boolean.parseBoolean(elem.getChildText("useForReading"));
+          errlog.append(String.format("    useForReading = '%s' \n", useForReading));
           if (useForReading) {
             try {
               // Registers Nc4Iosp in front of all the other IOSPs already registered in NetcdfFile.<clinit>().
               // Crucially, this means that we'll try to open a file with Nc4Iosp before we try it with H5iosp.
-              NetcdfFile.registerIOProvider(nc4IospClassName);
+              NetcdfFiles.registerIOProvider(nc4IospClassName);
             } catch (IllegalAccessException | InstantiationException | ClassNotFoundException e) {
               errlog.append(String.format("Could not register IOSP '%s': %s%n", nc4IospClassName, e.getMessage()));
             }
@@ -303,3 +306,4 @@ public class RuntimeConfigParser {
     }
   }
 }
+
