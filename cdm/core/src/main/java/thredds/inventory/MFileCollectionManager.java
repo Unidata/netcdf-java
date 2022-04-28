@@ -103,7 +103,7 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
 
     dateExtractor = (sp.getDateFormatMark() == null) ? new DateExtractorNone()
         : new DateExtractorFromName(sp.getDateFormatMark(), true);
-    scanList.add(new CollectionConfig(sp.getRootDir(), sp.getRootDir(), sp.wantSubdirs(), filters, null));
+    scanList.add(new CollectionConfig(sp.getRootDir(), getScanRootDir(sp), sp.wantSubdirs(), filters, null));
   }
 
   // this is the full featured constructor, using FeatureCollectionConfig for config.
@@ -126,7 +126,7 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
     else
       dateExtractor = new DateExtractorNone();
 
-    scanList.add(new CollectionConfig(sp.getRootDir(), sp.getRootDir(), sp.wantSubdirs(), filters, null));
+    scanList.add(new CollectionConfig(sp.getRootDir(), getScanRootDir(sp), sp.wantSubdirs(), filters, null));
 
     if (config.protoConfig != null)
       protoChoice = config.protoConfig.choice;
@@ -190,11 +190,15 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
 
     dateExtractor = (sp.getDateFormatMark() == null) ? new DateExtractorNone()
         : new DateExtractorFromName(sp.getDateFormatMark(), true);
-    scanList.add(new CollectionConfig(sp.getRootDir(), sp.getRootDir(), sp.wantSubdirs(), filters, null));
+    scanList.add(new CollectionConfig(sp.getRootDir(), getScanRootDir(sp), sp.wantSubdirs(), filters, null));
 
     this.recheck = null;
     this.protoChoice = FeatureCollectionConfig.ProtoChoice.Penultimate; // default
     this.olderThanInMsecs = -1;
+  }
+
+  private static String getScanRootDir(CollectionSpecParserAbstract specParser) {
+    return specParser.getRootDir() + specParser.getFragment();
   }
 
   public MFileCollectionManager(String name, CollectionConfig mc, CalendarDate startPartition,
