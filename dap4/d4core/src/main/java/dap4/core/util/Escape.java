@@ -57,6 +57,8 @@ public class Escape {
     StringBuilder escaped = new StringBuilder();
     for (int i = 0; i < s.length(); i++) {
       char c = s.charAt(i);
+      // XML cannot handle nul char so just suppress it altogether
+      if(c == 0) continue;
       int index = wrt.indexOf(c);
       if (index < 0)
         escaped.append(c);
@@ -81,9 +83,6 @@ public class Escape {
           case '\t':
           case '\n':
             escaped.append(c); // These are the only legal control chars
-            break;
-          case '\0':
-            // What to do about nul? currrently we suppress it
             break;
           default:
             if (c >= ' ')

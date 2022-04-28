@@ -468,7 +468,9 @@ public class DMRPrinter {
       for (int i = 0; i < svec.length; i++) {
         buf.append(svec[i]);
       }
-      String cs = String.format("<Value value=\"%s\"/>", buf.toString());
+      // Still needs XML escaping
+      String s = Escape.entityEscape(buf.toString(), null);
+      String cs = String.format("<Value value=\"%s\"/>", s);
       printer.marginPrintln(cs);
     } else if (type.isEnumType()) {
       String[] names = (String[]) ((DapEnumeration) type).convert(svec);
