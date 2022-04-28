@@ -708,6 +708,10 @@ public class NestedTable {
     return leaf.parent.getStructureDataIterator(cursor); // the middle table
   }
 
+  public int getStationNestingLevel() {
+    return stnVE.nestingLevel;
+  }
+
   // also called from StandardPointFeatureIterator
   StationFeature makeStation(StructureData stationData) {
     if (stnVE.isMissing(stationData))

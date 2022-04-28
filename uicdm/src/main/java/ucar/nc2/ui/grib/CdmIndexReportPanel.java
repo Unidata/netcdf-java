@@ -81,7 +81,7 @@ public class CdmIndexReportPanel extends ReportPanel {
     f.format("%n Grand Total %s%n", total);
   }
 
-  // seperate report for each file in collection
+  // separate report for each file in collection
   private void doDupAndMissingEach(Formatter f, MFile mfile, boolean each, boolean extra, Accum accum)
       throws IOException {
 
@@ -158,7 +158,7 @@ public class CdmIndexReportPanel extends ReportPanel {
     }
   }
 
-  // seperate report for each file in collection
+  // separate report for each file in collection
   private void doMisplacedFieldsEach(Formatter f2, MFile mfile, Set<String> filenames, boolean extra)
       throws IOException {
     Formatter f = new Formatter(System.out);

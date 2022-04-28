@@ -653,7 +653,7 @@ public class TestGribCompressByBit {
     }
 
     byte[] compress(GribData.Bean bean) throws IOException {
-      return GribData.compressScaled(bean); // LOOK could seperate from compression and try different ones
+      return GribData.compressScaled(bean); // LOOK could separate from compression and try different ones
     }
   }
 

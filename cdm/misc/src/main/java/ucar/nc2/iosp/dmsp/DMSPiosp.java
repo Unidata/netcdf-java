@@ -194,7 +194,7 @@ public class DMSPiosp extends AbstractIOServiceProvider {
         // Make sure the cached data for year, dayOfYear, and secondsOfDay
         // is available as it is used in the time calculation.
         // [Note: don't need Arrays returned.]
-        // @todo Could seperate reading cache from Array production.
+        // @todo Could separate reading cache from Array production.
         Variable curVar = this.ncfile.findVariable(VariableInfo.YEAR.getName());
         this.readData(curVar, curVar.getShapeAsSection());
 

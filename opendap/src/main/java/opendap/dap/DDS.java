@@ -1750,10 +1750,10 @@ public class DDS extends DStructure {
         throw new MalformedAliasException(
             "Alias fields that begin with the quote (\") sign " + "must have a closing quote.");
 
-      // If there is more stuff, and that stuff is not seperated from the
+      // If there is more stuff, and that stuff is not separated from the
       // closing quote by a dot character, then it's bad syntax.
       if (lastIndex > end && field.charAt(end + 1) != dot)
-        throw new MalformedAliasException("Alias fields must be seperated by the dot (.) character.");
+        throw new MalformedAliasException("Alias fields must be separated by the dot (.) character.");
 
       // The last caharcter in the field may not be an (unquoted) dot.
       if (field.charAt(lastIndex) == dot)

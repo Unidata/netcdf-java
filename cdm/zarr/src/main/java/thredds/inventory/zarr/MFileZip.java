@@ -5,6 +5,7 @@
 
 package thredds.inventory.zarr;
 
+import java.io.OutputStream;
 import thredds.filesystem.MFileOS;
 import thredds.inventory.MFile;
 import thredds.inventory.MFileProvider;
@@ -19,6 +20,7 @@ import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
+import ucar.nc2.util.IO;
 
 /**
  * Implements thredds.inventory.MFile for ZipFiles and ZipEntries
@@ -145,6 +147,19 @@ public class MFileZip implements MFile {
   @Override
   public void setAuxInfo(Object info) {
     auxInfo = info;
+  }
+
+  @Override
+  public void writeToStream(OutputStream outputStream) throws IOException {
+    for (ZipEntry entry : leafEntries) {
+      final File file = new File(entry.getName());
+      IO.copyFile(file, outputStream);
+    }
+  }
+
+  @Override
+  public void writeToStream(OutputStream outputStream, long offset, long maxBytes) throws IOException {
+    throw new IOException("Writing MFileZip with a byte range to stream not implemented. Filename: " + getName());
   }
 
   public Path getRootPath() {

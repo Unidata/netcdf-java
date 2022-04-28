@@ -16,15 +16,8 @@ import ucar.unidata.geoloc.LatLonRect;
  * @author caron
  * @since Feb 29, 2008
  */
-public interface StationProfileFeatureCollection extends PointFeatureCCC, Iterable<StationProfileFeature> {
-
-  List<StationFeature> getStationFeatures();
-
-  List<StationFeature> getStationFeatures(List<String> stnNames);
-
-  List<StationFeature> getStationFeatures(ucar.unidata.geoloc.LatLonRect boundingBox);
-
-  StationFeature findStationFeature(String name);
+public interface StationProfileFeatureCollection
+    extends StationFeatureCollection, PointFeatureCCC, Iterable<StationProfileFeature> {
 
   StationProfileFeature getStationProfileFeature(StationFeature s);
 

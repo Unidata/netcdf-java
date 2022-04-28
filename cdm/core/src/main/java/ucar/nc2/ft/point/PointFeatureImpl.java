@@ -36,7 +36,7 @@ public abstract class PointFeatureImpl implements PointFeature, Comparable<Point
     this.location = Preconditions.checkNotNull(location, "location == null");
     this.obsTime = obsTime;
     this.nomTime = (nomTime == 0) ? obsTime : nomTime; // LOOK temp kludge until protobuf accepts NaN as defaults
-    this.timeUnit = Preconditions.checkNotNull(timeUnit, "timeUnit == null");
+    this.timeUnit = timeUnit;
   }
 
   @Nonnull
@@ -68,13 +68,13 @@ public abstract class PointFeatureImpl implements PointFeature, Comparable<Point
   @Nonnull
   @Override
   public CalendarDate getObservationTimeAsCalendarDate() {
-    return timeUnit.makeCalendarDate(getObservationTime());
+    return timeUnit == null ? CalendarDate.UNKNOWN : timeUnit.makeCalendarDate(getObservationTime());
   }
 
   @Nonnull
   @Override
   public CalendarDate getNominalTimeAsCalendarDate() {
-    return timeUnit.makeCalendarDate(getNominalTime());
+    return timeUnit == null ? CalendarDate.UNKNOWN : timeUnit.makeCalendarDate(getNominalTime());
   }
 
   @Override

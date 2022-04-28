@@ -130,7 +130,7 @@ Notes on CFSR dataset
     "CFSR monthly atmospheric, oceanic and land surface output products are available at 0.5, 1.0, and 2.5 degree horizontal
     resolutions as 6-hourly diurnal monthly means (00Z, 06Z, 12Z, and 18Z) and regular monthly means."
 
-- trying to seperate the diurnal from regular monthly.
+- trying to separate the diurnal from regular monthly.
   regular: G:/nomads/cfsr/monthly/200808/.*200808.grb2
 
   File=G:/nomads/cfsr/monthly/200808/diabf01.gdas.200808.grb2 (0)

@@ -6,7 +6,9 @@
 package thredds.inventory.s3;
 
 import static com.google.common.truth.Truth.assertThat;
+import static org.junit.Assert.assertThrows;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -14,6 +16,7 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import software.amazon.awssdk.services.s3.model.NoSuchKeyException;
 import thredds.inventory.MFile;
 import ucar.unidata.io.s3.S3TestsCommon;
 import ucar.unidata.util.test.category.NotPullRequest;
@@ -24,6 +27,7 @@ public class TestMFileS3 {
 
   private static final String parentDirName = "242";
   private static final String dirName = "00";
+  private static final String topLevelDir = "ABI-L1b-RadC";
   private static final String G16_DIR = "ABI-L1b-RadC/2017/" + parentDirName + "/" + dirName;
   private static final String G16_NAME_1 =
       "OR_ABI-L1b-RadC-M3C01_G16_s20172420002168_e20172420004540_c20172420004583.nc";
@@ -40,6 +44,7 @@ public class TestMFileS3 {
   private static final String AWS_G16_S3_OBJECT_1 = S3TestsCommon.TOP_LEVEL_AWS_BUCKET + "?" + G16_OBJECT_KEY_1;
   private static final String AWS_G16_S3_OBJECT_2 = S3TestsCommon.TOP_LEVEL_AWS_BUCKET + "?" + G16_OBJECT_KEY_2;
   private static final String AWS_G16_S3_URI_DIR = S3TestsCommon.TOP_LEVEL_AWS_BUCKET + "?" + G16_DIR;
+  private static final String AWS_G16_S3_URI_TOP_DIR = S3TestsCommon.TOP_LEVEL_AWS_BUCKET + "?" + topLevelDir;
 
   // Google Cloud Platform constants
   private static final String GCS_G16_S3_OBJECT_1 = S3TestsCommon.TOP_LEVEL_GCS_BUCKET + "?" + G16_OBJECT_KEY_1;
@@ -129,6 +134,15 @@ public class TestMFileS3 {
   }
 
   @Test
+  public void shouldReturnTopLevelKeyName() throws IOException {
+    final MFileS3 fileWithoutDelimiter = new MFileS3(AWS_G16_S3_URI_TOP_DIR);
+    assertThat(fileWithoutDelimiter.getName()).isEqualTo(topLevelDir);
+
+    final MFileS3 fileWithDelimiter = new MFileS3(AWS_G16_S3_URI_TOP_DIR + DELIMITER_FRAGMENT);
+    assertThat(fileWithDelimiter.getName()).isEqualTo(topLevelDir);
+  }
+
+  @Test
   public void compareMFilesAws() throws IOException {
     for (String delimiter : DELIMITER_FRAGMENTS) {
       compareS3Mfiles(AWS_G16_S3_OBJECT_1 + delimiter, AWS_G16_S3_OBJECT_2 + delimiter);
@@ -168,6 +182,56 @@ public class TestMFileS3 {
     for (String delimiter : DELIMITER_FRAGMENTS) {
       checkS3MFilesAuxInfo(OSDC_G16_S3_OBJECT_1 + delimiter);
     }
+  }
+
+  @Test
+  public void shouldWriteObjectsToStream() throws IOException {
+    final String[] objects = {AWS_G16_S3_OBJECT_1, GCS_G16_S3_OBJECT_1, OSDC_G16_S3_OBJECT_1};
+
+    for (String object : objects) {
+      final MFile mFile = new MFileS3(object);
+      final long length = mFile.getLength();
+
+      final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+      mFile.writeToStream(outputStream);
+      assertThat(outputStream.size()).isEqualTo(length);
+    }
+  }
+
+  @Test
+  public void shouldWritePartialObjectToStream() throws IOException {
+    final MFile mFile = new MFileS3(AWS_G16_S3_OBJECT_1);
+    final long length = mFile.getLength();
+
+    final long[][] testCases = {{0, 0}, {10, 10}, {0, length}, {0, 100}, {42, 100}};
+
+    for (long[] testCase : testCases) {
+      final long offset = testCase[0];
+      final long maxBytes = testCase[1];
+
+      final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+      mFile.writeToStream(outputStream, offset, maxBytes);
+
+      final long bytesWritten = Math.min(maxBytes, length - offset);
+      assertThat(outputStream.size()).isEqualTo(bytesWritten);
+    }
+  }
+
+  @Test
+  public void shouldNotWriteDirectoryToStream() throws IOException {
+    final MFile mFile = new MFileS3(AWS_G16_S3_URI_DIR + "/" + DELIMITER_FRAGMENT);
+    assertThat(mFile.isDirectory()).isTrue();
+
+    final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+    assertThrows(NoSuchKeyException.class, () -> mFile.writeToStream(outputStream));
+  }
+
+  @Test
+  public void shouldNotWriteNonExistingObjectToStream() throws IOException {
+    final MFile mFile = new MFileS3(AWS_G16_S3_URI_DIR + "?NotARealKey");
+
+    final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+    assertThrows(NoSuchKeyException.class, () -> mFile.writeToStream(outputStream));
   }
 
   private void checkWithBucket(String cdmS3Uri) throws IOException {

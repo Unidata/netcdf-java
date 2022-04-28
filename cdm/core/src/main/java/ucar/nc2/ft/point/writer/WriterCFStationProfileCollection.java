@@ -55,7 +55,7 @@ public class WriterCFStationProfileCollection extends CFPointWriter {
     super(fileOut, globalAtts, dataVars, timeUnit, altUnits, config);
     writer.addGroupAttribute(null, new Attribute(CF.FEATURE_TYPE, CF.FeatureType.timeSeriesProfile.name()));
     writer.addGroupAttribute(null,
-        new Attribute(CF.DSG_REPRESENTATION, "Ragged array representation of time series profiless, H.5.3"));
+        new Attribute(CF.DSG_REPRESENTATION, "Ragged array representation of time series profiles, H.5.3"));
   }
 
   public void setStations(List<StationFeature> stns) {

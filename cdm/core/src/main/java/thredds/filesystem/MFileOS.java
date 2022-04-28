@@ -5,9 +5,13 @@
 
 package thredds.filesystem;
 
+import java.io.IOException;
+import java.io.OutputStream;
 import java.nio.file.Files;
 import javax.annotation.Nullable;
 import thredds.inventory.MFile;
+import ucar.nc2.util.IO;
+import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.StringUtil2;
 import javax.annotation.concurrent.ThreadSafe;
 import java.io.File;
@@ -106,6 +110,18 @@ public class MFileOS implements MFile {
   public String toString() {
     String sb = "MFileOS{" + "file=" + file.getPath() + ", lastModified=" + lastModified + '}';
     return sb;
+  }
+
+  @Override
+  public void writeToStream(OutputStream outputStream) throws IOException {
+    IO.copyFile(file, outputStream);
+  }
+
+  @Override
+  public void writeToStream(OutputStream outputStream, long offset, long maxBytes) throws IOException {
+    try (RandomAccessFile randomAccessFile = RandomAccessFile.acquire(file.getPath())) {
+      IO.copyRafB(randomAccessFile, offset, maxBytes, outputStream);
+    }
   }
 
   public File getFile() {

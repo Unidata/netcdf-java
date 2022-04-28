@@ -598,7 +598,7 @@ public class WriterProfileObsDataset {
           manAS.setMemberArray(mname, sdata.getArray(mname));
         }
 
-        // each level is weritten as a seperate structure
+        // each level is weritten as a separate structure
         int numMand = sdata.getScalarInt("numMand");
         if (numMand >= manDim.getLength())
           continue;

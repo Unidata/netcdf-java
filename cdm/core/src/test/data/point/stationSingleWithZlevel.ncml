@@ -1,26 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" >
+  <dimension name="s" length="1"/>
   <dimension name="z" length="3" />
   <dimension name="time" length="3"/>
 
   <attribute name="featureType" value="timeSeries" />
   <attribute name="Conventions" value="CF-1.6" />
   
-  <variable name="lon" shape="" type="float">
+  <variable name="lon" shape="s" type="float">
     <attribute name="long_name" value="longitude" />
     <attribute name="units" value="degrees_east" />
     <values>-105.0</values>
   </variable>
-  <variable name="lat" shape="" type="float">
+  <variable name="lat" shape="s" type="float">
     <attribute name="long_name" value="latitude" />
     <attribute name="units" value="degrees_north" />
     <values>40.0</values>
   </variable>
-  <variable name="stationId" shape="" type="int">
+  <variable name="stationId" shape="s" type="int">
     <attribute name="cf_role" value="timeseries_id" />
     <values>666</values>
   </variable>  
-  <variable name="stationAlt" shape="" type="int">
+  <variable name="stationAlt" shape="s" type="int">
     <attribute name="units" value="m" />
     <attribute name="standard_name" value="surface_altitude" />
     <values>101</values>
@@ -39,7 +40,7 @@
     <values>0 31 59</values>
   </variable>
   
-  <variable name="data" shape="time z" type="float">
+  <variable name="data" shape="s time z" type="float">
     <attribute name="long_name" value="skin temperature" />
     <attribute name="units" value="Celsius" />
     <attribute name="coordinates" value="time lon lat z" />

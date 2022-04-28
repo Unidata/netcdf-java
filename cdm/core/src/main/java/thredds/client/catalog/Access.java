@@ -63,7 +63,7 @@ public class Access { // (5)
   } // optional
 
   /**
-   * Get the standard URL, with resolution if the URL is reletive.
+   * Get the standard URL, with resolution if the URL is relative.
    * catalog.resolveURI( getUnresolvedUrlName())
    *
    * @return URL string, or null if error.
@@ -95,7 +95,7 @@ public class Access { // (5)
 
   /**
    * Construct "unresolved" URL: service.getBase() + getUrlPath() + service.getSuffix().
-   * It is not resolved, so it may be a reletive URL.
+   * It is not resolved, so it may be a relative URL.
    * 
    * @return unresolved Url as a String
    */

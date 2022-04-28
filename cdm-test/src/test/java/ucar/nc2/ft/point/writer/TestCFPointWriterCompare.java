@@ -25,6 +25,7 @@ import ucar.nc2.NetcdfFileWriter.Version;
 import ucar.nc2.NetcdfFiles;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.FeatureType;
+import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
 import ucar.nc2.ft.FeatureDatasetPoint;
@@ -88,6 +89,7 @@ public class TestCFPointWriterCompare {
       throws IOException {
     File fileIn = new File(location);
     File fileOrg = tempFolder.newFile();
+
     long start = System.currentTimeMillis();
 
     System.out.printf("================ TestCFPointWriter%n read %s size=%d%n write to=%s%n", fileIn.getAbsoluteFile(),
@@ -128,7 +130,7 @@ public class TestCFPointWriterCompare {
 
   private static void compare(String fileOrg, String fileNew) throws IOException {
     // Compare that the files are identical
-    try (NetcdfFile org = NetcdfFile.open(fileOrg); NetcdfFile copy = NetcdfFiles.open(fileNew)) {
+    try (NetcdfFile org = NetcdfDatasets.openDataset(fileOrg); NetcdfFile copy = NetcdfDatasets.openDataset(fileNew)) {
       Formatter f = new Formatter();
       CompareNetcdf2 compare = new CompareNetcdf2(f, false, false, true);
       boolean ok = compare.compare(org, copy, new FileWritingObjFilter());

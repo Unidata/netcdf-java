@@ -92,7 +92,7 @@ public enum FeatureType {
   public boolean isPointFeatureType() {
     return (this == FeatureType.POINT) || (this == FeatureType.STATION) || (this == FeatureType.TRAJECTORY)
         || (this == FeatureType.PROFILE) || (this == FeatureType.STATION_PROFILE)
-        || (this == FeatureType.TRAJECTORY_PROFILE);
+        || (this == FeatureType.TRAJECTORY_PROFILE) || (this == FeatureType.ANY_POINT);
   }
 
   public boolean isCoverageFeatureType() {

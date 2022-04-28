@@ -78,9 +78,9 @@ public class Service { // (7)
   }
 
   /**
-   * See if the service Base is reletive
+   * See if the service Base is relative
    * 
-   * @return true if the service Base is reletive
+   * @return true if the service Base is relative
    */
   public boolean isRelativeBase() {
     if (getType() == ServiceType.Compound)

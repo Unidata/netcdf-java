@@ -11,7 +11,7 @@ import java.util.*;
  * Use Coordinate.equals(), hashCode() to find unique coordinate variables.
  *
  * Used by GribPartitionBuilder.makeBest(), for all coordinates not CoordinateTime2D and not CoordinateRuntime.
- * Best coordinates are translated into equivilent 2D coordinate, thus we dont need seperate CoordinateND.
+ * Best coordinates are translated into equivilent 2D coordinate, thus we dont need separate CoordinateND.
  *
  * @author caron
  * @since 12/10/13

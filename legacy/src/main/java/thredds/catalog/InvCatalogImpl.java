@@ -403,7 +403,7 @@ public class InvCatalogImpl extends InvCatalog {
 
   /**
    * Set the catalog base URI.
-   * Its used to resolve reletive URLS.
+   * Its used to resolve relative URLS.
    * 
    * @param baseURI set to this
    */

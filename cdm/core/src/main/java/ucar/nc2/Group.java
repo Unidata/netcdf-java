@@ -1071,20 +1071,20 @@ public class Group extends CDMNode implements AttributeContainer {
     }
 
     /**
-     * Find a subgroup of this Group, with the specified reletive name.
+     * Find a subgroup of this Group, with the specified relative name.
      * An embedded "/" separates group names.
      * Can have a leading "/" only if this is the root group.
      *
-     * @param reletiveName eg "group/subgroup/wantGroup".
+     * @param relativeName eg "group/subgroup/wantGroup".
      * @return Group or empty if not found.
      */
-    public Optional<Group.Builder> findGroupNested(String reletiveName) {
-      if (reletiveName == null || reletiveName.isEmpty()) {
+    public Optional<Group.Builder> findGroupNested(String relativeName) {
+      if (relativeName == null || relativeName.isEmpty()) {
         return (this.getParentGroup() == null) ? Optional.of(this) : Optional.empty();
       }
 
       Group.Builder g = this;
-      StringTokenizer stoke = new StringTokenizer(reletiveName, "/");
+      StringTokenizer stoke = new StringTokenizer(relativeName, "/");
       while (stoke.hasMoreTokens()) {
         String groupName = NetcdfFiles.makeNameUnescaped(stoke.nextToken());
         Optional<Group.Builder> sub = g.findGroupLocal(groupName);
@@ -1190,22 +1190,22 @@ public class Group extends CDMNode implements AttributeContainer {
     }
 
     /**
-     * Find a Variable, with the specified reletive name. No structure members.
+     * Find a Variable, with the specified relative name. No structure members.
      * 
-     * @param reletiveName eg "group/subgroup/varname".
+     * @param relativeName eg "group/subgroup/varname".
      */
-    public Optional<Variable.Builder<?>> findVariableNested(String reletiveName) {
-      if (reletiveName == null || reletiveName.isEmpty()) {
+    public Optional<Variable.Builder<?>> findVariableNested(String relativeName) {
+      if (relativeName == null || relativeName.isEmpty()) {
         return Optional.empty();
       }
 
       // break into groupNames and varName
       Group.Builder group = this;
-      String varName = reletiveName;
-      int pos = reletiveName.lastIndexOf('/');
+      String varName = relativeName;
+      int pos = relativeName.lastIndexOf('/');
       if (pos >= 0) {
-        String groupNames = reletiveName.substring(0, pos);
-        varName = reletiveName.substring(pos + 1);
+        String groupNames = relativeName.substring(0, pos);
+        varName = relativeName.substring(pos + 1);
         group = findGroupNested(groupNames).orElse(null);
       }
 

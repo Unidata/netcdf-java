@@ -131,7 +131,7 @@ in this case, you have to read everything. if buffer has no vlens or strings, co
     
 (each struct contains its own heap)
 
-this indicates maybe we should rewrite ArrayStructureBB to have seperate heaps for each struct.
+this indicates maybe we should rewrite ArrayStructureBB to have separate heaps for each struct.
 
 #### Nested Vlen
 

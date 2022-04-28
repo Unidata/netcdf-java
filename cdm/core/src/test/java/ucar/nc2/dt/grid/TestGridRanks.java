@@ -4,25 +4,26 @@
  */
 package ucar.nc2.dt.grid;
 
-import junit.framework.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.junit.Rule;
+import org.junit.rules.TemporaryFolder;
+import org.junit.Test;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.dataset.*;
 import ucar.unidata.util.test.TestDir;
 import java.io.*;
-import java.lang.invoke.MethodHandles;
 
 /** Test grids with 1 dimensional z and/or t dimension */
 
-public class TestGridRanks extends TestCase {
-  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+public class TestGridRanks {
 
   private boolean show = false;
+  @Rule
+  public TemporaryFolder tempFolder = new TemporaryFolder();
 
+  @Test
   public void testWrite() throws Exception {
-    NetcdfFileWriter ncfile = NetcdfFileWriter.createNew(TestDir.cdmLocalTestDataDir + "rankTest.nc", true);
+    NetcdfFileWriter ncfile = NetcdfFileWriter.createNew(tempFolder.getRoot().getAbsolutePath() + "rankTest.nc", true);
 
     // define dimensions
     Dimension xDim = ncfile.addDimension("x", 3);
@@ -199,6 +200,7 @@ public class TestGridRanks extends TestCase {
   }
 
   //////////////////////////////////////////////
+  @Test
   public void testRead() throws Exception {
     ucar.nc2.dt.grid.GridDataset dataset = GridDataset.open(TestDir.cdmLocalTestDataDir + "rankTest.nc");
 
@@ -368,7 +370,4 @@ public class TestGridRanks extends TestCase {
 
     return w;
   }
-
-
-
 }

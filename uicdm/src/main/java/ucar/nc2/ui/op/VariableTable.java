@@ -72,7 +72,7 @@ public class VariableTable extends JPanel {
     this.prefs = prefs;
 
     PreferencesExt fcPrefs = (prefs == null) ? null : (PreferencesExt) prefs.node("FileManager");
-    fileChooser = new FileManager(null, null, "csv", "comma seperated values", fcPrefs);
+    fileChooser = new FileManager(null, null, "csv", "comma separated values", fcPrefs);
   }
 
   /**

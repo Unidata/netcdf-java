@@ -301,7 +301,7 @@ public class Grib1ParamTables {
               || filename.startsWith("http://")) {
             path = filename;
           } else {
-            File tableFile = new File(parent, filename); // reletive file
+            File tableFile = new File(parent, filename); // relative file
             path = tableFile.getPath();
           }
 

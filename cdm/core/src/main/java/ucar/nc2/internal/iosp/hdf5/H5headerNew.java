@@ -1059,7 +1059,7 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
         }
         StructureMembers.MemberBuilder mb = builder.addMember(h5sm.name, null, null, dt, dim);
 
-        if (h5sm.mdt.endian >= 0) // apparently each member may have seperate byte order (!!!??)
+        if (h5sm.mdt.endian >= 0) // apparently each member may have separate byte order (!!!??)
           mb.setDataObject(
               h5sm.mdt.endian == RandomAccessFile.LITTLE_ENDIAN ? ByteOrder.LITTLE_ENDIAN : ByteOrder.BIG_ENDIAN);
         mb.setDataParam(h5sm.offset); // offset since start of Structure

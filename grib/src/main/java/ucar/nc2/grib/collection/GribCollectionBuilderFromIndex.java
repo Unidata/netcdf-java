@@ -107,7 +107,7 @@ abstract class GribCollectionBuilderFromIndex {
       /*
        * message GribCollection {
        * required string name = 1; // must be unique - index filename is name.ncx
-       * required string topDir = 2; // filenames are reletive to this
+       * required string topDir = 2; // filenames are relative to this
        * repeated MFile mfiles = 3; // list of grib MFiles
        * repeated Dataset dataset = 4;
        * repeated Gds gds = 5; // unique Gds, shared amongst datasets

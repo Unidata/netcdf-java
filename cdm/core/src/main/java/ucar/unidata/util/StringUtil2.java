@@ -590,7 +590,7 @@ public class StringUtil2 {
    * Cover for String.split, because who can remember regexp?
    *
    * @param source split this string
-   * @return tokens that were seperated by whitespace
+   * @return tokens that were separated by whitespace
    * @deprecated use StringUtil2.split()
    */
   @Deprecated

@@ -480,7 +480,7 @@ public class LatLonRect {
     if (allLongitude)
       return;
 
-    // everything is reletive to current LonMin
+    // everything is relative to current LonMin
     double lonMin = getLonMin();
     double lonMax = getLonMax();
 

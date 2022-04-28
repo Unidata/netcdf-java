@@ -45,8 +45,8 @@ allprojects {
   // <prerelease version> may be SNAPSHOT, alphax, betax, etc.
   // Note - if bumping to a new major or minor version, be sure to update the docs (see step 1 in
   // docs/src/private/internal/release.md for details)
-  version = '5.5.2'
-  status = 'release'
+  version = '5.5.3-SNAPSHOT'
+  status = 'development'
 }
 
 // Matches Maven's "project.description".
@@ -129,3 +129,9 @@ apply from: "$rootDir/gradle/root/dependency-check.gradle"
 apply from: "$rootDir/gradle/any/archiving.gradle"
 // Modifies pubs created in root/publishing.gradle
 apply from: "$rootDir/gradle/any/publishing.gradle"
+
+// shortcut to run toolsUI
+tasks.register("toolsui") {
+  group = "application"
+  dependsOn(":uicdm:run")
+}

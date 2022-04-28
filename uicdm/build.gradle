@@ -1,3 +1,7 @@
+plugins {
+  id "application"
+}
+
 description = 'Provides a graphical interface to the CDM library.'
 ext.title = 'ToolsUI'
 
@@ -36,6 +40,10 @@ dependencies {
 
   // constrained by netcdf-java-platform
   runtimeOnly 'ch.qos.logback:logback-classic'
+}
+
+application {
+  mainClass.set("ucar.nc2.ui.ToolsUI")
 }
 
 jar.manifest.attributes 'Main-Class': 'ucar.nc2.ui.ToolsUI'

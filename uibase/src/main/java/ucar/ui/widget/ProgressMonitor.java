@@ -111,7 +111,7 @@ public class ProgressMonitor {
     pm.setMillisToDecideToPopup(1000);
     pm.setMillisToPopup(1000);
 
-    // do task in a seperate, non-event, thread
+    // do task in a separate, non-event, thread
     Thread taskThread = new Thread(task);
     taskThread.start();
 
