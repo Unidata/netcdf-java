@@ -156,7 +156,7 @@ public class CollectionSpecTable extends JPanel {
     if (spec.startsWith("<collection ")) {
       dcm = setCollectionElement(spec, f);
     } else {
-      CollectionSpecParser sp = new CollectionSpecParser(spec, f);
+      CollectionSpecParserAbstract sp = CollectionSpecParsers.create(spec, f);
       f.format("spec='%s'%n", sp);
       dcm = scanCollection(spec, f);
     }

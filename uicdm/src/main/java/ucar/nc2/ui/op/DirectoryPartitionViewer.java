@@ -294,7 +294,7 @@ public class DirectoryPartitionViewer extends JPanel {
     Formatter errlog = new Formatter();
     FeatureCollectionConfigBuilder builder = new FeatureCollectionConfigBuilder(errlog);
     config = builder.readConfig(doc.getRootElement());
-    CollectionSpecParser spec = new CollectionSpecParser(config.spec, errlog);
+    CollectionSpecParserAbstract spec = CollectionSpecParsers.create(config.spec, errlog);
     partitionTreeBrowser.setRoot(Paths.get(spec.getRootDir()));
   }
 

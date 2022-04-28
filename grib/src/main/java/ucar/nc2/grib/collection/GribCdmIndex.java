@@ -112,7 +112,7 @@ public class GribCdmIndex implements IndexReader {
    */
   private static File makeTopIndexFileFromConfig(FeatureCollectionConfig config) {
     Formatter errlog = new Formatter();
-    CollectionSpecParser specp = config.getCollectionSpecParser(errlog);
+    CollectionSpecParserAbstract specp = config.getCollectionSpecParserAbstract(errlog);
 
     String name = StringUtil2.replace(config.collectionName, '\\', "/");
     // String cname = DirectoryCollection.makeCollectionName(name, Paths.get(specp.getRootDir()));
@@ -304,7 +304,7 @@ public class GribCdmIndex implements IndexReader {
     long start = System.currentTimeMillis();
 
     Formatter errlog = new Formatter();
-    CollectionSpecParser specp = config.getCollectionSpecParser(errlog);
+    CollectionSpecParserAbstract specp = config.getCollectionSpecParserAbstract(errlog);
     Path rootPath = Paths.get(specp.getRootDir());
     boolean isGrib1 = config.type == FeatureCollectionType.GRIB1;
 
@@ -524,7 +524,7 @@ public class GribCdmIndex implements IndexReader {
 
     } else {
       Formatter errlog = new Formatter();
-      CollectionSpecParser specp = config.getCollectionSpecParser(errlog);
+      CollectionSpecParserAbstract specp = config.getCollectionSpecParserAbstract(errlog);
 
       try (DirectoryCollection dcm =
           new DirectoryCollection(config.collectionName, dirPath, isTop, config.olderThan, logger)) {
@@ -555,7 +555,7 @@ public class GribCdmIndex implements IndexReader {
       CollectionUpdateType updateType, boolean isTop, Logger logger, Path dirPath) throws IOException {
     long start = System.currentTimeMillis();
     Formatter errlog = new Formatter();
-    CollectionSpecParser specp = config.getCollectionSpecParser(errlog);
+    CollectionSpecParserAbstract specp = config.getCollectionSpecParserAbstract(errlog);
 
     try (FilePartition partition = new FilePartition(config.collectionName, dirPath, isTop, config.olderThan, logger)) {
       partition.putAuxInfo(FeatureCollectionConfig.AUX_CONFIG, config);

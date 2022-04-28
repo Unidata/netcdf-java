@@ -91,7 +91,7 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
 
   private MFileCollectionManager(String collectionName, String collectionSpec, String olderThan, Formatter errlog) {
     super(collectionName, null);
-    CollectionSpecParser sp = new CollectionSpecParser(collectionSpec, errlog);
+    CollectionSpecParserAbstract sp = CollectionSpecParsers.create(collectionSpec, errlog);
     this.recheck = null;
     this.protoChoice = FeatureCollectionConfig.ProtoChoice.Penultimate; // default
     this.root = sp.getRootDir();
@@ -111,7 +111,7 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
     super(config.collectionName != null ? config.collectionName : config.spec, logger);
     this.config = config;
 
-    CollectionSpecParser sp = config.getCollectionSpecParser(errlog);
+    CollectionSpecParserAbstract sp = config.getCollectionSpecParserAbstract(errlog);
     this.root = sp.getRootDir();
 
     CompositeMFileFilter filters = new CompositeMFileFilter();
@@ -181,7 +181,7 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
 
   public MFileCollectionManager(String name, String spec, Formatter errlog, org.slf4j.Logger logger) {
     super(name, logger);
-    CollectionSpecParser sp = new CollectionSpecParser(spec, errlog);
+    CollectionSpecParserAbstract sp = CollectionSpecParsers.create(spec, errlog);
     this.root = sp.getRootDir();
 
     CompositeMFileFilter filters = new CompositeMFileFilter();
