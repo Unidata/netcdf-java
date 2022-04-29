@@ -93,6 +93,16 @@ public class TestGribIndexCreation {
 
   @Test
   @Category(NeedsCdmUnitTest.class)
+  public void shouldReturnFalseForEmptyPartition() throws IOException {
+    FeatureCollectionConfig config = new FeatureCollectionConfig("empty", "test/empty", FeatureCollectionType.GRIB2,
+        TestDir.cdmUnitTestDir + "gribCollections/Emptiness/.*grib2", null, null, null, "file", null);
+
+    boolean changed = GribCdmIndex.updateGribCollection(config, updateMode, logger);
+    Assert.assertFalse(changed);
+  }
+
+  @Test
+  @Category(NeedsCdmUnitTest.class)
   public void testGdsHashChange() throws IOException {
     Grib.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
     FeatureCollectionConfig config =
@@ -102,7 +112,7 @@ public class TestGribIndexCreation {
     config.gribConfig.addGdsHash("-1506003048", "-1505079527");
 
     boolean changed = GribCdmIndex.updateGribCollection(config, updateMode, logger);
-    System.out.printf("changed = %s%n", changed);
+    Assert.assertTrue(changed);
     String location = TestDir.cdmUnitTestDir + "gribCollections/gdsHashChange/noaaport/NDFD-CONUS_noaaport.ncx4";
     // LOOK add check that records were combined
     try (NetcdfFile ncfile = NetcdfFiles.open(location, null)) {
@@ -146,7 +156,7 @@ public class TestGribIndexCreation {
     config.gribConfig.useGenType = true;
 
     boolean changed = GribCdmIndex.updateGribCollection(config, updateMode, logger);
-    System.out.printf("changed = %s%n", changed);
+    Assert.assertTrue(changed);
   }
 
   @Test
@@ -161,7 +171,7 @@ public class TestGribIndexCreation {
     config.gribConfig.addGdsHash("1450192070", "1450218978");
 
     boolean changed = GribCdmIndex.updateGribCollection(config, updateMode, logger);
-    System.out.printf("changed = %s%n", changed);
+    Assert.assertTrue(changed);
   }
 
   @Test
@@ -171,7 +181,7 @@ public class TestGribIndexCreation {
         TestDir.cdmUnitTestDir + "gribCollections/dgex/**/.*grib2", null, null, null, "file", null);
 
     boolean changed = GribCdmIndex.updateGribCollection(config, updateMode, logger);
-    System.out.printf("changed = %s%n", changed);
+    Assert.assertTrue(changed);
   }
 
   @Test
@@ -181,9 +191,8 @@ public class TestGribIndexCreation {
         new FeatureCollectionConfig("gfsConus80_file", "test/gfsConus80", FeatureCollectionType.GRIB1,
             TestDir.cdmUnitTestDir + "gribCollections/gfs_conus80/**/.*grib1", null, null, null, "file", null);
 
-    System.out.printf("===testGFSconus80_file %n");
     boolean changed = GribCdmIndex.updateGribCollection(config, updateMode, logger);
-    System.out.printf("changed = %s%n", changed);
+    Assert.assertTrue(changed);
   }
 
   @Test
@@ -193,9 +202,8 @@ public class TestGribIndexCreation {
         new FeatureCollectionConfig("gfsConus80_dir", "test/gfsConus80", FeatureCollectionType.GRIB1,
             TestDir.cdmUnitTestDir + "gribCollections/gfs_conus80/**/.*grib1", null, null, null, "directory", null);
 
-    System.out.printf("===testGFSconus80_dir %n");
     boolean changed = GribCdmIndex.updateGribCollection(config, updateMode, logger);
-    System.out.printf("changed = %s%n", changed);
+    Assert.assertTrue(changed);
   }
 
   @Test
@@ -205,9 +213,8 @@ public class TestGribIndexCreation {
         new FeatureCollectionConfig("GFS_CONUS_80km", "test/gfsConus80", FeatureCollectionType.GRIB1,
             TestDir.cdmUnitTestDir + "ncss/GFS/CONUS_80km/.*grib1", null, null, null, "file", null);
 
-    System.out.printf("===testGFSconus80ncss %n");
     boolean changed = GribCdmIndex.updateGribCollection(config, updateMode, logger);
-    System.out.printf("changed = %s%n", changed);
+    Assert.assertTrue(changed);
   }
 
   @Test
@@ -218,7 +225,7 @@ public class TestGribIndexCreation {
             TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/.*grib2", null, null, null, "file", null);
 
     boolean changed = GribCdmIndex.updateGribCollection(config, updateMode, logger);
-    System.out.printf("changed = %s%n", changed);
+    Assert.assertTrue(changed);
   }
 
   @Test
@@ -229,9 +236,10 @@ public class TestGribIndexCreation {
             TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/.*grib2", null, null, null, "file", null);
 
     boolean changed = GribCdmIndex.updateGribCollection(config, updateMode, logger);
-    System.out.printf("changed = %s%n", changed);
+    Assert.assertTrue(changed);
   }
 
+  @Ignore("This data directory no longer has .grib2 files so partition creation fails")
   @Test
   @Category(NeedsCdmUnitTest.class)
   public void testEnsembles() throws IOException {
@@ -240,7 +248,7 @@ public class TestGribIndexCreation {
             TestDir.cdmUnitTestDir + "gribCollections/ens/.*grib2", null, null, null, "file", null);
 
     boolean changed = GribCdmIndex.updateGribCollection(config, updateMode, logger);
-    System.out.printf("changed = %s%n", changed);
+    Assert.assertTrue(changed);
   }
 
   ////////////////
@@ -253,7 +261,7 @@ public class TestGribIndexCreation {
         null, null, "directory", null);
 
     boolean changed = GribCdmIndex.updateGribCollection(config, updateMode, logger);
-    System.out.printf("changed = %s%n", changed);
+    Assert.assertTrue(changed);
     Grib.setDebugFlags(new DebugFlagsImpl());
   }
 
@@ -266,7 +274,7 @@ public class TestGribIndexCreation {
         null, null, "directory", null);
 
     boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.always, logger);
-    System.out.printf("changed = %s%n", changed);
+    Assert.assertTrue(changed);
     Grib.setDebugFlags(new DebugFlagsImpl());
   }
 
@@ -294,12 +302,12 @@ public class TestGribIndexCreation {
         null, "#ei.oper.an.pv/#yyyyMM", null, "directory", null);
 
     boolean changed = GribCdmIndex.updateGribCollection(config, updateMode, logger);
-    System.out.printf("changed = %s%n", changed);
+    Assert.assertTrue(changed);
     Grib.setDebugFlags(new DebugFlagsImpl());
   }
 
 
-  @Test // has one file for for each month, all in same directory
+  @Test // has one file for each month, all in same directory
   @Category(NeedsCdmUnitTest.class)
   public void testRdvamds627p1() throws IOException {
     Grib.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
@@ -308,23 +316,23 @@ public class TestGribIndexCreation {
             TestDir.cdmUnitTestDir + "gribCollections/rdavm/ds627.1/.*gbx9", null, null, null, "directory", null);
 
     boolean changed = GribCdmIndex.updateGribCollection(config, updateMode, logger);
-    System.out.printf("changed = %s%n", changed);
+    Assert.assertTrue(changed);
     Grib.setDebugFlags(new DebugFlagsImpl());
   }
 
   ////////////////
 
-  @Test // has one file for for each month, all in same directory
+  @Test // has one file for each month, all in same directory
   @Category(NeedsCdmUnitTest.class)
   public void testTimePartition() throws IOException {
     Grib.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
     FeatureCollectionConfig config = new FeatureCollectionConfig("yearPartition", "test/yearPartition",
         FeatureCollectionType.GRIB1, TestDir.cdmUnitTestDir + "gribCollections/rdavm/ds627.1/.*gbx9", null,
         "#ei.mdfa.fc12hr.sfc.regn128sc.#yyyyMMddhh", null, "year", null);
-    System.out.printf("config = %s%n", config);
+    logger.debug("config = " + config);
 
     boolean changed = GribCdmIndex.updateGribCollection(config, updateMode, logger);
-    System.out.printf("changed = %s%n", changed);
+    Assert.assertTrue(changed);
     Grib.setDebugFlags(new DebugFlagsImpl());
   }
 
@@ -339,7 +347,7 @@ public class TestGribIndexCreation {
             TestDir.cdmUnitTestDir + "gribCollections/tp/.*grib2", null, null, null, "file", null);
 
     boolean changed = GribCdmIndex.updateGribCollection(config, updateMode, logger);
-    System.out.printf("changed = %s%n", changed);
+    Assert.assertTrue(changed);
   }
 
   @Test
@@ -352,7 +360,7 @@ public class TestGribIndexCreation {
             TestDir.cdmUnitTestDir + "gribCollections/ecmwf/bcs/.*001$", null, null, null, "directory", null);
 
     boolean changed = GribCdmIndex.updateGribCollection(config, updateMode, logger);
-    System.out.printf("changed = %s%n", changed);
+    Assert.assertTrue(changed);
   }
 
   @Test
@@ -363,7 +371,7 @@ public class TestGribIndexCreation {
             TestDir.cdmUnitTestDir + "gribCollections/ecmwf/emd/.*grib$", null, null, null, "directory", null);
 
     boolean changed = GribCdmIndex.updateGribCollection(config, updateMode, logger);
-    System.out.printf("changed = %s%n", changed);
+    Assert.assertTrue(changed);
   }
 
   @Test
@@ -374,7 +382,7 @@ public class TestGribIndexCreation {
             TestDir.cdmUnitTestDir + "gribCollections/ecmwf/mad/.*001$", null, null, null, "directory", null);
 
     boolean changed = GribCdmIndex.updateGribCollection(config, updateMode, logger);
-    System.out.printf("changed = %s%n", changed);
+    Assert.assertTrue(changed);
   }
 
   @Test
@@ -385,7 +393,7 @@ public class TestGribIndexCreation {
             TestDir.cdmUnitTestDir + "gribCollections/ecmwf/mee/.*001$", null, null, null, "directory", null);
 
     boolean changed = GribCdmIndex.updateGribCollection(config, updateMode, logger);
-    System.out.printf("changed = %s%n", changed);
+    Assert.assertTrue(changed);
   }
 
   @Test
@@ -396,7 +404,7 @@ public class TestGribIndexCreation {
             TestDir.cdmUnitTestDir + "gribCollections/ecmwf/mwp/.*001$", null, null, null, "directory", null);
 
     boolean changed = GribCdmIndex.updateGribCollection(config, updateMode, logger);
-    System.out.printf("changed = %s%n", changed);
+    Assert.assertTrue(changed);
   }
 
   @Test
@@ -407,7 +415,7 @@ public class TestGribIndexCreation {
             TestDir.cdmUnitTestDir + "gribCollections/anal/.*grib2$", null, null, null, "directory", null);
 
     boolean changed = GribCdmIndex.updateGribCollection(config, updateMode, logger);
-    System.out.printf("changed = %s%n", changed);
+    Assert.assertTrue(changed);
   }
 
   @Test
@@ -419,7 +427,7 @@ public class TestGribIndexCreation {
             TestDir.cdmUnitTestDir + "tds_index/NCEP/NBM/Ocean/.*gbx9", null, null, null, "file", null);
 
     boolean changed = GribCdmIndex.updateGribCollection(config, always, logger);
-    System.out.printf("changed = %s%n", changed);
+    Assert.assertTrue(changed);
     Grib.setDebugFlags(new DebugFlagsImpl());
   }
 
@@ -432,7 +440,7 @@ public class TestGribIndexCreation {
             TestDir.cdmUnitTestDir + "tds_index/NCEP/NDFD/CPC/.*gbx9", null, null, null, "file", null);
 
     boolean changed = GribCdmIndex.updateGribCollection(config, always, logger);
-    System.out.printf("changed = %s%n", changed);
+    Assert.assertTrue(changed);
     Grib.setDebugFlags(new DebugFlagsImpl());
   }
 
@@ -444,7 +452,7 @@ public class TestGribIndexCreation {
             TestDir.cdmUnitTestDir + "gribCollections/ndfd_spc/.*grib2$", null, null, null, "file", null);
 
     boolean changed = GribCdmIndex.updateGribCollection(config, always, logger);
-    System.out.printf("changed = %s%n", changed);
+    Assert.assertTrue(changed);
   }
 
   @Test

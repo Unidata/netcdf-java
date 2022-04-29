@@ -28,23 +28,23 @@ public class TestGribIndexProto {
   @Parameterized.Parameters(name = "{0}")
   public static List<Object[]> getTestParameters() {
     List<Object[]> result = new ArrayList<>();
-    result.add(new Object[] {"grib1.proto2.gbx9", true, false});
-    result.add(new Object[] {"grib1.proto3.gbx9", true, true}); // fails
-    result.add(new Object[] {"grib1.proto3.syntax2.gbx9", true, false});
-    result.add(new Object[] {"grib2.proto2.gbx9", false, false});
-    result.add(new Object[] {"grib2.proto3.gbx9", false, true}); // fails
-    result.add(new Object[] {"grib2.proto3.syntax2.gbx9", false, false});
+    result.add(new Object[] {"grib1.proto2.gbx9", true, true});
+    result.add(new Object[] {"grib1.proto3.gbx9", true, false});
+    result.add(new Object[] {"grib1.proto3.syntax2.gbx9", true, true});
+    result.add(new Object[] {"grib2.proto2.gbx9", false, true});
+    result.add(new Object[] {"grib2.proto3.gbx9", false, false});
+    result.add(new Object[] {"grib2.proto3.syntax2.gbx9", false, true});
     return result;
   }
 
   String filename;
   boolean isGrib1;
-  boolean fail;
+  boolean expectedResult;
 
-  public TestGribIndexProto(String ds, boolean isGrib1, boolean fail) {
+  public TestGribIndexProto(String ds, boolean isGrib1, boolean expectedResult) {
     this.filename = "../grib/src/test/data/index/" + ds;
     this.isGrib1 = isGrib1;
-    this.fail = fail;
+    this.expectedResult = expectedResult;
   }
 
   @Test
@@ -52,12 +52,12 @@ public class TestGribIndexProto {
     try {
       if (isGrib1) {
         Grib1Index reader = new Grib1Index();
-        boolean ok = reader.readIndex(filename, -1, CollectionUpdateType.never);
-        assertTrue(ok || fail);
+        boolean result = reader.readIndex(filename, -1, CollectionUpdateType.never);
+        assertEquals(expectedResult, result);
       } else {
         Grib2Index reader = new Grib2Index();
-        boolean ok = reader.readIndex(filename, -1, CollectionUpdateType.never);
-        assertTrue(ok || fail);
+        boolean result = reader.readIndex(filename, -1, CollectionUpdateType.never);
+        assertEquals(expectedResult, result);
       }
     } catch (Exception e) {
       fail("Exception should not be thrown");
