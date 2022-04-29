@@ -120,15 +120,13 @@ public class CollectionSpecParser {
       return Pattern.compile(filterAndDateMark);
     } else if (numberOfHashes == 1) {
       return Pattern.compile(filterAndDateMark.substring(0, filterAndDateMark.indexOf('#')) + "*");
-    } else {
-      StringBuilder sb = new StringBuilder(StringUtil2.remove(filterAndDateMark, '#')); // remove hashes, replace with .
-
-      for (int i = filterAndDateMark.indexOf('#'); i < filterAndDateMark.lastIndexOf('#') - 1; i++) {
-        sb.setCharAt(i, '.');
-      }
-
-      return Pattern.compile(sb.toString());
+    } else if (numberOfHashes == 2) {
+      final String[] hashSegments = filterAndDateMark.split("#");
+      final String dateMarkMatcher = new String(new char[hashSegments[1].length()]).replace("\0", ".");
+      return Pattern.compile(hashSegments[0] + dateMarkMatcher + hashSegments[2]);
     }
+
+    throw new IllegalArgumentException("More than two '#' symbols not allowed in spec: " + filterAndDateMark);
   }
 
   private static String getDateFormatMark(String filterAndDateMark) {
