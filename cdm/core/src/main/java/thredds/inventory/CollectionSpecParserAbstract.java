@@ -102,7 +102,7 @@ public abstract class CollectionSpecParserAbstract {
   }
 
   protected static Pattern getRegEx(String filterAndDateMark) {
-    if (filterAndDateMark == null) {
+    if (filterAndDateMark == null || filterAndDateMark.length() <= 1) {
       return null;
     }
 
@@ -122,7 +122,7 @@ public abstract class CollectionSpecParserAbstract {
   }
 
   protected static String getDateFormatMark(String filterAndDateMark) {
-    if (filterAndDateMark == null) {
+    if (filterAndDateMark == null || filterAndDateMark.length() <= 1) {
       return null;
     }
 

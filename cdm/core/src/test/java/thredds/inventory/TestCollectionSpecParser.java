@@ -58,10 +58,10 @@ public class TestCollectionSpecParser {
         {"/data/ldm/pub/decoded/netcdf/surface/metar/**/", "/data/ldm/pub/decoded/netcdf/surface/metar", true, null,
             null},
 
-        {"/data/ldm/pub/decoded/netcdf/surface/metar/**/.*", "/data/ldm/pub/decoded/netcdf/surface/metar", true, ".*",
+        {"/data/ldm/pub/decoded/netcdf/surface/metar/**/*", "/data/ldm/pub/decoded/netcdf/surface/metar", true, null,
             null},
 
-        {"/data/ldm/pub/decoded/netcdf/surface/metar/.*", "/data/ldm/pub/decoded/netcdf/surface/metar", false, ".*",
+        {"/data/ldm/pub/decoded/netcdf/surface/metar/*", "/data/ldm/pub/decoded/netcdf/surface/metar", false, null,
             null},
 
         {"/data/ldm/pub/decoded/netcdf/surface/metar/T*.T", "/data/ldm/pub/decoded/netcdf/surface/metar", false, "T*.T",
