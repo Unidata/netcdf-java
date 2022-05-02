@@ -25,7 +25,7 @@ public class TimePartition extends CollectionPathMatcher implements PartitionMan
   CalendarPeriod timePeriod;
   CalendarDateFormatter cdf;
 
-  public TimePartition(FeatureCollectionConfig config, CollectionSpecParser specp, org.slf4j.Logger logger) {
+  public TimePartition(FeatureCollectionConfig config, CollectionSpecParserAbstract specp, org.slf4j.Logger logger) {
     super(config, specp, logger);
     timePeriod = config.timePeriod;
     cdf = CalendarDateFormatter.factory(timePeriod);

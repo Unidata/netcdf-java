@@ -28,7 +28,7 @@ public class CollectionPathMatcher extends CollectionAbstract {
   private final Path rootPath;
   private final PathMatcher matcher;
 
-  public CollectionPathMatcher(FeatureCollectionConfig config, CollectionSpecParser specp, Logger logger) {
+  public CollectionPathMatcher(FeatureCollectionConfig config, CollectionSpecParserAbstract specp, Logger logger) {
     super(config.collectionName, logger);
     this.config = config;
     this.wantSubdirs = specp.wantSubdirs();
