@@ -10,6 +10,7 @@ import static org.junit.Assert.assertThrows;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -232,6 +233,26 @@ public class TestMFileS3 {
 
     final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
     assertThrows(NoSuchKeyException.class, () -> mFile.writeToStream(outputStream));
+  }
+
+  @Test
+  public void shouldReturnTrueForExistingFile() throws IOException {
+    final MFile mFile = new MFileS3(AWS_G16_S3_OBJECT_1);
+    assertThat(mFile.exists()).isEqualTo(true);
+  }
+
+  @Test
+  public void shouldReturnFalseForNonExistingFile() throws IOException {
+    final MFile mFile = new MFileS3(AWS_G16_S3_URI_DIR + "?NotARealKey");
+    assertThat(mFile.exists()).isEqualTo(false);
+  }
+
+  @Test
+  public void shouldGetInputStream() throws IOException {
+    final MFile mFile = new MFileS3(AWS_G16_S3_OBJECT_1);
+    try (final InputStream inputStream = mFile.getInputStream()) {
+      assertThat(inputStream.read()).isNotEqualTo(-1);
+    }
   }
 
   private void checkWithBucket(String cdmS3Uri) throws IOException {

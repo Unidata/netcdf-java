@@ -15,43 +15,57 @@ import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.experimental.runners.Enclosed;
 import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
-@RunWith(Parameterized.class)
+@RunWith(Enclosed.class)
 public class TestMFileZip {
 
   @ClassRule
   public static final TemporaryFolder tempFolder = new TemporaryFolder();
 
-  @Parameterized.Parameters(name = "{0}, {1}")
-  static public List<Integer[]> getTestParameters() {
-    List<Integer[]> result = new ArrayList<>();
-    result.add(new Integer[] {0, 0});
-    result.add(new Integer[] {0, 1});
-    result.add(new Integer[] {1, 1});
-    result.add(new Integer[] {1000, 3});
-    return result;
+  @RunWith(Parameterized.class)
+  public static class TestMFileZipParameterized {
+
+    @Parameterized.Parameters(name = "{0}, {1}")
+    static public List<Integer[]> getTestParameters() {
+      List<Integer[]> result = new ArrayList<>();
+      result.add(new Integer[] {0, 0});
+      result.add(new Integer[] {0, 1});
+      result.add(new Integer[] {1, 1});
+      result.add(new Integer[] {1000, 3});
+      return result;
+    }
+
+    @Parameterized.Parameter(0)
+    public int expectedSize;
+
+    @Parameterized.Parameter(1)
+    public int expectedNumberOfFiles;
+
+    @Test
+    public void shouldWriteZipToStream() throws IOException {
+      final ZipFile zipFile = createTemporaryZipFile(expectedSize, expectedNumberOfFiles);
+      final MFileZip mFile = new MFileZip(zipFile.getName());
+
+      final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+      mFile.writeToStream(outputStream);
+      assertThat(outputStream.size()).isEqualTo(expectedSize * expectedNumberOfFiles);
+    }
   }
 
-  @Parameterized.Parameter(0)
-  public int expectedSize;
-
-  @Parameterized.Parameter(1)
-  public int expectedNumberOfFiles;
-
-  @Test
-  public void shouldWriteZipToStream() throws IOException {
-    final ZipFile zipFile = createTemporaryZipFile(expectedSize, expectedNumberOfFiles);
-    final MFileZip mFile = new MFileZip(zipFile.getName());
-
-    final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-    mFile.writeToStream(outputStream);
-    assertThat(outputStream.size()).isEqualTo(expectedSize * expectedNumberOfFiles);
+  public static class TestMFileZipNonParameterized {
+    @Test
+    public void shouldReturnTrueForExistingFile() throws IOException {
+      final ZipFile zipFile = createTemporaryZipFile(2, 0);
+      final MFileZip mFile = new MFileZip(zipFile.getName());
+      assertThat(mFile.exists()).isEqualTo(true);
+    }
   }
 
-  private ZipFile createTemporaryZipFile(int size, int numberOfFiles) throws IOException {
+  private static ZipFile createTemporaryZipFile(int size, int numberOfFiles) throws IOException {
     final File zipFile = tempFolder.newFile("TestMFileZip" + size + "-" + numberOfFiles + ".zip");
 
     try (FileOutputStream fos = new FileOutputStream(zipFile.getPath());
@@ -65,14 +79,14 @@ public class TestMFileZip {
     return new ZipFile(zipFile.getPath());
   }
 
-  private void writeToZipFile(File file, ZipOutputStream zipStream) throws IOException {
+  private static void writeToZipFile(File file, ZipOutputStream zipStream) throws IOException {
     final ZipEntry zipEntry = new ZipEntry(file.getPath());
     zipStream.putNextEntry(zipEntry);
     zipStream.write(Files.readAllBytes(file.toPath()), 0, (int) file.length());
     zipStream.closeEntry();
   }
 
-  private File createTemporaryFile(int size) throws IOException {
+  private static File createTemporaryFile(int size) throws IOException {
     final File tempFile = tempFolder.newFile();
 
     byte[] bytes = new byte[size];

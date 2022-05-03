@@ -5,7 +5,9 @@
 
 package thredds.inventory;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 
 /**
@@ -63,6 +65,20 @@ public interface MFile extends Comparable<MFile> {
   Object getAuxInfo();
 
   void setAuxInfo(Object info);
+
+  /**
+   * Check if the MFile exists
+   *
+   * @return true if the MFile exists, else false
+   */
+  boolean exists();
+
+  /**
+   * Get the MFile InputStream
+   *
+   * @return the MFile InputStream
+   */
+  InputStream getInputStream() throws FileNotFoundException;
 
   /**
    * Write the MFile to an OutputStream
