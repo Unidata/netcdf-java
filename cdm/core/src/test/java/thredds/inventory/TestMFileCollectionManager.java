@@ -26,9 +26,7 @@ public class TestMFileCollectionManager {
   public static List<Object[]> getTestParameters() {
     return Arrays.asList(new Object[][] {
 
-        {cdmUnitTestDir + ".*", true},
-
-        {cdmUnitTestDir + "ncss/GFS/.*", true},
+        {cdmUnitTestDir + "ncss/GFS/CONUS_80km/.*", true},
 
         {cdmUnitTestDir + "ncss/GFS/CONUS_80km/.*grib1", true},
 
