@@ -51,7 +51,7 @@ public class TestMFileCollectionManager {
 
   @Test
   public void shouldGetFilteredFiles() throws IOException {
-    final CollectionManager collectionManager = MFileCollectionManager.open("testWithDelimiter", spec, null, null);
+    final CollectionManager collectionManager = MFileCollectionManager.open("TestFilteredFiles", spec, null, null);
     final List<String> fileList = collectionManager.getFilenames();
     assertThat(!fileList.isEmpty()).isEqualTo(haveFiles);
     assertFileNamesMatchRegEx(fileList);
@@ -70,7 +70,7 @@ public class TestMFileCollectionManager {
     for (String file : fileList) {
       final long numberOfSlashesInFile = file.chars().filter(c -> c == '/').count();
 
-      assertWithMessage("Expected file " + file + "to be in directory defined by spec: " + spec)
+      assertWithMessage("Expected file " + file + " to be in directory defined by spec: " + spec)
           .that(numberOfSlashesInFile).isEqualTo(numberOfSlashesInPattern);
     }
   }
