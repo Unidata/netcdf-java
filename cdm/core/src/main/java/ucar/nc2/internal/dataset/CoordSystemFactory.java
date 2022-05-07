@@ -21,6 +21,7 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.spi.CoordSystemBuilderFactory;
 import ucar.nc2.internal.dataset.conv.CF1Convention;
 import ucar.nc2.internal.dataset.conv.DefaultConventions;
+import ucar.nc2.internal.dataset.spi.CFSubConventionProvider;
 import ucar.nc2.internal.ncml.NcmlReader;
 import ucar.nc2.util.CancelTask;
 import ucar.unidata.util.StringUtil2;
@@ -54,6 +55,9 @@ public class CoordSystemFactory {
   // These get precedence
   static {
     registerConvention(_Coordinate.Convention, new CoordSystemBuilder.Factory());
+    for (CFSubConventionProvider provider : ServiceLoader.load(CFSubConventionProvider.class)) {
+      registerConvention(provider.getConventionName(), provider);
+    }
     registerConvention("CF-1.", new CF1Convention.Factory(), String::startsWith);
     registerConvention("CDM-Extended-CF", new CF1Convention.Factory());
     // this is to test DefaultConventions, not needed when we remove old convention builders.
@@ -225,6 +229,19 @@ public class CoordSystemFactory {
       coordSysFactory = findConventionByName(convName);
     }
 
+    // if the match is on the main CF convention, we need to look at possible sub-conventions or incubating conventions
+    if (coordSysFactory != null && ds.orgFile != null && coordSysFactory.getClass().isInstance(CF1Convention.class)) {
+      List<String> convs = breakupConventionNames(convName);
+      if (convs.size() > 1) {
+        CoordSystemBuilderFactory potentialCoordSysFactory = findCfSubConvention(ds.orgFile);
+        // only use the potentialCoordSysFactory if it is a CF sub-convention
+        if (potentialCoordSysFactory != null
+            && potentialCoordSysFactory.getClass().isInstance(CFSubConventionProvider.class)) {
+          coordSysFactory = potentialCoordSysFactory;
+        }
+      }
+    }
+
     // Try to match on isMine() TODO: why use orgFile instead of ds?
     if (coordSysFactory == null && ds.orgFile != null) {
       coordSysFactory = findConventionByIsMine(ds.orgFile);
@@ -251,6 +268,7 @@ public class CoordSystemFactory {
     return Optional.of(coordSystemBuilder);
   }
 
+  @Nullable
   private static CoordSystemBuilderFactory findConventionByIsMine(NetcdfFile orgFile) {
     // Look for Convention using isMine()
     for (Convention conv : conventionList) {
@@ -270,6 +288,28 @@ public class CoordSystemFactory {
     return null;
   }
 
+  // same as findConventionByIsMine, but only checks CFSubConventionProvider instances of CoordSystemBuilderFactory
+  @Nullable
+  private static CoordSystemBuilderFactory findCfSubConvention(NetcdfFile orgFile) {
+    // Look for Convention using isMine()
+    for (Convention conv : conventionList) {
+      CoordSystemBuilderFactory candidate = conv.factory;
+      if (candidate.getClass().isInstance(CFSubConventionProvider.class) && candidate.isMine(orgFile)) {
+        return candidate;
+      }
+    }
+
+    // Use service loader mechanism isMine()
+    for (CoordSystemBuilderFactory csb : ServiceLoader.load(CoordSystemBuilderFactory.class)) {
+      if (csb.getClass().isInstance(CFSubConventionProvider.class) && csb.isMine(orgFile)) {
+        return csb;
+      }
+    }
+
+    return null;
+  }
+
+  @Nullable
   private static CoordSystemBuilderFactory findConventionByName(String convName) {
     // Try to match on convention name as is
     CoordSystemBuilderFactory coordSysFactory = findRegisteredConventionByName(convName);
@@ -314,6 +354,7 @@ public class CoordSystemFactory {
     return matchConvention(convName);
   }
 
+  @Nullable
   private static CoordSystemBuilderFactory findLoadedConventionByName(String convName) {
     // use service loader mechanism
     for (CoordSystemBuilderFactory csb : ServiceLoader.load(CoordSystemBuilderFactory.class)) {
