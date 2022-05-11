@@ -86,13 +86,14 @@ class CoordAxisHelper {
 
     double distance = coordValue - axis.getCoordEdge1(0);
     double exactNumSteps = distance / axis.getResolution();
-    // int index = (int) Math.round(exactNumSteps); // ties round to +Inf
-    int index = (int) exactNumSteps; // truncate down
+    int index = (int) Math.floor(exactNumSteps); // truncate down
 
-    if (bounded && index < 0)
+    if (bounded && index < 0) {
       return 0;
-    if (bounded && index >= n)
+    }
+    if (bounded && index >= n) {
       return n - 1;
+    }
 
     // check that found point is within interval
     if (index >= 0 && index < n) {
@@ -398,19 +399,24 @@ class CoordAxisHelper {
     int minIndex = findCoordElement(lower, false);
     int maxIndex = findCoordElement(upper, false);
 
-    if (minIndex >= axis.getNcoords())
+    if (minIndex >= axis.getNcoords()) {
       return Optional.empty(String.format("no points in subset: lower %f > end %f", lower, axis.getEndValue()));
-    if (maxIndex < 0)
+    }
+    if (maxIndex < 0) {
       return Optional.empty(String.format("no points in subset: upper %f < start %f", upper, axis.getStartValue()));
+    }
 
-    if (minIndex < 0)
+    if (minIndex < 0) {
       minIndex = 0;
-    if (maxIndex >= axis.getNcoords())
+    }
+    if (maxIndex >= axis.getNcoords()) {
       maxIndex = axis.getNcoords() - 1;
+    }
 
     int count = maxIndex - minIndex + 1;
-    if (count <= 0)
+    if (count <= 0) {
       throw new IllegalArgumentException("no points in subset");
+    }
 
     try {
       return Optional.of(subsetByIndex(new Range(minIndex, maxIndex, stride)));
