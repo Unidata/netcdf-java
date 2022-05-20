@@ -18,7 +18,7 @@ public interface MFileProvider {
 
   /** Determine if this Provider can provide an MFile for a given location. */
   default boolean canProvide(String location) {
-    return location.startsWith(getProtocol() + ":");
+    return location != null && location.startsWith(getProtocol() + ":");
   }
 
   /**
