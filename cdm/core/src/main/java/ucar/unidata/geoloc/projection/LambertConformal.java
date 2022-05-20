@@ -500,11 +500,11 @@ public class LambertConformal extends ProjectionImpl {
 
 
   /**
-   * Convert a LatLonPoint to projection coordinates
+   * Convert a LatLonPoint to projection coordinates in km
    *
    * @param latLon convert from these lat, lon coordinates
    * @param result the object to write to
-   * @return the given result
+   * @return the given result in km
    */
   public ProjectionPoint latLonToProj(LatLonPoint latLon, ProjectionPointImpl result) {
     double toX, toY;
@@ -524,6 +524,13 @@ public class LambertConformal extends ProjectionImpl {
     return result;
   }
 
+  /**
+   * Convert projection coordinates to latitude and longitude
+   *
+   * @param world projection coordinates in km
+   * @param result the object to write to
+   * @return the resulting latitude and longitude
+   */
   public LatLonPoint projToLatLon(ProjectionPoint world, LatLonPointImpl result) {
     double toLat, toLon;
     double fromX = world.getX() - falseEasting;
