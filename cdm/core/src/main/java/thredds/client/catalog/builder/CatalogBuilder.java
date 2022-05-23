@@ -291,7 +291,7 @@ public class CatalogBuilder {
       Document jdomDoc = saxBuilder.build(location);
       readCatalog(jdomDoc.getRootElement());
     } catch (Exception e) {
-      logError(e, "failed to read catalog at " + location);
+      logError(e, "failed to read xml catalog at " + location);
     }
   }
 
@@ -302,7 +302,7 @@ public class CatalogBuilder {
       Document jdomDoc = saxBuilder.build(uri.toURL());
       readCatalog(jdomDoc.getRootElement());
     } catch (Exception e) {
-      logError(e, "failed to read catalog at " + uri);
+      logError(e, "failed to read xml catalog at " + uri);
     }
   }
 
@@ -314,7 +314,7 @@ public class CatalogBuilder {
       Document jdomDoc = saxBuilder.build(in);
       readCatalog(jdomDoc.getRootElement());
     } catch (Exception e) {
-      logError(e, "failed to read catalog at " + baseURI);
+      logError(e, "failed to read xml catalog at " + baseURI);
     }
   }
 
@@ -325,7 +325,7 @@ public class CatalogBuilder {
       Document jdomDoc = saxBuilder.build(stream);
       readCatalog(jdomDoc.getRootElement());
     } catch (Exception e) {
-      logError(e, "failed to read catalog at " + baseURI);
+      logError(e, "failed to read xml catalog at " + baseURI);
     }
   }
 
