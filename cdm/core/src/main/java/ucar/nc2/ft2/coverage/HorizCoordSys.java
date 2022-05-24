@@ -317,7 +317,7 @@ public class HorizCoordSys {
   public LatLonPoint getLatLon(int yindex, int xindex) {
     if (isProjection) {
       double x = xAxis.getCoordMidpoint(xindex);
-      double y = yAxis.getCoordMidpoint(xindex);
+      double y = yAxis.getCoordMidpoint(yindex);
       ProjectionImpl proj = transform.getProjection();
       final double xInKm = convertToKm(x, xAxis.units, xAxis.name);
       final double yInKm = convertToKm(y, yAxis.units, yAxis.name);
