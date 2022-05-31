@@ -4,6 +4,8 @@
  */
 package ucar.nc2.dt.grid;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -30,6 +32,7 @@ import java.util.Arrays;
 
 public class TestGridSubset {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+  private static final double TOLERANCE = 1.0e-4;
 
   @Test
   @Category(NeedsCdmUnitTest.class)
@@ -546,6 +549,25 @@ public class TestGridSubset {
 
       Assert.assertTrue(CompareNetcdf2.compareData("slice", data, data2));
 
+    }
+  }
+
+  @Test
+  public void testLatLonBoundingBoxWithProjectionCoordinates() throws Exception {
+    try (GridDataset dataset =
+        GridDataset.open("src/test/data/ucar/nc2/ft/coverage/coverageWithLambertConformalConic_km_100.nc")) {
+      final GeoGrid grid = dataset.findGridByName("temp");
+      assertThat(grid).isNotNull();
+      final GridCoordSystem gcs = grid.getCoordinateSystem();
+      assertThat(gcs).isNotNull();
+
+      final LatLonRect expectedBoundingBox =
+          new LatLonRect(LatLonPoint.create(58.1417, -143.3466), LatLonPoint.create(17.4551, -51.3837));
+      final LatLonRect boundingBox = gcs.getLatLonBoundingBox();
+      assertThat(boundingBox.getLatMax()).isWithin(TOLERANCE).of(expectedBoundingBox.getLatMax());
+      assertThat(boundingBox.getLatMin()).isWithin(TOLERANCE).of(expectedBoundingBox.getLatMin());
+      assertThat(boundingBox.getLonMax()).isWithin(TOLERANCE).of(expectedBoundingBox.getLonMax());
+      assertThat(boundingBox.getLonMin()).isWithin(TOLERANCE).of(expectedBoundingBox.getLonMin());
     }
   }
 }
