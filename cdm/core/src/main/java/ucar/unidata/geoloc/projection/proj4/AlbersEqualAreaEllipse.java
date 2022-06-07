@@ -113,7 +113,7 @@ public class AlbersEqualAreaEllipse extends ProjectionImpl {
     this.lon0deg = lon0;
 
     this.lat0rad = Math.toRadians(lat0);
-    this.lon0rad = Math.toRadians(lat0);
+    this.lon0rad = Math.toRadians(lon0);
 
     this.par1deg = par1;
     this.par2deg = par2;
