@@ -473,6 +473,9 @@ public class TestProjections {
     makeSanityTest(new AlbersEqualAreaEllipse(23.0, -96.0, 29.5, 45.5, 0, 0, new Earth()), ppt, lpt);
     makeSanityTest(new CylindricalEqualAreaProjection(), ppt, lpt);
     makeSanityTest(new CylindricalEqualAreaProjection(0, 1, 0, 0, new Earth()), ppt, lpt);
+    makeSanityTest(
+        new CylindricalEqualAreaProjection(-97.674, 35.3, 0.1, -4534.2, new Earth(6378137.0, 0.0, 298.257222101)),
+        ProjectionPoint.create(-484, 140), lpt);
 
     makeSanityTest(new EquidistantAzimuthalProjection(0, 0, 0, 0, EarthEllipsoid.WGS84), ppt, lpt);
     makeSanityTest(new EquidistantAzimuthalProjection(45, 0, 0, 0, EarthEllipsoid.WGS84), ppt, lpt);
