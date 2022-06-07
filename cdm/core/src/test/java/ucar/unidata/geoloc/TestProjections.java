@@ -507,12 +507,17 @@ public class TestProjections {
   }
 
   private void makeSanityTest(Projection p, ProjectionPoint ppt, LatLonPoint lpt) {
-    System.out.printf("%s%n", p);
-    LatLonPoint pr = p.projToLatLon(ppt);
-    System.out.printf(" projToLatLon %s -> %s%n", ppt, pr);
+    logger.debug(p.toString());
 
-    ProjectionPoint lr = p.latLonToProj(lpt);
-    System.out.printf(" latLonToProj %s -> %s%n", lpt, lr);
+    final LatLonPoint computedLatLonPoint = p.projToLatLon(ppt);
+    assertThat(computedLatLonPoint.getLatitude()).isNotEqualTo(Double.NaN);
+    assertThat(computedLatLonPoint.getLongitude()).isNotEqualTo(Double.NaN);
+    logger.debug(" projToLatLon " + ppt + " -> " + computedLatLonPoint);
+
+    final ProjectionPoint computedProjectionPoint = p.latLonToProj(lpt);
+    assertThat(computedProjectionPoint.getX()).isNotEqualTo(Double.NaN);
+    assertThat(computedProjectionPoint.getX()).isNotEqualTo(Double.NaN);
+    logger.debug(" latLonToProj " + lpt + " -> " + computedProjectionPoint);
   }
 
 }
