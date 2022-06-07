@@ -665,9 +665,9 @@ public class HorizCoordSys {
 
   // TODO is there a better place to handle units?
   private static double convertToKm(double coordinate, String unit, String axisName) {
-    if (unit.equals("km")) {
+    if (unit.equals("km") || unit.equals("kilometers")) {
       return coordinate;
-    } else if (unit.equals("m")) {
+    } else if (unit.equals("m") || unit.equals("meters")) {
       return 0.001 * coordinate;
     } else {
       // TODO not sure what other units that may not need scaling could be here (e.g. radians)
@@ -676,9 +676,9 @@ public class HorizCoordSys {
   }
 
   private static double convertFromKm(double coordinate, String unit, String axisName) {
-    if (unit.equals("km")) {
+    if (unit.equals("km") || unit.equals("kilometers")) {
       return coordinate;
-    } else if (unit.equals("m")) {
+    } else if (unit.equals("m") || unit.equals("meters")) {
       return 1000 * coordinate;
     } else {
       return coordinate;
