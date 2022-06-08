@@ -2,6 +2,8 @@
 package ucar.unidata.geoloc;
 
 import static com.google.common.truth.Truth.assertThat;
+
+import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -255,6 +257,8 @@ public class TestProjections {
     assertThat(p).isEqualTo(p2);
   }
 
+  @Ignore
+  @Test
   public void utestAEAE() {
     testProjectionLonMax(new AlbersEqualAreaEllipse(), 180, 80);
     AlbersEqualAreaEllipse p = new AlbersEqualAreaEllipse();
@@ -262,6 +266,8 @@ public class TestProjections {
     assertThat(p).isEqualTo(p2);
   }
 
+  @Ignore
+  @Test
   public void utestLCCE() {
     testProjectionLonMax(new LambertConformalConicEllipse(), 360, 80);
     LambertConformalConicEllipse p = new LambertConformalConicEllipse();
