@@ -2,7 +2,6 @@
 package ucar.unidata.geoloc;
 
 import static com.google.common.truth.Truth.assertThat;
-import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,8 +54,8 @@ public class TestProjections {
     LatLonPoint endL = doOne(new TransverseMercator(), lat, lon, true);
     if (endL.equals(LatLonPointImmutable.INVALID))
       return;
-    Assert.assertEquals(lat, endL.getLatitude(), tolerence);
-    Assert.assertEquals(lon, endL.getLongitude(), tolerence);
+    assertThat(endL.getLatitude()).isWithin(tolerence).of(lat);
+    assertThat(endL.getLongitude()).isWithin(tolerence).of(lon);
   }
 
   private void testProjection(ProjectionImpl proj) {
@@ -76,8 +75,8 @@ public class TestProjections {
           || endL.equals(LatLonPointImmutable.INVALID))
         continue;
 
-      Assert.assertEquals(startL.toString(8), startL.getLatitude(), endL.getLatitude(), 1.0e-3);
-      Assert.assertEquals(startL.toString(8), startL.getLongitude(), endL.getLongitude(), 1.0e-3);
+      assertThat(endL.getLatitude()).isWithin(1.0e-3).of(startL.getLatitude());
+      assertThat(endL.getLongitude()).isWithin(1.0e-3).of(startL.getLongitude());
       countT1++;
     }
 
@@ -93,8 +92,8 @@ public class TestProjections {
       if (Double.isNaN(endP.getX()) || Double.isNaN(endP.getY()))
         continue;
 
-      Assert.assertEquals(startP.toString(), startP.getX(), endP.getX(), tolerence);
-      Assert.assertEquals(startP.toString(), startP.getY(), endP.getY(), tolerence);
+      assertThat(endP.getX()).isWithin(tolerence).of(startP.getX());
+      assertThat(endP.getY()).isWithin(tolerence).of(startP.getY());
       countT2++;
     }
     if (show)
@@ -123,8 +122,8 @@ public class TestProjections {
         System.out.println("endL  = " + endL);
       }
 
-      Assert.assertEquals(startL.toString(8), startL.getLatitude(), endL.getLatitude(), tolerence);
-      Assert.assertEquals(startL.toString(8), startL.getLongitude(), endL.getLongitude(), tolerence);
+      assertThat(endL.getLatitude()).isWithin(tolerence).of(startL.getLatitude());
+      assertThat(endL.getLongitude()).isWithin(tolerence).of(startL.getLongitude());
 
       minx = Math.min(minx, p.getX());
       maxx = Math.max(maxx, p.getX());
@@ -156,8 +155,8 @@ public class TestProjections {
           System.out.println("end  = " + endP);
         }
 
-        Assert.assertEquals(startP.toString(), startP.getX(), endP.getX(), tolerence);
-        Assert.assertEquals(startP.toString(), startP.getY(), endP.getY(), tolerence);
+        assertThat(endP.getX()).isWithin(tolerence).of(startP.getX());
+        assertThat(endP.getY()).isWithin(tolerence).of(startP.getY());
       } catch (IllegalArgumentException e) {
         System.out.printf("IllegalArgumentException=%s%n", e.getMessage());
       }
@@ -183,8 +182,8 @@ public class TestProjections {
           System.out.println("end  = " + endP);
         }
 
-        Assert.assertEquals(startP.toString(), startP.getX(), endP.getX(), tolerence);
-        Assert.assertEquals(startP.toString(), startP.getY(), endP.getY(), tolerence);
+        assertThat(endP.getX()).isWithin(tolerence).of(startP.getX());
+        assertThat(endP.getY()).isWithin(tolerence).of(startP.getY());
       } catch (IllegalArgumentException e) {
         System.out.printf("IllegalArgumentException=%s%n", e.getMessage());
         continue;
@@ -212,7 +211,7 @@ public class TestProjections {
       System.out.printf(" p1= x=%f y=%f%n", p1.getX(), p1.getY());
       System.out.printf(" p2= x=%f y=%f%n", p2.getX(), p2.getY());
     }
-    assert lc.crossSeam(p1, p2);
+    assertThat(lc.crossSeam(p1, p2)).isTrue();
   }
 
   @Test
@@ -381,8 +380,8 @@ public class TestProjections {
       System.out.println("endL  = " + endL);
     }
 
-    Assert.assertEquals(startL.toString(), startL.getLatitude(), endL.getLatitude(), 1.3e-4);
-    Assert.assertEquals(startL.toString(), startL.getLongitude(), endL.getLongitude(), 1.3e-4);
+    assertThat(endL.getLatitude()).isWithin(1.3e-4).of(startL.getLatitude());
+    assertThat(endL.getLongitude()).isWithin(1.3e-4).of(startL.getLongitude());
   }
 
   private void testProjectionUTM(int n) {
@@ -407,8 +406,8 @@ public class TestProjections {
         System.out.println("endL  = " + endL);
       }
 
-      Assert.assertEquals(startL.toString(8), startL.getLatitude(), endL.getLatitude(), 1.0e-4);
-      Assert.assertEquals(startL.toString(8), startL.getLongitude(), endL.getLongitude(), .02);
+      assertThat(endL.getLatitude()).isWithin(1.0e-4).of(startL.getLatitude());
+      assertThat(endL.getLongitude()).isWithin(.02).of(startL.getLongitude());
     }
 
     /*
