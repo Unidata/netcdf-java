@@ -670,7 +670,7 @@ public class HorizCoordSys {
     } else if (unit.equals("m") || unit.equals("meters")) {
       return 0.001 * coordinate;
     } else {
-      // TODO not sure what other units that may not need scaling could be here (e.g. radians)
+      logger.info("Unrecognized unit '" + unit + "' for axis '" + axisName + "'");
       return coordinate;
     }
   }
@@ -681,6 +681,7 @@ public class HorizCoordSys {
     } else if (unit.equals("m") || unit.equals("meters")) {
       return 1000 * coordinate;
     } else {
+      logger.info("Unrecognized unit '" + unit + "' for axis '" + axisName + "'");
       return coordinate;
     }
   }
