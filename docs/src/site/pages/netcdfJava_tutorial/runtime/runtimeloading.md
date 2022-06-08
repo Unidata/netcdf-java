@@ -141,7 +141,7 @@ The configuration file looks like this:
     However, if this property is set to `true`, then it will be used for reading NetCDF-4 (and HDF5) files as well.
     
 There are several ways pass the Runtime Configuration XML to the CDM library. From your application, you can pass a `java.io.InputStream` (or JDOM element) to 
-`ucar.nc2.internal.util.xml.RuntimeConfigParser`, as in the following examples:
+`ucar.nc2.util.xml.RuntimeConfigParser`, as in the following examples:
 
 {% capture rmd %}
 {% includecodeblock netcdf-java&docs/src/test/java/examples/runtime/runtimeloadingTutorial.java&passConfigurationToCDM %}

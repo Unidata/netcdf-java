@@ -2,7 +2,8 @@
 package ucar.unidata.geoloc;
 
 import static com.google.common.truth.Truth.assertThat;
-import org.junit.Assert;
+
+import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,11 +27,10 @@ import java.lang.invoke.MethodHandles;
 
 public class TestProjections {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-  private static final boolean show = false;
   private static final int NTRIALS = 10000;
   private static final double tolerence = 5.0e-4;
 
-  private LatLonPoint doOne(ProjectionImpl proj, double lat, double lon, boolean show) {
+  private LatLonPoint doOne(ProjectionImpl proj, double lat, double lon) {
     LatLonPointImpl startL = new LatLonPointImpl(lat, lon);
     ProjectionPoint p = proj.latLonToProj(startL);
     if (Double.isNaN(p.getX()) || Double.isNaN(p.getY()))
@@ -39,11 +39,10 @@ public class TestProjections {
       return LatLonPointImmutable.INVALID;
     LatLonPoint endL = proj.projToLatLon(p);
 
-    if (show) {
-      System.out.println("start  = " + startL.toString(8));
-      System.out.println("projection point  = " + p.toString());
-      System.out.println("end  = " + endL.toString());
-    }
+    logger.debug("start  = " + startL.toString(8));
+    logger.debug("projection point  = " + p);
+    logger.debug("end  = " + endL.toString());
+
     return endL;
   }
 
@@ -52,11 +51,11 @@ public class TestProjections {
   public void testTMproblem() {
     double lat = -.072111263;
     double lon = 165.00490;
-    LatLonPoint endL = doOne(new TransverseMercator(), lat, lon, true);
+    LatLonPoint endL = doOne(new TransverseMercator(), lat, lon);
     if (endL.equals(LatLonPointImmutable.INVALID))
       return;
-    Assert.assertEquals(lat, endL.getLatitude(), tolerence);
-    Assert.assertEquals(lon, endL.getLongitude(), tolerence);
+    assertThat(endL.getLatitude()).isWithin(tolerence).of(lat);
+    assertThat(endL.getLongitude()).isWithin(tolerence).of(lon);
   }
 
   private void testProjection(ProjectionImpl proj) {
@@ -76,8 +75,8 @@ public class TestProjections {
           || endL.equals(LatLonPointImmutable.INVALID))
         continue;
 
-      Assert.assertEquals(startL.toString(8), startL.getLatitude(), endL.getLatitude(), 1.0e-3);
-      Assert.assertEquals(startL.toString(8), startL.getLongitude(), endL.getLongitude(), 1.0e-3);
+      assertThat(endL.getLatitude()).isWithin(1.0e-3).of(startL.getLatitude());
+      assertThat(endL.getLongitude()).isWithin(1.0e-3).of(startL.getLongitude());
       countT1++;
     }
 
@@ -93,12 +92,11 @@ public class TestProjections {
       if (Double.isNaN(endP.getX()) || Double.isNaN(endP.getY()))
         continue;
 
-      Assert.assertEquals(startP.toString(), startP.getX(), endP.getX(), tolerence);
-      Assert.assertEquals(startP.toString(), startP.getY(), endP.getY(), tolerence);
+      assertThat(endP.getX()).isWithin(tolerence).of(startP.getX());
+      assertThat(endP.getY()).isWithin(tolerence).of(startP.getY());
       countT2++;
     }
-    if (show)
-      System.out.printf("Tested %d, %d pts for projection %s %n", countT1, countT2, proj.getClassName());
+    logger.debug("Tested " + countT1 + ", " + countT2 + " pts for projection " + proj.getClassName());
   }
 
   // must have lon within +/- lonMax, lat within +/- latMax
@@ -117,14 +115,12 @@ public class TestProjections {
       ProjectionPoint p = proj.latLonToProj(startL);
       LatLonPoint endL = proj.projToLatLon(p);
 
-      if (show) {
-        System.out.println("startL  = " + startL);
-        System.out.println("inter  = " + p);
-        System.out.println("endL  = " + endL);
-      }
+      logger.debug("startL  = " + startL);
+      logger.debug("inter  = " + p);
+      logger.debug("endL  = " + endL);
 
-      Assert.assertEquals(startL.toString(8), startL.getLatitude(), endL.getLatitude(), tolerence);
-      Assert.assertEquals(startL.toString(8), startL.getLongitude(), endL.getLongitude(), tolerence);
+      assertThat(endL.getLatitude()).isWithin(tolerence).of(startL.getLatitude());
+      assertThat(endL.getLongitude()).isWithin(tolerence).of(startL.getLongitude());
 
       minx = Math.min(minx, p.getX());
       maxx = Math.max(maxx, p.getX());
@@ -134,10 +130,8 @@ public class TestProjections {
 
     double rangex = maxx - minx;
     double rangey = maxy - miny;
-    if (show) {
-      System.out.printf("rangex  = (%f,%f) %n", minx, maxx);
-      System.out.printf("rangey  = (%f,%f) %n", miny, maxy);
-    }
+    logger.debug("rangex  = " + minx + ", " + maxx);
+    logger.debug("rangey  = " + miny + ", " + maxy);
 
     startL.setLatitude(latMax / 2);
     startL.setLongitude(lonMax / 2);
@@ -150,21 +144,18 @@ public class TestProjections {
         LatLonPoint ll = proj.projToLatLon(startP);
         ProjectionPoint endP = proj.latLonToProj(ll);
 
-        if (show) {
-          System.out.println("start  = " + startP);
-          System.out.println("interL  = " + ll);
-          System.out.println("end  = " + endP);
-        }
+        logger.debug("start  = " + startP);
+        logger.debug("interL  = " + ll);
+        logger.debug("end  = " + endP);
 
-        Assert.assertEquals(startP.toString(), startP.getX(), endP.getX(), tolerence);
-        Assert.assertEquals(startP.toString(), startP.getY(), endP.getY(), tolerence);
+        assertThat(endP.getX()).isWithin(tolerence).of(startP.getX());
+        assertThat(endP.getY()).isWithin(tolerence).of(startP.getY());
       } catch (IllegalArgumentException e) {
-        System.out.printf("IllegalArgumentException=%s%n", e.getMessage());
+        logger.debug("IllegalArgumentException= " + e.getMessage());
       }
     }
 
-    if (show)
-      System.out.println("Tested " + NTRIALS + " pts for projection " + proj.getClassName());
+    logger.debug("Tested " + NTRIALS + " pts for projection " + proj.getClassName());
   }
 
   // must have x within +/- xMax, y within +/- yMax
@@ -177,21 +168,17 @@ public class TestProjections {
       try {
         LatLonPoint ll = proj.projToLatLon(startP);
         ProjectionPoint endP = proj.latLonToProj(ll);
-        if (show) {
-          System.out.println("start  = " + startP);
-          System.out.println("interL  = " + ll);
-          System.out.println("end  = " + endP);
-        }
+        logger.debug("start  = " + startP);
+        logger.debug("interL  = " + ll);
+        logger.debug("end  = " + endP);
 
-        Assert.assertEquals(startP.toString(), startP.getX(), endP.getX(), tolerence);
-        Assert.assertEquals(startP.toString(), startP.getY(), endP.getY(), tolerence);
+        assertThat(endP.getX()).isWithin(tolerence).of(startP.getX());
+        assertThat(endP.getY()).isWithin(tolerence).of(startP.getY());
       } catch (IllegalArgumentException e) {
-        System.out.printf("IllegalArgumentException=%s%n", e.getMessage());
-        continue;
+        logger.debug("IllegalArgumentException= " + e.getMessage());
       }
     }
-    if (show)
-      System.out.println("Tested " + NTRIALS + " pts for projection " + proj.getClassName());
+    logger.debug("Tested " + NTRIALS + " pts for projection " + proj.getClassName());
   }
 
   @Test
@@ -208,11 +195,9 @@ public class TestProjections {
     LambertConformal lc = new LambertConformal(40.0, 180.0, 20.0, 60.0);
     ProjectionPoint p1 = lc.latLonToProj(LatLonPoint.create(0.0, -1.0));
     ProjectionPoint p2 = lc.latLonToProj(LatLonPoint.create(0.0, 1.0));
-    if (show) {
-      System.out.printf(" p1= x=%f y=%f%n", p1.getX(), p1.getY());
-      System.out.printf(" p2= x=%f y=%f%n", p2.getX(), p2.getY());
-    }
-    assert lc.crossSeam(p1, p2);
+    logger.debug(" p1= x=" + p1.getX() + " y=" + p1.getY());
+    logger.debug(" p2= x=" + p2.getX() + " y=" + p2.getY());
+    assertThat(lc.crossSeam(p1, p2)).isTrue();
   }
 
   @Test
@@ -272,6 +257,8 @@ public class TestProjections {
     assertThat(p).isEqualTo(p2);
   }
 
+  @Ignore
+  @Test
   public void utestAEAE() {
     testProjectionLonMax(new AlbersEqualAreaEllipse(), 180, 80);
     AlbersEqualAreaEllipse p = new AlbersEqualAreaEllipse();
@@ -279,6 +266,8 @@ public class TestProjections {
     assertThat(p).isEqualTo(p2);
   }
 
+  @Ignore
+  @Test
   public void utestLCCE() {
     testProjectionLonMax(new LambertConformalConicEllipse(), 360, 80);
     LambertConformalConicEllipse p = new LambertConformalConicEllipse();
@@ -305,13 +294,12 @@ public class TestProjections {
   private void showProjVal(ProjectionImpl proj, double lat, double lon) {
     LatLonPoint startL = LatLonPoint.create(lat, lon);
     ProjectionPoint p = proj.latLonToProj(startL);
-    if (show)
-      System.out.printf("lat,lon= (%f, %f) x, y= (%f, %f) %n", lat, lon, p.getX(), p.getY());
+    logger.debug("lat,lon= " + lat + ", " + lon + ", x, y= " + p.getX() + ", " + p.getY());
   }
 
   @Test
   public void testMSG() {
-    doOne(new MSGnavigation(), 60, 60, true);
+    doOne(new MSGnavigation(), 60, 60);
     testProjection(new MSGnavigation());
 
     MSGnavigation m = new MSGnavigation();
@@ -345,7 +333,7 @@ public class TestProjections {
 
   @Test
   public void testSinusoidal() {
-    doOne(new Sinusoidal(0, 0, 0, 6371.007), 20, 40, true);
+    doOne(new Sinusoidal(0, 0, 0, 6371.007), 20, 40);
     testProjection(new Sinusoidal(0, 0, 0, 6371.007));
     Sinusoidal p = new Sinusoidal();
     Sinusoidal p2 = (Sinusoidal) p.constructCopy();
@@ -375,14 +363,12 @@ public class TestProjections {
     ProjectionPoint p = proj.latLonToProj(startL);
     LatLonPoint endL = proj.projToLatLon(p);
 
-    if (show) {
-      System.out.println("startL  = " + startL);
-      System.out.println("inter  = " + p);
-      System.out.println("endL  = " + endL);
-    }
+    logger.debug("startL  = " + startL);
+    logger.debug("inter  = " + p);
+    logger.debug("endL  = " + endL);
 
-    Assert.assertEquals(startL.toString(), startL.getLatitude(), endL.getLatitude(), 1.3e-4);
-    Assert.assertEquals(startL.toString(), startL.getLongitude(), endL.getLongitude(), 1.3e-4);
+    assertThat(endL.getLatitude()).isWithin(1.3e-4).of(startL.getLatitude());
+    assertThat(endL.getLongitude()).isWithin(1.3e-4).of(startL.getLongitude());
   }
 
   private void testProjectionUTM(int n) {
@@ -401,14 +387,12 @@ public class TestProjections {
       ProjectionPoint p = proj.latLonToProj(startL);
       LatLonPoint endL = proj.projToLatLon(p);
 
-      if (show) {
-        System.out.println("startL  = " + startL);
-        System.out.println("inter  = " + p);
-        System.out.println("endL  = " + endL);
-      }
+      logger.debug("startL  = " + startL);
+      logger.debug("inter  = " + p);
+      logger.debug("endL  = " + endL);
 
-      Assert.assertEquals(startL.toString(8), startL.getLatitude(), endL.getLatitude(), 1.0e-4);
-      Assert.assertEquals(startL.toString(8), startL.getLongitude(), endL.getLongitude(), .02);
+      assertThat(endL.getLatitude()).isWithin(1.0e-4).of(startL.getLatitude());
+      assertThat(endL.getLongitude()).isWithin(.02).of(startL.getLongitude());
     }
 
     /*
@@ -429,8 +413,7 @@ public class TestProjections {
      * }
      */
 
-    if (show)
-      System.out.println("Tested " + n + " pts for UTM projection ");
+    logger.debug("Tested " + n + " pts for UTM projection ");
   }
 
   @Test
@@ -473,6 +456,9 @@ public class TestProjections {
     makeSanityTest(new AlbersEqualAreaEllipse(23.0, -96.0, 29.5, 45.5, 0, 0, new Earth()), ppt, lpt);
     makeSanityTest(new CylindricalEqualAreaProjection(), ppt, lpt);
     makeSanityTest(new CylindricalEqualAreaProjection(0, 1, 0, 0, new Earth()), ppt, lpt);
+    makeSanityTest(
+        new CylindricalEqualAreaProjection(-97.674, 35.3, 0.1, -4534.2, new Earth(6378137.0, 0.0, 298.257222101)),
+        ProjectionPoint.create(-484, 140), lpt);
 
     makeSanityTest(new EquidistantAzimuthalProjection(0, 0, 0, 0, EarthEllipsoid.WGS84), ppt, lpt);
     makeSanityTest(new EquidistantAzimuthalProjection(45, 0, 0, 0, EarthEllipsoid.WGS84), ppt, lpt);
@@ -504,12 +490,17 @@ public class TestProjections {
   }
 
   private void makeSanityTest(Projection p, ProjectionPoint ppt, LatLonPoint lpt) {
-    System.out.printf("%s%n", p);
-    LatLonPoint pr = p.projToLatLon(ppt);
-    System.out.printf(" projToLatLon %s -> %s%n", ppt, pr);
+    logger.debug(p.toString());
 
-    ProjectionPoint lr = p.latLonToProj(lpt);
-    System.out.printf(" latLonToProj %s -> %s%n", lpt, lr);
+    final LatLonPoint computedLatLonPoint = p.projToLatLon(ppt);
+    assertThat(computedLatLonPoint.getLatitude()).isNotEqualTo(Double.NaN);
+    assertThat(computedLatLonPoint.getLongitude()).isNotEqualTo(Double.NaN);
+    logger.debug(" projToLatLon " + ppt + " -> " + computedLatLonPoint);
+
+    final ProjectionPoint computedProjectionPoint = p.latLonToProj(lpt);
+    assertThat(computedProjectionPoint.getX()).isNotEqualTo(Double.NaN);
+    assertThat(computedProjectionPoint.getX()).isNotEqualTo(Double.NaN);
+    logger.debug(" latLonToProj " + lpt + " -> " + computedProjectionPoint);
   }
 
 }

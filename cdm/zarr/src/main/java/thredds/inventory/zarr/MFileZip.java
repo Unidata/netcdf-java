@@ -5,6 +5,7 @@
 
 package thredds.inventory.zarr;
 
+import java.io.InputStream;
 import java.io.OutputStream;
 import thredds.filesystem.MFileOS;
 import thredds.inventory.MFile;
@@ -150,6 +151,16 @@ public class MFileZip implements MFile {
   }
 
   @Override
+  public boolean exists() {
+    return Files.exists(Paths.get(root.getName()));
+  }
+
+  @Override
+  public InputStream getInputStream() {
+    throw new UnsupportedOperationException("MFileZip::getInputStream not implemented");
+  }
+
+  @Override
   public void writeToStream(OutputStream outputStream) throws IOException {
     for (ZipEntry entry : leafEntries) {
       final File file = new File(entry.getName());
@@ -159,7 +170,8 @@ public class MFileZip implements MFile {
 
   @Override
   public void writeToStream(OutputStream outputStream, long offset, long maxBytes) throws IOException {
-    throw new IOException("Writing MFileZip with a byte range to stream not implemented. Filename: " + getName());
+    throw new UnsupportedOperationException(
+        "Writing MFileZip with a byte range to stream not implemented. Filename: " + getName());
   }
 
   public Path getRootPath() {

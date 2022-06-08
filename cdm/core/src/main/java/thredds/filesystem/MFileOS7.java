@@ -5,6 +5,8 @@
 
 package thredds.filesystem;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.OutputStream;
 import thredds.inventory.MFile;
 import ucar.nc2.util.IO;
@@ -115,6 +117,16 @@ public class MFileOS7 implements MFile {
   @Override
   public String toString() {
     return getPath();
+  }
+
+  @Override
+  public boolean exists() {
+    return Files.exists(path);
+  }
+
+  @Override
+  public FileInputStream getInputStream() throws FileNotFoundException {
+    return new FileInputStream(path.toFile());
   }
 
   @Override

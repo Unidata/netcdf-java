@@ -239,18 +239,10 @@ public class CalendarPeriod {
   // offset from start to end, in these units
   // start + offset = end
   public int getOffset(CalendarDate start, CalendarDate end) {
-    if (start.equals(end))
+    if (start.equals(end)) {
       return 0;
-    long start_millis = start.getDateTime().getMillis();
-    long end_millis = end.getDateTime().getMillis();
-
-    // 5 second slop
-    Period p;
-    if (start_millis < end_millis)
-      p = new Period(start_millis, end_millis + 5000, getPeriodType());
-    else
-      p = new Period(start_millis + 5000, end_millis, getPeriodType());
-
+    }
+    Period p = new Period(start.getMillis(), end.getMillis(), getPeriodType());
     return p.get(getDurationFieldType());
   }
 

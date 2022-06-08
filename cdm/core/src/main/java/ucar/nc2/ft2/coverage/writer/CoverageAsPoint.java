@@ -55,8 +55,17 @@ public class CoverageAsPoint {
       this.name = name;
       this.varData = new ArrayList<>();
       for (Coverage cov : wantCovs) {
-        this.varData.add(new VarData(cov));
+        try {
+          this.varData.add(new VarData(cov));
+        } catch (InvalidRangeException e) {
+          e.printStackTrace();
+        }
       }
+
+      if (varData.isEmpty()) {
+        throw new IllegalArgumentException("No coverage data found for parameters " + subset);
+      }
+
       CoverageCoordSys subsetSys = this.varData.get(0).array.getCoordSysForData();
 
       // single point subset, so only one lat/lon to grab, and this will be the lat/lon
@@ -82,16 +91,11 @@ public class CoverageAsPoint {
     Coverage cov;
     GeoReferencedArray array;
 
-    VarData(Coverage cov) throws IOException {
+    VarData(Coverage cov) throws IOException, InvalidRangeException {
       this.cov = cov;
-      try {
-        this.array = cov.readData(subset);
-        if (debug) {
-          System.out.printf(" Coverage %s data shape = %s%n", cov.getName(),
-              Arrays.toString(array.getData().getShape()));
-        }
-      } catch (InvalidRangeException e) {
-        e.printStackTrace();
+      this.array = cov.readData(subset);
+      if (debug) {
+        System.out.printf(" Coverage %s data shape = %s%n", cov.getName(), Arrays.toString(array.getData().getShape()));
       }
     }
   }

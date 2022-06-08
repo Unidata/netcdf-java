@@ -5,6 +5,8 @@
 
 package thredds.filesystem;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
@@ -110,6 +112,16 @@ public class MFileOS implements MFile {
   public String toString() {
     String sb = "MFileOS{" + "file=" + file.getPath() + ", lastModified=" + lastModified + '}';
     return sb;
+  }
+
+  @Override
+  public boolean exists() {
+    return file.exists();
+  }
+
+  @Override
+  public FileInputStream getInputStream() throws FileNotFoundException {
+    return new FileInputStream(file);
   }
 
   @Override
