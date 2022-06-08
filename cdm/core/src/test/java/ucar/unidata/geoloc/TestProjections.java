@@ -174,7 +174,6 @@ public class TestProjections {
         assertThat(endP.getY()).isWithin(tolerence).of(startP.getY());
       } catch (IllegalArgumentException e) {
         logger.debug("IllegalArgumentException= " + e.getMessage());
-        continue;
       }
     }
     logger.debug("Tested " + NTRIALS + " pts for projection " + proj.getClassName());
