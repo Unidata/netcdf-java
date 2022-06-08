@@ -1,6 +1,7 @@
 package ucar.nc2.ft2.coverage.writer;
 
 import static com.google.common.truth.Truth.assertThat;
+import static org.junit.Assert.assertThrows;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -75,6 +76,21 @@ public class TestCoverageAsPoint {
     varNames.add("T1noZ");
     params.setVariables(varNames);
     readCoverageAsPoint(varNames, params, alts[0], times, vals);
+  }
+
+  @Test
+  public void testExceptionThrownForPointOutsideCoverage() {
+    double[] vals = Arrays.copyOfRange(expected, 0, 1);
+    // test single point (no time)
+    List<String> varNames = new ArrayList<>();
+    varNames.add("2D");
+    SubsetParams params = new SubsetParams();
+    params.setVariables(varNames);
+    params.setLatLonPoint(LatLonPoint.create(100, 100));
+    IllegalArgumentException e =
+        assertThrows(IllegalArgumentException.class, () -> readCoverageAsPoint(varNames, params, alts[0], times, vals));
+    assertThat(e).hasMessageThat()
+        .contains("No coverage data found for parameters  latlonPoint == 90.0000N 100.0000E, var == [2D],");
   }
 
   @Test
