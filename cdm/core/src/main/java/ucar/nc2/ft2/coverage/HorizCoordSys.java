@@ -675,14 +675,14 @@ public class HorizCoordSys {
     }
   }
 
-  private static double convertFromKm(double coordinate, String unit, String axisName) {
-    if (unit.equals("km") || unit.equals("kilometers")) {
-      return coordinate;
-    } else if (unit.equals("m") || unit.equals("meters")) {
-      return 1000 * coordinate;
+  private static double convertFromKm(double coordinateInKm, String desiredUnit, String axisName) {
+    if (desiredUnit.equals("km") || desiredUnit.equals("kilometers")) {
+      return coordinateInKm;
+    } else if (desiredUnit.equals("m") || desiredUnit.equals("meters")) {
+      return 1000 * coordinateInKm;
     } else {
-      logger.info("Unrecognized unit '" + unit + "' for axis '" + axisName + "'");
-      return coordinate;
+      logger.info("Unrecognized unit '" + desiredUnit + "' for axis '" + axisName + "'");
+      return coordinateInKm;
     }
   }
 
