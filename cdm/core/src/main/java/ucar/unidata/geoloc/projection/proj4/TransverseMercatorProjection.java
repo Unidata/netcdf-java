@@ -74,6 +74,7 @@ public class TransverseMercatorProjection extends ProjectionImpl {
     _lon0 = 0;
     projectionLatitude = Math.toRadians(0);
     projectionLongitude = Math.toRadians(0);
+    scaleFactor = 1.0;
     initialize();
   }
 

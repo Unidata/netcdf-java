@@ -85,7 +85,7 @@ public class CylindricalEqualAreaProjection extends ProjectionImpl {
       qp = MapMath.qsfn(1., e, one_es);
     }
 
-    addParameter(CF.GRID_MAPPING_NAME, CF.ALBERS_CONICAL_EQUAL_AREA);
+    addParameter(CF.GRID_MAPPING_NAME, CF.LAMBERT_CYLINDRICAL_EQUAL_AREA);
     addParameter(CF.LONGITUDE_OF_CENTRAL_MERIDIAN, lon0);
     addParameter(CF.STANDARD_PARALLEL, trueScaleLatitude);
 
