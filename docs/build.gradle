@@ -244,13 +244,6 @@ task deleteCurrentDocsFromNexus(group: 'Documentation', type: DeleteFromNexusTas
     return true
   }
 }
-//
-//// Will apply to "compileJava", "compileTestJava", "compileSourceSetJava", etc.
-//tasks.withType(JavaCompile).all {
-//  options.encoding = 'UTF-8'
-//  // show deprecation details
-//  //options.compilerArgs = ['-Xlint:deprecation']
-//}
 
 tasks.withType(JavaCompile).configureEach {
   options.encoding = 'UTF-8'
@@ -263,6 +256,8 @@ tasks.withType(JavaCompile).configureEach {
     setSourceCompatibility(JavaVersion.VERSION_1_8)
     setTargetCompatibility(JavaVersion.VERSION_1_8)
   }
+  // show deprecation details
+  options.compilerArgs = ['-Xlint:deprecation']
 }
 
 apply plugin: 'com.diffplug.gradle.spotless'
