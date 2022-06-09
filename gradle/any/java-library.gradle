@@ -48,4 +48,3 @@ tasks.withType(JavaCompile).configureEach {
   // show deprecation details
   //options.compilerArgs = ['-Xlint:deprecation']
 }
-
