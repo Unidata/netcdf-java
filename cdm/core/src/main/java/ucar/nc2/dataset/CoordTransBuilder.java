@@ -55,6 +55,7 @@ public class CoordTransBuilder {
     registerTransform(CF.STEREOGRAPHIC, Stereographic.class);
     registerTransform(CF.TRANSVERSE_MERCATOR, TransverseMercator.class);
     registerTransform("UTM", UTM.class);
+    registerTransform("universal_transverse_mercator", UTM.class);
     registerTransform(CF.VERTICAL_PERSPECTIVE, VerticalPerspective.class);
 
     // registerTransform("atmosphere_ln_pressure_coordinate", VAtmLnPressure.class); // DO NOT USE: see
