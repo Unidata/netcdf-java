@@ -976,7 +976,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
       return;
     }
     if (size == 1) {
-      // if the axis size is zero, edges are the same as the coord
+      // if the axis size is one, edges are the same as the coord
       edge[0] = coords[0];
       edge[1] = coords[0];
       return;
