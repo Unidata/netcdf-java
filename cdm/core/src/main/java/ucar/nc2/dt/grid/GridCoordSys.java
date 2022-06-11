@@ -1039,6 +1039,8 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
 
   /**
    * Get horizontal bounding box in lat, lon coordinates.
+   * If projection coordinates are used, the lat/ lon box is calculated from the perimeter of the projection coordinates
+   * box
    *
    * @return lat, lon bounding box.
    */
@@ -1060,7 +1062,14 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
       } else {
         ProjectionImpl dataProjection = getProjection();
         ProjectionRect bb = getBoundingBox();
-        llbb = dataProjection.projToLatLonBB(bb);
+        LatLonRect approxLatLonBoundingBox = dataProjection.projToLatLonBB(bb);
+
+        try {
+          llbb = getPreciseLatLonBoundingBox(approxLatLonBoundingBox);
+        } catch (IOException e) {
+          log.error("Could not read axis values when computing LatLon bounding box: " + e.getMessage());
+          llbb = approxLatLonBoundingBox;
+        }
       }
     }
 
@@ -1121,6 +1130,51 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
      * }
      */
 
+  }
+
+  /*
+   * Get precise lat/lon bounding box by looking at all points on the perimeter
+   */
+  private LatLonRect getPreciseLatLonBoundingBox(LatLonRect approximateBoundingBox) throws IOException {
+    LatLonRect boundingBox = approximateBoundingBox;
+    final Array xValues = horizXaxis.read();
+    final Array yValues = horizYaxis.read();
+
+    final double yMin = yValues.getDouble(0);
+    final double yMax = yValues.getDouble((int) (yValues.getSize() - 1));
+
+    boundingBox = extendLatLonBoundingBox(boundingBox, xValues, yMin, yMax, true);
+
+    final double xMin = xValues.getDouble(0);
+    final double xMax = xValues.getDouble((int) (xValues.getSize() - 1));
+
+    boundingBox = extendLatLonBoundingBox(boundingBox, yValues, xMin, xMax, false);
+
+    return boundingBox;
+  }
+
+  /*
+   * Extend the bounding box by looking at all values on the x- or y-axis
+   */
+  private LatLonRect extendLatLonBoundingBox(LatLonRect boundingBox, Array axisValues, double otherAxisMin,
+      double otherAxisMax, boolean isXAxis) {
+    IndexIterator iterator = axisValues.getIndexIterator();
+
+    while (iterator.hasNext()) {
+      double value = iterator.getDoubleNext();
+      final LatLonPoint firstEdge =
+          isXAxis ? proj.projToLatLon(value, otherAxisMin) : proj.projToLatLon(otherAxisMin, value);
+      if (!boundingBox.contains(firstEdge)) {
+        boundingBox = LatLonRect.extend(boundingBox, firstEdge);
+      }
+      final LatLonPoint secondEdge =
+          isXAxis ? proj.projToLatLon(value, otherAxisMax) : proj.projToLatLon(otherAxisMax, value);
+      if (!boundingBox.contains(secondEdge)) {
+        boundingBox = LatLonRect.extend(boundingBox, secondEdge);
+      }
+    }
+
+    return boundingBox;
   }
 
   /**

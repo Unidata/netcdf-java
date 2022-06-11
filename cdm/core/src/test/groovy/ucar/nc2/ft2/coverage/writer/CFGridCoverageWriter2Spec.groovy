@@ -66,7 +66,7 @@ class CFGridCoverageWriter2Spec extends Specification {
         featDsetCov?.close()
     }
     
-    @Rule public final TemporaryFolder tempFolder = new TemporaryFolder()
+    @Rule public TemporaryFolder tempFolder = new TemporaryFolder()
     
     def "CFGridCoverageWriter2 properly adds 2D lat/lon variables"() {
         setup: "Open test resource as FeatureDatasetCoverage"
