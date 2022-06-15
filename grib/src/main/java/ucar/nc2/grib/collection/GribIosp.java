@@ -780,12 +780,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
           CoordinateTimeIntv timeIntv = (CoordinateTimeIntv) time2D.getTimeCoordinate(runIdx);
           int timeIdx = 0;
           for (TimeCoordIntvValue tinv : timeIntv.getTimeIntervals()) {
-            data[runIdx * ntimes + timeIdx] = timeUnit.getValue() * tinv.getBounds2() + time2D.getOffset(runIdx); // use
-                                                                                                                  // upper
-                                                                                                                  // bounds
-                                                                                                                  // for
-                                                                                                                  // coord
-                                                                                                                  // value
+            data[runIdx * ntimes + timeIdx] = timeUnit.getValue() * tinv.getCoordValue() + time2D.getOffset(runIdx);
             timeIdx++;
           }
         }
@@ -796,8 +791,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
         for (int runIdx = 0; runIdx < nruns; runIdx++) {
           CoordinateTimeIntv timeIntv = (CoordinateTimeIntv) time2D.getTimeCoordinate(runIdx);
           for (TimeCoordIntvValue tinv : timeIntv.getTimeIntervals()) {
-            data[count++] = timeUnit.getValue() * tinv.getBounds2() + time2D.getOffset(runIdx); // use upper bounds for
-                                                                                                // coord value
+            data[count++] = timeUnit.getValue() * tinv.getCoordValue() + time2D.getOffset(runIdx);
           }
         }
         break;
@@ -910,9 +904,8 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
     double[] data = new double[ntimes];
     int count = 0;
 
-    // use upper bounds for coord value
     for (TimeCoordIntvValue tinv : coordTime.getTimeIntervals()) {
-      data[count++] = tinv.getBounds2();
+      data[count++] = tinv.getCoordValue();
     }
     v.setCachedData(Array.factory(DataType.DOUBLE, new int[] {ntimes}, data));
 
