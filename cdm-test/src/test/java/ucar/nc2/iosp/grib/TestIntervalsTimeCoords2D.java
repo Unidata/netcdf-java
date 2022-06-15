@@ -57,6 +57,7 @@ import java.util.Collection;
 @Category(NeedsCdmUnitTest.class)
 public class TestIntervalsTimeCoords2D {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+  private static final double TOLERANCE = 1e-6;
 
   @Parameterized.Parameters(name = "{0}")
   public static Collection<Object[]> getTestParameters() throws IOException {
@@ -113,12 +114,18 @@ public class TestIntervalsTimeCoords2D {
       Variable interval = best.findVariableLocal(dimBounds);
       assertThat(interval != null).isTrue();
 
+      Variable coordinate = best.findVariableLocal(dim.getShortName());
+      assertThat(coordinate != null).isTrue();
+
       Array data = interval.read();
       IndexIterator iter = data.getIndexIterator();
+      Array coordinateData = coordinate.read();
+      IndexIterator coordinateIter = coordinateData.getIndexIterator();
       int idx = 0;
       while (iter.hasNext()) {
         int start = iter.getIntNext();
         int end = iter.getIntNext();
+        double coordinateValue = coordinateIter.getDoubleNext();
         if (start != bounds[idx][0] || end != bounds[idx][1]) {
           logger.error("bounds " + interval.getFullName() + " for file " + filename + ", parameter " + var.getFullName()
               + " failed");
@@ -126,6 +133,7 @@ public class TestIntervalsTimeCoords2D {
         }
         assertThat(start).isEqualTo(bounds[idx][0]);
         assertThat(end).isEqualTo(bounds[idx][1]);
+        assertThat(coordinateValue).isWithin(TOLERANCE).of((start + end) / 2.0);
         idx++;
       }
 
