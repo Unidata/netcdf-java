@@ -10,6 +10,8 @@
 
 package ucar.nc2.iosp.grib;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
@@ -103,7 +105,7 @@ public class TestIntervalsTimeCoords2D {
         best = ncf.getRootGroup();
       }
       Variable var = ncf.findVariableByAttribute(best, Grib.VARIABLE_ID_ATTNAME, parameter);
-      assert var != null : parameter;
+      assertThat(var != null).isTrue();
       logger.debug(" using variable " + var.getFullName());
 
       Dimension dim = var.getDimension(0);
@@ -111,7 +113,7 @@ public class TestIntervalsTimeCoords2D {
         dim = var.getDimension(1);
       String bounds = dim.getShortName() + "_bounds";
       Variable interval = best.findVariableLocal(bounds);
-      assert interval != null : bounds;
+      assertThat(interval != null).isTrue();
 
       Array data = interval.read();
       IndexIterator iter = data.getIndexIterator();
@@ -124,8 +126,8 @@ public class TestIntervalsTimeCoords2D {
               + " failed");
           logger.error("interval " + start + " - " + end + " known " + tb[idx][0] + " - " + tb[idx][0]);
         }
-        assert (start == tb[idx][0]);
-        assert (end == tb[idx][1]);
+        assertThat(start).isEqualTo(tb[idx][0]);
+        assertThat(end).isEqualTo(tb[idx][1]);
         idx++;
       }
 
