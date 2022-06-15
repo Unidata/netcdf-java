@@ -80,10 +80,10 @@ public class TestIntervalsTimeCoords2D {
 
   String filename;
   String parameter;
-  Object bounds;
+  int[][] bounds;
   int ndim;
 
-  public TestIntervalsTimeCoords2D(String filename, String parameter, Object bounds, int ndim) {
+  public TestIntervalsTimeCoords2D(String filename, String parameter, int[][] bounds, int ndim) {
     this.filename = filename;
     this.parameter = parameter;
     this.bounds = bounds;
@@ -95,8 +95,6 @@ public class TestIntervalsTimeCoords2D {
    */
   @Test
   public void checkTimeIntervalCoordinates() throws Exception {
-    int[][] tb = (int[][]) bounds;
-
     logger.debug("Open " + filename + "(" + parameter + ")");
 
     try (NetcdfFile ncf = NetcdfFiles.open(filename)) {
@@ -111,8 +109,8 @@ public class TestIntervalsTimeCoords2D {
       Dimension dim = var.getDimension(0);
       if (dim.getShortName().startsWith("reftime"))
         dim = var.getDimension(1);
-      String bounds = dim.getShortName() + "_bounds";
-      Variable interval = best.findVariableLocal(bounds);
+      String dimBounds = dim.getShortName() + "_bounds";
+      Variable interval = best.findVariableLocal(dimBounds);
       assertThat(interval != null).isTrue();
 
       Array data = interval.read();
@@ -121,13 +119,13 @@ public class TestIntervalsTimeCoords2D {
       while (iter.hasNext()) {
         int start = iter.getIntNext();
         int end = iter.getIntNext();
-        if (start != tb[idx][0] || end != tb[idx][1]) {
+        if (start != bounds[idx][0] || end != bounds[idx][1]) {
           logger.error("bounds " + interval.getFullName() + " for file " + filename + ", parameter " + var.getFullName()
               + " failed");
-          logger.error("interval " + start + " - " + end + " known " + tb[idx][0] + " - " + tb[idx][0]);
+          logger.error("interval " + start + " - " + end + " known " + bounds[idx][0] + " - " + bounds[idx][0]);
         }
-        assertThat(start).isEqualTo(tb[idx][0]);
-        assertThat(end).isEqualTo(tb[idx][1]);
+        assertThat(start).isEqualTo(bounds[idx][0]);
+        assertThat(end).isEqualTo(bounds[idx][1]);
         idx++;
       }
 
