@@ -95,7 +95,7 @@ public class TestIntervalsTimeCoords2D {
   public void checkTimeIntervalCoordinates() throws Exception {
     int[][] tb = (int[][]) bounds;
 
-    System.out.printf("Open %s (%s)%n", filename, parameter);
+    logger.debug("Open " + filename + "(" + parameter + ")");
 
     try (NetcdfFile ncf = NetcdfFiles.open(filename)) {
       Group best = ncf.findGroup("Best"); // use best group if it exists, may be null
@@ -104,7 +104,7 @@ public class TestIntervalsTimeCoords2D {
       }
       Variable var = ncf.findVariableByAttribute(best, Grib.VARIABLE_ID_ATTNAME, parameter);
       assert var != null : parameter;
-      System.out.printf(" using variable %s%n", var.getFullName());
+      logger.debug(" using variable " + var.getFullName());
 
       Dimension dim = var.getDimension(0);
       if (dim.getShortName().startsWith("reftime"))
@@ -120,9 +120,9 @@ public class TestIntervalsTimeCoords2D {
         int start = iter.getIntNext();
         int end = iter.getIntNext();
         if (start != tb[idx][0] || end != tb[idx][1]) {
-          System.out.printf("bounds %s for file %s, parameter %s failed%n", interval.getFullName(), filename,
-              var.getFullName());
-          System.out.printf("interval %d - %d  known %d - %d%n", start, end, tb[idx][0], tb[idx][1]);
+          logger.error("bounds " + interval.getFullName() + " for file " + filename + ", parameter " + var.getFullName()
+              + " failed");
+          logger.error("interval " + start + " - " + end + " known " + tb[idx][0] + " - " + tb[idx][0]);
         }
         assert (start == tb[idx][0]);
         assert (end == tb[idx][1]);
