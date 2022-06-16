@@ -496,8 +496,7 @@ class CoordAxisHelper {
 
     // subset(int ncoords, double start, double end, double[] values)
     CoverageCoordAxisBuilder builder = new CoverageCoordAxisBuilder(axis);
-    builder.subset(ncoords, axis.getCoordMidpoint(range.first()), axis.getCoordMidpoint(range.last()), resolution,
-        subsetValues);
+    builder.subset(ncoords, axis.getCoord(range.first()), axis.getCoord(range.last()), resolution, subsetValues);
     builder.setRange(range);
     return builder;
   }

@@ -114,6 +114,25 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis { // implements Itera
     throw new IllegalStateException("unknown spacing" + spacing);
   }
 
+  public double getCoord(int index) {
+    if (index < 0 || index >= getNcoords()) {
+      throw new IllegalArgumentException("Index out of range=" + index);
+    }
+    loadValuesIfNeeded();
+
+    switch (spacing) {
+      case regularPoint:
+      case regularInterval:
+        return startValue + index * getResolution();
+
+      case irregularPoint:
+      case contiguousInterval:
+      case discontiguousInterval:
+        return values[index];
+    }
+    throw new IllegalStateException("Unknown spacing=" + spacing);
+  }
+
   public double getCoordMidpoint(int index) {
     if (index < 0 || index >= getNcoords())
       throw new IllegalArgumentException("Index out of range=" + index);
