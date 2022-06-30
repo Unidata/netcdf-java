@@ -787,11 +787,26 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
         break;
 
       case intvU:
-        count = 0;
+        count = 0; // data[nruns*ntimes]
         for (int runIdx = 0; runIdx < nruns; runIdx++) {
           CoordinateTimeIntv timeIntv = (CoordinateTimeIntv) time2D.getTimeCoordinate(runIdx);
+          TimeCoordIntvValue prevTimeIntervalValue = null;
           for (TimeCoordIntvValue tinv : timeIntv.getTimeIntervals()) {
-            data[count++] = timeUnit.getValue() * tinv.getCoordValue() + time2D.getOffset(runIdx);
+            data[count] = timeUnit.getValue() * tinv.getCoordValue() + time2D.getOffset(runIdx);
+            if (count >= 2) {
+              // Check that coordinate values are monotonically increasing
+              if (data[count] <= data[count-1]) {
+                // Set value to half way between previous coord value and current interval upper bound.
+                // Unless those are the same, then add the distance between the previous
+                // and current upper bounds to the ???? Ugh. Hard to describe in words. Will think more.
+                if (tinv.getBounds2() != prevTimeIntervalValue.getBounds2())
+                  data[count] = (tinv.getBounds2() - prevTimeIntervalValue.getBounds2())/2.0 + data[count-1];
+                else
+                  data[count] = (tinv.getBounds2() - data[count-1])/2.0 + data[count-1];
+              }
+            }
+            count++;
+            prevTimeIntervalValue = tinv;
           }
         }
         break;
