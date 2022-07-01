@@ -388,6 +388,23 @@ public class NcmlReader {
     return reader.readNcml(ncmlLocation, referencedDatasetUri, netcdfElem, cancelTask);
   }
 
+  /**
+   * Find the location attribute in a NcML string
+   *
+   * @param ncml the NcML as a string
+   * @return the resulting location attribute, or null if not found or if the NcML cannot be read
+   */
+  public static String getLocationFromNcml(String ncml) {
+    try {
+      final SAXBuilder builder = new SAXBuilder();
+      builder.setExpandEntities(false);
+      final org.jdom2.Document doc = builder.build(new StringReader(ncml));
+      return getLocation(doc.getRootElement());
+    } catch (Exception e) {
+      return null;
+    }
+  }
+
   //////////////////////////////////////////////////////////////////////////////////////
   private Namespace ncNS;
   private String location;
