@@ -52,6 +52,7 @@ import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.conn.socket.ConnectionSocketFactory;
 import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
+import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
 import org.apache.http.cookie.Cookie;
 import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.BasicCredentialsProvider;
@@ -60,6 +61,7 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.ssl.SSLContextBuilder;
 import org.apache.http.ssl.SSLContexts;
+import org.apache.http.ssl.TrustStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -363,7 +365,7 @@ public class HTTPSession implements Closeable {
     authcontrols.setReadOnly(false);
     buildproxy(authcontrols);
     buildkeystores(authcontrols);
-    buildsslfactory(authcontrols);
+    buildsslfactory(authcontrols, null);
     authcontrols.setReadOnly(true);
     processDFlags(); // Other than the auth flags
     connmgr.addProtocol("https", (ConnectionSocketFactory) authcontrols.get(AuthProp.SSLFACTORY));
@@ -400,11 +402,11 @@ public class HTTPSession implements Closeable {
     props.put(Prop.COOKIE_SPEC, DEFAULT_COOKIESPEC);
   }
 
-  static void buildsslfactory(AuthControls authcontrols) {
+  static void buildsslfactory(AuthControls authcontrols, TrustStrategy trustStrategy) {
     KeyStore keystore = (KeyStore) authcontrols.get(AuthProp.KEYSTORE);
     String keypass = (String) authcontrols.get(AuthProp.KEYPASSWORD);
     KeyStore truststore = (KeyStore) authcontrols.get(AuthProp.TRUSTSTORE);
-    buildsslfactory(authcontrols, truststore, keystore, keypass);
+    buildsslfactory(authcontrols, truststore, trustStrategy, keystore, keypass);
   }
 
   static void buildkeystores(AuthControls authcontrols) {
@@ -499,14 +501,13 @@ public class HTTPSession implements Closeable {
 
   }
 
-  static void buildsslfactory(AuthControls authcontrols, KeyStore truststore, KeyStore keystore, String keypassword) {
+  static void buildsslfactory(AuthControls authcontrols, KeyStore truststore, TrustStrategy trustStrategy,
+      KeyStore keystore, String keypassword) {
     SSLConnectionSocketFactory globalsslfactory;
     try {
       // set up the context
       SSLContextBuilder sslbuilder = SSLContexts.custom();
-      if (truststore != null) {
-        sslbuilder.loadTrustMaterial(truststore, null);
-      }
+      sslbuilder.loadTrustMaterial(truststore, trustStrategy);
       if (keystore != null) {
         sslbuilder.loadKeyMaterial(keystore, keypassword.toCharArray());
       }
@@ -1198,6 +1199,23 @@ public class HTTPSession implements Closeable {
     authcontrols.setReadOnly(false);
     authcontrols.put(AuthProp.KEYSTORE, newks);
     authcontrols.setReadOnly(true);
+  }
+
+  // Only for testing purposes
+  public static void allowSelfSignedCertificatesForTesting() {
+    if (!TESTING) {
+      throw new UnsupportedOperationException();
+    }
+
+    if (USEPOOL) {
+      connmgr = new HTTPConnectionPool();
+    } else {
+      connmgr = new HTTPConnectionSimple();
+    }
+    authcontrols.setReadOnly(false);
+    buildsslfactory(authcontrols, new TrustSelfSignedStrategy());
+    authcontrols.setReadOnly(true);
+    connmgr.addProtocol("https", (ConnectionSocketFactory) authcontrols.get(AuthProp.SSLFACTORY));
   }
 
   //////////////////////////////////////////////////
