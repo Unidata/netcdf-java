@@ -1203,10 +1203,6 @@ public class HTTPSession implements Closeable {
 
   // Only for testing purposes
   public static void allowSelfSignedCertificatesForTesting() {
-    if (!TESTING) {
-      throw new UnsupportedOperationException();
-    }
-
     if (USEPOOL) {
       connmgr = new HTTPConnectionPool();
     } else {
