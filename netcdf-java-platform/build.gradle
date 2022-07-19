@@ -69,7 +69,7 @@ dependencies {
 
     // legacy gradle module
     // todo: remove with legacy in 6
-    api 'com.amazonaws:aws-java-sdk-s3:1.11.871'
+    api 'com.amazonaws:aws-java-sdk-s3:1.12.263'
   }
 }
 
