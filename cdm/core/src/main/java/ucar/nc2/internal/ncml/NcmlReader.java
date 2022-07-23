@@ -8,6 +8,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.Formatter;
@@ -326,11 +327,7 @@ public class NcmlReader {
     Element netcdfElem = doc.getRootElement();
 
     // the ncml probably refers to another dataset, but doesnt have to
-    String referencedDatasetUri = netcdfElem.getAttributeValue("location");
-    if (referencedDatasetUri == null)
-      referencedDatasetUri = netcdfElem.getAttributeValue("url");
-    if (referencedDatasetUri != null)
-      referencedDatasetUri = AliasTranslator.translateAlias(referencedDatasetUri);
+    final String referencedDatasetUri = getLocation(netcdfElem);
 
     NcmlReader reader = new NcmlReader();
     return reader.readNcml(ncmlLocation, referencedDatasetUri, netcdfElem, cancelTask);
@@ -384,17 +381,28 @@ public class NcmlReader {
 
     if (referencedDatasetUri == null) {
       // the ncml probably refers to another dataset, but doesnt have to
-      referencedDatasetUri = netcdfElem.getAttributeValue("location");
-      if (referencedDatasetUri == null) {
-        referencedDatasetUri = netcdfElem.getAttributeValue("url");
-      }
-    }
-    if (referencedDatasetUri != null) {
-      referencedDatasetUri = AliasTranslator.translateAlias(referencedDatasetUri);
+      referencedDatasetUri = getLocation(netcdfElem);
     }
 
     NcmlReader reader = new NcmlReader();
     return reader.readNcml(ncmlLocation, referencedDatasetUri, netcdfElem, cancelTask);
+  }
+
+  /**
+   * Find the location attribute in a NcML string
+   *
+   * @param ncml the NcML as a string
+   * @return the resulting location attribute, or null if not found or if the NcML cannot be read
+   */
+  public static String getLocationFromNcml(String ncml) {
+    try {
+      final SAXBuilder builder = new SAXBuilder();
+      builder.setExpandEntities(false);
+      final org.jdom2.Document doc = builder.build(new StringReader(ncml));
+      return getLocation(doc.getRootElement());
+    } catch (Exception e) {
+      return null;
+    }
   }
 
   //////////////////////////////////////////////////////////////////////////////////////
@@ -1453,13 +1461,7 @@ public class NcmlReader {
     // nested netcdf elements
     java.util.List<Element> ncList = aggElem.getChildren("netcdf", ncNS);
     for (Element netcdfElemNested : ncList) {
-      String location = netcdfElemNested.getAttributeValue("location");
-      if (location == null) {
-        location = netcdfElemNested.getAttributeValue("url");
-      }
-      if (location != null) {
-        location = AliasTranslator.translateAlias(location);
-      }
+      final String location = getLocation(netcdfElemNested);
 
       String id = netcdfElemNested.getAttributeValue("id");
       String ncoords = netcdfElemNested.getAttributeValue("ncoords");
@@ -1551,6 +1553,14 @@ public class NcmlReader {
     }
 
     return agg;
+  }
+
+  private static String getLocation(Element netCdfElem) {
+    String referencedDatasetUri = netCdfElem.getAttributeValue("location");
+    if (referencedDatasetUri == null) {
+      referencedDatasetUri = netCdfElem.getAttributeValue("url");
+    }
+    return referencedDatasetUri != null ? AliasTranslator.translateAlias(referencedDatasetUri) : null;
   }
 
   private class NcmlElementReader implements ucar.nc2.util.cache.FileFactory {

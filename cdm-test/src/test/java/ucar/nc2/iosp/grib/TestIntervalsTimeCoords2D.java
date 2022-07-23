@@ -10,6 +10,8 @@
 
 package ucar.nc2.iosp.grib;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
@@ -55,6 +57,7 @@ import java.util.Collection;
 @Category(NeedsCdmUnitTest.class)
 public class TestIntervalsTimeCoords2D {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+  private static final double TOLERANCE = 1e-6;
 
   @Parameterized.Parameters(name = "{0}")
   public static Collection<Object[]> getTestParameters() throws IOException {
@@ -78,10 +81,10 @@ public class TestIntervalsTimeCoords2D {
 
   String filename;
   String parameter;
-  Object bounds;
+  int[][] bounds;
   int ndim;
 
-  public TestIntervalsTimeCoords2D(String filename, String parameter, Object bounds, int ndim) {
+  public TestIntervalsTimeCoords2D(String filename, String parameter, int[][] bounds, int ndim) {
     this.filename = filename;
     this.parameter = parameter;
     this.bounds = bounds;
@@ -93,9 +96,7 @@ public class TestIntervalsTimeCoords2D {
    */
   @Test
   public void checkTimeIntervalCoordinates() throws Exception {
-    int[][] tb = (int[][]) bounds;
-
-    System.out.printf("Open %s (%s)%n", filename, parameter);
+    logger.debug("Open " + filename + "(" + parameter + ")");
 
     try (NetcdfFile ncf = NetcdfFiles.open(filename)) {
       Group best = ncf.findGroup("Best"); // use best group if it exists, may be null
@@ -103,29 +104,36 @@ public class TestIntervalsTimeCoords2D {
         best = ncf.getRootGroup();
       }
       Variable var = ncf.findVariableByAttribute(best, Grib.VARIABLE_ID_ATTNAME, parameter);
-      assert var != null : parameter;
-      System.out.printf(" using variable %s%n", var.getFullName());
+      assertThat(var != null).isTrue();
+      logger.debug(" using variable " + var.getFullName());
 
       Dimension dim = var.getDimension(0);
       if (dim.getShortName().startsWith("reftime"))
         dim = var.getDimension(1);
-      String bounds = dim.getShortName() + "_bounds";
-      Variable interval = best.findVariableLocal(bounds);
-      assert interval != null : bounds;
+      String dimBounds = dim.getShortName() + "_bounds";
+      Variable interval = best.findVariableLocal(dimBounds);
+      assertThat(interval != null).isTrue();
+
+      Variable coordinate = best.findVariableLocal(dim.getShortName());
+      assertThat(coordinate != null).isTrue();
 
       Array data = interval.read();
       IndexIterator iter = data.getIndexIterator();
+      Array coordinateData = coordinate.read();
+      IndexIterator coordinateIter = coordinateData.getIndexIterator();
       int idx = 0;
       while (iter.hasNext()) {
         int start = iter.getIntNext();
         int end = iter.getIntNext();
-        if (start != tb[idx][0] || end != tb[idx][1]) {
-          System.out.printf("bounds %s for file %s, parameter %s failed%n", interval.getFullName(), filename,
-              var.getFullName());
-          System.out.printf("interval %d - %d  known %d - %d%n", start, end, tb[idx][0], tb[idx][1]);
+        double coordinateValue = coordinateIter.getDoubleNext();
+        if (start != bounds[idx][0] || end != bounds[idx][1]) {
+          logger.error("bounds " + interval.getFullName() + " for file " + filename + ", parameter " + var.getFullName()
+              + " failed");
+          logger.error("interval " + start + " - " + end + " known " + bounds[idx][0] + " - " + bounds[idx][0]);
         }
-        assert (start == tb[idx][0]);
-        assert (end == tb[idx][1]);
+        assertThat(start).isEqualTo(bounds[idx][0]);
+        assertThat(end).isEqualTo(bounds[idx][1]);
+        assertThat(coordinateValue).isWithin(TOLERANCE).of((start + end) / 2.0);
         idx++;
       }
 

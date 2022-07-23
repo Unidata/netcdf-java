@@ -100,11 +100,11 @@ class CoordAxisHelper {
       double lower = axis.getCoordEdge1(index);
       double upper = axis.getCoordEdge2(index);
       if (axis.isAscending()) {
-        assert lower <= coordValue : lower + " should be le " + coordValue;
-        assert upper >= coordValue : upper + " should be ge " + coordValue;
+        assert lower <= coordValue : lower + " should be <= " + coordValue;
+        assert upper >= coordValue : upper + " should be >= " + coordValue;
       } else {
-        assert lower >= coordValue : lower + " should be ge " + coordValue;
-        assert upper <= coordValue : upper + " should be le " + coordValue;
+        assert lower >= coordValue : lower + " should be >= " + coordValue;
+        assert upper <= coordValue : upper + " should be <= " + coordValue;
       }
     }
 
@@ -496,8 +496,7 @@ class CoordAxisHelper {
 
     // subset(int ncoords, double start, double end, double[] values)
     CoverageCoordAxisBuilder builder = new CoverageCoordAxisBuilder(axis);
-    builder.subset(ncoords, axis.getCoordMidpoint(range.first()), axis.getCoordMidpoint(range.last()), resolution,
-        subsetValues);
+    builder.subset(ncoords, axis.getCoord(range.first()), axis.getCoord(range.last()), resolution, subsetValues);
     builder.setRange(range);
     return builder;
   }

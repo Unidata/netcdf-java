@@ -756,6 +756,42 @@ public class TestCoverageSubsetTime {
     }
   }
 
+  @Test
+  public void testRegularIntervalSubsetTimeRange() throws IOException, InvalidRangeException {
+    String endpoint = TestDir.cdmUnitTestDir + "tds/ncep/NAM_CONUS_12km_20100915_1200.grib2";
+    String covName = "Total_precipitation_surface_3_Hour_Accumulation";
+
+    logger.debug("testRegularIntervalSubsetTimeRange Dataset {} coverage {}", endpoint, covName);
+
+    try (FeatureDatasetCoverage featureDatasetCoverage = CoverageDatasetFactory.open(endpoint)) {
+      assertThat(featureDatasetCoverage).isNotNull();
+      CoverageCollection coverageCollection = featureDatasetCoverage.findCoverageDataset(FeatureType.GRID);
+      assertThat(coverageCollection).isNotNull();
+      Coverage coverage = coverageCollection.findCoverage(covName);
+      assertThat(coverage).isNotNull();
+      SubsetParams params = new SubsetParams();
+
+      CalendarDate subsetTimeStart = CalendarDate.parseISOformat(null, "2010-09-15T16:00:00Z");
+      CalendarDate subsetTimeEnd = CalendarDate.parseISOformat(null, "2010-09-15T23:00:00Z");
+      // expect times are regular offsets 3, 6, 9, ... from reftime 2010-09-15T12:00:00Z
+      int expectedStartIndex = 1;
+      int expectedEndIndex = 3;
+      params.setTimeRange(CalendarDateRange.of(subsetTimeStart, subsetTimeEnd));
+      logger.debug("  subset {}", params);
+
+      GeoReferencedArray geo = coverage.readData(params);
+      assertThat(geo).isNotNull();
+      assertThat(geo.getData().getSize()).isGreaterThan(0);
+      assertThat(geo.getData().getDouble(0)).isEqualTo(1.0);
+      assertThat(geo.getData().getDouble(1)).isEqualTo(0.0);
+
+      CoverageCoordAxis timeAxis = geo.findCoordAxis("time1");
+      assertThat(timeAxis).isNotNull();
+      assertThat(timeAxis.getSpacing()).isEqualTo(Spacing.regularInterval);
+      assertThat(timeAxis.getRange()).isEqualTo(new Range(expectedStartIndex, expectedEndIndex));
+    }
+  }
+
   ///////////////////////////////////////////////////////////////////////////////////////////
   // ENsemble
 

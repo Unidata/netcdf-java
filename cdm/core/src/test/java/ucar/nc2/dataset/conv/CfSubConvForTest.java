@@ -12,13 +12,20 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.internal.dataset.CoordSystemBuilder;
 import ucar.nc2.internal.dataset.spi.CFSubConventionProvider;
 
+import java.util.List;
+
+import static ucar.nc2.internal.dataset.CoordSystemFactory.breakupConventionNames;
+
 /**
  * An implementation of CoordSystemBuilder for testing CFSubConvention hooks.
  *
  * @see ucar.nc2.dataset.TestCfSubConventionProvider
  */
 public class CfSubConvForTest extends CoordSystemBuilder {
-  public static String CONVENTION_NAME = "CF-1.200/YOLO";
+  private static String SUBCONVENTAION_NAME = "YOLO";
+  // public for testing
+  public static String CONVENTAION_NAME_STARTS_WITH = "CF-1.X";
+  public static String CONVENTION_NAME = CONVENTAION_NAME_STARTS_WITH + "/" + SUBCONVENTAION_NAME;
 
   private CfSubConvForTest(NetcdfDataset.Builder<?> datasetBuilder) {
     super(datasetBuilder);
@@ -33,7 +40,13 @@ public class CfSubConvForTest extends CoordSystemBuilder {
       if (conventionAttr != null) {
         String conventionValue = conventionAttr.getStringValue();
         if (conventionValue != null) {
-          mine = conventionValue.equals(CONVENTION_NAME);
+          List<String> names = breakupConventionNames(conventionValue);
+          for (String name : names) {
+            if (name.equalsIgnoreCase(SUBCONVENTAION_NAME)) {
+              mine = true;
+              break;
+            }
+          }
         }
       }
       return mine;
