@@ -165,7 +165,7 @@ public class Coverage implements VariableSimpleIF, IsMissingEvaluator {
   /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   public GeoReferencedArray readData(SubsetParams subset) throws IOException, InvalidRangeException {
-    return reader.readData(this, subset, false);
+    return reader.readData(this, subset, true);
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////
