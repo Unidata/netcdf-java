@@ -618,8 +618,10 @@ public class DtCoverage implements IsMissingEvaluator {
     // check to see if we need to permute
     boolean needPermute = false;
     for (int i = 0; i < permuteIndex.length; i++) {
-      if (i != permuteIndex[i])
+      if (i != permuteIndex[i]) {
         needPermute = true;
+        break;
+      }
     }
 
     return needPermute ? permuteIndex : null;
