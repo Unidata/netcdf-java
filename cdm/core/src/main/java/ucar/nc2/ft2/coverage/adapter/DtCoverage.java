@@ -615,15 +615,6 @@ public class DtCoverage implements IsMissingEvaluator {
     if (oldDims.contains(xdim))
       permuteIndex[count] = oldDims.indexOf(xdim);
 
-    if (debugArrayShape) {
-      System.out.println("oldDims = ");
-      for (Dimension oldDim : oldDims)
-        System.out.println("   oldDim = " + oldDim.getShortName());
-      System.out.println("permute dims = ");
-      for (int aPermuteIndex : permuteIndex)
-        System.out.println("   oldDim index = " + aPermuteIndex);
-    }
-
     // check to see if we need to permute
     boolean needPermute = false;
     for (int i = 0; i < permuteIndex.length; i++) {
