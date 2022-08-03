@@ -261,6 +261,9 @@ public class LatLonRect {
    * @return minimum longitude
    */
   public double getLonMin() {
+    if (allLongitude) {
+      return -180.0;
+    }
     return lowerLeft.getLongitude();
   }
 
@@ -270,6 +273,9 @@ public class LatLonRect {
    * @return maximum longitude
    */
   public double getLonMax() {
+    if (allLongitude) {
+      return 180.0;
+    }
     return lowerLeft.getLongitude() + width;
   }
 
