@@ -10,11 +10,14 @@ import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.Array;
+import ucar.ma2.DataType;
 import ucar.ma2.IndexIterator;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Section;
+import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft2.coverage.*;
+import ucar.nc2.ft2.coverage.CoverageCoordAxis.Spacing;
 import ucar.nc2.grib.collection.Grib;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.util.Misc;
@@ -265,6 +268,51 @@ public class TestCoverageHorizSubset {
       assertThat(sumData).isNotEqualTo(initialSumVal);
       assertThat(sumDataFlip).isNotEqualTo(initialSumVal);
     }
+  }
+
+  @Test
+  public void shouldSubsetLongitudeAndLatitude() {
+    // longitude is regularPoint with spacing 60, so boundaries should be -121 and 119
+    final double[] lonValues = new double[] {-91.0, -31.0, 29.0, 89.0};
+    final CoverageCoordAxis1D lonAxis = createCoverageCoordAxis1D(AxisType.Lon, lonValues);
+
+    final double[] latValues = new double[] {-90.0, 0.0, 90.0};
+    final CoverageCoordAxis1D latAxis = createCoverageCoordAxis1D(AxisType.Lat, latValues);
+
+    final HorizCoordSys horizCoordSys = HorizCoordSys.factory(null, null, latAxis, lonAxis, null);
+    final LatLonRect boundingBox = horizCoordSys.calcLatLonBoundingBox();
+
+    assertThat(boundingBox).isNotNull();
+    assertThat(boundingBox.getLonMin()).isEqualTo(-121.0);
+    assertThat(boundingBox.getLonMax()).isEqualTo(119.0);
+    assertThat(boundingBox.getLatMin()).isEqualTo(-90.0);
+    assertThat(boundingBox.getLatMax()).isEqualTo(90.0);
+  }
+
+  @Test
+  public void shouldSubsetEntireWorld() {
+    // longitude is regularPoint with spacing 60, so boundaries should be -181=179 and 179
+    final double[] lonValues = new double[] {-151.0, -91.0, -31.0, 29.0, 89.0, 149.0};
+    final CoverageCoordAxis1D lonAxis = createCoverageCoordAxis1D(AxisType.Lon, lonValues);
+
+    final double[] latValues = new double[] {-90.0, 0.0, 90.0};
+    final CoverageCoordAxis1D latAxis = createCoverageCoordAxis1D(AxisType.Lat, latValues);
+
+    final HorizCoordSys horizCoordSys = HorizCoordSys.factory(null, null, latAxis, lonAxis, null);
+    final LatLonRect boundingBox = horizCoordSys.calcLatLonBoundingBox();
+
+    assertThat(boundingBox).isNotNull();
+    assertThat(boundingBox.getLonMin()).isEqualTo(-180.0);
+    assertThat(boundingBox.getLonMax()).isEqualTo(180.0);
+    assertThat(boundingBox.getLatMin()).isEqualTo(-90.0);
+    assertThat(boundingBox.getLatMax()).isEqualTo(90.0);
+  }
+
+  private CoverageCoordAxis1D createCoverageCoordAxis1D(AxisType type, double[] values) {
+    final CoverageCoordAxisBuilder coordAxisBuilder = new CoverageCoordAxisBuilder("name", "unit", "description",
+        DataType.DOUBLE, type, null, CoverageCoordAxis.DependenceType.independent, null, Spacing.regularPoint,
+        values.length, values[0], values[values.length - 1], values[1] - values[0], values, null);
+    return new CoverageCoordAxis1D(coordAxisBuilder);
   }
 
   private void checkLatLonSubset(CoverageCollection gcs, Coverage coverage, LatLonRect bbox, int[] expectedShape)
