@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2022 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 
@@ -7,6 +7,18 @@ package ucar.nc2.ft.fmrc;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.Formatter;
+import java.util.List;
+import java.util.Locale;
+import java.util.ServiceLoader;
+import java.util.StringTokenizer;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import org.slf4j.Logger;
@@ -27,8 +39,6 @@ import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateFormatter;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.constants._Coordinate;
-import java.util.*;
-import java.io.*;
 import org.jdom2.output.XMLOutputter;
 import org.jdom2.output.Format;
 import org.jdom2.Document;
@@ -90,7 +100,7 @@ public class GridDatasetInv {
 
     @Override
     public GridDatasetInv call() throws Exception {
-      GridDataset gds = null;
+      ucar.nc2.dt.GridDataset gds = null;
       GridDatasetInv inv = null;
       if (persistedCache != null) {
         inv = persistedCache.get(mfile);
@@ -99,7 +109,7 @@ public class GridDatasetInv {
       if (inv == null) {
         try {
           if (ncml == null) {
-            gds = GridDataset.open(mfile.getPath());
+            gds = GridDataset.openIfce(mfile.getPath());
           } else {
             NetcdfFile nc = NetcdfDataset.acquireFile(DatasetUrl.create(null, mfile.getPath()), null);
             NetcdfDataset ncd = NcMLReader.mergeNcML(nc, ncml); // create new dataset
@@ -134,7 +144,7 @@ public class GridDatasetInv {
 
   private GridDatasetInv() {}
 
-  public GridDatasetInv(ucar.nc2.dt.grid.GridDataset gds, CalendarDate runDate) {
+  public GridDatasetInv(ucar.nc2.dt.GridDataset gds, CalendarDate runDate) {
     this.location = gds.getLocation();
     this.runDate = runDate;
 

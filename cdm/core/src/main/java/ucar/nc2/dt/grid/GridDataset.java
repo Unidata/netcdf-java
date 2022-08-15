@@ -1,7 +1,8 @@
 /*
- * Copyright (c) 1998-2018 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2022 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
+
 package ucar.nc2.dt.grid;
 
 import java.io.IOException;
@@ -11,6 +12,7 @@ import java.util.Formatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.ServiceLoader;
 import java.util.Set;
 import ucar.nc2.Attribute;
 import ucar.nc2.AttributeContainer;
@@ -23,6 +25,7 @@ import ucar.nc2.dataset.*;
 import ucar.nc2.dataset.NetcdfDataset.Enhance;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDatatype;
+import ucar.nc2.dt.grid.internal.spi.GridDatasetProvider;
 import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
@@ -89,6 +92,41 @@ public class GridDataset implements ucar.nc2.dt.GridDataset, FeatureDataset {
   }
 
   /**
+   * Open a netcdf dataset, using NetcdfDataset.defaultEnhanceMode plus CoordSystems
+   * and return a ucar.nc2.dt.GridDataset interface.
+   *
+   * @param location netcdf dataset to open, using NetcdfDataset.acquireDataset().
+   * @return ucar.nc2.dt.GridDataset
+   * @throws java.io.IOException on read error
+   * @see ucar.nc2.dataset.NetcdfDataset#acquireDataset
+   */
+  public static ucar.nc2.dt.GridDataset openIfce(String location) throws java.io.IOException {
+    return openIfce(location, NetcdfDataset.getDefaultEnhanceMode());
+  }
+
+  /**
+   * Open a netcdf dataset, using NetcdfDataset.defaultEnhanceMode plus CoordSystems
+   * and return a ucar.nc2.dt.GridDataset interface.
+   *
+   * @param location netcdf dataset to open, using NetcdfDataset.acquireDataset().
+   * @param enhanceMode open netcdf dataset with this enhanceMode
+   * @return ucar.nc2.dt.GridDataset
+   * @throws java.io.IOException on read error
+   * @see ucar.nc2.dataset.NetcdfDataset#acquireDataset
+   */
+  public static ucar.nc2.dt.GridDataset openIfce(String location, Set<NetcdfDataset.Enhance> enhanceMode)
+      throws java.io.IOException {
+    for (GridDatasetProvider gdsProvider : ServiceLoader.load(GridDatasetProvider.class)) {
+      if (gdsProvider.isMine(location, enhanceMode)) {
+        return gdsProvider.open(location, enhanceMode);
+      }
+    }
+    NetcdfDataset ds = ucar.nc2.dataset.NetcdfDataset.acquireDataset(null, DatasetUrl.findDatasetUrl(location),
+        enhanceMode, -1, null, null);
+    return new GridDataset(ds, null);
+  }
+
+  /**
    * Create a GridDataset from a NetcdfDataset.
    *
    * @param ncd underlying NetcdfDataset, will do Enhance.CoordSystems if not already done.
@@ -112,7 +150,6 @@ public class GridDataset implements ucar.nc2.dt.GridDataset, FeatureDataset {
     if (enhance == null || enhance.isEmpty())
       enhance = NetcdfDataset.getDefaultEnhanceMode();
     ncd.enhance(enhance);
-
     // look for geoGrids
     if (parseInfo != null)
       parseInfo.format("GridDataset look for GeoGrids%n");
