@@ -23,7 +23,6 @@ import ucar.nc2.grib.coord.SparseArray;
 import ucar.nc2.grib.coord.TimeCoordIntvValue;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.util.CancelTask;
-import ucar.nc2.util.Misc;
 import ucar.nc2.util.cache.FileCacheable;
 import ucar.nc2.util.cache.FileFactory;
 import ucar.nc2.util.cache.SmartArrayInt;
