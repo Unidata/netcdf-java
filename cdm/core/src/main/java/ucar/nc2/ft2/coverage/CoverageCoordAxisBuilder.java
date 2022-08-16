@@ -240,6 +240,12 @@ public class CoverageCoordAxisBuilder {
         modeCount = resol.getCount(value);
       else {
         Number valueNumber = (Number) value;
+
+        // a difference of 0 means there are repeated values
+        if (valueNumber.intValue() == 0) {
+          return false;
+        }
+
         // non mode must be a multiple of mode - means there are some missing values
         int rem = (valueNumber.intValue() % modeNumber.intValue());
         if (rem != 0)
