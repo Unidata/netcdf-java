@@ -61,7 +61,7 @@ public class ConvertD2N {
    * @param section the requested variable section, as a List of type Range
    * @param dataV the dataDDS has been parsed into this dodsV, this is the top variable containing v
    * @param flatten if true, remove the StructureData "wrapper".
-   * @return the data as as Array
+   * @return the data as an Array
    * @throws IOException on io error
    * @throws DAP2Exception on bad things happening
    */
@@ -110,7 +110,7 @@ public class ConvertD2N {
    * @param v must be a top variable
    * @param section the requested variable section
    * @param dataV the dataDDS has been parsed into this dodsV
-   * @return the data as as Array
+   * @return the data as an Array
    * @throws IOException on io error
    * @throws DAP2Exception on bad
    */
@@ -157,7 +157,7 @@ public class ConvertD2N {
    * Convert a DataDDS into an Array
    *
    * @param dataV the dataDDS has been parsed into this dodsV
-   * @return the data as as Array
+   * @return the data as an Array
    * @throws IOException on io error
    * @throws DAP2Exception on bad
    */
