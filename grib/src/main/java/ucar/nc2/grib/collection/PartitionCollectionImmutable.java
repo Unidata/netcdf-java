@@ -722,7 +722,7 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
       int masterIdx = masterRuntime.getIndex(runtime.getMillis());
       // LOOK ok to use Best like this (see other getDataRecord) ?
 
-      if (masterIdx < 0) { // means that the runtie is not in the masterRuntime list
+      if (masterIdx < 0) { // means that the runtime is not in the masterRuntime list
         throw new RuntimeException("masterRuntime does not contain runtime " + runtime);
       }
 
