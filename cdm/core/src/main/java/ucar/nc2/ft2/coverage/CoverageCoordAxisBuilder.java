@@ -227,7 +227,7 @@ public class CoverageCoordAxisBuilder {
     }
   }
 
-  private static final double missingTolerence = .05;
+  private static final double missingTolerance = .05;
 
   private boolean isRegular(Counters.Counter resol) {
     if (resol.getUnique() == 1) {
@@ -268,7 +268,7 @@ public class CoverageCoordAxisBuilder {
 
     // only tolerate these many missing values
     double ratio = (nonModeCount / (double) modeCount);
-    return ratio < missingTolerence;
+    return ratio < missingTolerance;
   }
 
   ////////////////////////////////////////
