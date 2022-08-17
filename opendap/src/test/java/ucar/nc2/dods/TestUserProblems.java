@@ -4,6 +4,8 @@
  */
 package ucar.nc2.dods;
 
+import org.junit.Ignore;
+import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.Array;
@@ -33,7 +35,7 @@ import java.util.List;
 public class TestUserProblems {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  @org.junit.Test
+  @Test
   public void testGrid() throws IOException, InvalidRangeException {
     System.setProperty("httpservices.urlencode", "false");
     try (DODSNetcdfFile dodsfile =
@@ -61,7 +63,8 @@ public class TestUserProblems {
   // ucar.nc2.dods.TestUserProblems > testNomads STANDARD_ERROR
   // opendap.dap.DAP2Exception: Method failed:HTTP/1.1 403 Forbidden on URL=
   // http://nomads.ncdc.noaa.gov/thredds/dodsC/cfsr1hr/200912/tmp2m.gdas.200912.grb2.dods?Temperature[0:1:744][0:1:0][0:1:575][0:1:1151]
-  // @org.junit.Test
+  @Ignore
+  @Test
   public void testNomads() throws InvalidRangeException {
     // This server is running TDS v4.2, and there appears to be an issue with encoded urls?
     System.setProperty("httpservices.urlencode", "false");
