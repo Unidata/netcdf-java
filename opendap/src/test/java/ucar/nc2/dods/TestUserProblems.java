@@ -4,6 +4,8 @@
  */
 package ucar.nc2.dods;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -41,21 +43,20 @@ public class TestUserProblems {
     try (DODSNetcdfFile dodsfile =
         TestDODSRead.openAbs("http://iridl.ldeo.columbia.edu/SOURCES/.NOAA/.NCEP/.CPC/.GLOBAL/.daily/dods")) {
 
-      Variable dataV = null;
+      Variable dataV = dodsfile.findVariable("olr");
 
       // array
-      assert (null != (dataV = dodsfile.findVariable("olr")));
-      assert dataV instanceof DODSVariable;
+      assertThat(dataV != null).isTrue();
+      assertThat(dataV instanceof DODSVariable).isTrue();
 
       // maps
-      Variable v = null;
-      assert (null != (v = dodsfile.findVariable("time")));
-      assert (null != (v = dodsfile.findVariable("lat")));
-      assert (null != (v = dodsfile.findVariable("lon")));
+      assertThat(dodsfile.findVariable("time") != null).isTrue();
+      assertThat(dodsfile.findVariable("lat") != null).isTrue();
+      assertThat(dodsfile.findVariable("lon") != null).isTrue();
 
       // read data
       Array data = dataV.read("0, 0:72:1, 0:143:1");
-      assert null != data;
+      assertThat(data).isNotNull();
     }
     System.setProperty("httpservices.urlencode", "true");
   }
