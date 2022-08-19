@@ -49,11 +49,11 @@ public class TestCFPointWriterCompare {
     List<Object[]> result = new ArrayList<>();
 
     result.addAll(TestCFPointDatasets.getPointDatasets());
-//    result.addAll(TestCFPointDatasets.getStationDatasets());
-//    result.addAll(TestCFPointDatasets.getProfileDatasets());
-//    result.addAll(TestCFPointDatasets.getTrajectoryDatasets());
-//    result.addAll(TestCFPointDatasets.getStationProfileDatasets());
-//    result.addAll(TestCFPointDatasets.getSectionDatasets());
+    result.addAll(TestCFPointDatasets.getStationDatasets());
+    result.addAll(TestCFPointDatasets.getProfileDatasets());
+    result.addAll(TestCFPointDatasets.getTrajectoryDatasets());
+    result.addAll(TestCFPointDatasets.getStationProfileDatasets());
+    result.addAll(TestCFPointDatasets.getSectionDatasets());
 
     return result;
   }
@@ -88,8 +88,7 @@ public class TestCFPointWriterCompare {
   private void writeDataset(String location, FeatureType ftype, NetcdfFileWriter.Version version, int countExpected)
       throws IOException {
     File fileIn = new File(location);
-//    File fileOrg = tempFolder.newFile();
-    File fileOrg = File.createTempFile("testWrite", "input.nc");
+    File fileOrg = tempFolder.newFile();
 
     long start = System.currentTimeMillis();
 
@@ -116,9 +115,7 @@ public class TestCFPointWriterCompare {
 
     try (FeatureDataset fdataset = FeatureDatasetFactoryManager.open(ftype, location, null, out)) {
       FeatureDatasetPoint fdpoint = (FeatureDatasetPoint) fdataset;
-//      File fileNew = tempFolder.newFile();
-
-      File fileNew = File.createTempFile("testWrite", "output.nc");
+      File fileNew = tempFolder.newFile();
       ucar.nc2.ft.point.writer2.CFPointWriterConfig configNew = ucar.nc2.ft.point.writer2.CFPointWriterConfig.builder()
           .setFormat(NetcdfFormatWriter.convertToNetcdfFileFormat(version)).build();
       int countNew =
