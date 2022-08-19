@@ -21,7 +21,6 @@ import ucar.nc2.filter.Filters;
 import ucar.nc2.iosp.hdf5.BTree2;
 import ucar.nc2.iosp.hdf5.FractalHeap;
 import ucar.nc2.iosp.hdf5.MemTracker;
-import ucar.nc2.filter.Filter;
 import ucar.unidata.io.RandomAccessFile;
 
 /** The low-level HDF5 data objects. */
@@ -1773,7 +1772,7 @@ public class H5objects {
     }
 
     int getId() {
-      return (int)this.properties.get(Filters.Keys.ID);
+      return (int) this.properties.get(Filters.Keys.ID);
     }
 
     Map<String, Object> getProperties() {
