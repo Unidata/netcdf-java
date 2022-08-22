@@ -65,7 +65,7 @@ public class H5tiledLayoutBB implements LayoutBB {
    * @param v2 Variable to index over; assumes that vinfo is the data object
    * @param wantSection the wanted section of data, contains a List of Range objects. must be complete
    * @param raf the RandomAccessFile
-   * @param filterProps set of filter propertoes from which filter object will be created
+   * @param filterProps set of filter properties from which filter object will be created
    * @throws InvalidRangeException if section invalid for this variable
    * @throws IOException on io error
    */
