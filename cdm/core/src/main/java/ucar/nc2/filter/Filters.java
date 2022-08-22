@@ -54,7 +54,7 @@ public class Filters {
     String name = (String) properties.get(Keys.NAME);
     Object oid = properties.get(Keys.ID);
     // if no id or name, return null filter
-    if ((name == null || name.isEmpty()) && (oid == null || !(oid instanceof Number))) {
+    if ((name == null || name.isEmpty()) && !(oid instanceof Number)) {
       return nullFilter;
     }
 
