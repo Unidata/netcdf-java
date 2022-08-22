@@ -7,6 +7,9 @@ package ucar.nc2.geotiff;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.util.Map;
+import java.util.HashMap;
+import java.awt.Color;
 import ucar.ma2.Array;
 import ucar.ma2.ArrayByte;
 import ucar.ma2.ArrayFloat;
@@ -42,6 +45,7 @@ public class GeotiffWriter implements Closeable {
 
   protected GeoTiff geotiff;
   protected short pageNumber = 1;
+  protected int[] colorTable;
 
   /**
    * Constructor
@@ -201,8 +205,6 @@ public class GeotiffWriter implements Closeable {
     geotiff.addTag(new IFDEntry(Tag.Orientation, FieldType.SHORT).setValue(1));
     geotiff.addTag(new IFDEntry(Tag.Compression, FieldType.SHORT).setValue(1)); // no compression
     geotiff.addTag(new IFDEntry(Tag.Software, FieldType.ASCII).setValue("nc2geotiff"));
-    geotiff.addTag(new IFDEntry(Tag.PhotometricInterpretation, FieldType.SHORT).setValue(1)); // black is zero : not
-                                                                                              // used?
     geotiff.addTag(new IFDEntry(Tag.PlanarConfiguration, FieldType.SHORT).setValue(1));
 
     if (greyScale) {
@@ -213,8 +215,16 @@ public class GeotiffWriter implements Closeable {
       geotiff.addTag(new IFDEntry(Tag.XResolution, FieldType.RATIONAL).setValue(1, 1));
       geotiff.addTag(new IFDEntry(Tag.YResolution, FieldType.RATIONAL).setValue(1, 1));
       geotiff.addTag(new IFDEntry(Tag.ResolutionUnit, FieldType.SHORT).setValue(1));
-
+      if (colorTable != null && colorTable.length > 0) {
+        geotiff.addTag(new IFDEntry(Tag.PhotometricInterpretation, FieldType.SHORT).setValue(3));
+        geotiff.addTag(new IFDEntry(Tag.ColorMap, FieldType.SHORT, colorTable.length).setValue(colorTable));
+      } else {
+        // black is zero (value used in GeotiffWriter)
+        geotiff.addTag(new IFDEntry(Tag.PhotometricInterpretation, FieldType.SHORT).setValue(1));
+      }
     } else {
+      geotiff.addTag(new IFDEntry(Tag.PhotometricInterpretation, FieldType.SHORT).setValue(1)); // black is zero :
+                                                                                                // not used?
       // standard tags for SampleFormat ( see TIFF spec, section 19)
       geotiff.addTag(new IFDEntry(Tag.BitsPerSample, FieldType.SHORT).setValue(32)); // 32 bits per sample
       geotiff.addTag(new IFDEntry(Tag.SampleFormat, FieldType.SHORT).setValue(3)); // Sample Format
@@ -259,6 +269,91 @@ public class GeotiffWriter implements Closeable {
     }
 
     geotiff.writeMetadata(imageNumber);
+  }
+
+  /**
+   * Get a copy of the current colormap as a 1-D 3*256 element array (or null).
+   *
+   * All 256 red values first, then green, then blue.
+   *
+   * For these RGB triplets, 0 is minimum intensity, 65535 is maximum intensity (due to geotiff conventions).
+   * This function is intended for debugging and testing.
+   */
+  public int[] getColorTable() {
+    if (colorTable == null) {
+      return null;
+    } else {
+      return colorTable.clone();
+    }
+  }
+
+  /**
+   * Provide a colormap in the form of a mapping of the pixel value to the rgb triplet.
+   * Assumes an RGB of {255, 255, 255} for any values not specified.
+   *
+   * Pass null to unset the colorTable.
+   *
+   * For these RGB triplets, 0 is minimum intensity, 255 is maximum intensity. Values outside that range will
+   * be floored/ceilinged to the [0, 255] range. The color table is also assumed to be for pixel values
+   * between 0 and 255.
+   */
+  public void setColorTable(Map<Integer, Color> colorMap) {
+    setColorTable(colorMap, new Color(255, 255, 255));
+  }
+
+  /**
+   * Provide a colormap in the form of a mapping of the pixel value to the rgb triplet.
+   * Provide a default RGB triplet for any values not specified.
+   *
+   * Pass null to unset the colorTable.
+   *
+   * For these RGB triplets, 0 is minimum intensity, 255 is maximum intensity. Values outside that range will
+   * be floored/ceilinged to the [0, 255] range. The color table is also assumed to be for pixel values
+   * between 0 and 255.
+   */
+  public void setColorTable(Map<Integer, Color> colorMap, Color defaultRGB) {
+    if (colorMap == null) {
+        colorTable = null;
+        return;
+    }
+
+    // FIXME: This isn't quite right because this assumes that the data being written is
+    // unsigned bytes, but the tiff spec says that it should be sized to the width of
+    // the data type, but I would need to know the data type, which this writer doesn't know.
+    colorTable = new int[3*256];
+    for (int color = 0; color < 3; color++) {
+      for (int i = 0; i < 256; i++) {
+        // Scale it up to [0, 65535], which is needed by the ColorMap tag.
+        if (color == 0) {
+          colorTable[i] = colorMap.getOrDefault(i, defaultRGB).getRed() * 256;
+        } else if (color == 1) {
+          colorTable[256 + i] = colorMap.getOrDefault(i, defaultRGB).getGreen() * 256;
+        } else {
+          colorTable[512 + i] = colorMap.getOrDefault(i, defaultRGB).getBlue() * 256;
+        }
+      }
+    }
+  }
+
+  /**
+   * Creates a colormap in the form of a mapping of the pixel value to the rgb color.
+   *
+   * @param flag_values is an array of values for each categorical
+   * @param flag_colors is an array of octal strings (e.g., #00AAFF) of same length as flag_values.
+   * @return Map of the flag values to Color objects the RGB color values,
+   *         with 0 representing minimum intensity and 255 representing maximum intensity.
+   * @throws IllegalArgumentException if above assumptions not valid
+   * @throws NumberFormatException if a supplied color isn't parsable
+   */
+  public static HashMap<Integer, Color> createColorMap(int[] flag_values, String[] flag_colors) throws IllegalArgumentException, NumberFormatException {
+    if (flag_values.length != flag_colors.length) {
+      throw new IllegalArgumentException("flag_values and flag_colors must be of equal length");
+    }
+    HashMap<Integer, Color> colorMap = new HashMap<Integer, Color>();
+    for (int i = 0; i < flag_values.length; i++) {
+      colorMap.put(flag_values[i], Color.decode(flag_colors[i]));
+    }
+    return colorMap;
   }
 
   /**
