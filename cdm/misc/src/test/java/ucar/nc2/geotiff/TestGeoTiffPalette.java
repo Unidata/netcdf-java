@@ -37,9 +37,8 @@ public class TestGeoTiffPalette {
 
   @Test
   public void testCreateColorMap() {
-    HashMap<Integer, Color> result = GeotiffWriter.createColorMap(
-            new int[] {10, 3, 145, 4},
-            new String[] {"#00AAff", "#151412", "#DE01aB", "#100ABB"});
+    HashMap<Integer, Color> result = GeotiffWriter.createColorMap(new int[] {10, 3, 145, 4},
+        new String[] {"#00AAff", "#151412", "#DE01aB", "#100ABB"});
     HashMap<Integer, Color> expected = new HashMap<Integer, Color>();
     expected.put(10, new Color(0, 170, 255));
     expected.put(3, new Color(21, 20, 18));
@@ -48,31 +47,30 @@ public class TestGeoTiffPalette {
     Assert.assertEquals(expected, result);
 
     Exception badargs = Assert.assertThrows(IllegalArgumentException.class, () -> {
-        GeotiffWriter.createColorMap(new int[] {10, 3}, new String[] {"#00AAff"});
+      GeotiffWriter.createColorMap(new int[] {10, 3}, new String[] {"#00AAff"});
     });
     Assert.assertEquals("flag_values and flag_colors must be of equal length", badargs.getMessage());
 
     Exception badcolor = Assert.assertThrows(NumberFormatException.class, () -> {
-        GeotiffWriter.createColorMap(new int[] {10, 3}, new String[] {"#00AAff", "Yellow"});
+      GeotiffWriter.createColorMap(new int[] {10, 3}, new String[] {"#00AAff", "Yellow"});
     });
     Assert.assertEquals("For input string: \"Yellow\"", badcolor.getMessage());
   }
 
   @Test
   public void testSetColorTable() {
-    HashMap<Integer, Color> colorMap = GeotiffWriter.createColorMap(
-        new int[] {1, 2, 3, 4},
-        new String[] {"#00AAff", "#151412", "#DE01aB", "#100ABB"});
+    HashMap<Integer, Color> colorMap =
+        GeotiffWriter.createColorMap(new int[] {1, 2, 3, 4}, new String[] {"#00AAff", "#151412", "#DE01aB", "#100ABB"});
     GeotiffWriter writer = new GeotiffWriter("dummy.tif");
     writer.setColorTable(colorMap, Color.black);
     int[] resultTable = writer.getColorTable();
 
-    int[] expectedTable = new int[3*256];
+    int[] expectedTable = new int[3 * 256];
     for (int i = 1; i <= 4; i++) {
       // Channel values are between 0 and 256*256 as per tiff conventions.
-      expectedTable[0*256 + i] = colorMap.get(i).getRed() * 256;
-      expectedTable[1*256 + i] = colorMap.get(i).getGreen() * 256;
-      expectedTable[2*256 + i] = colorMap.get(i).getBlue() * 256;
+      expectedTable[0 * 256 + i] = colorMap.get(i).getRed() * 256;
+      expectedTable[1 * 256 + i] = colorMap.get(i).getGreen() * 256;
+      expectedTable[2 * 256 + i] = colorMap.get(i).getBlue() * 256;
     }
     Assert.assertArrayEquals(expectedTable, resultTable);
 
@@ -89,14 +87,12 @@ public class TestGeoTiffPalette {
     String baseline = "src/test/data/ucar/nc2/geotiff/baseline_palette.tif";
     logger.info("****geotiff palette write {}", gridOut);
 
-    HashMap<Integer, Color> colorMap = GeotiffWriter.createColorMap(
-        new int[] {1, 2, 3, 4},
-        new String[] {"#00AAff", "#151412", "#DE01aB", "#100ABB"});
+    HashMap<Integer, Color> colorMap =
+        GeotiffWriter.createColorMap(new int[] {1, 2, 3, 4}, new String[] {"#00AAff", "#151412", "#DE01aB", "#100ABB"});
     int[] colorTable;
 
     Array dtArray;
-    try (GridDataset dataset =
-        GridDataset.open("src/test/data/ucar/nc2/geotiff/categorical.nc")) {
+    try (GridDataset dataset = GridDataset.open("src/test/data/ucar/nc2/geotiff/categorical.nc")) {
       final GeoGrid grid = dataset.findGridByName("drought");
       assert grid != null;
       final GridCoordSystem gcs = grid.getCoordinateSystem();
@@ -126,7 +122,7 @@ public class TestGeoTiffPalette {
 
         IFDEntry colorTableTag = geotiff.findTag(Tag.ColorMap);
         Assert.assertNotNull(colorTableTag);
-        Assert.assertEquals(3*256, colorTableTag.count);
+        Assert.assertEquals(3 * 256, colorTableTag.count);
         Assert.assertArrayEquals(colorTable, colorTableTag.value);
       }
 
@@ -134,7 +130,7 @@ public class TestGeoTiffPalette {
       File file1 = new File(gridOut);
       File file2 = new File(baseline);
 
-      Assert.assertTrue( FileUtils.contentEquals(file1, file2) );
+      Assert.assertTrue(FileUtils.contentEquals(file1, file2));
     }
   }
 }
