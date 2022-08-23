@@ -313,14 +313,14 @@ public class GeotiffWriter implements Closeable {
    */
   public void setColorTable(Map<Integer, Color> colorMap, Color defaultRGB) {
     if (colorMap == null) {
-        colorTable = null;
-        return;
+      colorTable = null;
+      return;
     }
 
     // FIXME: This isn't quite right because this assumes that the data being written is
     // unsigned bytes, but the tiff spec says that it should be sized to the width of
     // the data type, but I would need to know the data type, which this writer doesn't know.
-    colorTable = new int[3*256];
+    colorTable = new int[3 * 256];
     for (int color = 0; color < 3; color++) {
       for (int i = 0; i < 256; i++) {
         // Scale it up to [0, 65535], which is needed by the ColorMap tag.
@@ -345,7 +345,8 @@ public class GeotiffWriter implements Closeable {
    * @throws IllegalArgumentException if above assumptions not valid
    * @throws NumberFormatException if a supplied color isn't parsable
    */
-  public static HashMap<Integer, Color> createColorMap(int[] flag_values, String[] flag_colors) throws IllegalArgumentException, NumberFormatException {
+  public static HashMap<Integer, Color> createColorMap(int[] flag_values, String[] flag_colors)
+      throws IllegalArgumentException, NumberFormatException {
     if (flag_values.length != flag_colors.length) {
       throw new IllegalArgumentException("flag_values and flag_colors must be of equal length");
     }
