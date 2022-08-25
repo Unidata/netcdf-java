@@ -61,6 +61,27 @@ public class TestCoverageAsPoint {
   }
 
   @Test
+  public void testVarFeatureTypes () throws IOException {
+    // vars with no z (or z.len <=1) should be station
+    List<String> stationVarNames = Arrays.asList(new String[]{"withZ1", "withT1Z1", "Z1noT", "T1noZ"});
+
+    SubsetParams params = new SubsetParams();
+    params.setVariables(stationVarNames);
+    params.setLatLonPoint(latlon);
+
+    FeatureDatasetPoint fdp1 = new CoverageAsPoint(gds, stationVarNames, params).asFeatureDatasetPoint();
+    assertThat(fdp1.getFeatureType()).isEqualTo(FeatureType.STATION);
+
+    // vars with z should be station profile
+    List<String> profileVarNames = Arrays.asList(new String[]{"full4", "withT1", "full3", "3D", "4D"});
+
+    params.setVariables(profileVarNames);
+
+    FeatureDatasetPoint fdp2 = new CoverageAsPoint(gds, profileVarNames, params).asFeatureDatasetPoint();
+    assertThat(fdp2.getFeatureType()).isEqualTo(FeatureType.STATION_PROFILE);
+  }
+
+  @Test
   public void testCoverageAsPoint() throws IOException {
     double[] vals = Arrays.copyOfRange(expected, 0, 1);
     // test single point (no time)
