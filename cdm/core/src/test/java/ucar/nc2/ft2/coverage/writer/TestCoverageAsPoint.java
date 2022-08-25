@@ -61,9 +61,9 @@ public class TestCoverageAsPoint {
   }
 
   @Test
-  public void testVarFeatureTypes () throws IOException {
+  public void testVarFeatureTypes() throws IOException {
     // vars with no z (or z.len <=1) should be station
-    List<String> stationVarNames = Arrays.asList(new String[]{"withZ1", "withT1Z1", "Z1noT", "T1noZ"});
+    List<String> stationVarNames = Arrays.asList(new String[] {"withZ1", "withT1Z1", "Z1noT", "T1noZ"});
 
     SubsetParams params = new SubsetParams();
     params.setVariables(stationVarNames);
@@ -73,7 +73,7 @@ public class TestCoverageAsPoint {
     assertThat(fdp1.getFeatureType()).isEqualTo(FeatureType.STATION);
 
     // vars with z should be station profile
-    List<String> profileVarNames = Arrays.asList(new String[]{"full4", "withT1", "full3", "3D", "4D"});
+    List<String> profileVarNames = Arrays.asList(new String[] {"full4", "withT1", "full3", "3D", "4D"});
 
     params.setVariables(profileVarNames);
 
