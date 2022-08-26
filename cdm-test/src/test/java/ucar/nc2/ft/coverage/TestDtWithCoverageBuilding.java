@@ -13,6 +13,8 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ucar.ma2.InvalidRangeException;
+import ucar.ma2.Section;
 import ucar.nc2.Attribute;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.CDM;
@@ -220,4 +222,19 @@ public class TestDtWithCoverageBuilding {
     }
   }
 
+  @Test
+  public void testBadTimeUnit() throws IOException {
+    final String filename = "src/test/data/ucar/nc2/ft/coverage/testBadTimeUnit.nc";
+
+    try (final DtCoverageDataset dtCoverageDataset = DtCoverageDataset.open(filename)) {
+      Assert.assertNotNull(filename, dtCoverageDataset);
+      final String gridName = "variable_time_longitude_latitude";
+
+      final DtCoverage grid = dtCoverageDataset.findGridByShortName(gridName);
+      Assert.assertNotNull(gridName, grid);
+
+      // should throw because variable depends on time, which could not be made into coordinate because of bad time unit
+      Assert.assertThrows(InvalidRangeException.class, () -> grid.readDataSection(new Section(), true));
+    }
+  }
 }
