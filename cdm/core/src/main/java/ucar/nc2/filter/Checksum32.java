@@ -7,7 +7,6 @@ package ucar.nc2.filter;
 
 import com.google.common.primitives.Ints;
 
-import java.nio.ByteOrder;
 import java.util.Map;
 import java.util.zip.Adler32;
 import java.util.zip.CRC32;
@@ -35,17 +34,8 @@ public class Checksum32 extends Filter {
 
   private final CType type; // type of checksum
 
-  private final ByteOrder byteOrder;
-
-  public Checksum32(CType type, ByteOrder bo) {
-    this.type = type;
-    this.byteOrder = bo;
-  }
-
-
   public Checksum32(CType type) {
-    // TODO: can we do this better?
-    this(type, ByteOrder.LITTLE_ENDIAN);
+    this.type = type;
   }
 
   @Override
@@ -61,11 +51,15 @@ public class Checksum32 extends Filter {
   @Override
   public byte[] encode(byte[] dataIn) {
     // create a checksum
-    int checksum = getChecksum(dataIn);
-    // append checksum in front of data
+    int checksum = (int) getChecksum(dataIn);
+    // append checksum in front or behind data
+    // Adler and CRC are supported by Zarr, which follows the NumCodec spec with a checksum before the data
+    // Fletcher is support by hdf5, which has the checksum after the data
     byte[] dataOut = new byte[dataIn.length + nbytes];
-    System.arraycopy(dataIn, 0, dataOut, nbytes, dataIn.length);
-    System.arraycopy(Ints.toByteArray(checksum), 0, dataOut, 0, nbytes);;
+    int dataStart = this.type == CType.FLETCHER ? 0 : nbytes;
+    System.arraycopy(dataIn, 0, dataOut, dataStart, dataIn.length);
+    int checksumStart = this.type == CType.FLETCHER ? dataOut.length - nbytes : 0;
+    System.arraycopy(Ints.toByteArray(checksum), 0, dataOut, checksumStart, nbytes);;
     return dataOut;
   }
 
@@ -73,11 +67,15 @@ public class Checksum32 extends Filter {
   public byte[] decode(byte[] dataIn) {
     // strip the checksum
     byte[] dataOut = new byte[dataIn.length - nbytes];
-    System.arraycopy(dataIn, nbytes, dataOut, 0, dataOut.length);
+    // Adler and CRC are supported by Zarr, which follows the NumCodec spec with a checksum before the data
+    // Fletcher is support by hdf5, which has the checksum after the data
+    int dataStart = this.type == CType.FLETCHER ? 0 : nbytes;
+    System.arraycopy(dataIn, dataStart, dataOut, 0, dataOut.length);
     // verify checksum
-    int checksum = getChecksum(dataOut);
+    int checksum = (int) getChecksum(dataOut);
     byte[] bytes = new byte[nbytes];
-    System.arraycopy(dataIn, 0, bytes, 0, nbytes);
+    int checksumStart = this.type == CType.FLETCHER ? dataIn.length - nbytes : 0;
+    System.arraycopy(dataIn, checksumStart, bytes, 0, nbytes);
     int i = Ints.fromByteArray(bytes);
     if (i != checksum) {
       throw new RuntimeException("Checksum invalid");
@@ -86,7 +84,7 @@ public class Checksum32 extends Filter {
     return dataOut;
   }
 
-  private int getChecksum(byte[] data) {
+  private long getChecksum(byte[] data) {
     Checksum checksum;
     switch (type) {
       case ADLER:
@@ -101,18 +99,13 @@ public class Checksum32 extends Filter {
         break;
     }
     checksum.update(data, 0, data.length);
-    int val = (int) checksum.getValue();
-    // reverse bytes for little endian
-    if (this.byteOrder == ByteOrder.LITTLE_ENDIAN) {
-      val = Integer.reverseBytes(val);
-    }
-    return val;
+    return checksum.getValue();
   }
 
   private class Fletcher32 extends Adler32 {
 
-    private int sum1 = 0;
-    private int sum2 = 0;
+    private long sum1 = 0;
+    private long sum2 = 0;
 
     @Override
     public void update(byte[] b, int off, int len) {
@@ -122,10 +115,37 @@ public class Checksum32 extends Filter {
       if (off < 0 || len < 0 || off > b.length - len) {
         throw new ArrayIndexOutOfBoundsException();
       }
-      for (int i = off; i < len; i++) {
-        sum1 = (sum1 + (b[i] & 0xff)) % 65535;
-        sum2 = (sum2 + sum1) % 65535;
+
+      int i = 0;
+      int end = len / 2;
+      while (end > 0) {
+        int blocklen = end > 360 ? 360 : end;
+        end -= blocklen;
+        do {
+          sum1 += (b[i] & 0xff) << 8 | b[i + 1] & 0xff;
+          sum2 += sum1;
+          i += 2;
+          blocklen--;
+        } while (blocklen > 0);
+        sum1 = (sum1 & 0xffff) + (sum1 >>> 16);
+        sum2 = (sum2 & 0xffff) + (sum2 >>> 16);
       }
+
+      // handle odd # of bytes
+      if (len % 2 > 0) {
+        sum1 += (b[len - 1] & 0xff) << 8;
+        sum2 += sum1;
+        sum1 = (sum1 & 0xffff) + (sum1 >>> 16);
+        sum2 = (sum2 & 0xffff) + (sum2 >>> 16);
+      }
+
+      sum1 = (sum1 & 0xffff) + (sum1 >>> 16);
+      sum2 = (sum2 & 0xffff) + (sum2 >>> 16);
+    }
+
+    @Override
+    public long getValue() {
+      return Integer.reverseBytes((int) ((sum2 << 16) | sum1));
     }
   }
 
