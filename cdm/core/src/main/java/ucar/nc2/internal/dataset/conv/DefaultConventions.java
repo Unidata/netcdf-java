@@ -213,12 +213,14 @@ public class DefaultConventions extends CoordSystemBuilder {
       {
         return AxisType.Height;
       }
+      logger.info("Unit '" + unit + "' is not compatible with meters for axis '" + vname + "'");
     }
 
     if (vname.equalsIgnoreCase("time") || findAlias(vb).equalsIgnoreCase("time")) {
       if (SimpleUnit.isDateUnit(unit)) {
         return AxisType.Time;
       }
+      logger.info("Unit '" + unit + "' not recognized as a time unit for axis '" + vname + "'");
     }
 
     if (vname.equalsIgnoreCase("time") && vb.dataType == DataType.STRING) {
