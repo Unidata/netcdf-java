@@ -31,7 +31,6 @@ import ucar.nc2.grib.coord.VertCoordType;
 import ucar.nc2.grib.coord.VertCoordValue;
 import ucar.nc2.grib.grib2.Grib2Utils;
 import ucar.nc2.time.Calendar;
-import ucar.nc2.time.CalendarPeriod;
 import ucar.unidata.geoloc.projection.RotatedPole;
 import ucar.unidata.util.Parameter;
 import java.util.Formatter;
