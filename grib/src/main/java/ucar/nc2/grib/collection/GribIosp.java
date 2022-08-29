@@ -440,7 +440,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
               dimNames.format("%s %s ", run.getName(), timeDimName);
             }
             coordinateAtt.format("%s %s ", run.getName(), timeCoordName);
-            if (timeDimName != timeCoordName) {
+            if (!timeDimName.equals(timeCoordName)) {
               coordinateAtt.format("%s ", timeDimName);
             }
             break;
