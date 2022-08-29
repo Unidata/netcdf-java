@@ -452,7 +452,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
             break;
 
           default:
-            throw new IllegalStateException("Uknown GribCollection TYpe = " + gctype);
+            throw new IllegalStateException("Unknown GribCollection Type = " + gctype);
         }
 
         // do other (vert, ens) coordinates
