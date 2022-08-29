@@ -332,8 +332,6 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
       cv.setCachedData(Array.makeArray(DataType.FLOAT, hcs.ny, hcs.starty, hcs.dy));
     }
 
-    boolean singleRuntimeWasMade = false;
-
     for (Coordinate coord : group.coords) {
       Coordinate.Type ctype = coord.getType();
       switch (ctype) {
