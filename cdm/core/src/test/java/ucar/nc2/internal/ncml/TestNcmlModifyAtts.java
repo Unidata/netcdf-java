@@ -56,7 +56,7 @@ public class TestNcmlModifyAtts {
   @Test
   public void testVarAtt() {
     final Variable v = ncfile.findVariable("rh");
-    assertThat(v != null).isTrue();
+    assertThat((Object) v).isNotNull();
 
     final Attribute removedAttribute = v.findAttribute(CDM.LONG_NAME);
     assertThat(removedAttribute).isNull();
@@ -98,7 +98,7 @@ public class TestNcmlModifyAtts {
   @Test
   public void testReadCoordvar() throws IOException {
     Variable lat = ncfile.findVariable("lat");
-    assertThat(lat != null).isTrue();
+    assertThat((Object) lat).isNotNull();
     assertThat(lat.getShortName()).isEqualTo("lat");
     assertThat(lat.getRank()).isEqualTo(1);
     assertThat(lat.getSize()).isEqualTo(3);
@@ -133,7 +133,7 @@ public class TestNcmlModifyAtts {
   @Test
   public void testReadData() throws IOException {
     Variable v = ncfile.findVariable("rh");
-    assertThat(v != null).isTrue();
+    assertThat((Object) v).isNotNull();
     assertThat(v.getShortName()).isEqualTo("rh");
     assertThat(v.getRank()).isEqualTo(3);
     assertThat(v.getSize()).isEqualTo(24);
@@ -168,7 +168,7 @@ public class TestNcmlModifyAtts {
   @Test
   public void testReadSlice() throws IOException, InvalidRangeException {
     Variable v = ncfile.findVariable("rh");
-    assertThat(v != null).isTrue();
+    assertThat((Object) v).isNotNull();
     int[] origin = new int[3];
     int[] shape = {2, 3, 1};
 
@@ -192,7 +192,7 @@ public class TestNcmlModifyAtts {
   @Test
   public void testReadSlice2() throws IOException, InvalidRangeException {
     Variable v = ncfile.findVariable("rh");
-    assertThat(v != null).isTrue();
+    assertThat((Object) v).isNotNull();
     int[] origin = new int[3];
     int[] shape = {2, 1, 3};
 
@@ -215,10 +215,10 @@ public class TestNcmlModifyAtts {
   @Test
   public void testReadData2() throws IOException {
     Variable v = ncfile.findVariable("Temperature");
-    assertThat(v == null).isTrue();
+    assertThat((Object) v).isNull();
 
     v = ncfile.findVariable("T");
-    assertThat(v != null).isTrue();
+    assertThat((Object) v).isNotNull();
     assertThat(v.getShortName()).isEqualTo("T");
     assertThat(v.getRank()).isEqualTo(3);
     assertThat(v.getSize()).isEqualTo(24);
