@@ -50,7 +50,7 @@ public class TestMRMS {
 
       att = var.findAttribute("_FillValue");
       Assert.assertNotNull(att);
-      Assert.assertEquals(-999., att.getNumericValue().doubleValue(), 1e-6);
+      Assert.assertEquals(-9999., att.getNumericValue().doubleValue(), 1e-6);
     }
   }
 }
