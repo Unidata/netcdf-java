@@ -332,8 +332,6 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
       cv.setCachedData(Array.makeArray(DataType.FLOAT, hcs.ny, hcs.starty, hcs.dy));
     }
 
-    boolean singleRuntimeWasMade = false;
-
     for (Coordinate coord : group.coords) {
       Coordinate.Type ctype = coord.getType();
       switch (ctype) {
@@ -442,7 +440,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
               dimNames.format("%s %s ", run.getName(), timeDimName);
             }
             coordinateAtt.format("%s %s ", run.getName(), timeCoordName);
-            if (timeDimName != timeCoordName) {
+            if (!timeDimName.equals(timeCoordName)) {
               coordinateAtt.format("%s ", timeDimName);
             }
             break;
@@ -454,7 +452,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
             break;
 
           default:
-            throw new IllegalStateException("Uknown GribCollection TYpe = " + gctype);
+            throw new IllegalStateException("Unknown GribCollection Type = " + gctype);
         }
 
         // do other (vert, ens) coordinates
