@@ -778,7 +778,7 @@ public class H4header implements HdfHeaderIF {
     if (vh.nfields < 1)
       throw new IllegalStateException();
 
-    try{
+    try {
       Variable.Builder vb;
       if (vh.nfields == 1) {
         // String name = createValidObjectName(vh.name);
@@ -841,8 +841,7 @@ public class H4header implements HdfHeaderIF {
       }
 
       return vb;
-    }
-    catch (InvalidRangeException e){
+    } catch (InvalidRangeException e) {
       log.error(e.getMessage());
       throw new IllegalStateException(e.getMessage());
     }
@@ -946,8 +945,7 @@ public class H4header implements HdfHeaderIF {
     if (!ok) {
       try {
         vb.setDimensionsAnonymous(dim.shape);
-      }
-      catch (InvalidRangeException e){
+      } catch (InvalidRangeException e) {
         log.error(e.getMessage());
       }
     }
@@ -997,10 +995,9 @@ public class H4header implements HdfHeaderIF {
       throw new IllegalStateException();
 
     Variable.Builder vb = Variable.builder().setName("SDS-" + group.refno);
-    try{
+    try {
       vb.setDimensionsAnonymous(dim.shape);
-    }
-    catch (InvalidRangeException e){
+    } catch (InvalidRangeException e) {
       log.error(e.getMessage());
     }
     DataType dataType = H4type.setDataType(nt.type, null);

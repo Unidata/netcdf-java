@@ -124,13 +124,12 @@ class BufrIospBuilder {
     dkey.name = uname; // name may need to be changed for uniqueness
 
     Structure.Builder struct = Structure.builder().setName(uname);
-    try{
+    try {
       struct.setDimensionsAnonymous(new int[] {count}); // anon vector
-    }
-    catch (InvalidRangeException e){
+    } catch (InvalidRangeException e) {
       log.error(e.getMessage());
     }
-      for (BufrConfig.FieldConverter subKey : fld.flds) {
+    for (BufrConfig.FieldConverter subKey : fld.flds) {
       addMember(group, struct, subKey);
     }
 
@@ -182,10 +181,9 @@ class BufrIospBuilder {
     Structure.Builder struct = Structure.builder().setName(uname);
     parent.addMemberVariable(struct);
     int n = parentFld.dds.replication;
-    try{
+    try {
       struct.setDimensionsAnonymous(new int[] {n}); // anon vector
-    }
-    catch (InvalidRangeException e){
+    } catch (InvalidRangeException e) {
       log.error(e.getMessage());
     }
 
@@ -202,10 +200,9 @@ class BufrIospBuilder {
 
   private void addDpiSequence(Structure.Builder parent, BufrConfig.FieldConverter fld) {
     Structure.Builder struct = Structure.builder().setName("statistics");
-    try{
+    try {
       struct.setDimensionsAnonymous(new int[] {fld.dds.replication}); // scalar
-    }
-    catch (InvalidRangeException e){
+    } catch (InvalidRangeException e) {
       log.error(e.getMessage());
     }
 
@@ -228,10 +225,9 @@ class BufrIospBuilder {
 
     Variable.Builder v = Variable.builder().setName(uname);
     if (count > 1) {
-      try{
+      try {
         v.setDimensionsAnonymous(new int[] {count}); // anon vector
-      }
-      catch (InvalidRangeException e){
+      } catch (InvalidRangeException e) {
         log.error(e.getMessage());
         log.debug("ERROR: makeVariableShapeAndType {}", e.getMessage());
       }
@@ -260,10 +256,9 @@ class BufrIospBuilder {
     if (dataDesc.type == 1) {
       v.setDataType(DataType.CHAR);
       int size = dataDesc.bitWidth / 8;
-      try{
+      try {
         v.setDimensionsAnonymous(new int[] {size});
-      }
-      catch (InvalidRangeException e){
+      } catch (InvalidRangeException e) {
         log.error(e.getMessage());
         log.debug("ERROR: makeVariableShapeAndType {}", e.getMessage());
       }

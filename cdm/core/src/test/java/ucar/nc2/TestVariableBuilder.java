@@ -55,12 +55,12 @@ public class TestVariableBuilder {
     assertThat(var.getShapeAsSection()).isEqualTo(new Section(new int[] {3, 6, -1}));
   }
 
-  @Test (expected = ucar.ma2.InvalidRangeException.class)
+  @Test(expected = ucar.ma2.InvalidRangeException.class)
   public void testWithZeroDims() throws InvalidRangeException {
     int[] shape = new int[] {3, 6, 0};
     Variable var = Variable.builder().setName("name").setDataType(DataType.FLOAT).setDimensionsAnonymous(shape)
-            .build(makeDummyGroup());
-   }
+        .build(makeDummyGroup());
+  }
 
   @Test
   public void testCopy() {

@@ -2062,7 +2062,7 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
         if ((shape[i] < 1) && (shape[i] != -1))
           throw new InvalidRangeException("shape[" + i + "]=" + shape[i] + " must be > 0");
       }
-        this.dimensions = new ArrayList<>(Dimensions.makeDimensionsAnon(shape));
+      this.dimensions = new ArrayList<>(Dimensions.makeDimensionsAnon(shape));
       return self();
     }
 
