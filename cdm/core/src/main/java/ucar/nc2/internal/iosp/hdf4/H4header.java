@@ -778,68 +778,74 @@ public class H4header implements HdfHeaderIF {
     if (vh.nfields < 1)
       throw new IllegalStateException();
 
-    Variable.Builder vb;
-    if (vh.nfields == 1) {
-      // String name = createValidObjectName(vh.name);
-      vb = Variable.builder().setName(vh.name);
-      vinfo.setVariable(vb);
-      vb.setDataType(H4type.setDataType(vh.fld_type[0], null));
+    try{
+      Variable.Builder vb;
+      if (vh.nfields == 1) {
+        // String name = createValidObjectName(vh.name);
+        vb = Variable.builder().setName(vh.name);
+        vinfo.setVariable(vb);
+        vb.setDataType(H4type.setDataType(vh.fld_type[0], null));
 
-      if (vh.nvert > 1) {
+        if (vh.nvert > 1) {
 
-        if (vh.fld_order[0] > 1)
-          vb.setDimensionsAnonymous(new int[] {vh.nvert, vh.fld_order[0]});
-        else if (vh.fld_order[0] < 0)
-          vb.setDimensionsAnonymous(new int[] {vh.nvert, vh.fld_isize[0]});
-        else
-          vb.setDimensionsAnonymous(new int[] {vh.nvert});
+          if (vh.fld_order[0] > 1)
+            vb.setDimensionsAnonymous(new int[] {vh.nvert, vh.fld_order[0]});
+          else if (vh.fld_order[0] < 0)
+            vb.setDimensionsAnonymous(new int[] {vh.nvert, vh.fld_isize[0]});
+          else
+            vb.setDimensionsAnonymous(new int[] {vh.nvert});
+
+        } else {
+
+          if (vh.fld_order[0] > 1)
+            vb.setDimensionsAnonymous(new int[] {vh.fld_order[0]});
+          else if (vh.fld_order[0] < 0)
+            vb.setDimensionsAnonymous(new int[] {vh.fld_isize[0]});
+          else
+            vb.setIsScalar();
+        }
+
+        vinfo.setData(data, vb.dataType.getSize());
 
       } else {
 
-        if (vh.fld_order[0] > 1)
-          vb.setDimensionsAnonymous(new int[] {vh.fld_order[0]});
-        else if (vh.fld_order[0] < 0)
-          vb.setDimensionsAnonymous(new int[] {vh.fld_isize[0]});
+        Structure.Builder s = Structure.builder().setName(vh.name);
+        vinfo.setVariable(s);
+        // vinfo.recsize = vh.ivsize;
+
+        if (vh.nvert > 1)
+          s.setDimensionsAnonymous(new int[] {vh.nvert});
         else
-          vb.setIsScalar();
+          s.setIsScalar();
+
+        for (int fld = 0; fld < vh.nfields; fld++) {
+          Variable.Builder m = Variable.builder().setName(vh.fld_name[fld]);
+          short type = vh.fld_type[fld];
+          short nelems = vh.fld_order[fld];
+          m.setDataType(H4type.setDataType(type, null));
+          if (nelems > 1)
+            m.setDimensionsAnonymous(new int[] {nelems});
+          else
+            m.setIsScalar();
+
+          m.setSPobject(new Minfo(vh.fld_offset[fld]));
+          s.addMemberVariable(m);
+        }
+
+        vinfo.setData(data, vh.ivsize);
+        vb = s;
       }
 
-      vinfo.setData(data, vb.dataType.getSize());
-
-    } else {
-
-      Structure.Builder s = Structure.builder().setName(vh.name);
-      vinfo.setVariable(s);
-      // vinfo.recsize = vh.ivsize;
-
-      if (vh.nvert > 1)
-        s.setDimensionsAnonymous(new int[] {vh.nvert});
-      else
-        s.setIsScalar();
-
-      for (int fld = 0; fld < vh.nfields; fld++) {
-        Variable.Builder m = Variable.builder().setName(vh.fld_name[fld]);
-        short type = vh.fld_type[fld];
-        short nelems = vh.fld_order[fld];
-        m.setDataType(H4type.setDataType(type, null));
-        if (nelems > 1)
-          m.setDimensionsAnonymous(new int[] {nelems});
-        else
-          m.setIsScalar();
-
-        m.setSPobject(new Minfo(vh.fld_offset[fld]));
-        s.addMemberVariable(m);
+      if (debugConstruct) {
+        System.out.println("added variable " + vb.shortName + " from VH " + vh);
       }
 
-      vinfo.setData(data, vh.ivsize);
-      vb = s;
+      return vb;
     }
-
-    if (debugConstruct) {
-      System.out.println("added variable " + vb.shortName + " from VH " + vh);
+    catch (InvalidRangeException e){
+      log.error(e.getMessage());
+      throw new IllegalStateException(e.getMessage());
     }
-
-    return vb;
   }
 
   @Override
@@ -938,7 +944,12 @@ public class H4header implements HdfHeaderIF {
     }
 
     if (!ok) {
-      vb.setDimensionsAnonymous(dim.shape);
+      try {
+        vb.setDimensionsAnonymous(dim.shape);
+      }
+      catch (InvalidRangeException e){
+        log.error(e.getMessage());
+      }
     }
 
     // look for attributes
@@ -986,7 +997,12 @@ public class H4header implements HdfHeaderIF {
       throw new IllegalStateException();
 
     Variable.Builder vb = Variable.builder().setName("SDS-" + group.refno);
-    vb.setDimensionsAnonymous(dim.shape);
+    try{
+      vb.setDimensionsAnonymous(dim.shape);
+    }
+    catch (InvalidRangeException e){
+      log.error(e.getMessage());
+    }
     DataType dataType = H4type.setDataType(nt.type, null);
     vb.setDataType(dataType);
 

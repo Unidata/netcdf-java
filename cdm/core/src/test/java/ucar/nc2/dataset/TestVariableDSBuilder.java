@@ -7,10 +7,7 @@ import static ucar.nc2.TestUtils.makeDummyGroup;
 import java.io.IOException;
 import java.util.List;
 import org.junit.Test;
-import ucar.ma2.Array;
-import ucar.ma2.DataType;
-import ucar.ma2.IndexIterator;
-import ucar.ma2.Section;
+import ucar.ma2.*;
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
 import ucar.nc2.Group;
@@ -77,7 +74,7 @@ public class TestVariableDSBuilder {
   }
 
   @Test
-  public void testWithAnonymousDims() {
+  public void testWithAnonymousDims() throws InvalidRangeException {
     // No parent group needed
     int[] shape = new int[] {3, 6, -1};
     VariableDS var = VariableDS.builder().setName("name").setDataType(DataType.FLOAT).setDimensionsAnonymous(shape)

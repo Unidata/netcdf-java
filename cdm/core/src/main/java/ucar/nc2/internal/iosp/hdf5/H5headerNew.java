@@ -1544,7 +1544,13 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
       else
         v.setDimensionsByName(dimNames);
     } else {
-      v.setDimensionsAnonymous(shape);
+        try{
+          v.setDimensionsAnonymous(shape);
+        }
+        catch (InvalidRangeException e){
+          log.error(e.getMessage());
+          return false;
+        }
     }
 
     // set the type

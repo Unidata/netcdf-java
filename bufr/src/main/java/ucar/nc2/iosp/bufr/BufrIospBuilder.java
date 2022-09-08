@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Optional;
 import org.slf4j.Logger;
 import ucar.ma2.DataType;
+import ucar.ma2.InvalidRangeException;
 import ucar.nc2.Attribute;
 import ucar.nc2.AttributeContainerMutable;
 import ucar.nc2.EnumTypedef;
@@ -123,8 +124,13 @@ class BufrIospBuilder {
     dkey.name = uname; // name may need to be changed for uniqueness
 
     Structure.Builder struct = Structure.builder().setName(uname);
-    struct.setDimensionsAnonymous(new int[] {count}); // anon vector
-    for (BufrConfig.FieldConverter subKey : fld.flds) {
+    try{
+      struct.setDimensionsAnonymous(new int[] {count}); // anon vector
+    }
+    catch (InvalidRangeException e){
+      log.error(e.getMessage());
+    }
+      for (BufrConfig.FieldConverter subKey : fld.flds) {
       addMember(group, struct, subKey);
     }
 
@@ -176,7 +182,12 @@ class BufrIospBuilder {
     Structure.Builder struct = Structure.builder().setName(uname);
     parent.addMemberVariable(struct);
     int n = parentFld.dds.replication;
-    struct.setDimensionsAnonymous(new int[] {n}); // anon vector
+    try{
+      struct.setDimensionsAnonymous(new int[] {n}); // anon vector
+    }
+    catch (InvalidRangeException e){
+      log.error(e.getMessage());
+    }
 
     Variable.Builder v = Variable.builder().setName("name");
     v.setDataType(DataType.STRING); // scalar
@@ -191,7 +202,12 @@ class BufrIospBuilder {
 
   private void addDpiSequence(Structure.Builder parent, BufrConfig.FieldConverter fld) {
     Structure.Builder struct = Structure.builder().setName("statistics");
-    struct.setDimensionsAnonymous(new int[] {fld.dds.replication}); // scalar
+    try{
+      struct.setDimensionsAnonymous(new int[] {fld.dds.replication}); // scalar
+    }
+    catch (InvalidRangeException e){
+      log.error(e.getMessage());
+    }
 
     Variable.Builder v = Variable.builder().setName("name");
     v.setDataType(DataType.STRING); // scalar
@@ -212,7 +228,13 @@ class BufrIospBuilder {
 
     Variable.Builder v = Variable.builder().setName(uname);
     if (count > 1) {
-      v.setDimensionsAnonymous(new int[] {count}); // anon vector
+      try{
+        v.setDimensionsAnonymous(new int[] {count}); // anon vector
+      }
+      catch (InvalidRangeException e){
+        log.error(e.getMessage());
+        log.debug("ERROR: makeVariableShapeAndType {}", e.getMessage());
+      }
     }
 
     if (fld.getDesc() != null) {
@@ -238,7 +260,13 @@ class BufrIospBuilder {
     if (dataDesc.type == 1) {
       v.setDataType(DataType.CHAR);
       int size = dataDesc.bitWidth / 8;
-      v.setDimensionsAnonymous(new int[] {size});
+      try{
+        v.setDimensionsAnonymous(new int[] {size});
+      }
+      catch (InvalidRangeException e){
+        log.error(e.getMessage());
+        log.debug("ERROR: makeVariableShapeAndType {}", e.getMessage());
+      }
 
     } else if ((dataDesc.type == 2) && CodeFlagTables.hasTable(dataDesc.fxy)) { // enum
       int nbits = dataDesc.bitWidth;

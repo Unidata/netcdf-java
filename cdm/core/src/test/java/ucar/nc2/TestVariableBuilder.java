@@ -5,6 +5,7 @@ import static org.junit.Assert.fail;
 import static ucar.nc2.TestUtils.makeDummyGroup;
 import org.junit.Test;
 import ucar.ma2.DataType;
+import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Section;
 
 public class TestVariableBuilder {
@@ -42,7 +43,7 @@ public class TestVariableBuilder {
   }
 
   @Test
-  public void testWithAnonymousDims() {
+  public void testWithAnonymousDims() throws InvalidRangeException {
     int[] shape = new int[] {3, 6, -1};
     Variable var = Variable.builder().setName("name").setDataType(DataType.FLOAT).setDimensionsAnonymous(shape)
         .build(makeDummyGroup());
@@ -53,6 +54,13 @@ public class TestVariableBuilder {
     assertThat(var.getShape()).isEqualTo(new int[] {3, 6, -1});
     assertThat(var.getShapeAsSection()).isEqualTo(new Section(new int[] {3, 6, -1}));
   }
+
+  @Test (expected = ucar.ma2.InvalidRangeException.class)
+  public void testWithZeroDims() throws InvalidRangeException {
+    int[] shape = new int[] {3, 6, 0};
+    Variable var = Variable.builder().setName("name").setDataType(DataType.FLOAT).setDimensionsAnonymous(shape)
+            .build(makeDummyGroup());
+   }
 
   @Test
   public void testCopy() {

@@ -2055,10 +2055,14 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
      * Set the dimensions using all anonymous (unshared) dimensions
      *
      * @param shape defines the dimension lengths. must be > 0, or -1 for VLEN
-     * @throws RuntimeException if any shape < 1 and not -1.
+     * @throws InvalidRangeException if any shape < 1 and not -1.
      */
-    public T setDimensionsAnonymous(int[] shape) {
-      this.dimensions = new ArrayList<>(Dimensions.makeDimensionsAnon(shape));
+    public T setDimensionsAnonymous(int[] shape) throws InvalidRangeException {
+      for (int i = 0; i < shape.length; i++) {
+        if ((shape[i] < 1) && (shape[i] != -1))
+          throw new InvalidRangeException("shape[" + i + "]=" + shape[i] + " must be > 0");
+      }
+        this.dimensions = new ArrayList<>(Dimensions.makeDimensionsAnon(shape));
       return self();
     }
 
