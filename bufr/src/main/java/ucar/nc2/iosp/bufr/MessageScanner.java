@@ -179,7 +179,7 @@ public class MessageScanner {
           embedTable = new EmbeddedTable(m, raf);
         embedTable.addTable(m);
       } else if (embedTable != null) {
-        m.setTableLookup(embedTable.getTableLookup());
+        // m.setTableLookup(embedTable.getTableLookup());
       }
 
       countMsgs++;
