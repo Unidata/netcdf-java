@@ -6,6 +6,7 @@ buildscript {
   // The buildscript {} block is odd: even though we applied dependencies.gradle above, the repositories therein
   // do not get included here. Instead, we must explicitly define the repos again. Yay for duplication.
   repositories {
+    mavenCentral()
     gradlePluginPortal()
     exclusiveContent {
       forRepository {
