@@ -10,6 +10,7 @@ import ucar.unidata.util.Parameter;
 /**
  * Projective geometry transformations from (lat,lon) to (x,y) on
  * a projective cartesian surface.
+ * Unless it is a rotation from (lat,lon) to (lat,lon).
  * 
  * @author John Caron
  *         LOOK will be immutable AutoValue in ver6
