@@ -28,7 +28,7 @@ cd netcdf-java
 ~~~
 
 By default, the current branch head is set to `maint-5.x`, which is our main development branch.
-If you’d like to build a released version instead, you can see all the release tags using
+If you’d like to build a released version instead, you can see all the release tags using:
 ~~~bash
 git tag
 ~~~
