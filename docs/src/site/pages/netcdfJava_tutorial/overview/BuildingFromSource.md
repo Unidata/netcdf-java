@@ -28,10 +28,15 @@ cd netcdf-java
 ~~~
 
 By default, the current branch head is set to master, which is our main development branch.
-If you’d like to build a released version instead — v5.0.0, for example, you’ll need to checkout that version:
+If you’d like to build a released version instead, you can see all the release tags using
+~~~bash
+git tag
+~~~
+
+To choose release version {{site.docset_version}}.0, for example, you’ll need to checkout that version's tag:
 
 ~~~bash
-git checkout v5.0.0
+git checkout v{{site.docset_version}}.0
 ~~~
 
 Next, use the Gradle wrapper to execute the assemble task:
