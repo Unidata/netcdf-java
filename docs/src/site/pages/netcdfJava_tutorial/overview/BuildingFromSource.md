@@ -10,7 +10,7 @@ toc: false
 
 The netCDF-Java source code is hosted on GitHub, and — as of v4.6.1 — we use Gradle to build it.
 Ant and Maven builds are no longer supported.
-To build, you need Git and JDK 8 installed (building with JDK > 8 is not yet supported, but is being addressed).
+To build, you need Git and JDK 8, JDK 11, or JDK 14 installed.
 
 First, clone the netCDF-Java repository from Github:
 
