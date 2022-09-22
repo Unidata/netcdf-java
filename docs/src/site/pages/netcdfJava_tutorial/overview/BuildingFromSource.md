@@ -55,7 +55,7 @@ NetCDF-Java is comprised of several modules, many of which you can use within yo
 At Unidata, we publish the artifacts that those modules generate to our Nexus repository.
 
 However, it may happen that you need artifacts for the in-development version of netCDF-Java in your local branch, which we usually don’t upload to Nexus.
-We do publish nightly SNAPSHOTS, but those may not have the develoment changes you are currently working on. 
+We do publish nightly SNAPSHOTS, but those may not have the development changes you are currently working on. 
 Never fear: you can build them yourself and publish them to your local Maven repository!
 
 ~~~
