@@ -33,6 +33,7 @@ If you’d like to build a released version instead, you can see all the release
 git tag
 ~~~
 
+We recommend that you choose the latest release.
 To choose release version {{site.docset_version}}.0, for example, you’ll need to checkout that version's tag:
 
 ~~~bash
