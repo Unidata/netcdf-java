@@ -27,7 +27,7 @@ Change into the netcdf-java directory:
 cd netcdf-java
 ~~~
 
-By default, the current branch head is set to master, which is our main development branch.
+By default, the current branch head is set to `maint-5.x`, which is our main development branch.
 If you’d like to build a released version instead, you can see all the release tags using
 ~~~bash
 git tag
@@ -59,7 +59,7 @@ We do publish nightly SNAPSHOTS, but those may not have the develoment changes y
 Never fear: you can build them yourself and publish them to your local Maven repository!
 
 ~~~
-git checkout master
+git checkout maint-5.x
 ./gradlew publishToMavenLocal
 ~~~
 
