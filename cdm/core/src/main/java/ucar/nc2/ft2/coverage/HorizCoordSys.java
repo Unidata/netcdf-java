@@ -657,7 +657,11 @@ public class HorizCoordSys {
       final ProjectionPoint projPointInKm =
           ProjectionPoint.create(convertToKm(projPoint.getX(), xAxis.units, xAxis.name),
               convertToKm(projPoint.getY(), yAxis.units, yAxis.name));
-      latLonPoints.add(transform.getProjection().projToLatLon(projPointInKm));
+
+      final LatLonPoint latLonPoint = transform.getProjection().projToLatLon(projPointInKm);
+      if (!Double.isNaN(latLonPoint.getLatitude()) && !Double.isNaN(latLonPoint.getLongitude())) {
+        latLonPoints.add(latLonPoint);
+      }
     }
 
     return latLonPoints;
