@@ -497,7 +497,7 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
         }
 
         if (facadeNested.dobj.mdt.map != null) {
-          EnumTypedef enumTypedef = parentGroup.findEnumTypedef(facadeNested.name,true).orElse(null);
+          EnumTypedef enumTypedef = parentGroup.findEnumTypedef(facadeNested.name, true).orElse(null);
           if (enumTypedef == null) {
             DataType basetype;
             switch (facadeNested.dobj.mdt.byteSize) {
@@ -553,7 +553,7 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
             }
             // This code apparently addresses the possibility of an anonymous enum LOOK ??
             if (enumTypeName.isEmpty()) {
-              EnumTypedef enumTypedef = parentGroup.findEnumTypedef(facadeNested.name,true).get();
+              EnumTypedef enumTypedef = parentGroup.findEnumTypedef(facadeNested.name, true).get();
               if (enumTypedef == null) {
                 enumTypedef = new EnumTypedef(facadeNested.name, facadeNested.dobj.mdt.map);
                 parentGroup.addEnumTypedef(enumTypedef);
@@ -1569,7 +1569,7 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
     // set the enumTypedef
     if (dt.isEnum()) {
       // TODO Not sure why, but there may be both a user type and a "local" mdt enum. May need to do a value match?
-      EnumTypedef enumTypedef = parent.findEnumTypedef(mdt.enumTypeName,true).orElse(null);
+      EnumTypedef enumTypedef = parent.findEnumTypedef(mdt.enumTypeName, true).orElse(null);
       if (enumTypedef == null) { // if shared object, wont have a name, shared version gets added later
         EnumTypedef local = new EnumTypedef(mdt.enumTypeName, mdt.map);
         enumTypedef = parent.enumTypedefs.stream().filter((e) -> e.equalsMapOnly(local)).findFirst().orElse(local);

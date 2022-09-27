@@ -231,24 +231,23 @@ public class Group extends CDMNode implements AttributeContainer {
 
   /** Find a Enumeration in this or a parent Group Builder, using its short name. */
   public EnumTypedef findEnumeration(String name, boolean searchup) {
-      EnumTypedef ed = null;
-      if (name != null) {
-        // name = NetcdfFile.makeNameUnescaped(name);
-        Group g = this;
-        search:
-        do {
-          // search this group's EnumTypedefs
-          for(EnumTypedef e : g.getEnumTypedefs()) {
-            if(e.getShortName().equals(name)) {
-              ed = e;
-              break search;
-            }
+    EnumTypedef ed = null;
+    if (name != null) {
+      // name = NetcdfFile.makeNameUnescaped(name);
+      Group g = this;
+      search: do {
+        // search this group's EnumTypedefs
+        for (EnumTypedef e : g.getEnumTypedefs()) {
+          if (e.getShortName().equals(name)) {
+            ed = e;
+            break search;
           }
-          g = g.getParentGroup();
-        } while(searchup && g != null);
-      }
-      return ed;
+        }
+        g = g.getParentGroup();
+      } while (searchup && g != null);
     }
+    return ed;
+  }
 
   /**
    * Find a Dimension in this or a parent Group, matching on short name.
@@ -520,12 +519,12 @@ public class Group extends CDMNode implements AttributeContainer {
 
       for (Attribute att : attributes) {
         // String name = strict ? NetcdfFile.escapeNameCDL(getShortName()) : getShortName();
-          out.format("%s", indent);
-          att.writeCDL(out, strict, null);
-          out.format(";");
-          if (!strict && (att.getDataType() != DataType.STRING))
-            out.format(" // %s", att.getDataType());
-          out.format("%n");
+        out.format("%s", indent);
+        att.writeCDL(out, strict, null);
+        out.format(";");
+        if (!strict && (att.getDataType() != DataType.STRING))
+          out.format(" // %s", att.getDataType());
+        out.format("%n");
       }
     }
   }
@@ -1123,13 +1122,14 @@ public class Group extends CDMNode implements AttributeContainer {
       if (name != null) {
         // name = NetcdfFile.makeNameUnescaped(name);
         ed = this.enumTypedefs.stream().filter(e -> e.shortName.equals(name)).findFirst();
-	if(!ed.isPresent() && search) {
-          for(Group.Builder gb = this; gb != null; gb = gb.getParentGroup()) {
+        if (!ed.isPresent() && search) {
+          for (Group.Builder gb = this; gb != null; gb = gb.getParentGroup()) {
             // search this group builders's EnumTypedefs
-	        ed = gb.enumTypedefs.stream().filter(e -> e.shortName.equals(name)).findFirst();
-            if(ed.isPresent()) break;
+            ed = gb.enumTypedefs.stream().filter(e -> e.shortName.equals(name)).findFirst();
+            if (ed.isPresent())
+              break;
           }
-	}
+        }
       }
       return ed;
     }
@@ -1151,7 +1151,7 @@ public class Group extends CDMNode implements AttributeContainer {
      * Return new or existing.
      */
     public EnumTypedef findOrAddEnumTypedef(String name, Map<Integer, String> map) {
-      Optional<EnumTypedef> opt = findEnumTypedef(name,false); // Find in this group
+      Optional<EnumTypedef> opt = findEnumTypedef(name, false); // Find in this group
       if (opt.isPresent()) {
         return opt.get();
       } else {

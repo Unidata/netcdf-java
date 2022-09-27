@@ -491,7 +491,7 @@ public class H5header extends NCheader implements H5headerIF {
         }
 
         if (facadeNested.dobj.mdt.map != null) {
-          EnumTypedef enumTypedef = ncGroup.findEnumeration(facadeNested.name,false);
+          EnumTypedef enumTypedef = ncGroup.findEnumeration(facadeNested.name, false);
           if (enumTypedef == null) {
             DataType basetype;
             switch (facadeNested.dobj.mdt.byteSize) {
@@ -549,7 +549,7 @@ public class H5header extends NCheader implements H5headerIF {
             // This code apparently addresses the possibility of an anonymous enum LOOK ??
             String ename = enumTypedef.getShortName();
             if (ename == null || ename.isEmpty()) {
-              enumTypedef = ncGroup.findEnumeration(facadeNested.name,false);
+              enumTypedef = ncGroup.findEnumeration(facadeNested.name, false);
               if (enumTypedef == null) {
                 enumTypedef = new EnumTypedef(facadeNested.name, facadeNested.dobj.mdt.map);
                 ncGroup.addEnumeration(enumTypedef);
