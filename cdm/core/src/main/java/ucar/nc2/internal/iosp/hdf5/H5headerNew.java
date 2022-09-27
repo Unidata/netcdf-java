@@ -44,11 +44,11 @@ import ucar.nc2.Group.Builder;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.CDM;
+import ucar.nc2.filter.Filter;
 import ucar.nc2.internal.iosp.hdf4.HdfEos;
 import ucar.nc2.internal.iosp.hdf4.HdfHeaderIF;
 import ucar.nc2.internal.iosp.hdf5.H5objects.DataObject;
 import ucar.nc2.internal.iosp.hdf5.H5objects.DataObjectFacade;
-import ucar.nc2.internal.iosp.hdf5.H5objects.Filter;
 import ucar.nc2.internal.iosp.hdf5.H5objects.GlobalHeap;
 import ucar.nc2.internal.iosp.hdf5.H5objects.H5Group;
 import ucar.nc2.internal.iosp.hdf5.H5objects.HeaderMessage;
@@ -160,8 +160,6 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
    * 2) they all have the same length as the dimension
    * 3) all variables' dimensions have a dimension scale
    */
-
-  private static final int KNOWN_FILTERS = 3;
 
   private final RandomAccessFile raf;
   private final Group.Builder root;
@@ -1264,16 +1262,6 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
       return null;
     }
 
-    // deal with filters, cant do SZIP
-    if (facade.dobj.mfp != null) {
-      for (Filter f : facade.dobj.mfp.filters) {
-        if (f.id == 4) {
-          log.debug("SKIPPING variable with SZIP Filter= " + facade.dobj.mfp + " for variable " + facade.name);
-          return null;
-        }
-      }
-    }
-
     Attribute fillAttribute = null;
     for (HeaderMessage mess : facade.dobj.messages) {
       if (mess.mtype == MessageType.FillValue) {
@@ -1400,14 +1388,8 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
 
     // debugging
     vinfo.setOwner(vb);
-    if ((vinfo.mfp != null) && warnings) {
-      for (Filter f : vinfo.mfp.getFilters()) {
-        if (f.id > KNOWN_FILTERS) {
-          log.warn("  Variable " + facade.name + " has unknown Filter(s) = " + vinfo.mfp);
-          break;
-        }
-      }
-    }
+    // TODO: handle logging warnings and unknown filters at the Filter level
+
     if (debug1) {
       log.debug("makeVariable " + vb.shortName + "; vinfo= " + vinfo);
     }
@@ -1634,8 +1616,8 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
       if (mfp == null)
         return null;
       Formatter f = new Formatter();
-      for (Filter filt : mfp.filters) {
-        f.format("%s ", filt.name);
+      for (H5objects.Filter filt : mfp.filters) {
+        f.format("name: %s , id: %d", filt.getName(), filt.getId());
       }
       return f.toString();
     }

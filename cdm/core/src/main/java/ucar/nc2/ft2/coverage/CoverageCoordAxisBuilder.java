@@ -134,10 +134,11 @@ public class CoverageCoordAxisBuilder {
   // for intervals: values are the edges, values[2*npts]: low0, high0, low1, high1
 
   public void setSpacingFromValues(boolean isInterval) {
-    if (isInterval)
+    if (isInterval) {
       setSpacingFromIntervalValues();
-    else
+    } else {
       setSpacingFromPointValues();
+    }
   }
 
   private void setSpacingFromPointValues() {
@@ -162,13 +163,15 @@ public class CoverageCoordAxisBuilder {
     }
 
     Comparable resolMode = resol.getMode();
-    if (resolMode != null)
+    if (resolMode != null) {
       this.resolution = ((Number) resolMode).doubleValue();
+    }
 
     boolean isRegular = isRegular(resol);
     this.spacing = isRegular ? CoverageCoordAxis.Spacing.regularPoint : CoverageCoordAxis.Spacing.irregularPoint;
-    if (isRegular)
+    if (isRegular) {
       values = null;
+    }
   }
 
   private void setSpacingFromIntervalValues() {
@@ -191,8 +194,9 @@ public class CoverageCoordAxisBuilder {
     Comparable resolMode = resol.getMode();
     if (resolMode != null) {
       double modeValue = ((Number) resolMode).doubleValue();
-      if (modeValue != 0.0)
+      if (modeValue != 0.0) {
         this.resolution = modeValue;
+      }
     }
 
     boolean regular = isRegular(resol);
@@ -212,8 +216,9 @@ public class CoverageCoordAxisBuilder {
       this.spacing = CoverageCoordAxis.Spacing.contiguousInterval;
       double[] contValues = new double[ncoords + 1];
       int count = 0;
-      for (int i = 0; i < values.length; i += 2)
+      for (int i = 0; i < values.length; i += 2) {
         contValues[count++] = values[i]; // starting interval
+      }
       contValues[count] = values[values.length - 1]; // ending interval
       this.values = contValues;
 
@@ -222,38 +227,48 @@ public class CoverageCoordAxisBuilder {
     }
   }
 
-  private static final double missingTolerence = .05;
+  private static final double missingTolerance = .05;
 
   private boolean isRegular(Counters.Counter resol) {
-    if (resol.getUnique() == 1)
+    if (resol.getUnique() == 1) {
       return true; // all same resolution, or n == 1
+    }
 
     Comparable mode = resol.getMode();
     Number modeNumber = (Number) mode;
-    if (modeNumber == null || modeNumber.intValue() == 0)
+    if (modeNumber == null || modeNumber.intValue() == 0) {
       return false;
+    }
 
     int modeCount = 0;
     int nonModeCount = 0;
     for (Comparable value : resol.getValues()) {
-      if (value.compareTo(mode) == 0)
+      if (value.compareTo(mode) == 0) {
         modeCount = resol.getCount(value);
-      else {
+      } else {
         Number valueNumber = (Number) value;
+
+        // a difference of 0 means there are repeated values
+        if (valueNumber.intValue() == 0) {
+          return false;
+        }
+
         // non mode must be a multiple of mode - means there are some missing values
         int rem = (valueNumber.intValue() % modeNumber.intValue());
-        if (rem != 0)
+        if (rem != 0) {
           return false;
+        }
         int multiple = (valueNumber.intValue() / modeNumber.intValue());
         nonModeCount += (multiple - 1) * resol.getCount(value);
       }
     }
-    if (modeCount == 0)
+    if (modeCount == 0) {
       return true; // cant happen i think
+    }
 
     // only tolerate these many missing values
     double ratio = (nonModeCount / (double) modeCount);
-    return ratio < missingTolerence;
+    return ratio < missingTolerance;
   }
 
   ////////////////////////////////////////

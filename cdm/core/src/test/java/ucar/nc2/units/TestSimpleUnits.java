@@ -4,6 +4,8 @@
  */
 package ucar.nc2.units;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import junit.framework.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -103,4 +105,11 @@ public class TestSimpleUnits extends TestCase {
     }
   }
 
+  public void testIsDateUnit() {
+    final String timeUnitSince = "Year since 1970";
+    assertThat(SimpleUnit.isDateUnit(timeUnitSince)).isTrue();
+
+    final String timeUnit = "Year";
+    assertThat(SimpleUnit.isDateUnit(timeUnit)).isFalse();
+  }
 }

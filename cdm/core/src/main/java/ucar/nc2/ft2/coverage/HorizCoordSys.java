@@ -493,7 +493,7 @@ public class HorizCoordSys {
       maxLon = Math.max(maxLon, boundaryPoint.getLongitude());
     }
 
-    return new LatLonRect(LatLonPoint.create(minLat, minLon), LatLonPoint.create(maxLat, maxLon));
+    return new LatLonRect(LatLonPoint.create(minLat, minLon), maxLat - minLat, maxLon - minLon);
   }
 
   /**
@@ -664,13 +664,14 @@ public class HorizCoordSys {
   }
 
   // TODO is there a better place to handle units?
+  // Some projections are actually just rotations (RotatedPole)
+  // so the "projection" coordinates have units "degrees" and don't need to be converted
   private static double convertToKm(double coordinate, String unit, String axisName) {
     if (unit.equals("km") || unit.equals("kilometers")) {
       return coordinate;
     } else if (unit.equals("m") || unit.equals("meters")) {
       return 0.001 * coordinate;
     } else {
-      logger.info("Unrecognized unit '" + unit + "' for axis '" + axisName + "'");
       return coordinate;
     }
   }
@@ -681,7 +682,6 @@ public class HorizCoordSys {
     } else if (desiredUnit.equals("m") || desiredUnit.equals("meters")) {
       return 1000 * coordinateInKm;
     } else {
-      logger.info("Unrecognized unit '" + desiredUnit + "' for axis '" + axisName + "'");
       return coordinateInKm;
     }
   }

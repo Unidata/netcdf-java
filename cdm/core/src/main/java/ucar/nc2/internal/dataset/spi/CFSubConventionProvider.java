@@ -5,6 +5,7 @@
 
 package ucar.nc2.internal.dataset.spi;
 
+import java.util.List;
 import ucar.nc2.dataset.spi.CoordSystemBuilderFactory;
 
 /**
@@ -20,4 +21,9 @@ import ucar.nc2.dataset.spi.CoordSystemBuilderFactory;
  * CoordSystemBuilder (which is what this interface is intended to facilitate).
  */
 public interface CFSubConventionProvider extends CoordSystemBuilderFactory {
+
+  // check a list of convention names to see if the CFSubConventionProvider is a provider
+  default boolean isMine(List<String> convList) {
+    return false;
+  }
 }

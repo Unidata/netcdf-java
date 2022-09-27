@@ -125,7 +125,7 @@ public class CoverageAsPoint {
 
   private class CoverageAsFeatureDatasetPoint extends ucar.nc2.ft.point.PointDatasetImpl {
     CoverageAsFeatureDatasetPoint() {
-      super(varGroups.size() > 1 ? FeatureType.ANY_POINT : varGroups.get(0).fType);
+      super(parseFeatureType(varGroups));
       this.collectionList = new ArrayList<>();
       List<VariableSimpleIF> dataVars = new ArrayList<>();
       // each group of vars is its own collection
@@ -144,6 +144,16 @@ public class CoverageAsPoint {
       }
       this.dataVariables = dataVars;
     }
+  }
+
+  private static FeatureType parseFeatureType(List<VarGroup> groups) {
+    FeatureType fType = groups.get(0).fType;
+    for (int i = 1; i < groups.size(); i++) {
+      if (groups.get(i).fType != fType) {
+        return FeatureType.ANY_POINT;
+      }
+    }
+    return fType;
   }
 
   private class CoverageAsStationProfileCollection extends StationProfileCollectionImpl {

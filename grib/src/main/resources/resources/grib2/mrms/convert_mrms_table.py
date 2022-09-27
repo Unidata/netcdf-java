@@ -11,7 +11,7 @@ def parse_table_version(fname):
 
 def parse_file(fname):
     table_version = parse_table_version(fname)
-    with open(fname, 'r') as infile:
+    with open(fname, 'r', encoding='latin-1') as infile:
         reader = csv.reader(infile)
         ret = []
         cols = next(reader)

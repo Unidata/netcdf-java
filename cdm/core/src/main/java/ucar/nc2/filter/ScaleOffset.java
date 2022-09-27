@@ -21,6 +21,10 @@ import static ucar.ma2.DataType.*;
  */
 public class ScaleOffset extends Filter {
 
+  private static final String name = "fixedscaleoffset";
+
+  private static final int id = 6;
+
   // maps numeric zarr datatypes to CDM datatypes
   private static Map<String, DataType> dTypeMap;
 
@@ -69,6 +73,15 @@ public class ScaleOffset extends Filter {
     astypeOrder = parseByteOrder(aType, dtypeOrder);
   }
 
+  @Override
+  public String getName() {
+    return name;
+  }
+
+  @Override
+  public int getId() {
+    return id;
+  }
 
   @Override
   public byte[] encode(byte[] dataIn) {
@@ -270,10 +283,6 @@ public class ScaleOffset extends Filter {
   }
 
   public static class Provider implements FilterProvider {
-
-    private static final String name = "fixedscaleoffset";
-
-    private static final int id = -1; // not yet implemented by id
 
     @Override
     public String getName() {

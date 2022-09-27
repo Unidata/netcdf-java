@@ -133,7 +133,7 @@ public class TestIntervalsTimeCoords2D {
         }
         assertThat(start).isEqualTo(bounds[idx][0]);
         assertThat(end).isEqualTo(bounds[idx][1]);
-        assertThat(coordinateValue).isWithin(TOLERANCE).of((start + end) / 2.0);
+        assertThat(coordinateValue).isWithin(TOLERANCE).of(end);
         idx++;
       }
 

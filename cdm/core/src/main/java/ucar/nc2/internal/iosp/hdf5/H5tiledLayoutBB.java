@@ -11,11 +11,15 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.util.Map;
+
 import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Section;
 import ucar.nc2.Variable;
-import ucar.nc2.internal.iosp.hdf5.H5objects.Filter;
+import ucar.nc2.filter.Filter;
+import ucar.nc2.filter.Filters;
+import ucar.nc2.filter.UnknownFilterException;
 import ucar.nc2.iosp.LayoutBB;
 import ucar.nc2.iosp.LayoutBBTiled;
 import ucar.nc2.iosp.hdf5.DataBTree;
@@ -56,17 +60,17 @@ public class H5tiledLayoutBB implements LayoutBB {
 
   /**
    * Constructor.
-   * This is for HDF5 chunked data storage. The data is read by chunk, for efficency.
+   * This is for HDF5 chunked data storage. The data is read by chunk, for efficiency.
    *
    * @param v2 Variable to index over; assumes that vinfo is the data object
    * @param wantSection the wanted section of data, contains a List of Range objects. must be complete
    * @param raf the RandomAccessFile
-   * @param filters set of filters that have been applied to the data
+   * @param filterProps set of filter properties from which filter object will be created
    * @throws InvalidRangeException if section invalid for this variable
    * @throws IOException on io error
    */
-  public H5tiledLayoutBB(Variable v2, Section wantSection, RandomAccessFile raf, Filter[] filters, ByteOrder byteOrder)
-      throws InvalidRangeException, IOException {
+  public H5tiledLayoutBB(Variable v2, Section wantSection, RandomAccessFile raf, H5objects.Filter[] filterProps,
+      ByteOrder byteOrder) throws InvalidRangeException, IOException {
     wantSection = Section.fill(wantSection, v2.getShape());
 
     H5headerNew.Vinfo vinfo = (H5headerNew.Vinfo) v2.getSPobject();
@@ -74,7 +78,18 @@ public class H5tiledLayoutBB implements LayoutBB {
     assert vinfo.btree != null;
 
     this.raf = raf;
-    this.filters = filters;
+    this.filters = new Filter[filterProps.length];
+    for (int i = 0; i < filterProps.length; i++) {
+      // add var info to filter props
+      Map<String, Object> props = filterProps[i].getProperties();
+      props.put(Filters.Keys.ELEM_SIZE, v2.getElementSize());
+      // try to get filter by name or id, throw if not recognized filter
+      try {
+        filters[i] = Filters.getFilter(props);
+      } catch (UnknownFilterException ex) {
+        throw new IOException(ex);
+      }
+    }
     this.byteOrder = byteOrder;
 
     // we have to translate the want section into the same rank as the storageSize, in order to be able to call
@@ -212,22 +227,12 @@ public class H5tiledLayoutBB implements LayoutBB {
         for (int i = filters.length - 1; i >= 0; i--) {
           Filter f = filters[i];
           if (isBitSet(delegate.filterMask, i)) {
-            if (debug)
+            if (debug) {
               System.out.println("skip for chunk " + delegate);
+            }
             continue;
           }
-          if (f.id == 1) {
-            data = inflate(data);
-          } else if (f.id == 2) {
-            data = shuffle(data, f.data[0]);
-          } else if (f.id == 3) {
-            data = checkfletcher32(data);
-            /*
-             * } else if (f.id == 307) {
-             * data = unbzip2(data);
-             */
-          } else
-            throw new RuntimeException("Unknown filter type=" + f.id);
+          data = f.decode(data);
         }
 
         ByteBuffer result = ByteBuffer.wrap(data);
@@ -241,97 +246,8 @@ public class H5tiledLayoutBB implements LayoutBB {
       }
     }
 
-    /**
-     * inflate data
-     *
-     * @param compressed compressed data
-     * @return uncompressed data
-     * @throws IOException on I/O error
-     */
-    private byte[] inflate(byte[] compressed) throws IOException {
-      // run it through the Inflator
-      ByteArrayInputStream in = new ByteArrayInputStream(compressed);
-      java.util.zip.Inflater inflater = new java.util.zip.Inflater();
-      java.util.zip.InflaterInputStream inflatestream =
-          new java.util.zip.InflaterInputStream(in, inflater, inflatebuffersize);
-      int len = Math.min(8 * compressed.length, MAX_ARRAY_LEN);
-      ByteArrayOutputStream out = new ByteArrayOutputStream(len); // Fixes KXL-349288
-      IO.copyB(inflatestream, out, len);
-
-      byte[] uncomp = out.toByteArray();
-      if (debug || debugFilter)
-        System.out.println(" inflate bytes in= " + compressed.length + " bytes out= " + uncomp.length);
-      return uncomp;
-    }
-
-    /*
-     * private byte[] unbzip2(byte[] compressed) throws IOException {
-     * int max = 20 * compressed.length;
-     * byte[] buffer = new byte[max];
-     * ByteArrayOutputStream out = new ByteArrayOutputStream(20 * compressed.length);
-     * ByteArrayInputStream in = new ByteArrayInputStream(compressed);
-     * try (org.itadaki.bzip2.BZip2InputStream bzIn = new org.itadaki.bzip2.BZip2InputStream(in, false)) {
-     * int bytesRead;
-     * int totRead = 0;
-     * while ((bytesRead = bzIn.read (buffer)) != -1) {
-     * out.write (buffer, 0, bytesRead) ; // LOOK unneeded copy
-     * totRead += bytesRead;
-     * }
-     * out.close();
-     * //System.out.printf("unbzip2=%d%n", totRead);
-     * } catch (Exception e) {
-     * e.printStackTrace();
-     * }
-     * 
-     * return out.toByteArray();
-     * }
-     */
-
-    // just strip off the 4-byte fletcher32 checksum at the end
-    private byte[] checkfletcher32(byte[] org) {
-      byte[] result = new byte[org.length - 4];
-      System.arraycopy(org, 0, result, 0, result.length);
-      if (debug)
-        System.out.println(" checkfletcher32 bytes in= " + org.length + " bytes out= " + result.length);
-      return result;
-    }
-
-    private byte[] shuffle(byte[] data, int n) {
-      if (debug)
-        System.out.println(" shuffle bytes in= " + data.length + " n= " + n);
-
-      assert data.length % n == 0;
-      if (n <= 1)
-        return data;
-
-      int m = data.length / n;
-      int[] count = new int[n];
-      for (int k = 0; k < n; k++)
-        count[k] = k * m;
-
-      byte[] result = new byte[data.length];
-      /*
-       * for (int i = 0; i < data.length; i += n) {
-       * for (int k = 0; k < n; k++) {
-       * result[count[k]++] = data[i + k];
-       * }
-       * }
-       */
-
-      for (int i = 0; i < m; i++) {
-        for (int j = 0; j < n; j++) {
-          result[i * n + j] = data[i + count[j]];
-        }
-      }
-
-      return result;
-    }
-
     boolean isBitSet(int val, int bitno) {
       return ((val >>> bitno) & 1) != 0;
     }
-
   }
-
-
 }

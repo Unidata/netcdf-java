@@ -233,7 +233,7 @@ public class CoordSystemFactory {
     if (coordSysFactory != null && ds.orgFile != null && coordSysFactory instanceof CF1Convention.Factory) {
       List<String> convs = breakupConventionNames(convName);
       if (convs.size() > 1) {
-        CoordSystemBuilderFactory potentialCoordSysFactory = findCfSubConvention(ds.orgFile);
+        CoordSystemBuilderFactory potentialCoordSysFactory = findCfSubConvention(ds.orgFile, convs);
         // only use the potentialCoordSysFactory if it is a CF sub-convention
         if (potentialCoordSysFactory != null && potentialCoordSysFactory instanceof CFSubConventionProvider) {
           coordSysFactory = potentialCoordSysFactory;
@@ -289,7 +289,7 @@ public class CoordSystemFactory {
 
   // same as findConventionByIsMine, but only checks CFSubConventionProvider instances of CoordSystemBuilderFactory
   @Nullable
-  private static CoordSystemBuilderFactory findCfSubConvention(NetcdfFile orgFile) {
+  private static CoordSystemBuilderFactory findCfSubConvention(NetcdfFile orgFile, List<String> convs) {
     // Look for Convention using isMine()
     for (Convention conv : conventionList) {
       CoordSystemBuilderFactory candidate = conv.factory;
@@ -299,9 +299,9 @@ public class CoordSystemFactory {
     }
 
     // Use service loader mechanism isMine()
-    for (CoordSystemBuilderFactory csb : ServiceLoader.load(CoordSystemBuilderFactory.class)) {
-      if (csb instanceof CFSubConventionProvider && csb.isMine(orgFile)) {
-        return csb;
+    for (CFSubConventionProvider cfSubCon : ServiceLoader.load(CFSubConventionProvider.class)) {
+      if (cfSubCon.isMine(orgFile) || cfSubCon.isMine(convs)) {
+        return cfSubCon;
       }
     }
 
