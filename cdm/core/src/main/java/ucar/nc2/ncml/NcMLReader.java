@@ -996,7 +996,7 @@ public class NcMLReader {
     if (dtype.isEnum()) {
       String typedefS = varElem.getAttributeValue("typedef");
       if (typedefS != null)
-        typedef = g.findEnumeration(typedefS);
+        typedef = g.findEnumeration(typedefS,true);
     }
 
     String shape = varElem.getAttributeValue("shape");
@@ -1207,7 +1207,7 @@ public class NcMLReader {
     if (dtype.isEnum()) {
       String typedefS = varElem.getAttributeValue("typedef");
       if (typedefS != null)
-        typedef = g.findEnumeration(typedefS);
+        typedef = g.findEnumeration(typedefS,true);
     }
 
     String shape = varElem.getAttributeValue("shape");

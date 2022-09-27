@@ -17,13 +17,8 @@ import java.nio.LongBuffer;
 import java.nio.ShortBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Formatter;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.TimeZone;
+import java.util.*;
+
 import ucar.ma2.Array;
 import ucar.ma2.ArrayChar;
 import ucar.ma2.ArrayObject;
@@ -44,11 +39,11 @@ import ucar.nc2.Group.Builder;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.CDM;
-import ucar.nc2.filter.Filter;
 import ucar.nc2.internal.iosp.hdf4.HdfEos;
 import ucar.nc2.internal.iosp.hdf4.HdfHeaderIF;
 import ucar.nc2.internal.iosp.hdf5.H5objects.DataObject;
 import ucar.nc2.internal.iosp.hdf5.H5objects.DataObjectFacade;
+import ucar.nc2.internal.iosp.hdf5.H5objects.Filter;
 import ucar.nc2.internal.iosp.hdf5.H5objects.GlobalHeap;
 import ucar.nc2.internal.iosp.hdf5.H5objects.H5Group;
 import ucar.nc2.internal.iosp.hdf5.H5objects.HeaderMessage;
@@ -160,6 +155,8 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
    * 2) they all have the same length as the dimension
    * 3) all variables' dimensions have a dimension scale
    */
+
+  private static final int KNOWN_FILTERS = 3;
 
   private final RandomAccessFile raf;
   private final Group.Builder root;
@@ -500,7 +497,7 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
         }
 
         if (facadeNested.dobj.mdt.map != null) {
-          EnumTypedef enumTypedef = parentGroup.findEnumTypedef(facadeNested.name).orElse(null);
+          EnumTypedef enumTypedef = parentGroup.findEnumTypedef(facadeNested.name,true).orElse(null);
           if (enumTypedef == null) {
             DataType basetype;
             switch (facadeNested.dobj.mdt.byteSize) {
@@ -556,7 +553,7 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
             }
             // This code apparently addresses the possibility of an anonymous enum LOOK ??
             if (enumTypeName.isEmpty()) {
-              EnumTypedef enumTypedef = parentGroup.findEnumTypedef(facadeNested.name).orElse(null);
+              EnumTypedef enumTypedef = parentGroup.findEnumTypedef(facadeNested.name,true).get();
               if (enumTypedef == null) {
                 enumTypedef = new EnumTypedef(facadeNested.name, facadeNested.dobj.mdt.map);
                 parentGroup.addEnumTypedef(enumTypedef);
@@ -1262,6 +1259,16 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
       return null;
     }
 
+    // deal with filters, cant do SZIP
+    if (facade.dobj.mfp != null) {
+      for (Filter f : facade.dobj.mfp.filters) {
+        if (f.id == 4) {
+          log.debug("SKIPPING variable with SZIP Filter= " + facade.dobj.mfp + " for variable " + facade.name);
+          return null;
+        }
+      }
+    }
+
     Attribute fillAttribute = null;
     for (HeaderMessage mess : facade.dobj.messages) {
       if (mess.mtype == MessageType.FillValue) {
@@ -1388,8 +1395,14 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
 
     // debugging
     vinfo.setOwner(vb);
-    // TODO: handle logging warnings and unknown filters at the Filter level
-
+    if ((vinfo.mfp != null) && warnings) {
+      for (Filter f : vinfo.mfp.getFilters()) {
+        if (f.id > KNOWN_FILTERS) {
+          log.warn("  Variable " + facade.name + " has unknown Filter(s) = " + vinfo.mfp);
+          break;
+        }
+      }
+    }
     if (debug1) {
       log.debug("makeVariable " + vb.shortName + "; vinfo= " + vinfo);
     }
@@ -1556,7 +1569,7 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
     // set the enumTypedef
     if (dt.isEnum()) {
       // TODO Not sure why, but there may be both a user type and a "local" mdt enum. May need to do a value match?
-      EnumTypedef enumTypedef = parent.findEnumTypedef(mdt.enumTypeName).orElse(null);
+      EnumTypedef enumTypedef = parent.findEnumTypedef(mdt.enumTypeName,true).orElse(null);
       if (enumTypedef == null) { // if shared object, wont have a name, shared version gets added later
         EnumTypedef local = new EnumTypedef(mdt.enumTypeName, mdt.map);
         enumTypedef = parent.enumTypedefs.stream().filter((e) -> e.equalsMapOnly(local)).findFirst().orElse(local);
@@ -1616,8 +1629,8 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
       if (mfp == null)
         return null;
       Formatter f = new Formatter();
-      for (H5objects.Filter filt : mfp.filters) {
-        f.format("name: %s , id: %d", filt.getName(), filt.getId());
+      for (Filter filt : mfp.filters) {
+        f.format("%s ", filt.name);
       }
       return f.toString();
     }

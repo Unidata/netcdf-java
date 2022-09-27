@@ -60,6 +60,16 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
 
   private static Nc4prototypes nc4 = NetcdfClibrary.getForeignFunctionInterface();
 
+  private static final String SPECIALPREFIX = "_";
+
+  // Define Special attributes that should be suppressed
+  public static final String NCPROPERTIES = "_NCProperties";
+  public static final String ISNETCDF4 = "_IsNetcdf4";
+  public static final String SUPERBLOCKVERSION = "_SuperblockVersion";
+
+  static final String[] SPECIALS =
+      {NCPROPERTIES, ISNETCDF4, SUPERBLOCKVERSION};
+
   // Define reserved attributes (see Nc4DSP)
   public static final String UCARTAGOPAQUE = "_edu.ucar.opaque.size";
   // Not yet implemented
@@ -127,6 +137,18 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
   }
 
   public static void setDebugFlags(DebugFlags flags) {}
+
+  public static boolean isspecial(Attribute a) {
+    String nm = a.getShortName();
+    if (nm.startsWith(SPECIALPREFIX)) {
+      /* Check for selected special attributes */
+      for (String s : SPECIALS) {
+        if (nm.startsWith(s))
+          return true; /* is special */
+      }
+    }
+    return false; /* is not special */
+  }
 
   //////////////////////////////////////////////////
   // Instance Variables
@@ -212,7 +234,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
   @Override
   public String getFileTypeVersion() {
     // TODO this only works for files writtten by netcdf4 c library. what about plain hdf5?
-    return ncfile.getRootGroup().findAttributeString(CDM.NCPROPERTIES, "N/A");
+    return ncfile.getRootGroup().findAttributeString(NCPROPERTIES, "N/A");
   }
 
   @Override
@@ -1072,7 +1094,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     }
 
     if (dtype.isEnum()) {
-      EnumTypedef enumTypedef = g.findEnumeration(utype.name);
+      EnumTypedef enumTypedef = g.findEnumeration(utype.name,true);
       v.setEnumTypedef(enumTypedef);
     } else if (dtype == DataType.OPAQUE) {
       // TODO whats the problem with knowing the size?? Needed to read properly??
@@ -2861,9 +2883,9 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
       return;
     if (att.getShortName().equals(CDM.COMPRESS))
       return;
-    if (att.getShortName().equals(CDM.NCPROPERTIES))
+    if (att.getShortName().equals(NCPROPERTIES))
       return;
-    if (att.getShortName().equals(CDM.ISNETCDF4))
+    if (att.getShortName().equals(ISNETCDF4))
       return;
 
     int ret = 0;

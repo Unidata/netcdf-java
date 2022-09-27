@@ -4,6 +4,7 @@
  */
 package ucar.nc2;
 
+import static java.util.Optional.ofNullable;
 import static ucar.nc2.NetcdfFiles.reservedFullName;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
@@ -228,6 +229,27 @@ public class Group extends CDMNode implements AttributeContainer {
     return ImmutableList.copyOf(enumTypedefs);
   }
 
+  /** Find a Enumeration in this or a parent Group Builder, using its short name. */
+  public EnumTypedef findEnumeration(String name, boolean searchup) {
+      EnumTypedef ed = null;
+      if (name != null) {
+        // name = NetcdfFile.makeNameUnescaped(name);
+        Group g = this;
+        search:
+        do {
+          // search this group's EnumTypedefs
+          for(EnumTypedef e : g.getEnumTypedefs()) {
+            if(e.getShortName().equals(name)) {
+              ed = e;
+              break search;
+            }
+          }
+          g = g.getParentGroup();
+        } while(searchup && g != null);
+      }
+      return ed;
+    }
+
   /**
    * Find a Dimension in this or a parent Group, matching on short name.
    *
@@ -374,23 +396,6 @@ public class Group extends CDMNode implements AttributeContainer {
 
   ////////////////////////////////////////////////////////////////////////
 
-  /** Find a Enumeration in this or a parent Group, using its short name. */
-  @Nullable
-  public EnumTypedef findEnumeration(String name) {
-    if (name == null)
-      return null;
-    // name = NetcdfFile.makeNameUnescaped(name);
-    for (EnumTypedef d : enumTypedefs) {
-      if (name.equals(d.getShortName()))
-        return d;
-    }
-    Group parent = getParentGroup();
-    if (parent != null)
-      return parent.findEnumeration(name);
-
-    return null;
-  }
-
   /**
    * Get the common parent of this and the other group.
    * Cant fail, since the root group is always a parent of any 2 groups.
@@ -515,14 +520,12 @@ public class Group extends CDMNode implements AttributeContainer {
 
       for (Attribute att : attributes) {
         // String name = strict ? NetcdfFile.escapeNameCDL(getShortName()) : getShortName();
-        if (!Attribute.isspecial(att)) {
           out.format("%s", indent);
           att.writeCDL(out, strict, null);
           out.format(";");
           if (!strict && (att.getDataType() != DataType.STRING))
             out.format(" // %s", att.getDataType());
           out.format("%n");
-        }
       }
     }
   }
@@ -1114,6 +1117,23 @@ public class Group extends CDMNode implements AttributeContainer {
       return other;
     }
 
+    /** Find a Enumeration in this or a parent Group Builder, using its short name. */
+    public Optional<EnumTypedef> findEnumTypedef(String name, boolean search) {
+      Optional<EnumTypedef> ed = Optional.empty();
+      if (name != null) {
+        // name = NetcdfFile.makeNameUnescaped(name);
+        ed = this.enumTypedefs.stream().filter(e -> e.shortName.equals(name)).findFirst();
+	if(!ed.isPresent() && search) {
+          for(Group.Builder gb = this; gb != null; gb = gb.getParentGroup()) {
+            // search this group builders's EnumTypedefs
+	        ed = gb.enumTypedefs.stream().filter(e -> e.shortName.equals(name)).findFirst();
+            if(ed.isPresent()) break;
+          }
+	}
+      }
+      return ed;
+    }
+
     public Builder addEnumTypedef(EnumTypedef typedef) {
       Preconditions.checkNotNull(typedef);
       enumTypedefs.add(typedef);
@@ -1131,7 +1151,7 @@ public class Group extends CDMNode implements AttributeContainer {
      * Return new or existing.
      */
     public EnumTypedef findOrAddEnumTypedef(String name, Map<Integer, String> map) {
-      Optional<EnumTypedef> opt = findEnumTypedef(name);
+      Optional<EnumTypedef> opt = findEnumTypedef(name,false); // Find in this group
       if (opt.isPresent()) {
         return opt.get();
       } else {
@@ -1139,10 +1159,6 @@ public class Group extends CDMNode implements AttributeContainer {
         addEnumTypedef(enumTypedef);
         return enumTypedef;
       }
-    }
-
-    public Optional<EnumTypedef> findEnumTypedef(String name) {
-      return this.enumTypedefs.stream().filter(e -> e.shortName.equals(name)).findFirst();
     }
 
     /** Add a Variable, throw error if one of the same name if it exists. */
