@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.awt.Color;
 import ucar.ma2.Array;
 import ucar.ma2.ArrayByte;
+import ucar.ma2.ArrayInt;
 import ucar.ma2.ArrayFloat;
 import ucar.ma2.DataType;
 import ucar.ma2.Index;
@@ -63,6 +64,9 @@ public class GeotiffWriter implements Closeable {
   /**
    * Write GridDatatype data to the geotiff file.
    *
+   * This is for backwards-compatibility. Assumes dtype is FLOAT if greyScale is false, and assumes
+   * dtype is BYTE if greyScale is true.
+   *
    * @param dataset grid in contained in this dataset
    * @param grid data is in this grid
    * @param data 2D array in YX order
@@ -70,6 +74,21 @@ public class GeotiffWriter implements Closeable {
    * @throws IOException on i/o error
    */
   public void writeGrid(GridDataset dataset, GridDatatype grid, Array data, boolean greyScale) throws IOException {
+    writeGrid(dataset, grid, data, greyScale, greyScale ? DataType.BYTE : DataType.FLOAT);
+  }
+
+  /**
+   * Write GridDatatype data to the geotiff file.
+   *
+   * @param dataset grid in contained in this dataset
+   * @param grid data is in this grid
+   * @param data 2D array in YX order
+   * @param greyScale if true, write greyScale image, else dataSample.
+   * @param dtype DataType for the output.
+   * @throws IOException on i/o error
+   */
+  public void writeGrid(GridDataset dataset, GridDatatype grid, Array data, boolean greyScale, DataType dtype)
+      throws IOException {
     GridCoordSystem gcs = grid.getCoordinateSystem();
 
     if (!gcs.isRegularSpatial()) {
@@ -102,7 +121,7 @@ public class GeotiffWriter implements Closeable {
     }
 
     // write it out
-    writeGrid(grid, data, greyScale, xStart, yStart, xInc, yInc, pageNumber);
+    writeGrid(grid, data, greyScale, xStart, yStart, xInc, yInc, pageNumber, dtype);
     pageNumber++;
   }
 
@@ -116,9 +135,12 @@ public class GeotiffWriter implements Closeable {
    * <li>be equally spaced
    * </ol>
    *
+   * This is for backwards-compatibility. Assumes dtype is FLOAT if greyScale is false, and assumes
+   * dtype is BYTE if greyScale is true.
+   *
    * @param grid original grid
    * @param data 2D array in YX order
-   * @param greyScale if true, write greyScale image, else dataSample.
+   * @param greyScale if true, normalize the data before writing, otherwise, only handle missing data.
    * @param xStart starting x coord
    * @param yStart starting y coord
    * @param xInc increment x coord
@@ -129,9 +151,49 @@ public class GeotiffWriter implements Closeable {
    */
   void writeGrid(GridDatatype grid, Array data, boolean greyScale, double xStart, double yStart, double xInc,
       double yInc, int imageNumber) throws IOException {
+    writeGrid(grid, data, greyScale, xStart, yStart, xInc, yInc, imageNumber,
+        greyScale ? DataType.BYTE : DataType.FLOAT);
+  }
+
+  /**
+   * Write Grid data to the geotiff file.
+   * Grid currently must:
+   * <ol>
+   * <li>have a 1D X and Y coordinate axes.
+   * <li>be lat/lon or Lambert Conformal Projection
+   * <li>be equally spaced
+   * </ol>
+   *
+   * @param grid original grid
+   * @param data 2D array in YX order
+   * @param greyScale if true, normalize the data before writing, otherwise, only handle missing data.
+   * @param xStart starting x coord
+   * @param yStart starting y coord
+   * @param xInc increment x coord
+   * @param yInc increment y coord
+   * @param imageNumber used to write multiple images
+   * @param dtype if greyScale is false, then save the data in the given data type.
+   *        Currently, this is a bit hobbled in order to avoid back-compatibility breaks.
+   *        If greyScale is true and this is not BYTE, then an exception is thrown.
+   *        If null, then use the datatype of the given array.
+   * @throws IOException on i/o error
+   * @throws IllegalArgumentException if above assumptions not valid *
+   */
+  void writeGrid(GridDatatype grid, Array data, boolean greyScale, double xStart, double yStart, double xInc,
+      double yInc, int imageNumber, DataType dtype) throws IOException {
 
     int nextStart;
     GridCoordSystem gcs = grid.getCoordinateSystem();
+
+    // This check has to be *before* resolving the dtype so that we are only
+    // checking explicitly specified data types.
+    if (greyScale && dtype != DataType.BYTE) {
+      throw new IllegalArgumentException("When greyScale is true, dtype must be BYTE or null");
+    }
+
+    if (dtype == null) {
+      dtype = data.getDataType();
+    }
 
     // get rid of this when all projections are implemented
     if (!gcs.isLatLon() && !(gcs.getProjection() instanceof LambertConformal)
@@ -148,8 +210,16 @@ public class GeotiffWriter implements Closeable {
       ArrayByte result = replaceMissingValuesAndScale(grid, data, dataMinMax);
       nextStart = geotiff.writeData((byte[]) result.getStorage(), imageNumber);
     } else {
-      ArrayFloat result = replaceMissingValues(grid, data, dataMinMax);
-      nextStart = geotiff.writeData((float[]) result.getStorage(), imageNumber);
+      if (dtype == DataType.BYTE || dtype == DataType.UBYTE) {
+        ArrayByte result = coerceByte(data);
+        nextStart = geotiff.writeData((byte[]) result.getStorage(), imageNumber);
+      } else if (dtype.isIntegral()) {
+        ArrayInt result = coerceInt(data);
+        nextStart = geotiff.writeData((int[]) result.getStorage(), imageNumber);
+      } else {
+        ArrayFloat result = replaceMissingValues(grid, data, dataMinMax);
+        nextStart = geotiff.writeData((float[]) result.getStorage(), imageNumber);
+      }
     }
 
     // set the width and the height
@@ -157,11 +227,12 @@ public class GeotiffWriter implements Closeable {
     int width = data.getShape()[1]; // X
 
     writeMetadata(greyScale, xStart, yStart, xInc, yInc, height, width, imageNumber, nextStart, dataMinMax,
-        gcs.getProjection());
+        gcs.getProjection(), dtype);
   }
 
   private void writeMetadata(boolean greyScale, double xStart, double yStart, double xInc, double yInc, int height,
-      int width, int imageNumber, int nextStart, MAMath.MinMax dataMinMax, Projection proj) throws IOException {
+      int width, int imageNumber, int nextStart, MAMath.MinMax dataMinMax, Projection proj, DataType dtype)
+      throws IOException {
 
     geotiff.addTag(new IFDEntry(Tag.ImageWidth, FieldType.SHORT).setValue(width));
     geotiff.addTag(new IFDEntry(Tag.ImageLength, FieldType.SHORT).setValue(height));
@@ -185,7 +256,17 @@ public class GeotiffWriter implements Closeable {
      * geotiff.addTag( new IFDEntry(Tag.StripOffsets, FieldType.LONG).setValue(nextStart));
      */
 
-    int elemSize = greyScale ? 1 : 4;
+    if (dtype == null) {
+      throw new IllegalArgumentException("dtype can't be null in writeMetadata()");
+    }
+
+    // This check has to be *before* resolving the dtype so that we are only
+    // checking explicitly specified data types.
+    if (greyScale && dtype != DataType.BYTE) {
+      throw new IllegalArgumentException("When greyScale is true, dtype must be BYTE");
+    }
+
+    int elemSize = dtype.getSize();
 
     int[] soffset = new int[height];
     int[] sbytecount = new int[height];
@@ -215,25 +296,54 @@ public class GeotiffWriter implements Closeable {
       geotiff.addTag(new IFDEntry(Tag.XResolution, FieldType.RATIONAL).setValue(1, 1));
       geotiff.addTag(new IFDEntry(Tag.YResolution, FieldType.RATIONAL).setValue(1, 1));
       geotiff.addTag(new IFDEntry(Tag.ResolutionUnit, FieldType.SHORT).setValue(1));
+      // black is zero (value used in GeotiffWriter)
+      geotiff.addTag(new IFDEntry(Tag.PhotometricInterpretation, FieldType.SHORT).setValue(1));
+    } else {
       if (colorTable != null && colorTable.length > 0) {
         geotiff.addTag(new IFDEntry(Tag.PhotometricInterpretation, FieldType.SHORT).setValue(3));
         geotiff.addTag(new IFDEntry(Tag.ColorMap, FieldType.SHORT, colorTable.length).setValue(colorTable));
       } else {
-        // black is zero (value used in GeotiffWriter)
-        geotiff.addTag(new IFDEntry(Tag.PhotometricInterpretation, FieldType.SHORT).setValue(1));
+        geotiff.addTag(new IFDEntry(Tag.PhotometricInterpretation, FieldType.SHORT).setValue(1)); // black is zero :
+                                                                                                  // not used?
       }
-    } else {
-      geotiff.addTag(new IFDEntry(Tag.PhotometricInterpretation, FieldType.SHORT).setValue(1)); // black is zero :
-                                                                                                // not used?
       // standard tags for SampleFormat ( see TIFF spec, section 19)
-      geotiff.addTag(new IFDEntry(Tag.BitsPerSample, FieldType.SHORT).setValue(32)); // 32 bits per sample
-      geotiff.addTag(new IFDEntry(Tag.SampleFormat, FieldType.SHORT).setValue(3)); // Sample Format
+      geotiff.addTag(new IFDEntry(Tag.BitsPerSample, FieldType.SHORT).setValue(elemSize * 8));
+
+      if (dtype.isIntegral()) {
+        geotiff.addTag(new IFDEntry(Tag.SampleFormat, FieldType.SHORT).setValue(dtype.isUnsigned() ? 1 : 2)); // UINT or
+                                                                                                              // INT
+      } else if (dtype.isFloatingPoint()) {
+        geotiff.addTag(new IFDEntry(Tag.SampleFormat, FieldType.SHORT).setValue(3)); // IEEE Floating Point Type
+      } else {
+        throw new IllegalArgumentException("Unsupported data type for geotiff: " + dtype);
+      }
       geotiff.addTag(new IFDEntry(Tag.SamplesPerPixel, FieldType.SHORT).setValue(1));
-      float min = (float) (dataMinMax.min);
-      float max = (float) (dataMinMax.max);
-      geotiff.addTag(new IFDEntry(Tag.SMinSampleValue, FieldType.FLOAT).setValue(min));
-      geotiff.addTag(new IFDEntry(Tag.SMaxSampleValue, FieldType.FLOAT).setValue(max));
-      geotiff.addTag(new IFDEntry(Tag.GDALNoData, FieldType.FLOAT).setValue(min - 1.f));
+
+      if (dtype.isFloatingPoint()) {
+        float min = (float) (dataMinMax.min);
+        float max = (float) (dataMinMax.max);
+        geotiff.addTag(new IFDEntry(Tag.SMinSampleValue, FieldType.FLOAT).setValue(min));
+        geotiff.addTag(new IFDEntry(Tag.SMaxSampleValue, FieldType.FLOAT).setValue(max));
+        geotiff.addTag(new IFDEntry(Tag.GDALNoData, FieldType.FLOAT).setValue(min - 1.f));
+      } else if (dtype.isIntegral()) {
+        int min = (int) (dataMinMax.min);
+        int max = (int) (dataMinMax.max);
+        FieldType ftype;
+        DataType sdtype = dtype.withSignedness(DataType.Signedness.SIGNED);
+        if (sdtype == DataType.BYTE) {
+          ftype = FieldType.BYTE;
+        } else if (sdtype == DataType.SHORT) {
+          ftype = FieldType.SHORT;
+        } else if (sdtype == DataType.INT) {
+          // A geotiff LONG is really a 4-byte regular integer
+          ftype = FieldType.LONG;
+        } else {
+          throw new IllegalArgumentException("Unsupported dtype: " + dtype + " sdtype: " + sdtype);
+        }
+        geotiff.addTag(new IFDEntry(Tag.SMinSampleValue, ftype).setValue(min));
+        geotiff.addTag(new IFDEntry(Tag.SMaxSampleValue, ftype).setValue(max));
+        geotiff.addTag(new IFDEntry(Tag.GDALNoData, ftype).setValue(min - 1));
+      }
     }
 
     /*
@@ -288,7 +398,7 @@ public class GeotiffWriter implements Closeable {
   }
 
   /**
-   * Provide a colormap in the form of a mapping of the pixel value to the rgb triplet.
+   * Have the geotiff include a colormap in the form of a mapping of the pixel value to the rgb triplet.
    * Assumes an RGB of {255, 255, 255} for any values not specified.
    *
    * Pass null to unset the colorTable.
@@ -296,13 +406,16 @@ public class GeotiffWriter implements Closeable {
    * For these RGB triplets, 0 is minimum intensity, 255 is maximum intensity. Values outside that range will
    * be floored/ceilinged to the [0, 255] range. The color table is also assumed to be for pixel values
    * between 0 and 255.
+   *
+   * In order for the color table to be properly included in the geotiff, the "greyScale" mode must be false,
+   * and the output data type must be byte or integer.
    */
   public void setColorTable(Map<Integer, Color> colorMap) {
     setColorTable(colorMap, new Color(255, 255, 255));
   }
 
   /**
-   * Provide a colormap in the form of a mapping of the pixel value to the rgb triplet.
+   * Have the geotiff include a colormap in the form of a mapping of the pixel value to the rgb triplet.
    * Provide a default RGB triplet for any values not specified.
    *
    * Pass null to unset the colorTable.
@@ -310,6 +423,8 @@ public class GeotiffWriter implements Closeable {
    * For these RGB triplets, 0 is minimum intensity, 255 is maximum intensity. Values outside that range will
    * be floored/ceilinged to the [0, 255] range. The color table is also assumed to be for pixel values
    * between 0 and 255.
+   * In order for the color table to be properly included in the geotiff, the "greyScale" mode must be false,
+   * and the output data type must be byte or integer.
    */
   public void setColorTable(Map<Integer, Color> colorMap, Color defaultRGB) {
     if (colorMap == null) {
@@ -321,17 +436,11 @@ public class GeotiffWriter implements Closeable {
     // unsigned bytes, but the tiff spec says that it should be sized to the width of
     // the data type, but I would need to know the data type, which this writer doesn't know.
     colorTable = new int[3 * 256];
-    for (int color = 0; color < 3; color++) {
-      for (int i = 0; i < 256; i++) {
-        // Scale it up to [0, 65535], which is needed by the ColorMap tag.
-        if (color == 0) {
-          colorTable[i] = colorMap.getOrDefault(i, defaultRGB).getRed() * 256;
-        } else if (color == 1) {
-          colorTable[256 + i] = colorMap.getOrDefault(i, defaultRGB).getGreen() * 256;
-        } else {
-          colorTable[512 + i] = colorMap.getOrDefault(i, defaultRGB).getBlue() * 256;
-        }
-      }
+    for (int i = 0; i < 256; i++) {
+      // Scale it up to [0, 65535], which is needed by the ColorMap tag.
+      colorTable[i] = colorMap.getOrDefault(i, defaultRGB).getRed() * 256;
+      colorTable[256 + i] = colorMap.getOrDefault(i, defaultRGB).getGreen() * 256;
+      colorTable[512 + i] = colorMap.getOrDefault(i, defaultRGB).getBlue() * 256;
     }
   }
 
@@ -355,6 +464,30 @@ public class GeotiffWriter implements Closeable {
       colorMap.put(flag_values[i], Color.decode(flag_colors[i]));
     }
     return colorMap;
+  }
+
+  private ArrayByte coerceByte(Array data) {
+    ArrayByte array = (ArrayByte) Array.factory(DataType.BYTE, data.getShape());
+    IndexIterator dataIter = data.getIndexIterator();
+    IndexIterator resultIter = array.getIndexIterator();
+
+    while (dataIter.hasNext()) {
+      resultIter.setByteNext(dataIter.getByteNext());
+    }
+
+    return array;
+  }
+
+  private ArrayInt coerceInt(Array data) {
+    ArrayInt array = (ArrayInt) Array.factory(DataType.INT, data.getShape());
+    IndexIterator dataIter = data.getIndexIterator();
+    IndexIterator resultIter = array.getIndexIterator();
+
+    while (dataIter.hasNext()) {
+      resultIter.setIntNext(dataIter.getIntNext());
+    }
+
+    return array;
   }
 
   /**
@@ -633,6 +766,23 @@ public class GeotiffWriter implements Closeable {
    * @throws IOException on i/o error
    */
   public void writeGrid(GeoReferencedArray array, boolean greyScale) throws IOException {
+    writeGrid(array, greyScale, greyScale ? DataType.BYTE : DataType.FLOAT);
+  }
+
+  /**
+   * Write GridCoverage data to the geotiff file.
+   *
+   * @param array GeoReferencedArray array in YX order
+   * @param greyScale if true, write greyScale image, else dataSample.
+   * @param dtype if greyScale is false, then save the data in the given data type.
+   *        Currently, this is a bit hobbled in order to avoid back-compatibility breaks.
+   *        If greyScale is true and this is not BYTE, then an exception is thrown.
+   *        If null, then use the datatype of the given array.
+   * @throws IOException on i/o error
+   * @throws IllegalArgumentException if data isn't regular or if contradicting the greyScale argument.
+   */
+  public void writeGrid(GeoReferencedArray array, boolean greyScale, DataType dtype)
+      throws IOException, IllegalArgumentException {
 
     CoverageCoordSys gcs = array.getCoordSysForData();
     if (!gcs.isRegularSpatial())
@@ -657,6 +807,16 @@ public class GeotiffWriter implements Closeable {
       yStart = yaxis.getCoordEdgeLast();
     }
 
+    // This check has to be *before* resolving the dtype so that we are only
+    // checking explicitly specified data types.
+    if (greyScale && dtype != DataType.BYTE) {
+      throw new IllegalArgumentException("When greyScale is true, dtype must be BYTE or null");
+    }
+
+    if (dtype == null) {
+      dtype = data.getDataType();
+    }
+
     /*
      * remove - i think unneeded, monotonic lon handled in CoordinateAxis1D. JC 3/18/2013
      * if (gcs.isLatLon()) {
@@ -678,15 +838,23 @@ public class GeotiffWriter implements Closeable {
       ArrayByte result = replaceMissingValuesAndScale(array, data, dataMinMax);
       nextStart = geotiff.writeData((byte[]) result.getStorage(), pageNumber);
     } else {
-      ArrayFloat result = replaceMissingValues(array, data, dataMinMax);
-      nextStart = geotiff.writeData((float[]) result.getStorage(), pageNumber);
+      if (dtype == DataType.BYTE || dtype == DataType.UBYTE) {
+        ArrayByte result = coerceByte(data);
+        nextStart = geotiff.writeData((byte[]) result.getStorage(), pageNumber);
+      } else if (dtype.isIntegral()) {
+        ArrayInt result = coerceInt(data);
+        nextStart = geotiff.writeData((int[]) result.getStorage(), pageNumber);
+      } else {
+        ArrayFloat result = replaceMissingValues(array, data, dataMinMax);
+        nextStart = geotiff.writeData((float[]) result.getStorage(), pageNumber);
+      }
     }
 
     // set the width and the height
     int height = data.getShape()[0]; // Y
     int width = data.getShape()[1]; // X
 
-    writeMetadata(greyScale, xStart, yStart, xInc, yInc, height, width, pageNumber, nextStart, dataMinMax, proj);
+    writeMetadata(greyScale, xStart, yStart, xInc, yInc, height, width, pageNumber, nextStart, dataMinMax, proj, dtype);
     pageNumber++;
   }
 }

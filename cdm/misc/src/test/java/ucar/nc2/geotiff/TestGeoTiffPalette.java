@@ -12,6 +12,7 @@ import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.Array;
+import ucar.ma2.DataType;
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.grid.GridDataset;
@@ -106,7 +107,7 @@ public class TestGeoTiffPalette {
 
       try (GeotiffWriter writer = new GeotiffWriter(gridOut)) {
         writer.setColorTable(colorMap, Color.black);
-        writer.writeGrid(dataset, grid, dtArray, true);
+        writer.writeGrid(dataset, grid, dtArray, false, DataType.UBYTE);
         colorTable = writer.getColorTable();
       }
 
