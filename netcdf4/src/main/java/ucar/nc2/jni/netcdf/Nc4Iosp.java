@@ -67,8 +67,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
   public static final String ISNETCDF4 = "_IsNetcdf4";
   public static final String SUPERBLOCKVERSION = "_SuperblockVersion";
 
-  static final String[] SPECIALS =
-      {NCPROPERTIES, ISNETCDF4, SUPERBLOCKVERSION};
+  static final String[] SPECIALS = {NCPROPERTIES, ISNETCDF4, SUPERBLOCKVERSION};
 
   // Define reserved attributes (see Nc4DSP)
   public static final String UCARTAGOPAQUE = "_edu.ucar.opaque.size";
@@ -1094,7 +1093,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     }
 
     if (dtype.isEnum()) {
-      EnumTypedef enumTypedef = g.findEnumeration(utype.name,true);
+      EnumTypedef enumTypedef = g.findEnumeration(utype.name, true);
       v.setEnumTypedef(enumTypedef);
     } else if (dtype == DataType.OPAQUE) {
       // TODO whats the problem with knowing the size?? Needed to read properly??
