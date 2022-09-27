@@ -1262,7 +1262,7 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
     // deal with filters, cant do SZIP
     if (facade.dobj.mfp != null) {
       for (Filter f : facade.dobj.mfp.filters) {
-        if (f.id == 4) {
+        if (f.getId() == 4) {
           log.debug("SKIPPING variable with SZIP Filter= " + facade.dobj.mfp + " for variable " + facade.name);
           return null;
         }
@@ -1397,7 +1397,7 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
     vinfo.setOwner(vb);
     if ((vinfo.mfp != null) && warnings) {
       for (Filter f : vinfo.mfp.getFilters()) {
-        if (f.id > KNOWN_FILTERS) {
+        if (f.getId() > KNOWN_FILTERS) {
           log.warn("  Variable " + facade.name + " has unknown Filter(s) = " + vinfo.mfp);
           break;
         }
@@ -1630,7 +1630,7 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
         return null;
       Formatter f = new Formatter();
       for (Filter filt : mfp.filters) {
-        f.format("%s ", filt.name);
+        f.format("%s ", filt.getName());
       }
       return f.toString();
     }
