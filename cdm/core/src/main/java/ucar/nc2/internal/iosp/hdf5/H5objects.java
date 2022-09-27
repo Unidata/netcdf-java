@@ -1703,7 +1703,7 @@ public class H5objects {
         // create properties map
         Map<String, Object> props = new HashMap<>();
         // read filter description
-        int id = (int)raf.readShort();
+        int id = (int) raf.readShort();
         props.put(Filters.Keys.ID, id);
         // if the filter id < 256 then this field is not stored
         short nameSize = ((version > 1) && (id < 256)) ? 0 : raf.readShort();
@@ -1772,7 +1772,7 @@ public class H5objects {
     }
 
     int getId() {
-      return (int)this.properties.get(Filters.Keys.ID);
+      return (int) this.properties.get(Filters.Keys.ID);
     }
 
     Map<String, Object> getProperties() {
