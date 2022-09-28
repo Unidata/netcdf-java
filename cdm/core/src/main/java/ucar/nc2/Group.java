@@ -229,26 +229,6 @@ public class Group extends CDMNode implements AttributeContainer {
     return ImmutableList.copyOf(enumTypedefs);
   }
 
-  /** Find a Enumeration in this or a parent Group Builder, using its short name. */
-  public EnumTypedef findEnumeration(String name, boolean searchup) {
-    EnumTypedef ed = null;
-    if (name != null) {
-      // name = NetcdfFile.makeNameUnescaped(name);
-      Group g = this;
-      search: do {
-        // search this group's EnumTypedefs
-        for (EnumTypedef e : g.getEnumTypedefs()) {
-          if (e.getShortName().equals(name)) {
-            ed = e;
-            break search;
-          }
-        }
-        g = g.getParentGroup();
-      } while (searchup && g != null);
-    }
-    return ed;
-  }
-
   /**
    * Find a Dimension in this or a parent Group, matching on short name.
    *
@@ -395,6 +375,25 @@ public class Group extends CDMNode implements AttributeContainer {
 
   ////////////////////////////////////////////////////////////////////////
 
+  /** Find a Enumeration in this or a parent Group, using its short name. */
+  @Nullable
+  public EnumTypedef findEnumeration(String name, boolean searchup) {
+    if (name == null)
+      return null;
+    // name = NetcdfFile.makeNameUnescaped(name);
+    // search this group's EnumTypedefs
+    for (EnumTypedef d : this.getEnumTypedefs()) {
+      if (name.equals(d.getShortName()))
+        return d;
+    }
+    if (searchup) {
+      Group parent = getParentGroup();
+      if (parent != null)
+        return parent.findEnumeration(name,searchup);
+    }
+    return null;
+  }
+
   /**
    * Get the common parent of this and the other group.
    * Cant fail, since the root group is always a parent of any 2 groups.
@@ -519,12 +518,14 @@ public class Group extends CDMNode implements AttributeContainer {
 
       for (Attribute att : attributes) {
         // String name = strict ? NetcdfFile.escapeNameCDL(getShortName()) : getShortName();
-        out.format("%s", indent);
-        att.writeCDL(out, strict, null);
-        out.format(";");
-        if (!strict && (att.getDataType() != DataType.STRING))
-          out.format(" // %s", att.getDataType());
-        out.format("%n");
+        if (!Attribute.isspecial(att)) {
+          out.format("%s", indent);
+          att.writeCDL(out, strict, null);
+          out.format(";");
+          if (!strict && (att.getDataType() != DataType.STRING))
+            out.format(" // %s", att.getDataType());
+          out.format("%n");
+        }
       }
     }
   }
@@ -1117,21 +1118,22 @@ public class Group extends CDMNode implements AttributeContainer {
     }
 
     /** Find a Enumeration in this or a parent Group Builder, using its short name. */
-    public Optional<EnumTypedef> findEnumTypedef(String name, boolean search) {
-      Optional<EnumTypedef> ed = Optional.empty();
-      if (name != null) {
-        // name = NetcdfFile.makeNameUnescaped(name);
-        ed = this.enumTypedefs.stream().filter(e -> e.shortName.equals(name)).findFirst();
-        if (!ed.isPresent() && search) {
-          for (Group.Builder gb = this; gb != null; gb = gb.getParentGroup()) {
-            // search this group builders's EnumTypedefs
-            ed = gb.enumTypedefs.stream().filter(e -> e.shortName.equals(name)).findFirst();
-            if (ed.isPresent())
-              break;
-          }
-        }
+    public Optional<EnumTypedef> findEnumTypedef(String name, boolean searchup) {
+      if (name == null)
+        return Optional.empty();
+      // name = NetcdfFile.makeNameUnescaped(name);
+      // search this group builders's EnumTypedefs
+      Optional<EnumTypedef> ed = this.enumTypedefs.stream().filter(e -> e.shortName.equals(name)).findFirst();
+      if (ed.isPresent())
+        return ed;
+      // Optionally search parents
+      if (searchup) {
+          Group.Builder gb = getParentGroup();
+          ed = gb.findEnumTypedef(name, searchup);
+          if (ed.isPresent())
+            return ed;
       }
-      return ed;
+      return Optional.empty();
     }
 
     public Builder addEnumTypedef(EnumTypedef typedef) {

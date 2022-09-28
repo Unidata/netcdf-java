@@ -1025,6 +1025,8 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
 
     indent.incr();
     for (Attribute att : attributes()) {
+      if (Attribute.isspecial(att))
+        continue;
       buf.format("%s", indent);
       att.writeCDL(buf, strict, getShortName());
       buf.format(";");
@@ -1829,10 +1831,12 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
 
     if (this.dataType.isEnum()) {
       this.enumTypedef = this.group.findEnumeration(builder.enumTypeName, true);
-      if (this.enumTypedef == null)
+      if (this.enumTypedef == null) {
         throw new IllegalStateException(
             String.format("EnumTypedef '%s' does not exist in a parent Group", builder.enumTypeName));
+      }
     }
+
     // Convert dimension to shared dimensions that live in a parent group.
     // TODO: In 6.0 remove group field in dimensions, just use equals() to match.
     List<Dimension> dims = new ArrayList<>();
