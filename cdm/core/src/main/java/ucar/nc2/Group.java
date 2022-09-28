@@ -389,7 +389,7 @@ public class Group extends CDMNode implements AttributeContainer {
     if (searchup) {
       Group parent = getParentGroup();
       if (parent != null)
-        return parent.findEnumeration(name,searchup);
+        return parent.findEnumeration(name, searchup);
     }
     return null;
   }
@@ -1128,10 +1128,10 @@ public class Group extends CDMNode implements AttributeContainer {
         return ed;
       // Optionally search parents
       if (searchup) {
-          Group.Builder gb = getParentGroup();
-          ed = gb.findEnumTypedef(name, searchup);
-          if (ed.isPresent())
-            return ed;
+        Group.Builder gb = getParentGroup();
+        ed = gb.findEnumTypedef(name, searchup);
+        if (ed.isPresent())
+          return ed;
       }
       return Optional.empty();
     }
