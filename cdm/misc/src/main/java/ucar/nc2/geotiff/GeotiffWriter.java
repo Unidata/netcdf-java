@@ -399,7 +399,7 @@ public class GeotiffWriter implements Closeable {
 
   /**
    * Have the geotiff include a colormap in the form of a mapping of the pixel value to the rgb triplet.
-   * Assumes an RGB of {255, 255, 255} for any values not specified.
+   * Assumes an RGB of {0, 0, 0} for any values not specified.
    *
    * Pass null to unset the colorTable.
    *
@@ -411,7 +411,7 @@ public class GeotiffWriter implements Closeable {
    * and the output data type must be byte or integer.
    */
   public void setColorTable(Map<Integer, Color> colorMap) {
-    setColorTable(colorMap, new Color(255, 255, 255));
+    setColorTable(colorMap, new Color(0, 0, 0));
   }
 
   /**
@@ -438,9 +438,11 @@ public class GeotiffWriter implements Closeable {
     colorTable = new int[3 * 256];
     for (int i = 0; i < 256; i++) {
       // Scale it up to [0, 65535], which is needed by the ColorMap tag.
-      colorTable[i] = colorMap.getOrDefault(i, defaultRGB).getRed() * 256;
-      colorTable[256 + i] = colorMap.getOrDefault(i, defaultRGB).getGreen() * 256;
-      colorTable[512 + i] = colorMap.getOrDefault(i, defaultRGB).getBlue() * 256;
+      // It seems like 0 should map to 255, 1 to 511, and so forth, as that
+      // seems to be the only way to get gdalinfo to report back the correct values.
+      colorTable[i] = (colorMap.getOrDefault(i, defaultRGB).getRed() + 1) * 256 - 1;
+      colorTable[256 + i] = (colorMap.getOrDefault(i, defaultRGB).getGreen() + 1) * 256 - 1;
+      colorTable[512 + i] = (colorMap.getOrDefault(i, defaultRGB).getBlue() + 1) * 256 - 1;
     }
   }
 

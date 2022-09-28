@@ -66,12 +66,37 @@ public class TestGeoTiffPalette {
     writer.setColorTable(colorMap, Color.black);
     int[] resultTable = writer.getColorTable();
 
+    // Explicitly spelling out the RGB channel values [0, 255]
+    // because there were some off-by-one errors in initial development.
+    int[] expectedRGBs = new int[] {0, 170, 255,  // #00AAff
+                                    21, 20, 18,   // #151412
+                                    222, 1, 171,  // #DE01aB
+                                    16, 10, 187}; // #100ABB
+
     int[] expectedTable = new int[3 * 256];
+    // The colortable uses black for the default color as per above,
+    // which translate to RGB values of (255, 255, 255) in the TIFF color notation (see note below).
+    // Java arrays are initialized to zero, so we need to fill it with 255 before putting in our table.
+    for (int i = 0; i < expectedTable.length; i++) {
+      expectedTable[i] = 255;
+    }
+
+    // Now put in our color table.
     for (int i = 1; i <= 4; i++) {
-      // Channel values are between 0 and 256*256 as per tiff conventions.
-      expectedTable[0 * 256 + i] = colorMap.get(i).getRed() * 256;
-      expectedTable[1 * 256 + i] = colorMap.get(i).getGreen() * 256;
-      expectedTable[2 * 256 + i] = colorMap.get(i).getBlue() * 256;
+      // TIFF ColorTable Channel values are between 0 and (256*256 - 1), inclusively, as per tiff conventions.
+      // Java Color Channel values are between 0 and 255, inclusively.
+      // Java Channel Value 0 should map to TIFF Channel Value 255
+      // 1 should map to 511
+      // 2 should map to 767
+      // 255 should map to 65535
+      Assert.assertEquals(expectedRGBs[0 + 3 * (i - 1)], colorMap.get(i).getRed());
+      expectedTable[0 * 256 + i] = (colorMap.get(i).getRed() + 1) * 256 - 1;
+
+      Assert.assertEquals(expectedRGBs[1 + 3 * (i - 1)], colorMap.get(i).getGreen());
+      expectedTable[1 * 256 + i] = (colorMap.get(i).getGreen() + 1) * 256 - 1;
+
+      Assert.assertEquals(expectedRGBs[2 + 3 * (i - 1)], colorMap.get(i).getBlue());
+      expectedTable[2 * 256 + i] = (colorMap.get(i).getBlue() + 1) * 256 - 1;
     }
     Assert.assertArrayEquals(expectedTable, resultTable);
 
