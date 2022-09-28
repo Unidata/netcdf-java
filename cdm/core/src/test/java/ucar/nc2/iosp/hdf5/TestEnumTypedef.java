@@ -24,7 +24,7 @@ public class TestEnumTypedef {
       EnumTypedef typedef = primaryCloud.getEnumTypedef();
       assertThat(typedef).isNotNull();
       // TODO disable this until we have a fix see Issue #126
-      // assertThat(typedef.getShortName()).isEqualTo("cloud_class_t");
+      assertThat(typedef.getShortName()).isEqualTo("cloud_class_t");
     }
   }
 
