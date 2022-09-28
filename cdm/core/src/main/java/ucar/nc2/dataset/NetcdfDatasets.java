@@ -63,7 +63,7 @@ public class NetcdfDatasets {
    */
   public static synchronized void initNetcdfFileCache(int minElementsInMemory, int maxElementsInMemory, int hardLimit,
       int period) {
-    netcdfFileCache = new FileCache("NetcdfFileCache ", minElementsInMemory, maxElementsInMemory, hardLimit, period);
+    netcdfFileCache = new FileCache("NetcdfFileCache", minElementsInMemory, maxElementsInMemory, hardLimit, period);
   }
 
   public static synchronized void disableNetcdfFileCache() {
