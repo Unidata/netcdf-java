@@ -1129,7 +1129,8 @@ public class Group extends CDMNode implements AttributeContainer {
       // Optionally search parents
       if (searchup) {
         Group.Builder gb = getParentGroup();
-        ed = gb.findEnumTypedef(name, searchup);
+        if (gb != null)
+          ed = gb.findEnumTypedef(name, searchup);
         if (ed.isPresent())
           return ed;
       }
