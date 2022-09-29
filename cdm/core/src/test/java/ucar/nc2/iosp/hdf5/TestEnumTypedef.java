@@ -5,6 +5,7 @@ import static com.google.common.truth.Truth.assertThat;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import java.lang.invoke.MethodHandles;
 import ucar.ma2.DataType;
 import ucar.nc2.EnumTypedef;
 import ucar.nc2.NetcdfFile;
@@ -20,7 +21,7 @@ public class TestEnumTypedef {
   @Test
   public void problem() throws Exception {
     String s = TestDir.cdmLocalTestDataDir + "hdf5/test_atomic_types.nc";
-    logger.info("TestEnumTypedef on {}%n", filename);
+    logger.info("TestEnumTypedef on {}%n", s);
     try (NetcdfFile ncfile = NetcdfFiles.open(s)) {
       Variable primaryCloud = ncfile.findVariable("primary_cloud");
       assertThat((Object) primaryCloud).isNotNull();
