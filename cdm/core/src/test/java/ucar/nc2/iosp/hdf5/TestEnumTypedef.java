@@ -18,15 +18,15 @@ public class TestEnumTypedef {
 
   @Test
   public void problem() throws Exception {
-      StringBuilder s = new StringBuilder();
-      s.append(System.getProperty("user.dir"));
-      s.append("/");
-      s.append(TestDir.cdmLocalTestDataDir);
-      s.append("hdf5/test_atomic_types.nc");
-      translate(s);
-      File f = new File(s.toString());
-      assert(f.canRead());
-      try (NetcdfFile ncfile = NetcdfFiles.open(s.toString())) {
+    StringBuilder s = new StringBuilder();
+    s.append(System.getProperty("user.dir"));
+    s.append("/");
+    s.append(TestDir.cdmLocalTestDataDir);
+    s.append("hdf5/test_atomic_types.nc");
+    translate(s);
+    File f = new File(s.toString());
+    assert (f.canRead());
+    try (NetcdfFile ncfile = NetcdfFiles.open(s.toString())) {
       Variable primaryCloud = ncfile.findVariable("primary_cloud");
       assertThat((Object) primaryCloud).isNotNull();
       assertThat(primaryCloud.getDataType().isEnum());
@@ -40,11 +40,11 @@ public class TestEnumTypedef {
   }
 
   private void translate(StringBuilder sb) {
-      char sep = File.separator.charAt(0);
-      for(int i = 0 ; i < sb.length(); i++) {
-          char c = sb.charAt(i);
-          sb.setCharAt(i, (c == '/' || c == '\\') ? sep : c);
-      }
+    char sep = File.separator.charAt(0);
+    for (int i = 0; i < sb.length(); i++) {
+      char c = sb.charAt(i);
+      sb.setCharAt(i, (c == '/' || c == '\\') ? sep : c);
+    }
   }
 
 }
