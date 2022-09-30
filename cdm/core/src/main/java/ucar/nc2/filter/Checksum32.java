@@ -59,7 +59,8 @@ public class Checksum32 extends Filter {
     int dataStart = this.type == CType.FLETCHER ? 0 : nbytes;
     System.arraycopy(dataIn, 0, dataOut, dataStart, dataIn.length);
     int checksumStart = this.type == CType.FLETCHER ? dataOut.length - nbytes : 0;
-    System.arraycopy(Ints.toByteArray(checksum), 0, dataOut, checksumStart, nbytes);;
+    // encode as little endian by default
+    System.arraycopy(Ints.toByteArray(Integer.reverseBytes(checksum)), 0, dataOut, checksumStart, nbytes);;
     return dataOut;
   }
 
@@ -76,7 +77,7 @@ public class Checksum32 extends Filter {
     byte[] bytes = new byte[nbytes];
     int checksumStart = this.type == CType.FLETCHER ? dataIn.length - nbytes : 0;
     System.arraycopy(dataIn, checksumStart, bytes, 0, nbytes);
-    int i = Ints.fromByteArray(bytes);
+    int i = Integer.reverseBytes(Ints.fromByteArray(bytes)); // convert from little endian
     if (i != checksum) {
       throw new RuntimeException("Checksum invalid");
     }
@@ -145,7 +146,7 @@ public class Checksum32 extends Filter {
 
     @Override
     public long getValue() {
-      return Integer.reverseBytes((int) ((sum2 << 16) | sum1));
+      return (sum2 << 16) | sum1;
     }
   }
 
