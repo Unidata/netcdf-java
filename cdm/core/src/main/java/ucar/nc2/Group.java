@@ -4,6 +4,7 @@
  */
 package ucar.nc2;
 
+import static java.util.Optional.ofNullable;
 import static ucar.nc2.NetcdfFiles.reservedFullName;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
@@ -376,18 +377,20 @@ public class Group extends CDMNode implements AttributeContainer {
 
   /** Find a Enumeration in this or a parent Group, using its short name. */
   @Nullable
-  public EnumTypedef findEnumeration(String name) {
+  public EnumTypedef findEnumeration(String name, boolean searchup) {
     if (name == null)
       return null;
     // name = NetcdfFile.makeNameUnescaped(name);
-    for (EnumTypedef d : enumTypedefs) {
+    // search this group's EnumTypedefs
+    for (EnumTypedef d : this.getEnumTypedefs()) {
       if (name.equals(d.getShortName()))
         return d;
     }
-    Group parent = getParentGroup();
-    if (parent != null)
-      return parent.findEnumeration(name);
-
+    if (searchup) {
+      Group parent = getParentGroup();
+      if (parent != null)
+        return parent.findEnumeration(name, searchup);
+    }
     return null;
   }
 
@@ -1114,6 +1117,26 @@ public class Group extends CDMNode implements AttributeContainer {
       return other;
     }
 
+    /** Find a Enumeration in this or a parent Group Builder, using its short name. */
+    public Optional<EnumTypedef> findEnumTypedef(String name, boolean searchup) {
+      if (name == null)
+        return Optional.empty();
+      // name = NetcdfFile.makeNameUnescaped(name);
+      // search this group builders's EnumTypedefs
+      Optional<EnumTypedef> ed = this.enumTypedefs.stream().filter(e -> e.shortName.equals(name)).findFirst();
+      if (ed.isPresent())
+        return ed;
+      // Optionally search parents
+      if (searchup) {
+        Group.Builder gb = getParentGroup();
+        if (gb != null)
+          ed = gb.findEnumTypedef(name, searchup);
+        if (ed.isPresent())
+          return ed;
+      }
+      return Optional.empty();
+    }
+
     public Builder addEnumTypedef(EnumTypedef typedef) {
       Preconditions.checkNotNull(typedef);
       enumTypedefs.add(typedef);
@@ -1131,7 +1154,7 @@ public class Group extends CDMNode implements AttributeContainer {
      * Return new or existing.
      */
     public EnumTypedef findOrAddEnumTypedef(String name, Map<Integer, String> map) {
-      Optional<EnumTypedef> opt = findEnumTypedef(name);
+      Optional<EnumTypedef> opt = findEnumTypedef(name, false); // Find in this group
       if (opt.isPresent()) {
         return opt.get();
       } else {
@@ -1139,10 +1162,6 @@ public class Group extends CDMNode implements AttributeContainer {
         addEnumTypedef(enumTypedef);
         return enumTypedef;
       }
-    }
-
-    public Optional<EnumTypedef> findEnumTypedef(String name) {
-      return this.enumTypedefs.stream().filter(e -> e.shortName.equals(name)).findFirst();
     }
 
     /** Add a Variable, throw error if one of the same name if it exists. */
