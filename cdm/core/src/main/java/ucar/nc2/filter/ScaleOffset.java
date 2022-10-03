@@ -56,8 +56,8 @@ public class ScaleOffset extends Filter {
 
   public ScaleOffset(Map<String, Object> properties) {
     // get offset and scale parameters
-    offset = ((Number) properties.get("offset")).doubleValue();
-    scale = (int) properties.get("scale");
+    offset = ((Number) properties.getOrDefault("offset", 0)).doubleValue();
+    scale = (int) properties.getOrDefault("scale", 1);
 
     // input data type
     String type = (String) properties.get("dtype");
