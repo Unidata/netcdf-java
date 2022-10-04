@@ -69,8 +69,6 @@ So you can move the data files and the _gbx_ files as needed.
 The CDM index files (_ncx4_) also store the names of the GRIB data files, and (usually) needs the GRIB files to exist there.
 So if you move the GRIB and GRIB index files, it\'s best to delete the _ncx4_ files and re-create them after the move.
 
-The use of external tables in GRIB is quite problematic (read here for more details). Nonetheless, GRIB files are in wide use internationally and contain invaluable data. The CDM is a general-purpose GRIB reading library that makes GRIB data available through the CDM/NetCDF API, that is, as multidimensional data arrays and CF-compliant metadata and coordinates.
-
 ## GRIB Tables
 
 The use of external tables in GRIB is quite problematic ([read](https://doi.org/10.5065/vkan-dp10){:target="blank"} for more details).

@@ -5,6 +5,7 @@ buildscript {
   apply from: "$rootDir/gradle/any/shared-mvn-coords.gradle"
 
   repositories {
+    mavenCentral()
     gradlePluginPortal()
   }
   dependencies {
@@ -16,14 +17,14 @@ apply from: "$rootDir/gradle/any/properties.gradle"
 apply plugin: 'org.gretty'
 apply plugin: 'jacoco'
 
-// when applying the gretty buildScript to a project, make sure that project has access to the gradlePluginPortal
-// which is where the gretty tomcat runners live
+// when applying the gretty buildScript to a project, make sure that project has access the gretty tomcat runners
 repositories {
   exclusiveContent {
     forRepository {
+      mavenCentral()
       gradlePluginPortal()
     }
-    // only look for unidata gretty related artifacts from the gradlePluginPortal
+    // only look for unidata gretty related artifacts from the above repos
     filter {
       includeGroup 'org.gretty'
     }

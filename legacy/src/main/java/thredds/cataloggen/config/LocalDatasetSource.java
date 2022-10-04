@@ -108,7 +108,7 @@ public class LocalDatasetSource extends DatasetSource {
 
       // Check that accessPoint file starts with accessPointHeader.
       if (!apFile.getPath().startsWith(aphFile.getPath())
-          && !apFile.getCanonicalPath().startsWith(aphFile.getCanonicalPath())) {
+          && !apFile.getCanonicalFile().toPath().startsWith(aphFile.getCanonicalFile().toPath())) {
         String tmpMsg = "The accessPoint <" + apFile.getPath() + " or " + apFile.getCanonicalPath()
             + "> must start with the accessPointHeader <" + aphFile.getPath() + " or " + aphFile.getCanonicalPath()
             + ">.";
