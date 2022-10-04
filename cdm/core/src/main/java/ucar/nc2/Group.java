@@ -375,7 +375,14 @@ public class Group extends CDMNode implements AttributeContainer {
 
   ////////////////////////////////////////////////////////////////////////
 
-  /** Find a Enumeration in this or a parent Group, using its short name. */
+  /** Find a Enumeration in this Group, using its short name. */
+  @Nullable
+  public EnumTypedef findEnumeration(String name) {
+    // Keep the old behavior
+    return findEnumeration(name, false);
+  }
+
+  /** Find a Enumeration in this or optionally the parent Groups, using its short name. */
   @Nullable
   public EnumTypedef findEnumeration(String name, boolean searchup) {
     if (name == null)
@@ -1115,6 +1122,12 @@ public class Group extends CDMNode implements AttributeContainer {
       while (!other.isParent(this))
         other = other.parentGroup;
       return other;
+    }
+
+    /** Find a Enumeration in this Group Builder, using its short name. */
+    public Optional<EnumTypedef> findEnumTypedef(String name) {
+      // Keep the old behavior
+      return findEnumTypedef(name, false);
     }
 
     /** Find a Enumeration in this or a parent Group Builder, using its short name. */

@@ -43,7 +43,6 @@ import ucar.nc2.internal.iosp.hdf4.HdfEos;
 import ucar.nc2.internal.iosp.hdf4.HdfHeaderIF;
 import ucar.nc2.internal.iosp.hdf5.H5objects.DataObject;
 import ucar.nc2.internal.iosp.hdf5.H5objects.DataObjectFacade;
-import ucar.nc2.internal.iosp.hdf5.H5objects.Filter;
 import ucar.nc2.internal.iosp.hdf5.H5objects.GlobalHeap;
 import ucar.nc2.internal.iosp.hdf5.H5objects.H5Group;
 import ucar.nc2.internal.iosp.hdf5.H5objects.HeaderMessage;
