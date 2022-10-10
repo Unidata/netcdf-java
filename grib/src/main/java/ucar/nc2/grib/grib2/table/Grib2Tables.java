@@ -564,7 +564,7 @@ public class Grib2Tables implements ucar.nc2.grib.GribTables, TimeUnitConverter 
     if (wantPeriod == null) {
       return null;
     }
-    CalendarPeriod havePeriod = Grib2Utils.getCalendarPeriod(convertTimeUnit(intvu.timeUnitIntv));
+    CalendarPeriod havePeriod = Grib2Utils.getCalendarPeriod(intvu.timeUnitIntv);
     double fac2 = intvu.timeRange * wantPeriod.getConvertFactor(havePeriod);
     CalendarPeriod period = wantPeriod.multiply((int) fac2); // LOOK needs to be an int
 
