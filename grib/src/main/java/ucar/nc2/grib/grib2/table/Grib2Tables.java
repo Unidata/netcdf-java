@@ -460,9 +460,8 @@ public class Grib2Tables implements ucar.nc2.grib.GribTables, TimeUnitConverter 
 
   private TimeUnitConverter timeUnitConverter; // LOOK not really immutable
 
+  // Do not modify timeUnitConverter once it's been set
   public void setTimeUnitConverter(TimeUnitConverter timeUnitConverter) {
-    if (this.timeUnitConverter != null)
-      throw new RuntimeException("Cant modify timeUnitConverter once its been set");
     this.timeUnitConverter = timeUnitConverter;
   }
 
