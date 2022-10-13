@@ -167,7 +167,7 @@ public class CalendarPeriod {
 
   /**
    * Subtract two dates, return difference in units of this period.
-   * If not even, will round down (floor) and log a warning
+   * If not even, will round down (take the floor)
    * 
    * @param start start date
    * @param end end date
@@ -176,8 +176,6 @@ public class CalendarPeriod {
   public int subtract(CalendarDate start, CalendarDate end) {
     long diff = end.getDifferenceInMsecs(start);
     int thislen = millisecs();
-    if ((diff % thislen != 0))
-      log.warn("roundoff error");
     return (int) Math.floor(diff / (float) thislen);
   }
 
