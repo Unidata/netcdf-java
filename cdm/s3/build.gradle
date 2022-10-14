@@ -26,7 +26,10 @@ dependencies {
   implementation 'software.amazon.awssdk:apache-client'
   implementation 'com.google.code.findbugs:jsr305'
 
-  runtimeOnly 'software.amazon.awssdk:sts'
+  runtimeOnly('software.amazon.awssdk:sts') {
+    // see above comment about awssdk and netty-nio-client
+    exclude group: 'software.amazon.awssdk', module: 'netty-nio-client'
+  }
 
   testImplementation project(':cdm:cdm-radial')
   testImplementation project(':cdm-test-utils')
