@@ -10,7 +10,9 @@ javaPlatform {
 
 dependencies {
   def awsVersion = '2.17.290'
+  def jacksonVersion = '2.14.0-rc1'
   api enforcedPlatform("software.amazon.awssdk:bom:${awsVersion}")
+  api enforcedPlatform("com.fasterxml.jackson:jackson-bom:${jacksonVersion}")
   constraints {
     // Note: The depVersion variable is defined in gradle/any/shared-mvn-coords.gradle and is used for dependencies
     // that are used in different configurations of a build that need access to the full maven coordinates.
@@ -44,9 +46,9 @@ dependencies {
     // cdm-vis5d (vis5d IOSP)
     api 'edu.wisc.ssec:visad:2.0-20130124'
 
-    // cdm-zarr
-    api 'com.fasterxml.jackson.core:jackson-core:2.14.0-rc1'
-    api 'com.fasterxml.jackson.core:jackson-databind:2.14.0-rc1'
+    // netcdfAll (everything else is happy with the Jackson BOM)
+    api "com.fasterxml.jackson.core:jackson-core:${jacksonVersion}"
+    api "com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}"
 
     // toolsUI (everything else is happy with the aws BOM)
     api "software.amazon.awssdk:s3:2.17.290:${awsVersion}"
