@@ -197,7 +197,7 @@ public class MFileZip implements MFile {
 
     @Override
     public boolean canProvide(String location) {
-      return location.contains(ext);
+      return location != null && location.contains(ext);
     }
 
     @Nullable
