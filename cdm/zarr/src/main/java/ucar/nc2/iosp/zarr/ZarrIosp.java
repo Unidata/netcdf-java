@@ -19,13 +19,14 @@ import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.io.zarr.RandomAccessDirectory;
 
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 
 /**
  * IOSP for reading/writing Zarr/NCZarr formats
  */
 public class ZarrIosp extends AbstractIOServiceProvider {
 
-  static final Logger logger = LoggerFactory.getLogger(ZarrIosp.class);
+  static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup ( ).lookupClass ( ));
 
   private static final String fileTypeId = "Zarr";
   private static final String fileTypeDescription = "Zarr v2 formatted dataset";
@@ -68,9 +69,56 @@ public class ZarrIosp extends AbstractIOServiceProvider {
     ZarrHeader.VInfo vinfo = (ZarrHeader.VInfo) v2.getSPobject();
     DataType dataType = v2.getDataType();
 
+    logger.debug("DataType is '{}'", dataType);
+
+    // Watch for floating point fill values encoded as Strings
+    final Object fillValueObj = vinfo.getFillValue();
+
+    Object fillValue = fillValueObj;
+
+    if (fillValueObj instanceof String) {
+      final String fillValueStr = (String)fillValueObj;
+
+      logger.debug("Fill value is String with value '{}'", fillValueStr);
+
+      if ("".equals(fillValueStr)) {
+        fillValue = null;
+      } else {
+        switch (dataType) {
+          case FLOAT:
+            if ("NaN".equals(fillValueStr)) {
+              fillValue = Float.NaN;
+            } else if ("Infinity".equals(fillValueStr)) {
+              fillValue = Float.POSITIVE_INFINITY;
+            } else if ("-Infinity".equals(fillValueStr)) {
+              fillValue = Float.NEGATIVE_INFINITY;
+            } else {
+              logger.debug("String value '{}' not handled for float fill value", fillValueStr);
+            }
+            break;
+
+          case DOUBLE:
+            if ("NaN".equals(fillValueStr)) {
+              fillValue = Float.NaN;
+            } else if ("Infinity".equals(fillValueStr)) {
+              fillValue = Float.POSITIVE_INFINITY;
+            } else if ("-Infinity".equals(fillValueStr)) {
+              fillValue = Float.NEGATIVE_INFINITY;
+            } else {
+              logger.debug("String value '{}' not handled for float fill value", fillValueStr);
+            }
+            break;
+
+          default:
+            logger.debug("String value '{}' not handled for {} fill value", fillValueStr, dataType);
+            break;
+        }
+      }
+    }
+
     // create layout object
     Layout layout = new ZarrLayoutBB(v2, section, this.raf);
-    Object data = IospHelper.readDataFill((LayoutBB) layout, dataType, vinfo.getFillValue());
+    Object data = IospHelper.readDataFill((LayoutBB) layout, dataType, fillValue);
 
     Array array = Array.factory(dataType, section.getShape(), data);
     if (vinfo.getOrder() == ZArray.Order.F) {
@@ -85,3 +133,4 @@ public class ZarrIosp extends AbstractIOServiceProvider {
     return array;
   }
 }
+
