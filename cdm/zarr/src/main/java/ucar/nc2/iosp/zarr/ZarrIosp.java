@@ -99,11 +99,11 @@ public class ZarrIosp extends AbstractIOServiceProvider {
 
           case DOUBLE:
             if ("NaN".equals(fillValueStr)) {
-              fillValue = Float.NaN;
+              fillValue = Double.NaN;
             } else if ("Infinity".equals(fillValueStr)) {
-              fillValue = Float.POSITIVE_INFINITY;
+              fillValue = Double.POSITIVE_INFINITY;
             } else if ("-Infinity".equals(fillValueStr)) {
-              fillValue = Float.NEGATIVE_INFINITY;
+              fillValue = Double.NEGATIVE_INFINITY;
             } else {
               logger.debug("String value '{}' not handled for float fill value", fillValueStr);
             }
