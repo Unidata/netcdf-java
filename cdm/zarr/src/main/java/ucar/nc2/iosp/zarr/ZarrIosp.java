@@ -105,7 +105,7 @@ public class ZarrIosp extends AbstractIOServiceProvider {
             } else if ("-Infinity".equals(fillValueStr)) {
               fillValue = Double.NEGATIVE_INFINITY;
             } else {
-              logger.debug("String value '{}' not handled for float fill value", fillValueStr);
+              logger.debug("String value '{}' not handled for double fill value", fillValueStr);
             }
             break;
 
