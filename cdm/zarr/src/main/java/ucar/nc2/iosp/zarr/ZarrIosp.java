@@ -26,7 +26,7 @@ import java.lang.invoke.MethodHandles;
  */
 public class ZarrIosp extends AbstractIOServiceProvider {
 
-  static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup ( ).lookupClass ( ));
+  static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   private static final String fileTypeId = "Zarr";
   private static final String fileTypeDescription = "Zarr v2 formatted dataset";
@@ -77,7 +77,7 @@ public class ZarrIosp extends AbstractIOServiceProvider {
     Object fillValue = fillValueObj;
 
     if (fillValueObj instanceof String) {
-      final String fillValueStr = (String)fillValueObj;
+      final String fillValueStr = (String) fillValueObj;
 
       logger.debug("Fill value is String with value '{}'", fillValueStr);
 
@@ -133,4 +133,3 @@ public class ZarrIosp extends AbstractIOServiceProvider {
     return array;
   }
 }
-
