@@ -5,12 +5,13 @@
 
 package ucar.nc2.filter;
 
+import com.google.common.primitives.Ints;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import ucar.unidata.io.RandomAccessFile;
 
 import java.io.IOException;
-import java.nio.ByteOrder;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -61,11 +62,11 @@ public class TestFilters {
   @Test
   public void testChecksum32() throws IOException {
     // test Adler32
-    Filter filter = new Checksum32(Checksum32.CType.ADLER, ByteOrder.LITTLE_ENDIAN);
+    Filter filter = new Checksum32(Checksum32.CType.ADLER);
     testEncodeDecode(filter, "adler32");
 
     // test CRC32
-    filter = new Checksum32(Checksum32.CType.CRC, ByteOrder.LITTLE_ENDIAN);
+    filter = new Checksum32(Checksum32.CType.CRC);
     testEncodeDecode(filter, "crc32");
   }
 
@@ -106,6 +107,21 @@ public class TestFilters {
     // test decode
     byte[] decoded = filter.decode(encoded);
     assertThat(decoded).isEqualTo(decoded_data);
+  }
+
+  @Test
+  public void testFletcher() {
+    // test case from Wikipeda Fletcher test vectors
+    String testString = "abcdefgh";
+    int knownChecksum = -1785599007;
+    byte[] checksumBytes = Ints.toByteArray(knownChecksum);
+    Checksum32 filter = new Checksum32(Checksum32.CType.FLETCHER);
+    byte[] expected = testString.getBytes(StandardCharsets.UTF_8);
+    byte[] in = new byte[expected.length + 4];
+    System.arraycopy(expected, 0, in, 0, expected.length);
+    System.arraycopy(checksumBytes, 0, in, expected.length, 4);
+    byte[] out = filter.decode(in);
+    assertThat(out).isEqualTo(expected);
   }
 
 }
