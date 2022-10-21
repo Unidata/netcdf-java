@@ -68,8 +68,28 @@ public class ZarrIosp extends AbstractIOServiceProvider {
     // find variable in RAF
     ZarrHeader.VInfo vinfo = (ZarrHeader.VInfo) v2.getSPobject();
     DataType dataType = v2.getDataType();
-
     logger.debug("DataType is '{}'", dataType);
+
+    Object fillValue = getFillValue(vinfo, dataType);
+
+    // create layout object
+    Layout layout = new ZarrLayoutBB(v2, section, this.raf);
+    Object data = IospHelper.readDataFill((LayoutBB) layout, dataType, fillValue);
+
+    Array array = Array.factory(dataType, section.getShape(), data);
+    if (vinfo.getOrder() == ZArray.Order.F) {
+      int n = v2.getDimensions().size();
+      int[] dims = new int[n];
+      for (int i = 0; i < n; i++) {
+        dims[i] = n - i - 1;
+      }
+      array = array.permute(dims);
+    }
+
+    return array;
+  }
+
+  private Object getFillValue(ZarrHeader.VInfo vinfo, DataType dataType) {
 
     // Watch for floating point fill values encoded as Strings
     final Object fillValueObj = vinfo.getFillValue();
@@ -78,11 +98,13 @@ public class ZarrIosp extends AbstractIOServiceProvider {
 
     if (fillValueObj instanceof String) {
       final String fillValueStr = (String) fillValueObj;
-
       logger.debug("Fill value is String with value '{}'", fillValueStr);
+      if (dataType.isString()) {
+        return fillValueStr;
+      }
 
-      if ("".equals(fillValueStr)) {
-        fillValue = null;
+      if (fillValueStr.isEmpty()) {
+        return null;
       } else {
         switch (dataType) {
           case FLOAT:
@@ -115,21 +137,6 @@ public class ZarrIosp extends AbstractIOServiceProvider {
         }
       }
     }
-
-    // create layout object
-    Layout layout = new ZarrLayoutBB(v2, section, this.raf);
-    Object data = IospHelper.readDataFill((LayoutBB) layout, dataType, fillValue);
-
-    Array array = Array.factory(dataType, section.getShape(), data);
-    if (vinfo.getOrder() == ZArray.Order.F) {
-      int n = v2.getDimensions().size();
-      int[] dims = new int[n];
-      for (int i = 0; i < n; i++) {
-        dims[i] = n - i - 1;
-      }
-      array = array.permute(dims);
-    }
-
-    return array;
+    return fillValue;
   }
 }
