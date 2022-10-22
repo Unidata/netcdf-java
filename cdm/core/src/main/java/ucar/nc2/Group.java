@@ -1130,7 +1130,8 @@ public class Group extends CDMNode implements AttributeContainer {
       // optionally search this group builders's EnumTypedefs
       if (!skipparent) {
         ed = this.enumTypedefs.stream().filter(e -> e.equalsMapOnly(template)).findFirst();
-        if(ed.isPresent()) return ed;
+        if (ed.isPresent())
+          return ed;
       }
       // Optionally search parents
       if (searchup) {
@@ -1144,7 +1145,7 @@ public class Group extends CDMNode implements AttributeContainer {
     }
 
 
-      /** Find a Enumeration in this Group Builder, using its short name. */
+    /** Find a Enumeration in this Group Builder, using its short name. */
     public Optional<EnumTypedef> findEnumTypedef(String name) {
       // Keep the old behavior
       return findEnumTypedef(name, false);
