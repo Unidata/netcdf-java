@@ -18,9 +18,28 @@ import ucar.unidata.util.test.TestDir;
 public class TestEnumTypedef {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
+  // Test where enum type is in same group to the variable using it.
   @Test
-  public void problem() throws Exception {
+  public void test1() throws Exception {
     String s = TestDir.cdmLocalTestDataDir + "hdf5/test_atomic_types.nc";
+    logger.info("TestEnumTypedef on {}%n", s);
+    try (NetcdfFile ncfile = NetcdfFiles.open(s)) {
+      Variable primaryCloud = ncfile.findVariable("primary_cloud");
+      assertThat((Object) primaryCloud).isNotNull();
+      assertThat(primaryCloud.getDataType().isEnum());
+      assertThat(primaryCloud.getDataType()).isEqualTo(DataType.ENUM1);
+      assertThat(primaryCloud.getEnumTypedef()).isNotNull();
+      EnumTypedef typedef = primaryCloud.getEnumTypedef();
+      assertThat(typedef).isNotNull();
+      logger.info("TestEnumTypedef typedef name {}%n", typedef.getShortName());
+      assertThat(typedef.getShortName()).isEqualTo("cloud_class_t");
+    }
+  }
+
+  // Test where enum type is in a parent group to the variable using it.
+  @Test
+  public void test2() throws Exception {
+    String s = TestDir.cdmLocalTestDataDir + "hdf5/test_enum_2.nc";
     logger.info("TestEnumTypedef on {}%n", s);
     try (NetcdfFile ncfile = NetcdfFiles.open(s)) {
       Variable primaryCloud = ncfile.findVariable("primary_cloud");
