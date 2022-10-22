@@ -1125,6 +1125,26 @@ public class Group extends CDMNode implements AttributeContainer {
       return other;
     }
 
+    public Optional<EnumTypedef> findSimilarEnumTypedef(EnumTypedef template, boolean searchup, boolean anyname) {
+      Optional<EnumTypedef> ed = Optional.empty();
+      assert (template != null);
+      // search this group builders's EnumTypedefs but with constraint on name
+      ed = this.enumTypedefs.stream()
+          .filter(e -> (anyname || !template.getShortName().equals(e.getShortName())) && e.equalsMapOnly(template))
+          .findFirst();
+      if (ed.isPresent())
+        return ed;
+      // Optionally search parents
+      if (searchup) {
+        Group.Builder gb = getParentGroup();
+        if (gb != null)
+          ed = gb.findSimilarEnumTypedef(template, searchup, anyname);
+        if (ed.isPresent())
+          return ed;
+      }
+      return Optional.empty();
+    }
+
     /** Find a Enumeration in this Group Builder, using its short name. */
     public Optional<EnumTypedef> findEnumTypedef(String name) {
       // Keep the old behavior
