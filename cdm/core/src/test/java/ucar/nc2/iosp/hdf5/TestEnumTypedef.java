@@ -15,7 +15,7 @@ import ucar.unidata.util.test.TestDir;
 public class TestEnumTypedef {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  // Test where enum type is in same group to the variable using it.
+  // Test case where enum type is in same group to the variable using it.
   @Test
   public void test1() throws Exception {
     String s = TestDir.cdmLocalTestDataDir + "hdf5/test_atomic_types.nc";
@@ -33,7 +33,7 @@ public class TestEnumTypedef {
     }
   }
 
-  // Test where enum type is in a parent group to the variable using it.
+  // Test case where enum type is in a parent group to the variable using it.
   @Test
   public void test2() throws Exception {
     String s = TestDir.cdmLocalTestDataDir + "hdf5/test_enum_2.nc4";
