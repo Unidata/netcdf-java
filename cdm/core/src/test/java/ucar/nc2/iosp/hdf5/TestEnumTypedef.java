@@ -36,7 +36,7 @@ public class TestEnumTypedef {
   // Test where enum type is in a parent group to the variable using it.
   @Test
   public void test2() throws Exception {
-    String s = TestDir.cdmLocalTestDataDir + "hdf5/test_enum_2.nc";
+    String s = TestDir.cdmLocalTestDataDir + "hdf5/test_enum_2.nc4";
     logger.info("TestEnumTypedef on {}%n", s);
     try (NetcdfFile ncfile = NetcdfFiles.open(s)) {
       Group h = ncfile.findGroup("/h");
