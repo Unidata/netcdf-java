@@ -1559,9 +1559,9 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
       // 1. The enum name is the same as the variable name.
       // 2. There is no enum of that name in the current group.
       // 3. There is another enum type in some containing group
-      // that is structurally identical to the EnumTypedef
-      // associated with the variable. This is in contrast to testing
-      // for name equality.
+      //     that is structurally identical to the EnumTypedef -- but with a
+      //     different name -- associated with the variable. This is in contrast
+      //     to testing for name equality.
       // If all three conditions are true, then use the enum found
       // in condition 3 as the enum type for the variable.
       // Note that provision is made only for a shortname rather than a
@@ -1572,14 +1572,15 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
       // Else if condition 3 is false, then it is an error because the
       // variable's enum type is not defined.
 
-      // Create the EnumTypedef on speculation
-      EnumTypedef enumTypedef = new EnumTypedef(mdt.enumTypeName, mdt.map);
-      if (enumTypedef.getShortName().equals(v.shortName)) { // Condition 1
-        Optional<EnumTypedef> actualEnumTypedef = parent.findEnumTypedef(mdt.enumTypeName, false);
-        if (!actualEnumTypedef.isPresent()) { // Condition 2
-          actualEnumTypedef = parent.findSimilarEnumTypedef(enumTypedef, true, true);
-          if (actualEnumTypedef.isPresent()) // Condition 3; use correct EnumTypedef
-            enumTypedef = actualEnumTypedef.get();
+      EnumTypedef actualEnumTypedef = null; // The final chosen EnumTypedef
+      // Create the variables EnumTypedef on speculation
+      EnumTypedef template = new EnumTypedef(mdt.enumTypeName, mdt.map);
+      if (template.getShortName().equals(v.shortName)) { // Condition 1
+        Optional<EnumTypedef> candidate = parent.findEnumTypedef(mdt.enumTypeName, false);
+        if (!candidate.isPresent()) { // Condition 2
+          candidate = parent.findSimilarEnumTypedef(template, true, false);
+          if (candidate.isPresent()) // Condition 3; use correct EnumTypedef
+            actualEnumTypedef = candidate.get();
           else { // !Condition 3
             log.warn("EnumTypedef is missing for variable: {}", v.shortName);
             throw new IllegalStateException("EnumTypedef is missing for variable: " + v.shortName);
@@ -1588,9 +1589,9 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
           log.warn("Duplicate name: EnumTypedef and Variable: {}", v.shortName);
           throw new IllegalStateException("Duplicate name: EnumTypedef and Variable: " + v.shortName);
         }
-      } // else ! Condition 1; use speculative EnumTypedef
-        // enumTypedef = enumTypedef;
-      v.setEnumTypeName(enumTypedef.getShortName());
+      } else // ! Condition 1; use template
+        actualEnumTypedef = template;
+      v.setEnumTypeName(actualEnumTypedef.getShortName());
     }
 
     return true;
