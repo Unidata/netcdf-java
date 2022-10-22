@@ -1559,13 +1559,15 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
       // 1. The enum name is the same as the variable name.
       // 2. There is no enum of that name in the current group.
       // 3. There is another enum type in some containing group
-      //     that is structurally identical to the EnumTypedef -- but with a
-      //     different name -- associated with the variable. This is in contrast
-      //     to testing for name equality.
+      // that is structurally identical to the EnumTypedef -- but with a
+      // different name -- associated with the variable. This is in contrast
+      // to testing for name equality.
+      //
       // If all three conditions are true, then use the enum found
       // in condition 3 as the enum type for the variable.
       // Note that provision is made only for a shortname rather than a
       // fully qualified name, which is incorrect, but too hard to change.
+      //
       // If condition 1 if false, then it is ok to create a new EnumTypedef.
       // Else if condition 2 is false then it is an error because the existence
       // of such an enum is illegal netcdf-4 because duplicate name.

@@ -1128,8 +1128,11 @@ public class Group extends CDMNode implements AttributeContainer {
       Optional<EnumTypedef> ed = Optional.empty();
       assert (template != null);
       // search this group builders's EnumTypedefs but with constraint on name
-      ed = this.enumTypedefs.stream().filter(e -> (anyname || !template.getShortName().equals(e.getShortName())) && e.equalsMapOnly(template)).findFirst();
-      if (ed.isPresent()) return ed;
+      ed = this.enumTypedefs.stream()
+          .filter(e -> (anyname || !template.getShortName().equals(e.getShortName())) && e.equalsMapOnly(template))
+          .findFirst();
+      if (ed.isPresent())
+        return ed;
       // Optionally search parents
       if (searchup) {
         Group.Builder gb = getParentGroup();
