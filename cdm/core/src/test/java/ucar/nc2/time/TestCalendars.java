@@ -149,17 +149,20 @@ public class TestCalendars {
   }
 
   @Test
-  public void testWhiteSpaceCompatibilityWithUdunits(){
+  public void testWhiteSpaceCompatibilityWithUdunits() {
     String date = "2022-1-1";
     String time = "12:34:00Z";
-    String[] udunitsWhitespace = new String[]{" ", "  ", "\t", "\n", "\r", "\f"};
+    String[] udunitsWhitespace = new String[] {" ", "  ", "\t", "\n", "\r", "\f"};
     for (Calendar cal : Calendar.values()) {
-      CalendarDateUnit cleanUnit = CalendarDateUnit.withCalendar(cal, String.format("secs since %sT%s", date, time));
+      // unit with time in ISO format to use for testing
+      CalendarDateUnit isoFormatUnit =
+          CalendarDateUnit.withCalendar(cal, String.format("secs since %sT%s", date, time));
 
-      for(String whitespace : udunitsWhitespace){
-          CalendarDateUnit testUnit = CalendarDateUnit.withCalendar(cal, String.format("secs since %s%s%s", date, whitespace, time));
-          assert(cleanUnit.getBaseDate().equals(testUnit.getBaseDate()));
-        }
+      for (String whitespace : udunitsWhitespace) {
+        CalendarDateUnit testUnit =
+            CalendarDateUnit.withCalendar(cal, String.format("secs since %s%s%s", date, whitespace, time));
+        assert (isoFormatUnit.getBaseDate().equals(testUnit.getBaseDate()));
+      }
     }
 
   }
