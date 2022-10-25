@@ -149,7 +149,7 @@ public class TestCalendars {
   }
 
   @Test
-  public void testWhitespaceCompatibilityWithUdunits() {
+  public void testWhiteSpaceCompatibilityWithUdunits() {
     String date = "2022-1-1";
     String time = "12:34:00Z";
     String[] udunitsWhitespace = new String[] {" ", "  ", "\t", "\n", "\r", "\f"};
