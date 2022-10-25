@@ -149,15 +149,19 @@ public class TestCalendars {
   }
 
   @Test
-  public void TestExtraWhitespaceInUnit(){
-    //test time unit with extra space between date and time
+  public void testWhiteSpaceCompatibilityWithUdunits(){
+    String date = "2022-1-1";
+    String time = "12:34:00Z";
+    String[] udunitsWhitespace = new String[]{" ", "  ", "\t", "\n", "\r", "\f"};
     for (Calendar cal : Calendar.values()) {
-      CalendarDateUnit unit = CalendarDateUnit.withCalendar(cal, "calendar years since 2022-01-01  12:34:00");
+      CalendarDateUnit cleanUnit = CalendarDateUnit.withCalendar(cal, String.format("secs since %sT%s", date, time));
 
-    //need to add assert
+      for(String whitespace : udunitsWhitespace){
+          CalendarDateUnit testUnit = CalendarDateUnit.withCalendar(cal, String.format("secs since %s%s%s", date, whitespace, time));
+          assert(cleanUnit.getBaseDate().equals(testUnit.getBaseDate()));
+        }
     }
+
   }
-
-
 }
 
