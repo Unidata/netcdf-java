@@ -148,6 +148,16 @@ public class TestCalendars {
     assert unit2.getCalendar() == Calendar.proleptic_gregorian;
   }
 
+  @Test
+  public void TestExtraWhitespaceInUnit(){
+    //test time unit with extra space between date and time
+    for (Calendar cal : Calendar.values()) {
+      CalendarDateUnit unit = CalendarDateUnit.withCalendar(cal, "calendar years since 2022-01-01  12:34:00");
+
+    //need to add assert
+    }
+  }
+
 
 }
 
