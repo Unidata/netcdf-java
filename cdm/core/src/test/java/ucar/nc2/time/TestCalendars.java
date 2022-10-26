@@ -37,6 +37,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.lang.invoke.MethodHandles;
 
+import static com.google.common.truth.Truth.assertThat;
+
 /**
  * Test on non-standard Calendars
  *
@@ -161,7 +163,7 @@ public class TestCalendars {
       for (String whitespace : udunitsWhitespace) {
         CalendarDateUnit testUnit =
             CalendarDateUnit.withCalendar(cal, String.format("secs since %s%s%s", date, whitespace, time));
-        assert (isoFormatUnit.getBaseDate().equals(testUnit.getBaseDate()));
+        assertThat(isoFormatUnit.getBaseDate()).isEqualTo(testUnit.getBaseDate());
       }
     }
 
