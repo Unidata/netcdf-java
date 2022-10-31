@@ -139,7 +139,6 @@ public class Grib2Tables implements ucar.nc2.grib.GribTables, TimeUnitConverter 
 
   ///////////////////////////////////////////////////////////////
   protected final Grib2TableConfig config;
-  private boolean timeUnitWarnWasSent;
 
   protected Grib2Tables(Grib2TableConfig config) {
     this.config = config;
