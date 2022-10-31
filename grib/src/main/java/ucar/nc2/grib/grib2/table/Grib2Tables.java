@@ -38,6 +38,7 @@ import java.util.*;
  * @since 4/3/11
  */
 @Immutable
+// TODO version 6: remove implements TimeUnitConverter
 public class Grib2Tables implements ucar.nc2.grib.GribTables, TimeUnitConverter {
   private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib2Tables.class);
   private static final Map<Grib2TablesId, Grib2Tables> tables = new HashMap<>();
@@ -460,12 +461,20 @@ public class Grib2Tables implements ucar.nc2.grib.GribTables, TimeUnitConverter 
 
   private TimeUnitConverter timeUnitConverter; // LOOK not really immutable
 
+  /**
+   * @deprecated Remove in version 6, functionality moved to Grib2CollectionBuilder
+   */
+  @Deprecated
   public void setTimeUnitConverter(TimeUnitConverter timeUnitConverter) {
     if (this.timeUnitConverter != null)
       throw new RuntimeException("Cant modify timeUnitConverter once its been set");
     this.timeUnitConverter = timeUnitConverter;
   }
 
+  /**
+   * @deprecated Remove in version 6, functionality moved to Grib2CollectionBuilder
+   */
+  @Deprecated
   @Override
   public int convertTimeUnit(int timeUnit) {
     if (timeUnitConverter == null)
