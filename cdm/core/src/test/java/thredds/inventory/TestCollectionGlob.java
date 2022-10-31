@@ -20,11 +20,17 @@ public class TestCollectionGlob {
     return Arrays.asList(new Object[][] {
 
         {"foo*.nc", "foo", 0},
+
         {"foo/*.nc", "foo/", 0},
+
         {"foo/*/bar.nc", "foo/", 1},
+
         {"**/bar.nc", "", 1},
+
         {"foo*/bar/baz.nc", "foo", 2},
+
         {"foo*/bar/**/baz.nc", "foo", Integer.MAX_VALUE},
+
     });
   }
 
