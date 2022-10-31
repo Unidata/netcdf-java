@@ -489,67 +489,6 @@ public class Grib2Tables implements ucar.nc2.grib.GribTables, TimeUnitConverter 
     }
   }
 
-
-  /*
-   * Get the time interval in units of gr.getPDS().getTimeUnit()
-   *
-   * @param gr Grib record, must have pds that is a time interval.
-   * 
-   * @return time interval in units of gr.getPDS().getTimeUnit()
-   *
-   * @Nullable
-   * public TimeCoordIntvDateValue getForecastTimeInterval(Grib2Record gr) {
-   * // note from Arthur Taylor (degrib):
-   * /*
-   * If there was a range I used:
-   * 
-   * End of interval (EI) = (bytes 36-42 show an "end of overall time interval")
-   * C1) End of Interval = EI;
-   * Begin of Interval = EI - range
-   * 
-   * and if there was no interval then I used:
-   * C2) End of Interval = Begin of Interval = Ref + ForeT.
-   *
-   * if (!gr.getPDS().isTimeInterval())
-   * return null;
-   * Grib2Pds.PdsInterval pdsIntv = (Grib2Pds.PdsInterval) gr.getPDS();
-   * int timeUnitOrg = gr.getPDS().getTimeUnit();
-   * 
-   * // calculate total "range"
-   * int range = 0;
-   * for (Grib2Pds.TimeInterval ti : pdsIntv.getTimeIntervals()) {
-   * if (ti.timeRangeUnit == 255)
-   * continue;
-   * if ((ti.timeRangeUnit != timeUnitOrg)
-   * || (ti.timeIncrementUnit != timeUnitOrg && ti.timeIncrementUnit != 255 && ti.timeIncrement != 0)) {
-   * if (!timeUnitWarnWasSent) {
-   * logger.warn(
-   * "TimeInterval has different units timeUnit org=" + timeUnitOrg + " TimeInterval=" + ti.timeIncrementUnit);
-   * timeUnitWarnWasSent = true;
-   * // throw new RuntimeException("TimeInterval(2) has different units");
-   * }
-   * }
-   * 
-   * range += ti.timeRangeLength;
-   * if (ti.timeIncrementUnit != 255)
-   * range += ti.timeIncrement;
-   * }
-   * 
-   * CalendarPeriod unitPeriod = Grib2Utils.getCalendarPeriod(convertTimeUnit(timeUnitOrg));
-   * if (unitPeriod == null)
-   * return null;
-   * CalendarPeriod period = unitPeriod.multiply(range);
-   * 
-   * // End of Interval as date
-   * CalendarDate EI = pdsIntv.getIntervalTimeEnd();
-   * if (EI == CalendarDate.UNKNOWN) { // all values were set to zero LOOK guessing!
-   * return new TimeCoordIntvDateValue(gr.getReferenceDate(), period);
-   * } else {
-   * return new TimeCoordIntvDateValue(period, EI);
-   * }
-   * }
-   */
-
   public TimeCoordIntvDateValue getForecastTimeInterval(Grib2Record gr) {
     if (!gr.getPDS().isTimeInterval())
       return null;
@@ -654,54 +593,6 @@ public class Grib2Tables implements ucar.nc2.grib.GribTables, TimeUnitConverter 
     }
     return new TimeIntervalAndUnits(timeUnitIntv, range);
   }
-
-  /*
-   * Get interval size in units of hours.
-   * Only use in GribVariable to decide on variable identity when intvMerge = false.
-   * 
-   * @param pds must be a Grib2Pds.PdsInterval
-   * 
-   * @return interval size in units of hours
-   *
-   * public double getForecastTimeIntervalSizeInHours(Grib2Pds pds) {
-   * Grib2Pds.PdsInterval pdsIntv = (Grib2Pds.PdsInterval) pds;
-   * int timeUnitOrg = pds.getTimeUnit();
-   * 
-   * // calculate total "range" in units of timeUnit
-   * int range = 0;
-   * for (Grib2Pds.TimeInterval ti : pdsIntv.getTimeIntervals()) {
-   * if (ti.timeRangeUnit == 255)
-   * continue;
-   * if ((ti.timeRangeUnit != timeUnitOrg)
-   * || (ti.timeIncrementUnit != timeUnitOrg && ti.timeIncrementUnit != 255 && ti.timeIncrement != 0)) {
-   * logger.warn("TimeInterval(2) has different units timeUnit org=" + timeUnitOrg + " TimeInterval="
-   * + ti.timeIncrementUnit);
-   * throw new RuntimeException("TimeInterval(2) has different units");
-   * }
-   * 
-   * range += ti.timeRangeLength;
-   * if (ti.timeIncrementUnit != 255)
-   * range += ti.timeIncrement;
-   * }
-   * 
-   * // now convert that range to units of the requested period.
-   * CalendarPeriod timeUnitPeriod = Grib2Utils.getCalendarPeriod(convertTimeUnit(timeUnitOrg));
-   * if (timeUnitPeriod == null)
-   * return GribNumbers.UNDEFINEDD;
-   * if (timeUnitPeriod.equals(CalendarPeriod.Hour))
-   * return range;
-   * 
-   * double fac;
-   * if (timeUnitPeriod.getField() == CalendarPeriod.Field.Month) {
-   * fac = 30.0 * 24.0; // nominal hours in a month
-   * } else if (timeUnitPeriod.getField() == CalendarPeriod.Field.Year) {
-   * fac = 365.0 * 24.0; // nominal hours in a year
-   * } else {
-   * fac = CalendarPeriod.Hour.getConvertFactor(timeUnitPeriod);
-   * }
-   * return fac * range;
-   * }
-   */
 
   /**
    * If this has a time interval coordinate, get time interval
