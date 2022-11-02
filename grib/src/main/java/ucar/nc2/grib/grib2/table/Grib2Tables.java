@@ -54,8 +54,9 @@ public class Grib2Tables implements ucar.nc2.grib.GribTables, TimeUnitConverter 
   public static Grib2Tables factory(int center, int subCenter, int masterVersion, int localVersion, int genProcessId) {
     Grib2TablesId id = new Grib2TablesId(center, subCenter, masterVersion, localVersion, genProcessId);
     Grib2Tables cust = tables.get(id);
-    if (cust != null)
+    if (cust != null) {
       return cust;
+    }
 
     // note that we match on id, so same Grib2Customizer may be mapped to multiple id's (eg match on -1)
     Grib2TableConfig config = Grib2TableConfig.matchTable(id);
@@ -173,8 +174,9 @@ public class Grib2Tables implements ucar.nc2.grib.GribTables, TimeUnitConverter 
    */
   public String getVariableName(int discipline, int category, int parameter) {
     String s = WmoParamTable.getParameterName(discipline, category, parameter);
-    if (s == null)
+    if (s == null) {
       s = "U" + discipline + "-" + category + "-" + parameter;
+    }
     return s;
   }
 
@@ -235,8 +237,9 @@ public class Grib2Tables implements ucar.nc2.grib.GribTables, TimeUnitConverter 
 
   public String getStatisticName(int id) {
     String result = getCodeTableValue("4.10", id); // WMO
-    if (result == null)
+    if (result == null) {
       result = getStatisticNameShort(id);
+    }
     return result;
   }
 
@@ -460,15 +463,17 @@ public class Grib2Tables implements ucar.nc2.grib.GribTables, TimeUnitConverter 
   private TimeUnitConverter timeUnitConverter; // LOOK not really immutable
 
   public void setTimeUnitConverter(TimeUnitConverter timeUnitConverter) {
-    if (this.timeUnitConverter != null)
+    if (this.timeUnitConverter != null) {
       throw new RuntimeException("Cant modify timeUnitConverter once its been set");
+    }
     this.timeUnitConverter = timeUnitConverter;
   }
 
   @Override
   public int convertTimeUnit(int timeUnit) {
-    if (timeUnitConverter == null)
+    if (timeUnitConverter == null) {
       return timeUnit;
+    }
     return timeUnitConverter.convertTimeUnit(timeUnit);
   }
 
@@ -489,8 +494,9 @@ public class Grib2Tables implements ucar.nc2.grib.GribTables, TimeUnitConverter 
   }
 
   public TimeCoordIntvDateValue getForecastTimeInterval(Grib2Record gr) {
-    if (!gr.getPDS().isTimeInterval())
+    if (!gr.getPDS().isTimeInterval()) {
       return null;
+    }
     Grib2Pds.PdsInterval pdsIntv = (Grib2Pds.PdsInterval) gr.getPDS();
 
     // the time "range" in units of pdsIntv timeUnits
@@ -541,10 +547,12 @@ public class Grib2Tables implements ucar.nc2.grib.GribTables, TimeUnitConverter 
 
     // convert that range to units of hours.
     CalendarPeriod timeUnitPeriod = Grib2Utils.getCalendarPeriod(convertTimeUnit(intvu.timeUnitIntv));
-    if (timeUnitPeriod == null)
+    if (timeUnitPeriod == null) {
       return GribNumbers.UNDEFINEDD;
-    if (timeUnitPeriod.equals(CalendarPeriod.Hour))
+    }
+    if (timeUnitPeriod.equals(CalendarPeriod.Hour)) {
       return intvu.timeRange;
+    }
 
     // LOOK leave this until we fix getConvertFactor()
     double fac;
@@ -608,8 +616,9 @@ public class Grib2Tables implements ucar.nc2.grib.GribTables, TimeUnitConverter 
     Grib2Pds pds = gr.getPDS();
     int unit = convertTimeUnit(pds.getTimeUnit());
     TimeCoordIntvValue tinv = tinvd.convertReferenceDate(gr.getReferenceDate(), Grib2Utils.getCalendarPeriod(unit));
-    if (tinv == null)
+    if (tinv == null) {
       return null;
+    }
     int[] result = new int[2];
     result[0] = tinv.getBounds1();
     result[1] = tinv.getBounds2();
