@@ -30,7 +30,7 @@ import java.util.*;
 /**
  * Grib 2 Tables - allows local overrides and augmentation of WMO tables.
  * This class serves the standard WMO tables, local tables are subclasses that override.
- * Methods are placed here because they may be overrided by local Tables.
+ * Methods are placed here because they may be overridden by local Tables.
  *
  * Tables include code, flag and parameter tables.
  *
@@ -169,7 +169,7 @@ public class Grib2Tables implements ucar.nc2.grib.GribTables, TimeUnitConverter 
   }
 
   /**
-   * Make a IOSP Variable name, using the Parameter name is available, otherwise a synthezized name.
+   * Make a IOSP Variable name, using the Parameter name is available, otherwise a synthesized name.
    */
   public String getVariableName(int discipline, int category, int parameter) {
     String s = WmoParamTable.getParameterName(discipline, category, parameter);
@@ -577,7 +577,7 @@ public class Grib2Tables implements ucar.nc2.grib.GribTables, TimeUnitConverter 
       }
       if (timeUnitIntv < 0) {
         timeUnitIntv = ti.timeRangeUnit;
-      } else if ((ti.timeRangeUnit != timeUnitIntv) // make sure it doesnt change
+      } else if ((ti.timeRangeUnit != timeUnitIntv) // make sure it doesn't change
           || (ti.timeIncrementUnit != timeUnitIntv && ti.timeIncrementUnit != 255 && ti.timeIncrement != 0)) { // LOOK
         // WTF?
         logger.warn("TimeInterval(2) has different units timeUnit first=" + timeUnitIntv + " TimeInterval="
