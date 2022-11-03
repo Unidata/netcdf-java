@@ -31,8 +31,6 @@ public class TestGribCollectionTimeUnits {
   private static final String NAME = "testCollectionUnits";
   private static final String MIXED_UNITS_SPEC =
       TestDir.cdmUnitTestDir + "/tds/ncep/NDFD_NWS_CONUS_conduit_2p5km_#yyyyMMdd_HHmm#\\.grib2$";
-  private static final String MIXED_UNITS_INDEX =
-      TestDir.cdmUnitTestDir + "/tds/ncep/testCollectionUnits" + GribCdmIndex.NCX_SUFFIX;
 
   @Test
   @Category(NeedsCdmUnitTest.class)
@@ -82,8 +80,9 @@ public class TestGribCollectionTimeUnits {
       String units, double[] values) throws IOException {
     final boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.always, logger);
     assertThat(changed).isTrue();
+    final String topLevelIndex = GribCdmIndex.getTopIndexFileFromConfig(config).getAbsolutePath();
 
-    try (NetcdfDataset netcdfDataset = NetcdfDatasets.openDataset(MIXED_UNITS_INDEX)) {
+    try (NetcdfDataset netcdfDataset = NetcdfDatasets.openDataset(topLevelIndex)) {
       final Variable variable =
           netcdfDataset.findVariable("Best/Total_precipitation_surface_" + intervalName + "_Accumulation");
       assertThat((Iterable<?>) variable).isNotNull();
