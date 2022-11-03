@@ -38,6 +38,7 @@ import java.util.*;
  * @since 4/3/11
  */
 @Immutable
+// TODO version 6: remove implements TimeUnitConverter
 public class Grib2Tables implements ucar.nc2.grib.GribTables, TimeUnitConverter {
   private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib2Tables.class);
   private static final Map<Grib2TablesId, Grib2Tables> tables = new HashMap<>();
@@ -462,6 +463,10 @@ public class Grib2Tables implements ucar.nc2.grib.GribTables, TimeUnitConverter 
 
   private TimeUnitConverter timeUnitConverter; // LOOK not really immutable
 
+  /**
+   * @deprecated Remove in version 6, functionality moved to Grib2CollectionBuilder
+   */
+  @Deprecated
   public void setTimeUnitConverter(TimeUnitConverter timeUnitConverter) {
     if (this.timeUnitConverter != null) {
       throw new RuntimeException("Cant modify timeUnitConverter once its been set");
@@ -469,6 +474,10 @@ public class Grib2Tables implements ucar.nc2.grib.GribTables, TimeUnitConverter 
     this.timeUnitConverter = timeUnitConverter;
   }
 
+  /**
+   * @deprecated Remove in version 6, functionality moved to Grib2CollectionBuilder
+   */
+  @Deprecated
   @Override
   public int convertTimeUnit(int timeUnit) {
     if (timeUnitConverter == null) {
@@ -486,7 +495,7 @@ public class Grib2Tables implements ucar.nc2.grib.GribTables, TimeUnitConverter 
 
     } else {
       int val = pds.getForecastTime();
-      CalendarPeriod period = Grib2Utils.getCalendarPeriod(convertTimeUnit(pds.getTimeUnit()));
+      CalendarPeriod period = Grib2Utils.getCalendarPeriod(pds.getTimeUnit());
       if (period == null)
         return null;
       return gr.getReferenceDate().add(period.multiply(val));
@@ -504,11 +513,11 @@ public class Grib2Tables implements ucar.nc2.grib.GribTables, TimeUnitConverter 
 
     // convert time "range" to units of pds timeUnits
     int timeUnitOrg = gr.getPDS().getTimeUnit();
-    CalendarPeriod wantPeriod = Grib2Utils.getCalendarPeriod(convertTimeUnit(timeUnitOrg));
+    CalendarPeriod wantPeriod = Grib2Utils.getCalendarPeriod(timeUnitOrg);
     if (wantPeriod == null) {
       return null;
     }
-    CalendarPeriod havePeriod = Grib2Utils.getCalendarPeriod(convertTimeUnit(intvu.timeUnitIntv));
+    CalendarPeriod havePeriod = Grib2Utils.getCalendarPeriod(intvu.timeUnitIntv);
     double fac2 = intvu.timeRange * wantPeriod.getConvertFactor(havePeriod);
     CalendarPeriod period = wantPeriod.multiply((int) fac2); // LOOK needs to be an int
 
@@ -546,7 +555,7 @@ public class Grib2Tables implements ucar.nc2.grib.GribTables, TimeUnitConverter 
     TimeIntervalAndUnits intvu = getForecastTimeInterval(pdsIntv);
 
     // convert that range to units of hours.
-    CalendarPeriod timeUnitPeriod = Grib2Utils.getCalendarPeriod(convertTimeUnit(intvu.timeUnitIntv));
+    CalendarPeriod timeUnitPeriod = Grib2Utils.getCalendarPeriod(intvu.timeUnitIntv);
     if (timeUnitPeriod == null) {
       return GribNumbers.UNDEFINEDD;
     }
@@ -614,7 +623,7 @@ public class Grib2Tables implements ucar.nc2.grib.GribTables, TimeUnitConverter 
       return null;
 
     Grib2Pds pds = gr.getPDS();
-    int unit = convertTimeUnit(pds.getTimeUnit());
+    int unit = pds.getTimeUnit();
     TimeCoordIntvValue tinv = tinvd.convertReferenceDate(gr.getReferenceDate(), Grib2Utils.getCalendarPeriod(unit));
     if (tinv == null) {
       return null;
