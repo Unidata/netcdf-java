@@ -32,6 +32,7 @@ import java.util.List;
 @Category(NeedsCdmUnitTest.class)
 public class TestAggDatasetIsCached {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+  private static final String JOIN_EXISTING_AGGREGATION = TestDir.cdmUnitTestDir + "agg/caching/wqb.ncml";
 
   @BeforeClass
   public static void setupClass() {
@@ -46,9 +47,8 @@ public class TestAggDatasetIsCached {
   }
 
   @Test
-  public void TestAggCached() throws IOException {
-    String filename = TestDir.cdmUnitTestDir + "agg/caching/wqb.ncml";
-    DatasetUrl durl = DatasetUrl.findDatasetUrl(filename);
+  public void testAggCached() throws IOException {
+    DatasetUrl durl = DatasetUrl.findDatasetUrl(JOIN_EXISTING_AGGREGATION);
 
     for (int i = 0; i < 2; i++) {
       NetcdfDataset ncd = NetcdfDataset.acquireDataset(durl, true, null);
@@ -74,10 +74,8 @@ public class TestAggDatasetIsCached {
   }
 
   @Test
-  // check if caching works
-  public void TestAggCached2() throws IOException {
-    String filename = TestDir.cdmUnitTestDir + "agg/caching/wqb.ncml"; // joinExisting
-    DatasetUrl durl = DatasetUrl.findDatasetUrl(filename);
+  public void testAggCached2() throws IOException {
+    DatasetUrl durl = DatasetUrl.findDatasetUrl(JOIN_EXISTING_AGGREGATION);
 
     for (int i = 0; i < 2; i++) {
       logger.debug("=====Iteration {} =====", i + 1);
