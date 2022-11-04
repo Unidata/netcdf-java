@@ -12,7 +12,6 @@ import org.slf4j.LoggerFactory;
 import ucar.nc2.dataset.DatasetUrl;
 import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.util.CancelTask;
-import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.NetcdfFile;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.StringUtil2;
