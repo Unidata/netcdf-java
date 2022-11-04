@@ -7,7 +7,6 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.ma2.InvalidRangeException;
 import ucar.nc2.dataset.DatasetUrl;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.NetcdfDataset.Enhance;
@@ -44,7 +43,7 @@ public class TestAggDatasetIsCached {
   }
 
   @Test
-  public void TestAggCached() throws IOException, InvalidRangeException {
+  public void TestAggCached() throws IOException {
     String filename = TestDir.cdmUnitTestDir + "agg/caching/wqb.ncml";
     DatasetUrl durl = DatasetUrl.findDatasetUrl(filename);
     boolean ok = true;
@@ -88,7 +87,7 @@ public class TestAggDatasetIsCached {
 
   @Test
   // check if caching works
-  public void TestAggCached2() throws IOException, InvalidRangeException {
+  public void TestAggCached2() throws IOException {
     String filename = TestDir.cdmUnitTestDir + "agg/caching/wqb.ncml"; // joinExisting
     DatasetUrl durl = DatasetUrl.findDatasetUrl(filename);
 
