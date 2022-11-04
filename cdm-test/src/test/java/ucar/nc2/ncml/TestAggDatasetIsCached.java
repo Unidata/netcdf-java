@@ -92,8 +92,7 @@ public class TestAggDatasetIsCached {
       logger.debug("---FeatureDataset not failed");
 
       Formatter out = new Formatter();
-      boolean ok = CompareNetcdf2.compareFiles(nc1, nc2, out, false, false, false);
-      logger.debug("---fd compare ok {}", ok);
+      assertThat(CompareNetcdf2.compareFiles(nc1, nc2, out, false, false, false)).isTrue();
       logger.debug(out.toString());
 
       NetcdfDataset nc3 = NetcdfDataset.wrap(nc1, NetcdfDataset.getEnhanceAll());
