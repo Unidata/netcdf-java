@@ -50,10 +50,9 @@ public class TestNetcdfFileCache {
       return;
 
     for (File f : files) {
-      if (f.isDirectory())
+      if (f.isDirectory()) {
         loadFilesIntoCache(f, cache);
-
-      else if (f.getPath().endsWith(".nc") && f.length() > 0) {
+      } else if (f.getPath().endsWith(".nc") && f.length() > 0) {
         try {
           String want = StringUtil2.replace(f.getPath(), '\\', "/");
           DatasetUrl durl = DatasetUrl.create(null, want);
