@@ -68,10 +68,7 @@ public class TestNetcdfFileCache {
 
   @Test
   public void testNetcdfFileCache() throws IOException {
-    System.out.printf("TestNetcdfFileCache%n");
-
     loadFilesIntoCache(new File(TestDir.cdmLocalTestDataDir), cache);
-    System.out.println(" loaded " + count);
 
     cache.showCache(new Formatter(System.out));
 
