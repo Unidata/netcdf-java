@@ -52,14 +52,12 @@ public class TestNetcdfFileCache {
         loadFilesIntoCache(f, cache);
 
       else if (f.getPath().endsWith(".nc") && f.length() > 0) {
-        // System.out.println(" open "+f.getPath());
         try {
           String want = StringUtil2.replace(f.getPath(), '\\', "/");
           DatasetUrl durl = DatasetUrl.create(null, want);
           cache.acquire(factory, durl);
           count++;
         } catch (IOException e) {
-          // e.printStackTrace();
           System.out.println(" *** failed on " + f.getPath());
         }
       }
@@ -81,7 +79,6 @@ public class TestNetcdfFileCache {
 
     for (Object key : map.keySet()) {
       FileCache.CacheElement elem = map.get(key);
-      // System.out.println(" "+key+" == "+elem);
       Assert.assertEquals(1, elem.list.size());
     }
 
@@ -95,7 +92,6 @@ public class TestNetcdfFileCache {
 
     for (Object key : map.keySet()) {
       FileCache.CacheElement elem = map.get(key);
-      // System.out.println(" "+key+" == "+elem);
       Assert.assertEquals(2, elem.list.size());
       checkAllSame(elem.list);
     }
@@ -217,7 +213,6 @@ public class TestNetcdfFileCache {
   int N = 10000;
   int PROD_THREAD = 10;
   int CONS_THREAD = 10;
-  // int QSIZE = 10;
   int SKIP = 100;
 
   @Test
@@ -323,9 +318,7 @@ public class TestNetcdfFileCache {
       if (x.isDone()) {
         NetcdfFile ncfile = (NetcdfFile) x.get();
         ncfile.close();
-        // format.format(" closed qsize= %3d\n", queue.size());
       } else {
-        // format.format(" lost file= %3d\n", queue.size());
         queue.add(x); // put it back
       }
 
