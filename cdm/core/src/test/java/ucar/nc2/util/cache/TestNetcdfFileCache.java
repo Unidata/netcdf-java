@@ -4,6 +4,8 @@
  */
 package ucar.nc2.util.cache;
 
+import static org.junit.Assert.fail;
+
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -58,7 +60,7 @@ public class TestNetcdfFileCache {
           cache.acquire(factory, durl);
           count++;
         } catch (IOException e) {
-          System.out.println(" *** failed on " + f.getPath());
+          fail(" *** failed on " + f.getPath());
         }
       }
     }
