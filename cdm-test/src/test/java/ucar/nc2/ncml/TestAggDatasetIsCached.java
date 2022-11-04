@@ -1,6 +1,9 @@
 package ucar.nc2.ncml;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import java.util.Set;
+import java.util.stream.Collectors;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -46,14 +49,13 @@ public class TestAggDatasetIsCached {
   public void TestAggCached() throws IOException {
     String filename = TestDir.cdmUnitTestDir + "agg/caching/wqb.ncml";
     DatasetUrl durl = DatasetUrl.findDatasetUrl(filename);
-    boolean ok = true;
 
     System.out.printf("==========%n");
     for (int i = 0; i < 2; i++) {
       NetcdfDataset ncd = NetcdfDataset.acquireDataset(durl, true, null);
       NetcdfDataset ncd2 = NetcdfDataset.wrap(ncd, NetcdfDataset.getEnhanceAll());
       Formatter out = new Formatter();
-      ok &= CompareNetcdf2.compareFiles(ncd, ncd2, out, false, false, false);
+      assertThat(CompareNetcdf2.compareFiles(ncd, ncd2, out, false, false, false)).isTrue();
       System.out.printf("----------------%nfile=%s%n%s%n", filename, out);
 
       Set<Enhance> modes = ncd2.getEnhanceMode();
@@ -61,7 +63,6 @@ public class TestAggDatasetIsCached {
       ncd2.close();
       System.out.printf("==========%n");
     }
-    assert ok;
 
     Formatter f = new Formatter();
     FileCacheIF cache = NetcdfDataset.getNetcdfFileCache();
@@ -69,13 +70,8 @@ public class TestAggDatasetIsCached {
     System.out.printf("%s%n", f);
 
     List<String> cacheFiles = cache.showCache();
-    assert cacheFiles.size() == 6;
-    boolean gotit = false;
-    for (String name : cacheFiles) {
-      if (name.endsWith("wqb.ncml"))
-        gotit = true;
-    }
-    assert gotit;
+    assertThat(cacheFiles.size()).isEqualTo(6);
+    assertThat(cacheFiles.stream().filter(cacheFile -> cacheFile.endsWith("wqb.ncml")).collect(Collectors.toList())).isNotEmpty();
   }
 
   private void showModes(Set<NetcdfDataset.Enhance> modes) {
@@ -100,7 +96,7 @@ public class TestAggDatasetIsCached {
       System.out.printf("---new NetcdfDataset(nc1) object == %d%n", nc2.hashCode());
       FeatureDataset fd2 = ucar.nc2.ft.FeatureDatasetFactoryManager.wrap(ucar.nc2.constants.FeatureType.STATION, nc2,
           null, new Formatter(System.out));
-      assert fd2 != null; // no longer fails
+      assertThat(fd2).isNotNull();
       System.out.printf("---FeatureDataset not failed%n");
 
       Formatter out = new Formatter();
@@ -111,14 +107,14 @@ public class TestAggDatasetIsCached {
       System.out.printf("---NetcdfDataset.wrap(nc1, enhance) object == %d%n", nc3.hashCode());
       FeatureDataset fd3 = ucar.nc2.ft.FeatureDatasetFactoryManager.wrap(ucar.nc2.constants.FeatureType.STATION, nc3,
           null, new Formatter(System.out));
-      assert fd3 != null;
+      assertThat(fd3).isNotNull();
       System.out.printf("---FeatureDataset not failed %d%n", i);
 
       NetcdfDataset nc4 = NetcdfDataset.wrap(nc1, null);
       System.out.printf("---NetcdfDataset.wrap(nc1, null) object == %d%n", nc4.hashCode());
       FeatureDataset fd4 = ucar.nc2.ft.FeatureDatasetFactoryManager.wrap(ucar.nc2.constants.FeatureType.STATION, nc4,
           null, new Formatter(System.err));
-      assert fd4 != null;
+      assertThat(fd4).isNotNull();
       System.out.printf("---FeatureDataset not failed%n");
 
       nc1.close();
