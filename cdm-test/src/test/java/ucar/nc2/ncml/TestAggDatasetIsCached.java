@@ -47,7 +47,6 @@ public class TestAggDatasetIsCached {
   public void TestAggCached() throws IOException, InvalidRangeException {
     String filename = TestDir.cdmUnitTestDir + "agg/caching/wqb.ncml";
     DatasetUrl durl = DatasetUrl.findDatasetUrl(filename);
-    // String filename = "file:./"+TestNcMLRead.topDir + "aggExisting.xml";
     boolean ok = true;
 
     System.out.printf("==========%n");
@@ -116,14 +115,6 @@ public class TestAggDatasetIsCached {
       assert fd3 != null;
       System.out.printf("---FeatureDataset not failed %d%n", i);
 
-      /*
-       * out = new Formatter();
-       * ok = CompareNetcdf2.compareFiles(nc1, nc3, out, false, false, false);
-       * allok &= ok;
-       * System.out.printf("---fd compare ok %s iter %d%n", ok, i);
-       * System.out.printf("--------------%nfile=%s%n%s%n", filename, out);
-       */
-
       NetcdfDataset nc4 = NetcdfDataset.wrap(nc1, null);
       System.out.printf("---NetcdfDataset.wrap(nc1, null) object == %d%n", nc4.hashCode());
       FeatureDataset fd4 = ucar.nc2.ft.FeatureDatasetFactoryManager.wrap(ucar.nc2.constants.FeatureType.STATION, nc4,
@@ -137,16 +128,4 @@ public class TestAggDatasetIsCached {
     FileCacheIF cache = NetcdfDataset.getNetcdfFileCache();
     cache.showCache();
   }
-
-
-  /*
-   * @Test
-   * public void testProblem() throws Exception {
-   * show = true;
-   * Aggregation.setPersistenceCache(new DiskCache2("/.unidata/aggCache", true, -1, -1));
-   * openWithEnhance( TestDir.cdmUnitTestDir+"/ft/grid/cg/cg.ncml");
-   * Aggregation.setPersistenceCache(null);
-   * }
-   */
-
 }
