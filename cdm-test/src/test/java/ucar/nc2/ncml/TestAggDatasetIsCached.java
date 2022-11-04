@@ -55,7 +55,6 @@ public class TestAggDatasetIsCached {
       NetcdfDataset ncd2 = NetcdfDataset.wrap(ncd, NetcdfDataset.getEnhanceAll());
       Formatter out = new Formatter();
       assertThat(CompareNetcdf2.compareFiles(ncd, ncd2, out, false, false, false)).isTrue();
-      logger.debug("file=" + filename);
       logger.debug(out.toString());
 
       Set<Enhance> modes = ncd2.getEnhanceMode();
