@@ -185,7 +185,7 @@ public class TestNetcdfFileCache {
 
   private void testPeriodicCleanup(FileCache cache) throws IOException {
     loadFilesIntoCache(new File(TestDir.cdmLocalTestDataDir), cache);
-    System.out.println(" loaded " + count);
+    logger.debug(" loaded " + count);
 
     // close all
     Map<Object, FileCache.CacheElement> map = cache.getCache();
@@ -197,7 +197,7 @@ public class TestNetcdfFileCache {
         files.add(file.ncfile);
       }
     }
-    System.out.println(" close " + files.size());
+    logger.debug(" close " + files.size());
 
     for (FileCacheable ncfile : files) {
       ncfile.close();
@@ -269,11 +269,10 @@ public class TestNetcdfFileCache {
             if (file.isLocked.get())
               locks++;
         }
-        // System.out.println(" key= "+key+ " size= "+elem.list.size()+" locks="+locks);
         total_locks += locks;
         total += elem.list.size();
       }
-      System.out.println(" total=" + total + " total_locks=" + total_locks);
+      logger.debug(" total=" + total + " total_locks=" + total_locks);
       // assert total_locks == map.keySet().size();
 
       cache.clearCache(false);
