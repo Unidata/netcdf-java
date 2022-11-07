@@ -69,7 +69,8 @@ public class TestAggDatasetIsCached {
 
     List<String> cacheFiles = cache.showCache();
     assertThat(cacheFiles.size()).isEqualTo(6);
-    assertThat(cacheFiles.stream().filter(cacheFile -> cacheFile.endsWith("wqb.ncml")).collect(Collectors.toList())).isNotEmpty();
+    assertThat(cacheFiles.stream().filter(cacheFile -> cacheFile.endsWith("wqb.ncml")).collect(Collectors.toList()))
+        .isNotEmpty();
   }
 
   @Test
