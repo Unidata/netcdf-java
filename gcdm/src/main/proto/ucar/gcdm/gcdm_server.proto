@@ -1,0 +1,19 @@
+// Copyright (c) 2020-2021 John Caron and University Corporation for Atmospheric Research/Unidata
+// See LICENSE for license information.
+
+syntax = "proto3";
+
+package ucar.gcdm;
+
+import "ucar/gcdm/gcdm_netcdf.proto";
+import "ucar/gcdm/gcdm_grid.proto";
+
+option java_package = "ucar.gcdm";
+option java_outer_classname = "GcdmServerProto";
+
+service Gcdm {
+  rpc GetNetcdfHeader (HeaderRequest) returns (HeaderResponse) {}
+  rpc GetNetcdfData (DataRequest) returns (stream DataResponse) {}
+  rpc GetGridDataset (GridDatasetRequest) returns (GridDatasetResponse) {}
+  rpc GetGridData (GridDataRequest) returns (stream GridDataResponse) {}
+}
