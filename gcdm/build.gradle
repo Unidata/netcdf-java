@@ -22,7 +22,7 @@ apply from: "$rootDir/gradle/any/protobuf.gradle"
 apply from: "$rootDir/gradle/any/shared-mvn-coords.gradle"
 
 dependencies {
-  api project(':cdm-core')
+  api project(':cdm:cdm-core')
 
   implementation "io.grpc:grpc-protobuf:${depVersion.grpc}"
   implementation "io.grpc:grpc-stub:${depVersion.grpc}"
