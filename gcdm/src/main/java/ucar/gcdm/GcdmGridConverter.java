@@ -1,7 +1,7 @@
 package ucar.gcdm;
 
 import com.google.common.collect.ImmutableList;
-import ucar.array.Array;
+import ucar.ma2.Array;
 import ucar.gcdm.client.GcdmGrid;
 import ucar.gcdm.client.GcdmGridDataset;
 import ucar.nc2.AttributeContainer;
