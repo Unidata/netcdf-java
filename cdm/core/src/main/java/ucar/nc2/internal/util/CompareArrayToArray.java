@@ -10,7 +10,8 @@ import java.io.IOException;
 import java.util.Formatter;
 import java.util.Iterator;
 
-import ucar.array.*;
+import ucar.ma2.Array;
+import ucar.ma2.DataType;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Sequence;
 import ucar.nc2.Variable;
@@ -54,7 +55,7 @@ public class CompareArrayToArray {
       return false;
     }
 
-    if (vorg.getArrayType() == ArrayType.SEQUENCE) {
+    if (vorg.getDataType() == DataType.SEQUENCE) {
       System.out.printf("  read sequence %s %s%n", vorg.getDataType(), vorg.getShortName());
       Sequence s = (Sequence) vorg;
       Iterator<StructureData> orgSeq = s.iterator();
@@ -103,8 +104,8 @@ public class CompareArrayToArray {
       // ok = false;
     }
 
-    if (org.getArrayType() != array.getArrayType()) {
-      f.format(" WARN  %s: dataType %s !== %s%n", name, org.getArrayType(), array.getArrayType());
+    if (org.getDataType() != array.getDataType()) {
+      f.format(" WARN  %s: dataType %s !== %s%n", name, org.getDataType(), array.getDataType());
       // ok = false;
     }
 
@@ -123,7 +124,7 @@ public class CompareArrayToArray {
       return false;
     }
 
-    ArrayType dt = org.getArrayType();
+    DataType dt = org.getDataType();
 
     if (org instanceof ArrayVlen) {
       ArrayVlen<?> orgv = (ArrayVlen<?>) org;
@@ -311,14 +312,14 @@ public class CompareArrayToArray {
 
       default: {
         ok = false;
-        f.format(" %s: Unknown data type %s%n", name, org.getArrayType());
+        f.format(" %s: Unknown data type %s%n", name, org.getDataType());
       }
     }
 
     return ok;
   }
 
-  private static String createNumericDataDiffMessage(ArrayType dt, String name, Number v1, Number v2, int idx) {
+  private static String createNumericDataDiffMessage(DataType dt, String name, Number v1, Number v2, int idx) {
     return String.format(" DIFF %s %s: %s != %s;  count = %s, absDiff = %s, relDiff = %s %n", dt, name, v1, v2, idx,
         Misc.absoluteDifference(v1.doubleValue(), v2.doubleValue()),
         Misc.relativeDifference(v1.doubleValue(), v2.doubleValue()));
@@ -344,7 +345,7 @@ public class CompareArrayToArray {
       Array<?> data1 = org.getMemberData(m1);
       Array<?> data2 = array.getMemberData(m2);
       if (data2 != null) {
-        f.format("    compare member %s %s%n", m1.getArrayType(), m1.getName());
+        f.format("    compare member %s %s%n", m1.getDataType(), m1.getName());
         ok &= compareData(f, m1.getName(), data1, data2, justOne, false);
       }
     }

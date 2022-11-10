@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import ucar.array.ArrayType;
 import ucar.array.ArrayVlen;
 import ucar.array.Arrays;
 import ucar.array.StructureData;
@@ -29,6 +28,7 @@ import ucar.array.Array;
 import ucar.array.InvalidRangeException;
 import ucar.array.Range;
 import ucar.array.Section;
+import ucar.ma2.DataType;
 import ucar.nc2.Attribute;
 import ucar.nc2.AttributeContainer;
 import ucar.nc2.AttributeContainerMutable;
@@ -43,7 +43,7 @@ import ucar.nc2.Variable;
 public class GcdmConverter {
   private static final boolean debugSize = false;
 
-  public static GcdmNetcdfProto.DataType convertDataType(ArrayType dtype) {
+  public static GcdmNetcdfProto.DataType convertDataType(DataType dtype) {
     switch (dtype) {
       case CHAR:
         return GcdmNetcdfProto.DataType.DATA_TYPE_CHAR;
@@ -85,44 +85,44 @@ public class GcdmConverter {
     throw new IllegalStateException("illegal data type " + dtype);
   }
 
-  public static ArrayType convertDataType(GcdmNetcdfProto.DataType dtype) {
+  public static DataType convertDataType(GcdmNetcdfProto.DataType dtype) {
     switch (dtype) {
       case DATA_TYPE_CHAR:
-        return ArrayType.CHAR;
+        return DataType.CHAR;
       case DATA_TYPE_BYTE:
-        return ArrayType.BYTE;
+        return DataType.BYTE;
       case DATA_TYPE_SHORT:
-        return ArrayType.SHORT;
+        return DataType.SHORT;
       case DATA_TYPE_INT:
-        return ArrayType.INT;
+        return DataType.INT;
       case DATA_TYPE_LONG:
-        return ArrayType.LONG;
+        return DataType.LONG;
       case DATA_TYPE_FLOAT:
-        return ArrayType.FLOAT;
+        return DataType.FLOAT;
       case DATA_TYPE_DOUBLE:
-        return ArrayType.DOUBLE;
+        return DataType.DOUBLE;
       case DATA_TYPE_STRING:
-        return ArrayType.STRING;
+        return DataType.STRING;
       case DATA_TYPE_STRUCTURE:
-        return ArrayType.STRUCTURE;
+        return DataType.STRUCTURE;
       case DATA_TYPE_SEQUENCE:
-        return ArrayType.SEQUENCE;
+        return DataType.SEQUENCE;
       case DATA_TYPE_ENUM1:
-        return ArrayType.ENUM1;
+        return DataType.ENUM1;
       case DATA_TYPE_ENUM2:
-        return ArrayType.ENUM2;
+        return DataType.ENUM2;
       case DATA_TYPE_ENUM4:
-        return ArrayType.ENUM4;
+        return DataType.ENUM4;
       case DATA_TYPE_OPAQUE:
-        return ArrayType.OPAQUE;
+        return DataType.OPAQUE;
       case DATA_TYPE_UBYTE:
-        return ArrayType.UBYTE;
+        return DataType.UBYTE;
       case DATA_TYPE_USHORT:
-        return ArrayType.USHORT;
+        return DataType.USHORT;
       case DATA_TYPE_UINT:
-        return ArrayType.UINT;
+        return DataType.UINT;
       case DATA_TYPE_ULONG:
-        return ArrayType.ULONG;
+        return DataType.ULONG;
     }
     throw new IllegalStateException("illegal data type " + dtype);
   }

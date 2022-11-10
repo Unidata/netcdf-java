@@ -192,7 +192,7 @@ public class GcdmServer {
           .setVarFullName(var.getFullName()).setSection(GcdmConverter.encodeSection(wantSection));
 
       Array<?> data = var.readArray(wantSection);
-      response.setData(GcdmConverter.encodeData(data.getArrayType(), data));
+      response.setData(GcdmConverter.encodeData(data.getDataType(), data));
 
       responseObserver.onNext(response.build());
       System.out.printf(" Send one chunk %s size=%d bytes%n", spec,
