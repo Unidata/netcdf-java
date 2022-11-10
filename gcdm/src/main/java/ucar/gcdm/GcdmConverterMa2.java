@@ -415,11 +415,11 @@ public class GcdmConverterMa2 {
         Array data = Array.factory(dtUse, new int[] {len});
         for (int i = 0; i < len; i++)
           data.setObject(i, values.get(i));
-        return Attribute.fromArray(attp.getName(), data);
+        return Attribute.builder(attp.getName()).setValues(data).build();
       }
     } else {
       Array array = decodeData(attp.getData(), Section.builder().appendRange(len).build());
-      return Attribute.fromArray(attp.getName(), array);
+      return Attribute.builder(attp.getName()).setValues(array).build();
     }
   }
 
