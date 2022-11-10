@@ -16,8 +16,6 @@ import java.util.concurrent.TimeUnit;
 
 import ucar.array.*;
 import ucar.gcdm.GcdmGrpc.GcdmImplBase;
-import ucar.gcdm.GcdmGridConverter;
-import ucar.gcdm.GcdmGridProto;
 import ucar.gcdm.GcdmNetcdfProto;
 import ucar.gcdm.GcdmNetcdfProto.DataRequest;
 import ucar.gcdm.GcdmNetcdfProto.DataResponse;
@@ -32,7 +30,6 @@ import ucar.nc2.ParsedArraySectionSpec;
 import ucar.nc2.Sequence;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDatasets;
-import ucar.nc2.grid.*;
 import ucar.nc2.util.Misc;
 import ucar.nc2.write.ChunkingIndex;
 
@@ -232,77 +229,5 @@ public class GcdmServer {
       }
       return (start + count) * members.getStorageSizeBytes();
     }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // GridDataset
-
-    @Override
-    public void getGridDataset(GcdmGridProto.GridDatasetRequest request,
-        io.grpc.stub.StreamObserver<GcdmGridProto.GridDatasetResponse> responseObserver) {
-      System.out.printf("GcdmServer getGridDataset open %s%n", request.getLocation());
-      GcdmGridProto.GridDatasetResponse.Builder response = GcdmGridProto.GridDatasetResponse.newBuilder();
-      Formatter errlog = new Formatter();
-      try (GridDataset gridDataset = GridDatasetFactory.openGridDataset(request.getLocation(), errlog)) {
-        response.setDataset(GcdmGridConverter.encodeDataset(gridDataset));
-        responseObserver.onNext(response.build());
-        responseObserver.onCompleted();
-        logger.info("GcdmServer getGridDataset " + request.getLocation());
-      } catch (Throwable t) {
-        System.out.printf("GcdmServer getGridDataset failed %s %n%s%n", t.getMessage(), errlog);
-        logger.warn("GcdmServer getGridDataset failed ", t);
-        t.printStackTrace();
-        response.setError(GcdmNetcdfProto.Error.newBuilder().setMessage(t.getMessage()).build());
-      }
-    }
-
-    @Override
-    public void getGridData(GcdmGridProto.GridDataRequest request,
-        io.grpc.stub.StreamObserver<ucar.gcdm.GcdmGridProto.GridDataResponse> responseObserver) {
-
-      System.out.printf("GcdmServer getData %s %s%n", request.getLocation(), request.getSubsetMap());
-      GcdmGridProto.GridDataResponse.Builder response = GcdmGridProto.GridDataResponse.newBuilder();
-      response.setLocation(request.getLocation()).putAllSubset(request.getSubsetMap());
-      final Stopwatch stopwatch = Stopwatch.createStarted();
-
-      GridSubset gridSubset = new GridSubset(request.getSubsetMap());
-      if (gridSubset.getGridName() == null) {
-        makeError(response, "GridName is not set");
-        responseObserver.onNext(response.build());
-        return;
-      }
-
-      Formatter errlog = new Formatter();
-      try (GridDataset gridDataset = GridDatasetFactory.openGridDataset(request.getLocation(), errlog)) {
-        if (gridDataset == null) {
-          makeError(response, String.format("GridDataset '%s' not found", request.getLocation()));
-        } else {
-          String wantGridName = gridSubset.getGridName();
-          Grid wantGrid = gridDataset.findGrid(wantGridName).orElse(null);
-          if (wantGrid == null) {
-            makeError(response,
-                String.format("GridDataset '%s' does not have Grid '%s", request.getLocation(), wantGridName));
-          } else {
-            GridReferencedArray geoReferencedArray = wantGrid.readData(gridSubset);
-            response.setData(GcdmGridConverter.encodeGridReferencedArray(geoReferencedArray));
-            System.out.printf(" ** size=%d shape=%s%n", geoReferencedArray.data().length(),
-                java.util.Arrays.toString(geoReferencedArray.data().getShape()));
-
-          }
-        }
-
-      } catch (Throwable t) {
-        logger.warn("GcdmServer getGridData failed ", t);
-        t.printStackTrace();
-        errlog.format("%n%s", t.getMessage() == null ? "" : t.getMessage());
-        makeError(response, errlog.toString());
-      }
-      responseObserver.onNext(response.build());
-      System.out.printf(" ** took=%s%n", stopwatch.stop());
-    }
-
-    void makeError(GcdmGridProto.GridDataResponse.Builder response, String message) {
-      response.setError(GcdmNetcdfProto.Error.newBuilder().setMessage(message).build());
-    }
-
   } // GcdmImpl
 }
