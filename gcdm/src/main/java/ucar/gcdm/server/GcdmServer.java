@@ -22,7 +22,7 @@ import ucar.gcdm.GcdmNetcdfProto.DataResponse;
 import ucar.gcdm.GcdmNetcdfProto.Header;
 import ucar.gcdm.GcdmNetcdfProto.HeaderRequest;
 import ucar.gcdm.GcdmNetcdfProto.HeaderResponse;
-import ucar.gcdm.GcdmConverter;
+import ucar.gcdm.GcdmConverterMa2;
 import ucar.array.InvalidRangeException;
 import ucar.array.Section;
 import ucar.nc2.NetcdfFile;
@@ -108,7 +108,7 @@ public class GcdmServer {
       HeaderResponse.Builder response = HeaderResponse.newBuilder();
       try (NetcdfFile ncfile = NetcdfDatasets.openFile(req.getLocation(), null)) {
         Header.Builder header = Header.newBuilder().setLocation(req.getLocation())
-            .setRoot(GcdmConverter.encodeGroup(ncfile.getRootGroup(), 100).build());
+            .setRoot(GcdmConverterMa2.encodeGroup(ncfile.getRootGroup(), 100).build());
         response.setHeader(header);
         responseObserver.onNext(response.build());
         responseObserver.onCompleted();
@@ -189,10 +189,10 @@ public class GcdmServer {
       Section wantSection = varSection.getArraySection();
 
       DataResponse.Builder response = DataResponse.newBuilder().setLocation(ncfile.getLocation()).setVariableSpec(spec)
-          .setVarFullName(var.getFullName()).setSection(GcdmConverter.encodeSection(wantSection));
+          .setVarFullName(var.getFullName()).setSection(GcdmConverterMa2.encodeSection(wantSection));
 
       Array<?> data = var.readArray(wantSection);
-      response.setData(GcdmConverter.encodeData(data.getDataType(), data));
+      response.setData(GcdmConverterMa2.encodeData(data.getDataType(), data));
 
       responseObserver.onNext(response.build());
       System.out.printf(" Send one chunk %s size=%d bytes%n", spec,
@@ -220,8 +220,8 @@ public class GcdmServer {
           StructureDataArray sdataArray = new StructureDataArray(members, new int[] {count}, sdata);
           Section section = Section.builder().appendRange(start, start + count).build();
           DataResponse.Builder response = DataResponse.newBuilder().setLocation(ncfile.getLocation())
-              .setVariableSpec(spec).setVarFullName(seq.getFullName()).setSection(GcdmConverter.encodeSection(section));
-          response.setData(GcdmConverter.encodeData(ArrayType.SEQUENCE, sdataArray));
+              .setVariableSpec(spec).setVarFullName(seq.getFullName()).setSection(GcdmConverterMa2.encodeSection(section));
+          response.setData(GcdmConverterMa2.encodeData(ArrayType.SEQUENCE, sdataArray));
           responseObserver.onNext(response.build());
           start = count;
           count = 0;

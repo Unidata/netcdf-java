@@ -10,7 +10,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import ucar.array.Arrays;
 import ucar.gcdm.GcdmGrpc;
 import ucar.gcdm.GcdmNetcdfProto.DataRequest;
 import ucar.gcdm.GcdmNetcdfProto.DataResponse;
@@ -18,7 +17,7 @@ import ucar.gcdm.GcdmNetcdfProto.Header;
 import ucar.gcdm.GcdmNetcdfProto.HeaderRequest;
 import ucar.gcdm.GcdmNetcdfProto.HeaderResponse;
 import ucar.gcdm.GcdmNetcdfProto.Variable;
-import ucar.gcdm.GcdmConverter;
+import ucar.gcdm.GcdmConverterMa2;
 import ucar.ma2.DataType;
 import ucar.ma2.Section;
 
@@ -53,8 +52,8 @@ public class GcdmClient {
   }
 
   private <T> Array<T> getData(String location, Variable v) {
-    DataType dataType = GcdmConverter.convertDataType(v.getDataType());
-    Section section = GcdmConverter.decodeSection(v);
+    DataType dataType = GcdmConverterMa2.convertDataType(v.getDataType());
+    Section section = GcdmConverterMa2.decodeSection(v);
     System.out.printf("Data request %s %s (%s)%n", v.getDataType(), v.getName(), section);
     if (dataType != DataType.DOUBLE && dataType != DataType.FLOAT) {
       System.out.printf("***skip%n");
@@ -67,7 +66,7 @@ public class GcdmClient {
       List<Array<T>> results = new ArrayList<>();
       while (responses.hasNext()) {
         DataResponse response = responses.next();
-        results.add(GcdmConverter.decodeData(response.getData()));
+        results.add(GcdmConverterMa2.decodeData(response.getData()));
       }
       return Arrays.factoryCopy(dataType, section.getShape(), results);
     } catch (Throwable e) {
