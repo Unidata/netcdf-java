@@ -18,13 +18,13 @@ import java.util.concurrent.TimeUnit;
 import javax.annotation.Nullable;
 import ucar.array.Arrays;
 import ucar.array.StructureDataArray;
+import ucar.gcdm.GcdmConverterMa2;
 import ucar.gcdm.GcdmGrpc;
 import ucar.gcdm.GcdmNetcdfProto.DataRequest;
 import ucar.gcdm.GcdmNetcdfProto.DataResponse;
 import ucar.gcdm.GcdmNetcdfProto.Header;
 import ucar.gcdm.GcdmNetcdfProto.HeaderRequest;
 import ucar.gcdm.GcdmNetcdfProto.HeaderResponse;
-import ucar.gcdm.GcdmConverter;
 import ucar.ma2.Section;
 import ucar.ma2.StructureDataIterator;
 import ucar.nc2.Group;
@@ -90,7 +90,7 @@ public class GcdmNetcdfFile extends NetcdfFile {
           throw new IOException(response.getError().getMessage());
         }
         // Section sectionReturned = GcdmConverter.decodeSection(response.getSection());
-        ucar.array.Array<?> result = GcdmConverter.decodeData(response.getData());
+        ucar.array.Array<?> result = GcdmConverterMa2.decodeData(response.getData());
         results.add(result);
         size += result.length() * v.getElementSize();
         if (showRequest) {
@@ -247,7 +247,7 @@ public class GcdmNetcdfFile extends NetcdfFile {
         setLocation(remoteURI);
 
         this.rootGroup = Group.builder().setName("");
-        GcdmConverter.decodeGroup(header.getRoot(), this.rootGroup);
+        GcdmConverterMa2.decodeGroup(header.getRoot(), this.rootGroup);
       }
     }
 
