@@ -16,8 +16,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import javax.annotation.Nullable;
-import ucar.array.Arrays;
-import ucar.array.StructureDataArray;
 import ucar.gcdm.GcdmConverterMa2;
 import ucar.gcdm.GcdmGrpc;
 import ucar.gcdm.GcdmNetcdfProto.DataRequest;
@@ -25,6 +23,7 @@ import ucar.gcdm.GcdmNetcdfProto.DataResponse;
 import ucar.gcdm.GcdmNetcdfProto.Header;
 import ucar.gcdm.GcdmNetcdfProto.HeaderRequest;
 import ucar.gcdm.GcdmNetcdfProto.HeaderResponse;
+import ucar.ma2.Arrays;
 import ucar.ma2.Section;
 import ucar.ma2.StructureDataIterator;
 import ucar.nc2.Group;
@@ -59,9 +58,9 @@ public class GcdmNetcdfFile extends NetcdfFile {
   }
 
   @Override
-  public Iterator<ucar.array.StructureData> getStructureDataArrayIterator(Sequence s, int bufferSize)
+  public Iterator<ucar.ma2.StructureData> getStructureDataArrayIterator(Sequence s, int bufferSize)
       throws IOException {
-    ucar.array.Array<?> data = readArrayData(s, s.getSection());
+    ucar.ma2.Array data = readArrayData(s, s.getSection());
     Preconditions.checkNotNull(data);
     Preconditions.checkArgument(data instanceof StructureDataArray);
     StructureDataArray sdata = (StructureDataArray) data;
@@ -69,7 +68,7 @@ public class GcdmNetcdfFile extends NetcdfFile {
   }
 
   @Nullable
-  protected ucar.array.Array<?> readArrayData(Variable v, ucar.array.Section sectionWanted) throws IOException {
+  protected ucar.ma2.Array readArrayData(Variable v, ucar.ma2.Section sectionWanted) throws IOException {
     String spec = ParsedArraySectionSpec.makeSectionSpecString(v, sectionWanted);
     if (showRequest) {
       long expected = sectionWanted.computeSize() * v.getElementSize();
@@ -78,7 +77,7 @@ public class GcdmNetcdfFile extends NetcdfFile {
     }
     final Stopwatch stopwatch = Stopwatch.createStarted();
 
-    List<ucar.array.Array<?>> results = new ArrayList<>();
+    List<ucar.ma2.Array> results = new ArrayList<>();
     long size = 0;
     DataRequest request = DataRequest.newBuilder().setLocation(this.path).setVariableSpec(spec).build();
     try {
@@ -90,11 +89,11 @@ public class GcdmNetcdfFile extends NetcdfFile {
           throw new IOException(response.getError().getMessage());
         }
         // Section sectionReturned = GcdmConverter.decodeSection(response.getSection());
-        ucar.array.Array<?> result = GcdmConverterMa2.decodeData(response.getData());
+        ucar.ma2.Array result = GcdmConverterMa2.decodeData(response.getData());
         results.add(result);
-        size += result.length() * v.getElementSize();
+        size += result.getSize() * v.getElementSize();
         if (showRequest) {
-          long recieved = result.length() * v.getElementSize();
+          long recieved = result.getSize() * v.getElementSize();
           System.out.printf("  readArrayData bytes recieved = %d %n", recieved);
         }
       }

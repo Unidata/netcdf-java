@@ -71,8 +71,8 @@ public class CompareArrayToArray {
     } else {
       long size = vorg.getSize();
       if (size < Integer.MAX_VALUE) {
-        Array<?> org = vorg.readArray();
-        Array<?> array = vnew.readArray();
+        Array org = vorg.read();
+        Array array = vnew.read();
         System.out.printf("  compareData %s %s%n", vorg.getDataType(), vorg.getNameAndDimensions());
         Formatter f = new Formatter();
         boolean ok1 = compareData(f, vorg.getShortName(), org, array, justOne, true);
@@ -86,7 +86,7 @@ public class CompareArrayToArray {
     return ok;
   }
 
-  public static boolean compareData(String name, Array<?> org, Array<?> array) throws IOException {
+  public static boolean compareData(String name, Array org, Array array) throws IOException {
     Formatter f = new Formatter();
     boolean ok = compareData(f, name, org, array, false, true);
     if (f.toString().isEmpty()) {
@@ -95,12 +95,12 @@ public class CompareArrayToArray {
     return ok;
   }
 
-  public static boolean compareData(Formatter f, String name, Array<?> org, Array<?> array, boolean justOne,
+  public static boolean compareData(Formatter f, String name, Array org, Array array, boolean justOne,
       boolean testTypes) throws IOException {
     boolean ok = true;
 
-    if (org.length() != array.length()) {
-      f.format(" WARN  %s: data nelems %d !== %d%n", name, org.length(), array.length());
+    if (org.getSize() != array.getSize()) {
+      f.format(" WARN  %s: data nelems %d !== %d%n", name, org.getSize(), array.getSize());
       // ok = false;
     }
 
@@ -133,8 +133,8 @@ public class CompareArrayToArray {
       Iterator iter2 = arrv.iterator();
 
       while (iter1.hasNext() && iter2.hasNext()) {
-        Array<?> v1 = (Array<?>) iter1.next();
-        Array<?> v2 = (Array<?>) iter2.next();
+        Array v1 = (Array) iter1.next();
+        Array v2 = (Array) iter2.next();
         ok &= compareData(f, name, v1, v2, justOne, testTypes);
       }
       return ok;
@@ -342,8 +342,8 @@ public class CompareArrayToArray {
         System.out.printf("Cant find %s in copy%n", m1.getName());
         continue;
       }
-      Array<?> data1 = org.getMemberData(m1);
-      Array<?> data2 = array.getMemberData(m2);
+      Array data1 = org.getMemberData(m1);
+      Array data2 = array.getMemberData(m2);
       if (data2 != null) {
         f.format("    compare member %s %s%n", m1.getDataType(), m1.getName());
         ok &= compareData(f, m1.getName(), data1, data2, justOne, false);
