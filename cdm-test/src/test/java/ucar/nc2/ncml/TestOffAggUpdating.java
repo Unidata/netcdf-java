@@ -5,6 +5,8 @@
 
 package ucar.nc2.ncml;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -89,11 +91,11 @@ public class TestOffAggUpdating {
 
     // reread
     long end = ncfile.getLastModified();
-    assert (end > start);
+    assertThat(end).isGreaterThan(start);
 
     // again
     long end2 = ncfile.getLastModified();
-    assert (end == end2);
+    assertThat(end).isEqualTo(end2);
 
     ncfile.close();
   }
@@ -118,13 +120,13 @@ public class TestOffAggUpdating {
 
   private void check(NetcdfFile ncfile, int n) throws IOException, InvalidRangeException {
     Variable v = ncfile.findVariable("time");
-    assert v != null;
+    assertThat((Object) v).isNotNull();
     System.out.printf(" time= %s%n", v.getNameAndDimensions());
-    assert v.getSize() == n : v.getSize();
+    assertThat(v.getSize()).isEqualTo(n);
 
     v = ncfile.findVariable("eta");
-    assert v != null;
-    assert v.getRank() == 3 : v.getRank();
+    assertThat((Object) v).isNotNull();
+    assertThat(v.getRank()).isEqualTo(3);
   }
 
   private class NcmlStringFileFactory implements ucar.nc2.util.cache.FileFactory {
