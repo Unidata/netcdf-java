@@ -87,7 +87,6 @@ public class GcdmServer {
 
   /** Main launches the server from the command line. */
   public static void main(String[] args) throws IOException, InterruptedException {
-    Misc.showClassPath();
     final GcdmServer server = new GcdmServer();
     server.start();
     server.blockUntilShutdown();
