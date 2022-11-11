@@ -33,8 +33,10 @@
 package ucar.nc2.ncml;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.junit.rules.TemporaryFolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import thredds.client.catalog.ServiceType;
@@ -66,38 +68,38 @@ import java.nio.file.StandardCopyOption;
 public class TestOffAggUpdating {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  String dir = TestDir.cdmUnitTestDir + "agg/updating";
-  String location = dir + "agg/updating.ncml";
-  File dirFile = new File(dir);
-  String extraFile = dir + "/extra.nc";
+  private static final String dir = TestDir.cdmUnitTestDir + "agg/updating";
+  private static final String location = "test/location.ncml";
+  private static final Path extraFile = Paths.get(dir, "extra.nc");
 
-  String ncml = "<?xml version='1.0' encoding='UTF-8'?>\n"
-      + "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2'>\n"
-      + "       <aggregation dimName='time' type='joinExisting' recheckEvery='1 msec'>\n" + "         <scan location='"
-      + dir + "' suffix='*.nc' />\n" + "         <variable name='depth'>\n"
-      + "           <attribute name='coordinates' value='lon lat'/>\n" + "         </variable>\n"
-      + "         <variable name='wvh'>\n" + "           <attribute name='coordinates' value='lon lat'/>\n"
-      + "         </variable>\n" + "       </aggregation>\n"
-      + "       <attribute name='Conventions' type='String' value='CF-1.0'/>\n" + "</netcdf>";
+  @Rule
+  public TemporaryFolder tempFolder = new TemporaryFolder();
+
+  private String getNcml() {
+    return "<?xml version='1.0' encoding='UTF-8'?>\n"
+        + "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2'>\n"
+        + "       <aggregation dimName='time' type='joinExisting' recheckEvery='1 msec'>\n"
+        + "         <scan location='" + tempFolder.getRoot().toString() + "' suffix='*.nc' />\n"
+        + "         <variable name='depth'>\n" + "           <attribute name='coordinates' value='lon lat'/>\n"
+        + "         </variable>\n" + "         <variable name='wvh'>\n"
+        + "           <attribute name='coordinates' value='lon lat'/>\n" + "         </variable>\n"
+        + "       </aggregation>\n" + "       <attribute name='Conventions' type='String' value='CF-1.0'/>\n"
+        + "</netcdf>";
+  }
 
   @Before
-  public void setup() {
-    assert dirFile.exists();
-    assert dirFile.isDirectory();
-    assert dirFile.listFiles() != null;
+  public void setup() throws IOException {
+    Files.copy(Paths.get(dir, "ds1.nc"), Paths.get(tempFolder.getRoot().toString(), "ds1.nc"));
+    Files.copy(Paths.get(dir, "ds2.nc"), Paths.get(tempFolder.getRoot().toString(), "ds2.nc"));
   }
 
   @Test
   public void testUpdateSync() throws IOException, InvalidRangeException, InterruptedException {
-    // make sure that the extra file is not in the agg
-    move(extraFile);
-
     // open the agg
-    NetcdfFile ncfile = NcMLReader.readNcML(new StringReader(ncml), location, null);
+    NetcdfFile ncfile = NcMLReader.readNcML(new StringReader(getNcml()), location, null);
     check(ncfile, 12);
 
-    // now make sure that the extra file is in the agg
-    moveBack(extraFile);
+    addExtraFile();
 
     // reread
     ncfile.syncExtend();
@@ -108,15 +110,11 @@ public class TestOffAggUpdating {
 
   @Test
   public void testUpdateLastModified() throws IOException, InvalidRangeException, InterruptedException {
-    // make sure that the extra file is not in the agg
-    move(extraFile);
-
     // open the agg
-    NetcdfFile ncfile = NcMLReader.readNcML(new StringReader(ncml), location, null);
+    NetcdfFile ncfile = NcMLReader.readNcML(new StringReader(getNcml()), location, null);
     long start = ncfile.getLastModified();
 
-    // now make sure that the extra file is in the agg
-    moveBack(extraFile);
+    addExtraFile();
 
     // reread
     long end = ncfile.getLastModified();
@@ -131,9 +129,6 @@ public class TestOffAggUpdating {
 
   @Test
   public void testUpdateCache() throws IOException, InvalidRangeException, InterruptedException {
-    // make sure that the extra file is not in the agg
-    move(extraFile);
-
     DatasetUrl durl = DatasetUrl.findDatasetUrl(location);
 
     // open the agg
@@ -141,8 +136,7 @@ public class TestOffAggUpdating {
 
     check(ncfile, 12);
 
-    // now make sure that the extra file is in the agg
-    moveBack(extraFile);
+    addExtraFile();
 
     // reread
     ncfile.syncExtend();
@@ -167,8 +161,12 @@ public class TestOffAggUpdating {
     @Override
     public FileCacheable open(DatasetUrl durl, int buffer_size, CancelTask cancelTask, Object iospMessage)
         throws IOException {
-      return NcMLReader.readNcML(new StringReader(ncml), durl.trueurl, null);
+      return NcMLReader.readNcML(new StringReader(getNcml()), durl.trueurl, null);
     }
+  }
+
+  private void addExtraFile() throws IOException {
+    Files.copy(extraFile, Paths.get(tempFolder.getRoot().toString(), "extra.nc"));
   }
 
   public static boolean move(String filename) throws IOException {
