@@ -18,6 +18,8 @@ import ucar.gcdm.GcdmNetcdfProto.HeaderRequest;
 import ucar.gcdm.GcdmNetcdfProto.HeaderResponse;
 import ucar.gcdm.GcdmNetcdfProto.Variable;
 import ucar.gcdm.GcdmConverterMa2;
+import ucar.ma2.Array;
+import ucar.ma2.Arrays;
 import ucar.ma2.DataType;
 import ucar.ma2.Section;
 
@@ -51,7 +53,7 @@ public class GcdmClient {
     return null;
   }
 
-  private <T> Array<T> getData(String location, Variable v) {
+  private Array getData(String location, Variable v) {
     DataType dataType = GcdmConverterMa2.convertDataType(v.getDataType());
     Section section = GcdmConverterMa2.decodeSection(v);
     System.out.printf("Data request %s %s (%s)%n", v.getDataType(), v.getName(), section);
@@ -63,7 +65,7 @@ public class GcdmClient {
     Iterator<DataResponse> responses;
     try {
       responses = blockingStub.withDeadlineAfter(30, TimeUnit.SECONDS).getNetcdfData(request);
-      List<Array<T>> results = new ArrayList<>();
+      List<Array> results = new ArrayList<>();
       while (responses.hasNext()) {
         DataResponse response = responses.next();
         results.add(GcdmConverterMa2.decodeData(response.getData()));
@@ -105,10 +107,10 @@ public class GcdmClient {
       long total = 0;
       for (Variable v : header.getRoot().getVarsList()) {
         Stopwatch s2 = Stopwatch.createStarted();
-        Array<?> array = client.getData(location, v);
+        Array array = client.getData(location, v);
         s2.stop();
         if (array != null) {
-          long size = array.length();
+          long size = array.getSize();
           double rate = ((double) size) / s2.elapsed(TimeUnit.MICROSECONDS);
           System.out.printf("    size = %d, time = %s rate = %10.4f MB/sec%n", size, s2, rate);
           total += size;

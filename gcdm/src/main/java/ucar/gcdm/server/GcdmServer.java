@@ -14,7 +14,6 @@ import java.util.Formatter;
 import java.util.Iterator;
 import java.util.concurrent.TimeUnit;
 
-import ucar.array.*;
 import ucar.gcdm.GcdmGrpc.GcdmImplBase;
 import ucar.gcdm.GcdmNetcdfProto;
 import ucar.gcdm.GcdmNetcdfProto.DataRequest;
@@ -23,8 +22,7 @@ import ucar.gcdm.GcdmNetcdfProto.Header;
 import ucar.gcdm.GcdmNetcdfProto.HeaderRequest;
 import ucar.gcdm.GcdmNetcdfProto.HeaderResponse;
 import ucar.gcdm.GcdmConverterMa2;
-import ucar.array.InvalidRangeException;
-import ucar.array.Section;
+import ucar.ma2.Array;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.ParsedArraySectionSpec;
 import ucar.nc2.Sequence;
@@ -191,12 +189,12 @@ public class GcdmServer {
       DataResponse.Builder response = DataResponse.newBuilder().setLocation(ncfile.getLocation()).setVariableSpec(spec)
           .setVarFullName(var.getFullName()).setSection(GcdmConverterMa2.encodeSection(wantSection));
 
-      Array<?> data = var.readArray(wantSection);
+      Array data = var.read(wantSection);
       response.setData(GcdmConverterMa2.encodeData(data.getDataType(), data));
 
       responseObserver.onNext(response.build());
       System.out.printf(" Send one chunk %s size=%d bytes%n", spec,
-          data.length() * varSection.getVariable().getElementSize());
+          data.getSize() * varSection.getVariable().getElementSize());
     }
 
 

@@ -11,8 +11,8 @@ import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import ucar.array.Array;
 import ucar.gcdm.client.GcdmNetcdfFile;
+import ucar.ma2.Array;
 import ucar.nc2.Variable;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
@@ -36,9 +36,9 @@ public class TimeGcdm {
       for (Variable v : gcdmFile.getVariables()) {
         System.out.printf("  read variable though array : %s %s", v.getDataType(), v.getShortName());
         Stopwatch stopwatch = Stopwatch.createStarted();
-        Array<?> data = v.readArray();
+        Array data = v.readArray();
         stopwatch.stop();
-        long size = data.length();
+        long size = data.getSize();
         double rate = ((double) size) / stopwatch.elapsed(TimeUnit.MICROSECONDS);
         System.out.printf("    size = %d, time = %s rate = %10.4f MB/sec%n", size, stopwatch, rate);
         total += size;
