@@ -23,7 +23,7 @@ import ucar.gcdm.GcdmNetcdfProto.DataResponse;
 import ucar.gcdm.GcdmNetcdfProto.Header;
 import ucar.gcdm.GcdmNetcdfProto.HeaderRequest;
 import ucar.gcdm.GcdmNetcdfProto.HeaderResponse;
-import ucar.ma2.Arrays;
+import ucar.ma2.Array;
 import ucar.ma2.Section;
 import ucar.ma2.StructureDataIterator;
 import ucar.nc2.Group;
@@ -115,7 +115,7 @@ public class GcdmNetcdfFile extends NetcdfFile {
     if (results.size() == 1) {
       return results.get(0);
     } else {
-      return Arrays.factoryCopy(v.getDataType(), sectionWanted.getShape(), (List) results); // TODO generics
+      return Array.factoryCopy(v.getDataType(), sectionWanted.getShape(), (List) results); // TODO generics
     }
   }
 
