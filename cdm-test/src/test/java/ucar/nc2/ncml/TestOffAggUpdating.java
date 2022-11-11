@@ -14,7 +14,6 @@ import org.junit.experimental.categories.Category;
 import org.junit.rules.TemporaryFolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.ma2.InvalidRangeException;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.DatasetUrl;
@@ -67,7 +66,7 @@ public class TestOffAggUpdating {
   }
 
   @Test
-  public void testUpdateSync() throws IOException, InvalidRangeException, InterruptedException {
+  public void testUpdateSync() throws IOException {
     // open the agg
     NetcdfFile ncfile = NcMLReader.readNcML(new StringReader(getNcml()), location, null);
     check(ncfile, 12);
@@ -82,7 +81,7 @@ public class TestOffAggUpdating {
   }
 
   @Test
-  public void testUpdateLastModified() throws IOException, InvalidRangeException, InterruptedException {
+  public void testUpdateLastModified() throws IOException {
     // open the agg
     NetcdfFile ncfile = NcMLReader.readNcML(new StringReader(getNcml()), location, null);
     long start = ncfile.getLastModified();
@@ -101,7 +100,7 @@ public class TestOffAggUpdating {
   }
 
   @Test
-  public void testUpdateCache() throws IOException, InvalidRangeException, InterruptedException {
+  public void testUpdateCache() throws IOException {
     DatasetUrl durl = DatasetUrl.findDatasetUrl(location);
 
     // open the agg
@@ -118,7 +117,7 @@ public class TestOffAggUpdating {
     ncfile.close();
   }
 
-  private void check(NetcdfFile ncfile, int n) throws IOException, InvalidRangeException {
+  private void check(NetcdfFile ncfile, int n) {
     Variable v = ncfile.findVariable("time");
     assertThat((Object) v).isNotNull();
     System.out.printf(" time= %s%n", v.getNameAndDimensions());
