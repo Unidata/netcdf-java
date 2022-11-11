@@ -23,6 +23,14 @@ import ucar.gcdm.GcdmNetcdfProto.HeaderRequest;
 import ucar.gcdm.GcdmNetcdfProto.HeaderResponse;
 import ucar.gcdm.GcdmConverterMa2;
 import ucar.ma2.Array;
+import ucar.ma2.ArrayStructureMA;
+import ucar.ma2.DataType;
+import ucar.ma2.Index;
+import ucar.ma2.InvalidRangeException;
+import ucar.ma2.Section;
+import ucar.ma2.StructureData;
+import ucar.ma2.StructureDataIterator;
+import ucar.ma2.StructureMembers;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.ParsedArraySectionSpec;
 import ucar.nc2.Sequence;
@@ -175,7 +183,7 @@ public class GcdmServer {
         Section section = new Section(chunkOrigin, chunkShape);
         ParsedArraySectionSpec spec = new ParsedArraySectionSpec(var, section);
         getOneChunk(ncfile, spec, responseObserver);
-        index.setCurrentCounter(index.currentElement() + (int) Arrays.computeSize(chunkShape));
+        index.setCurrentCounter(index.currentElement() + (int) Index.computeSize(chunkShape));
       }
     }
 

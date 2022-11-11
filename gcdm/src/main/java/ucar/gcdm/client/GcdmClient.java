@@ -19,7 +19,6 @@ import ucar.gcdm.GcdmNetcdfProto.HeaderResponse;
 import ucar.gcdm.GcdmNetcdfProto.Variable;
 import ucar.gcdm.GcdmConverterMa2;
 import ucar.ma2.Array;
-import ucar.ma2.Arrays;
 import ucar.ma2.DataType;
 import ucar.ma2.Section;
 
@@ -70,7 +69,7 @@ public class GcdmClient {
         DataResponse response = responses.next();
         results.add(GcdmConverterMa2.decodeData(response.getData()));
       }
-      return Arrays.factoryCopy(dataType, section.getShape(), results);
+      return Array.factoryCopy(dataType, section.getShape(), results);
     } catch (Throwable e) {
       logger.warn("getData failed: " + location, e);
       e.printStackTrace();
