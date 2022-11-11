@@ -157,12 +157,6 @@ public class TestGcdmNetcdfFileProblem {
   }
 
   @Test
-  @Category(NeedsCdmUnitTest.class)
-  public void testShowClassPath() throws Exception {
-    Misc.showClassPath();
-  }
-
-  @Test
   public void testOpaqueDataType() throws Exception {
     String localFilename = TestDir.cdmLocalTestDataDir + "hdf5/test_atomic_types.nc";
     Path path = Paths.get(localFilename);
