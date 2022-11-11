@@ -120,7 +120,7 @@ public class TestOffAggUpdating {
   private void check(NetcdfFile ncfile, int n) {
     Variable v = ncfile.findVariable("time");
     assertThat((Object) v).isNotNull();
-    System.out.printf(" time= %s%n", v.getNameAndDimensions());
+    logger.debug(" time= {}", v.getNameAndDimensions());
     assertThat(v.getSize()).isEqualTo(n);
 
     v = ncfile.findVariable("eta");
