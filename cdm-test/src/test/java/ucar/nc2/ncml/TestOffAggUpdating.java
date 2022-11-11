@@ -43,6 +43,8 @@ public class TestOffAggUpdating {
   private static final String dir = TestDir.cdmUnitTestDir + "agg/updating";
   private static final String location = "test/location.ncml";
   private static final Path extraFile = Paths.get(dir, "extra.nc");
+  private static final int expectedSizeOfTime = 12;
+  private static final int expectedSizeOfTimeWithExtraFile = 18;
 
   @Rule
   public TemporaryFolder tempFolder = new TemporaryFolder();
@@ -69,13 +71,13 @@ public class TestOffAggUpdating {
   public void testUpdateSync() throws IOException {
     // open the agg
     NetcdfFile ncfile = NcMLReader.readNcML(new StringReader(getNcml()), location, null);
-    check(ncfile, 12);
+    check(ncfile, expectedSizeOfTime);
 
     addExtraFile();
 
     // reread
     ncfile.syncExtend();
-    check(ncfile, 18);
+    check(ncfile, expectedSizeOfTimeWithExtraFile);
 
     ncfile.close();
   }
@@ -106,26 +108,26 @@ public class TestOffAggUpdating {
     // open the agg
     NetcdfFile ncfile = NetcdfDataset.acquireDataset(new NcmlStringFileFactory(), durl, null, -1, null, null);
 
-    check(ncfile, 12);
+    check(ncfile, expectedSizeOfTime);
 
     addExtraFile();
 
     // reread
     ncfile.syncExtend();
-    check(ncfile, 18);
+    check(ncfile, expectedSizeOfTimeWithExtraFile);
 
     ncfile.close();
   }
 
-  private void check(NetcdfFile ncfile, int n) {
-    Variable v = ncfile.findVariable("time");
-    assertThat((Object) v).isNotNull();
-    logger.debug(" time= {}", v.getNameAndDimensions());
-    assertThat(v.getSize()).isEqualTo(n);
+  private void check(NetcdfFile ncfile, int expectedSizeOfTime) {
+    final Variable time = ncfile.findVariable("time");
+    assertThat((Object) time).isNotNull();
+    logger.debug(" time= {}", time.getNameAndDimensions());
+    assertThat(time.getSize()).isEqualTo(expectedSizeOfTime);
 
-    v = ncfile.findVariable("eta");
-    assertThat((Object) v).isNotNull();
-    assertThat(v.getRank()).isEqualTo(3);
+    final Variable eta = ncfile.findVariable("eta");
+    assertThat((Object) eta).isNotNull();
+    assertThat(eta.getRank()).isEqualTo(3);
   }
 
   private class NcmlStringFileFactory implements ucar.nc2.util.cache.FileFactory {
