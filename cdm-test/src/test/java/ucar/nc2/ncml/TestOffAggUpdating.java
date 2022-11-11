@@ -28,7 +28,6 @@ import java.lang.invoke.MethodHandles;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 
 /**
  * Updating aggregation
@@ -141,25 +140,6 @@ public class TestOffAggUpdating {
 
   private void addExtraFile() throws IOException {
     Files.copy(extraFile, Paths.get(tempFolder.getRoot().toString(), "extra.nc"));
-  }
-
-  public static boolean move(String filename) throws IOException {
-    Path src = Paths.get(filename);
-    if (!Files.exists(src))
-      return false;
-    Path dest = Paths.get(filename + ".save");
-    Files.move(src, dest, StandardCopyOption.REPLACE_EXISTING);
-    return true;
-  }
-
-
-  public static boolean moveBack(String filename) throws IOException {
-    Path src = Paths.get(filename + ".save");
-    if (!Files.exists(src))
-      return false;
-    Path dest = Paths.get(filename);
-    Files.move(src, dest, StandardCopyOption.REPLACE_EXISTING);
-    return true;
   }
 }
 
