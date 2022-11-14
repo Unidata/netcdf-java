@@ -130,7 +130,7 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
   /**
    * Get the number of bytes for one element of this Variable.
    * For Variables of primitive type, this is equal to getDataType().getSize().
-   * Variables of String type dont know their size, so what they return is undefined.
+   * Variables of String type don't know their size, so what they return is undefined.
    * Variables of Structure type return the total number of bytes for all the members of
    * one Structure, plus possibly some extra padding, depending on the underlying format.
    * Variables of Sequence type return the number of bytes of one element.
@@ -149,7 +149,7 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
   /**
    * Get the parent group, or if null, the root group.
    * 
-   * @deprecated Will go away in ver6, shouldnt be needed when builders are used.
+   * @deprecated Will go away in ver6, shouldn't be needed when builders are used.
    */
   @Deprecated
   public Group getParentGroupOrRoot() {
@@ -302,7 +302,7 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
   }
 
   /**
-   * Get shape as an List of Range objects.
+   * Get shape as a List of Range objects.
    * The List is immutable.
    *
    * @return List of Ranges, one for each Dimension.
@@ -344,7 +344,7 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
    *        Each Range corresponds to a Dimension, and specifies the section of data to read in that Dimension.
    *        A Range object may be null, which means use the entire dimension.
    * @return a new Variable which is a logical section of this Variable.
-   * @throws InvalidRangeException if shape and range list dont match
+   * @throws InvalidRangeException if shape and range list don't match
    */
   public Variable section(List<Range> ranges) throws InvalidRangeException {
     return section(new Section(ranges, shape).makeImmutable());
@@ -585,7 +585,7 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
    * To read the data in all structures, use ncfile.readSectionSpec().
    * <p/>
    * Note this only allows you to specify a subset of this variable.
-   * If the variable is nested in a array of structures and you want to subset that, use
+   * If the variable is nested in an array of structures and you want to subset that, use
    * NetcdfFile.read(String sectionSpec, boolean flatten);
    *
    * @param section list of Range specifying the section of data to read.
@@ -1608,7 +1608,7 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
 
   /**
    * Note that standalone Ncml caches data values set in the Ncml.
-   * So one cannont invalidate those caches.
+   * So one cannot invalidate those caches.
    * 
    * @deprecated Use Variable.builder()
    */
