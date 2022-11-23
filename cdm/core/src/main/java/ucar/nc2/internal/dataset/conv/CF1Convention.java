@@ -193,7 +193,9 @@ public class CF1Convention extends CSMConvention {
         }
 
         // look for time variables and check to see if they have a calendar attribute. if not, add the default
-        checkTimeVarForCalendar((VariableDS.Builder) vb);
+        if (vb instanceof VariableDS.Builder) {
+          checkTimeVarForCalendar((VariableDS.Builder<?>) vb);
+        }
       }
 
       // look for horiz transforms. only ones that are referenced by another variable.
