@@ -4,7 +4,9 @@
  */
 package ucar.nc2.util.cache;
 
-import org.junit.Assert;
+import static com.google.common.truth.Truth.assertThat;
+import static org.junit.Assert.fail;
+
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -12,7 +14,6 @@ import org.slf4j.LoggerFactory;
 import ucar.nc2.dataset.DatasetUrl;
 import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.util.CancelTask;
-import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.NetcdfFile;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.StringUtil2;
@@ -49,19 +50,16 @@ public class TestNetcdfFileCache {
       return;
 
     for (File f : files) {
-      if (f.isDirectory())
+      if (f.isDirectory()) {
         loadFilesIntoCache(f, cache);
-
-      else if (f.getPath().endsWith(".nc") && f.length() > 0) {
-        // System.out.println(" open "+f.getPath());
+      } else if (f.getPath().endsWith(".nc") && f.length() > 0) {
         try {
           String want = StringUtil2.replace(f.getPath(), '\\', "/");
           DatasetUrl durl = DatasetUrl.create(null, want);
           cache.acquire(factory, durl);
           count++;
         } catch (IOException e) {
-          // e.printStackTrace();
-          System.out.println(" *** failed on " + f.getPath());
+          fail(" *** failed on " + f.getPath());
         }
       }
     }
@@ -69,21 +67,17 @@ public class TestNetcdfFileCache {
 
   @Test
   public void testNetcdfFileCache() throws IOException {
-    System.out.printf("TestNetcdfFileCache%n");
-
     loadFilesIntoCache(new File(TestDir.cdmLocalTestDataDir), cache);
-    System.out.println(" loaded " + count);
 
     cache.showCache(new Formatter(System.out));
 
     // count cache size
     Map<Object, FileCache.CacheElement> map = cache.getCache();
-    Assert.assertEquals(count, map.values().size());
+    assertThat(map.values().size()).isEqualTo(count);
 
     for (Object key : map.keySet()) {
       FileCache.CacheElement elem = map.get(key);
-      // System.out.println(" "+key+" == "+elem);
-      Assert.assertEquals(1, elem.list.size());
+      assertThat(elem.list.size()).isEqualTo(1);
     }
 
     // load same files again - should be added to the list, rather than creating a new elem
@@ -92,29 +86,28 @@ public class TestNetcdfFileCache {
     map = cache.getCache();
     cache.showCache(new Formatter(System.out));
 
-    Assert.assertEquals(saveCount, map.values().size()); // problem
+    assertThat(map.values().size()).isEqualTo(saveCount); // problem
 
     for (Object key : map.keySet()) {
       FileCache.CacheElement elem = map.get(key);
-      // System.out.println(" "+key+" == "+elem);
-      Assert.assertEquals(2, elem.list.size());
+      assertThat(elem.list.size()).isEqualTo(2);
       checkAllSame(elem.list);
     }
 
     cache.clearCache(true);
     map = cache.getCache();
-    Assert.assertEquals(0, map.values().size());
+    assertThat(map.values().size()).isEqualTo(0);
 
     // load again
     loadFilesIntoCache(new File(TestDir.cdmLocalTestDataDir), cache);
     map = cache.getCache();
-    Assert.assertEquals(saveCount, map.values().size());
+    assertThat(map.values().size()).isEqualTo(saveCount);
 
     // close all
     List<FileCacheable> files = new ArrayList<>();
     for (Object key : map.keySet()) {
       FileCache.CacheElement elem = map.get(key);
-      Assert.assertEquals(1, elem.list.size());
+      assertThat(elem.list.size()).isEqualTo(1);
       for (FileCache.CacheElement.CacheFile file : elem.list) {
         files.add(file.ncfile);
       }
@@ -124,34 +117,34 @@ public class TestNetcdfFileCache {
     }
     cache.clearCache(false);
     map = cache.getCache();
-    Assert.assertEquals(0, map.values().size());
+    assertThat(map.values().size()).isEqualTo(0);
 
     // load twice
     loadFilesIntoCache(new File(TestDir.cdmLocalTestDataDir), cache);
     loadFilesIntoCache(new File(TestDir.cdmLocalTestDataDir), cache);
     map = cache.getCache();
-    Assert.assertEquals(saveCount, map.values().size());
+    assertThat(map.values().size()).isEqualTo(saveCount);
 
     // close 1 of 2
     for (Object key : map.keySet()) {
       FileCache.CacheElement elem = map.get(key);
-      Assert.assertEquals(2, elem.list.size());
+      assertThat(elem.list.size()).isEqualTo(2);
       FileCache.CacheElement.CacheFile first = elem.list.get(0);
       first.ncfile.close();
-      Assert.assertTrue(!first.isLocked.get());
-      Assert.assertEquals(2, elem.list.size());
+      assertThat(first.isLocked.get()).isFalse();
+      assertThat(elem.list.size()).isEqualTo(2);
     }
 
     map = cache.getCache();
-    Assert.assertEquals(saveCount, map.values().size());
+    assertThat(map.values().size()).isEqualTo(saveCount);
 
     cache.clearCache(false);
     map = cache.getCache();
-    Assert.assertEquals(saveCount, map.values().size());
+    assertThat(map.values().size()).isEqualTo(saveCount);
 
     for (Object key : map.keySet()) {
       FileCache.CacheElement elem = map.get(key);
-      Assert.assertEquals(1, elem.list.size());
+      assertThat(elem.list.size()).isEqualTo(1);
     }
 
     cache.clearCache(true);
@@ -160,15 +153,15 @@ public class TestNetcdfFileCache {
   void checkAllSame(List<FileCache.CacheElement.CacheFile> list) {
     FileCache.CacheElement.CacheFile first = null;
     for (FileCache.CacheElement.CacheFile file : list) {
-      Assert.assertTrue(file.isLocked.get());
-      Assert.assertEquals(0, file.countAccessed); // countAccessed not incremented until its closed, so == 0
-      Assert.assertNotEquals(0, file.lastAccessed);
+      assertThat(file.isLocked.get()).isTrue();
+      assertThat(file.countAccessed).isEqualTo(0); // countAccessed not incremented until its closed, so == 0
+      assertThat(file.lastAccessed).isNotEqualTo(0);
 
       if (first == null)
         first = file;
       else {
-        assert first.ncfile.getLocation().equals(file.ncfile.getLocation());
-        assert first.lastAccessed < file.lastAccessed;
+        assertThat(first.ncfile.getLocation()).isEqualTo(file.ncfile.getLocation());
+        assertThat(first.lastAccessed).isLessThan(file.lastAccessed);
       }
     }
   }
@@ -181,29 +174,29 @@ public class TestNetcdfFileCache {
     FileCache cache = new FileCache(0, 10, 60 * 60);
     testPeriodicCleanup(cache);
     Map<Object, FileCache.CacheElement> map = cache.getCache();
-    assert map.values().size() == 0 : map.values().size();
+    assertThat(map.values().size()).isEqualTo(0);
 
     cache = new FileCache(5, 10, 60 * 60);
     testPeriodicCleanup(cache);
     map = cache.getCache();
-    assert map.values().size() == 5 : map.values().size();
+    assertThat(map.values().size()).isEqualTo(5);
   }
 
   private void testPeriodicCleanup(FileCache cache) throws IOException {
     loadFilesIntoCache(new File(TestDir.cdmLocalTestDataDir), cache);
-    System.out.println(" loaded " + count);
+    logger.debug(" loaded " + count);
 
     // close all
     Map<Object, FileCache.CacheElement> map = cache.getCache();
     List<FileCacheable> files = new ArrayList<>();
     for (Object key : map.keySet()) {
       FileCache.CacheElement elem = map.get(key);
-      assert elem.list.size() == 1;
+      assertThat(elem.list.size()).isEqualTo(1);
       for (FileCache.CacheElement.CacheFile file : elem.list) {
         files.add(file.ncfile);
       }
     }
-    System.out.println(" close " + files.size());
+    logger.debug(" close " + files.size());
 
     for (FileCacheable ncfile : files) {
       ncfile.close();
@@ -218,7 +211,6 @@ public class TestNetcdfFileCache {
   int N = 10000;
   int PROD_THREAD = 10;
   int CONS_THREAD = 10;
-  // int QSIZE = 10;
   int SKIP = 100;
 
   @Test
@@ -267,7 +259,7 @@ public class TestNetcdfFileCache {
       HashSet<Object> checkUnique = new HashSet<>();
       map = cache.getCache();
       for (Object key : map.keySet()) {
-        assert !checkUnique.contains(key);
+        assertThat(checkUnique.contains(key)).isFalse();
         checkUnique.add(key);
         int locks = 0;
         FileCache.CacheElement elem = map.get(key);
@@ -276,11 +268,10 @@ public class TestNetcdfFileCache {
             if (file.isLocked.get())
               locks++;
         }
-        // System.out.println(" key= "+key+ " size= "+elem.list.size()+" locks="+locks);
         total_locks += locks;
         total += elem.list.size();
       }
-      System.out.println(" total=" + total + " total_locks=" + total_locks);
+      logger.debug(" total=" + total + " total_locks=" + total_locks);
       // assert total_locks == map.keySet().size();
 
       cache.clearCache(false);
@@ -324,9 +315,7 @@ public class TestNetcdfFileCache {
       if (x.isDone()) {
         NetcdfFile ncfile = (NetcdfFile) x.get();
         ncfile.close();
-        // format.format(" closed qsize= %3d\n", queue.size());
       } else {
-        // format.format(" lost file= %3d\n", queue.size());
         queue.add(x); // put it back
       }
 

@@ -37,6 +37,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.lang.invoke.MethodHandles;
 
+import static com.google.common.truth.Truth.assertThat;
+
 /**
  * Test on non-standard Calendars
  *
@@ -148,6 +150,23 @@ public class TestCalendars {
     assert unit2.getCalendar() == Calendar.proleptic_gregorian;
   }
 
+  @Test
+  public void testWhitespaceCompatibilityWithUdunits() {
+    String date = "2022-1-1";
+    String time = "12:34:00Z";
+    String[] udunitsWhitespace = new String[] {" ", "  ", "\t", "\n", "\r", "\f"};
+    for (Calendar cal : Calendar.values()) {
+      // unit with time in ISO format to use for testing
+      CalendarDateUnit isoFormatUnit =
+          CalendarDateUnit.withCalendar(cal, String.format("secs since %sT%s", date, time));
 
+      for (String whitespace : udunitsWhitespace) {
+        CalendarDateUnit testUnit =
+            CalendarDateUnit.withCalendar(cal, String.format("secs since %s%s%s", date, whitespace, time));
+        assertThat(isoFormatUnit.getBaseDate()).isEqualTo(testUnit.getBaseDate());
+      }
+    }
+
+  }
 }
 

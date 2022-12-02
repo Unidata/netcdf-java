@@ -22,5 +22,5 @@ ext {
   // coords.
   depVersion = [:]
   depVersion.slf4j = '1.7.28'
-  depVersion.protobuf = '3.19.3'
+  depVersion.protobuf = '3.21.7'
 }

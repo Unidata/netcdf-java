@@ -79,7 +79,7 @@ public class CoverageDatasetFactory {
         return Optional.empty(errlog.toString());
     }
 
-    return Optional.empty("Could not open as Coverage: " + endpoint);
+    return Optional.empty("Could not open as a coverage dataset");
   }
 
   /**

@@ -40,7 +40,7 @@ import java.nio.*;
  * <p/>
  * The type, shape and backing storage of an Array are immutable.
  * The data itself is read or written using an Index or an IndexIterator, which stores any needed state information
- * for efficient traversal. This makes use of Arrays thread-safe (as long as you dont share the Index or IndexIterator)
+ * for efficient traversal. This makes use of Arrays thread-safe (as long as you don't share the Index or IndexIterator)
  * except for the possibility of non-atomic read/write on long/doubles. If this is the case, you should probably
  * synchronize your calls. Presumably 64-bit CPUs will make those operations atomic also.
  *
@@ -165,7 +165,7 @@ public abstract class Array {
    */
   public static Array factoryConstant(DataType dtype, int[] shape, Object storage) {
     Index index = new IndexConstant(shape);
-    // cant go though the factory, must call the general constructor
+    // can't go through the factory, must call the general constructor
     switch (dtype) {
       case BOOLEAN:
         return new ArrayBoolean(index, (boolean[]) storage);
@@ -337,7 +337,7 @@ public abstract class Array {
       } else if (dtype == DataType.LONG) {
         if (dtype.isUnsigned()) {
           BigInteger biggy = new BigInteger(s);
-          dataI.setLongNext(biggy.longValue()); // > 63 bits will become "negetive".
+          dataI.setLongNext(biggy.longValue()); // > 63 bits will become "negative".
 
         } else {
           long val = Long.parseLong(s);
@@ -693,7 +693,7 @@ public abstract class Array {
    * It avoids copying if possible.
    * Only for numeric types (byte, short, int, long, double, float)
    *
-   * @return equivilent data in a ByteBuffer
+   * @return equivalent data in a ByteBuffer
    */
   public ByteBuffer getDataAsByteBuffer() {
     throw new UnsupportedOperationException();
@@ -807,7 +807,7 @@ public abstract class Array {
   }
 
   /**
-   * Copy this array to a n-Dimensional Java primitive array of type getElementType()
+   * Copy this array to an n-Dimensional Java primitive array of type getElementType()
    * and rank getRank(). Makes a copy of the data.
    *
    * @return a Java ND array of type getElementType().
@@ -1258,7 +1258,7 @@ public abstract class Array {
    * Return the next int in the local iterator.
    * Uses the local iterator, which is not thread-safe. Use getIndexIterator if you need thread-safety.
    *
-   * @return next element as a int, same as IndexIterator.getIntNext().
+   * @return next element as an int, same as IndexIterator.getIntNext().
    */
   public int nextInt() {
     return ii.getIntNext();

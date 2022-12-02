@@ -178,9 +178,12 @@ public class ZArray {
       int[] chunks = StreamSupport.stream(((ArrayNode) root.path(ZarrKeys.CHUNKS)).spliterator(), false)
           .mapToInt(JsonNode::asInt).toArray();
       String dtype = ((JsonNode) root.path(ZarrKeys.DTYPE)).asText();
+
       JsonNode fillValueNode = (JsonNode) root.path(ZarrKeys.FILL_VALUE);
       final Object fill;
-      if (fillValueNode.isLong()) {
+      if (fillValueNode.isInt()) {
+        fill = fillValueNode.asInt();
+      } else if (fillValueNode.isLong()) {
         fill = fillValueNode.longValue();
       } else if (fillValueNode.isFloat()) {
         fill = fillValueNode.floatValue();

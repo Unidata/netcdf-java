@@ -3,26 +3,18 @@ ext.title = 'CDM Zarr support library'
 
 apply from: "$rootDir/gradle/any/dependencies.gradle"
 apply from: "$rootDir/gradle/any/java-library.gradle"
-apply from: "$rootDir/gradle/any/protobuf.gradle"
 
 dependencies {
     api enforcedPlatform(project(':netcdf-java-platform'))
     testImplementation enforcedPlatform(project(':netcdf-java-testing-platform'))
 
     api project(':cdm:cdm-core')
-    api project(':cdm:cdm-s3')
 
-    implementation 'org.jdom:jdom2'
-    implementation 'com.google.code.findbugs:jsr305'
-    implementation 'com.beust:jcommander'
-    implementation 'com.google.protobuf:protobuf-java'
-    implementation 'com.google.re2j:re2j'
     implementation 'org.slf4j:slf4j-api'
-    implementation 'com.google.guava:guava'
     implementation 'com.fasterxml.jackson.core:jackson-core'
     implementation 'com.fasterxml.jackson.core:jackson-databind'
 
-    implementation('software.amazon.awssdk:s3') {
+    testImplementation('software.amazon.awssdk:s3') {
         // exclude netty nio client due to open CVEs. See
         // https://github.com/aws/aws-sdk-java-v2/issues/1632
         // we don't use the nio http client in our S3 related code,
@@ -32,8 +24,7 @@ dependencies {
         exclude group: 'software.amazon.awssdk', module: 'netty-nio-client'
     }
 
-    implementation 'software.amazon.awssdk:apache-client'
-
+    testImplementation project(':cdm:cdm-s3')
     testImplementation project(':cdm-test-utils')
 
     testImplementation 'com.google.truth:truth'

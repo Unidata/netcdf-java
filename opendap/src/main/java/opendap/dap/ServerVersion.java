@@ -48,12 +48,12 @@ import java.util.Optional;
 import ucar.httpservices.HTTPMethod;
 
 /**
- * Aprses and holds the Server Version information returned by a DAP server.
+ * Parses and holds the Server Version information returned by a DAP server.
  * This information is used to determine the version of the DAP protocol used to
  * by the DAP server to encode the data.<br>
  * <br>
  * Currently the Server Version can come from
- * more than one source. An DAP server responding to to a client request
+ * more than one source. An DAP server responding to a client request
  * over HTTP must include either an <code>XDAP</code> header or an <code>
  * XDODS-Server</code> header. <br>
  * >
@@ -81,7 +81,7 @@ import ucar.httpservices.HTTPMethod;
  * considered deprecated. Thus, clients seeking to read data from OPeNDAP
  * servers should first check the server response for the existence of an
  * <code>XDAP</code> header, if one is not found then the client should
- * check for an <code>XDODS-Server</code> header. If the repsonse is missing
+ * check for an <code>XDODS-Server</code> header. If the response is missing
  * both headers then an exception should be thrown as the server response is
  * invalid.
  *
@@ -124,7 +124,7 @@ public class ServerVersion implements java.io.Serializable {
    *
    * @param method The GetMethod containing the DAP2 headers.
    * @throws DAP2Exception When bad things happen (like the headers are
-   *         missing or incorrectly constructed.
+   *         missing or incorrectly constructed.)
    */
   public ServerVersion(HTTPMethod method) throws DAP2Exception {
 
@@ -158,9 +158,9 @@ public class ServerVersion implements java.io.Serializable {
    * Determines Server (Protocol) Version based on the headers associated
    * with the passed java.net.URLConnection.
    *
-   * @param connection The URLCOnnection containing the DAP2 headers
+   * @param connection The URLConnection containing the DAP2 headers
    * @throws DAP2Exception When bad things happen (like the headers are
-   *         missing or incorrectly constructed.
+   *         missing or incorrectly constructed.)
    */
   public ServerVersion(URLConnection connection) throws DAP2Exception {
 
@@ -186,7 +186,7 @@ public class ServerVersion implements java.io.Serializable {
 
 
     // This is important! If neither of these headers (XDAP or
-    // XDODS-Server is present then we are not connected to a real
+    // XDODS-Server) is present then we are not connected to a real
     // OPeNDAP server. Period. Without the information contained
     // in these headers some data types (Such as Sequence) cannot
     // be correctly serialized/deserialized.
@@ -199,7 +199,7 @@ public class ServerVersion implements java.io.Serializable {
   /**
    * Construct a new ServerVersion, setting major and minor version based
    * on the full version string. Currently the Server Version can come from
-   * more than one source. An OPeNDAP server responding to to a client request
+   * more than one source. An OPeNDAP server responding to a client request
    * over HTTP must include either an <code>XDAP</code> header or an <code>
    * XDODS-Server</code> header. <br>
    * >
@@ -227,7 +227,7 @@ public class ServerVersion implements java.io.Serializable {
    * considered deprecated. Thus, clients seeking to read data from OPeNDAP
    * servers should first check the server response for the existence of an
    * <code>XDAP</code> header, if one is not found then the client should
-   * check for an <code>XDODS-Server</code> header. If the repsonse is missing
+   * check for an <code>XDODS-Server</code> header. If the response is missing
    * both headers then an exception should be thrown as the server response is
    * invalid.
    *
@@ -271,7 +271,7 @@ public class ServerVersion implements java.io.Serializable {
       // If the identifying word is missing then we punt and try to
       // read the value as if it is just the Major.Minor number.
       // Which is really bullshit, but a bunch of servers got built that
-      // do corrrectly utilze this parameter.
+      // do correctly utilize this parameter.
       verIndex = 0;
     }
 

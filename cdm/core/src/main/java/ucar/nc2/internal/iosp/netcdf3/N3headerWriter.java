@@ -10,6 +10,8 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Formatter;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.ma2.IndexIterator;
@@ -215,7 +217,10 @@ class N3headerWriter extends N3headerNew {
 
   private void writeAtts(Iterable<Attribute> atts, Formatter fout) throws IOException {
 
-    int n = Iterables.size(atts);
+    final List<Attribute> attributesToWrite = StreamSupport.stream(atts.spliterator(), false)
+        .filter(att -> !Attribute.isspecial(att)).collect(Collectors.toList());
+
+    int n = Iterables.size(attributesToWrite);
     if (n == 0) {
       raf.writeInt(0);
       raf.writeInt(0);
@@ -225,7 +230,7 @@ class N3headerWriter extends N3headerNew {
     }
 
     int count = 0;
-    for (Attribute att : atts) {
+    for (Attribute att : attributesToWrite) {
       if (fout != null)
         fout.format("***att %d pos= %d%n", count, raf.getFilePointer());
 
