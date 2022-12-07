@@ -79,6 +79,7 @@ public class CoverageDatasetFactory {
         return Optional.empty(errlog.toString());
     }
 
+    gds.close();
     return Optional.empty("Could not open as a coverage dataset");
   }
 
