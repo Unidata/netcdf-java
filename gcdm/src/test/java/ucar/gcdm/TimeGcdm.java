@@ -36,7 +36,7 @@ public class TimeGcdm {
       for (Variable v : gcdmFile.getVariables()) {
         System.out.printf("  read variable though array : %s %s", v.getDataType(), v.getShortName());
         Stopwatch stopwatch = Stopwatch.createStarted();
-        Array data = v.readArray();
+        Array data = v.read();
         stopwatch.stop();
         long size = data.getSize();
         double rate = ((double) size) / stopwatch.elapsed(TimeUnit.MICROSECONDS);
