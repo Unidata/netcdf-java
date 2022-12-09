@@ -12,7 +12,6 @@ import ucar.gcdm.client.GcdmNetcdfFile;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.internal.util.CompareArrayToArray;
-import ucar.nc2.internal.util.CompareArrayToMa2;
 import ucar.nc2.util.Misc;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
@@ -71,7 +70,6 @@ public class TestGcdmNetcdfFileProblem {
   public void testHdf4() throws Exception {
     String localFilename = TestDir.cdmUnitTestDir + "formats/hdf4/MOD021KM.A2004328.1735.004.2004329164007.hdf";
     Path path = Paths.get(localFilename);
-    compareArrayToMa2(path, "MODIS_SWATH_Type_L1B/Data_Fields/EV_250_Aggr1km_RefSB");
     compareArrayToArray(path, "MODIS_SWATH_Type_L1B/Data_Fields/EV_250_Aggr1km_RefSB");
   }
 
@@ -80,7 +78,6 @@ public class TestGcdmNetcdfFileProblem {
   public void testCombineStructure() throws Exception {
     String localFilename = TestDir.cdmUnitTestDir + "formats/hdf5/IASI/IASI.h5";
     Path path = Paths.get(localFilename);
-    compareArrayToMa2(path, "U-MARF/EPS/IASI_xxx_1C/DATA/MDR_1C_IASI_L1_ARRAY_000001");
     compareArrayToArray(path, "U-MARF/EPS/IASI_xxx_1C/DATA/MDR_1C_IASI_L1_ARRAY_000001");
   }
 
@@ -89,7 +86,6 @@ public class TestGcdmNetcdfFileProblem {
   public void testGcdmVlenCast() throws Exception {
     String localFilename = TestDir.cdmUnitTestDir + "formats/netcdf4/files/tst_opaque_data.nc4";
     Path path = Paths.get(localFilename);
-    compareArrayToMa2(path);
     compareArrayToArray(path);
   }
 
@@ -99,7 +95,6 @@ public class TestGcdmNetcdfFileProblem {
     String localFilename =
         TestDir.cdmUnitTestDir + "formats/netcdf4/e562p1_fp.inst3_3d_asm_Nv.20100907_00z+20100909_1200z.nc4";
     Path path = Paths.get(localFilename);
-    compareArrayToMa2(path, "T");
     compareArrayToArray(path, "O3");
   }
 
@@ -116,7 +111,6 @@ public class TestGcdmNetcdfFileProblem {
   public void testAttributeStruct() throws Exception {
     String localFilename = TestDir.cdmUnitTestDir + "formats/netcdf4/attributeStruct.nc";
     Path path = Paths.get(localFilename);
-    compareArrayToMa2(path);
     compareArrayToArray(path, "observations");
   }
 
@@ -139,7 +133,6 @@ public class TestGcdmNetcdfFileProblem {
   public void testCharProblem() throws Exception {
     String localFilename = TestDir.cdmUnitTestDir + "formats/bufr/userExamples/test1.bufr";
     Path path = Paths.get(localFilename);
-    compareArrayToMa2(path, "obs");
     compareArrayToArray(path);
   }
 
@@ -152,7 +145,6 @@ public class TestGcdmNetcdfFileProblem {
   public void testChunkProblem() throws Exception {
     String localFilename = TestDir.cdmUnitTestDir + "formats/netcdf4/multiDimscale.nc4";
     Path path = Paths.get(localFilename);
-    compareArrayToMa2(path, "u");
     compareArrayToArray(path);
   }
 
@@ -160,7 +152,6 @@ public class TestGcdmNetcdfFileProblem {
   public void testOpaqueDataType() throws Exception {
     String localFilename = TestDir.cdmLocalTestDataDir + "hdf5/test_atomic_types.nc";
     Path path = Paths.get(localFilename);
-    compareArrayToMa2(path);
     compareArrayToArray(path);
   }
 
@@ -168,32 +159,10 @@ public class TestGcdmNetcdfFileProblem {
   public void testGcdmProblem2() throws Exception {
     String localFilename = TestDir.cdmLocalTestDataDir + "dataset/SimpleGeos/hru_soil_moist_vlen_3hru_5timestep.nc";
     Path path = Paths.get(localFilename);
-    compareArrayToMa2(path);
     compareArrayToArray(path);
   }
 
   ////////////////////////////////////////////////////////////////////////////
-
-  public void compareArrayToMa2(Path path) throws Exception {
-    String gcdmUrl = "gcdm://localhost:16111/" + path.toAbsolutePath();
-    try (NetcdfFile ncfile = NetcdfDatasets.openFile(path.toString(), null);
-        GcdmNetcdfFile gcdmFile = GcdmNetcdfFile.builder().setRemoteURI(gcdmUrl).build()) {
-
-      boolean ok = CompareArrayToMa2.compareFiles(ncfile, gcdmFile);
-      assertThat(ok).isTrue();
-    }
-  }
-
-  public void compareArrayToMa2(Path path, String varName) throws Exception {
-    // LOOK kludge for now. Also, need to auto start up CmdrServer
-    String gcdmUrl = "gcdm://localhost:16111/" + path.toAbsolutePath();
-    try (NetcdfFile ma2File = NetcdfDatasets.openFile(path.toString(), null);
-        GcdmNetcdfFile arrayFile = GcdmNetcdfFile.builder().setRemoteURI(gcdmUrl).build()) {
-
-      boolean ok = CompareArrayToMa2.compareVariable(ma2File, arrayFile, varName, true);
-      assertThat(ok).isTrue();
-    }
-  }
 
   public void compareArrayToArray(Path path) throws Exception {
     String gcdmUrl = "gcdm://localhost:16111/" + path.toAbsolutePath();
