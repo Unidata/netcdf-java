@@ -8,11 +8,13 @@ package ucar.nc2.internal.util;
 import com.google.common.base.Stopwatch;
 import java.io.IOException;
 import java.util.Formatter;
-import java.util.Iterator;
 
 import ucar.ma2.Array;
+import ucar.ma2.ArraySequence;
 import ucar.ma2.DataType;
+import ucar.ma2.IndexIterator;
 import ucar.ma2.StructureData;
+import ucar.ma2.StructureDataIterator;
 import ucar.ma2.StructureMembers;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Sequence;
@@ -60,9 +62,9 @@ public class CompareArrayToArray {
     if (vorg.getDataType() == DataType.SEQUENCE) {
       System.out.printf("  read sequence %s %s%n", vorg.getDataType(), vorg.getShortName());
       Sequence s = (Sequence) vorg;
-      Iterator<StructureData> orgSeq = s.iterator();
+      StructureDataIterator orgSeq = s.getStructureIterator(-1);
       Sequence copyv = (Sequence) vnew;
-      Iterator<StructureData> array = copyv.iterator();
+      StructureDataIterator array = copyv.getStructureIterator(-1);
       Formatter f = new Formatter();
       boolean ok1 = compareSequence(f, vorg.getShortName(), orgSeq, array);
       if (!ok1) {
@@ -128,31 +130,17 @@ public class CompareArrayToArray {
 
     DataType dt = org.getDataType();
 
-    if (org instanceof ArrayVlen) {
-      ArrayVlen<?> orgv = (ArrayVlen<?>) org;
-      ArrayVlen<?> arrv = (ArrayVlen<?>) array;
-      Iterator iter1 = orgv.iterator();
-      Iterator iter2 = arrv.iterator();
-
-      while (iter1.hasNext() && iter2.hasNext()) {
-        Array v1 = (Array) iter1.next();
-        Array v2 = (Array) iter2.next();
-        ok &= compareData(f, name, v1, v2, justOne, testTypes);
-      }
-      return ok;
-    }
-
     switch (dt) {
       case CHAR:
       case OPAQUE:
       case BYTE:
       case ENUM1:
       case UBYTE: {
-        Iterator<Byte> iter1 = (Iterator<Byte>) org.iterator();
-        Iterator<Byte> iter2 = (Iterator<Byte>) array.iterator();
+        IndexIterator iter1 = org.getIndexIterator();
+        IndexIterator iter2 = array.getIndexIterator();
         while (iter1.hasNext() && iter2.hasNext()) {
-          byte v1 = iter1.next();
-          byte v2 = iter2.next();
+          byte v1 = iter1.getByteNext();
+          byte v2 = iter2.getByteNext();
           if (v1 != v2) {
             f.format(createNumericDataDiffMessage(dt, name, v1, v2, 0));
             ok = false;
@@ -164,11 +152,11 @@ public class CompareArrayToArray {
       }
 
       case DOUBLE: {
-        Iterator<Double> iter1 = (Iterator<Double>) org.iterator();
-        Iterator<Double> iter2 = (Iterator<Double>) array.iterator();
+        IndexIterator iter1 = org.getIndexIterator();
+        IndexIterator iter2 = array.getIndexIterator();
         while (iter1.hasNext() && iter2.hasNext()) {
-          double v1 = iter1.next();
-          double v2 = iter2.next();
+          double v1 = iter1.getDoubleNext();
+          double v2 = iter2.getDoubleNext();
           if (!Misc.nearlyEquals(v1, v2)) {
             f.format(createNumericDataDiffMessage(dt, name, v1, v2, 0));
             ok = false;
@@ -180,11 +168,11 @@ public class CompareArrayToArray {
       }
 
       case FLOAT: {
-        Iterator<Float> iter1 = (Iterator<Float>) org.iterator();
-        Iterator<Float> iter2 = (Iterator<Float>) array.iterator();
+        IndexIterator iter1 = org.getIndexIterator();
+        IndexIterator iter2 = array.getIndexIterator();
         while (iter1.hasNext() && iter2.hasNext()) {
-          float v1 = iter1.next();
-          float v2 = iter2.next();
+          float v1 = iter1.getFloatNext();
+          float v2 = iter2.getFloatNext();
           if (!Misc.nearlyEquals(v1, v2)) {
             f.format(createNumericDataDiffMessage(dt, name, v1, v2, 0));
             ok = false;
@@ -198,11 +186,11 @@ public class CompareArrayToArray {
       case INT:
       case ENUM4:
       case UINT: {
-        Iterator<Integer> iter1 = (Iterator<Integer>) org.iterator();
-        Iterator<Integer> iter2 = (Iterator<Integer>) array.iterator();
+        IndexIterator iter1 = org.getIndexIterator();
+        IndexIterator iter2 = array.getIndexIterator();
         while (iter1.hasNext() && iter2.hasNext()) {
-          int v1 = iter1.next();
-          int v2 = iter2.next();
+          int v1 = iter1.getIntNext();
+          int v2 = iter2.getIntNext();
           if (v1 != v2) {
             f.format(createNumericDataDiffMessage(dt, name, v1, v2, 0));
             ok = false;
@@ -215,11 +203,11 @@ public class CompareArrayToArray {
 
       case LONG:
       case ULONG: {
-        Iterator<Long> iter1 = (Iterator<Long>) org.iterator();
-        Iterator<Long> iter2 = (Iterator<Long>) array.iterator();
+        IndexIterator iter1 = org.getIndexIterator();
+        IndexIterator iter2 = array.getIndexIterator();
         while (iter1.hasNext() && iter2.hasNext()) {
-          long v1 = iter1.next();
-          long v2 = iter2.next();
+          long v1 = iter1.getLongNext();
+          long v2 = iter2.getLongNext();
           if (v1 != v2) {
             f.format(createNumericDataDiffMessage(dt, name, v1, v2, 0));
             ok = false;
@@ -258,11 +246,11 @@ public class CompareArrayToArray {
       case SHORT:
       case ENUM2:
       case USHORT: {
-        Iterator<Short> iter1 = (Iterator<Short>) org.iterator();
-        Iterator<Short> iter2 = (Iterator<Short>) array.iterator();
+        IndexIterator iter1 = org.getIndexIterator();
+        IndexIterator iter2 = array.getIndexIterator();
         while (iter1.hasNext() && iter2.hasNext()) {
-          short v1 = iter1.next();
-          short v2 = iter2.next();
+          short v1 = iter1.getShortNext();
+          short v2 = iter2.getShortNext();
           if (v1 != v2) {
             f.format(createNumericDataDiffMessage(dt, name, v1, v2, 0));
             ok = false;
@@ -274,11 +262,11 @@ public class CompareArrayToArray {
       }
 
       case STRING: {
-        Iterator<String> iter1 = (Iterator<String>) org.iterator();
-        Iterator<String> iter2 = (Iterator<String>) array.iterator();
+        IndexIterator iter1 = org.getIndexIterator();
+        IndexIterator iter2 = array.getIndexIterator();
         while (iter1.hasNext() && iter2.hasNext()) {
-          String v1 = iter1.next();
-          String v2 = iter2.next();
+          String v1 = (String) iter1.getObjectNext();
+          String v2 = (String) iter2.getObjectNext();
           if (!v1.equals(v2)) {
             f.format(" DIFF string %s: %s != %s count=%s%n", name, v1, v2, 0);
             ok = false;
@@ -291,8 +279,8 @@ public class CompareArrayToArray {
 
 
       case SEQUENCE: {
-        Iterator<StructureData> iter1 = (Iterator<StructureData>) org.iterator();
-        Iterator<StructureData> iter2 = (Iterator<StructureData>) array.iterator();
+        StructureDataIterator iter1 = ((ArraySequence) org).getStructureDataIterator();
+        StructureDataIterator iter2 = ((ArraySequence) array).getStructureDataIterator();
         int row = 0;
         while (iter1.hasNext() && iter2.hasNext()) {
           ok &= compareStructureData(f, iter1.next(), iter2.next(), justOne);
@@ -302,11 +290,11 @@ public class CompareArrayToArray {
       }
 
       case STRUCTURE: {
-        Iterator<StructureData> iter1 = (Iterator<StructureData>) org.iterator();
-        Iterator<StructureData> iter2 = (Iterator<StructureData>) array.iterator();
+        IndexIterator iter1 = org.getIndexIterator();
+        IndexIterator iter2 = array.getIndexIterator();
         int row = 0;
         while (iter1.hasNext() && iter2.hasNext()) {
-          ok &= compareStructureData(f, iter1.next(), iter2.next(), justOne);
+          ok &= compareStructureData(f, (StructureData) iter1.next(), (StructureData) iter2.next(), justOne);
           row++;
         }
         break;
@@ -332,20 +320,20 @@ public class CompareArrayToArray {
     boolean ok = true;
 
     StructureMembers sm1 = org.getStructureMembers();
-    ucar.array.StructureMembers sm2 = array.getStructureMembers();
+    StructureMembers sm2 = array.getStructureMembers();
     if (sm1.getMembers().size() != sm2.getMembers().size()) {
       f.format(" membersize %d !== %d%n", sm1.getMembers().size(), sm2.getMembers().size());
       ok = false;
     }
 
     for (StructureMembers.Member m1 : sm1.getMembers()) {
-      ucar.array.StructureMembers.Member m2 = sm2.findMember(m1.getName());
+      StructureMembers.Member m2 = sm2.findMember(m1.getName());
       if (m2 == null) {
         System.out.printf("Cant find %s in copy%n", m1.getName());
         continue;
       }
-      Array data1 = org.getMemberData(m1);
-      Array data2 = array.getMemberData(m2);
+      Array data1 = org.getArray(m1);
+      Array data2 = array.getArray(m2);
       if (data2 != null) {
         f.format("    compare member %s %s%n", m1.getDataType(), m1.getName());
         ok &= compareData(f, m1.getName(), data1, data2, justOne, false);
@@ -355,14 +343,19 @@ public class CompareArrayToArray {
     return ok;
   }
 
-  public static boolean compareSequence(Formatter f, String name, Iterator<StructureData> org,
-      Iterator<StructureData> array) throws IOException {
+  public static boolean compareSequence(Formatter f, String name, StructureDataIterator org,
+      StructureDataIterator array) throws IOException {
     boolean ok = true;
     int obsrow = 0;
     System.out.printf(" compareSequence %s%n", name);
     while (org.hasNext() && array.hasNext()) {
       ok &= compareStructureData(f, org.next(), array.next(), false);
       obsrow++;
+    }
+    if (org.hasNext() != array.hasNext()) {
+      System.out.printf(" mismatch length of sequence %s row %d: %s != %s%n", name, obsrow, org.hasNext(),
+          array.hasNext());
+      ok = false;
     }
     return ok;
   }
