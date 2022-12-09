@@ -12,6 +12,8 @@ import java.util.Iterator;
 
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
+import ucar.ma2.StructureData;
+import ucar.ma2.StructureMembers;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Sequence;
 import ucar.nc2.Variable;
@@ -289,8 +291,8 @@ public class CompareArrayToArray {
 
 
       case SEQUENCE: {
-        Iterator<ucar.array.StructureData> iter1 = (Iterator<ucar.array.StructureData>) org.iterator();
-        Iterator<ucar.array.StructureData> iter2 = (Iterator<ucar.array.StructureData>) array.iterator();
+        Iterator<StructureData> iter1 = (Iterator<StructureData>) org.iterator();
+        Iterator<StructureData> iter2 = (Iterator<StructureData>) array.iterator();
         int row = 0;
         while (iter1.hasNext() && iter2.hasNext()) {
           ok &= compareStructureData(f, iter1.next(), iter2.next(), justOne);
@@ -300,8 +302,8 @@ public class CompareArrayToArray {
       }
 
       case STRUCTURE: {
-        Iterator<ucar.array.StructureData> iter1 = (Iterator<ucar.array.StructureData>) org.iterator();
-        Iterator<ucar.array.StructureData> iter2 = (Iterator<ucar.array.StructureData>) array.iterator();
+        Iterator<StructureData> iter1 = (Iterator<StructureData>) org.iterator();
+        Iterator<StructureData> iter2 = (Iterator<StructureData>) array.iterator();
         int row = 0;
         while (iter1.hasNext() && iter2.hasNext()) {
           ok &= compareStructureData(f, iter1.next(), iter2.next(), justOne);
