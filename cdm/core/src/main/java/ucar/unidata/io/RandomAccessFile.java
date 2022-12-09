@@ -730,10 +730,14 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
    * @param b put data into this buffer
    * @param offset buffer offset
    * @param len this number of bytes
-   * @return actual number of bytes read
+   * @return actual number of bytes read, -1 if underlying random access file was closed
    * @throws IOException on io error
    */
   protected int read_(long pos, byte[] b, int offset, int len) throws IOException {
+    if (file == null) {
+      return -1;
+    }
+
     file.seek(pos);
     int n = file.read(b, offset, len);
     if (debugAccess) {
