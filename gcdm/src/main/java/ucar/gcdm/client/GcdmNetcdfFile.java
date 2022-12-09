@@ -57,16 +57,6 @@ public class GcdmNetcdfFile extends NetcdfFile {
     throw new UnsupportedOperationException();
   }
 
-  @Override
-  public Iterator<ucar.ma2.StructureData> getStructureDataArrayIterator(Sequence s, int bufferSize)
-      throws IOException {
-    ucar.ma2.Array data = readArrayData(s, s.getSection());
-    Preconditions.checkNotNull(data);
-    Preconditions.checkArgument(data instanceof StructureDataArray);
-    StructureDataArray sdata = (StructureDataArray) data;
-    return sdata.iterator();
-  }
-
   @Nullable
   protected ucar.ma2.Array readArrayData(Variable v, ucar.ma2.Section sectionWanted) throws IOException {
     String spec = ParsedArraySectionSpec.makeSectionSpecString(v, sectionWanted);
