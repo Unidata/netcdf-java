@@ -28,7 +28,7 @@ import ucar.ma2.Section;
 import ucar.ma2.StructureDataIterator;
 import ucar.nc2.Group;
 import ucar.nc2.NetcdfFile;
-import ucar.nc2.ParsedArraySectionSpec;
+import ucar.nc2.ParsedSectionSpec;
 import ucar.nc2.Sequence;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
@@ -59,7 +59,7 @@ public class GcdmNetcdfFile extends NetcdfFile {
 
   @Nullable
   protected ucar.ma2.Array readArrayData(Variable v, ucar.ma2.Section sectionWanted) throws IOException {
-    String spec = ParsedArraySectionSpec.makeSectionSpecString(v, sectionWanted);
+    String spec = ParsedSectionSpec.makeSectionSpecString(v, sectionWanted);
     if (showRequest) {
       long expected = sectionWanted.computeSize() * v.getElementSize();
       System.out.printf("GcdmNetcdfFile data request forspec=(%s)%n url='%s'%n path='%s' request bytes = %d%n", spec,
