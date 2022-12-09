@@ -17,7 +17,7 @@ import ucar.ma2.*;
 import java.io.*;
 import java.nio.ByteBuffer;
 
-import ucar.nc2.internal.iosp.hdf5.H5header;
+import ucar.nc2.iosp.hdf5.H5header;
 import ucar.nc2.iosp.NetcdfFormatUtils;
 import ucar.nc2.util.Misc;
 
