@@ -32,7 +32,7 @@ dependencies {
   runtimeOnly project(':bufr')
   runtimeOnly project(':grib')
   runtimeOnly "io.grpc:grpc-netty-shaded:${depVersion.grpc}"
-  runtimeOnly 'org.slf4j:slf4j-jdk14'
+  runtimeOnly 'org.slf4j:slf4j-api'
 
   testImplementation enforcedPlatform(project(':netcdf-java-testing-platform'))
   testImplementation project(':cdm-test-utils')
@@ -41,8 +41,9 @@ dependencies {
   testImplementation 'commons-io:commons-io'
   testImplementation 'org.mockito:mockito-core'
   testImplementation "io.grpc:grpc-testing:${depVersion.grpc}"
+  testImplementation 'org.slf4j:slf4j-api'
 
-  testRuntimeOnly "org.slf4j:slf4j-jdk14:${depVersion.slf4j}"
+  testRuntimeOnly 'ch.qos.logback:logback-classic'
 }
 
 protobuf {
