@@ -193,6 +193,10 @@ public class GeotiffWriter implements Closeable {
 
     if (dtype == null) {
       dtype = data.getDataType();
+      // Need to cap at single precision floats because that's what gets written for floating points
+      if (dtype == DataType.DOUBLE) {
+        dtype = DataType.FLOAT;
+      }
     }
 
     // get rid of this when all projections are implemented
@@ -817,6 +821,10 @@ public class GeotiffWriter implements Closeable {
 
     if (dtype == null) {
       dtype = data.getDataType();
+      // Need to cap at single precision floats because that's what gets written for floating points
+      if (dtype == DataType.DOUBLE) {
+        dtype = DataType.FLOAT;
+      }
     }
 
     /*
