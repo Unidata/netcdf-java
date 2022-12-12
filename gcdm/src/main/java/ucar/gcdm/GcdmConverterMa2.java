@@ -503,6 +503,14 @@ public class GcdmConverterMa2 {
     return section.build();
   }
 
+  public static ucar.ma2.Section decodeSection(GcdmNetcdfProto.Variable var) {
+    ucar.ma2.Section.Builder section = ucar.ma2.Section.builder();
+    for (GcdmNetcdfProto.Dimension dim : var.getShapesList()) {
+      section.appendRange((int) dim.getLength());
+    }
+    return section.build();
+  }
+
   // Note that this converts to Objects, so not very efficient ??
   public static Array decodeData(Data data, Section section) {
     DataType dataType = convertDataType(data.getDataType());
