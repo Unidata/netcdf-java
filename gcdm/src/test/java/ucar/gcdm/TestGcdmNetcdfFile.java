@@ -22,11 +22,13 @@ import ucar.unidata.util.test.TestDir;
 /** Test {@link GcdmNetcdfFile} */
 @RunWith(Parameterized.class)
 public class TestGcdmNetcdfFile {
+  private static final String TEST_DIR = "../cdm/core/src/test/data/";
+
   @Parameterized.Parameters(name = "{0}")
   public static List<Object[]> getTestParameters() {
     List<Object[]> result = new ArrayList<>(500);
     try {
-      TestDir.actOnAllParameterized(TestDir.cdmLocalTestDataDir, new SuffixFileFilter(".nc"), result, true);
+      TestDir.actOnAllParameterized(TEST_DIR, new SuffixFileFilter(".nc"), result, true);
 
       FileFilter ff = TestDir.FileFilterSkipSuffix(".cdl .ncml perverse.nc");
       TestDir.actOnAllParameterized(TestDir.cdmUnitTestDir + "formats/bufr/userExamples", ff, result, false);
