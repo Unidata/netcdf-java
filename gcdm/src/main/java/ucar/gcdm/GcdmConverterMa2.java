@@ -447,7 +447,7 @@ public class GcdmConverterMa2 {
 
     if (var.hasData()) {
       Array data = decodeData(var.getData(), section.build());
-      ncvar.setSourceData(data);
+      ncvar.setCachedData(data, false);
     }
 
     return ncvar;
