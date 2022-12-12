@@ -59,7 +59,7 @@ public class GcdmNetcdfFile extends NetcdfFile {
 
   @Nullable
   protected ucar.ma2.Array readArrayData(Variable v, ucar.ma2.Section sectionWanted) throws IOException {
-    String spec = ParsedSectionSpec.makeSectionSpecString(v, sectionWanted);
+    String spec = ParsedSectionSpec.makeSectionSpecString(v, sectionWanted.getRanges());
     if (showRequest) {
       long expected = sectionWanted.computeSize() * v.getElementSize();
       System.out.printf("GcdmNetcdfFile data request forspec=(%s)%n url='%s'%n path='%s' request bytes = %d%n", spec,
