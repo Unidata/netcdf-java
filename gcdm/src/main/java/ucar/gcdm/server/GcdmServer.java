@@ -206,33 +206,31 @@ public class GcdmServer {
 
 
     private long getSequenceData(NetcdfFile ncfile, ParsedSectionSpec varSection,
-        StreamObserver<DataResponse> responseObserver) throws InvalidRangeException {
+        StreamObserver<DataResponse> responseObserver) throws InvalidRangeException, IOException {
 
       String spec = varSection.makeSectionSpecString();
       Sequence seq = (Sequence) varSection.getVariable();
-      StructureMembers.Builder membersb = seq.makeStructureMembersBuilder();
-      membersb.setStandardOffsets(false);
-      StructureMembers members = membersb.build();
+      StructureMembers members = seq.makeStructureMembers();
 
       StructureData[] sdata = new StructureData[SEQUENCE_CHUNK];
       int start = 0;
       int count = 0;
-      Iterator<StructureData> it = seq.iterator();
+      StructureDataIterator it = seq.getStructureIterator();
       while (it.hasNext()) {
         sdata[count++] = it.next();
 
         if (count >= SEQUENCE_CHUNK || !it.hasNext()) {
-          StructureDataArray sdataArray = new StructureDataArray(members, new int[] {count}, sdata);
+          ArrayStructureMA sdataArray = new ArrayStructureMA(members, new int[] {count}, sdata);
           Section section = Section.builder().appendRange(start, start + count).build();
           DataResponse.Builder response = DataResponse.newBuilder().setLocation(ncfile.getLocation())
               .setVariableSpec(spec).setVarFullName(seq.getFullName()).setSection(GcdmConverterMa2.encodeSection(section));
-          response.setData(GcdmConverterMa2.encodeData(ArrayType.SEQUENCE, sdataArray));
+          response.setData(GcdmConverterMa2.encodeData(DataType.SEQUENCE, sdataArray));
           responseObserver.onNext(response.build());
           start = count;
           count = 0;
         }
       }
-      return (start + count) * members.getStorageSizeBytes();
+      return (start + count) * members.getStructureSize();
     }
   } // GcdmImpl
 }
