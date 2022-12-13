@@ -150,14 +150,14 @@ public class TestGcdmNetcdfFileProblem {
 
   @Test
   public void testOpaqueDataType() throws Exception {
-    String localFilename = TestDir.cdmLocalTestDataDir + "hdf5/test_atomic_types.nc";
+    String localFilename = TestDir.cdmLocalTestDataDir + "hdf5/test_atomic_types.nc"; // TODO file does not exist
     Path path = Paths.get(localFilename);
     compareArrayToArray(path);
   }
 
   @Test
   public void testGcdmProblem2() throws Exception {
-    String localFilename = TestDir.cdmLocalTestDataDir + "dataset/SimpleGeos/hru_soil_moist_vlen_3hru_5timestep.nc";
+    String localFilename = TestDir.cdmLocalTestDataDir + "dataset/SimpleGeos/hru_soil_moist_vlen_3hru_5timestep.nc"; // TODO files does not exist
     Path path = Paths.get(localFilename);
     compareArrayToArray(path);
   }

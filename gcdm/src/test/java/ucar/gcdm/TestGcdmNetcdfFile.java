@@ -22,6 +22,7 @@ import ucar.unidata.util.test.TestDir;
 /** Test {@link GcdmNetcdfFile} */
 @RunWith(Parameterized.class)
 public class TestGcdmNetcdfFile {
+  // TODO or TestDir.cdmLocalTestDataDir if make submodule of cdm
   private static final String TEST_DIR = "../cdm/core/src/test/data/";
 
   @Parameterized.Parameters(name = "{0}")

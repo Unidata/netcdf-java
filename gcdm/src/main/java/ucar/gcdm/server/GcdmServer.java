@@ -220,7 +220,7 @@ public class GcdmServer {
         sdata[count++] = it.next();
 
         if (count >= SEQUENCE_CHUNK || !it.hasNext()) {
-          ArrayStructureMA sdataArray = new ArrayStructureMA(members, new int[] {count}, sdata);
+          ArrayStructureMA sdataArray = new ArrayStructureMA(members, new int[] {count}, sdata); // TODO check this
           Section section = Section.builder().appendRange(start, start + count).build();
           DataResponse.Builder response = DataResponse.newBuilder().setLocation(ncfile.getLocation())
               .setVariableSpec(spec).setVarFullName(seq.getFullName()).setSection(GcdmConverterMa2.encodeSection(section));
