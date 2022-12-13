@@ -50,6 +50,10 @@ public class H5objects {
     this.memTracker = memTracker;
   }
 
+  RandomAccessFile getRandomAccessFile() {
+    return raf;
+  }
+
   H5Group readRootSymbolTable(long pos) throws IOException {
     // The root object's SymbolTableEntry
     SymbolTableEntry rootEntry = new SymbolTableEntry(pos);

@@ -2306,6 +2306,10 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
     return sizeOffsets;
   }
 
+  H5objects getH5objects() {
+    return h5objects;
+  }
+
   boolean isNetcdf4() {
     return isNetcdf4;
   }
