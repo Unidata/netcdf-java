@@ -37,7 +37,6 @@ public class H5objects {
   private static boolean debugDimensionScales;
 
   private final H5headerNew header;
-  private final RandomAccessFile raf;
 
   private final PrintWriter debugOut;
   private final MemTracker memTracker;
@@ -45,13 +44,12 @@ public class H5objects {
 
   H5objects(H5headerNew header, PrintWriter debugOut, MemTracker memTracker) {
     this.header = header;
-    this.raf = header.getRandomAccessFile();
     this.debugOut = debugOut;
     this.memTracker = memTracker;
   }
 
   RandomAccessFile getRandomAccessFile() {
-    return raf;
+    return header.getRandomAccessFile();
   }
 
   H5Group readRootSymbolTable(long pos) throws IOException {
@@ -312,63 +310,63 @@ public class H5objects {
         log.debug("\n--> DataObject.read parsing <" + who + "> object ID/address=" + address);
       }
       if (debugPos) {
-        log.debug("      DataObject.read now at position=" + raf.getFilePointer() + " for <" + who + "> reposition to "
-            + header.getFileOffset(address));
+        log.debug("      DataObject.read now at position=" + getRandomAccessFile().getFilePointer() + " for <" + who
+            + "> reposition to " + header.getFileOffset(address));
       }
       // if (offset < 0) return null;
-      raf.seek(header.getFileOffset(address));
+      getRandomAccessFile().seek(header.getFileOffset(address));
 
-      version = raf.readByte();
+      version = getRandomAccessFile().readByte();
       if (version == 1) { // Level 2A1 (first part, before the messages)
-        raf.readByte(); // skip byte
-        short nmess = raf.readShort();
+        getRandomAccessFile().readByte(); // skip byte
+        short nmess = getRandomAccessFile().readShort();
         if (debugDetail) {
           log.debug(" version=" + version + " nmess=" + nmess);
         }
 
-        int referenceCount = raf.readInt();
-        int headerSize = raf.readInt();
+        int referenceCount = getRandomAccessFile().readInt();
+        int headerSize = getRandomAccessFile().readInt();
         if (debugDetail) {
           log.debug(" referenceCount=" + referenceCount + " headerSize=" + headerSize);
         }
 
         // if (referenceCount > 1)
         // log.debug("WARNING referenceCount="+referenceCount);
-        raf.skipBytes(4); // header messages multiples of 8
+        getRandomAccessFile().skipBytes(4); // header messages multiples of 8
 
-        long posMess = raf.getFilePointer();
+        long posMess = getRandomAccessFile().getFilePointer();
         int count = readMessagesVersion1(posMess, nmess, Integer.MAX_VALUE, this.who);
         if (debugContinueMessage) {
           log.debug(" nmessages read = {}", count);
         }
         if (debugPos) {
-          log.debug("<--done reading messages for <" + who + ">; position=" + raf.getFilePointer());
+          log.debug("<--done reading messages for <" + who + ">; position=" + getRandomAccessFile().getFilePointer());
         }
         if (debugTracker)
           memTracker.addByLen("Object " + who, header.getFileOffset(address), headerSize + 16);
 
       } else { // level 2A2 (first part, before the messages)
         // first byte was already read
-        String magic = raf.readString(3);
+        String magic = getRandomAccessFile().readString(3);
         if (!magic.equals("HDR"))
           throw new IllegalStateException("DataObject doesnt start with OHDR");
 
-        version = raf.readByte();
-        byte flags = raf.readByte(); // data object header flags (version 2)
+        version = getRandomAccessFile().readByte();
+        byte flags = getRandomAccessFile().readByte(); // data object header flags (version 2)
         if (debugDetail) {
           log.debug(" version=" + version + " flags=" + Integer.toBinaryString(flags));
         }
 
         // raf.skipBytes(2);
         if (((flags >> 5) & 1) == 1) {
-          int accessTime = raf.readInt();
-          int modTime = raf.readInt();
-          int changeTime = raf.readInt();
-          int birthTime = raf.readInt();
+          int accessTime = getRandomAccessFile().readInt();
+          int modTime = getRandomAccessFile().readInt();
+          int changeTime = getRandomAccessFile().readInt();
+          int birthTime = getRandomAccessFile().readInt();
         }
         if (((flags >> 4) & 1) == 1) {
-          short maxCompactAttributes = raf.readShort();
-          short minDenseAttributes = raf.readShort();
+          short maxCompactAttributes = getRandomAccessFile().readShort();
+          short minDenseAttributes = getRandomAccessFile().readShort();
         }
 
         long sizeOfChunk = readVariableSizeFactor(flags & 3);
@@ -376,13 +374,13 @@ public class H5objects {
           log.debug(" sizeOfChunk=" + sizeOfChunk);
         }
 
-        long posMess = raf.getFilePointer();
+        long posMess = getRandomAccessFile().getFilePointer();
         int count = readMessagesVersion2(posMess, sizeOfChunk, (flags & 4) != 0, this.who);
         if (debugContinueMessage) {
           log.debug(" nmessages read = {}", count);
         }
         if (debugPos) {
-          log.debug("<--done reading messages for <" + who + ">; position=" + raf.getFilePointer());
+          log.debug("<--done reading messages for <" + who + ">; position=" + getRandomAccessFile().getFilePointer());
         }
       }
 
@@ -524,7 +522,7 @@ public class H5objects {
           if (debugContinueMessage)
             debugOut.println(" ---ObjectHeaderContinuation filePos= " + continuationBlockFilePos);
 
-          raf.seek(continuationBlockFilePos);
+          getRandomAccessFile().seek(continuationBlockFilePos);
           String sig = readStringFixedLength(4);
           if (!sig.equals("OCHK"))
             throw new IllegalStateException(" ObjectHeaderContinuation Missing signature");
@@ -668,28 +666,28 @@ public class H5objects {
      */
     int read(long filePos, int version, boolean creationOrderPresent, String objectName) throws IOException {
       this.start = filePos;
-      raf.seek(filePos);
+      getRandomAccessFile().seek(filePos);
       if (debugPos) {
-        log.debug("  --> Message Header starts at =" + raf.getFilePointer());
+        log.debug("  --> Message Header starts at =" + getRandomAccessFile().getFilePointer());
       }
 
       if (version == 1) {
-        type = raf.readShort();
-        size = DataType.unsignedShortToInt(raf.readShort());
-        headerMessageFlags = raf.readByte();
-        raf.skipBytes(3);
+        type = getRandomAccessFile().readShort();
+        size = DataType.unsignedShortToInt(getRandomAccessFile().readShort());
+        headerMessageFlags = getRandomAccessFile().readByte();
+        getRandomAccessFile().skipBytes(3);
         header_length = 8;
 
       } else {
-        type = raf.readByte();
-        size = DataType.unsignedShortToInt(raf.readShort());
+        type = getRandomAccessFile().readByte();
+        size = DataType.unsignedShortToInt(getRandomAccessFile().readShort());
         // if (size > Short.MAX_VALUE)
         // log.debug("HEY");
 
-        headerMessageFlags = raf.readByte();
+        headerMessageFlags = getRandomAccessFile().readByte();
         header_length = 4;
         if (creationOrderPresent) {
-          creationOrder = raf.readShort();
+          creationOrder = getRandomAccessFile().readShort();
           header_length += 2;
         }
       }
@@ -701,7 +699,7 @@ public class H5objects {
         }
       }
       if (debugPos) {
-        log.debug("  --> Message Data starts at=" + raf.getFilePointer());
+        log.debug("  --> Message Data starts at=" + getRandomAccessFile().getFilePointer());
       }
 
       if ((headerMessageFlags & 2) != 0) { // shared
@@ -759,7 +757,7 @@ public class H5objects {
 
       } else if (mtype == MessageType.Attribute) { // 12
         MessageAttribute data = new MessageAttribute();
-        data.read(raf.getFilePointer());
+        data.read(getRandomAccessFile().getFilePointer());
         messData = data;
 
       } else if (mtype == MessageType.Comment) { // 13
@@ -839,17 +837,17 @@ public class H5objects {
   }
 
   private DataObject getSharedDataObject(MessageType mtype) throws IOException {
-    byte sharedVersion = raf.readByte();
-    byte sharedType = raf.readByte();
+    byte sharedVersion = getRandomAccessFile().readByte();
+    byte sharedType = getRandomAccessFile().readByte();
     if (sharedVersion == 1)
-      raf.skipBytes(6);
+      getRandomAccessFile().skipBytes(6);
     if ((sharedVersion == 3) && (sharedType == 1)) {
-      long heapId = raf.readLong();
+      long heapId = getRandomAccessFile().readLong();
       if (debug1) {
         log.debug("     Shared Message " + sharedVersion + " type=" + sharedType + " heapId = " + heapId);
       }
       if (debugPos) {
-        log.debug("  --> Shared Message reposition to =" + raf.getFilePointer());
+        log.debug("  --> Shared Message reposition to =" + getRandomAccessFile().getFilePointer());
       }
       // dunno where is the file's shared object header heap ??
       throw new UnsupportedOperationException("****SHARED MESSAGE type = " + mtype + " heapId = " + heapId);
@@ -911,20 +909,20 @@ public class H5objects {
 
     void read() throws IOException {
       if (debugPos) {
-        log.debug("   *MessageSimpleDataspace start pos= " + raf.getFilePointer());
+        log.debug("   *MessageSimpleDataspace start pos= " + getRandomAccessFile().getFilePointer());
       }
 
-      byte version = raf.readByte();
+      byte version = getRandomAccessFile().readByte();
       if (version == 1) {
-        ndims = raf.readByte();
-        flags = raf.readByte();
+        ndims = getRandomAccessFile().readByte();
+        flags = getRandomAccessFile().readByte();
         type = (byte) ((ndims == 0) ? 0 : 1);
-        raf.skipBytes(5); // skip 5 bytes
+        getRandomAccessFile().skipBytes(5); // skip 5 bytes
 
       } else if (version == 2) {
-        ndims = raf.readByte();
-        flags = raf.readByte();
-        type = raf.readByte();
+        ndims = getRandomAccessFile().readByte();
+        flags = getRandomAccessFile().readByte();
+        type = getRandomAccessFile().readByte();
 
       } else {
         throw new IllegalStateException("MessageDataspace: unknown version= " + version);
@@ -1013,12 +1011,12 @@ public class H5objects {
 
     void read() throws IOException {
       if (debugPos) {
-        log.debug("   *MessageGroupNew start pos= " + raf.getFilePointer());
+        log.debug("   *MessageGroupNew start pos= " + getRandomAccessFile().getFilePointer());
       }
-      byte version = raf.readByte();
-      byte flags = raf.readByte();
+      byte version = getRandomAccessFile().readByte();
+      byte flags = getRandomAccessFile().readByte();
       if ((flags & 1) != 0) {
-        maxCreationIndex = raf.readLong();
+        maxCreationIndex = getRandomAccessFile().readLong();
       }
 
       fractalHeapAddress = header.readOffset();
@@ -1056,19 +1054,19 @@ public class H5objects {
 
     void read() throws IOException {
       if (debugPos) {
-        log.debug("   *MessageGroupInfo start pos= " + raf.getFilePointer());
+        log.debug("   *MessageGroupInfo start pos= " + getRandomAccessFile().getFilePointer());
       }
-      byte version = raf.readByte();
-      flags = raf.readByte();
+      byte version = getRandomAccessFile().readByte();
+      flags = getRandomAccessFile().readByte();
 
       if ((flags & 1) != 0) {
-        maxCompactValue = raf.readShort();
-        minDenseValue = raf.readShort();
+        maxCompactValue = getRandomAccessFile().readShort();
+        minDenseValue = getRandomAccessFile().readShort();
       }
 
       if ((flags & 2) != 0) {
-        estNumEntries = raf.readShort();
-        estLengthEntryName = raf.readShort();
+        estNumEntries = getRandomAccessFile().readShort();
+        estLengthEntryName = getRandomAccessFile().readShort();
       }
 
       if (debug1) {
@@ -1107,19 +1105,19 @@ public class H5objects {
 
     void read() throws IOException {
       if (debugPos) {
-        log.debug("   *MessageLink start pos= {}", raf.getFilePointer());
+        log.debug("   *MessageLink start pos= {}", getRandomAccessFile().getFilePointer());
       }
-      version = raf.readByte();
-      flags = raf.readByte();
+      version = getRandomAccessFile().readByte();
+      flags = getRandomAccessFile().readByte();
 
       if ((flags & 8) != 0)
-        linkType = raf.readByte();
+        linkType = getRandomAccessFile().readByte();
 
       if ((flags & 4) != 0)
-        creationOrder = raf.readLong();
+        creationOrder = getRandomAccessFile().readLong();
 
       if ((flags & 0x10) != 0)
-        encoding = raf.readByte();
+        encoding = getRandomAccessFile().readByte();
 
       int linkNameLength = (int) readVariableSizeFactor(flags & 3);
       linkName = readStringFixedLength(linkNameLength);
@@ -1128,11 +1126,11 @@ public class H5objects {
         linkAddress = header.readOffset();
 
       } else if (linkType == 1) {
-        short len = raf.readShort();
+        short len = getRandomAccessFile().readShort();
         link = readStringFixedLength(len);
 
       } else if (linkType == 64) {
-        short len = raf.readShort();
+        short len = getRandomAccessFile().readShort();
         link = readStringFixedLength(len); // actually 2 strings - see docs
       }
 
@@ -1227,15 +1225,15 @@ public class H5objects {
 
     void read(String objectName) throws IOException {
       if (debugPos) {
-        log.debug("   *MessageDatatype start pos= {}", raf.getFilePointer());
+        log.debug("   *MessageDatatype start pos= {}", getRandomAccessFile().getFilePointer());
       }
 
-      byte tandv = raf.readByte();
+      byte tandv = getRandomAccessFile().readByte();
       type = (tandv & 0xf);
       version = ((tandv & 0xf0) >> 4);
 
-      raf.readFully(flags);
-      byteSize = raf.readInt();
+      getRandomAccessFile().readFully(flags);
+      byteSize = getRandomAccessFile().readInt();
       endian = ((flags[0] & 1) == 0) ? RandomAccessFile.LITTLE_ENDIAN : RandomAccessFile.BIG_ENDIAN;
 
       if (debug1) {
@@ -1246,8 +1244,8 @@ public class H5objects {
 
       if (type == 0) { // fixed point
         unsigned = ((flags[0] & 8) == 0);
-        short bitOffset = raf.readShort();
-        short bitPrecision = raf.readShort();
+        short bitOffset = getRandomAccessFile().readShort();
+        short bitPrecision = getRandomAccessFile().readShort();
         if (debug1) {
           log.debug("   type 0 (fixed point): bitOffset= " + bitOffset + " bitPrecision= " + bitPrecision
               + " unsigned= " + unsigned);
@@ -1255,20 +1253,20 @@ public class H5objects {
         isOK = (bitOffset == 0) && (bitPrecision % 8 == 0);
 
       } else if (type == 1) { // floating point
-        short bitOffset = raf.readShort();
-        short bitPrecision = raf.readShort();
-        byte expLocation = raf.readByte();
-        byte expSize = raf.readByte();
-        byte manLocation = raf.readByte();
-        byte manSize = raf.readByte();
-        int expBias = raf.readInt();
+        short bitOffset = getRandomAccessFile().readShort();
+        short bitPrecision = getRandomAccessFile().readShort();
+        byte expLocation = getRandomAccessFile().readByte();
+        byte expSize = getRandomAccessFile().readByte();
+        byte manLocation = getRandomAccessFile().readByte();
+        byte manSize = getRandomAccessFile().readByte();
+        int expBias = getRandomAccessFile().readInt();
         if (debug1) {
           log.debug("   type 1 (floating point): bitOffset= " + bitOffset + " bitPrecision= " + bitPrecision
               + " expLocation= " + expLocation + " expSize= " + expSize + " manLocation= " + manLocation + " manSize= "
               + manSize + " expBias= " + expBias);
         }
       } else if (type == 2) { // time
-        short bitPrecision = raf.readShort();
+        short bitPrecision = getRandomAccessFile().readShort();
         if (bitPrecision == 16)
           timeType = DataType.SHORT;
         else if (bitPrecision == 32)
@@ -1287,8 +1285,8 @@ public class H5objects {
         }
 
       } else if (type == 4) { // bit field
-        short bitOffset = raf.readShort();
-        short bitPrecision = raf.readShort();
+        short bitOffset = getRandomAccessFile().readShort();
+        short bitPrecision = getRandomAccessFile().readShort();
         if (debug1) {
           log.debug("   type 4 (bit field): bitOffset= " + bitOffset + " bitPrecision= " + bitPrecision);
         }
@@ -1296,7 +1294,7 @@ public class H5objects {
 
       } else if (type == 5) { // opaque
         byte len = flags[0];
-        opaque_desc = (len > 0) ? readString(raf).trim() : null;
+        opaque_desc = (len > 0) ? readString(getRandomAccessFile()).trim() : null;
         if (debug1) {
           log.debug("   type 5 (opaque): len= " + len + " desc= " + opaque_desc);
         }
@@ -1335,20 +1333,20 @@ public class H5objects {
         String[] enumName = new String[nmembers];
         for (int i = 0; i < nmembers; i++) {
           if (version < 3)
-            enumName[i] = readString8(raf); // padding
+            enumName[i] = readString8(getRandomAccessFile()); // padding
           else
-            enumName[i] = readString(raf); // no padding
+            enumName[i] = readString(getRandomAccessFile()); // no padding
         }
 
         // read the enum values; must switch to base byte order (!)
         if (base.endian >= 0) {
-          raf.order(base.endian);
+          getRandomAccessFile().order(base.endian);
         }
         int[] enumValue = new int[nmembers];
         for (int i = 0; i < nmembers; i++) {
           enumValue[i] = (int) header.readVariableSizeUnsigned(base.byteSize); // assume size is 1, 2, or 4
         }
-        raf.order(RandomAccessFile.LITTLE_ENDIAN);
+        getRandomAccessFile().order(RandomAccessFile.LITTLE_ENDIAN);
 
         enumTypeName = objectName;
         map = new TreeMap<>();
@@ -1377,14 +1375,14 @@ public class H5objects {
         if (debug1) {
           debugOut.print("   type 10(array) lengths= ");
         }
-        int ndims = raf.readByte();
+        int ndims = getRandomAccessFile().readByte();
         if (version < 3) {
-          raf.skipBytes(3);
+          getRandomAccessFile().skipBytes(3);
         }
 
         dim = new int[ndims];
         for (int i = 0; i < ndims; i++) {
-          dim[i] = raf.readInt();
+          dim[i] = getRandomAccessFile().readInt();
           if (debug1) {
             debugOut.print(" " + dim[i]);
           }
@@ -1393,7 +1391,7 @@ public class H5objects {
         if (version < 3) { // not present in version 3, never used anyway
           int[] pdim = new int[ndims];
           for (int i = 0; i < ndims; i++)
-            pdim[i] = raf.readInt();
+            pdim[i] = getRandomAccessFile().readInt();
         }
         if (debug1) {
           log.debug("");
@@ -1436,13 +1434,13 @@ public class H5objects {
 
     StructureMember(int version, int byteSize) throws IOException {
       if (debugPos) {
-        log.debug("   *StructureMember now at position={}", raf.getFilePointer());
+        log.debug("   *StructureMember now at position={}", getRandomAccessFile().getFilePointer());
       }
 
-      name = readString(raf);
+      name = readString(getRandomAccessFile());
       if (version < 3) {
-        raf.skipBytes(padding(name.length() + 1, 8));
-        offset = raf.readInt();
+        getRandomAccessFile().skipBytes(padding(name.length() + 1, 8));
+        offset = getRandomAccessFile().readInt();
       } else {
         offset = (int) readVariableSizeMax(byteSize);
       }
@@ -1452,9 +1450,9 @@ public class H5objects {
       }
 
       if (version == 1) {
-        dims = raf.readByte();
-        raf.skipBytes(3);
-        raf.skipBytes(24); // ignore dimension info for now
+        dims = getRandomAccessFile().readByte();
+        getRandomAccessFile().skipBytes(3);
+        getRandomAccessFile().skipBytes(24); // ignore dimension info for now
       }
 
       // HDFdumpWithCount(buffer, raf.getFilePointer(), 16);
@@ -1485,9 +1483,9 @@ public class H5objects {
     int size;
 
     void read() throws IOException {
-      size = raf.readInt();
+      size = getRandomAccessFile().readInt();
       value = new byte[size];
-      raf.readFully(value);
+      getRandomAccessFile().readFully(value);
 
       if (debug1) {
         log.debug("{}", this);
@@ -1522,25 +1520,25 @@ public class H5objects {
     byte flags;
 
     void read() throws IOException {
-      version = raf.readByte();
+      version = getRandomAccessFile().readByte();
 
       if (version < 3) {
-        spaceAllocateTime = raf.readByte();
-        fillWriteTime = raf.readByte();
-        hasFillValue = raf.readByte() != 0;
+        spaceAllocateTime = getRandomAccessFile().readByte();
+        fillWriteTime = getRandomAccessFile().readByte();
+        hasFillValue = getRandomAccessFile().readByte() != 0;
 
       } else {
-        flags = raf.readByte();
+        flags = getRandomAccessFile().readByte();
         spaceAllocateTime = (byte) (flags & 3);
         fillWriteTime = (byte) ((flags >> 2) & 3);
         hasFillValue = (flags & 32) != 0;
       }
 
       if (hasFillValue) {
-        size = raf.readInt();
+        size = getRandomAccessFile().readInt();
         if (size > 0) {
           value = new byte[size];
-          raf.readFully(value);
+          getRandomAccessFile().readFully(value);
           hasFillValue = true;
         } else {
           hasFillValue = false;
@@ -1644,41 +1642,41 @@ public class H5objects {
     void read() throws IOException {
       int ndims;
 
-      byte version = raf.readByte();
+      byte version = getRandomAccessFile().readByte();
       if (version < 3) {
-        ndims = raf.readByte();
-        type = raf.readByte();
-        raf.skipBytes(5); // skip 5 bytes
+        ndims = getRandomAccessFile().readByte();
+        type = getRandomAccessFile().readByte();
+        getRandomAccessFile().skipBytes(5); // skip 5 bytes
 
         boolean isCompact = (type == 0);
         if (!isCompact)
           dataAddress = header.readOffset();
         chunkSize = new int[ndims];
         for (int i = 0; i < ndims; i++)
-          chunkSize[i] = raf.readInt();
+          chunkSize[i] = getRandomAccessFile().readInt();
 
         if (isCompact) {
-          dataSize = raf.readInt();
-          dataAddress = raf.getFilePointer();
+          dataSize = getRandomAccessFile().readInt();
+          dataAddress = getRandomAccessFile().getFilePointer();
         }
 
       } else {
-        type = raf.readByte();
+        type = getRandomAccessFile().readByte();
 
         if (type == 0) {
-          dataSize = raf.readShort();
-          dataAddress = raf.getFilePointer();
+          dataSize = getRandomAccessFile().readShort();
+          dataAddress = getRandomAccessFile().getFilePointer();
 
         } else if (type == 1) {
           dataAddress = header.readOffset();
           contiguousSize = header.readLength();
 
         } else if (type == 2) {
-          ndims = raf.readByte();
+          ndims = getRandomAccessFile().readByte();
           dataAddress = header.readOffset();
           chunkSize = new int[ndims];
           for (int i = 0; i < ndims; i++)
-            chunkSize[i] = raf.readInt();
+            chunkSize[i] = getRandomAccessFile().readInt();
         }
       }
 
@@ -1694,11 +1692,11 @@ public class H5objects {
 
     void read() throws IOException {
 
-      byte version = raf.readByte();
-      byte nfilters = raf.readByte();
+      byte version = getRandomAccessFile().readByte();
+      byte nfilters = getRandomAccessFile().readByte();
       // version 1 has 6 bytes reserved
       if (version == 1) {
-        raf.skipBytes(6);
+        getRandomAccessFile().skipBytes(6);
       }
 
       // create filters list
@@ -1707,32 +1705,32 @@ public class H5objects {
         // create properties map
         Map<String, Object> props = new HashMap<>();
         // read filter description
-        short id = raf.readShort();
+        short id = getRandomAccessFile().readShort();
         props.put(Filters.Keys.ID, id);
         // if the filter id < 256 then this field is not stored
-        short nameSize = ((version > 1) && (id < 256)) ? 0 : raf.readShort();
-        short flags = raf.readShort();
+        short nameSize = ((version > 1) && (id < 256)) ? 0 : getRandomAccessFile().readShort();
+        short flags = getRandomAccessFile().readShort();
         props.put(Filters.Keys.OPTIONAL, (flags != 0)); // save as boolean
-        short nValues = raf.readShort();
+        short nValues = getRandomAccessFile().readShort();
 
         // get filter name, if present
         String name = null;
         if (nameSize > 0) {
           // version 1 name is padded to multiple of 8
-          name = version == 1 ? readString8(raf) : readStringFixedLength(nameSize);
+          name = version == 1 ? readString8(getRandomAccessFile()) : readStringFixedLength(nameSize);
         }
         props.put(Filters.Keys.NAME, name);
 
         // read data
         int[] data = new int[nValues];
         for (int n = 0; n < nValues; n++) {
-          data[n] = raf.readInt();
+          data[n] = getRandomAccessFile().readInt();
         }
         props.put(Filters.Keys.DATA, data);
 
         // add padding if nValues is odd
         if ((version == 1) && (nValues & 1) != 0) {
-          raf.skipBytes(4);
+          getRandomAccessFile().skipBytes(4);
         }
 
         // add to filters list
@@ -1830,51 +1828,52 @@ public class H5objects {
     }
 
     boolean read(long pos) throws IOException {
-      raf.seek(pos);
+      getRandomAccessFile().seek(pos);
       if (debugPos) {
-        log.debug("   *MessageAttribute start pos= {}", raf.getFilePointer());
+        log.debug("   *MessageAttribute start pos= {}", getRandomAccessFile().getFilePointer());
       }
       short nameSize, typeSize, spaceSize;
       byte flags = 0;
       byte encoding = 0; // 0 = ascii, 1 = UTF-8
 
-      version = raf.readByte();
+      version = getRandomAccessFile().readByte();
       if (version == 1) {
-        raf.read(); // skip byte
-        nameSize = raf.readShort();
-        typeSize = raf.readShort();
-        spaceSize = raf.readShort();
+        getRandomAccessFile().read(); // skip byte
+        nameSize = getRandomAccessFile().readShort();
+        typeSize = getRandomAccessFile().readShort();
+        spaceSize = getRandomAccessFile().readShort();
 
       } else if ((version == 2) || (version == 3)) {
-        flags = raf.readByte();
-        nameSize = raf.readShort();
-        typeSize = raf.readShort();
-        spaceSize = raf.readShort();
+        flags = getRandomAccessFile().readByte();
+        nameSize = getRandomAccessFile().readShort();
+        typeSize = getRandomAccessFile().readShort();
+        spaceSize = getRandomAccessFile().readShort();
         if (version == 3)
-          encoding = raf.readByte();
+          encoding = getRandomAccessFile().readByte();
 
       } else if (version == 72) {
-        flags = raf.readByte();
-        nameSize = raf.readShort();
-        typeSize = raf.readShort();
-        spaceSize = raf.readShort();
-        log.error("HDF5 MessageAttribute found bad version " + version + " at filePos " + raf.getFilePointer());
+        flags = getRandomAccessFile().readByte();
+        nameSize = getRandomAccessFile().readShort();
+        typeSize = getRandomAccessFile().readShort();
+        spaceSize = getRandomAccessFile().readShort();
+        log.error("HDF5 MessageAttribute found bad version " + version + " at filePos "
+            + getRandomAccessFile().getFilePointer());
         // G:/work/galibert/IMOS_ANMN-NSW_AETVZ_20131127T230000Z_PH100_FV01_PH100-1311-Workhorse-ADCP-109.5_END-20140306T010000Z_C-20140521T053527Z.nc
         // E:/work/antonio/2014_ch.nc
         // return false;
       } else {
-        log.error("bad version " + version + " at filePos " + raf.getFilePointer()); // buggery, may be HDF5 "more than
-        // 8 attributes" error
+        // buggery, may be HDF5 "more than 8 attributes" error
+        log.error("bad version " + version + " at filePos " + getRandomAccessFile().getFilePointer());
         return false;
         // throw new IllegalStateException("MessageAttribute unknown version " + version);
       }
 
       // read the attribute name
-      long filePos = raf.getFilePointer();
-      name = readString(raf); // read at current pos
+      long filePos = getRandomAccessFile().getFilePointer();
+      name = readString(getRandomAccessFile()); // read at current pos
       if (version == 1)
         nameSize += padding(nameSize, 8);
-      raf.seek(filePos + nameSize); // make it more robust for errors
+      getRandomAccessFile().seek(filePos + nameSize); // make it more robust for errors
 
       if (debug1) {
         log.debug("   MessageAttribute version= " + version + " flags = " + Integer.toBinaryString(flags)
@@ -1882,7 +1881,7 @@ public class H5objects {
       }
 
       // read the datatype
-      filePos = raf.getFilePointer();
+      filePos = getRandomAccessFile().getFilePointer();
       if (debugPos) {
         log.debug("   *MessageAttribute before mdt pos= {}", filePos);
       }
@@ -1897,20 +1896,20 @@ public class H5objects {
         if (version == 1)
           typeSize += padding(typeSize, 8);
       }
-      raf.seek(filePos + typeSize); // make it more robust for errors
+      getRandomAccessFile().seek(filePos + typeSize); // make it more robust for errors
 
       // read the dataspace
-      filePos = raf.getFilePointer();
+      filePos = getRandomAccessFile().getFilePointer();
       if (debugPos) {
         log.debug("   *MessageAttribute before mds = {}", filePos);
       }
       mds.read();
       if (version == 1)
         spaceSize += padding(spaceSize, 8);
-      raf.seek(filePos + spaceSize); // make it more robust for errors
+      getRandomAccessFile().seek(filePos + spaceSize); // make it more robust for errors
 
       // the data starts immediately afterward - ie in the message
-      dataPos = raf.getFilePointer(); // note this is absolute position (no offset needed)
+      dataPos = getRandomAccessFile().getFilePointer(); // note this is absolute position (no offset needed)
       if (debug1) {
         log.debug("   *MessageAttribute dataPos= {}", dataPos);
       }
@@ -1995,12 +1994,12 @@ public class H5objects {
 
     void read() throws IOException {
       if (debugPos) {
-        log.debug("   *MessageAttributeInfo start pos= {}", raf.getFilePointer());
+        log.debug("   *MessageAttributeInfo start pos= {}", getRandomAccessFile().getFilePointer());
       }
-      byte version = raf.readByte();
-      byte flags = raf.readByte();
+      byte version = getRandomAccessFile().readByte();
+      byte flags = getRandomAccessFile().readByte();
       if ((flags & 1) != 0)
-        maxCreationIndex = raf.readShort();
+        maxCreationIndex = getRandomAccessFile().readShort();
 
       fractalHeapAddress = header.readOffset();
       v2BtreeAddress = header.readOffset();
@@ -2019,7 +2018,7 @@ public class H5objects {
     String comment;
 
     void read() throws IOException {
-      comment = readString(raf);
+      comment = readString(getRandomAccessFile());
     }
 
     public String toString() {
@@ -2038,9 +2037,9 @@ public class H5objects {
     int secs;
 
     void read() throws IOException {
-      version = raf.readByte();
-      raf.skipBytes(3); // skip byte
-      secs = raf.readInt();
+      version = getRandomAccessFile().readByte();
+      getRandomAccessFile().skipBytes(3); // skip byte
+      secs = getRandomAccessFile().readInt();
     }
 
     public String toString() {
@@ -2058,7 +2057,7 @@ public class H5objects {
     String datemod;
 
     void read() throws IOException {
-      datemod = raf.readString(14);
+      datemod = getRandomAccessFile().readString(14);
       if (debug1) {
         log.debug("   MessageLastModifiedOld={}", datemod);
       }
@@ -2095,8 +2094,8 @@ public class H5objects {
     int refCount;
 
     void read() throws IOException {
-      int version = raf.readByte();
-      refCount = raf.readInt();
+      int version = getRandomAccessFile().readByte();
+      refCount = getRandomAccessFile().readInt();
       if (debug1) {
         log.debug("   ObjectReferenceCount={}", refCount);
       }
@@ -2145,7 +2144,7 @@ public class H5objects {
         long pos = fractalHeapId.getPos();
         if (pos < 0)
           continue;
-        raf.seek(pos);
+        getRandomAccessFile().seek(pos);
         MessageLink linkMessage = new MessageLink();
         linkMessage.read();
         if (debugBtree2) {
@@ -2231,18 +2230,18 @@ public class H5objects {
 
     // recursively read all entries, place them in order in list
     void readAllEntries(long address, List<GroupBTree.Entry> entryList) throws IOException {
-      raf.seek(header.getFileOffset(address));
+      getRandomAccessFile().seek(header.getFileOffset(address));
       if (debugGroupBtree) {
-        log.debug("\n--> GroupBTree read tree at position={}", raf.getFilePointer());
+        log.debug("\n--> GroupBTree read tree at position={}", getRandomAccessFile().getFilePointer());
       }
 
-      String magic = raf.readString(4);
+      String magic = getRandomAccessFile().readString(4);
       if (!magic.equals("TREE"))
         throw new IllegalStateException("BtreeGroup doesnt start with TREE");
 
-      int type = raf.readByte();
-      int level = raf.readByte();
-      int nentries = raf.readShort();
+      int type = getRandomAccessFile().readByte();
+      int level = getRandomAccessFile().readByte();
+      int nentries = getRandomAccessFile().readShort();
       if (debugGroupBtree) {
         log.debug("    type=" + type + " level=" + level + " nentries=" + nentries);
       }
@@ -2303,25 +2302,25 @@ public class H5objects {
       GroupNode(long address) throws IOException {
         this.address = address;
 
-        raf.seek(header.getFileOffset(address));
+        getRandomAccessFile().seek(header.getFileOffset(address));
         if (debugDetail) {
-          log.debug("--Group Node position={}", raf.getFilePointer());
+          log.debug("--Group Node position={}", getRandomAccessFile().getFilePointer());
         }
 
         // header
-        String magic = raf.readString(4);
+        String magic = getRandomAccessFile().readString(4);
         if (!magic.equals("SNOD")) {
           throw new IllegalStateException(magic + " should equal SNOD");
         }
 
-        version = raf.readByte();
-        raf.readByte(); // skip byte
-        nentries = raf.readShort();
+        version = getRandomAccessFile().readByte();
+        getRandomAccessFile().readByte(); // skip byte
+        nentries = getRandomAccessFile().readShort();
         if (debugDetail) {
           log.debug("   version={} nentries={}", version, nentries);
         }
 
-        long posEntry = raf.getFilePointer();
+        long posEntry = getRandomAccessFile().getFilePointer();
         for (int i = 0; i < nentries; i++) {
           SymbolTableEntry entry = new SymbolTableEntry(posEntry);
           posEntry += entry.getSize();
@@ -2337,7 +2336,7 @@ public class H5objects {
           }
         }
         if (debugDetail) {
-          log.debug("-- Group Node end position={}", raf.getFilePointer());
+          log.debug("-- Group Node end position={}", getRandomAccessFile().getFilePointer());
         }
         long size = 8 + nentries * 40;
         if (debugTracker)
@@ -2362,22 +2361,22 @@ public class H5objects {
     boolean isSymbolicLink;
 
     SymbolTableEntry(long filePos) throws IOException {
-      raf.seek(filePos);
+      getRandomAccessFile().seek(filePos);
       if (debugSymbolTable) {
-        log.debug("--> readSymbolTableEntry position={}", raf.getFilePointer());
+        log.debug("--> readSymbolTableEntry position={}", getRandomAccessFile().getFilePointer());
       }
 
       nameOffset = header.readOffset();
       objectHeaderAddress = header.readOffset();
-      cacheType = raf.readInt();
-      raf.skipBytes(4);
+      cacheType = getRandomAccessFile().readInt();
+      getRandomAccessFile().skipBytes(4);
 
       if (debugSymbolTable) {
         log.debug(" nameOffset={} objectHeaderAddress={} cacheType={}", nameOffset, objectHeaderAddress, cacheType);
       }
 
       // "scratch pad"
-      posData = raf.getFilePointer();
+      posData = getRandomAccessFile().getFilePointer();
       if (debugSymbolTable)
         dump("Group Entry scratch pad", posData, 16, false);
 
@@ -2391,7 +2390,7 @@ public class H5objects {
 
       // check for symbolic link
       if (cacheType == 2) {
-        linkOffset = raf.readInt(); // offset in local heap
+        linkOffset = getRandomAccessFile().readInt(); // offset in local heap
         if (debugSymbolTable) {
           log.debug("WARNING Symbolic Link linkOffset={}", linkOffset);
         }
@@ -2399,7 +2398,7 @@ public class H5objects {
       }
 
       if (debugSymbolTable) {
-        log.debug("<-- end readSymbolTableEntry position={}", raf.getFilePointer());
+        log.debug("<-- end readSymbolTableEntry position={}", getRandomAccessFile().getFilePointer());
       }
 
       if (debugTracker)
@@ -2459,43 +2458,43 @@ public class H5objects {
       log.debug(" HeapObject= {}", ho);
     }
     if (endian >= 0) {
-      raf.order(endian);
+      getRandomAccessFile().order(endian);
     }
 
     if (DataType.FLOAT == dataType) {
       float[] pa = new float[heapId.nelems];
-      raf.seek(ho.dataPos);
-      raf.readFloat(pa, 0, pa.length);
+      getRandomAccessFile().seek(ho.dataPos);
+      getRandomAccessFile().readFloat(pa, 0, pa.length);
       return Array.factory(dataType, new int[] {pa.length}, pa);
 
     } else if (DataType.DOUBLE == dataType) {
       double[] pa = new double[heapId.nelems];
-      raf.seek(ho.dataPos);
-      raf.readDouble(pa, 0, pa.length);
+      getRandomAccessFile().seek(ho.dataPos);
+      getRandomAccessFile().readDouble(pa, 0, pa.length);
       return Array.factory(dataType, new int[] {pa.length}, pa);
 
     } else if (dataType.getPrimitiveClassType() == byte.class) {
       byte[] pa = new byte[heapId.nelems];
-      raf.seek(ho.dataPos);
-      raf.readFully(pa, 0, pa.length);
+      getRandomAccessFile().seek(ho.dataPos);
+      getRandomAccessFile().readFully(pa, 0, pa.length);
       return Array.factory(dataType, new int[] {pa.length}, pa);
 
     } else if (dataType.getPrimitiveClassType() == short.class) {
       short[] pa = new short[heapId.nelems];
-      raf.seek(ho.dataPos);
-      raf.readShort(pa, 0, pa.length);
+      getRandomAccessFile().seek(ho.dataPos);
+      getRandomAccessFile().readShort(pa, 0, pa.length);
       return Array.factory(dataType, new int[] {pa.length}, pa);
 
     } else if (dataType.getPrimitiveClassType() == int.class) {
       int[] pa = new int[heapId.nelems];
-      raf.seek(ho.dataPos);
-      raf.readInt(pa, 0, pa.length);
+      getRandomAccessFile().seek(ho.dataPos);
+      getRandomAccessFile().readInt(pa, 0, pa.length);
       return Array.factory(dataType, new int[] {pa.length}, pa);
 
     } else if (dataType.getPrimitiveClassType() == long.class) {
       long[] pa = new long[heapId.nelems];
-      raf.seek(ho.dataPos);
-      raf.readLong(pa, 0, pa.length);
+      getRandomAccessFile().seek(ho.dataPos);
+      getRandomAccessFile().readLong(pa, 0, pa.length);
       return Array.factory(dataType, new int[] {pa.length}, pa);
     }
 
@@ -2521,11 +2520,11 @@ public class H5objects {
     // address must be absolute, getFileOffset already added
     HeapIdentifier(long address) throws IOException {
       // header information is in le byte order
-      raf.order(RandomAccessFile.LITTLE_ENDIAN);
-      raf.seek(address);
-      nelems = raf.readInt();
+      getRandomAccessFile().order(RandomAccessFile.LITTLE_ENDIAN);
+      getRandomAccessFile().seek(address);
+      nelems = getRandomAccessFile().readInt();
       heapAddress = header.readOffset();
-      index = raf.readInt();
+      index = getRandomAccessFile().readInt();
       if (debugDetail) {
         log.debug("   read HeapIdentifier address=" + address + this);
       }
@@ -2576,10 +2575,10 @@ public class H5objects {
 
     RegionReference(long filePos) throws IOException {
       // header information is in le byte order
-      raf.order(RandomAccessFile.LITTLE_ENDIAN);
-      raf.seek(filePos);
+      getRandomAccessFile().order(RandomAccessFile.LITTLE_ENDIAN);
+      getRandomAccessFile().seek(filePos);
       heapAddress = header.readOffset();
-      index = raf.readInt();
+      index = getRandomAccessFile().readInt();
 
       GlobalHeap gheap;
       if (null == (gheap = heapMap.get(heapAddress))) {
@@ -2599,8 +2598,8 @@ public class H5objects {
        * src/H5S<foo>.c, where foo = {all, hyper, point, none}.
        * There is _no_ datatype information stored for these kind of selections currently.
        */
-      raf.seek(want.dataPos);
-      long objId = raf.readLong();
+      getRandomAccessFile().seek(want.dataPos);
+      long objId = getRandomAccessFile().readLong();
       DataObject ndo = header.getDataObject(objId, null);
       // String what = (ndo == null) ? "none" : ndo.getName();
       if (debugRegionReference) {
@@ -2620,35 +2619,35 @@ public class H5objects {
 
     GlobalHeap(long address) throws IOException {
       // header information is in le byte order
-      raf.order(RandomAccessFile.LITTLE_ENDIAN);
-      raf.seek(header.getFileOffset(address));
+      getRandomAccessFile().order(RandomAccessFile.LITTLE_ENDIAN);
+      getRandomAccessFile().seek(header.getFileOffset(address));
 
       // header
-      String magic = raf.readString(4);
+      String magic = getRandomAccessFile().readString(4);
       if (!magic.equals("GCOL"))
         throw new IllegalStateException(magic + " should equal GCOL");
 
-      version = raf.readByte();
-      raf.skipBytes(3);
-      sizeBytes = raf.readInt();
+      version = getRandomAccessFile().readByte();
+      getRandomAccessFile().skipBytes(3);
+      sizeBytes = getRandomAccessFile().readInt();
       if (debugDetail) {
         log.debug("-- readGlobalHeap address=" + address + " version= " + version + " size = " + sizeBytes);
         // log.debug("-- readGlobalHeap address=" + address + " version= " + version + " size = " + sizeBytes);
       }
-      raf.skipBytes(4); // pad to 8
+      getRandomAccessFile().skipBytes(4); // pad to 8
 
       int count = 0;
       int countBytes = 0;
       while (true) {
-        long startPos = raf.getFilePointer();
+        long startPos = getRandomAccessFile().getFilePointer();
         GlobalHeap.HeapObject o = new GlobalHeap.HeapObject();
-        o.id = raf.readShort();
+        o.id = getRandomAccessFile().readShort();
         if (o.id == 0)
           break; // ?? look
-        o.refCount = raf.readShort();
-        raf.skipBytes(4);
+        o.refCount = getRandomAccessFile().readShort();
+        getRandomAccessFile().skipBytes(4);
         o.dataSize = header.readLength();
-        o.dataPos = raf.getFilePointer();
+        o.dataPos = getRandomAccessFile().getFilePointer();
 
         int dsize = ((int) o.dataSize) + padding((int) o.dataSize, 8);
         countBytes += dsize + 16;
@@ -2665,7 +2664,7 @@ public class H5objects {
               + o.dataSize + " dataPos = " + o.dataPos + " count= " + count + " countBytes= " + countBytes);
         }
 
-        raf.skipBytes(dsize);
+        getRandomAccessFile().skipBytes(dsize);
         hos.put(o.id, o);
         count++;
 
@@ -2674,7 +2673,7 @@ public class H5objects {
       }
 
       if (debugDetail) {
-        log.debug("-- endGlobalHeap position=" + raf.getFilePointer());
+        log.debug("-- endGlobalHeap position=" + getRandomAccessFile().getFilePointer());
       }
       if (debugTracker)
         memTracker.addByLen("GlobalHeap", address, sizeBytes);
@@ -2709,21 +2708,21 @@ public class H5objects {
       this.group = group;
 
       // header information is in le byte order
-      raf.order(RandomAccessFile.LITTLE_ENDIAN);
-      raf.seek(header.getFileOffset(address));
+      getRandomAccessFile().order(RandomAccessFile.LITTLE_ENDIAN);
+      getRandomAccessFile().seek(header.getFileOffset(address));
 
       if (debugDetail) {
-        log.debug("-- readLocalHeap position={}", raf.getFilePointer());
+        log.debug("-- readLocalHeap position={}", getRandomAccessFile().getFilePointer());
       }
 
       // header
-      String magic = raf.readString(4);
+      String magic = getRandomAccessFile().readString(4);
       if (!magic.equals("HEAP")) {
         throw new IllegalStateException(magic + " should equal HEAP");
       }
 
-      version = raf.readByte();
-      raf.skipBytes(3);
+      version = getRandomAccessFile().readByte();
+      getRandomAccessFile().skipBytes(3);
       size = (int) header.readLength();
       freelistOffset = header.readLength();
       dataAddress = header.readOffset();
@@ -2732,17 +2731,17 @@ public class H5objects {
             + " heap starts at dataAddress=" + dataAddress);
       }
       if (debugPos) {
-        log.debug("    *now at position={}", raf.getFilePointer());
+        log.debug("    *now at position={}", getRandomAccessFile().getFilePointer());
       }
 
       // data
-      raf.seek(header.getFileOffset(dataAddress));
+      getRandomAccessFile().seek(header.getFileOffset(dataAddress));
       heap = new byte[size];
-      raf.readFully(heap);
+      getRandomAccessFile().readFully(heap);
       // if (debugHeap) printBytes( out, "heap", heap, size, true);
 
       if (debugDetail) {
-        log.debug("-- endLocalHeap position={}", raf.getFilePointer());
+        log.debug("-- endLocalHeap position={}", getRandomAccessFile().getFilePointer());
       }
       int hsize = 8 + 2 * header.sizeLengths + header.sizeOffsets;
       if (debugTracker)
@@ -2816,7 +2815,7 @@ public class H5objects {
    * @throws IOException on io error
    */
   private String readStringFixedLength(int size) throws IOException {
-    return raf.readString(size);
+    return getRandomAccessFile().readString(size);
   }
 
   // size of data depends on "maximum possible number"
@@ -2845,13 +2844,13 @@ public class H5objects {
   private void dump(String head, long filePos, int nbytes, boolean count) throws IOException {
     if (debugOut == null)
       return;
-    long savePos = raf.getFilePointer();
+    long savePos = getRandomAccessFile().getFilePointer();
     if (filePos >= 0)
-      raf.seek(filePos);
+      getRandomAccessFile().seek(filePos);
     byte[] mess = new byte[nbytes];
-    raf.readFully(mess);
+    getRandomAccessFile().readFully(mess);
     printBytes(head, mess, nbytes, false, debugOut);
-    raf.seek(savePos);
+    getRandomAccessFile().seek(savePos);
   }
 
   private static void printBytes(String head, byte[] buff, int n, boolean count, PrintWriter ps) {
