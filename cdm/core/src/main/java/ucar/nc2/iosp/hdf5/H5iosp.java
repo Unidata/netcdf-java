@@ -90,6 +90,14 @@ public class H5iosp extends AbstractIOServiceProvider {
     }
   }
 
+  RandomAccessFile getRandomAccessFile() {
+    return raf;
+  }
+
+  H5header getHeader() {
+    return headerParser;
+  }
+
   public static void useHdfEos(boolean val) {
     useHdfEos = val;
   }
