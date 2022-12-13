@@ -41,6 +41,7 @@ import ucar.nc2.Structure;
 import ucar.nc2.Variable;
 
 /** Convert between Gcdm Protos and Netcdf objects, using ucar.ma2.Array for data. */
+// TODO rename to remove Ma2
 public class GcdmConverterMa2 {
   public static GcdmNetcdfProto.Group.Builder encodeGroup(Group g, int sizeToCache) throws IOException {
     GcdmNetcdfProto.Group.Builder groupBuilder = GcdmNetcdfProto.Group.newBuilder();
@@ -447,7 +448,7 @@ public class GcdmConverterMa2 {
 
     if (var.hasData()) {
       Array data = decodeData(var.getData(), section.build());
-      ncvar.setCachedData(data, false);
+      ncvar.setCachedData(data, false); // TODO check bool
     }
 
     return ncvar;
@@ -855,6 +856,7 @@ public class GcdmConverterMa2 {
      * }
      * return result;
      */
+    // TODO why is this commented out?
     return null;
   }
 
