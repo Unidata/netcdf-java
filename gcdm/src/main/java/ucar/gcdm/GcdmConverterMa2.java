@@ -177,7 +177,21 @@ public class GcdmConverterMa2 {
     return builder.build();
   }
 
-  public static Data encodeData(DataType dataType, Array data) {
+  public static GcdmNetcdfProto.Data encodeData(DataType dataType, Array data) {
+    GcdmNetcdfProto.Data result;
+    if (dataType == DataType.OPAQUE) {
+      result = encodePrimitiveData(dataType, data);
+    } else if (data.isVlen()) {
+      result = encodeVlenData(dataType, (ArrayObject) data);
+    } else if (data instanceof ArrayStructure) {
+      result = encodeArrayStructureData((ArrayStructure) data);
+    } else {
+      result = encodePrimitiveData(dataType, data);
+    }
+    return result;
+  }
+
+  public static Data encodePrimitiveData(DataType dataType, Array data) {
     Data.Builder builder = Data.newBuilder();
     builder.setDataType(convertDataType(dataType));
     IndexIterator iiter = data.getIndexIterator();
@@ -512,8 +526,18 @@ public class GcdmConverterMa2 {
     return section.build();
   }
 
+  public static Array decodeData(GcdmNetcdfProto.Data data, Section section) {
+    if (data.getVlenCount() > 0) {
+      return decodeVlenData(data, section);
+    } else if (data.hasMembers()) {
+      return decodeArrayStructureData(data, section);
+    } else {
+      return decodePrimitiveData(data, section);
+    }
+  }
+
   // Note that this converts to Objects, so not very efficient ??
-  public static Array decodeData(Data data, Section section) {
+  public static Array decodePrimitiveData(Data data, Section section) {
     DataType dataType = convertDataType(data.getDataType());
     int[] shape = section.getShape();
     switch (dataType) {
