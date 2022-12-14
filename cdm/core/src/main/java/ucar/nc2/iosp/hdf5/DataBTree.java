@@ -58,6 +58,10 @@ public class DataBTree {
     wantType = 1;
   }
 
+  RandomAccessFile getRandomAccessFile() {
+    return raf;
+  }
+
   public void setOwner(Object owner) {
     this.owner = owner;
   }
