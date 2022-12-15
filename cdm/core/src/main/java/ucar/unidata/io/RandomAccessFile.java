@@ -213,6 +213,10 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
   protected String location;
   private int cacheState; // 0 - not in cache, 1 = in cache && in use, 2 = in cache but not in use
 
+  int getCacheState() {
+    return cacheState;
+  }
+
   /**
    * The underlying java.io.RandomAccessFile.
    */
