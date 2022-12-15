@@ -156,7 +156,7 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
         throws IOException {
       String location = StringUtil2.replace(durl.getTrueurl(), "\\", "/"); // canonicalize the name
       RandomAccessFile result = new RandomAccessFile(location, "r", buffer_size);
-      result.cacheState = 1; // in use
+      result.cacheState = CacheState.IN_USE;
       return result;
     }
   };
@@ -211,9 +211,14 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
    * File location
    */
   protected String location;
-  private int cacheState; // 0 - not in cache, 1 = in cache && in use, 2 = in cache but not in use
 
-  int getCacheState() {
+  enum CacheState {
+    NOT_IN_CACHE, IN_USE, NOT_IN_USE
+  }
+
+  private CacheState cacheState = CacheState.NOT_IN_CACHE;
+
+  CacheState getCacheState() {
     return cacheState;
   }
 
@@ -398,16 +403,17 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
    */
   public synchronized void close() throws IOException {
     if (cache != null) {
-      if (cacheState > 0) {
-        if (cacheState == 1) {
-          cacheState = 2;
+      switch (cacheState) {
+        case NOT_IN_CACHE:
+          break;
+        case IN_USE:
+          cacheState = CacheState.NOT_IN_USE;
           // return true if in the cache, otherwise was opened regular, so must be closed regular
           if (cache.release(this))
             return;
-          cacheState = 0; // release failed, bail out
-        } else {
+          cacheState = CacheState.NOT_IN_CACHE; // release failed, bail out
+        case NOT_IN_USE:
           return; // close has been called more than once - ok
-        }
       }
     }
 
@@ -440,14 +446,14 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
   @Deprecated
   @Override
   public void release() { // one to one with java.io.RandomAccessFile
-    cacheState = 2;
+    cacheState = CacheState.NOT_IN_USE;
   }
 
   /** @deprecated do not use */
   @Deprecated
   @Override
   public void reacquire() {
-    cacheState = 1;
+    cacheState = CacheState.IN_USE;
   }
 
   /** @deprecated do not use */
@@ -455,7 +461,7 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
   @Override
   public synchronized void setFileCache(FileCacheIF fileCache) {
     if (fileCache == null)
-      cacheState = 0;
+      cacheState = CacheState.NOT_IN_CACHE;
   }
 
   @Override
