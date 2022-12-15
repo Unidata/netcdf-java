@@ -10,6 +10,7 @@ import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import ucar.unidata.io.RandomAccessFile.CacheState;
 
 public class TestRandomAccessFileCache {
 
@@ -41,44 +42,50 @@ public class TestRandomAccessFileCache {
 
   @Test
   public void shouldReturnInUseWhenFileIsAcquired() {
-    assertThat(testFile.getCacheState()).isEqualTo(1);
+    assertThat(testFile.getCacheState()).isEqualTo(CacheState.IN_USE);
   }
 
   @Test
   public void shouldReturnNotInUseWhenFileIsClosed() throws IOException {
     testFile.close();
-    assertThat(testFile.getCacheState()).isEqualTo(2);
+    assertThat(testFile.getCacheState()).isEqualTo(CacheState.NOT_IN_USE);
   }
 
   @Test
   public void shouldReturnNotInCacheWhenFileNotInCacheIsClosed() throws IOException {
     testFile.setFileCache(null);
     testFile.close();
-    assertThat(testFile.getCacheState()).isEqualTo(0);
+    assertThat(testFile.getCacheState()).isEqualTo(CacheState.NOT_IN_CACHE);
   }
 
   @Test
   public void shouldReturnNotInUseWhenFileIsClosedTwice() throws IOException {
     testFile.close();
     testFile.close();
-    assertThat(testFile.getCacheState()).isEqualTo(2);
+    assertThat(testFile.getCacheState()).isEqualTo(CacheState.NOT_IN_USE);
   }
 
   @Test
   public void shouldReturnNotInUseWhenFileIsReleased() {
     testFile.release();
-    assertThat(testFile.getCacheState()).isEqualTo(2);
+    assertThat(testFile.getCacheState()).isEqualTo(CacheState.NOT_IN_USE);
   }
 
   @Test
   public void shouldReturnInUseWhenFileIsReacquired() {
     testFile.reacquire();
-    assertThat(testFile.getCacheState()).isEqualTo(1);
+    assertThat(testFile.getCacheState()).isEqualTo(CacheState.IN_USE);
   }
 
   @Test
   public void shouldReturnNotInCacheWhenFileCacheIsReset() {
     testFile.setFileCache(null);
-    assertThat(testFile.getCacheState()).isEqualTo(0);
+    assertThat(testFile.getCacheState()).isEqualTo(CacheState.NOT_IN_CACHE);
+  }
+
+  @Test
+  public void shouldReturnNotInCacheForNewRaf() throws IOException {
+    final RandomAccessFile raf = new RandomAccessFile(tempFolder.newFile().getAbsolutePath(), "r", 0);
+    assertThat(raf.getCacheState()).isEqualTo(CacheState.NOT_IN_CACHE);
   }
 }
