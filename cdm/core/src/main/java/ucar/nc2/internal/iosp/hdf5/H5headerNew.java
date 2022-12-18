@@ -155,7 +155,6 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
    * 3) all variables' dimensions have a dimension scale
    */
 
-  private final RandomAccessFile raf;
   private final Group.Builder root;
   private final H5iospNew h5iosp;
 
@@ -179,8 +178,7 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
 
   private final Charset valueCharset;
 
-  H5headerNew(RandomAccessFile myRaf, Group.Builder root, H5iospNew h5iosp) {
-    this.raf = myRaf;
+  H5headerNew(Group.Builder root, H5iospNew h5iosp) {
     this.root = root;
     this.h5iosp = h5iosp;
     valueCharset = h5iosp.getValueCharset().orElse(StandardCharsets.UTF_8);
@@ -206,7 +204,7 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
     }
     h5objects = new H5objects(this, debugOut, memTracker);
 
-    long actualSize = raf.length();
+    long actualSize = getRandomAccessFile().length();
 
     if (debugTracker)
       memTracker = new MemTracker(actualSize);
@@ -215,8 +213,8 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
     boolean ok = false;
     long filePos = 0;
     while ((filePos < actualSize - 8)) {
-      raf.seek(filePos);
-      String magic = raf.readString(8);
+      getRandomAccessFile().seek(filePos);
+      String magic = getRandomAccessFile().readString(8);
       if (magic.equals(magicString)) {
         ok = true;
         break;
@@ -227,19 +225,19 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
       throw new IOException("Not a netCDF4/HDF5 file ");
     }
     if (debug1) {
-      log.debug("H5header opened file to read:'{}' size= {}", raf.getLocation(), actualSize);
+      log.debug("H5header opened file to read:'{}' size= {}", getRandomAccessFile().getLocation(), actualSize);
     }
     // now we are positioned right after the header
 
     // header information is in le byte order
-    raf.order(RandomAccessFile.LITTLE_ENDIAN);
+    getRandomAccessFile().order(RandomAccessFile.LITTLE_ENDIAN);
 
-    long superblockStart = raf.getFilePointer() - 8;
+    long superblockStart = getRandomAccessFile().getFilePointer() - 8;
     if (debugTracker)
       memTracker.add("header", 0, superblockStart);
 
     // superblock version
-    byte versionSB = raf.readByte();
+    byte versionSB = getRandomAccessFile().readByte();
 
     if (versionSB < 2) {
       readSuperBlock1(superblockStart, versionSB);
@@ -275,43 +273,43 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
     long eofAddress;
     long driverBlockAddress;
 
-    versionFSS = raf.readByte();
-    versionGroup = raf.readByte();
-    raf.readByte(); // skip 1 byte
-    versionSHMF = raf.readByte();
+    versionFSS = getRandomAccessFile().readByte();
+    versionGroup = getRandomAccessFile().readByte();
+    getRandomAccessFile().readByte(); // skip 1 byte
+    versionSHMF = getRandomAccessFile().readByte();
     if (debugDetail) {
       log.debug(" versionSB= " + versionSB + " versionFSS= " + versionFSS + " versionGroup= " + versionGroup
           + " versionSHMF= " + versionSHMF);
     }
 
-    sizeOffsets = raf.readByte();
+    sizeOffsets = getRandomAccessFile().readByte();
     isOffsetLong = (sizeOffsets == 8);
 
-    sizeLengths = raf.readByte();
+    sizeLengths = getRandomAccessFile().readByte();
     isLengthLong = (sizeLengths == 8);
     if (debugDetail) {
       log.debug(" sizeOffsets= {} sizeLengths= {}", sizeOffsets, sizeLengths);
       log.debug(" isLengthLong= {} isOffsetLong= {}", isLengthLong, isOffsetLong);
     }
 
-    raf.read(); // skip 1 byte
+    getRandomAccessFile().read(); // skip 1 byte
     // log.debug(" position="+mapBuffer.position());
 
-    btreeLeafNodeSize = raf.readShort();
-    btreeInternalNodeSize = raf.readShort();
+    btreeLeafNodeSize = getRandomAccessFile().readShort();
+    btreeInternalNodeSize = getRandomAccessFile().readShort();
     if (debugDetail) {
       log.debug(" btreeLeafNodeSize= {} btreeInternalNodeSize= {}", btreeLeafNodeSize, btreeInternalNodeSize);
     }
     // log.debug(" position="+mapBuffer.position());
 
-    fileFlags = raf.readInt();
+    fileFlags = getRandomAccessFile().readInt();
     if (debugDetail) {
       log.debug(" fileFlags= 0x{}", Integer.toHexString(fileFlags));
     }
 
     if (versionSB == 1) {
-      short storageInternalNodeSize = raf.readShort();
-      raf.skipBytes(2);
+      short storageInternalNodeSize = getRandomAccessFile().readShort();
+      getRandomAccessFile().skipBytes(2);
     }
 
     baseAddress = readOffset();
@@ -331,36 +329,36 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
       log.debug(" baseAddress= 0x{}", Long.toHexString(baseAddress));
       log.debug(" global free space heap Address= 0x{}", Long.toHexString(heapAddress));
       log.debug(" eof Address={}", eofAddress);
-      log.debug(" raf length= {}", raf.length());
+      log.debug(" raf length= {}", getRandomAccessFile().length());
       log.debug(" driver BlockAddress= 0x{}", Long.toHexString(driverBlockAddress));
       log.debug("");
     }
     if (debugTracker)
-      memTracker.add("superblock", superblockStart, raf.getFilePointer());
+      memTracker.add("superblock", superblockStart, getRandomAccessFile().getFilePointer());
 
     // look for file truncation
-    long fileSize = raf.length();
+    long fileSize = getRandomAccessFile().length();
     if (fileSize < eofAddress)
-      throw new IOException(
-          "File is truncated should be= " + eofAddress + " actual = " + fileSize + "%nlocation= " + raf.getLocation());
+      throw new IOException("File is truncated should be= " + eofAddress + " actual = " + fileSize + "%nlocation= "
+          + getRandomAccessFile().getLocation());
 
     // next comes the root object's SymbolTableEntry
     // extract the root group object, recursively read all objects
-    h5rootGroup = h5objects.readRootSymbolTable(raf.getFilePointer());
+    h5rootGroup = h5objects.readRootSymbolTable(getRandomAccessFile().getFilePointer());
   }
 
   private void readSuperBlock2(long superblockStart) throws IOException {
-    sizeOffsets = raf.readByte();
+    sizeOffsets = getRandomAccessFile().readByte();
     isOffsetLong = (sizeOffsets == 8);
 
-    sizeLengths = raf.readByte();
+    sizeLengths = getRandomAccessFile().readByte();
     isLengthLong = (sizeLengths == 8);
     if (debugDetail) {
       log.debug(" sizeOffsets= {} sizeLengths= {}", sizeOffsets, sizeLengths);
       log.debug(" isLengthLong= {} isOffsetLong= {}", isLengthLong, isOffsetLong);
     }
 
-    byte fileFlags = raf.readByte();
+    byte fileFlags = getRandomAccessFile().readByte();
     if (debugDetail) {
       log.debug(" fileFlags= 0x{}", Integer.toHexString(fileFlags));
     }
@@ -369,7 +367,7 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
     long extensionAddress = readOffset();
     long eofAddress = readOffset();
     long rootObjectAddress = readOffset();
-    int checksum = raf.readInt();
+    int checksum = getRandomAccessFile().readInt();
 
     if (debugDetail) {
       log.debug(" baseAddress= 0x{}", Long.toHexString(baseAddress));
@@ -380,7 +378,7 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
     }
 
     if (debugTracker)
-      memTracker.add("superblock", superblockStart, raf.getFilePointer());
+      memTracker.add("superblock", superblockStart, getRandomAccessFile().getFilePointer());
 
     if (baseAddress != superblockStart) {
       baseAddress = superblockStart;
@@ -391,7 +389,7 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
     }
 
     // look for file truncation
-    long fileSize = raf.length();
+    long fileSize = getRandomAccessFile().length();
     if (fileSize < eofAddress) {
       throw new IOException("File is truncated should be= " + eofAddress + " actual = " + fileSize);
     }
@@ -975,7 +973,7 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
 
     // reading attribute values might change byte order during a read
     // put back to little endian for further header processing
-    raf.order(RandomAccessFile.LITTLE_ENDIAN);
+    getRandomAccessFile().order(RandomAccessFile.LITTLE_ENDIAN);
   }
 
   private Attribute makeAttribute(MessageAttribute matt) throws IOException {
@@ -995,7 +993,7 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
       attData = readAttributeData(matt, vinfo, dtype);
 
     } catch (InvalidRangeException e) {
-      log.warn("failed to read Attribute " + matt.name + " HDF5 file=" + raf.getLocation());
+      log.warn("failed to read Attribute " + matt.name + " HDF5 file=" + getRandomAccessFile().getLocation());
       return null;
     }
 
@@ -1013,7 +1011,7 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
       result = new Attribute(matt.name, attData);
     }
 
-    raf.order(RandomAccessFile.LITTLE_ENDIAN);
+    getRandomAccessFile().order(RandomAccessFile.LITTLE_ENDIAN);
     return result;
   }
 
@@ -1076,8 +1074,8 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
         }
 
         // copy bytes directly into the underlying byte[]
-        raf.seek(chunk.getSrcPos());
-        raf.readFully(byteArray, (int) chunk.getDestElem() * recsize, chunk.getNelems() * recsize);
+        getRandomAccessFile().seek(chunk.getSrcPos());
+        getRandomAccessFile().readFully(byteArray, (int) chunk.getDestElem() * recsize, chunk.getNelems() * recsize);
       }
 
       // strings are stored on the heap, and must be read separately
@@ -1714,7 +1712,7 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
 
       isvlen = this.mdt.isVlen();
       if (!facade.dobj.mdt.isOK && warnings) {
-        log.debug("WARNING HDF5 file " + raf.getLocation() + " not handling " + facade.dobj.mdt);
+        log.debug("WARNING HDF5 file " + getRandomAccessFile().getLocation() + " not handling " + facade.dobj.mdt);
         return; // not a supported datatype
       }
 
@@ -1742,7 +1740,7 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
       this.dataPos = dataPos;
 
       if (!mdt.isOK && warnings) {
-        log.debug("WARNING HDF5 file " + raf.getLocation() + " not handling " + mdt);
+        log.debug("WARNING HDF5 file " + getRandomAccessFile().getLocation() + " not handling " + mdt);
         return; // not a supported datatype
       }
 
@@ -1943,7 +1941,8 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
         // cant happen because we use null for wantSection
         throw new IllegalStateException();
       }
-      Object data = IospHelper.readDataFill(raf, layout, dataType, getFillValue(), typeInfo.endian, false);
+      Object data =
+          IospHelper.readDataFill(getRandomAccessFile(), layout, dataType, getFillValue(), typeInfo.endian, false);
       return Array.factory(dataType, shape, data);
     }
 
@@ -1962,7 +1961,8 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
         // cant happen because we use null for wantSection
         throw new IllegalStateException();
       }
-      Object data = IospHelper.readDataFill(raf, layout, dataType, getFillValue(), typeInfo.endian, true);
+      Object data =
+          IospHelper.readDataFill(getRandomAccessFile(), layout, dataType, getFillValue(), typeInfo.endian, true);
 
       String result = "";
       if (data instanceof String) {
@@ -2001,10 +2001,10 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
       else if (size == 8)
         return DataType.LONG.withSignedness(signedness);
       else if (warnings) {
-        log.debug("WARNING HDF5 file " + raf.getLocation() + " not handling hdf integer type (" + hdfType
+        log.debug("WARNING HDF5 file " + getRandomAccessFile().getLocation() + " not handling hdf integer type ("
+            + hdfType + ") with size= " + size);
+        log.warn("HDF5 file " + getRandomAccessFile().getLocation() + " not handling hdf integer type (" + hdfType
             + ") with size= " + size);
-        log.warn(
-            "HDF5 file " + raf.getLocation() + " not handling hdf integer type (" + hdfType + ") with size= " + size);
         return null;
       }
 
@@ -2014,8 +2014,10 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
       else if (size == 8)
         return DataType.DOUBLE;
       else if (warnings) {
-        log.debug("WARNING HDF5 file " + raf.getLocation() + " not handling hdf float type with size= " + size);
-        log.warn("HDF5 file " + raf.getLocation() + " not handling hdf float type with size= " + size);
+        log.debug("WARNING HDF5 file " + getRandomAccessFile().getLocation()
+            + " not handling hdf float type with size= " + size);
+        log.warn(
+            "HDF5 file " + getRandomAccessFile().getLocation() + " not handling hdf float type with size= " + size);
         return null;
       }
 
@@ -2032,9 +2034,11 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
       return null; // dunno
 
     } else if (warnings) {
-      log.warn("HDF5 file " + raf.getLocation() + " not handling hdf type = " + hdfType + " size= " + size);
+      log.warn("HDF5 file " + getRandomAccessFile().getLocation() + " not handling hdf type = " + hdfType + " size= "
+          + size);
     } else {
-      log.debug("HDF5 file " + raf.getLocation() + " not handling hdf type = " + hdfType + " size= " + size);
+      log.debug("HDF5 file " + getRandomAccessFile().getLocation() + " not handling hdf type = " + hdfType + " size= "
+          + size);
     }
     return null;
   }
@@ -2099,43 +2103,43 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
       log.debug(" HeapObject= {}", ho);
     }
     if (endian >= 0) {
-      raf.order(endian);
+      getRandomAccessFile().order(endian);
     }
 
     if (DataType.FLOAT == dataType) {
       float[] pa = new float[heapId.nelems];
-      raf.seek(ho.dataPos);
-      raf.readFloat(pa, 0, pa.length);
+      getRandomAccessFile().seek(ho.dataPos);
+      getRandomAccessFile().readFloat(pa, 0, pa.length);
       return Array.factory(dataType, new int[] {pa.length}, pa);
 
     } else if (DataType.DOUBLE == dataType) {
       double[] pa = new double[heapId.nelems];
-      raf.seek(ho.dataPos);
-      raf.readDouble(pa, 0, pa.length);
+      getRandomAccessFile().seek(ho.dataPos);
+      getRandomAccessFile().readDouble(pa, 0, pa.length);
       return Array.factory(dataType, new int[] {pa.length}, pa);
 
     } else if (dataType.getPrimitiveClassType() == byte.class) {
       byte[] pa = new byte[heapId.nelems];
-      raf.seek(ho.dataPos);
-      raf.readFully(pa, 0, pa.length);
+      getRandomAccessFile().seek(ho.dataPos);
+      getRandomAccessFile().readFully(pa, 0, pa.length);
       return Array.factory(dataType, new int[] {pa.length}, pa);
 
     } else if (dataType.getPrimitiveClassType() == short.class) {
       short[] pa = new short[heapId.nelems];
-      raf.seek(ho.dataPos);
-      raf.readShort(pa, 0, pa.length);
+      getRandomAccessFile().seek(ho.dataPos);
+      getRandomAccessFile().readShort(pa, 0, pa.length);
       return Array.factory(dataType, new int[] {pa.length}, pa);
 
     } else if (dataType.getPrimitiveClassType() == int.class) {
       int[] pa = new int[heapId.nelems];
-      raf.seek(ho.dataPos);
-      raf.readInt(pa, 0, pa.length);
+      getRandomAccessFile().seek(ho.dataPos);
+      getRandomAccessFile().readInt(pa, 0, pa.length);
       return Array.factory(dataType, new int[] {pa.length}, pa);
 
     } else if (dataType.getPrimitiveClassType() == long.class) {
       long[] pa = new long[heapId.nelems];
-      raf.seek(ho.dataPos);
-      raf.readLong(pa, 0, pa.length);
+      getRandomAccessFile().seek(ho.dataPos);
+      getRandomAccessFile().readLong(pa, 0, pa.length);
       return Array.factory(dataType, new int[] {pa.length}, pa);
     }
 
@@ -2159,8 +2163,8 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
       throw new IllegalStateException("Cant find Heap Object,heapId=" + heapId);
     if (ho.dataSize > 1000 * 1000)
       return String.format("Bad HeapObject.dataSize=%s", ho);
-    raf.seek(ho.dataPos);
-    return raf.readString((int) ho.dataSize, valueCharset);
+    getRandomAccessFile().seek(ho.dataPos);
+    return getRandomAccessFile().readString((int) ho.dataSize, valueCharset);
   }
 
   /**
@@ -2179,8 +2183,8 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
     GlobalHeap.HeapObject ho = heapId.getHeapObject();
     if (ho == null)
       throw new IllegalStateException("Cant find Heap Object,heapId=" + heapId);
-    raf.seek(ho.dataPos);
-    return raf.readString((int) ho.dataSize, valueCharset);
+    getRandomAccessFile().seek(ho.dataPos);
+    return getRandomAccessFile().readString((int) ho.dataSize, valueCharset);
   }
 
   Array readHeapVlen(ByteBuffer bb, int pos, DataType dataType, int endian) throws IOException, InvalidRangeException {
@@ -2257,12 +2261,12 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
 
   @Override
   public long readLength() throws IOException {
-    return isLengthLong ? raf.readLong() : (long) raf.readInt();
+    return isLengthLong ? getRandomAccessFile().readLong() : (long) getRandomAccessFile().readInt();
   }
 
   @Override
   public long readOffset() throws IOException {
-    return isOffsetLong ? raf.readLong() : (long) raf.readInt();
+    return isOffsetLong ? getRandomAccessFile().readLong() : (long) getRandomAccessFile().readInt();
   }
 
   @Override
@@ -2290,17 +2294,17 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
   public long readVariableSizeUnsigned(int size) throws IOException {
     long vv;
     if (size == 1) {
-      vv = DataType.unsignedByteToShort(raf.readByte());
+      vv = DataType.unsignedByteToShort(getRandomAccessFile().readByte());
     } else if (size == 2) {
       if (debugPos) {
-        log.debug("position={}", raf.getFilePointer());
+        log.debug("position={}", getRandomAccessFile().getFilePointer());
       }
-      short s = raf.readShort();
+      short s = getRandomAccessFile().readShort();
       vv = DataType.unsignedShortToInt(s);
     } else if (size == 4) {
-      vv = DataType.unsignedIntToLong(raf.readInt());
+      vv = DataType.unsignedIntToLong(getRandomAccessFile().readInt());
     } else if (size == 8) {
-      vv = raf.readLong();
+      vv = getRandomAccessFile().readLong();
     } else {
       vv = readVariableSizeN(size);
     }
@@ -2311,7 +2315,7 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
   private long readVariableSizeN(int nbytes) throws IOException {
     int[] ch = new int[nbytes];
     for (int i = 0; i < nbytes; i++)
-      ch[i] = raf.read();
+      ch[i] = getRandomAccessFile().read();
 
     long result = ch[nbytes - 1];
     for (int i = nbytes - 2; i >= 0; i--) {
@@ -2324,7 +2328,7 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
 
   @Override
   public RandomAccessFile getRandomAccessFile() {
-    return raf;
+    return h5iosp.getRandomAccessFile();
   }
 
   @Override
@@ -2335,6 +2339,10 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
   @Override
   public byte getSizeOffsets() {
     return sizeOffsets;
+  }
+
+  H5objects getH5objects() {
+    return h5objects;
   }
 
   boolean isNetcdf4() {
@@ -2354,7 +2362,7 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
   }
 
   public void getEosInfo(Formatter f) throws IOException {
-    HdfEos.getEosInfo(raf.getLocation(), this, root, f);
+    HdfEos.getEosInfo(getRandomAccessFile().getLocation(), this, root, f);
   }
 
   // debug - hdf5Table
