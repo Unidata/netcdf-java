@@ -56,7 +56,7 @@ public class TestNcmlReadersCompare {
     try (NetcdfDataset org = NcMLReader.readNcML(ncmlLocation, null)) {
       try (NetcdfDataset withBuilder = NcmlReader.readNcml(ncmlLocation, null, null).build()) {
         Formatter f = new Formatter();
-        CompareNetcdf2 compare = new CompareNetcdf2(f, true, true, true);
+        CompareNetcdf2 compare = new CompareNetcdf2(f, false, false, true);
         if (!compare.compare(org, withBuilder, new CoordsObjFilter())) {
           System.out.printf("Compare %s%n%s%n", ncmlLocation, f);
           fail();

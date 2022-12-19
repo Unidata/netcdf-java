@@ -475,9 +475,6 @@ public class CompareNetcdf2 {
     for (Attribute att1 : list1) {
       if (objFilter.attCheckOk(v, att1))
         ok &= checkAtt(name, att1, "file1", list1, "file2", list2, objFilter);
-    if(!ok) {
-      int x = 0;
-    }
     }
 
     for (Attribute att2 : list2) {
