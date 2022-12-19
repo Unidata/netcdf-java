@@ -105,7 +105,7 @@ public class TestNetcdfFileCache {
     map = cache.getCache();
     assertThat(map.values().size()).isEqualTo(0);
 
-    // load again
+    // load again (cached files are still locked, so no hits and all misses)
     loadFilesIntoCache(new File(TestDir.cdmLocalTestDataDir), cache);
     assertThat(cache.hits.get()).isEqualTo(0);
     assertThat(cache.miss.get()).isEqualTo(3 * saveCount);
@@ -128,7 +128,7 @@ public class TestNetcdfFileCache {
     map = cache.getCache();
     assertThat(map.values().size()).isEqualTo(0);
 
-    // load twice
+    // load twice (files aren't unlocked, so it results in cache misses)
     loadFilesIntoCache(new File(TestDir.cdmLocalTestDataDir), cache);
     loadFilesIntoCache(new File(TestDir.cdmLocalTestDataDir), cache);
     assertThat(cache.hits.get()).isEqualTo(0);
@@ -173,15 +173,24 @@ public class TestNetcdfFileCache {
     for (Object key : map.keySet()) {
       FileCache.CacheElement elem = map.get(key);
       assertThat(elem.list.size()).isEqualTo(1);
+
       for (FileCache.CacheElement.CacheFile file : elem.list) {
-        // Need to do it this way instead of directly closing them
-        // because closing the files changes the iterations
-        files.add(file.ncfile);
+        synchronized (file) {
+            // Need to collect files to close instead of directly closing them
+            // in this double-loop because closing the files changes the iterator
+            // We are also explicitly doing synchronous unlocks so that when we
+            // get to the next file loading stage, we are guaranteed that the
+            // files in the cache are indeed released and capable of being
+            // reacquired. Users won't need to do this normally.
+            files.add(file.ncfile);
+            file.isLocked.set(false);
+        }
       }
     }
     for (FileCacheable ncfile : files) {
       ncfile.close();
     }
+    logger.debug("Closed {} files", files.size());
 
     loadFilesIntoCache(new File(TestDir.cdmLocalTestDataDir), cache);
     cache.showCache(new Formatter(System.out));
