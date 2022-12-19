@@ -6,6 +6,8 @@
 package ucar.nc2.iosp;
 
 import javax.annotation.Nullable;
+import thredds.inventory.MFile;
+import thredds.inventory.MFiles;
 import ucar.ma2.Array;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Section;
@@ -161,8 +163,8 @@ public abstract class AbstractIOServiceProvider implements IOServiceProvider {
    */
   public long getLastModified() {
     if (location != null) {
-      File file = new File(location);
-      return file.lastModified();
+      MFile file = MFiles.create(location);
+      return file != null ? file.getLastModified() : 0;
     } else {
       return 0;
     }

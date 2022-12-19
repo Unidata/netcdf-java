@@ -7,6 +7,7 @@ package ucar.nc2.grib.collection;
 
 import javax.annotation.Nonnull;
 import thredds.featurecollection.FeatureCollectionConfig;
+import thredds.featurecollection.TimeUnitConverter;
 import thredds.inventory.CollectionUpdateType;
 import thredds.inventory.MCollection;
 import thredds.inventory.MFile;
@@ -40,6 +41,7 @@ import java.util.*;
  */
 class Grib2CollectionBuilder extends GribCollectionBuilder {
   private final FeatureCollectionConfig.GribConfig gribConfig;
+  private final TimeUnitConverter timeUnitConverter;
   private Grib2Tables cust;
 
   // LOOK prob name could be dcm.getCollectionName()
@@ -48,6 +50,15 @@ class Grib2CollectionBuilder extends GribCollectionBuilder {
 
     FeatureCollectionConfig config = (FeatureCollectionConfig) dcm.getAuxInfo(FeatureCollectionConfig.AUX_CONFIG);
     gribConfig = config.gribConfig;
+    timeUnitConverter =
+        gribConfig.getTimeUnitConverter() != null ? gribConfig.getTimeUnitConverter() : new TrivialTimeUnitConverter();
+  }
+
+  private static class TrivialTimeUnitConverter implements TimeUnitConverter {
+    @Override
+    public int convertTimeUnit(int timeUnit) {
+      return timeUnit;
+    }
   }
 
   // read all records in all files,
@@ -101,7 +112,6 @@ class Grib2CollectionBuilder extends GribCollectionBuilder {
         for (Grib2Record gr : index.getRecords()) { // we are using entire Grib2Record - memory limitations
           if (this.cust == null) {
             this.cust = Grib2Tables.factory(gr);
-            cust.setTimeUnitConverter(gribConfig.getTimeUnitConverter());
           }
           if (filterIntervals(gr, gribConfig.intvFilter)) {
             statsAll.filter++;
@@ -275,7 +285,7 @@ class Grib2CollectionBuilder extends GribCollectionBuilder {
       // create coordinates for each variable
       for (VariableBag vb : gribvars) {
         Grib2Pds pdsFirst = vb.first.getPDS();
-        int code = cust.convertTimeUnit(pdsFirst.getTimeUnit());
+        int code = timeUnitConverter.convertTimeUnit(pdsFirst.getTimeUnit());
         vb.timeUnit = userTimeUnit == null ? Grib2Utils.getCalendarPeriod(code) : userTimeUnit; // so can override the
                                                                                                 // code in config
                                                                                                 // "timeUnit"

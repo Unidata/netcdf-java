@@ -2,6 +2,7 @@
  * Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
+
 package ucar.nc2;
 
 import static java.util.Optional.ofNullable;
@@ -296,7 +297,7 @@ public class Group extends CDMNode implements AttributeContainer {
 
   /** The attributes contained by this Group. */
   public AttributeContainer attributes() {
-    return attributes;
+    return AttributeContainer.filter(attributes, Attribute.SPECIALS);
   }
 
   /** Find the attribute by name, return null if not exist */
@@ -1143,7 +1144,6 @@ public class Group extends CDMNode implements AttributeContainer {
       }
       return Optional.empty();
     }
-
 
     /** Find a Enumeration in this Group Builder, using its short name. */
     public Optional<EnumTypedef> findEnumTypedef(String name) {
