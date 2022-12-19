@@ -165,6 +165,7 @@ public class CompareNetcdf2 {
   private boolean showCompare;
   private boolean showEach;
   private boolean compareData;
+  private boolean ignoreattrcase;
 
   public CompareNetcdf2() {
     this(new Formatter(System.out));
@@ -175,10 +176,14 @@ public class CompareNetcdf2 {
   }
 
   public CompareNetcdf2(Formatter f, boolean showCompare, boolean showEach, boolean compareData) {
+    this(f,showCompare, showEach, compareData, true);
+  }
+  public CompareNetcdf2(Formatter f, boolean showCompare, boolean showEach, boolean compareData, boolean ignoreattrcase) {
     this.f = f;
     this.compareData = compareData;
     this.showCompare = showCompare;
     this.showEach = showEach;
+    this.ignoreattrcase = ignoreattrcase;
   }
 
   public boolean compare(NetcdfFile org, NetcdfFile copy) {
@@ -659,7 +664,11 @@ public class CompareNetcdf2 {
   private boolean checkAtt(String what, Attribute want, String name1, AttributeContainer list1, String name2,
       AttributeContainer list2, ObjFilter objFilter) {
     boolean ok = true;
-    Attribute found = list2.findAttributeIgnoreCase(want.getShortName());
+    Attribute found;
+    if(this.ignoreattrcase)
+      found = list2.findAttributeIgnoreCase(want.getShortName());
+    else
+      found = list2.findAttribute(want.getShortName());
     if (found == null) {
       f.format("  ** %s: %s (%s) not in %s %n", what, want, name1, name2);
       ok = false;
