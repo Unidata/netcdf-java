@@ -470,6 +470,9 @@ public class CompareNetcdf2 {
     for (Attribute att1 : list1) {
       if (objFilter.attCheckOk(v, att1))
         ok &= checkAtt(name, att1, "file1", list1, "file2", list2, objFilter);
+    if(!ok) {
+      int x = 0;
+    }
     }
 
     for (Attribute att2 : list2) {
@@ -659,7 +662,8 @@ public class CompareNetcdf2 {
   private boolean checkAtt(String what, Attribute want, String name1, AttributeContainer list1, String name2,
       AttributeContainer list2, ObjFilter objFilter) {
     boolean ok = true;
-    Attribute found = list2.findAttributeIgnoreCase(want.getShortName());
+    //Attribute found = list2.findAttributeIgnoreCase(want.getShortName());
+    Attribute found = list2.findAttribute(want.getShortName());
     if (found == null) {
       f.format("  ** %s: %s (%s) not in %s %n", what, want, name1, name2);
       ok = false;
