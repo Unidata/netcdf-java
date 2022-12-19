@@ -184,6 +184,7 @@ public class TestNetcdfFileCache {
     }
 
     loadFilesIntoCache(new File(TestDir.cdmLocalTestDataDir), cache);
+    cache.showCache(new Formatter(System.out));
     assertThat(cache.hits.get()).isEqualTo(saveCount);
     assertThat(cache.miss.get()).isEqualTo(6 * saveCount);
 
