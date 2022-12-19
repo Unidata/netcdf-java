@@ -176,14 +176,14 @@ public class TestNetcdfFileCache {
 
       for (FileCache.CacheElement.CacheFile file : elem.list) {
         synchronized (file) {
-            // Need to collect files to close instead of directly closing them
-            // in this double-loop because closing the files changes the iterator
-            // We are also explicitly doing synchronous unlocks so that when we
-            // get to the next file loading stage, we are guaranteed that the
-            // files in the cache are indeed released and capable of being
-            // reacquired. Users won't need to do this normally.
-            files.add(file.ncfile);
-            file.isLocked.set(false);
+          // Need to collect files to close instead of directly closing them
+          // in this double-loop because closing the files changes the iterator
+          // We are also explicitly doing synchronous unlocks so that when we
+          // get to the next file loading stage, we are guaranteed that the
+          // files in the cache are indeed released and capable of being
+          // reacquired. Users won't need to do this normally.
+          files.add(file.ncfile);
+          file.isLocked.set(false);
         }
       }
     }
