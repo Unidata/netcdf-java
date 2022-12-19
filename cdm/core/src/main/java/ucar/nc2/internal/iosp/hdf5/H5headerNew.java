@@ -1641,6 +1641,10 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
     boolean useFillValue;
     byte[] fillValue;
 
+    public DataBTree getBtree() {
+      return btree;
+    }
+
     public String getCompression() {
       if (mfp == null)
         return null;
