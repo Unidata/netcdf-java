@@ -29,8 +29,8 @@ public class TimeCoordIntvValue implements Comparable<TimeCoordIntvValue> {
   }
 
   public double getCoordValue() {
-    // Choose interval midpoint as the coordinate value
-    return (b1 + b2) / 2.0;
+    // Choose interval endpoint as the coordinate value
+    return b2;
   }
 
   public TimeCoordIntvValue convertReferenceDate(CalendarDate fromDate, CalendarPeriod fromUnit, CalendarDate toDate,

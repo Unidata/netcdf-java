@@ -7,8 +7,6 @@ package ucar.nc2.time;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import org.joda.time.DurationFieldType;
-import org.joda.time.Period;
 import org.joda.time.PeriodType;
 import ucar.nc2.units.TimeDuration;
 import ucar.unidata.util.StringUtil2;
@@ -169,7 +167,7 @@ public class CalendarPeriod {
 
   /**
    * Subtract two dates, return difference in units of this period.
-   * If not even, will round down and log a warning
+   * If not even, will round down (take the floor)
    * 
    * @param start start date
    * @param end end date
@@ -178,9 +176,7 @@ public class CalendarPeriod {
   public int subtract(CalendarDate start, CalendarDate end) {
     long diff = end.getDifferenceInMsecs(start);
     int thislen = millisecs();
-    if ((diff % thislen != 0))
-      log.warn("roundoff error");
-    return (int) (diff / thislen);
+    return (int) Math.floor(diff / (float) thislen);
   }
 
   /**
@@ -238,20 +234,13 @@ public class CalendarPeriod {
 
   // offset from start to end, in these units
   // start + offset = end
+  // takes the floor when rounding
   public int getOffset(CalendarDate start, CalendarDate end) {
     if (start.equals(end)) {
       return 0;
     }
-    Period p = new Period(start.getMillis(), end.getMillis(), getPeriodType());
-    return p.get(getDurationFieldType());
-  }
 
-  PeriodType getPeriodType() {
-    return getField().p;
-  }
-
-  DurationFieldType getDurationFieldType() {
-    return getField().p.getFieldType(0);
+    return subtract(start, end);
   }
 
   @Override

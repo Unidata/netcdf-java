@@ -4,6 +4,10 @@
  */
 package ucar.nc2.ncml;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -37,14 +41,14 @@ public class TestOffAggNewSync {
   @Ignore("file in use - testing artifact")
   public void testMove() throws IOException, InterruptedException {
     String fname = dataDir + "WEST-CONUS_4km_3.9_20050912_2130.gini";
-    if (!TestOffAggUpdating.move(fname))
+    if (!move(fname))
       System.out.printf("Move failed on %s%n", fname);
     System.out.printf("%s%n", aggExistingSync);
     NetcdfFile ncfile = NcMLReader.readNcML(new StringReader(aggExistingSync), "aggExistingSync", null);
     testAggCoordVar(ncfile, ntimes - 1);
     ncfile.close();
 
-    if (!TestOffAggUpdating.moveBack(fname))
+    if (!moveBack(fname))
       System.out.printf("Move back failed on %s%n", fname);
 
     ncfile = NcMLReader.readNcML(new StringReader(aggExistingSync), "aggExistingSync", null);
@@ -62,14 +66,14 @@ public class TestOffAggNewSync {
     ncfile.close();
 
     String fname = dataDir + "WEST-CONUS_4km_3.9_20050912_2130.gini";
-    boolean ok = TestOffAggUpdating.move(fname);
+    boolean ok = move(fname);
     int nfiles = ok ? ntimes - 1 : ntimes; // sometimes fails
 
     ncfile = NcMLReader.readNcML(new StringReader(aggExistingSync), "aggExistingSync", null);
     testAggCoordVar(ncfile, nfiles);
     ncfile.close();
 
-    TestOffAggUpdating.moveBack(fname);
+    moveBack(fname);
     System.out.printf("ok testRemove%n");
   }
 
@@ -77,13 +81,13 @@ public class TestOffAggNewSync {
   @Ignore("file in use - testing artifact")
   public void testSync() throws IOException, InterruptedException {
     String fname = dataDir + "WEST-CONUS_4km_3.9_20050912_2130.gini";
-    if (!TestOffAggUpdating.move(fname))
+    if (!move(fname))
       System.out.printf("Move failed on %s%n", fname);
 
     NetcdfFile ncfile = NcMLReader.readNcML(new StringReader(aggExistingSync), "aggExistingSync", null);
     testAggCoordVar(ncfile, ntimes - 1);
 
-    if (!TestOffAggUpdating.moveBack(fname))
+    if (!moveBack(fname))
       System.out.printf("Move back failed on %s%n", fname);
 
     Thread.sleep(2000);
@@ -102,7 +106,7 @@ public class TestOffAggNewSync {
     System.out.println("");
 
     String fname = dataDir + "WEST-CONUS_4km_3.9_20050912_2130.gini";
-    boolean ok = TestOffAggUpdating.move(fname);
+    boolean ok = move(fname);
     int nfiles = ok ? ntimes - 1 : ntimes; // sometimes fails
     Thread.sleep(2000);
 
@@ -111,7 +115,7 @@ public class TestOffAggNewSync {
     ncfile.close();
 
     // if (!moveBack(dataDir + fname ))
-    if (!TestOffAggUpdating.moveBack(fname))
+    if (!moveBack(fname))
       System.out.printf("Move back failed on %s%n", fname);
     else
       System.out.printf("ok testSyncRemove %n");
@@ -133,6 +137,23 @@ public class TestOffAggNewSync {
     assert data.getShape()[0] == n;
   }
 
+  private static boolean move(String filename) throws IOException {
+    Path src = Paths.get(filename);
+    if (!Files.exists(src))
+      return false;
+    Path dest = Paths.get(filename + ".save");
+    Files.move(src, dest, StandardCopyOption.REPLACE_EXISTING);
+    return true;
+  }
+
+  private static boolean moveBack(String filename) throws IOException {
+    Path src = Paths.get(filename + ".save");
+    if (!Files.exists(src))
+      return false;
+    Path dest = Paths.get(filename);
+    Files.move(src, dest, StandardCopyOption.REPLACE_EXISTING);
+    return true;
+  }
 }
 
 
