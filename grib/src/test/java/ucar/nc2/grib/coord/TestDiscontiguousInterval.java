@@ -9,9 +9,17 @@ import java.io.IOException;
 
 public class TestDiscontiguousInterval {
 
+  /**
+   * Ensure that when creating a time coordinate variable from a series of
+   * time intervals that are discontiguous and mixed, the time coordinate values
+   * increase in a strictly-monotonic manner (as required by the CF Conventions
+   * for netCDF).
+   *
+   * @throws IOException
+   */
   @Test
-  public void testTimeCoordinate1D_isMonotonicallyIncreasing() throws IOException {
-    String testfile = "../grib/src/test/data/GFS_Global_onedeg_20220627_0000.precipOnly.grib2";
+  public void testTimeCoordinate1D_isStrictlyMonotonicallyIncreasing() throws IOException {
+    String testfile = "../grib/src/test/data/GFS_Global_onedeg_20220627_0000.TotalPrecip.Out48hrs.grib2";
     try (NetcdfFile nc = NetcdfFiles.open(testfile)) {
       Variable dataVar = nc.findVariable("Total_precipitation_surface_Mixed_intervals_Accumulation");
       Assert.assertNotNull(dataVar);
@@ -31,11 +39,12 @@ public class TestDiscontiguousInterval {
       Assert.assertEquals(timeDim.getShortName() + "_bounds", att.getStringValue());
 
       Array timeCoordValues = timeCoordVar.read();
-      checkTimeCoordinateVariable1D_IsMonotonicallyIncreasing(timeDim.getLength(), timeCoordValues);
+      checkTimeCoordinateVariable1D_IsStrictlyMonotonicallyIncreasing(timeDim.getLength(), timeCoordValues);
     }
   }
 
-  private void checkTimeCoordinateVariable1D_IsMonotonicallyIncreasing(int timeDimLength, Array timeCoordValues) {
+  private void checkTimeCoordinateVariable1D_IsStrictlyMonotonicallyIncreasing(int timeDimLength,
+      Array timeCoordValues) {
     double currentValue = timeCoordValues.getDouble(0);
     double prevValue = currentValue;
     StringBuilder valuesSoFar = new StringBuilder();
@@ -43,7 +52,8 @@ public class TestDiscontiguousInterval {
     for (int i = 1; i < timeDimLength; i++) {
       currentValue = timeCoordValues.getDouble(i);
       valuesSoFar.append(", ").append(currentValue);
-      Assert.assertTrue("Not monotonically increasing: [" + valuesSoFar + "]", currentValue > prevValue);
+      Assert.assertTrue("Not increasing in a strictly-monotonic manner: [" + valuesSoFar + "]",
+          currentValue > prevValue);
       prevValue = currentValue;
     }
   }
