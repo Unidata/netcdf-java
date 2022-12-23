@@ -8,6 +8,9 @@ package ucar.nc2.filter;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.ma2.IndexIterator;
+import ucar.nc2.Attribute;
+import ucar.nc2.constants.CDM;
+import ucar.nc2.dataset.VariableDS;
 
 import java.nio.*;
 import java.util.HashMap;
@@ -24,6 +27,13 @@ public class ScaleOffset extends Filter {
   private static final String name = "fixedscaleoffset";
 
   private static final int id = 6;
+
+  public static class Keys {
+    public static final String OFFSET_KEY = "offset";
+    public static final String SCALE_KEY = "scale";
+    public static final String DTYPE_KEY = "dtype";
+    public static final String ASTYPE_KEY = "astype";
+  }
 
   // maps numeric zarr datatypes to CDM datatypes
   private static Map<String, DataType> dTypeMap;
@@ -43,7 +53,7 @@ public class ScaleOffset extends Filter {
   }
 
   private final double offset;
-  private final int scale;
+  private final double scale;
 
   // type information for original data type
   private final ByteOrder dtypeOrder;
@@ -53,24 +63,73 @@ public class ScaleOffset extends Filter {
   private final DataType astype;
   private final ByteOrder astypeOrder;
 
+  public static ScaleOffset createFromVariable(VariableDS var) {
+
+    DataType scaleType = null, offsetType = null;
+    double scale = 1.0, offset = 0;
+
+    DataType origDataType = var.getDataType();
+    DataType.Signedness signedness = var.getSignedness();
+
+    Attribute scaleAtt = var.findAttribute(CDM.SCALE_FACTOR);
+    if (scaleAtt != null && !scaleAtt.isString()) {
+      scaleType = FilterHelpers.getAttributeDataType(scaleAtt, signedness);
+      scale = var.convertUnsigned(scaleAtt.getNumericValue()).doubleValue();
+    }
+
+    Attribute offsetAtt = var.findAttribute(CDM.ADD_OFFSET);
+    if (offsetAtt != null && !offsetAtt.isString()) {
+      offsetType = FilterHelpers.getAttributeDataType(offsetAtt, signedness);
+      offset = var.convertUnsigned(offsetAtt.getNumericValue()).doubleValue();
+    }
+    if (scale != 1.0 || offset != 0) {
+      DataType scaledOffsetType =
+          FilterHelpers.largestOf(var.getUnsignedConversionType(), scaleType, offsetType).withSignedness(signedness);
+
+      Map<String, Object> scaleOffsetProps = new HashMap<>();
+      scaleOffsetProps.put(ScaleOffset.Keys.OFFSET_KEY, offset);
+      scaleOffsetProps.put(ScaleOffset.Keys.SCALE_KEY, scale);
+      scaleOffsetProps.put(ScaleOffset.Keys.DTYPE_KEY, origDataType);
+      scaleOffsetProps.put(ScaleOffset.Keys.ASTYPE_KEY, scaledOffsetType);
+      return new ScaleOffset(scaleOffsetProps);
+    }
+    return null;
+  }
 
   public ScaleOffset(Map<String, Object> properties) {
     // get offset and scale parameters
-    offset = ((Number) properties.getOrDefault("offset", 0)).doubleValue();
-    scale = (int) properties.getOrDefault("scale", 1);
+    offset = ((Number) properties.getOrDefault(Keys.OFFSET_KEY, 0)).doubleValue();
+    scale = (int) properties.getOrDefault(Keys.SCALE_KEY, 1);
 
     // input data type
-    String type = (String) properties.get("dtype");
-    dtype = parseDataType(type);
-    if (dtype == null) {
+    Object typeProp = properties.get(Keys.DTYPE_KEY);
+    if (typeProp instanceof String) {
+      String type = (String) typeProp;
+      dtype = parseDataType(type);
+      if (dtype == null) {
+        throw new RuntimeException("ScaleOffset error: could not parse dtype");
+      }
+      dtypeOrder = parseByteOrder(type, ByteOrder.LITTLE_ENDIAN);
+    } else if (typeProp instanceof DataType) {
+      dtype = (DataType) typeProp;
+      dtypeOrder = ByteOrder.LITTLE_ENDIAN;
+    } else {
       throw new RuntimeException("ScaleOffset error: could not parse dtype");
     }
-    dtypeOrder = parseByteOrder(type, ByteOrder.LITTLE_ENDIAN);
 
     // get storage type, if exists, or default to dtype
-    String aType = (String) properties.getOrDefault("astype", type);
-    astype = parseDataType(aType);
-    astypeOrder = parseByteOrder(aType, dtypeOrder);
+    Object aTypeProp = properties.getOrDefault(Keys.ASTYPE_KEY, null);
+    if (aTypeProp instanceof String) {
+      String aType = (String) aTypeProp;
+      astype = parseDataType(aType);
+      astypeOrder = parseByteOrder(aType, dtypeOrder);
+    } else if (aTypeProp instanceof DataType) {
+      astype = (DataType) aTypeProp;
+      astypeOrder = ByteOrder.LITTLE_ENDIAN;
+    } else {
+      astype = dtype;
+      astypeOrder = dtypeOrder;
+    }
   }
 
   @Override
@@ -83,27 +142,36 @@ public class ScaleOffset extends Filter {
     return id;
   }
 
+  public double getScaleFactor() {
+    return this.scale;
+  }
+
+  public double getOffset() {
+    return this.offset;
+  }
+
+  public DataType getScaledOffsetType() {
+    return this.astype;
+  }
+
   @Override
   public byte[] encode(byte[] dataIn) {
-    Array in =
-        Array.factory(dtype, new int[] {dataIn.length / dtype.getSize()}, convertToType(dataIn, dtype, dtypeOrder));
-    Array out = applyScaleOffset(in);
-    return arrayToBytes(out, astype, astypeOrder);
+    Array out = applyScaleOffset(FilterHelpers.bytesToArray(dataIn, dtype, dtypeOrder));
+    return FilterHelpers.arrayToBytes(out, astype, astypeOrder);
   }
 
   @Override
   public byte[] decode(byte[] dataIn) {
-    Array in =
-        Array.factory(astype, new int[] {dataIn.length / astype.getSize()}, convertToType(dataIn, astype, astypeOrder));
-    Array out = removeScaleOffset(in);
-    return arrayToBytes(out, dtype, dtypeOrder);
+    Array out = removeScaleOffset(FilterHelpers.bytesToArray(dataIn, astype, astypeOrder));
+    return FilterHelpers.arrayToBytes(out, dtype, dtypeOrder);
   }
 
-  private Array applyScaleOffset(Array in) {
+  // not used anywhere yet
+  public Array applyScaleOffset(Array in) {
     // use wider datatype if unsigned
     DataType outType = astype;
     if (astype.getSignedness() == Signedness.UNSIGNED) {
-      outType = nextLarger(astype).withSignedness(DataType.Signedness.UNSIGNED);
+      outType = FilterHelpers.nextLarger(astype).withSignedness(DataType.Signedness.UNSIGNED);
     }
 
     // create conversion array
@@ -122,11 +190,11 @@ public class ScaleOffset extends Filter {
     return out;
   }
 
-  private Array removeScaleOffset(Array in) {
+  public Array removeScaleOffset(Array in) {
     // use wider datatype if unsigned
     DataType outType = dtype;
     if (dtype.getSignedness() == Signedness.UNSIGNED) {
-      outType = nextLarger(dtype).withSignedness(DataType.Signedness.UNSIGNED);
+      outType = FilterHelpers.nextLarger(dtype).withSignedness(DataType.Signedness.UNSIGNED);
     }
 
     // create conversion array
@@ -166,26 +234,14 @@ public class ScaleOffset extends Filter {
     return defaultOrder;
   }
 
-  private DataType nextLarger(DataType dataType) {
-    switch (dataType) {
-      case BYTE:
-        return SHORT;
-      case UBYTE:
-        return USHORT;
-      case SHORT:
-        return INT;
-      case USHORT:
-        return UINT;
-      case INT:
-        return LONG;
-      case UINT:
-        return ULONG;
-      case LONG:
-      case ULONG:
-        return DOUBLE;
-      default:
-        return dataType;
-    }
+  public int applyScaleOffset(Number value) {
+    double convertedValue = value.doubleValue();
+    return (int) Math.round((convertedValue - offset) * scale);
+  }
+
+  public double removeScaleOffset(Number value) {
+    double convertedValue = value.doubleValue();
+    return convertedValue / scale + offset;
   }
 
   private Number convertUnsigned(Number value, Signedness signedness) {
@@ -197,90 +253,6 @@ public class ScaleOffset extends Filter {
     }
   }
 
-  private Object convertToType(byte[] dataIn, DataType wantType, ByteOrder bo) {
-    if (wantType.getSize() == 1) {
-      return dataIn;
-    } // no need for conversion
-
-    ByteBuffer bb = ByteBuffer.wrap(dataIn);
-    bb.order(bo);
-    switch (wantType) {
-      case SHORT:
-      case USHORT:
-        ShortBuffer sb = bb.asShortBuffer();
-        short[] shortArray = new short[sb.limit()];
-        sb.get(shortArray);
-        return shortArray;
-      case INT:
-      case UINT:
-        IntBuffer ib = bb.asIntBuffer();
-        int[] intArray = new int[ib.limit()];
-        ib.get(intArray);
-        return intArray;
-      case LONG:
-      case ULONG:
-        LongBuffer lb = bb.asLongBuffer();
-        long[] longArray = new long[lb.limit()];
-        lb.get(longArray);
-        return longArray;
-      case FLOAT:
-        FloatBuffer fb = bb.asFloatBuffer();
-        float[] floatArray = new float[fb.limit()];
-        fb.get(floatArray);
-        return floatArray;
-      case DOUBLE:
-        DoubleBuffer db = bb.asDoubleBuffer();
-        double[] doubleArray = new double[db.limit()];
-        db.get(doubleArray);
-        return doubleArray;
-      default:
-        return bb.array();
-    }
-  }
-
-  private int applyScaleOffset(Number value) {
-    double convertedValue = value.doubleValue();
-    return (int) Math.round((convertedValue - offset) * scale);
-  }
-
-  private double removeScaleOffset(Number value) {
-    double convertedValue = value.doubleValue();
-    return convertedValue / scale + offset;
-  }
-
-  private byte[] arrayToBytes(Array arr, DataType type, ByteOrder order) {
-    ByteBuffer bb = ByteBuffer.allocate((int) arr.getSize() * type.getSize());
-    bb.order(order);
-
-    IndexIterator ii = arr.getIndexIterator();
-    while (ii.hasNext()) {
-      switch (type) {
-        case BYTE:
-        case UBYTE:
-          bb.put(ii.getByteNext());
-          break;
-        case SHORT:
-        case USHORT:
-          bb.putShort(ii.getShortNext());
-          break;
-        case INT:
-        case UINT:
-          bb.putInt(ii.getIntNext());
-          break;
-        case LONG:
-        case ULONG:
-          bb.putLong(ii.getLongNext());
-          break;
-        case FLOAT:
-          bb.putFloat(ii.getFloatNext());
-          break;
-        case DOUBLE:
-          bb.putDouble(ii.getDoubleNext());
-          break;
-      }
-    }
-    return bb.array();
-  }
 
   public static class Provider implements FilterProvider {
 
