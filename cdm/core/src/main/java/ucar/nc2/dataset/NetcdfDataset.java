@@ -98,7 +98,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
      * Convert unsigned values to signed values.
      * For {@link ucar.nc2.constants.CDM#UNSIGNED} variables, reinterpret the bit patterns of any
      * negative values as unsigned. The result will be positive values that must be stored in a
-     * {@link EnhanceScaleMissingUnsignedImpl#nextLarger larger data type}.
+     * {@link ucar.nc2.filter.FilterHelpers#nextLarger larger data type}.
      */
     ConvertUnsigned,
     /** Apply scale and offset to values, promoting the data type if needed. */
