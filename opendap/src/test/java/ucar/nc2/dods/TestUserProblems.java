@@ -9,6 +9,7 @@ import static com.google.common.truth.Truth.assertThat;
 import org.junit.After;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.Array;
@@ -22,6 +23,7 @@ import ucar.nc2.util.DebugFlagsImpl;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.util.List;
+import ucar.unidata.util.test.category.NeedsExternalResource;
 
 /**
  * Test nc2 dods in the JUnit framework.
@@ -42,6 +44,7 @@ public class TestUserProblems {
     System.setProperty("httpservices.urlencode", "true");
   }
 
+  @Category(NeedsExternalResource.class)
   @Test
   public void testGrid() throws IOException, InvalidRangeException {
     System.setProperty("httpservices.urlencode", "false");
@@ -68,6 +71,7 @@ public class TestUserProblems {
   // ucar.nc2.dods.TestUserProblems > testNomads STANDARD_ERROR
   // opendap.dap.DAP2Exception: Method failed:HTTP/1.1 403 Forbidden on URL=
   // http://nomads.ncdc.noaa.gov/thredds/dodsC/cfsr1hr/200912/tmp2m.gdas.200912.grb2.dods?Temperature[0:1:744][0:1:0][0:1:575][0:1:1151]
+  @Category(NeedsExternalResource.class)
   @Ignore
   @Test
   public void testNomads() throws InvalidRangeException {
