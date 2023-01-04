@@ -28,7 +28,7 @@ dependencies {
     // netcdf4, dap4:d4lib
     // Tricky dependency here. We need to make sure that we keep in-line with the version
     // that chronicle-map uses in the TDS, or else we see bad things happen on the TDS side.
-    api 'net.java.dev.jna:jna:5.4.0'
+    api 'net.java.dev.jna:jna:5.12.1'
 
     // Annotations: Nullable
     api 'com.google.code.findbugs:jsr305:3.0.2'

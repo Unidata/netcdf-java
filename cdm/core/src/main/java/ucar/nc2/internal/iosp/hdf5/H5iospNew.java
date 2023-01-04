@@ -97,6 +97,10 @@ public class H5iospNew extends AbstractIOServiceProvider {
     return "Hierarchical Data Format, version 5";
   }
 
+  RandomAccessFile getRandomAccessFile() {
+    return raf;
+  }
+
   public static void useHdfEos(boolean val) {
     useHdfEos = val;
   }
@@ -118,7 +122,7 @@ public class H5iospNew extends AbstractIOServiceProvider {
     super.open(raf, rootGroup.getNcfile(), cancelTask);
 
     raf.order(RandomAccessFile.BIG_ENDIAN);
-    header = new H5headerNew(raf, rootGroup, this);
+    header = new H5headerNew(rootGroup, this);
     header.read(null);
 
     // check if its an HDF5-EOS file
@@ -171,7 +175,7 @@ public class H5iospNew extends AbstractIOServiceProvider {
   public void open(RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask) throws IOException {
     super.open(raf, ncfile, cancelTask);
     Group.Builder rootGroup = Group.builder().setName("").setNcfile(ncfile);
-    header = new H5headerNew(raf, rootGroup, this);
+    header = new H5headerNew(rootGroup, this);
     header.read(null);
     ncfile.setRootGroup(rootGroup.build());
 
