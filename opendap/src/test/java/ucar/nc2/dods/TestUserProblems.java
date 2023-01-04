@@ -6,6 +6,7 @@ package ucar.nc2.dods;
 
 import static com.google.common.truth.Truth.assertThat;
 
+import org.junit.After;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -36,6 +37,11 @@ import java.util.List;
 public class TestUserProblems {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
+  @After
+  public void resetSystemProperty() {
+    System.setProperty("httpservices.urlencode", "true");
+  }
+
   @Test
   public void testGrid() throws IOException, InvalidRangeException {
     System.setProperty("httpservices.urlencode", "false");
@@ -57,7 +63,6 @@ public class TestUserProblems {
       Array data = dataV.read("0, 0:72:1, 0:143:1");
       assertThat(data).isNotNull();
     }
-    System.setProperty("httpservices.urlencode", "true");
   }
 
   // ucar.nc2.dods.TestUserProblems > testNomads STANDARD_ERROR
@@ -97,12 +102,10 @@ public class TestUserProblems {
       ArrayFloat.D4 Temperature = (ArrayFloat.D4) V2.read(origin, shape).reduce();
 
     } catch (IOException ioe) {
-      System.setProperty("httpservices.urlencode", "true");
       System.out.println("trying to open " + testfile + " " + ioe);
       // getting 403 on 2 GB request
       assert true;
     }
-    System.setProperty("httpservices.urlencode", "true");
     System.out.println("---- End of File ----");
   }
 }
