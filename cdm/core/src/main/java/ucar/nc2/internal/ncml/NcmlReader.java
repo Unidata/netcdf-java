@@ -283,7 +283,7 @@ public class NcmlReader {
    * @throws IOException on read error
    */
   public static NetcdfDataset.Builder mergeNcml(NetcdfFile ref, @Nullable Element ncmlElem) throws IOException {
-    NetcdfDataset.Builder targetDS = new NetcdfDataset(ref.toBuilder()).toBuilder(); // no enhance
+    NetcdfDataset.Builder targetDS = NetcdfDataset.builder(ref); // no enhance
 
     if (ncmlElem != null) {
       NcmlReader reader = new NcmlReader();
