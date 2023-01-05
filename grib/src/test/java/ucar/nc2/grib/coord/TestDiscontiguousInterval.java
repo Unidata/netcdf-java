@@ -2,8 +2,11 @@ package ucar.nc2.grib.coord;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import ucar.ma2.Array;
 import ucar.nc2.*;
+import ucar.unidata.util.test.TestDir;
+import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
 import java.io.IOException;
 
@@ -18,10 +21,44 @@ public class TestDiscontiguousInterval {
    * @throws IOException
    */
   @Test
-  public void testTimeCoordinate1D_isStrictlyMonotonicallyIncreasing() throws IOException {
+  public void testTimeCoord1D_fromIntervals_isStrictlyMonotonicallyIncreasing_Dataset1() throws IOException {
     String testfile = "../grib/src/test/data/GFS_Global_onedeg_20220627_0000.TotalPrecip.Out48hrs.grib2";
+    String varName = "Total_precipitation_surface_Mixed_intervals_Accumulation";
+
+    checkTimeCoord1D_fromIntervals_isStrictlyMonotonicallyIncreasing(testfile, varName);
+  }
+
+  @Test
+  @Category(NeedsCdmUnitTest.class)
+  public void testTimeCoord1D_fromIntervals_isStrictlyMonotonicallyIncreasing_Dataset2() throws IOException {
+    String testfile = TestDir.cdmUnitTestDir + "formats/grib1/wrf-em.wmo";
+    String varName = "Total_precipitation_surface_Mixed_intervals_Accumulation";
+
+    checkTimeCoord1D_fromIntervals_isStrictlyMonotonicallyIncreasing(testfile, varName);
+  }
+
+  @Test
+  @Category(NeedsCdmUnitTest.class)
+  public void testTimeCoord1D_fromIntervals_isStrictlyMonotonicallyIncreasing_Dataset3() throws IOException {
+    String testfile = TestDir.cdmUnitTestDir + "formats/grib1/nomads/ruc2_252_20110830_2300_008.grb";
+    String varName = "Convective_precipitation_surface_Mixed_intervals_Accumulation";
+
+    checkTimeCoord1D_fromIntervals_isStrictlyMonotonicallyIncreasing(testfile, varName);
+  }
+
+  @Test
+  @Category(NeedsCdmUnitTest.class)
+  public void testTimeCoord1D_fromIntervals_isStrictlyMonotonicallyIncreasing_Dataset4() throws IOException {
+    String testfile = TestDir.cdmUnitTestDir + "formats/grib2/cosmo_de_eps_m001_2009051100.grib2";
+    String varName = "Total_precipitation_rate_surface_Mixed_intervals_Accumulation_ens";
+
+    checkTimeCoord1D_fromIntervals_isStrictlyMonotonicallyIncreasing(testfile, varName);
+  }
+
+  private void checkTimeCoord1D_fromIntervals_isStrictlyMonotonicallyIncreasing(String testfile, String varName)
+      throws IOException {
     try (NetcdfFile nc = NetcdfFiles.open(testfile)) {
-      Variable dataVar = nc.findVariable("Total_precipitation_surface_Mixed_intervals_Accumulation");
+      Variable dataVar = nc.findVariable(varName);
       Assert.assertNotNull(dataVar);
 
       Dimension timeDim = null;

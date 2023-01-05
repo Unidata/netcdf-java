@@ -786,34 +786,41 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
 
       case intvU:
         // data[nruns*ntimes]
+        int dataIndex = 0;
+        double[] currentBounds = new double[2];
+        double[] prevBounds = new double[2];
         for (int runIdx = 0; runIdx < nruns; runIdx++) {
           CoordinateTimeIntv timeIntv = (CoordinateTimeIntv) time2D.getTimeCoordinate(runIdx);
-          double valueBound1 = Double.NaN;
-          double valueBound2 = Double.NaN;
-          double twicePrevValueBound2 = Double.NaN;
-          int timeIndex = 0;
+          int runOffsetIndex = runIdx * ntimes;
+          int timeUnitValue = timeUnit.getValue();
+          int time2D_Offset = time2D.getOffset(runIdx);
           for (TimeCoordIntvValue tinv : timeIntv.getTimeIntervals()) {
-            valueBound1 = timeUnit.getValue() * tinv.getBounds1() + time2D.getOffset(runIdx);
-            valueBound2 = timeUnit.getValue() * tinv.getBounds2() + time2D.getOffset(runIdx);
+            currentBounds[0] = timeUnitValue * tinv.getBounds1() + time2D_Offset;
+            currentBounds[1] = timeUnitValue * tinv.getBounds2() + time2D_Offset;
             // Use end-point of current interval as initial guess for current time coordinate value
-            data[timeIndex] = valueBound2;
-            if (timeIndex >= 1) {
+            data[dataIndex] = currentBounds[1];
+            if (dataIndex >= runOffsetIndex + 1) {
               // Check that time coordinate values are increasing in a strictly-monotonic manner
               // (as required by CF conventions). If not strictly-monotonic ...
-              if (data[timeIndex] <= data[timeIndex - 1]) {
-                if (timeIndex >= 2 && data[timeIndex - 2] <= valueBound1) {
-                  // Change previous time coordinate value to mid-point between
-                  // current time interval start and end values.
-                  data[timeIndex - 1] = (valueBound2 - valueBound1) / 2.0 + valueBound1;
+              if (data[dataIndex] <= data[dataIndex - 1]) {
+                if (dataIndex >= runOffsetIndex + 2) {
+                  if (data[dataIndex - 2] <= currentBounds[0]) {
+                    // Change previous time coordinate value to mid-point between
+                    // current time interval start and end values.
+                    data[dataIndex - 1] = (currentBounds[1] - currentBounds[0]) / 2.0 + currentBounds[0];
+                  } else {
+                    // Or change previous time coordinate value to mid-point between
+                    // current time interval end value and the time coord value from two steps back.
+                    data[dataIndex - 1] = (currentBounds[1] - data[dataIndex - 2]) / 2.0 + data[dataIndex - 2];
+                  }
                 } else {
-                  // Or change previous time coordinate value to mid-point between
-                  // current time interval end value and the time coord value from two steps back.
-                  twicePrevValueBound2 = timeUnit.getValue() * data[timeIndex - 2] + time2D.getOffset(runIdx);
-                  data[timeIndex - 1] = (valueBound2 - twicePrevValueBound2) / 2.0 + twicePrevValueBound2;
+                  data[dataIndex - 1] = (prevBounds[1] - prevBounds[0]) / 2.0 + prevBounds[0];
                 }
               }
             }
-            timeIndex++;
+            prevBounds[0] = currentBounds[0];
+            prevBounds[1] = currentBounds[1];
+            dataIndex++;
           }
         }
         // The above assumes that sets of intervals are always sorted by
