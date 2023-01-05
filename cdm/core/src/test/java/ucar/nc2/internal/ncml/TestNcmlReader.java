@@ -20,7 +20,7 @@ import ucar.unidata.util.test.TestDir;
 public class TestNcmlReader {
 
   @Test
-  public void shouldMergeNcml() throws IOException {
+  public void shouldMergeNcml() throws IOException, JDOMException {
     final String filename = TestDir.cdmLocalTestDataDir + "example1.nc";
 
     try (NetcdfFile netcdfFile = NetcdfDatasets.openFile(filename, null)) {
@@ -34,18 +34,12 @@ public class TestNcmlReader {
     }
   }
 
-  private static Element getNcmlElement() {
+  private static Element getNcmlElement() throws IOException, JDOMException {
     final String ncml = TestNcmlRead.topDir + "modifyVars.xml";
 
-    try {
-      SAXBuilder saxBuilder = new SAXBuilder();
-      saxBuilder.setExpandEntities(false);
-      Document jdomDoc = saxBuilder.build(ncml);
-      return jdomDoc.getRootElement();
-    } catch (JDOMException | IOException e) {
-      Assert.fail();
-      e.printStackTrace();
-      return null;
-    }
+    SAXBuilder saxBuilder = new SAXBuilder();
+    saxBuilder.setExpandEntities(false);
+    Document jdomDoc = saxBuilder.build(ncml);
+    return jdomDoc.getRootElement();
   }
 }
