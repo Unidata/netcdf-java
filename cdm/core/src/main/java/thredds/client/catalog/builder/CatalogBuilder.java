@@ -330,8 +330,8 @@ public class CatalogBuilder {
   }
 
   private void logError(Exception e, String message) {
-    errlog.format(message + ", err=" + e);
-    logger.error(message);
+    errlog.format(message);
+    logger.error(message + ", err=" + e);
     if (logger.isTraceEnabled()) {
       e.printStackTrace();
     }
