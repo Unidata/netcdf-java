@@ -395,6 +395,16 @@ public class GridDatasetInv {
   //////////////////////////////////////////////////////////////
 
   /**
+   * Write the XML representation to a compact String.
+   *
+   * @return the compact XML representation to a String.
+   */
+  public String writeCompactXML(Date lastModified) {
+    XMLOutputter fmt = new XMLOutputter(Format.getCompactFormat());
+    return fmt.outputString(writeDocument(lastModified));
+  }
+
+  /**
    * Write the XML representation to a String.
    *
    * @return the XML representation to a String.

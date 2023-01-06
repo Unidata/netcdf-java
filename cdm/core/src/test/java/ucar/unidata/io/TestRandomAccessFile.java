@@ -208,6 +208,22 @@ public class TestRandomAccessFile {
   }
 
   @Test
+  public void testReadClosedRaf() throws IOException {
+    RandomAccessFile closedTempFile = new RandomAccessFile(TEST_FILE_PATH, "r", TEST_BUFFER_SIZE);
+    int n = 1;
+    byte[] expected = new byte[TEST_BUFFER_SIZE + n];
+    System.arraycopy(UTF8_BYTES, 0, expected, 0, TEST_BUFFER_SIZE);
+    System.arraycopy(new byte[n], 0, expected, TEST_BUFFER_SIZE, n);
+
+    closedTempFile.seek(0);
+    closedTempFile.close();
+
+    byte[] actual = new byte[TEST_BUFFER_SIZE + n];
+    closedTempFile.read(actual, 0, TEST_BUFFER_SIZE + n);
+    assertThat(arraysMatch(expected, actual, 0, 0, TEST_BUFFER_SIZE + n)).isTrue();
+  }
+
+  @Test
   public void testReadFully() throws IOException {
     // read fully, buff < file length
     testFile.seek(0);

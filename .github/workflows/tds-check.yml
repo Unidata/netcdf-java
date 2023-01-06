@@ -44,9 +44,7 @@ jobs:
           sed -i 's/versions\["ncj"\] =.*$/versions["ncj"] ="'${NCJ_VERSION}'"/g' ./gradle/any/dependencies.gradle
           # setup env vars for tds buildTestDSR
           CONTENT_ROOT="-Dtds.content.root.path=${TDS_BUILD_DIR}/tds/src/test/content"
-          DOWNLOAD_DIR="-Dtds.download.dir=/tmp/download"
-          UPLOAD_DIR="-Dtds.upload.dir=/tmp/upload"
-          SYSTEM_PROPS="$CONTENT_ROOT $DOWNLOAD_DIR $UPLOAD_DIR"
+          SYSTEM_PROPS="$CONTENT_ROOT"
           # run tds tests
           echo "Run the TDS tests"
           ./gradlew $SYSTEM_PROPS --info --stacktrace testAll
@@ -96,10 +94,8 @@ jobs:
           sed -i 's/versions\["ncj"\] =.*$/versions["ncj"] ="'${NCJ_VERSION}'"/g' ./gradle/any/dependencies.gradle
           # setup env vars for tds buildTestDSR
           CONTENT_ROOT="-Dtds.content.root.path=${TDS_BUILD_DIR}/tds/src/test/content"
-          DOWNLOAD_DIR="-Dtds.download.dir=/tmp/download"
-          UPLOAD_DIR="-Dtds.upload.dir=/tmp/upload"
           BUILDERS="-Dthredds.test.experimental.useNetcdfJavaBuilders=true"
-          SYSTEM_PROPS="$CONTENT_ROOT $DOWNLOAD_DIR $UPLOAD_DIR $BUILDERS"
+          SYSTEM_PROPS="$CONTENT_ROOT $BUILDERS"
           # run tds tests
           echo "Run the TDS tests"
           ./gradlew $SYSTEM_PROPS --info --stacktrace testAll --refresh-dependencies
