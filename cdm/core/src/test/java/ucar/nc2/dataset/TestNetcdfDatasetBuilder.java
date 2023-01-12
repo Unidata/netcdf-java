@@ -15,9 +15,10 @@ public class TestNetcdfDatasetBuilder {
     Attribute att = new Attribute("attName", "value");
     Dimension dim = new Dimension("dimName", 42);
     Group.Builder nested = Group.builder().setName("child");
-    VariableDS.Builder<?> vb = VariableDS.builder().setName("varName").setDataType(DataType.STRING);
-    Group.Builder groupb =
-        Group.builder().setName("name").addAttribute(att).addDimension(dim).addGroup(nested).addVariable(vb);
+    Variable.Builder<?> variableBuilder = Variable.builder().setName("varName").setDataType(DataType.STRING);
+    VariableDS.Builder<?> variableDSBuilder = VariableDS.builder().setName("varDSName").setDataType(DataType.STRING);
+    Group.Builder groupb = Group.builder().setName("name").addAttribute(att).addDimension(dim).addGroup(nested)
+        .addVariable(variableBuilder).addVariable(variableDSBuilder);
     nested.setParentGroup(groupb);
 
     NetcdfDataset.Builder builder =
@@ -47,10 +48,18 @@ public class TestNetcdfDatasetBuilder {
     assertThat(child.getParentGroup()).isEqualTo(group);
 
     assertThat(group.getVariables()).isNotEmpty();
-    assertThat(group.getVariables()).hasSize(1);
-    Variable v = group.findVariableLocal("varName");
-    assertThat(v.getParentGroup()).isEqualTo(group);
-    assertThat(v.getNetcdfFile()).isEqualTo(ncfile);
+    assertThat(group.getVariables()).hasSize(2);
+
+    Variable variable = group.findVariableLocal("varName");
+    // TODO is this correct behavior that a NetcdfDataset is allowed to have a Variable that is not a VariableDS?
+    assertThat((Object) variable).isNotInstanceOf(VariableDS.class);
+    assertThat(variable.getParentGroup()).isEqualTo(group);
+    assertThat(variable.getNetcdfFile()).isEqualTo(ncfile);
+
+    Variable variableDS = group.findVariableLocal("varDSName");
+    assertThat((Object) variableDS).isInstanceOf(VariableDS.class);
+    assertThat(variableDS.getParentGroup()).isEqualTo(group);
+    assertThat(variableDS.getNetcdfFile()).isEqualTo(ncfile);
   }
 
 }
