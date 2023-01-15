@@ -3,15 +3,15 @@
 
 %language "Java"
 %debug
-%error-verbose
+%define parse.error verbose
 
 /*
 Comment out in case we are using an older version of bison
 %define api.push-pull pull
 */
-%define abstract
-%define package {dap4.core.ce.parser}
-%define parser_class_name {CEBisonParser}
+%define api.parser.abstract
+%define api.package {dap4.core.ce.parser}
+%define api.parser.class {CEBisonParser}
 %define throws {ParseException}
 %define lex_throws {ParseException}
 
@@ -60,7 +60,7 @@ abstract CEAST.SliceList slicelist(CEAST.SliceList list, Slice slice);
 %type <Slice> slice subslice
 %type <CEAST> filter predicate
 %type <CEAST> dimredef
-%type <String> index
+%type <String> extent
 %type <CEAST.Operator> relop eqop 
 %type <CEAST.NodeList> clauselist
 %type <CEAST.NodeList> segmentforest
@@ -180,19 +180,19 @@ subslicelist:
         ;
 
 subslice:
-          index /* case 1 */
+          extent /* case 1 */
             {$$=subslice(1,$1,null,null);} 
-        | index ':' index /* case 2 */
+        | extent ':' extent /* case 2 */
             {$$=subslice(2,$1,$3,null);}
-        | index ':' index ':' index /*case 3*/
+        | extent ':' extent ':' extent /*case 3*/
             {$$=subslice(3,$1,$5,$3);}
-        | index ':' /* case 4 */
+        | extent ':' /* case 4 */
             {$$=subslice(4,$1,null,null);}
-        | index ':' index ':' /* case 5 */
+        | extent ':' extent ':' /* case 5 */
             {$$=subslice(5,$1,null,$3);}
         ;
 
-index:  LONG ;
+extent:  LONG ;
 
 /* 
 Semantics: The projection in a selection currently cannot have any

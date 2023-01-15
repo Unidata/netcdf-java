@@ -1,0 +1,33 @@
+netcdf test_fill_2 {
+  types:
+    byte enum cloud_class_t { Clear = 0, Cumulonimbus = 1, Stratus = 2, Stratocumulus = 3, Cumulus = 4, Altostratus = 5, Nimbostratus = 6, Altocumulus = 7, Cirrostratus = 8, Cirrocumulus = 9, Cirrus = 10, Missing = 127};
+
+  dimensions:
+    d2 = 2;
+  variables:
+    enum cloud_class_t enumvar(d2);
+      string enumvar:_FillValue = "Missing";
+
+    int uv32(d2);
+      uv32:_FillValue = 17;
+
+    ubyte uv8(d2);
+      uv8:_FillValue = 120B;
+
+    short v16(d2);
+      v16:_FillValue = -37S;
+
+  // global attributes:
+  :_DAP4_Little_Endian = 1B;
+  string :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
+
+  data:
+    enumvar = 
+      {2, 127}
+    uv32 = 
+      {111000, 17}
+    uv8 = 
+      {240, 120}
+    v16 = 
+      {32700, -37}
+}

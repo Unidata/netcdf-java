@@ -23,6 +23,7 @@ import ucar.nc2.iosp.NCheader;
 import ucar.nc2.iosp.hdf4.HdfEos;
 import ucar.nc2.iosp.hdf5.H5header;
 import ucar.nc2.ffi.netcdf.NetcdfClibrary;
+import ucar.nc2.iosp.netcdf4.Nc4;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.DebugFlags;
 import ucar.nc2.util.EscapeStrings;
@@ -59,12 +60,6 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
   public static final String TRANSLATE_NC4 = "nc4";
 
   private static Nc4prototypes nc4 = NetcdfClibrary.getForeignFunctionInterface();
-
-  // Define reserved attributes (see Nc4DSP)
-  public static final String UCARTAGOPAQUE = "_edu.ucar.opaque.size";
-  // Not yet implemented
-  public static final String UCARTAGVLEN = "_edu.ucar.isvlen";
-  public static final String UCARTAGORIGTYPE = "_edu.ucar.orig.type";
 
   // TODO: These flags currently control debug messages that are printed to STDOUT. They ought to be logged to SLF4J.
   // We could use SLF4J markers to filter which debug-level messages are printed.
@@ -1072,7 +1067,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     }
 
     if (dtype.isEnum()) {
-      EnumTypedef enumTypedef = g.findEnumeration(utype.name);
+      EnumTypedef enumTypedef = g.findEnumeration(utype.name, true);
       v.setEnumTypedef(enumTypedef);
     } else if (dtype == DataType.OPAQUE) {
       // TODO whats the problem with knowing the size?? Needed to read properly??

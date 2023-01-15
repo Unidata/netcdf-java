@@ -41,6 +41,7 @@ dependencies {
   ncIdv project(':bufr')
   ncIdv project(':grib')
   ncIdv project(':opendap')
+  ncIdv project(':dap4')
   ncIdv project(':visad:cdm-mcidas')
   ncIdv project(':visad:cdm-vis5d')
   ncIdv project(':httpservices')
@@ -55,6 +56,7 @@ dependencies {
   netcdfAll project(':grib')
   netcdfAll project(':netcdf4')
   netcdfAll project(':opendap')
+  netcdfAll project(':dap4')
   netcdfAll project(':httpservices')
   netcdfAll project(':visad:cdm-mcidas')
 

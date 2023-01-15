@@ -1,22 +1,40 @@
 ext.title = 'Data Access Protocol (DAP) version 4.0'  // Will be inherited by subprojects.
 
-// dap4 has no source code nor any artifacts to publish
+apply from: "$rootDir/gradle/any/dependencies.gradle"
+apply from: "$rootDir/gradle/any/java-library.gradle"
+apply from: "$rootDir/gradle/any/gretty.gradle"
 
-// NON-TRANSITIVE Dependency graph:
-// 	module		depends on
-// ----------------------------------------
-// common:
-//	d4core		nothing
-// 	d4lib	d4core httpservices
-// 	d4cdm		d4lib cdm
-// server:
-// 	d4servletshared	d4cdmshared netcdf4
-// 	d4ts		d4servletshared
-// 	d4tswar		d4ts
-// tests:
-// 	d4tests		d4servletshared d4ts
+dependencies {
+  api enforcedPlatform(project(':netcdf-java-platform'))
 
-subprojects {
-  // TODO: Give the subprojects real titles.
-  ext.title = "DAP4: $name"
+  implementation project(':httpservices')
+  implementation project(':cdm:cdm-core')
+  implementation project(':netcdf4')
+  testImplementation project(':cdm-test-utils')
+
+  implementation 'org.apache.httpcomponents:httpclient'
+  compileOnly 'org.apache.httpcomponents:httpcore'
+  compileOnly 'net.java.dev.jna:jna'
+  compileOnly 'com.beust:jcommander'
+  compileOnly 'org.slf4j:slf4j-api'
+
+  compileOnly enforcedPlatform(project(':netcdf-java-platform'))
+  testImplementation enforcedPlatform(project(':netcdf-java-testing-platform'))
+  testImplementation 'junit:junit'
+  testImplementation 'org.slf4j:slf4j-api'
+  testRuntimeOnly 'ch.qos.logback:logback-classic'
+}
+
+test {
+  systemProperties['testargs'] = System.getProperty('testargs', '')
+
+  include 'dap4/test/TestParserDMR.class'
+  include 'dap4/test/TestParserCE.class'
+  include 'dap4/test/TestRaw.class'
+  include 'dap4/test/TestRemote.class'
+  include 'dap4/test/TestConstraints.class'
+  include 'dap4/test/TestHyrax.class'
+
+  dependsOn('farmBeforeIntegrationTest')
+  finalizedBy('farmAfterIntegrationTest')
 }

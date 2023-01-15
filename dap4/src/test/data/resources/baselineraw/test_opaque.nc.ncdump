@@ -1,0 +1,11 @@
+netcdf test_opaque {
+  variables:
+    opaque vo1;
+
+  // global attributes:
+  string :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
+
+  data:
+    vo1 =       0x0123456789abcdef;
+
+}

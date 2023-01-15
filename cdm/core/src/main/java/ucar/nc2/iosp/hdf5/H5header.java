@@ -489,7 +489,7 @@ public class H5header extends NCheader implements H5headerIF {
         }
 
         if (facadeNested.dobj.mdt.map != null) {
-          EnumTypedef enumTypedef = ncGroup.findEnumeration(facadeNested.name);
+          EnumTypedef enumTypedef = ncGroup.findEnumeration(facadeNested.name, false);
           if (enumTypedef == null) {
             DataType basetype;
             switch (facadeNested.dobj.mdt.byteSize) {
@@ -547,7 +547,7 @@ public class H5header extends NCheader implements H5headerIF {
             // This code apparently addresses the possibility of an anonymous enum LOOK ??
             String ename = enumTypedef.getShortName();
             if (ename == null || ename.isEmpty()) {
-              enumTypedef = ncGroup.findEnumeration(facadeNested.name);
+              enumTypedef = ncGroup.findEnumeration(facadeNested.name, false);
               if (enumTypedef == null) {
                 enumTypedef = new EnumTypedef(facadeNested.name, facadeNested.dobj.mdt.map);
                 ncGroup.addEnumeration(enumTypedef);
@@ -1745,7 +1745,7 @@ public class H5header extends NCheader implements H5headerIF {
           ncGroup.getEnumTypedefs().stream().filter((e) -> e.equalsMapOnly(local)).findFirst().orElse(local);
       if (enumTypedef != null) {
         // if found, make sure it is added to the group
-        ncGroup.addEnumeration(enumTypedef);
+        assert (ncGroup.getEnumTypedefs().contains(enumTypedef));
       } else { // if shared object, wont have a name, shared version gets added later
         enumTypedef = new EnumTypedef(mdt.enumTypeName, mdt.map);
         ncGroup.addEnumeration(enumTypedef);

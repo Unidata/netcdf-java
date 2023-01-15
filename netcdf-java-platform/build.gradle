@@ -25,7 +25,7 @@ dependencies {
     api 'org.jdom:jdom2:2.0.6'
     api 'joda-time:joda-time:2.10.3' // replace by javax.time
 
-    // netcdf4, dap4:d4lib
+    // netcdf4, dap4
     // Tricky dependency here. We need to make sure that we keep in-line with the version
     // that chronicle-map uses in the TDS, or else we see bad things happen on the TDS side.
     api 'net.java.dev.jna:jna:5.12.1'
