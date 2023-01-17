@@ -676,26 +676,24 @@ class GribIospBuilder {
     v.addAttribute(new Attribute(CDM.UDUNITS, time2D.getTimeUdUnit()));
     v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.TimeOffset.toString()));
 
-    double[] midpoints = new double[n];
+    double[] data = new double[n];
     double[] bounds = null;
+    int timeUnitValue = time2D.getTimeUnit().getValue();
+
     if (time2D.isTimeInterval()) {
       bounds = new double[2 * n];
-      int count = 0;
-      int countb = 0;
-      for (Object offset : offsets) {
-        TimeCoordIntvValue tinv = (TimeCoordIntvValue) offset;
-        midpoints[count++] = (tinv.getBounds1() + tinv.getBounds2()) / 2.0;
-        bounds[countb++] = tinv.getBounds1();
-        bounds[countb++] = tinv.getBounds2();
-      }
+      List<TimeCoordIntvValue> intervals = (List<TimeCoordIntvValue>) offsets;
+      // TODO Should this be using 'timeUnitValue'? Wasn't in previous incarnation.
+      int count = GribTimeCoordIntervalUtils.generateTimeCoordValuesFromTimeCoordIntervals(intervals, data, bounds, 0, timeUnitValue, 0);
+      assert (count == n);
     } else {
       int count = 0;
       for (Object val : offsets) {
         Integer off = (Integer) val;
-        midpoints[count++] = off; // int ??
+        data[count++] = timeUnitValue * off; // int ??
       }
     }
-    v.setCachedData(Array.factory(DataType.DOUBLE, new int[] {n}, midpoints), false);
+    v.setCachedData(Array.factory(DataType.DOUBLE, new int[] {n}, data), false);
 
     if (time2D.isTimeInterval()) {
       String boundsName = toName + "_bounds";
