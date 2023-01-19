@@ -26,6 +26,16 @@ public class GempakFileReader implements GempakConstants {
   protected RandomAccessFile rf;
 
   /**
+   * Close any resources like file handles
+   *
+   * @throws IOException problem reading file
+   */
+  void close() throws IOException {
+    rf.close();
+    rf = null;
+  }
+
+  /**
    * An error message
    */
   private String errorMessage;
