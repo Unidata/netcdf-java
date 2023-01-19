@@ -70,4 +70,4 @@ public class TestCatalogBuilder {
     catalogBuilder.buildFromURI(testURI);
     Assert.assertTrue(catalogBuilder.hasFatalError());
   }
- }
+}
