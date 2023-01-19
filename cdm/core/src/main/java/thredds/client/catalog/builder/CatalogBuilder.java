@@ -62,8 +62,8 @@ public class CatalogBuilder {
     try {
       validatePort(baseURI);
     } catch (IllegalArgumentException e) {
-      errlog.format("Invalid port number: ", baseURI.toASCIIString(), e.getMessage());
-      logger.error("Invalid port number: ", baseURI.toASCIIString(), e.getMessage());
+      errlog.format("Invalid port number = '%s' err='%s'%n ", baseURI.toASCIIString(), e.getMessage());
+      logger.error("Invalid port number = '{}' err='{}}'", baseURI.toASCIIString(), e.getMessage());
       fatalError = true;
       return null;
     }
@@ -76,8 +76,8 @@ public class CatalogBuilder {
     try {
       validatePort(baseURI);
     } catch (IllegalArgumentException e) {
-      errlog.format("Invalid port number: ", baseURI.toASCIIString(), e.getMessage());
-      logger.error("Invalid port number: ", baseURI.toASCIIString(), e.getMessage());
+      errlog.format("Invalid port number = '%s' err='%s'%n ", baseURI.toASCIIString(), e.getMessage());
+      logger.error("Invalid port number = '{}' err='{}}'", baseURI.toASCIIString(), e.getMessage());
       fatalError = true;
       return null;
     }
@@ -97,8 +97,8 @@ public class CatalogBuilder {
     try {
       validatePort(baseURI);
     } catch (IllegalArgumentException e) {
-      errlog.format("Invalid port number: ", baseURI.toASCIIString(), e.getMessage());
-      logger.error("Invalid port number: ", baseURI.toASCIIString(), e.getMessage());
+      errlog.format("Invalid port number = '%s' err='%s'%n ", baseURI.toASCIIString(), e.getMessage());
+      logger.error("Invalid port number = '{}' err='{}}'", baseURI.toASCIIString(), e.getMessage());
       fatalError = true;
       return null;
     }
@@ -112,8 +112,8 @@ public class CatalogBuilder {
     try {
       validatePort(baseURI);
     } catch (IllegalArgumentException e) {
-      errlog.format("Invalid port number: ", baseURI.toASCIIString(), e.getMessage());
-      logger.error("Invalid port number: ", baseURI.toASCIIString(), e.getMessage());
+      errlog.format("Invalid port number = '%s' err='%s'%n ", baseURI.toASCIIString(), e.getMessage());
+      logger.error("Invalid port number = '{}' err='{}}'", baseURI.toASCIIString(), e.getMessage());
       fatalError = true;
       return null;
     }
@@ -126,8 +126,8 @@ public class CatalogBuilder {
     try {
       validatePort(baseURI);
     } catch (IllegalArgumentException e) {
-      errlog.format("Invalid port number: ", baseURI.toASCIIString(), e.getMessage());
-      logger.error("Invalid port number: ", baseURI.toASCIIString(), e.getMessage());
+      errlog.format("Invalid port number = '%s' err='%s'%n ", baseURI.toASCIIString(), e.getMessage());
+      logger.error("Invalid port number = '{}' err='{}}'", baseURI.toASCIIString(), e.getMessage());
       fatalError = true;
       return null;
     }
@@ -140,8 +140,8 @@ public class CatalogBuilder {
     try {
       validatePort(baseURI);
     } catch (IllegalArgumentException e) {
-      errlog.format("Invalid port number: ", baseURI.toASCIIString(), e.getMessage());
-      logger.error("Invalid port number: ", baseURI.toASCIIString(), e.getMessage());
+      errlog.format("Invalid port number = '%s' err='%s'%n ", baseURI.toASCIIString(), e.getMessage());
+      logger.error("Invalid port number = '{}' err='{}}'", baseURI.toASCIIString(), e.getMessage());
       fatalError = true;
       return null;
     }
@@ -158,14 +158,16 @@ public class CatalogBuilder {
    * @throws  IllegalArgumentException  if URI port number if
    * @see <https://github.com/Unidata/netcdf-java/pull/1131>
    */
-  public void validatePort(URI baseURI) throws IllegalArgumentException {
+  private void validatePort(URI baseURI) throws IllegalArgumentException {
     int port = baseURI.getPort();
-    // -1 means port undefined, so request will default to port 80
+    // -1 means port undefined
     if (port != -1) {
       // TCP/IP port numbers below 1024 are only for root user.
-      if (port < 1024 && (port != 80 || port != 443)) {
-        throw new IllegalArgumentException("User requesting access to catalog on non-valid root-privileged port: " +
-            new Integer(port).toString());
+      if (port < 1024) {
+        if (port != 80 && port != 443) {
+          throw new IllegalArgumentException("User requesting access to catalog on non-valid root-privileged port: " +
+              Integer.toString(port));
+        }
       }
     }
   }
