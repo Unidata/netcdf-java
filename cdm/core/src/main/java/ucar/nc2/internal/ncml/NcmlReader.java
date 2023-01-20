@@ -1108,6 +1108,12 @@ public class NcmlReader {
       readAtt(addedFromAgg.getAttributeContainer(), null, attElem);
     }
 
+    // process remove command
+    java.util.List<Element> removeList = varElem.getChildren("remove", ncNS);
+    for (Element remElem : removeList) {
+      cmdRemove(addedFromAgg, remElem.getAttributeValue("type"), remElem.getAttributeValue("name"));
+    }
+
     String typedefS = dtype.isEnum() ? varElem.getAttributeValue("typedef") : null;
     if (typedefS != null) {
       addedFromAgg.setEnumTypeName(typedefS);
