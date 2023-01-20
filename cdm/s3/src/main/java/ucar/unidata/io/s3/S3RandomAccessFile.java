@@ -163,10 +163,5 @@ public final class S3RandomAccessFile extends RemoteRandomAccessFile implements 
     public RandomAccessFile open(String location) throws IOException {
       return new S3RandomAccessFile(location);
     }
-
-    @Override
-    public RandomAccessFile open(String location, int bufferSize) throws IOException {
-      return new S3RandomAccessFile(location, bufferSize);
-    }
   }
 }
