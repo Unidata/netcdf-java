@@ -6,8 +6,7 @@
 
 package dap4.dap4lib.cdm.nc2;
 
-import dap4.core.interfaces.DataIndex;
-import dap4.dap4lib.D4Cursor;
+import dap4.dap4lib.D4Array;
 import dap4.dap4lib.D4DSP;
 import dap4.dap4lib.cdm.NodeMap;
 import dap4.core.dmr.*;
@@ -18,9 +17,6 @@ import ucar.nc2.Variable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import static dap4.core.dmr.DapType.*;
-import static dap4.core.util.DapConstants.*;
 
 /**
  * Associate the Array objects created in D4DataCompiler
@@ -52,7 +48,7 @@ abstract public class DataToCDM {
   protected Map<DapVariable, Long> localchecksummap = null;
 
   protected Group cdmroot = null;
-  protected Map<DapVariable, D4Cursor> datamap = null;
+  protected Map<DapVariable, D4Array> datamap = null;
   protected NodeMap nodemap = null;
 
   //////////////////////////////////////////////////
@@ -62,14 +58,14 @@ abstract public class DataToCDM {
   // Correlate CDM Variables with ucar.ma2.Array objects
 
   static public Map<Variable, Array> createDataMap(D4DSP dsp, NodeMap nodemap) throws DapException {
-    Map<DapVariable, D4Cursor> datamap = dsp.getVariableDataMap();
+    Map<DapVariable, D4Array> datamap = dsp.getVariableDataMap();
     DapDataset dmr = dsp.getDMR();
     Map<Variable, Array> arraymap = new HashMap<>();
     // iterate over the variables represented in the nodemap
     List<DapVariable> topvars = dmr.getTopVariables();
     Map<Variable, Array> map = null;
     for (DapVariable var : topvars) {
-      D4Cursor cursor = datamap.get(var);
+      D4Array cursor = datamap.get(var);
       Variable v = (Variable) nodemap.get(var);
       assert cursor != null && v != null;
       Array array = cursor.getArray();

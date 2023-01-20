@@ -8,8 +8,9 @@ package dap4.core.ce;
 import dap4.core.ce.parser.CEParserImpl;
 import dap4.core.dmr.*;
 import dap4.core.dmr.parser.ParseException;
-import dap4.core.interfaces.DataCursor;
 import dap4.core.util.*;
+import dap4.dap4lib.D4Array;
+
 import java.util.*;
 
 /**
@@ -96,8 +97,6 @@ public class CEConstraint {
     NONE, EXPANDED, CONTRACTED
   }
 
-  ;
-
   protected static class Segment {
     DapVariable var;
     List<Slice> slices; // projection slices for this variable
@@ -141,109 +140,6 @@ public class CEConstraint {
     }
   }
 
-  /*
-   * static protected class ReferenceIterator implements Iterator<DapNode>
-   * {
-   * 
-   * //////////////////////////////////////////////////
-   * // Instance Variables
-   * 
-   * List<DapNode> list = new ArrayList<>();
-   * Iterator<DapNode> listiter = null;
-   **
-   * 
-   * @param ce the constraint over which to iterate
-   * 
-   * @throws DapException
-   *
-   * public ReferenceIterator(CEConstraint ce)
-   * throws DapException
-   * {
-   * list.addAll(ce.dimrefs);
-   * list.addAll(ce.enums);
-   * list.addAll(ce.variables);
-   * listiter = list.iterator();
-   * }
-   * 
-   * //////////////////////////////////////////////////
-   * // Iterator Interface
-   * 
-   * public boolean hasNext()
-   * {
-   * return listiter.hasNext();
-   * }
-   * 
-   * public DapNode next()
-   * {
-   * return listiter.next();
-   * }
-   * 
-   * public void remove()
-   * {
-   * throw new UnsupportedOperationException();
-   * }
-   * 
-   * }
-   * 
-   * static protected class FilterIterator implements Iterator<DataCursor>
-   * {
-   * protected DapSequence seq;
-   * protected DataCursor data;
-   * protected long nrecords;
-   * protected CEAST filter;
-   * 
-   * protected int recno;
-   * protected DataCursor current;
-   * CEConstraint ce;
-   * 
-   * public FilterIterator(CEConstraint ce, DapSequence seq, DataCursor data, CEAST filter)
-   * {
-   * this.ce = ce;
-   * this.filter = filter;
-   * this.seq = seq;
-   * this.data = data;
-   * this.nrecords = data.getRecordCount();
-   * this.recno = 0; // actually recno of next record to read
-   * this.current = null;
-   * }
-   * 
-   * // Iterator interface
-   * public boolean hasNext()
-   * {
-   * if(recno < nrecords)
-   * return false;
-   * try {
-   * // look for next matching record starting at recno
-   * if(filter == null) {
-   * this.current = data.getRecord(this.recno);
-   * this.recno++;
-   * return true;
-   * } else for(;recno < nrecords;recno++) {
-   * this.current = data.getRecord(this.recno);
-   * if(ce.matches(this.seq, this.current, filter))
-   * return true;
-   * }
-   * } catch (DapException de) {
-   * return false;
-   * }
-   * this.current = null;
-   * return false;
-   * }
-   * 
-   * public DataCursor next()
-   * {
-   * if(this.recno >= nrecords || this.current == null)
-   * throw new NoSuchElementException();
-   * return this.current;
-   * }
-   * 
-   * public void remove()
-   * {
-   * throw new UnsupportedOperationException();
-   * }
-   * }
-   */
-
   //////////////////////////////////////////////////
   // class variables and methods
 
@@ -266,24 +162,6 @@ public class CEConstraint {
   public static void release(DapDataset dmr) {
     universals.remove(dmr);
   }
-  /*
-   * protected static DataCursor fieldValue(DapVariable sqvar, DapSequence seq, DataCursor record, String field)
-   * throws DapException {
-   * DapVariable dapv = seq.findByName(field);
-   * if (dapv == null)
-   * throw new DapException("Unknown variable in filter: " + field);
-   * if (!dapv.isAtomic())
-   * throw new DapException("Non-atomic variable in filter: " + field);
-   * if (dapv.getRank() > 0)
-   * throw new DapException("Non-scalar variable in filter: " + field);
-   * int fieldindex = seq.indexByName(field);
-   * DataCursor da = (DataCursor) (record.readField(fieldindex));
-   * if (da == null)
-   * throw new DapException("No such field: " + field);
-   * return da;
-   * }
-   * 
-   */
 
   protected static int compare(Object lvalue, Object rvalue) throws DapException {
     if (lvalue instanceof String && rvalue instanceof String)
@@ -313,7 +191,7 @@ public class CEConstraint {
    * @throws DapException
    * @return the value of the expression (usually a Boolean)
    */
-  protected Object eval(DapVariable var, DapSequence seq, DataCursor record, CEAST expr) throws DapException {
+  protected Object eval(DapVariable var, DapSequence seq, D4Array record, CEAST expr) throws DapException {
     switch (expr.sort) {
 
       case CONSTANT:
@@ -619,26 +497,6 @@ public class CEConstraint {
     return isref;
   }
 
-  /**
-   * Reference X Iterator
-   * Iterate over the variables and return
-   * those that are referenced. The order of
-   * return is preorder.
-   * Inputs:
-   * 1. the variable whose slices are to be iterated.
-   *
-   * @return ReferenceIterator
-   * @throws DapException if could not create.
-   */
-  /*
-   * public ReferenceIterator
-   * referenceIterator()
-   * throws DapException
-   * {
-   * return new ReferenceIterator(this);
-   * }
-   */
-
   //////////////////////////////////////////////////
   // Selection (Filter) processing
 
@@ -653,7 +511,7 @@ public class CEConstraint {
    * @throws DapException
    * @return true if the filter matches the record
    */
-  public boolean match(DapVariable sqvar, DapSequence seq, DataCursor rec) throws DapException {
+  public boolean match(DapVariable sqvar, DapSequence seq, D4Array rec) throws DapException {
     Segment sseq = findSegment(sqvar);
     if (sseq == null)
       return false;
@@ -674,7 +532,7 @@ public class CEConstraint {
    * @return true if a match
    * @throws DapException
    */
-  protected boolean matches(DapVariable var, DapSequence seq, DataCursor rec, CEAST filter) throws DapException {
+  protected boolean matches(DapVariable var, DapSequence seq, D4Array rec, CEAST filter) throws DapException {
     Object value = eval(var, seq, rec, filter);
     return ((Boolean) value);
   }

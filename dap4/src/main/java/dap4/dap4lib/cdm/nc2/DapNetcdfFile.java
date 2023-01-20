@@ -295,7 +295,7 @@ public class DapNetcdfFile extends NetcdfFile {
   protected void loadContext() {
     this.cxt.put(DapConstants.ChecksumSource.REMOTE, this.dsp.getChecksumMap(DapConstants.ChecksumSource.REMOTE));
     this.cxt.put(DapConstants.ChecksumSource.LOCAL, this.dsp.getChecksumMap(DapConstants.ChecksumSource.LOCAL));
-    this.cxt.put(D4Cursor.class, this.dsp.getVariableDataMap());
+    this.cxt.put(D4Array.class, this.dsp.getVariableDataMap());
   }
 
   protected void verifyChecksums() throws DapException {
@@ -358,11 +358,11 @@ public class DapNetcdfFile extends NetcdfFile {
       // Prepare the array map
       assert this.arraymap == null;
       this.arraymap = new HashMap<Variable, Array>();
-      Map<DapVariable, D4Cursor> datamap = this.dsp.getVariableDataMap();
+      Map<DapVariable, D4Array> datamap = this.dsp.getVariableDataMap();
       NodeMap<CDMNode, DapNode> nodemap = this.cdmCompiler.getNodeMap();
-      for (Map.Entry<DapVariable, D4Cursor> entry : datamap.entrySet()) {
+      for (Map.Entry<DapVariable, D4Array> entry : datamap.entrySet()) {
         DapVariable dv = entry.getKey();
-        D4Cursor dc = entry.getValue();
+        D4Array dc = entry.getValue();
         Variable v = (Variable) nodemap.get(entry.getKey());
         assert (dc.getArray() != null);
         arraymap.put(v, dc.getArray());

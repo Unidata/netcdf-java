@@ -6,7 +6,6 @@
 package dap4.core.util;
 
 import dap4.core.dmr.*;
-import dap4.core.interfaces.DataIndex;
 
 import java.io.*;
 import java.math.BigInteger;

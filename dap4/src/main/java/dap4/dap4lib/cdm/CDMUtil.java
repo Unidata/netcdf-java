@@ -5,8 +5,6 @@
 
 package dap4.dap4lib.cdm;
 
-import dap4.core.interfaces.DataIndex;
-import dap4.dap4lib.D4Cursor;
 import dap4.core.dmr.DapDimension;
 import dap4.core.dmr.DapType;
 import dap4.core.dmr.TypeSort;
@@ -156,27 +154,6 @@ public abstract class CDMUtil {
    * @return the lowest level Variable instance
    */
   public static Variable unwrap(Variable var) {
-    /*
-     * for(;;) {
-     * if(var instanceof VariableDS) {
-     * VariableDS vds = (VariableDS) var;
-     * var = vds.getOriginalVariable();
-     * if(var == null) {
-     * var = vds;
-     * break;
-     * }
-     * } else if(var instanceof StructureDS) {
-     * StructureDS sds = (StructureDS) var;
-     * var = sds.getOriginalVariable();
-     * if(var == null) {
-     * var = sds;
-     * break;
-     * }
-     * } else
-     * break;
-     * }
-     * return var;
-     */
     return (Variable) CDMNode.unwrap(var);
   }
 
@@ -273,68 +250,6 @@ public abstract class CDMUtil {
     return result;
   }
 
-  /**
-   * Given an arbitrary Array (including ArrayStructure), produce
-   * a new Array that represents the slice defined by the
-   * section. For now, we create a simple array of the relevant
-   * type and fill it by extracting the values specified by the
-   * section.
-   * <p>
-   * param array the array from which the section is extracted
-   * param section determines what to extract
-   * throws DapException
-   * returns the slice array
-   */
-  /*
-   * static public ucar.ma2.Array
-   * arraySlice(ucar.ma2.Array array, Section section)
-   * throws DapException
-   * {
-   * // Case it out.
-   * if(!dapvar.getBaseType().isStructType()) { // =>Atomic type
-   * if(dapvar.isTopLevel()) {
-   * // Simplest case: use createview, but watch out for final VLEN
-   * List<Range> ranges = section.getRanges();
-   * try {
-   * if(CDMUtil.hasVLEN(ranges))
-   * return array.section(ranges.subList(0, ranges.size() - 2));
-   * else
-   * return array.section(ranges);
-   * } catch (InvalidRangeException ire) {
-   * throw new DapException(ire);
-   * }
-   * } else
-   * throw new UnsupportedOperationException(); // same as other cdm
-   * } else { // struct type
-   * assert (array instanceof CDMArrayStructure);
-   * CDMArrayStructure struct = (CDMArrayStructure) array;
-   * if(dapvar.isTopLevel()) {
-   * // Build a new ArrayStructure containing
-   * // the relevant instances.
-   * int[] shape = section.getShape();
-   * StructureMembers sm = new StructureMembers(struct.getStructureMembers());
-   * ArrayStructureMA slice = new ArrayStructureMA(sm, shape);
-   * CDMOdometer odom = new CDMOdometer(dapvar.getDimensions(), section.getRanges());
-   * // Compute the number of structuredata instances we need
-   * long totalsize = section.computeSize();
-   * List<StructureMembers.Member> mlist = sm.getMembers();
-   * StructureData[] newdata = new StructureData[(int) totalsize];
-   * for(int i = 0;odom.hasNext();odom.next(), i++) {
-   * long recno = odom.index();
-   * StructureDataW clone = new StructureDataW(sm);
-   * newdata[i] = clone;
-   * StructureData record = struct.getStructureData((int) recno);
-   * for(int j = 0;j < mlist.size();j++) {
-   * StructureMembers.Member m = mlist.get(j);
-   * clone.setMemberData(m, record.getArray(m));
-   * }
-   * }
-   * return slice;
-   * } else
-   * throw new UnsupportedOperationException(); // same as other cdm
-   * }
-   * }
-   */
   public static String getChecksumString(byte[] checksum) {
     StringBuilder buf = new StringBuilder();
     for (int i = 0; i < checksum.length; i++) {
@@ -344,47 +259,6 @@ public abstract class CDMUtil {
     }
     return buf.toString();
   }
-
-  /**
-   * Convert a Section + variable to a constraint
-   * <p>
-   * <p>
-   * static public View
-   * sectionToView(CDMDSP dsp, Variable v, Section section)
-   * throws DapException
-   * {
-   * if(section == null || section.getRank() == 0)
-   * return null;
-   * // Get the corresponding DapNode
-   * DapVariable dv = (DapVariable) dsp.getNode().get(v);
-   * if(dv == null)
-   * throw new DapException("Variable has no corresponding dap node: " + v.getFullName());
-   * // Get the structure path wrt DapDataset for dv
-   * // and use path plus the Section to construct a constraint
-   * List<DapVariable> structpath = DapUtil.getStructurePath(dv);
-   * List<Range> ranges = section.getRanges();
-   * View view = new View(dmr);
-   * int next = 0;
-   * for(int i = 0;i < structpath.size();i++) {
-   * dv = structpath.get(i);
-   * int rank = dv.getRank();
-   * ViewVariable vv = new ViewVariable(dv);
-   * List<Slice> slices = new ArrayList<Slice>(rank);
-   * for(int j = 0;j < rank;j++, next++) {
-   * if(next >= ranges.size())
-   * throw new DapException("Range::Rank mismatch");
-   * Range range = ranges.get(next);
-   * Slice slice = new Slice(range.first(), range.last(), range.stride()).validate();
-   * slices.add(slice);
-   * }
-   * vv.setSlices(slices);
-   * view.put(dv, vv);
-   * }
-   * view.validate(View.EXPAND);
-   * return view;
-   * }
-   */
-
 
   public static List<Range> dimsetToRanges(List<DapDimension> dimset) throws dap4.core.util.DapException {
     if (dimset == null)

@@ -64,7 +64,7 @@ public abstract class D4DSP {
   // DAP stream compilation
   D4DataCompiler d4compiler = null;
 
-  protected Map<DapVariable, D4Cursor> datamap = new HashMap<>();
+  protected Map<DapVariable, D4Array> datamap = new HashMap<>();
 
   //////////////////////////////////////////////////
   // Constructor(s)
@@ -100,7 +100,7 @@ public abstract class D4DSP {
     return this.checksummode;
   }
 
-  public Map<DapVariable, D4Cursor> getVariableDataMap() {
+  public Map<DapVariable, D4Array> getVariableDataMap() {
     return this.datamap;
   }
 
@@ -123,7 +123,7 @@ public abstract class D4DSP {
     return this;
   }
 
-  protected void addVariableData(DapVariable var, D4Cursor cursor) {
+  protected void addVariableData(DapVariable var, D4Array cursor) {
     this.datamap.put(var, cursor);
   }
 
@@ -208,7 +208,7 @@ public abstract class D4DSP {
       case DAP:
         cxt.put(ChecksumSource.REMOTE, d4compiler.getChecksumMap(ChecksumSource.REMOTE));
         cxt.put(ChecksumSource.LOCAL, d4compiler.getChecksumMap(ChecksumSource.LOCAL));
-        cxt.put(D4Cursor.class, getVariableDataMap());
+        cxt.put(D4Array.class, getVariableDataMap());
         break;
     }
   }

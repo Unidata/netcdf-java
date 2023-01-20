@@ -6,7 +6,6 @@
 
 package dap4.dap4lib;
 
-import dap4.core.interfaces.DataIndex;
 import dap4.core.util.ChecksumMode;
 import dap4.core.dmr.*;
 import dap4.core.util.*;
@@ -21,11 +20,8 @@ import java.nio.ByteOrder;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.zip.Checksum;
 
-import static dap4.core.interfaces.DataCursor.Scheme.*;
-import static dap4.dap4lib.D4Cursor.Scheme;
-import static dap4.dap4lib.D4Cursor.schemeFor;
+import static dap4.core.interfaces.ArrayScheme.*;
 
 public class D4DataCompiler {
 
@@ -110,7 +106,7 @@ public class D4DataCompiler {
     // iterate over the variables represented in the databuffer
     for (DapVariable vv : this.dmr.getTopVariables()) {
       Object storage = compileVar(vv);
-      D4Cursor data = new D4Cursor(schemeFor(vv), this.dsp, vv).setStorage(storage);
+      D4Array data = new D4Array(schemeFor(vv), this.dsp, vv).setStorage(storage);
       assert data.getArray() == null;
       data.setArray(createArray(vv, data.getStorage()));
       this.dsp.addVariableData(vv, data);

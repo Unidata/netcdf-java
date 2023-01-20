@@ -5,16 +5,14 @@
 
 package dap4.dap4lib;
 
-import dap4.core.interfaces.DataIndex;
 import dap4.core.util.DapException;
 import dap4.core.util.Slice;
 import ucar.ma2.Index;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
-public class D4Index extends ucar.ma2.Index implements DataIndex {
+public class D4Index extends ucar.ma2.Index {
 
   public static final D4Index SCALAR = new D4Index(0);
 
@@ -37,21 +35,21 @@ public class D4Index extends ucar.ma2.Index implements DataIndex {
   }
 
   /**
-   * Convert DataIndex to list of slices
+   * Convert ucar.ma2.Index to list of slices
    * 
    * @param indices to convert
    * @return list of corresponding slices
    */
 
-  static public List<Slice> indexToSlices(DataIndex indices) throws DapException {
+  static public List<Slice> indexToSlices(ucar.ma2.Index indices) throws DapException {
     // short circuit the scalar case
     int rank = indices.getRank();
     if (rank == 0)
       return Slice.SCALARSLICES;
-    // offset = d3*(d2*(d1*(x1))+x2)+x3
     List<Slice> slices = new ArrayList<>(rank);
+    int[] counter = indices.getCurrentCounter();
     for (int i = 0; i < rank; i++) {
-      int isize = indices.getCurrentCounter(i);
+      int isize = counter[i];
       slices.add(new Slice(isize, isize + 1, 1, indices.getShape(i)));
     }
     return slices;
@@ -66,7 +64,7 @@ public class D4Index extends ucar.ma2.Index implements DataIndex {
    * @return Index corresponding to slices
    * @throws DapException
    */
-  static public DataIndex slicesToIndex(List<Slice> slices) throws DapException {
+  static public D4Index slicesToIndex(List<Slice> slices) throws DapException {
     int[] positions = new int[slices.size()];
     int[] dimsizes = new int[slices.size()];
     for (int i = 0; i < positions.length; i++) {
@@ -76,7 +74,9 @@ public class D4Index extends ucar.ma2.Index implements DataIndex {
       positions[i] = s.getFirst();
       dimsizes[i] = s.getMax();
     }
-    return new D4Index(positions, dimsizes);
+    D4Index result = new D4Index(dimsizes);
+    result.set(positions);
+    return result;
   }
 
   //////////////////////////////////////////////////

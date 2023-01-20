@@ -6,7 +6,7 @@
 package dap4.dap4lib;
 
 import dap4.core.dmr.*;
-import dap4.core.interfaces.DataCursor;
+import dap4.core.interfaces.ArrayScheme;
 import ucar.ma2.Array;
 
 /**
@@ -15,7 +15,7 @@ import ucar.ma2.Array;
  * information beside the Array.
  */
 
-public class D4Cursor implements DataCursor {
+public class D4Array {
 
   //////////////////////////////////////////////////
   // Mnemonics
@@ -27,7 +27,7 @@ public class D4Cursor implements DataCursor {
   // Instance Variables
 
   protected D4DSP dsp;
-  protected Scheme scheme; // Roughly, what kind of array
+  protected ArrayScheme scheme; // Roughly, what kind of array
   protected DapNode template;
   protected Array array = null; // the Array object for the variable
   protected Object storage = null; // The storage underlying Array
@@ -35,7 +35,7 @@ public class D4Cursor implements DataCursor {
   //////////////////////////////////////////////////
   // Constructor(s)
 
-  public D4Cursor(Scheme scheme, D4DSP dsp, DapVariable template) {
+  public D4Array(ArrayScheme scheme, D4DSP dsp, DapVariable template) {
     this.scheme = scheme;
     this.template = template;
     this.dsp = dsp;
@@ -44,7 +44,7 @@ public class D4Cursor implements DataCursor {
   public String toString() {
     StringBuilder buf = new StringBuilder();
     buf.append(getScheme().toString());
-    if (getScheme() == Scheme.STRUCTARRAY || getScheme() == Scheme.SEQARRAY)
+    if (getScheme() == ArrayScheme.STRUCTARRAY || getScheme() == ArrayScheme.SEQARRAY)
       buf.append("[]");
     buf.append(":");
     buf.append(getTemplate().toString());
@@ -58,7 +58,7 @@ public class D4Cursor implements DataCursor {
     return this.dsp;
   }
 
-  public Scheme getScheme() {
+  public ArrayScheme getScheme() {
     return this.scheme;
   }
 
@@ -78,31 +78,16 @@ public class D4Cursor implements DataCursor {
     return ((DapVariable) getTemplate()).getRank() == 0;
   }
 
-  public D4Cursor setArray(Array a) {
+  public D4Array setArray(Array a) {
     this.array = a;
     return this;
   }
 
-  public D4Cursor setStorage(Object store) {
+  public D4Array setStorage(Object store) {
     this.storage = store;
     return this;
   }
 
-
-  static public Scheme schemeFor(DapVariable field) {
-    DapType ftype = field.getBaseType();
-    Scheme scheme = null;
-    boolean isscalar = field.getRank() == 0;
-    if (ftype.getTypeSort().isAtomic())
-      scheme = Scheme.ATOMIC;
-    else {
-      if (ftype.getTypeSort().isStructType())
-        scheme = Scheme.STRUCTARRAY;
-      else if (ftype.getTypeSort().isSeqType())
-        scheme = Scheme.SEQARRAY;
-    }
-    return scheme;
-  }
 
 }
 
