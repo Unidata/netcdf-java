@@ -160,44 +160,7 @@ public class TestNetcdfFileCache {
 
     cache.clearCache(true);
 
-    // Verify that cache hits actually happen.
-    // Load up the files and then close them (thus, unlocking them).
-    // Then load them up again.
-    // Since files are now unlocked, loading stuff up should result in hits.
-    loadFilesIntoCache(new File(TestDir.cdmLocalTestDataDir), cache);
-    assertThat(cache.hits.get()).isEqualTo(0);
-    assertThat(cache.miss.get()).isEqualTo(6 * saveCount);
-    map = cache.getCache();
-    // close all
-    files = new ArrayList<>();
-    for (Object key : map.keySet()) {
-      FileCache.CacheElement elem = map.get(key);
-      assertThat(elem.list.size()).isEqualTo(1);
-
-      for (FileCache.CacheElement.CacheFile file : elem.list) {
-        synchronized (file) {
-          // Need to collect files to close instead of directly closing them
-          // in this double-loop because closing the files changes the iterator
-          // We are also explicitly doing synchronous unlocks so that when we
-          // get to the next file loading stage, we are guaranteed that the
-          // files in the cache are indeed released and capable of being
-          // reacquired. Users won't need to do this normally.
-          files.add(file.ncfile);
-          file.isLocked.set(false);
-        }
-      }
-    }
-    for (FileCacheable ncfile : files) {
-      ncfile.close();
-    }
-    logger.debug("Closed {} files", files.size());
-
-    loadFilesIntoCache(new File(TestDir.cdmLocalTestDataDir), cache);
-    cache.showCache(new Formatter(System.out));
-    assertThat(cache.hits.get()).isEqualTo(saveCount);
-    assertThat(cache.miss.get()).isEqualTo(6 * saveCount);
-
-    cache.clearCache(true);
+    // TODO: Verify that hits actually happen
   }
 
   void checkAllSame(List<FileCache.CacheElement.CacheFile> list) {

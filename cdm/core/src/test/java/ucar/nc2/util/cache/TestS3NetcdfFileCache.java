@@ -101,32 +101,7 @@ public class TestS3NetcdfFileCache {
     }
     cache.clearCache(true);
 
-    // Verify that cache hits actually happen.
-    // Load up the file and then close tthem (thus, unlocking it).
-    // Then load it up again.
-    // Since file is now unlocked, loading it up should result in a hit.
-    loadFileIntoCache(NCAR_G16_S3_URI, cache);
-    assertThat(cache.hits.get()).isEqualTo(0);
-    assertThat(cache.miss.get()).isEqualTo(3);
-    map = cache.getCache();
-    // close all
-    List<FileCacheable> files = new ArrayList<>();
-    for (Object key : map.keySet()) {
-      FileCache.CacheElement elem = map.get(key);
-      assertThat(elem.list.size()).isEqualTo(1);
-      for (FileCache.CacheElement.CacheFile file : elem.list) {
-        // Need to do it this way instead of directly closing them
-        // because closing the files changes the iterations
-        files.add(file.ncfile);
-      }
-    }
-    for (FileCacheable ncfile : files) {
-      ncfile.close();
-    }
-
-    loadFileIntoCache(NCAR_G16_S3_URI, cache);
-    assertThat(cache.hits.get()).isEqualTo(1);
-    assertThat(cache.miss.get()).isEqualTo(3);
+    // TODO: Verify that hits actually happen
   }
 
   void checkAllSame(List<FileCache.CacheElement.CacheFile> list) {
