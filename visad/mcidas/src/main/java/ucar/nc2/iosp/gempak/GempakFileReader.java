@@ -31,8 +31,10 @@ public class GempakFileReader implements GempakConstants {
    * @throws IOException problem reading file
    */
   void close() throws IOException {
-    rf.close();
-    rf = null;
+    if (rf != null) {
+      rf.close();
+      rf = null;
+    }
   }
 
   /**
