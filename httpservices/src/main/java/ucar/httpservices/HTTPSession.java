@@ -668,7 +668,8 @@ public class HTTPSession implements Closeable {
   }
 
   public synchronized void resetInterceptors() {
-    this.interceptors.resetInterceptors();
+    if(this.interceptors != null)
+      this.interceptors.resetInterceptors();
   }
 
   public AuthScope getAuthScope() {
