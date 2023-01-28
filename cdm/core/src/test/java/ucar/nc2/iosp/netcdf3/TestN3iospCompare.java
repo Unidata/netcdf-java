@@ -52,7 +52,7 @@ public class TestN3iospCompare {
       SPFactory.setServiceProvider("ucar.nc2.internal.iosp.netcdf3.N3iospNew");
       try (NetcdfFile withBuilder = NetcdfFiles.open(filename)) {
         Formatter f = new Formatter();
-        CompareNetcdf2 compare = new CompareNetcdf2(f, false, false, true);
+        CompareNetcdf2 compare = new CompareNetcdf2(f, false, false, true, false);
         if (!compare.compare(org, withBuilder)) {
           System.out.printf("Compare %s%n%s%n", filename, f);
           fail();
