@@ -395,9 +395,11 @@ public class Group extends CDMNode implements AttributeContainer {
       if (name.equals(d.getShortName()))
         return d;
     }
-    Group parent = getParentGroup();
-    if (parent != null && searchup)
-      return parent.findEnumeration(name, searchup);
+    if (searchup) {
+      Group parent = getParentGroup();
+      if (parent != null)
+        return parent.findEnumeration(name, searchup);
+    }
     return null;
   }
 
