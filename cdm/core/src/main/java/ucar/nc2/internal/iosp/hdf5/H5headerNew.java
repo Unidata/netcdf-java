@@ -17,8 +17,13 @@ import java.nio.LongBuffer;
 import java.nio.ShortBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
-
+import java.util.ArrayList;
+import java.util.Formatter;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.TimeZone;
 import ucar.ma2.Array;
 import ucar.ma2.ArrayChar;
 import ucar.ma2.ArrayObject;
@@ -39,6 +44,7 @@ import ucar.nc2.Group.Builder;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.CDM;
+import ucar.nc2.filter.Filter;
 import ucar.nc2.internal.iosp.hdf4.HdfEos;
 import ucar.nc2.internal.iosp.hdf4.HdfHeaderIF;
 import ucar.nc2.internal.iosp.hdf5.H5objects.DataObject;
@@ -492,7 +498,7 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
         }
 
         if (facadeNested.dobj.mdt.map != null) {
-          EnumTypedef enumTypedef = parentGroup.findEnumTypedef(facadeNested.name, true).orElse(null);
+          EnumTypedef enumTypedef = parentGroup.findEnumTypedef(facadeNested.name).orElse(null);
           if (enumTypedef == null) {
             DataType basetype;
             switch (facadeNested.dobj.mdt.byteSize) {
@@ -548,7 +554,7 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
             }
             // This code apparently addresses the possibility of an anonymous enum LOOK ??
             if (enumTypeName.isEmpty()) {
-              EnumTypedef enumTypedef = parentGroup.findEnumTypedef(facadeNested.name, true).get();
+              EnumTypedef enumTypedef = parentGroup.findEnumTypedef(facadeNested.name).orElse(null);
               if (enumTypedef == null) {
                 enumTypedef = new EnumTypedef(facadeNested.name, facadeNested.dobj.mdt.map);
                 parentGroup.addEnumTypedef(enumTypedef);
@@ -1547,51 +1553,14 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
 
     // set the enumTypedef
     if (dt.isEnum()) {
-      // dmh: HDF5, at least as used by netcdf-4, defines an enumeration type multiple times.
-      // One is when the enum type is defined, and then for every variable or field typed by that
-      // enum type, another enum type is created but with the name of the variable/field instead of
-      // the name of the actual type. This appears to be because H5header(New) does not pass
-      // down enough information for the HDF5->CDM translator to recognize the second case.
-      // The solution provided is to see if the following conditions hold when an enum typed
-      // variable is encountered:
-      // 1. The enum name is the same as the variable name.
-      // 2. There is no enum of that name in the current group.
-      // 3. There is another enum type in some containing group
-      // that is structurally identical to the EnumTypedef -- but with a
-      // different name -- associated with the variable. This is in contrast
-      // to testing for name equality.
-      //
-      // If all three conditions are true, then use the enum found
-      // in condition 3 as the enum type for the variable.
-      // Note that provision is made only for a shortname rather than a
-      // fully qualified name, which is incorrect, but too hard to change.
-      //
-      // If condition 1 if false, then it is ok to create a new EnumTypedef.
-      // Else if condition 2 is false then it is an error because the existence
-      // of such an enum is illegal netcdf-4 because duplicate name.
-      // Else if condition 3 is false, then it is an error because the
-      // variable's enum type is not defined.
-
-      EnumTypedef actualEnumTypedef = null; // The final chosen EnumTypedef
-      // Create the variables EnumTypedef on speculation
-      EnumTypedef template = new EnumTypedef(mdt.enumTypeName, mdt.map);
-      if (template.getShortName().equals(v.shortName)) { // Condition 1
-        Optional<EnumTypedef> candidate = parent.findEnumTypedef(mdt.enumTypeName, false);
-        if (!candidate.isPresent()) { // Condition 2
-          candidate = parent.findSimilarEnumTypedef(template, true, false);
-          if (candidate.isPresent()) // Condition 3; use correct EnumTypedef
-            actualEnumTypedef = candidate.get();
-          else { // !Condition 3
-            log.warn("EnumTypedef is missing for variable: {}", v.shortName);
-            throw new IllegalStateException("EnumTypedef is missing for variable: " + v.shortName);
-          }
-        } else { // !Condition 2
-          log.warn("Duplicate name: EnumTypedef and Variable: {}", v.shortName);
-          throw new IllegalStateException("Duplicate name: EnumTypedef and Variable: " + v.shortName);
-        }
-      } else // ! Condition 1; use template
-        actualEnumTypedef = template;
-      v.setEnumTypeName(actualEnumTypedef.getShortName());
+      // TODO Not sure why, but there may be both a user type and a "local" mdt enum. May need to do a value match?
+      EnumTypedef enumTypedef = parent.findEnumTypedef(mdt.enumTypeName).orElse(null);
+      if (enumTypedef == null) { // if shared object, wont have a name, shared version gets added later
+        EnumTypedef local = new EnumTypedef(mdt.enumTypeName, mdt.map);
+        enumTypedef = parent.enumTypedefs.stream().filter((e) -> e.equalsMapOnly(local)).findFirst().orElse(local);
+        parent.addEnumTypedef(enumTypedef);
+      }
+      v.setEnumTypeName(enumTypedef.getShortName());
     }
 
     return true;
@@ -1640,10 +1609,6 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
 
     boolean useFillValue;
     byte[] fillValue;
-
-    public DataBTree getBtree() {
-      return btree;
-    }
 
     public String getCompression() {
       if (mfp == null)

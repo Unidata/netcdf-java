@@ -1774,7 +1774,7 @@ public class H5objects {
     }
 
     int getId() {
-      return ((Short) this.properties.get(Filters.Keys.ID)).intValue();
+      return (int) this.properties.get(Filters.Keys.ID);
     }
 
     Map<String, Object> getProperties() {
