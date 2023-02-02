@@ -665,13 +665,18 @@ public class NcmlReader {
     boolean newName = (nameInFile != null) && !nameInFile.equals(name);
     if (nameInFile == null) {
       nameInFile = name;
-    } else if (null == findAttribute(ref, nameInFile)) { // has to exists
+    } else if (findAttribute(ref, nameInFile) == null && findAttribute(dest, nameInFile) == null) { // has to exists
       errlog.format("NcML attribute orgName '%s' doesnt exist. att=%s in=%s%n", nameInFile, name, refName);
       return;
     }
 
     // see if its new
-    ucar.nc2.Attribute oldatt = findAttribute(ref, nameInFile);
+    ucar.nc2.Attribute oldatt = null;
+    if(ref != null){
+      oldatt = findAttribute(ref, nameInFile);
+    } else {
+      oldatt = findAttribute(dest, nameInFile);
+    }
     if (oldatt == null) { // new
       if (debugConstruct) {
         System.out.println(" add new att = " + name);
