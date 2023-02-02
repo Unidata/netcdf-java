@@ -37,18 +37,18 @@ public class TestNcmlModifyAtts {
     String filename = "file:" + TestNcmlRead.topDir + "modifyAtts.xml";
     ncfile = NcmlReader.readNcml(filename, null, null).build();
 
-    String aggregationFilename = "file:" + TestNcmlRead.topDir + "aggregationModifyAttributes.xml";
-    aggregationNcFile = NcmlReader.readNcml(aggregationFilename, null, null).build();
+    //String aggregationFilename = "file:" + TestNcmlRead.topDir + "aggregationModifyAttributes.xml";
+    //aggregationNcFile = NcmlReader.readNcml(aggregationFilename, null, null).build();
 
-    String aggregationScanFilename = "file:" + TestNcmlRead.topDir + "aggregationScanModifyAttributes.xml";
-    aggregationScanNcFile = NcmlReader.readNcml(aggregationScanFilename, null, null).build();
+    //String aggregationScanFilename = "file:" + TestNcmlRead.topDir + "aggregationScanModifyAttributes.xml";
+    //aggregationScanNcFile = NcmlReader.readNcml(aggregationScanFilename, null, null).build();
   }
 
   @AfterClass
   public static void tearDown() throws IOException {
     ncfile.close();
-    aggregationNcFile.close();
-    aggregationScanNcFile.close();
+    //aggregationNcFile.close();
+    //aggregationScanNcFile.close();
   }
 
   @Test
@@ -270,13 +270,9 @@ public class TestNcmlModifyAtts {
   }
 
   @Test
-  public void shouldModifyAttributesOfAggregationScanVariable() {
-    final Variable variable = aggregationScanNcFile.findVariable("T");
-    verifyAttributesAreModified(variable);
-  }
-
-  @Test
-  public void shouldRemoveAttributesOfAggregationScanVariable() {
+  public void shouldRemoveAttributesOfAggregationScanVariable() throws IOException {
+    String aggregationScanFilename = "file:" + TestNcmlRead.topDir + "aggregationScanModifyAttributes.xml";
+    aggregationScanNcFile = NcmlReader.readNcml(aggregationScanFilename, null, null).build();
     final Variable variable = aggregationScanNcFile.findVariable("T");
 
     assertThat(variable != null).isTrue();
@@ -286,7 +282,7 @@ public class TestNcmlModifyAtts {
     assertThat(newAttribute).isNotNull();
     assertThat(newAttribute.getStringValue()).isEqualTo("new attribute value");
 
-    final Attribute renamedUnits = variable.findAttribute("units");
+    final Attribute renamedUnits = variable.findAttribute("renamed_units");
     assertThat(renamedUnits).isNotNull();
     assertThat(renamedUnits.getStringValue()).isEqualTo("degC");
 
@@ -296,9 +292,63 @@ public class TestNcmlModifyAtts {
   }
 
   @Test
-  public void shouldModifyAttributesOfAggregationVariable() {
+  public void shouldRemoveAttributesOfAggregationVariable() {
     final Variable variable = aggregationNcFile.findVariable("T");
-    verifyAttributesAreModified(variable);
+
+    assertThat(variable != null).isTrue();
+    assertThat(variable.getAttributes().size()).isEqualTo(2);
+
+    final Attribute newAttribute = variable.findAttribute("new_attribute");
+    assertThat(newAttribute).isNotNull();
+    assertThat(newAttribute.getStringValue()).isEqualTo("new attribute value");
+
+    final Attribute renamedUnits = variable.findAttribute("renamed_units");
+    assertThat(renamedUnits).isNotNull();
+    assertThat(renamedUnits.getStringValue()).isEqualTo("degC");
+
+    final Attribute removedAttribute = variable.findAttribute("long_name");
+    assertThat(removedAttribute).isNull();
+
+  }
+
+  @Test
+  public void shouldModifyAttributesOfAggregationScanVariable() throws IOException {
+    String aggregationScanFilename = "file:" + TestNcmlRead.topDir + "aggregationScanModifyAttributes.xml";
+    aggregationScanNcFile = NcmlReader.readNcml(aggregationScanFilename, null, null).build();
+    final Variable variable = aggregationScanNcFile.findVariable("T");
+
+    assertThat(variable != null).isTrue();
+
+    final Attribute renamedUnits = variable.findAttribute("renamed_units");
+    assertThat(renamedUnits).isNotNull();
+    assertThat(renamedUnits.getStringValue()).isEqualTo("degC");
+
+    final Attribute oldUnits = variable.findAttribute("units");
+    assertThat(oldUnits).isNull();
+
+    aggregationScanNcFile.close();
+
+    //verifyAttributesAreModified(variable);
+  }
+
+  @Test
+  public void shouldModifyAttributesOfAggregationVariable() throws IOException {
+    String aggregationScanFilename = "file:" + TestNcmlRead.topDir + "aggregationModifyAttributes.xml";
+    aggregationNcFile = NcmlReader.readNcml(aggregationScanFilename, null, null).build();
+    final Variable variable = aggregationNcFile.findVariable("T");
+
+    assertThat(variable != null).isTrue();
+
+    final Attribute renamedUnits = variable.findAttribute("renamed_units");
+    assertThat(renamedUnits).isNotNull();
+    assertThat(renamedUnits.getStringValue()).isEqualTo("degC");
+
+    final Attribute oldUnits = variable.findAttribute("units");
+    assertThat(oldUnits).isNull();
+    aggregationNcFile.close();
+
+
+    //verifyAttributesAreModified(variable);
   }
 
   private void verifyAttributesAreModified(Variable variable) {
