@@ -3,7 +3,7 @@
 
   <variable name="T">
     <attribute name="new_attribute" type="string" value="new attribute value"/>
-<!--    <attribute name="renamed_units" orgName="units"/> TODO this causes an error when reading the ncml-->
+    <attribute name="renamed_units" orgName="units"/> <!--TODO this causes an error when reading the ncml-->
     <remove type="attribute" name="long_name"/>
   </variable>
 
