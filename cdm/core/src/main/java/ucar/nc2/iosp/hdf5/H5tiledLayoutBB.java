@@ -247,18 +247,22 @@ public class H5tiledLayoutBB implements LayoutBB {
      */
     private byte[] inflate(byte[] compressed) throws IOException {
       // run it through the Inflator
-      ByteArrayInputStream in = new ByteArrayInputStream(compressed);
       java.util.zip.Inflater inflater = new java.util.zip.Inflater();
-      java.util.zip.InflaterInputStream inflatestream =
-          new java.util.zip.InflaterInputStream(in, inflater, inflatebuffersize);
-      int len = Math.min(8 * compressed.length, MAX_ARRAY_LEN);
-      ByteArrayOutputStream out = new ByteArrayOutputStream(len); // Fixes KXL-349288
-      IO.copyB(inflatestream, out, len);
+      try (ByteArrayInputStream in = new ByteArrayInputStream(compressed)) {
 
-      byte[] uncomp = out.toByteArray();
-      if (debug || debugFilter)
-        System.out.println(" inflate bytes in= " + compressed.length + " bytes out= " + uncomp.length);
-      return uncomp;
+        java.util.zip.InflaterInputStream inflatestream =
+            new java.util.zip.InflaterInputStream(in, inflater, inflatebuffersize);
+        int len = Math.min(8 * compressed.length, MAX_ARRAY_LEN);
+        ByteArrayOutputStream out = new ByteArrayOutputStream(len); // Fixes KXL-349288
+        IO.copyB(inflatestream, out, len);
+
+        byte[] uncomp = out.toByteArray();
+        if (debug || debugFilter)
+          System.out.println(" inflate bytes in= " + compressed.length + " bytes out= " + uncomp.length);
+        return uncomp;
+      } finally {
+        inflater.end();
+      }
     }
 
     /*
