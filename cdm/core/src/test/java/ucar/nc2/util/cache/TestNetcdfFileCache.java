@@ -68,8 +68,9 @@ public class TestNetcdfFileCache {
   @Test
   public void testNetcdfFileCache() throws IOException {
     loadFilesIntoCache(new File(TestDir.cdmLocalTestDataDir), cache);
-
     cache.showCache(new Formatter(System.out));
+    assertThat(cache.hits.get()).isEqualTo(0);
+    assertThat(cache.miss.get()).isEqualTo(count);
 
     // count cache size
     Map<Object, FileCache.CacheElement> map = cache.getCache();
@@ -81,10 +82,13 @@ public class TestNetcdfFileCache {
     }
 
     // load same files again - should be added to the list, rather than creating a new elem
+    // Note that the files are still open (therefore locked), so this won't increment hits.
     int saveCount = count;
     loadFilesIntoCache(new File(TestDir.cdmLocalTestDataDir), cache);
     map = cache.getCache();
     cache.showCache(new Formatter(System.out));
+    assertThat(cache.hits.get()).isEqualTo(0);
+    assertThat(cache.miss.get()).isEqualTo(2 * saveCount);
 
     assertThat(map.values().size()).isEqualTo(saveCount); // problem
 
@@ -95,11 +99,16 @@ public class TestNetcdfFileCache {
     }
 
     cache.clearCache(true);
+    // clearing the cache doesn't reset the cache counters.
+    assertThat(cache.hits.get()).isEqualTo(0);
+    assertThat(cache.miss.get()).isEqualTo(2 * saveCount);
     map = cache.getCache();
     assertThat(map.values().size()).isEqualTo(0);
 
-    // load again
+    // load again (cached files are still locked, so no hits and all misses)
     loadFilesIntoCache(new File(TestDir.cdmLocalTestDataDir), cache);
+    assertThat(cache.hits.get()).isEqualTo(0);
+    assertThat(cache.miss.get()).isEqualTo(3 * saveCount);
     map = cache.getCache();
     assertThat(map.values().size()).isEqualTo(saveCount);
 
@@ -119,9 +128,11 @@ public class TestNetcdfFileCache {
     map = cache.getCache();
     assertThat(map.values().size()).isEqualTo(0);
 
-    // load twice
+    // load twice (files aren't unlocked, so it results in cache misses)
     loadFilesIntoCache(new File(TestDir.cdmLocalTestDataDir), cache);
     loadFilesIntoCache(new File(TestDir.cdmLocalTestDataDir), cache);
+    assertThat(cache.hits.get()).isEqualTo(0);
+    assertThat(cache.miss.get()).isEqualTo(5 * saveCount);
     map = cache.getCache();
     assertThat(map.values().size()).isEqualTo(saveCount);
 
@@ -148,6 +159,8 @@ public class TestNetcdfFileCache {
     }
 
     cache.clearCache(true);
+
+    // TODO: Verify that hits actually happen
   }
 
   void checkAllSame(List<FileCache.CacheElement.CacheFile> list) {
