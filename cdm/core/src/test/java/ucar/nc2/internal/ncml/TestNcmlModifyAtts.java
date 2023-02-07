@@ -271,67 +271,56 @@ public class TestNcmlModifyAtts {
 
   @Test
   public void shouldRemoveAttributesOfAggregationScanVariable() {
-    final Variable variable = aggregationScanNcFile.findVariable("T");
-
-    assertThat(variable != null).isTrue();
-    assertThat(variable.getAttributes().size()).isEqualTo(2);
-
-    final Attribute newAttribute = variable.findAttribute("new_attribute");
-    assertThat(newAttribute).isNotNull();
-    assertThat(newAttribute.getStringValue()).isEqualTo("new attribute value");
-
-    final Attribute renamedUnits = variable.findAttribute("renamed_units");
-    assertThat(renamedUnits).isNotNull();
-    assertThat(renamedUnits.getStringValue()).isEqualTo("degC");
-
-    final Attribute removedAttribute = variable.findAttribute("long_name");
-    assertThat(removedAttribute).isNull();
+    verifyAggregationVariableAttributeRemoved(aggregationScanNcFile);
   }
 
   @Test
   public void shouldRemoveAttributesOfAggregationVariable() {
-    final Variable variable = aggregationNcFile.findVariable("T");
-
-    assertThat(variable != null).isTrue();
-    assertThat(variable.getAttributes().size()).isEqualTo(2);
-
-    final Attribute newAttribute = variable.findAttribute("new_attribute");
-    assertThat(newAttribute).isNotNull();
-    assertThat(newAttribute.getStringValue()).isEqualTo("new attribute value");
-
-    final Attribute renamedUnits = variable.findAttribute("renamed_units");
-    assertThat(renamedUnits).isNotNull();
-    assertThat(renamedUnits.getStringValue()).isEqualTo("degC");
-
-    final Attribute removedAttribute = variable.findAttribute("long_name");
-    assertThat(removedAttribute).isNull();
+    verifyAggregationVariableAttributeRemoved(aggregationNcFile);
   }
 
   @Test
   public void shouldModifyAttributesOfAggregationScanVariable() {
-    final Variable variable = aggregationScanNcFile.findVariable("T");
-
-    assertThat(variable != null).isTrue();
-
-    final Attribute renamedUnits = variable.findAttribute("renamed_units");
-    assertThat(renamedUnits).isNotNull();
-    assertThat(renamedUnits.getStringValue()).isEqualTo("degC");
-
-    final Attribute oldUnits = variable.findAttribute("units");
-    assertThat(oldUnits).isNull();
+    verifyAggregationVariableAttributeModified(aggregationScanNcFile);
   }
 
   @Test
   public void shouldModifyAttributesOfAggregationVariable() {
-    final Variable variable = aggregationNcFile.findVariable("T");
+    verifyAggregationVariableAttributeModified(aggregationNcFile);
+  }
+
+  private void verifyAggregationVariableAttributeModified(NetcdfFile ncFile) {
+    final Variable variable = ncFile.findVariable("T");
 
     assertThat(variable != null).isTrue();
 
-    final Attribute renamedUnits = variable.findAttribute("renamed_units");
-    assertThat(renamedUnits).isNotNull();
-    assertThat(renamedUnits.getStringValue()).isEqualTo("degC");
-
+    // verify that the units attribute was renamed and isn't there anymore
     final Attribute oldUnits = variable.findAttribute("units");
     assertThat(oldUnits).isNull();
+
+    // verify that the attribute was renamed
+    final Attribute renamedUnits = variable.findAttribute("renamed_units");
+    assertThat(renamedUnits).isNotNull();
+
+    // verify that the renamed attribute still has the correct value
+    assertThat(renamedUnits.getStringValue()).isEqualTo("degC");
+  }
+
+  private void verifyAggregationVariableAttributeRemoved(NetcdfFile ncFile) {
+    final Variable variable = ncFile.findVariable("T");
+
+    assertThat(variable != null).isTrue();
+    assertThat(variable.getAttributes().size()).isEqualTo(2);
+
+    // verify that attribute long_name was removed
+    final Attribute removedAttribute = variable.findAttribute("long_name");
+    assertThat(removedAttribute).isNull();
+
+    // verify that attributes new_attribute and renamed_units were not incorrectly removed
+    final Attribute newAttribute = variable.findAttribute("new_attribute");
+    assertThat(newAttribute).isNotNull();
+
+    final Attribute renamedUnits = variable.findAttribute("renamed_units");
+    assertThat(renamedUnits).isNotNull();
   }
 }
