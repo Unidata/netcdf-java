@@ -14,6 +14,7 @@ import ucar.ma2.Section;
 import ucar.ma2.StructureDataIterator;
 import ucar.nc2.Group;
 import ucar.nc2.NetcdfFile;
+import ucar.nc2.NetcdfFiles;
 import ucar.nc2.ParsedSectionSpec;
 import ucar.nc2.Structure;
 import ucar.nc2.util.CancelTask;
@@ -99,8 +100,8 @@ public abstract class AbstractIOServiceProvider implements IOServiceProvider {
 
   // reacquire any resources like file handles
   public void reacquire() throws IOException {
-    raf = RandomAccessFile.acquire(location);
-    this.raf.order(rafOrder);
+    raf = NetcdfFiles.getRaf(location, -1);
+    raf.order(rafOrder);
   }
 
   // default implementation, reads into an Array, then writes to WritableByteChannel

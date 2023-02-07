@@ -10,7 +10,6 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.nc2.NetcdfFile;
-import ucar.nc2.internal.iosp.hdf5.H5iospNew;
 import ucar.nc2.iosp.IOServiceProvider;
 import ucar.unidata.util.test.TestDir;
 
@@ -19,14 +18,14 @@ public class TestH5iosp {
   private static final String TEST_FILE = TestDir.cdmLocalTestDataDir + "hdf5/structmetadata_eos.h5";
 
   private NetcdfFile netcdfFile;
-  private H5iospNew h5iosp;
+  private H5iosp h5iosp;
 
   @Before
   public void open() throws Exception {
     netcdfFile = NetcdfFile.open(TEST_FILE);
     final IOServiceProvider iosp = netcdfFile.getIosp();
-    assertThat(iosp).isInstanceOf(H5iospNew.class);
-    h5iosp = (H5iospNew) iosp;
+    assertThat(iosp).isInstanceOf(H5iosp.class);
+    h5iosp = (H5iosp) iosp;
     assertThat(h5iosp).isNotNull();
   }
 
