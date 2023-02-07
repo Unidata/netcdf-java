@@ -7,21 +7,26 @@ package ucar.gcdm;
 import static com.google.common.truth.Truth.assertThat;
 
 import java.io.FileFilter;
+import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
+import java.util.Formatter;
 import java.util.List;
 import org.apache.commons.io.filefilter.SuffixFileFilter;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.gcdm.client.GcdmNetcdfFile;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.NetcdfDatasets;
-import ucar.nc2.internal.util.CompareArrayToArray;
+import ucar.nc2.util.CompareNetcdf2;
 import ucar.unidata.util.test.TestDir;
 
 /** Test {@link GcdmNetcdfFile} */
 @RunWith(Parameterized.class)
 public class TestGcdmNetcdfFile {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @Parameterized.Parameters(name = "{0}")
   public static List<Object[]> getTestParameters() {
@@ -61,7 +66,9 @@ public class TestGcdmNetcdfFile {
     try (NetcdfFile ncfile = NetcdfDatasets.openFile(filename, null);
         GcdmNetcdfFile gcdmFile = GcdmNetcdfFile.builder().setRemoteURI(gcdmUrl).build()) {
 
-      boolean ok = CompareArrayToArray.compareFiles(ncfile, gcdmFile);
+      Formatter formatter = new Formatter();
+      boolean ok = CompareNetcdf2.compareFiles(ncfile, gcdmFile, formatter, true, true, true);
+      logger.debug(formatter.toString());
       assertThat(ok).isTrue();
     }
   }

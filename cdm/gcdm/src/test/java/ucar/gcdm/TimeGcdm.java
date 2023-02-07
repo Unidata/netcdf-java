@@ -8,9 +8,12 @@ import static com.google.common.truth.Truth.assertThat;
 
 import com.google.common.base.Stopwatch;
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 import java.util.concurrent.TimeUnit;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.gcdm.client.GcdmNetcdfFile;
 import ucar.ma2.Array;
 import ucar.nc2.Variable;
@@ -21,6 +24,7 @@ import ucar.unidata.util.test.category.Slow;
 /** Time {@link GcdmNetcdfFile} takes ~ 3 minutes */
 @Category({NeedsCdmUnitTest.class, Slow.class})
 public class TimeGcdm {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
   String localFilename =
       TestDir.cdmUnitTestDir + "formats/netcdf4/e562p1_fp.inst3_3d_asm_Nv.20100907_00z+20100909_1200z.nc4";
 

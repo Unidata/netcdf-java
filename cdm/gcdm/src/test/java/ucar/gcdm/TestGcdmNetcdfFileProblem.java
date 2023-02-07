@@ -6,12 +6,16 @@ package ucar.gcdm;
 
 import static com.google.common.truth.Truth.assertThat;
 
+import java.lang.invoke.MethodHandles;
+import java.util.Formatter;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.gcdm.client.GcdmNetcdfFile;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.NetcdfDatasets;
-import ucar.nc2.internal.util.CompareArrayToArray;
+import ucar.nc2.util.CompareNetcdf2;
 import ucar.nc2.util.Misc;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
@@ -21,6 +25,7 @@ import java.nio.file.Paths;
 
 /** Test {@link GcdmNetcdfFile} problems */
 public class TestGcdmNetcdfFileProblem {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   /*
    * ushort EV_1KM_RefSB(Band_1KM_RefSB=15, 10*nscans=2030, Max_EV_frames=1354);
@@ -169,7 +174,9 @@ public class TestGcdmNetcdfFileProblem {
     try (NetcdfFile ncfile = NetcdfDatasets.openFile(path.toString(), null);
         GcdmNetcdfFile gcdmFile = GcdmNetcdfFile.builder().setRemoteURI(gcdmUrl).build()) {
 
-      boolean ok = CompareArrayToArray.compareFiles(ncfile, gcdmFile);
+      Formatter formatter = new Formatter();
+      boolean ok = CompareNetcdf2.compareFiles(ncfile, gcdmFile, formatter, true, false, true);
+      logger.debug(formatter.toString());
       assertThat(ok).isTrue();
     }
   }
@@ -180,7 +187,9 @@ public class TestGcdmNetcdfFileProblem {
     try (NetcdfFile ncfile = NetcdfDatasets.openFile(path.toString(), null);
         GcdmNetcdfFile gcdmFile = GcdmNetcdfFile.builder().setRemoteURI(gcdmUrl).build()) {
 
-      boolean ok = CompareArrayToArray.compareVariable(ncfile, gcdmFile, varName, true);
+      Formatter formatter = new Formatter();
+      boolean ok = CompareNetcdf2.compareFiles(ncfile, gcdmFile, formatter, true, false, true);
+      logger.debug(formatter.toString());
       assertThat(ok).isTrue();
     }
   }
