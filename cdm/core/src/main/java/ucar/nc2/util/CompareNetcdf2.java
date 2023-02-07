@@ -176,9 +176,11 @@ public class CompareNetcdf2 {
   }
 
   public CompareNetcdf2(Formatter f, boolean showCompare, boolean showEach, boolean compareData) {
-    this(f,showCompare, showEach, compareData, true);
+    this(f, showCompare, showEach, compareData, true);
   }
-  public CompareNetcdf2(Formatter f, boolean showCompare, boolean showEach, boolean compareData, boolean ignoreattrcase) {
+
+  public CompareNetcdf2(Formatter f, boolean showCompare, boolean showEach, boolean compareData,
+      boolean ignoreattrcase) {
     this.f = f;
     this.compareData = compareData;
     this.showCompare = showCompare;
@@ -665,7 +667,7 @@ public class CompareNetcdf2 {
       AttributeContainer list2, ObjFilter objFilter) {
     boolean ok = true;
     Attribute found;
-    if(this.ignoreattrcase)
+    if (this.ignoreattrcase)
       found = list2.findAttributeIgnoreCase(want.getShortName());
     else
       found = list2.findAttribute(want.getShortName());

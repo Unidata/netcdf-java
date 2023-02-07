@@ -1547,11 +1547,11 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
 
     // set the enumTypedef
     if (dt.isEnum()) {
-      // dmh: HDF5, at least as used by netcdf-4, defines an enumeration type multiple times.
-      // One is when the enum type is defined, and then for every variable or field typed by that
+      // dmh: HDF5, at least as used by netcdf-4, defines an enumeration type one or more times.
+      // Once is when the enum type is defined, and then for every variable or field typed by that
       // enum type, another enum type is created but with the name of the variable/field instead of
       // the name of the actual type. This appears to be because H5header(New) does not pass
-      // down enough information for the HDF5->CDM translator to recognize the second case.
+      // down enough information for the HDF5->CDM translator to recognize the case of two definitions.
       // The solution provided is to see if the following conditions hold when an enum typed
       // variable is encountered:
       // 1. The enum name is the same as the variable name.
@@ -1569,28 +1569,33 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
       // If condition 1 if false, then it is ok to create a new EnumTypedef.
       // Else if condition 2 is false then it is an error because the existence
       // of such an enum is illegal netcdf-4 because duplicate name.
-      // Else if condition 3 is false, then it is an error because the
-      // variable's enum type is not defined.
+      // Else if condition 3 is false, then we use the variable's enum type
+      // anonymously and use the name "<var_name>_enum_t" as its name.
 
       EnumTypedef actualEnumTypedef = null; // The final chosen EnumTypedef
       // Create the variables EnumTypedef on speculation
-      EnumTypedef template = new EnumTypedef(mdt.enumTypeName, mdt.map);
-      if (template.getShortName().equals(v.shortName)) { // Condition 1
+      String templatename = mdt.enumTypeName + "_enum_t";
+      EnumTypedef template = new EnumTypedef(templatename, mdt.map);
+      if (mdt.enumTypeName.equals(v.shortName)) { // Condition 1
         Optional<EnumTypedef> candidate = parent.findEnumTypedef(mdt.enumTypeName, false);
         if (!candidate.isPresent()) { // Condition 2
           candidate = parent.findSimilarEnumTypedef(template, true, false);
-          if (candidate.isPresent()) // Condition 3; use correct EnumTypedef
+          if (candidate.isPresent()) { // Condition 3; use correct EnumTypedef
             actualEnumTypedef = candidate.get();
-          else { // !Condition 3
-            log.warn("EnumTypedef is missing for variable: {}", v.shortName);
-            throw new IllegalStateException("EnumTypedef is missing for variable: " + v.shortName);
+          } else { // !Condition 3
+            //log.warn("EnumTypedef is missing for variable: {}", v.shortName);
+            //throw new IllegalStateException("EnumTypedef is missing for variable: " + v.shortName);
           }
         } else { // !Condition 2
           log.warn("Duplicate name: EnumTypedef and Variable: {}", v.shortName);
           throw new IllegalStateException("Duplicate name: EnumTypedef and Variable: " + v.shortName);
         }
-      } else // ! Condition 1; use template
+      }
+      if(actualEnumTypedef == null){ // default to the template
         actualEnumTypedef = template;
+        // Add to the current group(builder)
+        parent.addEnumTypedef(actualEnumTypedef);
+      }
       v.setEnumTypeName(actualEnumTypedef.getShortName());
     }
 
