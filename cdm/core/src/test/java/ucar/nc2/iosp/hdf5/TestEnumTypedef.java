@@ -80,43 +80,64 @@ public class TestEnumTypedef extends UnitTestCommon {
     String input;
     String baseline;
 
-    // Test case where enum type is in same group to the variable using it.
+    // Test case where:
+    // * enum type is in same group to the variable using it
+    // * Explicit enum type
+    // * Anonymous variable enum type
     file = "test_atomic_types.nc";
     fqn = "/primary_cloud";
     enum_t = "cloud_class_t";
     basetype = DataType.ENUM1;
     input = TestDir.cdmLocalTestDataDir + "hdf5/" + file;
     baseline = null;
-    tc = new TestCase(file,fqn,enum_t,basetype,input,baseline);
-    testcases.add(tc);
+    tc = new TestCase(file, fqn, enum_t, basetype, input, baseline);
+    //testcases.add(tc);
 
     // Test case where enum type is in a parent group to the variable using it.
+    // Test case where:
+    // * enum type is in parent group to the variable using it
+    // * Explicit enum type
+    // * Anonymous variable enum type
+    // * Anonymous attribute enum type
     file = "test_enum_2.nc4";
     fqn = "/h/primary_cloud";
     enum_t = "cloud_class_t";
     basetype = DataType.ENUM1;
     input = TestDir.cdmLocalTestDataDir + "hdf5/" + file;
     baseline = null;
-    tc = new TestCase(file,fqn,enum_t,basetype,input,baseline);
+    tc = new TestCase(file, fqn, enum_t, basetype, input, baseline);
     testcases.add(tc);
 
     // Test case where enum type is anonymous
+    // Test case where:
+    // * enum type is in same group to the variable using it
+    // * Explicit enum type
+    // * Anonymous variable enum type
     file = "ref_anon_enum.h5";
     fqn = "/EnumTest";
     enum_t = "EnumTest_enum_t";
     basetype = DataType.ENUM4;
     input = TestDir.cdmLocalTestDataDir + "hdf5/" + file;
-    baseline = "netcdf ref_anon_enum.h5 {\n" +
-      "types:\n" +
-      "enum EnumTest_enum_t { RED = 0, GREEN = 1, BLUE = 2, WHITE = 3, BLACK = 4};\n" +
-      "variables:\n" +
-      "enum EnumTest_enum_t EnumTest(10);\n" +
-    "data:\n" +
-    "EnumTest =\n" +
-    "{0, 1, 2, 3, 4, 0, 1, 2, 3, 4}\n" +
-    "\n}";
-    tc = new TestCase(file,fqn,enum_t,basetype,input,baseline);
-    testcases.add(tc);
+    baseline = "netcdf ref_anon_enum.h5 {\n" + "types:\n"
+        + "enum EnumTest_enum_t { RED = 0, GREEN = 1, BLUE = 2, WHITE = 3, BLACK = 4};\n" + "variables:\n"
+        + "enum EnumTest_enum_t EnumTest(10);\n" + "data:\n" + "EnumTest =\n" + "{0, 1, 2, 3, 4, 0, 1, 2, 3, 4}\n"
+        + "\n}";
+    tc = new TestCase(file, fqn, enum_t, basetype, input, baseline);
+    //testcases.add(tc);
+
+    // Test case where enum type exists
+    // Test case where:
+    // * enum type is in same group to the variable using it
+    // * Explicit enum type
+    // * Anonymous variable enum type
+    file = "test_enum_type.nc";
+    fqn = "/primary_cloud";
+    enum_t = "cloud_class_t";
+    basetype = DataType.ENUM1;
+    input = TestDir.cdmLocalTestDataDir + "hdf5/" + file;
+    baseline = null;
+    tc = new TestCase(file, fqn, enum_t, basetype, input, baseline);
+    //testcases.add(tc);
 
     return testcases;
   }
@@ -142,7 +163,8 @@ public class TestEnumTypedef extends UnitTestCommon {
   public void test() throws Exception {
     logger.info("TestEnumTypedef on {}%n", tc.input);
     try (NetcdfFile ncfile = NetcdfFiles.open(tc.input)) {
-      Variable var = getvar(ncfile,tc.fqn);
+      String testresult = dumpdata(ncfile, tc.file);
+      Variable var = getvar(ncfile, tc.fqn);
       Assert.assertNotNull((Object) var);
       Assert.assertTrue(var.getDataType().isEnum());
       Assert.assertTrue(var.getDataType() == tc.basetype);
@@ -151,19 +173,18 @@ public class TestEnumTypedef extends UnitTestCommon {
       Assert.assertNotNull(typedef);
       logger.info("TestEnumTypedef typedef name {}%n", typedef.getShortName());
       Assert.assertTrue(typedef.getShortName().equals(tc.enum_t));
-      if(tc.baseline != null) {
-        Assert.assertTrue(compare(tc.file,ncfile,tc.baseline));
+      if (tc.baseline != null) {
+        Assert.assertTrue(compare(tc.file, ncfile, tc.baseline, testresult));
       }
     }
   }
 
   // Support functions
 
-  protected boolean compare(String file, NetcdfFile ncfile, String baseline) throws Exception {
-    String testresult =  dumpdata(ncfile, file);
+  protected boolean compare(String file, NetcdfFile ncfile, String baseline, String testresult) throws Exception {
     String diffs = UnitTestCommon.compare(file, baseline, testresult);
-    if(diffs != null) {
-      System.err.println(String.format("Test %s failed:\n%s",file,diffs));
+    if (diffs != null) {
+      System.err.println(String.format("Test %s failed:\n%s", file, diffs));
     }
     return diffs == null;
   }
