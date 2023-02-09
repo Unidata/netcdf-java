@@ -1188,7 +1188,7 @@ public class Group extends CDMNode implements AttributeContainer {
      * Return new or existing.
      */
     public EnumTypedef findOrAddEnumTypedef(String name, Map<Integer, String> map) {
-      Optional<EnumTypedef> opt = findEnumTypedef(name, false); // Find in this group
+      Optional<EnumTypedef> opt = findEnumTypedef(name); // Find in this group
       if (opt.isPresent()) {
         return opt.get();
       } else {
