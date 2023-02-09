@@ -67,7 +67,7 @@ public class GcdmClient {
       List<Array> results = new ArrayList<>();
       while (responses.hasNext()) {
         DataResponse response = responses.next();
-        results.add(GcdmConverterMa2.decodeData(response.getData(), section));
+        results.add(GcdmConverterMa2.decodeData(response.getData()));
       }
       return Array.factoryCopy(dataType, section.getShape(), results);
     } catch (Throwable e) {
