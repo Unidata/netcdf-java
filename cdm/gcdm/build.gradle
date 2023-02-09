@@ -72,7 +72,8 @@ sourceSets {
 task startDaemon(type: JavaExecFork) {
   classpath = sourceSets.main.runtimeClasspath
   main = 'ucar.gcdm.server.GcdmServer'
-  jvmArgs = [ '-Xmx512m', '-Djava.awt.headless=true' ]
+  jvmArgs = [ '-Xmx512m', '-Djava.awt.headless=true',
+              '-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005' ]
   standardOutput = "$buildDir/gcdm_logs/gcdm.log"
   errorOutput = "$buildDir/gcdm_logs/gcdm-error.log"
   stopAfter = test
