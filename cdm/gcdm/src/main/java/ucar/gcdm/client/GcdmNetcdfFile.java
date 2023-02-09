@@ -79,7 +79,7 @@ public class GcdmNetcdfFile extends NetcdfFile {
           throw new IOException(response.getError().getMessage());
         }
         // Section sectionReturned = GcdmConverter.decodeSection(response.getSection());
-        ucar.ma2.Array result = GcdmConverterMa2.decodeData(response.getData(), sectionWanted);
+        ucar.ma2.Array result = GcdmConverterMa2.decodeData(response.getData());
         results.add(result);
         size += result.getSize() * v.getElementSize();
         if (showRequest) {
