@@ -91,7 +91,7 @@ public class TestEnumTypedef extends UnitTestCommon {
     input = TestDir.cdmLocalTestDataDir + "hdf5/" + file;
     baseline = null;
     tc = new TestCase(file, fqn, enum_t, basetype, input, baseline);
-    //testcases.add(tc);
+    // testcases.add(tc);
 
     // Test case where enum type is in a parent group to the variable using it.
     // Test case where:
@@ -123,7 +123,7 @@ public class TestEnumTypedef extends UnitTestCommon {
         + "enum EnumTest_enum_t EnumTest(10);\n" + "data:\n" + "EnumTest =\n" + "{0, 1, 2, 3, 4, 0, 1, 2, 3, 4}\n"
         + "\n}";
     tc = new TestCase(file, fqn, enum_t, basetype, input, baseline);
-    //testcases.add(tc);
+    // testcases.add(tc);
 
     // Test case where enum type exists
     // Test case where:
@@ -137,7 +137,7 @@ public class TestEnumTypedef extends UnitTestCommon {
     input = TestDir.cdmLocalTestDataDir + "hdf5/" + file;
     baseline = null;
     tc = new TestCase(file, fqn, enum_t, basetype, input, baseline);
-    //testcases.add(tc);
+    // testcases.add(tc);
 
     return testcases;
   }
