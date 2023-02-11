@@ -179,7 +179,8 @@ public class CompareNetcdf2 {
     this(f, showCompare, showEach, compareData, true);
   }
 
-  public CompareNetcdf2(Formatter f, boolean showCompare, boolean showEach, boolean compareData, boolean ignoreattrcase) {
+  public CompareNetcdf2(Formatter f, boolean showCompare, boolean showEach, boolean compareData,
+      boolean ignoreattrcase) {
     this.f = f;
     this.compareData = compareData;
     this.showCompare = showCompare;
