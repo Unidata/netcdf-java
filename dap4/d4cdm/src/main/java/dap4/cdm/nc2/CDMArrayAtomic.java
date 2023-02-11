@@ -106,6 +106,7 @@ import static dap4.core.data.DataCursor.Scheme;
   // Array API
   // TODO: add index range checks
 
+  @Override
   public Class getElementType() {
     DataType dt = CDMTypeFcns.daptype2cdmtype(this.basetype);
     if (dt == null)
@@ -113,98 +114,117 @@ import static dap4.core.data.DataCursor.Scheme;
     return CDMTypeFcns.cdmElementClass(dt);
   }
 
+  @Override
   public double getDouble(ucar.ma2.Index cdmidx) {
     return getDouble(CDMUtil.cdmIndexToIndex(cdmidx));
   }
 
+  @Override
   public float getFloat(ucar.ma2.Index cdmidx) {
     return getFloat(CDMUtil.cdmIndexToIndex(cdmidx));
   }
 
+  @Override
   public long getLong(ucar.ma2.Index cdmidx) {
     return getLong(CDMUtil.cdmIndexToIndex(cdmidx));
   }
 
+  @Override
   public int getInt(ucar.ma2.Index cdmidx) {
     return getInt(CDMUtil.cdmIndexToIndex(cdmidx));
   }
 
+  @Override
   public short getShort(ucar.ma2.Index cdmidx) {
     return getShort(CDMUtil.cdmIndexToIndex(cdmidx));
   }
 
+  @Override
   public byte getByte(ucar.ma2.Index cdmidx) {
     return getByte(CDMUtil.cdmIndexToIndex(cdmidx));
   }
 
+  @Override
   public char getChar(ucar.ma2.Index cdmidx) {
     return getChar(CDMUtil.cdmIndexToIndex(cdmidx));
   }
 
+  @Override
   public boolean getBoolean(ucar.ma2.Index cdmidx) {
     return getBoolean(CDMUtil.cdmIndexToIndex(cdmidx));
   }
 
+  @Override
   public Object getObject(ucar.ma2.Index cdmidx) {
     return getObject(CDMUtil.cdmIndexToIndex(cdmidx));
   }
 
   // Convert int base to Index based
 
+  @Override
   public double getDouble(int offset) {
     DapVariable d4var = (DapVariable) getTemplate();
     long[] dimsizes = DapUtil.getDimSizes(d4var.getDimensions());
     return getDouble(DapUtil.offsetToIndex(offset, dimsizes));
   }
 
+  @Override
   public float getFloat(int offset) {
     DapVariable d4var = (DapVariable) getTemplate();
     long[] dimsizes = DapUtil.getDimSizes(d4var.getDimensions());
     return getFloat(DapUtil.offsetToIndex(offset, dimsizes));
   }
 
+  @Override
   public long getLong(int offset) {
     DapVariable d4var = (DapVariable) getTemplate();
     long[] dimsizes = DapUtil.getDimSizes(d4var.getDimensions());
     return getLong(DapUtil.offsetToIndex(offset, dimsizes));
   }
 
+  @Override
   public int getInt(int offset) {
     DapVariable d4var = (DapVariable) getTemplate();
     long[] dimsizes = DapUtil.getDimSizes(d4var.getDimensions());
     return getInt(DapUtil.offsetToIndex(offset, dimsizes));
   }
 
+  @Override
   public short getShort(int offset) {
     DapVariable d4var = (DapVariable) getTemplate();
     long[] dimsizes = DapUtil.getDimSizes(d4var.getDimensions());
     return getShort(DapUtil.offsetToIndex(offset, dimsizes));
   }
 
+  @Override
   public byte getByte(int offset) {
     DapVariable d4var = (DapVariable) getTemplate();
     long[] dimsizes = DapUtil.getDimSizes(d4var.getDimensions());
     return getByte(DapUtil.offsetToIndex(offset, dimsizes));
   }
 
+  @Override
   public char getChar(int offset) {
     DapVariable d4var = (DapVariable) getTemplate();
     long[] dimsizes = DapUtil.getDimSizes(d4var.getDimensions());
     return getChar(DapUtil.offsetToIndex(offset, dimsizes));
   }
 
+  @Override
   public boolean getBoolean(int offset) {
     DapVariable d4var = (DapVariable) getTemplate();
     long[] dimsizes = DapUtil.getDimSizes(d4var.getDimensions());
     return getBoolean(DapUtil.offsetToIndex(offset, dimsizes));
   }
 
+  @Override
   public Object getObject(int offset) {
     DapVariable d4var = (DapVariable) getTemplate();
     long[] dimsizes = DapUtil.getDimSizes(d4var.getDimensions());
     return getObject(DapUtil.offsetToIndex(offset, dimsizes));
   }
 
+  @Override
   public Object getStorage() {
     try {
       List<Slice> slices = DapUtil.dimsetToSlices(this.template.getDimensions());
@@ -218,86 +238,107 @@ import static dap4.core.data.DataCursor.Scheme;
 
   // Unsupported Methods
 
+  @Override
   public void setDouble(Index ima, double value) {
     throw new UnsupportedOperationException();
   }
 
+  @Override
   public void setFloat(Index ima, float value) {
     throw new UnsupportedOperationException();
   }
 
+  @Override
   public void setLong(Index ima, long value) {
     throw new UnsupportedOperationException();
   }
 
+  @Override
   public void setInt(Index ima, int value) {
     throw new UnsupportedOperationException();
   }
 
+  @Override
   public void setShort(Index ima, short value) {
     throw new UnsupportedOperationException();
   }
 
+  @Override
   public void setByte(Index ima, byte value) {
     throw new UnsupportedOperationException();
   }
 
+  @Override
   public void setChar(Index ima, char value) {
     throw new UnsupportedOperationException();
   }
 
+  @Override
   public void setBoolean(Index ima, boolean value) {
     throw new UnsupportedOperationException();
   }
 
+  @Override
   public void setObject(Index ima, Object value) {
     throw new UnsupportedOperationException();
   }
 
+  @Override
   public void setDouble(int elem, double value) {
     throw new UnsupportedOperationException();
   }
 
+  @Override
   public void setFloat(int elem, float value) {
     throw new UnsupportedOperationException();
   }
 
+  @Override
   public void setLong(int elem, long value) {
     throw new UnsupportedOperationException();
   }
 
+  @Override
   public void setInt(int elem, int value) {
     throw new UnsupportedOperationException();
   }
 
+  @Override
   public void setShort(int elem, short value) {
     throw new UnsupportedOperationException();
   }
 
+  @Override
   public void setByte(int elem, byte value) {
     throw new UnsupportedOperationException();
   }
 
+  @Override
   public void setChar(int elem, char value) {
     throw new UnsupportedOperationException();
   }
 
+  @Override
   public void setBoolean(int elem, boolean value) {
     throw new UnsupportedOperationException();
   }
 
+  @Override
   public void setObject(int elem, Object value) {
     throw new UnsupportedOperationException();
   }
 
+  @Override
   protected void copyTo1DJavaArray(IndexIterator indexIterator, Object o) {
     throw new UnsupportedOperationException();
   }
 
+  @Override
   protected void copyFrom1DJavaArray(IndexIterator iter, Object javaArray) {
     throw new UnsupportedOperationException();
   }
 
+  @Override
   protected Array createView(Index index) {
     return this;
   }
