@@ -11,7 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
-import ucar.nc2.iosp.hdf5.H5header.Vinfo;
+import ucar.nc2.internal.iosp.hdf5.H5headerNew;
 import ucar.unidata.util.test.TestDir;
 
 public class TestDataBTree {
@@ -34,7 +34,7 @@ public class TestDataBTree {
   public void shouldReleaseRafs() throws IOException {
     final Variable variable = netcdfFile.findVariable("data");
     assertThat((Object) variable).isNotNull();
-    final DataBTree bTree = ((Vinfo) variable.getSPobject()).btree;
+    final DataBTree bTree = ((H5headerNew.Vinfo) variable.getSPobject()).btree;
 
     assertThat(bTree.getRandomAccessFile()).isNotNull();
     netcdfFile.release();
@@ -45,7 +45,7 @@ public class TestDataBTree {
   public void shouldCloseRafs() throws IOException {
     final Variable variable = netcdfFile.findVariable("data");
     assertThat((Object) variable).isNotNull();
-    final DataBTree bTree = ((Vinfo) variable.getSPobject()).btree;
+    final DataBTree bTree = ((H5headerNew.Vinfo) variable.getSPobject()).btree;
 
     assertThat(bTree.getRandomAccessFile()).isNotNull();
     netcdfFile.close();
