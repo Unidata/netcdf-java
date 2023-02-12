@@ -831,7 +831,7 @@ public class NetcdfFile implements FileCacheable, Closeable {
       return SPFactory.getServiceProvider();
 
     } else if (H5header.isValidFile(raf)) {
-      return new H5iospNew();
+      return new H5iosp();
 
     } else {
 
