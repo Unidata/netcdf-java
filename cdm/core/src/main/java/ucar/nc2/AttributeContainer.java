@@ -40,24 +40,6 @@ public interface AttributeContainer extends Iterable<Attribute> {
     return new AttributeContainerHelper(atts.getName(), result);
   }
 
-  /**
-   * Create a new AttributeContainer, removing any whose name exactly matches any in the given list.
-   *
-   * @param atts Start with this set of Attributes.
-   * @param remove Remove any whose name matches with one of these.
-   * @return new AttributeContainer with attributes removed.
-   */
-  static AttributeContainer filterExact(AttributeContainer atts, String... remove) {
-    List<Attribute> result = new ArrayList<>(atts.getAttributes());
-    for (Attribute att : atts.getAttributes()) {
-      for (String s : remove) {
-        if (att.getShortName().equals(s))
-          result.remove(att);
-      }
-    }
-    return new AttributeContainerHelper(atts.getName(), result);
-  }
-
   /** Find an Attribute by exact match on name. */
   @Nullable
   Attribute findAttribute(String attName);

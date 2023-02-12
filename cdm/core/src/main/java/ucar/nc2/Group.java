@@ -298,7 +298,6 @@ public class Group extends CDMNode implements AttributeContainer {
   /** The attributes contained by this Group. */
   public AttributeContainer attributes() {
     return attributes;
-    //    return AttributeContainer.filterExact(attributes, Attribute.SPECIALS);
   }
 
   /** Find the attribute by name, return null if not exist */
@@ -380,8 +379,7 @@ public class Group extends CDMNode implements AttributeContainer {
   /** Find a Enumeration in this Group, using its short name. */
   @Nullable
   public EnumTypedef findEnumeration(String name) {
-    // Keep the old behavior
-    return findEnumeration(name, false);
+    return findEnumeration(name, false); // Keep the old behavior
   }
 
   /** Find a Enumeration in this or optionally the parent Groups, using its short name. */
@@ -1126,20 +1124,25 @@ public class Group extends CDMNode implements AttributeContainer {
       return other;
     }
 
-    public Optional<EnumTypedef> findSimilarEnumTypedef(EnumTypedef template, boolean searchup, boolean anyname) {
+    /**
+     * Locate an enum type definition that is structurally
+     * similar to the template type def. The Enum names are ignored.
+     * 
+     * @param template match this enum type def
+     * @param searchup if true, then search this group and then parent groups.
+     */
+    public Optional<EnumTypedef> findSimilarEnumTypedef(EnumTypedef template, boolean searchup) {
       Optional<EnumTypedef> ed = Optional.empty();
       assert (template != null);
       // search this group builders's EnumTypedefs but with constraint on name
-      ed = this.enumTypedefs.stream()
-          .filter(e -> (anyname || !template.getShortName().equals(e.getShortName())) && e.equalsMapOnly(template))
-          .findFirst();
+      ed = this.enumTypedefs.stream().filter(e -> (e.equalsMapOnly(template))).findFirst();
       if (ed.isPresent())
         return ed;
       // Optionally search parents
       if (searchup) {
         Group.Builder gb = getParentGroup();
         if (gb != null)
-          ed = gb.findSimilarEnumTypedef(template, searchup, anyname);
+          ed = gb.findSimilarEnumTypedef(template, searchup);
         if (ed.isPresent())
           return ed;
       }
@@ -1152,7 +1155,12 @@ public class Group extends CDMNode implements AttributeContainer {
       return findEnumTypedef(name, false);
     }
 
-    /** Find a Enumeration in this or a parent Group Builder, using its short name. */
+    /**
+     * Find a Enumeration in this or a parent Group Builder, using its short name.
+     * 
+     * @param name for which to search
+     * @param searchup if true, then search this group and then parent groups.
+     */
     public Optional<EnumTypedef> findEnumTypedef(String name, boolean searchup) {
       if (name == null)
         return Optional.empty();

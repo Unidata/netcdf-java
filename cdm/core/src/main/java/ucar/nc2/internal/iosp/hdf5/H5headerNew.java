@@ -1581,7 +1581,7 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
         // Materialize a enum type def for search purposes; name is irrelevant
         EnumTypedef template = new EnumTypedef(mdt.enumTypeName, mdt.map);
         // Search for a structurally similar enum type def
-        candidate = parent.findSimilarEnumTypedef(template, true, true);
+        candidate = parent.findSimilarEnumTypedef(template, true);
         if (candidate.isPresent()) {
           // There is an independent type, so use it.
           actualEnumTypedef = candidate.get();
@@ -1649,7 +1649,7 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
 
     // chunked stuff
     boolean isChunked;
-    DataBTree btree; // only if isChunked
+    public DataBTree btree; // only if isChunked
 
     MessageDatatype mdt;
     MessageDataspace mds;
