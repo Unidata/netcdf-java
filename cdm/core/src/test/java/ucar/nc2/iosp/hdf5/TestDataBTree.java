@@ -9,9 +9,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ucar.nc2.iosp.hdf5.H5header.Vinfo;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
-import ucar.nc2.internal.iosp.hdf5.H5headerNew.Vinfo;
 import ucar.unidata.util.test.TestDir;
 
 public class TestDataBTree {
