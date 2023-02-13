@@ -402,6 +402,34 @@ public class Group extends CDMNode implements AttributeContainer {
   }
 
   /**
+   * Locate an enum type definition that is structurally
+   * similar to the template type def. The Enum names are ignored.
+   *
+   * @param template match this enum type def
+   * @param searchup if true, then search this group and then parent groups.
+   */
+  public EnumTypedef findSimilarEnumTypedef(EnumTypedef template, boolean searchup) {
+    EnumTypedef ed = null;
+    assert (template != null);
+    // search this group builders's EnumTypedefs but with constraint on name
+    {
+      Optional<EnumTypedef> edopt = this.enumTypedefs.stream().filter(e -> (e.equalsMapOnly(template))).findFirst();
+      ed = (edopt.isPresent() ? edopt.get() : null);
+    }
+    if (ed != null)
+      return ed;
+    // Optionally search parents
+    if (searchup) {
+      Group gb = getParentGroup();
+      if (gb != null)
+        ed = gb.findSimilarEnumTypedef(template, searchup);
+      if (ed != null)
+        return ed;
+    }
+    return null;
+  }
+
+  /**
    * Get the common parent of this and the other group.
    * Cant fail, since the root group is always a parent of any 2 groups.
    *

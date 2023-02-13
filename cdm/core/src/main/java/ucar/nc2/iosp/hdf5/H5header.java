@@ -1739,18 +1739,83 @@ public class H5header extends NCheader implements H5headerIF {
 
     // set the enumTypedef
     if (dt.isEnum()) {
+      // dmh: An HDF5 file, at least as used by netcdf-4, may define an enumeration
+      // type one or more times:
+      // 1. There may be an explicit, independent enum type definition.
+      // 2. A variable/HDF5-Dataset may define an implicit enum type with the same name as the variable.
+      // 3. A variable may define an implicit enum type that is a copy of a case 1 enum type;
+      // the implicit enum type will have the same name as the independent enum type.
+      //
+      // The algorithm to infer (and if necessary, create) the proper EnumTypeDef is as follows:
+      // Step 1. If there exists a case 1 enum type with the same name as the variable's enum type,
+      // then use that.
+      // Step 2. If the variable's enum type has the same name as the variable, then we need to
+      // look for a case 1 enum type that is structurally the same as the variable's enum type.
+      // If such exists, then use that.
+      // Step 3: Otherwise, create a new enum type and use that. The new enum type
+      // will have these properties:
+      // a. It is defined in the same group as the variable
+      // b. It has a mutated name similar to the variable's name, namely <variablename>_enum_t.
+
+      EnumTypedef actualEnumTypedef = null; // The final chosen EnumTypedef
       Group ncGroup = v.getParentGroupOrRoot();
-      EnumTypedef local = new EnumTypedef(mdt.enumTypeName, mdt.map);
-      EnumTypedef enumTypedef =
-          ncGroup.getEnumTypedefs().stream().filter((e) -> e.equalsMapOnly(local)).findFirst().orElse(local);
-      if (enumTypedef != null) {
-        // if found, make sure it is added to the group
-        ncGroup.addEnumeration(enumTypedef);
-      } else { // if shared object, wont have a name, shared version gets added later
-        enumTypedef = new EnumTypedef(mdt.enumTypeName, mdt.map);
-        ncGroup.addEnumeration(enumTypedef);
+
+      // Step 1:
+      // See if an independent enum type already exists with the same name
+      EnumTypedef candidate = ncGroup.findEnumeration(mdt.enumTypeName, true);
+      if (candidate != null) {
+        // There is an independent type, so use it.
+        actualEnumTypedef = candidate;
       }
-      v.setEnumTypedef(enumTypedef);
+
+      // Step 2:
+      // See if an independent enum type already exists that is structurally similar.
+      if (actualEnumTypedef == null && mdt.enumTypeName.equals(v.getShortName())) {
+        // Materialize a enum type def for search purposes; name is irrelevant
+        EnumTypedef template = new EnumTypedef(mdt.enumTypeName, mdt.map);
+        // Search for a structurally similar enum type def
+        candidate = ncGroup.findSimilarEnumTypedef(template, true);
+        if (candidate != null) {
+          // There is an independent type, so use it.
+          actualEnumTypedef = candidate;
+        }
+      }
+
+      // Step 3: Create an independent type
+      if (actualEnumTypedef == null) {
+        String newname = null;
+        if (mdt.enumTypeName.equals(v.getShortName())) {
+          // Create mutated name to avoid name conflict
+          newname = mdt.enumTypeName + "_enum_t";
+        } else {
+          newname = mdt.enumTypeName;
+        }
+        actualEnumTypedef = new EnumTypedef(newname, mdt.map);
+        // Add to the current group(builder)
+        ncGroup.addEnumeration(actualEnumTypedef);
+      }
+
+      if (actualEnumTypedef == null) {
+        log.warn("Missing EnumTypedef: {}", mdt.enumTypeName);
+        throw new IllegalStateException("Missing EnumTypedef: " + mdt.enumTypeName);
+      }
+
+      // associate with the variable
+      v.setEnumTypedef(actualEnumTypedef);
+      /*
+       * Group ncGroup = v.getParentGroupOrRoot();
+       * EnumTypedef local = new EnumTypedef(mdt.enumTypeName, mdt.map);
+       * EnumTypedef enumTypedef =
+       * ncGroup.getEnumTypedefs().stream().filter((e) -> e.equalsMapOnly(local)).findFirst().orElse(local);
+       * if (enumTypedef != null) {
+       * // if found, make sure it is added to the group
+       * ncGroup.addEnumeration(enumTypedef);
+       * } else { // if shared object, wont have a name, shared version gets added later
+       * enumTypedef = new EnumTypedef(mdt.enumTypeName, mdt.map);
+       * ncGroup.addEnumeration(enumTypedef);
+       * }
+       * v.setEnumTypedef(enumTypedef);
+       */
     }
 
     return true;
