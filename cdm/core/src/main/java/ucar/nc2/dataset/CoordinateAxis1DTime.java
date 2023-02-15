@@ -65,6 +65,8 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
   ////////////////////////////////////////////////////////////////
 
   // for section and slice
+  /** @deprecated Use {@link #toBuilder()} */
+  @Deprecated
   @Override
   protected CoordinateAxis1DTime copy() {
     return new CoordinateAxis1DTime(this.ncd, this);

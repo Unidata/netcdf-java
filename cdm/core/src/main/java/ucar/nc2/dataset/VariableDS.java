@@ -183,6 +183,8 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
   }
 
   // for section and slice
+  /** @deprecated Use {@link #toBuilder()} */
+  @Deprecated
   @Override
   protected VariableDS copy() {
     return new VariableDS(this, true);

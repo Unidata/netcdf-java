@@ -61,6 +61,8 @@ public class DODSGrid extends DODSVariable {
   }
 
   // for section, slice
+  /** @deprecated Use {@link #toBuilder()} */
+  @Deprecated
   @Override
   protected Variable copy() {
     return new DODSGrid(this);
