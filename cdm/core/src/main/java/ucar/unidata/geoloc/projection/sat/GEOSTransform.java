@@ -170,8 +170,8 @@ public class GEOSTransform {
     double theta_sat = Double.NaN;
 
     if (scan_geom.equals(GEOS)) { // GEOS (eg. SEVIRI, MSG) CGMS 03, 4.4.3.2, Normalized Geostationary Projection
-       if (h * (h - r_1) < r_3 * r_3 + r_eq * r_eq * r_2 * r_2 / (r_pol * r_pol)) {
-         return new double[] {Double.NaN, Double.NaN};
+      if (h * (h - r_1) < r_3 * r_3 + r_eq * r_eq * r_2 * r_2 / (r_pol * r_pol)) {
+        return new double[] {Double.NaN, Double.NaN};
       }
       lamda_sat = Math.atan(-r_2 / r_1);
       theta_sat = Math.asin(r_3 / Math.sqrt(r_1 * r_1 + r_2 * r_2 + r_3 * r_3));
