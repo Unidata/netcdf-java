@@ -4,6 +4,8 @@
  */
 package ucar.ma2;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -73,9 +75,9 @@ public class TestArrayStructureMA {
     // get f2 out of the 3rd "s"
     StructureMembers.Member f2 = as.getStructureMembers().findMember("f2");
     short[] f2data = as.getJavaArrayShort(2, f2);
-    assert f2data[0] == 20;
-    assert f2data[1] == 21;
-    assert f2data[2] == 22;
+    assertThat(f2data[0]).isEqualTo(20);
+    assertThat(f2data[1]).isEqualTo(21);
+    assertThat(f2data[2]).isEqualTo(22);
 
     // get nested1 out of the 3rd "s"
     StructureMembers.Member nested1 = as.getStructureMembers().findMember("nested1");
@@ -84,7 +86,7 @@ public class TestArrayStructureMA {
     // get g1 out of the 7th "nested1"
     StructureMembers.Member g1 = nested1Data.getStructureMembers().findMember("g1");
     int g1data = nested1Data.getScalarInt(6, g1);
-    assert g1data == 26;
+    assertThat(g1data).isEqualTo(26);
 
     // get nested2 out of the 7th "nested1"
     StructureMembers.Member nested2 = nested1Data.getStructureMembers().findMember("nested2");
@@ -93,7 +95,7 @@ public class TestArrayStructureMA {
     // get h1 out of the 4th "nested2"
     StructureMembers.Member h1 = nested2Data.getStructureMembers().findMember("h1");
     int val = nested2Data.getScalarInt(4, h1);
-    assert (val == 264);
+    assertThat(val).isEqualTo(264);
   }
 
 
