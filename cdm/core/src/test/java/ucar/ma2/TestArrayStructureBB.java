@@ -79,14 +79,8 @@ public class TestArrayStructureBB {
       Assert.assertEquals("Bad offset for " + m.getName(), offs2[i], m.getDataParam());
     }
 
-    // Formatter f = new Formatter(System.out);
-    // Indent indent = new Indent(2);
-    // ArrayStructureBB.showOffsets(members, indent, f);
-
     ArrayStructureBB bb = new ArrayStructureBB(members, new int[] {4});
     fillStructureArray(bb);
-
-    // System.out.println( NCdumpW.toString(bb, "test arrayBB", null));
 
     new UtilsTestStructureArray().testArrayStructure(bb);
 
@@ -94,7 +88,7 @@ public class TestArrayStructureBB {
     int n1reclen = 100;
     int n2reclen = 5;
 
-    // get f2 out of the 3nd "s"
+    // get f2 out of the 3rd "s"
     int srecno = 2;
     StructureMembers.Member f2 = bb.getStructureMembers().findMember("f2");
     int[] f2data = bb.getJavaArrayInt(srecno, f2);
@@ -102,7 +96,7 @@ public class TestArrayStructureBB {
     assert f2data[1] == srecno * sreclen + 2 : f2data[0];
     assert f2data[2] == srecno * sreclen + 3 : f2data[0];
 
-    // get nested1 out of the 3nd "s"
+    // get nested1 out of the 3rd "s"
     ArrayStructure nested1Data = bb.getArrayStructure(srecno, nested1);
     // get g1 out of the 7th "nested1"
     int n1recno = 6;

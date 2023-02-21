@@ -79,7 +79,6 @@ public class TestArrayStructureW {
     }
 
     ArrayStructureW as = new ArrayStructureW(members, new int[] {4}, sdata);
-    // System.out.println( NCdumpW.printArray(as, "", null));
     new UtilsTestStructureArray().testArrayStructure(as);
 
     // get f2 out of the 2nd "s"
@@ -88,7 +87,7 @@ public class TestArrayStructureW {
     assert f2data[1] == 3;
     assert f2data[2] == 4;
 
-    // get nested1 out of the 3nd "s"
+    // get nested1 out of the 3rd "s"
     ArrayStructure nested1Data = as.getArrayStructure(2, nested1);
 
     // get g1 out of the 4th "nested1"

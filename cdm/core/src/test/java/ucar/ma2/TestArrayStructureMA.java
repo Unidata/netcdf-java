@@ -69,17 +69,16 @@ public class TestArrayStructureMA {
     m.setDataArray(data);
 
     ArrayStructureMA as = new ArrayStructureMA(members, new int[] {4});
-    // System.out.println( NCdumpW.printArray(as, "", null));
     new UtilsTestStructureArray().testArrayStructure(as);
 
-    // get f2 out of the 3nd "s"
+    // get f2 out of the 3rd "s"
     StructureMembers.Member f2 = as.getStructureMembers().findMember("f2");
     short[] f2data = as.getJavaArrayShort(2, f2);
     assert f2data[0] == 20;
     assert f2data[1] == 21;
     assert f2data[2] == 22;
 
-    // get nested1 out of the 3nd "s"
+    // get nested1 out of the 3rd "s"
     StructureMembers.Member nested1 = as.getStructureMembers().findMember("nested1");
     ArrayStructure nested1Data = as.getArrayStructure(2, nested1);
 
