@@ -43,8 +43,6 @@ public class TestArrayOps {
 
   @Test
   public void testReshape() {
-    System.out.println("test reshape");
-
     checkArrayValues(array.reshape(new int[] {4, 6}));
 
     checkArrayValues(array.reshape(new int[] {24}));
