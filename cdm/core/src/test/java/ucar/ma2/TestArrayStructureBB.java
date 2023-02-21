@@ -9,7 +9,6 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.unidata.util.test.UtilsTestStructureArray;
-import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
@@ -46,7 +45,7 @@ public class TestArrayStructureBB {
    * 5 ints
    */
   @Test
-  public void testBB() throws IOException, InvalidRangeException {
+  public void testBB() {
     StructureMembers members = new StructureMembers("s");
     members.addMember("f1", "desc", "units", DataType.INT, new int[] {1});
     members.addMember("f2", "desc", "units", DataType.INT, new int[] {9}); // 10
@@ -135,7 +134,7 @@ public class TestArrayStructureBB {
   }
 
 
-  public ArrayStructure makeNested1(StructureMembers.Member parent) throws IOException, InvalidRangeException {
+  public ArrayStructure makeNested1(StructureMembers.Member parent) {
     StructureMembers members = new StructureMembers(parent.getName());
     parent.setStructureMembers(members);
 
@@ -161,7 +160,7 @@ public class TestArrayStructureBB {
     return new ArrayStructureBB(members, new int[] {4, 9});
   }
 
-  public ArrayStructure makeNested2(StructureMembers.Member parent) throws IOException, InvalidRangeException {
+  public ArrayStructure makeNested2(StructureMembers.Member parent) {
     StructureMembers members = new StructureMembers(parent.getName());
     parent.setStructureMembers(members);
 
@@ -180,49 +179,49 @@ public class TestArrayStructureBB {
 
   /*
    * static public void testArrayStructure(ArrayStructure as) {
-   * 
+   *
    * StructureMembers sms = as.getStructureMembers();
    * List members = sms.getMembers();
    * String name = sms.getName();
-   * 
+   *
    * int n = (int) as.getSize();
    * for (int recno = 0; recno < n; recno++) {
    * Object o = as.getObject(recno);
    * assert (o instanceof StructureData);
    * StructureData sdata = as.getStructureData(recno);
    * assert (o == sdata);
-   * 
+   *
    * for (int i = 0; i < members.size(); i++) {
    * StructureMembers.Member m = (StructureMembers.Member) members.get(i);
-   * 
+   *
    * Array sdataArray = sdata.getArray(m);
    * assert (sdataArray.getElementType() == m.getDataType().getPrimitiveClassType());
-   * 
+   *
    * Array sdataArray2 = sdata.getArray(m.getName());
    * ucar.ma2.TestMA2.testEquals(sdataArray, sdataArray2);
-   * 
+   *
    * Array a = as.getArray(recno, m);
    * assert (a.getElementType() == m.getDataType().getPrimitiveClassType());
    * ucar.ma2.TestMA2.testEquals(sdataArray, a);
-   * 
+   *
    * testGetArrayByType(as, recno, m, a);
    * }
    * testStructureData(sdata);
    * }
    * }
-   * 
+   *
    * static public void printArrayStructure(ArrayStructure as) throws IOException {
-   * 
+   *
    * StructureMembers sms = as.getStructureMembers();
    * List members = sms.getMembers();
    * String name = sms.getName();
-   * 
+   *
    * int n = (int) as.getSize();
    * for (int recno = 0; recno < n; recno++) {
    * System.out.println("\n***Dump " + name + " record=" + recno);
    * for (int i = 0; i < members.size(); i++) {
    * StructureMembers.Member m = (StructureMembers.Member) members.get(i);
-   * 
+   *
    * Array a = as.getArray(recno, m);
    * if (a instanceof ArrayStructure)
    * printArrayStructure((ArrayStructure) a);
@@ -230,10 +229,10 @@ public class TestArrayStructureBB {
    * NCdump.printArray(a, m.getName(), System.out, null);
    * }
    * }
-   * 
+   *
    * System.out.println(NCdumpW.printArray(as, "", null));
    * }
-   * 
+   *
    * static private void testGetArrayByType(ArrayStructure as, int recno, StructureMembers.Member m, Array a) {
    * DataType dtype = m.getDataType();
    * Object data = null;
@@ -266,31 +265,31 @@ public class TestArrayStructureBB {
    * ArrayStructure nested = as.getArrayStructure(recno, m);
    * testArrayStructure(nested);
    * }
-   * 
+   *
    * if (data != null)
    * ucar.ma2.TestMA2.testJarrayEquals(data, a.getStorage(), m.getSize());
    * }
-   * 
+   *
    * static private void testStructureData(StructureData sdata) {
-   * 
+   *
    * StructureMembers sms = sdata.getStructureMembers();
    * List members = sms.getMembers();
-   * 
+   *
    * for (int i = 0; i < members.size(); i++) {
    * StructureMembers.Member m = (StructureMembers.Member) members.get(i);
-   * 
+   *
    * Array sdataArray = sdata.getArray(m);
    * assert (sdataArray.getElementType() == m.getDataType().getPrimitiveClassType());
-   * 
+   *
    * Array sdataArray2 = sdata.getArray(m.getName());
    * ucar.ma2.TestMA2.testEquals(sdataArray, sdataArray2);
-   * 
+   *
    * //NCdump.printArray(sdataArray, m.getName(), System.out, null);
-   * 
+   *
    * testGetArrayByType(sdata, m, sdataArray);
    * }
    * }
-   * 
+   *
    * static private void testGetArrayByType(StructureData sdata, StructureMembers.Member m, Array a) {
    * DataType dtype = m.getDataType();
    * Object data = null;
@@ -323,7 +322,7 @@ public class TestArrayStructureBB {
    * ArrayStructure nested = sdata.getArrayStructure(m);
    * testArrayStructure(nested);
    * }
-   * 
+   *
    * if (data != null)
    * ucar.ma2.TestMA2.testJarrayEquals(data, a.getStorage(), m.getSize());
    * }

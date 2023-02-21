@@ -8,7 +8,6 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.unidata.util.test.UtilsTestStructureArray;
-import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 
 public class TestArrayStructureW {
@@ -51,7 +50,7 @@ public class TestArrayStructureW {
    * </ul>
    */
   @Test
-  public void testW() throws IOException, InvalidRangeException {
+  public void testW() {
     StructureMembers members = new StructureMembers("s");
 
     StructureMembers.Member f1 = members.addMember("f1", "desc", "units", DataType.FLOAT, new int[] {1});
@@ -116,8 +115,7 @@ public class TestArrayStructureW {
     assert (h2data[1] == 12019);
   }
 
-  public Array makeNested1(StructureMembers.Member nested1, int size1, int size2)
-      throws IOException, InvalidRangeException {
+  public Array makeNested1(StructureMembers.Member nested1, int size1, int size2) {
     StructureMembers members = new StructureMembers(nested1.getName());
     nested1.setStructureMembers(members);
 
@@ -150,8 +148,7 @@ public class TestArrayStructureW {
     return new ArrayStructureW(members, new int[] {size1}, sdata);
   }
 
-  public Array makeNested2(StructureMembers.Member nested, int who, int size)
-      throws IOException, InvalidRangeException {
+  public Array makeNested2(StructureMembers.Member nested, int who, int size) {
     StructureMembers members = new StructureMembers(nested.getName());
     nested.setStructureMembers(members);
 
