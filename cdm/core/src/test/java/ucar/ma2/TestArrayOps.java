@@ -4,19 +4,18 @@
  */
 package ucar.ma2;
 
-import junit.framework.TestCase;
+import static junit.framework.TestCase.assertEquals;
+
+import org.junit.Before;
+import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.lang.invoke.MethodHandles;
 
 /** Test ma2 get/put methods in the JUnit framework. */
 
-public class TestArrayOps extends TestCase {
+public class TestArrayOps {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-
-  public TestArrayOps(String name) {
-    super(name);
-  }
 
   int m = 4, n = 3, p = 2;
   int[] sA = {m, n, p};
@@ -24,6 +23,7 @@ public class TestArrayOps extends TestCase {
   int i, j, k;
   Index ima = A.getIndex();
 
+  @Before
   public void setUp() {
 
     // write
@@ -39,6 +39,7 @@ public class TestArrayOps extends TestCase {
     }
   }
 
+  @Test
   public void testReshape() {
     System.out.println("test reshape");
 
