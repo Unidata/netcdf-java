@@ -16,6 +16,7 @@ import java.lang.invoke.MethodHandles;
 
 public class TestArrayOps {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+  private static final double TOLERANCE = 1.0E-10;
 
   int m = 4, n = 3, p = 2;
   int[] sA = {m, n, p};
@@ -43,33 +44,25 @@ public class TestArrayOps {
   public void testReshape() {
     System.out.println("test reshape");
 
-    Array Ar = A.reshape(new int[] {4, 6});
-    IndexIterator ita = Ar.getIndexIterator();
-    int count = 0;
-    while (ita.hasNext()) {
-      assertThat(ita.getDoubleNext()).isWithin(1.0E-10).of(count++);
-    }
+    checkArrayValues(A.reshape(new int[] {4, 6}));
 
     try {
-      Ar = A.reshape(new int[] {12});
+      A.reshape(new int[] {12});
       assert (false);
     } catch (IllegalArgumentException e) {
       assert (true);
     }
 
-    Ar = A.reshape(new int[] {24});
-    ita = Ar.getIndexIterator();
-    count = 0;
-    while (ita.hasNext()) {
-      assertThat(ita.getDoubleNext()).isWithin(1.0E-10).of(count++);
-    }
+    checkArrayValues(A.reshape(new int[] {24}));
 
-    Ar = A.reshape(new int[] {2, 2, 3, 2});
-    ita = Ar.getIndexIterator();
-    count = 0;
-    while (ita.hasNext()) {
-      assertThat(ita.getDoubleNext()).isWithin(1.0E-10).of(count++);
-    }
+    checkArrayValues(A.reshape(new int[] {2, 2, 3, 2}));
   }
 
+  private static void checkArrayValues(Array array) {
+    IndexIterator indexIterator = array.getIndexIterator();
+    int count = 0;
+    while (indexIterator.hasNext()) {
+      assertThat(indexIterator.getDoubleNext()).isWithin(TOLERANCE).of(count++);
+    }
+  }
 }
