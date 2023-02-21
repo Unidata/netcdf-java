@@ -46,8 +46,9 @@ public class TestArrayOps {
     Array Ar = A.reshape(new int[] {4, 6});
     IndexIterator ita = Ar.getIndexIterator();
     int count = 0;
-    while (ita.hasNext())
+    while (ita.hasNext()) {
       assertEquals(ita.getDoubleNext(), (double) (count++), 1.0E-10);
+    }
 
     try {
       Ar = A.reshape(new int[] {12});
@@ -59,14 +60,16 @@ public class TestArrayOps {
     Ar = A.reshape(new int[] {24});
     ita = Ar.getIndexIterator();
     count = 0;
-    while (ita.hasNext())
+    while (ita.hasNext()) {
       assertEquals(ita.getDoubleNext(), (double) (count++), 1.0E-10);
+    }
 
     Ar = A.reshape(new int[] {2, 2, 3, 2});
     ita = Ar.getIndexIterator();
     count = 0;
-    while (ita.hasNext())
+    while (ita.hasNext()) {
       assertEquals(ita.getDoubleNext(), (double) (count++), 1.0E-10);
+    }
   }
 
 }
