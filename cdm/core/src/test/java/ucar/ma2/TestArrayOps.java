@@ -4,7 +4,7 @@
  */
 package ucar.ma2;
 
-import static junit.framework.TestCase.assertEquals;
+import static com.google.common.truth.Truth.assertThat;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -47,7 +47,7 @@ public class TestArrayOps {
     IndexIterator ita = Ar.getIndexIterator();
     int count = 0;
     while (ita.hasNext()) {
-      assertEquals(ita.getDoubleNext(), (double) (count++), 1.0E-10);
+      assertThat(ita.getDoubleNext()).isWithin(1.0E-10).of(count++);
     }
 
     try {
@@ -61,14 +61,14 @@ public class TestArrayOps {
     ita = Ar.getIndexIterator();
     count = 0;
     while (ita.hasNext()) {
-      assertEquals(ita.getDoubleNext(), (double) (count++), 1.0E-10);
+      assertThat(ita.getDoubleNext()).isWithin(1.0E-10).of(count++);
     }
 
     Ar = A.reshape(new int[] {2, 2, 3, 2});
     ita = Ar.getIndexIterator();
     count = 0;
     while (ita.hasNext()) {
-      assertEquals(ita.getDoubleNext(), (double) (count++), 1.0E-10);
+      assertThat(ita.getDoubleNext()).isWithin(1.0E-10).of(count++);
     }
   }
 
