@@ -11,7 +11,7 @@ import ucar.unidata.util.test.UtilsTestStructureArray;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 
-public class TestStructureArrayMA {
+public class TestArrayStructureMA {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   /*
