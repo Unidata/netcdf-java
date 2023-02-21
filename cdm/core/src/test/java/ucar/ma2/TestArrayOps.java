@@ -6,6 +6,7 @@ package ucar.ma2;
 
 import static com.google.common.truth.Truth.assertThat;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -46,16 +47,14 @@ public class TestArrayOps {
 
     checkArrayValues(array.reshape(new int[] {4, 6}));
 
-    try {
-      array.reshape(new int[] {12});
-      assert (false);
-    } catch (IllegalArgumentException e) {
-      assert (true);
-    }
-
     checkArrayValues(array.reshape(new int[] {24}));
 
     checkArrayValues(array.reshape(new int[] {2, 2, 3, 2}));
+  }
+
+  @Test
+  public void shouldThrowWhenSizeIsIncorrect() {
+    Assert.assertThrows(IllegalArgumentException.class, () -> array.reshape(new int[] {12}));
   }
 
   private static void checkArrayValues(Array array) {
