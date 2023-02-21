@@ -19,10 +19,10 @@ public class TestArrayOps {
   private static final double TOLERANCE = 1.0E-10;
 
   int m = 4, n = 3, p = 2;
-  int[] sA = {m, n, p};
-  ArrayDouble A = new ArrayDouble(sA);
+  int[] shapeArray = {m, n, p};
+  ArrayDouble array = new ArrayDouble(shapeArray);
   int i, j, k;
-  Index ima = A.getIndex();
+  Index index = array.getIndex();
 
   @Before
   public void setUp() {
@@ -30,11 +30,11 @@ public class TestArrayOps {
     // write
     int count = 0;
     for (i = 0; i < m; i++) {
-      ima.set0(i);
+      index.set0(i);
       for (j = 0; j < n; j++) {
-        ima.set1(j);
+        index.set1(j);
         for (k = 0; k < p; k++) {
-          A.setDouble(ima.set2(k), (double) (count++));
+          array.setDouble(index.set2(k), (double) (count++));
         }
       }
     }
@@ -44,18 +44,18 @@ public class TestArrayOps {
   public void testReshape() {
     System.out.println("test reshape");
 
-    checkArrayValues(A.reshape(new int[] {4, 6}));
+    checkArrayValues(array.reshape(new int[] {4, 6}));
 
     try {
-      A.reshape(new int[] {12});
+      array.reshape(new int[] {12});
       assert (false);
     } catch (IllegalArgumentException e) {
       assert (true);
     }
 
-    checkArrayValues(A.reshape(new int[] {24}));
+    checkArrayValues(array.reshape(new int[] {24}));
 
-    checkArrayValues(A.reshape(new int[] {2, 2, 3, 2}));
+    checkArrayValues(array.reshape(new int[] {2, 2, 3, 2}));
   }
 
   private static void checkArrayValues(Array array) {
