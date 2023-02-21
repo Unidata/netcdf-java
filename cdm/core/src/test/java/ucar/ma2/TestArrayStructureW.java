@@ -4,6 +4,8 @@
  */
 package ucar.ma2;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -82,9 +84,9 @@ public class TestArrayStructureW {
 
     // get f2 out of the 2nd "s"
     short[] f2data = as.getJavaArrayShort(1, f2);
-    assert f2data[0] == 2;
-    assert f2data[1] == 3;
-    assert f2data[2] == 4;
+    assertThat(f2data[0]).isEqualTo(2);
+    assertThat(f2data[1]).isEqualTo(3);
+    assertThat(f2data[2]).isEqualTo(4);
 
     // get nested1 out of the 3rd "s"
     ArrayStructure nested1Data = as.getArrayStructure(2, nested1);
@@ -92,12 +94,12 @@ public class TestArrayStructureW {
     // get g1 out of the 4th "nested1"
     StructureMembers.Member g1 = nested1Data.getStructureMembers().findMember("g1");
     int g1data = nested1Data.getScalarInt(3, g1);
-    assert g1data == 66;
+    assertThat(g1data).isEqualTo(66);
 
     // get g3 out of the 4th "nested1"
     StructureMembers.Member g3 = nested1Data.getStructureMembers().findMember("g3");
     double[] g3data = nested1Data.getJavaArrayDouble(3, g3);
-    assert g3data[0] == 73326.0;
+    assertThat(g3data[0]).isEqualTo(73326.0);
 
     // get nested2 out of the 7th "nested1"
     StructureMembers.Member nested2 = nested1Data.getStructureMembers().findMember("nested2");
@@ -106,13 +108,13 @@ public class TestArrayStructureW {
     // get h1 out of the 5th "nested2"
     StructureMembers.Member h1 = nested2Data.getStructureMembers().findMember("h1");
     int val = nested2Data.getScalarInt(4, h1);
-    assert (val == 1218) : val;
+    assertThat(val).isEqualTo(1218);
 
     // get h2 out of the 5th "nested2"
     StructureMembers.Member h2 = nested2Data.getStructureMembers().findMember("h2");
     double[] h2data = nested2Data.getJavaArrayDouble(4, h2);
-    assert (h2data[0] == 12018);
-    assert (h2data[1] == 12019);
+    assertThat(h2data[0]).isEqualTo(12018);
+    assertThat(h2data[1]).isEqualTo(12019);
   }
 
   public Array makeNested1(StructureMembers.Member nested1, int size1, int size2) {

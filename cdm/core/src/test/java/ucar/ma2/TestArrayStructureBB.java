@@ -4,7 +4,8 @@
  */
 package ucar.ma2;
 
-import org.junit.Assert;
+import static com.google.common.truth.Truth.assertThat;
+
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,13 +70,13 @@ public class TestArrayStructureBB {
     int[] offs = {0, 4, 40};
     for (int i = 0; i < offs.length; ++i) {
       StructureMembers.Member m = members.getMember(i);
-      Assert.assertEquals("Bad offset for " + m.getName(), offs[i], m.getDataParam());
+      assertThat(m.getDataParam()).isEqualTo(offs[i]);
     }
 
     int[] offs2 = {0, 4, 12, 60};
     for (int i = 0; i < offs2.length; ++i) {
       StructureMembers.Member m = nested1_members.getMember(i);
-      Assert.assertEquals("Bad offset for " + m.getName(), offs2[i], m.getDataParam());
+      assertThat(m.getDataParam()).isEqualTo(offs2[i]);
     }
 
     ArrayStructureBB bb = new ArrayStructureBB(members, new int[] {4});
@@ -91,9 +92,9 @@ public class TestArrayStructureBB {
     int srecno = 2;
     StructureMembers.Member f2 = bb.getStructureMembers().findMember("f2");
     int[] f2data = bb.getJavaArrayInt(srecno, f2);
-    assert f2data[0] == srecno * sreclen + 1 : f2data[0];
-    assert f2data[1] == srecno * sreclen + 2 : f2data[0];
-    assert f2data[2] == srecno * sreclen + 3 : f2data[0];
+    assertThat(f2data[0]).isEqualTo(srecno * sreclen + 1);
+    assertThat(f2data[1]).isEqualTo(srecno * sreclen + 2);
+    assertThat(f2data[2]).isEqualTo(srecno * sreclen + 3);
 
     // get nested1 out of the 3rd "s"
     ArrayStructure nested1Data = bb.getArrayStructure(srecno, nested1);
@@ -101,7 +102,7 @@ public class TestArrayStructureBB {
     int n1recno = 6;
     StructureMembers.Member g1 = nested1Data.getStructureMembers().findMember("g1");
     int g1data = nested1Data.getScalarInt(n1recno, g1);
-    assert g1data == srecno * sreclen + n1recno * n1reclen + 10 : g1data;
+    assertThat(g1data).isEqualTo(srecno * sreclen + n1recno * n1reclen + 10);
 
     // get nested2 out of the 7th "nested1"
     ArrayStructure nested2Data = nested1Data.getArrayStructure(n1recno, nested2);
@@ -109,7 +110,7 @@ public class TestArrayStructureBB {
     int n2recno = 3;
     StructureMembers.Member h1 = nested2Data.getStructureMembers().findMember("h1");
     int val = nested2Data.getScalarInt(n2recno, h1);
-    assert (val == srecno * sreclen + n1recno * n1reclen + n2recno * n2reclen + 15 + 10) : val;
+    assertThat(val).isEqualTo(srecno * sreclen + n1recno * n1reclen + n2recno * n2reclen + 15 + 10);
   }
 
   private void fillStructureArray(ArrayStructureBB sa) {
