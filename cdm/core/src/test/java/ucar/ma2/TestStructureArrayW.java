@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
 import ucar.unidata.util.test.UtilsTestStructureArray;
 import java.lang.invoke.MethodHandles;
 
-public class TestArrayStructureW {
+public class TestStructureArrayW {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   /*
