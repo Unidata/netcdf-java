@@ -10,6 +10,7 @@ import io.grpc.ServerCallHandler;
 import io.grpc.ServerInterceptor;
 import io.grpc.stub.StreamObserver;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Formatter;
 import java.util.Iterator;
 import java.util.concurrent.TimeUnit;
@@ -23,7 +24,7 @@ import ucar.gcdm.GcdmNetcdfProto.HeaderRequest;
 import ucar.gcdm.GcdmNetcdfProto.HeaderResponse;
 import ucar.gcdm.GcdmConverterMa2;
 import ucar.ma2.Array;
-import ucar.ma2.ArrayStructureMA;
+import ucar.ma2.ArrayStructureW;
 import ucar.ma2.DataType;
 import ucar.ma2.Index;
 import ucar.ma2.InvalidRangeException;
@@ -220,7 +221,8 @@ public class GcdmServer {
         sdata[count++] = it.next();
 
         if (count >= SEQUENCE_CHUNK || !it.hasNext()) {
-          ArrayStructureMA sdataArray = new ArrayStructureMA(members, new int[] {count}, sdata); // TODO check this
+          StructureData[] correctSizeArray = Arrays.copyOf(sdata, count);
+          ArrayStructureW sdataArray = new ArrayStructureW(members, new int[] {count}, correctSizeArray);
           Section section = Section.builder().appendRange(start, start + count).build();
           DataResponse.Builder response = DataResponse.newBuilder().setLocation(ncfile.getLocation())
               .setVariableSpec(spec).setVarFullName(seq.getFullName()).setSection(GcdmConverterMa2.encodeSection(section));
