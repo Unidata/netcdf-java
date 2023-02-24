@@ -43,8 +43,7 @@ import ucar.nc2.Structure;
 import ucar.nc2.Variable;
 
 /** Convert between Gcdm Protos and Netcdf objects, using ucar.ma2.Array for data. */
-// TODO rename to remove Ma2
-public class GcdmConverterMa2 {
+public class GcdmConverter {
   public static GcdmNetcdfProto.Group.Builder encodeGroup(Group g, int sizeToCache) throws IOException {
     GcdmNetcdfProto.Group.Builder groupBuilder = GcdmNetcdfProto.Group.newBuilder();
     groupBuilder.setName(g.getShortName());
@@ -165,7 +164,7 @@ public class GcdmConverterMa2 {
 
     for (Variable v : s.getVariables()) {
       if (v instanceof Structure)
-        builder.addStructs(GcdmConverterMa2.encodeStructure((Structure) v));
+        builder.addStructs(GcdmConverter.encodeStructure((Structure) v));
       else
         builder.addVars(encodeVar(v, -1));
     }
@@ -338,19 +337,19 @@ public class GcdmConverterMa2 {
   public static void decodeGroup(GcdmNetcdfProto.Group proto, Group.Builder g) {
 
     for (GcdmNetcdfProto.Dimension dim : proto.getDimsList())
-      g.addDimension(GcdmConverterMa2.decodeDim(dim)); // always added to group? what if private ??
+      g.addDimension(GcdmConverter.decodeDim(dim)); // always added to group? what if private ??
 
     for (GcdmNetcdfProto.Attribute att : proto.getAttsList())
-      g.addAttribute(GcdmConverterMa2.decodeAtt(att));
+      g.addAttribute(GcdmConverter.decodeAtt(att));
 
     for (GcdmNetcdfProto.EnumTypedef enumType : proto.getEnumTypesList())
-      g.addEnumTypedef(GcdmConverterMa2.decodeEnumTypedef(enumType));
+      g.addEnumTypedef(GcdmConverter.decodeEnumTypedef(enumType));
 
     for (GcdmNetcdfProto.Variable var : proto.getVarsList())
-      g.addVariable(GcdmConverterMa2.decodeVar(var));
+      g.addVariable(GcdmConverter.decodeVar(var));
 
     for (GcdmNetcdfProto.Structure s : proto.getStructsList())
-      g.addVariable(GcdmConverterMa2.decodeStructure(s));
+      g.addVariable(GcdmConverter.decodeStructure(s));
 
     for (GcdmNetcdfProto.Group gp : proto.getGroupsList()) {
       Group.Builder ng = Group.builder().setName(gp.getName());

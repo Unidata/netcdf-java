@@ -16,7 +16,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import javax.annotation.Nullable;
-import ucar.gcdm.GcdmConverterMa2;
+import ucar.gcdm.GcdmConverter;
 import ucar.gcdm.GcdmGrpc;
 import ucar.gcdm.GcdmNetcdfProto.DataRequest;
 import ucar.gcdm.GcdmNetcdfProto.DataResponse;
@@ -79,7 +79,7 @@ public class GcdmNetcdfFile extends NetcdfFile {
           throw new IOException(response.getError().getMessage());
         }
         // Section sectionReturned = GcdmConverter.decodeSection(response.getSection());
-        ucar.ma2.Array result = GcdmConverterMa2.decodeData(response.getData());
+        ucar.ma2.Array result = GcdmConverter.decodeData(response.getData());
         results.add(result);
         size += result.getSize() * v.getElementSize();
         if (showRequest) {
@@ -236,7 +236,7 @@ public class GcdmNetcdfFile extends NetcdfFile {
         setLocation(remoteURI);
 
         this.rootGroup = Group.builder().setName("");
-        GcdmConverterMa2.decodeGroup(header.getRoot(), this.rootGroup);
+        GcdmConverter.decodeGroup(header.getRoot(), this.rootGroup);
       }
     }
 
