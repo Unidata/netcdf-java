@@ -181,7 +181,7 @@ public class GcdmConverterMa2 {
 
   public static GcdmNetcdfProto.Data encodeData(DataType dataType, Array data) {
     GcdmNetcdfProto.Data result;
-    if (dataType == DataType.OPAQUE) {
+    if (dataType == DataType.OPAQUE) { // TODO why is this a separate case
       result = encodePrimitiveData(dataType, data);
     } else if (data.isVlen()) {
       result = encodeVlenData(dataType, (ArrayObject) data);
@@ -594,7 +594,7 @@ public class GcdmConverterMa2 {
       }
       case SEQUENCE:
       case STRUCTURE: {
-        return decodeArrayStructureData(data);
+        return decodeArrayStructureData(data); // TODO is this reached since structures are separate in decodeData?
       }
       case OPAQUE: {
         int i = 0;
