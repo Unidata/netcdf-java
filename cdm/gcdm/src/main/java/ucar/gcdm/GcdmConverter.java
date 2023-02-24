@@ -260,7 +260,7 @@ public class GcdmConverter {
         }
         break;
       default:
-        throw new IllegalStateException("Unkown datatype " + dataType);
+        throw new IllegalStateException("Unknown datatype " + dataType);
     }
     return builder.build();
   }
@@ -403,8 +403,8 @@ public class GcdmConverter {
       ncvar.setEnumTypeName(var.getEnumType());
     }
 
-    // The Dimensions are stored redunantly in the Variable.
-    // If shared, they must also exist in a parent Group. However, we dont yet have the Groups wired together,
+    // The Dimensions are stored redundantly in the Variable.
+    // If shared, they must also exist in a parent Group. However, we don't yet have the Groups wired together,
     // so that has to wait until build().
     List<Dimension> dims = new ArrayList<>(6);
     Section.Builder section = Section.builder();
@@ -604,7 +604,7 @@ public class GcdmConverter {
         return Array.factory(dataType, shape, array);
       }
       default:
-        throw new IllegalStateException("Unkown datatype " + dataType);
+        throw new IllegalStateException("Unknown datatype " + dataType);
     }
   }
 

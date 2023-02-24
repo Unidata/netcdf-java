@@ -175,7 +175,7 @@ public class GcdmServer {
 
       Variable var = varSection.getVariable();
       long maxChunkElems = MAX_MESSAGE / var.getElementSize();
-      // LOOK wrong this assume starts at 0, should start at varSection
+      // LOOK wrong this assumes starts at 0, should start at varSection
       ChunkingIndex index = new ChunkingIndex(var.getShape());
       while (index.currentElement() < index.getSize()) {
         int[] chunkOrigin = index.getCurrentCounter();
