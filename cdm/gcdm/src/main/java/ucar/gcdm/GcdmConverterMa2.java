@@ -22,6 +22,7 @@ import ucar.gcdm.GcdmNetcdfProto.StructureMemberProto;
 import ucar.ma2.Array;
 import ucar.ma2.ArrayObject;
 import ucar.ma2.ArrayStructure;
+import ucar.ma2.ArrayStructureW;
 import ucar.ma2.DataType;
 import ucar.ma2.Index;
 import ucar.ma2.IndexIterator;
@@ -32,6 +33,7 @@ import ucar.ma2.StructureData;
 import ucar.ma2.StructureDataW;
 import ucar.ma2.StructureMembers;
 import ucar.ma2.StructureMembers.Member;
+import ucar.ma2.StructureMembers.MemberBuilder;
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
 import ucar.nc2.EnumTypedef;
@@ -184,7 +186,7 @@ public class GcdmConverterMa2 {
     } else if (data.isVlen()) {
       result = encodeVlenData(dataType, (ArrayObject) data);
     } else if (data instanceof ArrayStructure) {
-      result = encodeArrayStructureData((ArrayStructure) data);
+      result = encodeArrayStructureData(dataType, (ArrayStructure) data);
     } else {
       result = encodePrimitiveData(dataType, data);
     }
@@ -288,20 +290,29 @@ public class GcdmConverterMa2 {
     return sbuilder.build();
   }
 
-  public static Data encodeArrayStructureData(ArrayStructure arrayStructure) {
+  public static Data encodeArrayStructureData(DataType dataType, ArrayStructure arrayStructure) {
     Data.Builder builder = Data.newBuilder();
-    builder.setDataType(convertDataType(DataType.STRUCTURE));
-
-    StructureMembers sm = arrayStructure.getStructureMembers();
-    for (Member member : sm.getMembers()) {
-      StructureMemberProto.Builder smBuilder = StructureMemberProto.newBuilder().setName(member.getName())
-          .setDataType(convertDataType(member.getDataType())).addAllShapes(Ints.asList(member.getShape()));
-      // builder.addMembers(smBuilder);
-    }
+    builder.setDataType(convertDataType(dataType));
+    encodeShape(builder, arrayStructure.getShape());
+    builder.setMembers(encodeStructureMembers(arrayStructure.getStructureMembers()));
 
     // row oriented
     for (StructureData sdata : arrayStructure) {
       builder.addRows(encodeStructureData(sdata));
+    }
+    return builder.build();
+  }
+
+  private static GcdmNetcdfProto.StructureMembersProto encodeStructureMembers(StructureMembers members) {
+    GcdmNetcdfProto.StructureMembersProto.Builder builder = GcdmNetcdfProto.StructureMembersProto.newBuilder();
+    builder.setName(members.getName());
+    for (Member member : members.getMembers()) {
+      StructureMemberProto.Builder smBuilder = StructureMemberProto.newBuilder().setName(member.getName())
+          .setDataType(convertDataType(member.getDataType())).addAllShapes(Ints.asList(member.getShape()));
+      if (member.getStructureMembers() != null) {
+        smBuilder.setMembers(encodeStructureMembers(member.getStructureMembers()));
+      }
+      builder.addMembers(smBuilder);
     }
     return builder.build();
   }
@@ -700,32 +711,39 @@ public class GcdmConverterMa2 {
   }
 
   public static ArrayStructure decodeArrayStructureData(Data arrayStructureProto) {
+    DataType dataType = convertDataType(arrayStructureProto.getDataType());
     int nrows = arrayStructureProto.getRowsCount();
-    Preconditions.checkArgument(nrows > 0);
-    // Preconditions.checkArgument(section.getSize() == nrows);
+    int[] shape = decodeShape(arrayStructureProto);
 
-    /*
-     * StructureMembers.Builder membersb = StructureMembers.builder();
-     * for (StructureMemberProto memberProto : arrayStructureProto.getMembersList()) {
-     * MemberBuilder memberb = StructureMembers.memberBuilder();
-     * memberb.setName(memberProto.getName());
-     * memberb.setDataType(convertDataType(memberProto.getDataType()));
-     * memberb.setShape(Ints.toArray(memberProto.getShapeList()));
-     * membersb.addMember(memberb);
-     * }
-     * StructureMembers members = membersb.build();
-     * 
-     * ArrayStructureW result = new ArrayStructureW(members, section.getShape());
-     * // row oriented
-     * int index = 0;
-     * for (GcdmNetcdfProto.StructureDataProto row : arrayStructureProto.getRowsList()) {
-     * result.setStructureData(decodeStructureData(row, members), index);
-     * index++;
-     * }
-     * return result;
-     */
-    // TODO why is this commented out?
-    return null;
+    // ok to have nrows = 0
+    Preconditions.checkArgument(Index.computeSize(shape) == nrows);
+
+    StructureMembers members = decodeStructureMembers(arrayStructureProto.getMembers());
+
+    ArrayStructureW result = new ArrayStructureW(members, shape);
+
+    // row oriented
+    int index = 0;
+    for (GcdmNetcdfProto.StructureDataProto row : arrayStructureProto.getRowsList()) {
+      result.setStructureData(decodeStructureData(row, members), index);
+      index++;
+    }
+
+    return result;
+  }
+
+  private static StructureMembers decodeStructureMembers(GcdmNetcdfProto.StructureMembersProto membersProto) {
+    StructureMembers.Builder membersb = StructureMembers.builder();
+    membersb.setName(membersProto.getName());
+    for (StructureMemberProto memberProto : membersProto.getMembersList()) {
+      MemberBuilder memberb = StructureMembers.memberBuilder().setName(memberProto.getName())
+          .setDataType(convertDataType(memberProto.getDataType())).setShape(Ints.toArray(memberProto.getShapesList()));
+      if (memberProto.hasMembers()) {
+        memberb.setStructureMembers(decodeStructureMembers(memberProto.getMembers()));
+      }
+      membersb.addMember(memberb);
+    }
+    return membersb.build();
   }
 
   public static StructureData decodeStructureData(GcdmNetcdfProto.StructureDataProto structDataProto,
