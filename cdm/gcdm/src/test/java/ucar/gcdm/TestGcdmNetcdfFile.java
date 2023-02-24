@@ -13,6 +13,7 @@ import java.util.Formatter;
 import java.util.List;
 import org.apache.commons.io.filefilter.SuffixFileFilter;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.slf4j.Logger;
@@ -22,9 +23,11 @@ import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.util.CompareNetcdf2;
 import ucar.unidata.util.test.TestDir;
+import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
 /** Test {@link GcdmNetcdfFile} */
 @RunWith(Parameterized.class)
+@Category(NeedsCdmUnitTest.class)
 public class TestGcdmNetcdfFile {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
