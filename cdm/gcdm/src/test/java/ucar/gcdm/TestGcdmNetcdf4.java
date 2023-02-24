@@ -37,8 +37,8 @@ public class TestGcdmNetcdf4 {
   private static final Predicate<Object[]> filesToSkip = new Predicate<Object[]>() {
     @Override
     public boolean test(Object[] filenameParam) {
-      // these files are removed because they cause an OutOfMemeoryError
-      // todo: why do these cause an OutOfMemeoryError?
+      // these files are removed because they cause an OutOfMemoryError
+      // todo: why do these cause an OutOfMemoryError?
       String fname = (String) filenameParam[0];
       return !(fname.endsWith("/e562p1_fp.inst3_3d_asm_Nv.20100907_00z+20100909_1200z.nc4")
           || fname.endsWith("/tiling.nc4"));

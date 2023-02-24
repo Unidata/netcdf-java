@@ -83,8 +83,8 @@ public class GcdmNetcdfFile extends NetcdfFile {
         results.add(result);
         size += result.getSize() * v.getElementSize();
         if (showRequest) {
-          long recieved = result.getSize() * v.getElementSize();
-          System.out.printf("  readArrayData bytes recieved = %d %n", recieved);
+          long received = result.getSize() * v.getElementSize();
+          System.out.printf("  readArrayData bytes received = %d %n", received);
         }
       }
 
@@ -99,7 +99,7 @@ public class GcdmNetcdfFile extends NetcdfFile {
     }
     if (showRequest) {
       double rate = ((double) size) / stopwatch.elapsed(TimeUnit.MICROSECONDS);
-      System.out.printf(" ** recieved=%d took=%s rate=%.2f MB/sec%n", size, stopwatch.stop(), rate);
+      System.out.printf(" ** received=%d took=%s rate=%.2f MB/sec%n", size, stopwatch.stop(), rate);
     }
 
     if (results.size() == 1) {
