@@ -35,6 +35,8 @@ public class TestGcdmNetcdfFile {
   public static List<Object[]> getTestParameters() {
     List<Object[]> result = new ArrayList<>(500);
     try {
+      TestDir.actOnAllParameterized("../../dap4/d4tests/src/test/data/resources/testfiles/", new SuffixFileFilter(".nc"), result, false);
+
       TestDir.actOnAllParameterized(TestDir.cdmLocalTestDataDir, new SuffixFileFilter(".nc"), result, true);
 
       FileFilter ff = TestDir.FileFilterSkipSuffix(".cdl .ncml perverse.nc");
