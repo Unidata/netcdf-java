@@ -181,7 +181,8 @@ public class CoordinateAxis1D extends CoordinateAxis {
   }
 
   // for section and slice
-
+  /** @deprecated Use {@link #toBuilder()} */
+  @Deprecated
   @Override
   protected CoordinateAxis1D copy() {
     return new CoordinateAxis1D(this.ncd, this);
