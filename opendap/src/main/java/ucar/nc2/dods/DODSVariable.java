@@ -95,6 +95,8 @@ public class DODSVariable extends ucar.nc2.Variable implements DODSNode {
   }
 
   // for section, slice
+  /** @deprecated Use {@link #toBuilder()} */
+  @Deprecated
   @Override
   protected Variable copy() {
     return new DODSVariable(this);

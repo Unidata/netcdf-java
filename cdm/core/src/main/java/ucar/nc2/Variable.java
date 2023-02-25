@@ -454,7 +454,7 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
     return sliceV.build(getParentGroupOrRoot());
   }
 
-  /** @deprecated Use Variable.toBuilder() */
+  /** @deprecated Use {@link #toBuilder()} */
   @Deprecated
   protected Variable copy() {
     return new Variable(this);

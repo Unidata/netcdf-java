@@ -40,6 +40,8 @@ public class CoordinateAxis2D extends CoordinateAxis {
   }
 
   // for section and slice
+  /** @deprecated Use {@link #toBuilder()} */
+  @Deprecated
   @Override
   protected CoordinateAxis2D copy() {
     return new CoordinateAxis2D(this.ncd, this);
