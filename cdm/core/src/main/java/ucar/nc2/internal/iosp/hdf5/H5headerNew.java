@@ -787,7 +787,7 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
             log.warn("DIMENSION_LIST: failed to read on variable {}", facade.getName());
 
           } else if (att.getLength() != facade.dobj.mds.dimLength.length) { // some attempts to writing hdf5 directly
-                                                                            // fail here
+            // fail here
             log.warn("DIMENSION_LIST: must have same number of dimension scales as dimensions att={} on variable {}",
                 att, facade.getName());
 
@@ -1547,55 +1547,72 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
 
     // set the enumTypedef
     if (dt.isEnum()) {
-      // dmh: HDF5, at least as used by netcdf-4, defines an enumeration type multiple times.
-      // One is when the enum type is defined, and then for every variable or field typed by that
-      // enum type, another enum type is created but with the name of the variable/field instead of
-      // the name of the actual type. This appears to be because H5header(New) does not pass
-      // down enough information for the HDF5->CDM translator to recognize the second case.
-      // The solution provided is to see if the following conditions hold when an enum typed
-      // variable is encountered:
-      // 1. The enum name is the same as the variable name.
-      // 2. There is no enum of that name in the current group.
-      // 3. There is another enum type in some containing group
-      // that is structurally identical to the EnumTypedef -- but with a
-      // different name -- associated with the variable. This is in contrast
-      // to testing for name equality.
+      // dmh: An HDF5 file, at least as used by netcdf-4, may define an enumeration
+      // type one or more times:
+      // 1. There may be an explicit, independent enum type definition.
+      // 2. A variable/HDF5-Dataset may define an implicit enum type with the same name as the variable.
+      // 3. A variable may define an implicit enum type that is a copy of a case 1 enum type;
+      // the implicit enum type will have the same name as the independent enum type.
       //
-      // If all three conditions are true, then use the enum found
-      // in condition 3 as the enum type for the variable.
-      // Note that provision is made only for a shortname rather than a
-      // fully qualified name, which is incorrect, but too hard to change.
-      //
-      // If condition 1 if false, then it is ok to create a new EnumTypedef.
-      // Else if condition 2 is false then it is an error because the existence
-      // of such an enum is illegal netcdf-4 because duplicate name.
-      // Else if condition 3 is false, then it is an error because the
-      // variable's enum type is not defined.
+      // The algorithm to infer (and if necessary, create) the proper EnumTypeDef is as follows:
+      // Step 1. If there exists a case 1 enum type with the same name as the variable's enum type,
+      // then use that.
+      // Step 2. If the variable's enum type has the same name as the variable, then we need to
+      // look for a case 1 enum type that is structurally the same as the variable's enum type.
+      // If such exists, then use that.
+      // Step 3: Otherwise, create a new enum type and use that. The new enum type
+      // will have these properties:
+      // a. It is defined in the same group as the variable
+      // b. It has a mutated name similar to the variable's name, namely <variablename>_enum_t.
 
       EnumTypedef actualEnumTypedef = null; // The final chosen EnumTypedef
-      // Create the variables EnumTypedef on speculation
-      EnumTypedef template = new EnumTypedef(mdt.enumTypeName, mdt.map);
-      if (template.getShortName().equals(v.shortName)) { // Condition 1
-        Optional<EnumTypedef> candidate = parent.findEnumTypedef(mdt.enumTypeName, false);
-        if (!candidate.isPresent()) { // Condition 2
-          candidate = parent.findSimilarEnumTypedef(template, true, false);
-          if (candidate.isPresent()) // Condition 3; use correct EnumTypedef
-            actualEnumTypedef = candidate.get();
-          else { // !Condition 3
-            log.warn("EnumTypedef is missing for variable: {}", v.shortName);
-            throw new IllegalStateException("EnumTypedef is missing for variable: " + v.shortName);
-          }
-        } else { // !Condition 2
-          log.warn("Duplicate name: EnumTypedef and Variable: {}", v.shortName);
-          throw new IllegalStateException("Duplicate name: EnumTypedef and Variable: " + v.shortName);
+
+      // Step 1:
+      // See if an independent enum type already exists with the same name
+      Optional<EnumTypedef> candidate = parent.findEnumTypedef(mdt.enumTypeName, true);
+      if (candidate.isPresent()) {
+        // There is an independent type, so use it.
+        actualEnumTypedef = candidate.get();
+      }
+
+      // Step 2:
+      // See if an independent enum type already exists that is structurally similar.
+      if (actualEnumTypedef == null && mdt.enumTypeName.equals(v.shortName)) {
+        // Materialize a enum type def for search purposes; name is irrelevant
+        EnumTypedef template = new EnumTypedef(mdt.enumTypeName, mdt.map);
+        // Search for a structurally similar enum type def
+        candidate = parent.findSimilarEnumTypedef(template, true);
+        if (candidate.isPresent()) {
+          // There is an independent type, so use it.
+          actualEnumTypedef = candidate.get();
         }
-      } else // ! Condition 1; use template
-        actualEnumTypedef = template;
+      }
+
+      // Step 3: Create an independent type
+      if (actualEnumTypedef == null) {
+        String newname = null;
+        if (mdt.enumTypeName.equals(v.shortName)) {
+          // Create mutated name to avoid name conflict
+          newname = mdt.enumTypeName + "_enum_t";
+        } else {
+          newname = mdt.enumTypeName;
+        }
+        actualEnumTypedef = new EnumTypedef(newname, mdt.map);
+        // Add to the current group(builder)
+        parent.addEnumTypedef(actualEnumTypedef);
+      }
+
+      if (actualEnumTypedef == null) {
+        log.warn("Missing EnumTypedef: {}", mdt.enumTypeName);
+        throw new IllegalStateException("Missing EnumTypedef: " + mdt.enumTypeName);
+      }
+
+      // associate with the variable
       v.setEnumTypeName(actualEnumTypedef.getShortName());
     }
-
     return true;
   }
+
 
   @Override
   public Builder getRootGroup() {
@@ -1632,7 +1649,7 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
 
     // chunked stuff
     boolean isChunked;
-    DataBTree btree; // only if isChunked
+    public DataBTree btree; // only if isChunked
 
     MessageDatatype mdt;
     MessageDataspace mds;

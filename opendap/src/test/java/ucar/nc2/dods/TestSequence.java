@@ -26,12 +26,15 @@ public class TestSequence extends TestCase {
   static String baseline = "";
 
   public void testSequence() {
-    String url = "http://tsds.net/tsds/test/Scalar";
+    // The old url: "http://tsds.net/tsds/test/Scalar" is no longer valid.
+    // So replaced with an equivalent.
+    // Also had to replace the struct "TimeSeries" and the field "time"
+    String url = "https://remotetest.unidata.ucar.edu/dts/whoi";
     try {
       NetcdfDataset ds = NetcdfDatasets.openDataset(url);
       System.out.println(ds);
-      Structure struct = (Structure) ds.findVariable("TimeSeries");
-      Variable var = struct.findVariable("time");
+      Structure struct = (Structure) ds.findVariable("emolt_sensor");
+      Variable var = struct.findVariable("TEMP");
       Array arr = var.read();
       int n = (int) arr.getSize();
       int i;
