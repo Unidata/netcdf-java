@@ -46,6 +46,7 @@ import ucar.nc2.iosp.AbstractIOServiceProvider;
 import ucar.nc2.iosp.IOServiceProvider;
 import ucar.nc2.iosp.IospHelper;
 import ucar.nc2.iosp.hdf5.H5header;
+import ucar.nc2.iosp.hdf5.H5iosp;
 import ucar.nc2.iosp.netcdf3.N3header;
 import ucar.nc2.iosp.netcdf3.N3iosp;
 import ucar.nc2.iosp.netcdf3.SPFactory;
