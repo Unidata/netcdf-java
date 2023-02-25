@@ -34,7 +34,7 @@ public class TestDataBTree {
   public void shouldReleaseRafs() throws IOException {
     final Variable variable = netcdfFile.findVariable("data");
     assertThat((Object) variable).isNotNull();
-    final DataBTree bTree = ((Vinfo) variable.getSPobject()).getBtree();
+    final DataBTree bTree = ((Vinfo) variable.getSPobject()).btree;
 
     assertThat(bTree.getRandomAccessFile()).isNotNull();
     netcdfFile.release();
@@ -45,7 +45,7 @@ public class TestDataBTree {
   public void shouldCloseRafs() throws IOException {
     final Variable variable = netcdfFile.findVariable("data");
     assertThat((Object) variable).isNotNull();
-    final DataBTree bTree = ((Vinfo) variable.getSPobject()).getBtree();
+    final DataBTree bTree = ((Vinfo) variable.getSPobject()).btree;
 
     assertThat(bTree.getRandomAccessFile()).isNotNull();
     netcdfFile.close();
