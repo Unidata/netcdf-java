@@ -1830,7 +1830,7 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
     this.cache = builder.cache;
 
     if (this.dataType.isEnum()) {
-      this.enumTypedef = this.group.findEnumeration(builder.enumTypeName);
+      this.enumTypedef = this.group.findEnumeration(builder.enumTypeName, true);
       if (this.enumTypedef == null) {
         throw new IllegalStateException(
             String.format("EnumTypedef '%s' does not exist in a parent Group", builder.enumTypeName));
