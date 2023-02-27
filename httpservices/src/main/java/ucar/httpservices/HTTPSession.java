@@ -9,7 +9,6 @@ import com.google.common.collect.ImmutableMap;
 import java.io.Closeable;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.KeyManagementException;
@@ -26,27 +25,16 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentSkipListSet;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.zip.GZIPInputStream;
-import java.util.zip.ZipInputStream;
 import javax.annotation.concurrent.ThreadSafe;
 import javax.print.attribute.UnmodifiableSetException;
-import org.apache.http.Header;
-import org.apache.http.HeaderElement;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpException;
-import org.apache.http.HttpHost;
-import org.apache.http.HttpRequestInterceptor;
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpResponseInterceptor;
+
+import org.apache.http.*;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.Credentials;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.HttpRequestRetryHandler;
 import org.apache.http.client.config.RequestConfig;
-import org.apache.http.client.entity.DeflateDecompressingEntity;
-import org.apache.http.client.entity.GzipDecompressingEntity;
 import org.apache.http.client.entity.InputStreamFactory;
 import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.conn.socket.ConnectionSocketFactory;
@@ -58,7 +46,6 @@ import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.DefaultHttpRequestRetryHandler;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.protocol.HttpContext;
 import org.apache.http.ssl.SSLContextBuilder;
 import org.apache.http.ssl.SSLContexts;
 import org.apache.http.ssl.TrustStrategy;
@@ -258,57 +245,6 @@ public class HTTPSession implements Closeable {
     }
   }
 
-  static class GZIPResponseInterceptor implements HttpResponseInterceptor {
-    public void process(final HttpResponse response, final HttpContext context) throws HttpException, IOException {
-      HttpEntity entity = response.getEntity();
-      if (entity != null) {
-        Header ceheader = entity.getContentEncoding();
-        if (ceheader != null) {
-          HeaderElement[] codecs = ceheader.getElements();
-          for (HeaderElement h : codecs) {
-            if (h.getName().equalsIgnoreCase("gzip")) {
-              response.setEntity(new GzipDecompressingEntity(response.getEntity()));
-              return;
-            }
-          }
-        }
-      }
-    }
-  }
-
-  static class DeflateResponseInterceptor implements HttpResponseInterceptor {
-    public void process(final HttpResponse response, final HttpContext context) throws HttpException, IOException {
-      HttpEntity entity = response.getEntity();
-      if (entity != null) {
-        Header ceheader = entity.getContentEncoding();
-        if (ceheader != null) {
-          HeaderElement[] codecs = ceheader.getElements();
-          for (HeaderElement h : codecs) {
-            if (h.getName().equalsIgnoreCase("deflate")) {
-              response.setEntity(new DeflateDecompressingEntity(response.getEntity()));
-              return;
-            }
-          }
-        }
-      }
-    }
-  }
-
-  static class ZipStreamFactory implements InputStreamFactory {
-    // InputStreamFactory methods
-    @Override
-    public InputStream create(InputStream instream) throws IOException {
-      return new ZipInputStream(instream, HTTPUtil.UTF8);
-    }
-  }
-
-  static class GZIPStreamFactory implements InputStreamFactory {
-    // InputStreamFactory methods
-    @Override
-    public InputStream create(InputStream instream) throws IOException {
-      return new GZIPInputStream(instream);
-    }
-  }
 
   ////////////////////////////////////////////////////////////////////////
   // Static variables
@@ -327,19 +263,6 @@ public class HTTPSession implements Closeable {
   // User is responsible for its contents via setCredentials
   static CredentialsProvider globalprovider = null;
 
-  // Define interceptor instances; use copy on write for thread safety
-  static List<HttpRequestInterceptor> reqintercepts = new CopyOnWriteArrayList<>();
-  static List<HttpResponseInterceptor> rspintercepts = new CopyOnWriteArrayList<>();
-
-  // This is a hack to suppress content-encoding headers from request
-  // Effectively final because its set in the static initializer and otherwise
-  // read only.
-  protected static HttpResponseInterceptor CEKILL;
-
-  // Debug Header interceptors
-  protected static List<HttpRequestInterceptor> dbgreq = new CopyOnWriteArrayList<>();
-  protected static List<HttpResponseInterceptor> dbgrsp = new CopyOnWriteArrayList<>();
-
   protected static HTTPConnections connmgr;
 
   protected static Map<String, InputStreamFactory> contentDecoderMap;
@@ -355,10 +278,9 @@ public class HTTPSession implements Closeable {
     } else {
       connmgr = new HTTPConnectionSimple();
     }
-    CEKILL = new HTTPUtil.ContentEncodingInterceptor();
     contentDecoderMap = new HashMap<>();
-    contentDecoderMap.put("zip", new ZipStreamFactory());
-    contentDecoderMap.put("gzip", new GZIPStreamFactory());
+    contentDecoderMap.put("zip", new HTTPUtil.ZipStreamFactory());
+    contentDecoderMap.put("gzip", new HTTPUtil.GZIPStreamFactory());
     globalsettings = new ConcurrentHashMap<>();
     setDefaults(globalsettings);
     authcontrols = new AuthControls();
@@ -603,38 +525,24 @@ public class HTTPSession implements Closeable {
   //////////////////////////////////////////////////
   // Compression
 
-  public static synchronized void setGlobalCompression(String compressors) {
+  public synchronized void setCompression(String compressors) {
     if (globalsettings.get(Prop.COMPRESSION) != null) {
-      removeGlobalCompression();
-    }
-    String compresslist = checkCompressors(compressors);
-    if (HTTPUtil.nullify(compresslist) == null) {
-      throw new IllegalArgumentException("Bad compressors: " + compressors);
-    }
-    globalsettings.put(Prop.COMPRESSION, compresslist);
-    HttpResponseInterceptor hrsi;
-    if (compresslist.contains("gzip")) {
-      hrsi = new GZIPResponseInterceptor();
-      rspintercepts.add(hrsi);
-    }
-    if (compresslist.contains("deflate")) {
-      hrsi = new DeflateResponseInterceptor();
-      rspintercepts.add(hrsi);
-    }
-  }
-
-  public static synchronized void removeGlobalCompression() {
-    if (globalsettings.remove(Prop.COMPRESSION) != null) {
-      for (int i = rspintercepts.size() - 1; i >= 0; i--) { // walk backwards
-        HttpResponseInterceptor hrsi = rspintercepts.get(i);
-        if (hrsi instanceof GZIPResponseInterceptor || hrsi instanceof DeflateResponseInterceptor) {
-          rspintercepts.remove(i);
-        }
+      if (globalsettings.remove(HTTPSession.Prop.COMPRESSION) != null) {
+        this.interceptors.removeCompression();
       }
+      String compresslist = checkCompressors(compressors);
+      if (HTTPUtil.nullify(compresslist) == null) {
+        throw new IllegalArgumentException("Bad compressors: " + compressors);
+      }
+      globalsettings.put(Prop.COMPRESSION, compresslist);
+      if (compresslist.contains("deflate"))
+        interceptors.setDeflateCompression();
+      if (compresslist.contains("gzip"))
+        interceptors.setGzipCompression();
     }
   }
 
-  protected static synchronized String checkCompressors(String compressors) {
+  static protected synchronized String checkCompressors(String compressors) {
     // Syntactic check of compressors
     Set<String> cset = new HashSet<>();
     compressors = compressors.replace(',', ' ');
@@ -701,9 +609,6 @@ public class HTTPSession implements Closeable {
   protected String identifier = "Session";
   protected Map<Prop, Object> localsettings = new ConcurrentHashMap<Prop, Object>();
 
-  // We currently only allow the use of global interceptors
-  // protected List<Object> intercepts = new ArrayList<Object>(); // current set of interceptors;
-
   // This context is re-used over all method executions so that we maintain
   // cookies, credentials, etc.
   // In theory this also supports credentials cache clearing.
@@ -711,6 +616,8 @@ public class HTTPSession implements Closeable {
   protected HTTPAuthCache sessioncache = new HTTPAuthCache();
 
   protected URI requestURI = null; // full uri from the HTTPMethod call
+
+  protected HTTPIntercepts interceptors = null;
 
   // cached and recreated as needed
   protected boolean cachevalid = false; // Are cached items up-to-date?
@@ -750,28 +657,19 @@ public class HTTPSession implements Closeable {
   }
 
   //////////////////////////////////////////////////
-  // Interceptors: Only supported at global level
+  // Accessor(s)
 
-  protected static void setInterceptors(HttpClientBuilder cb) {
-    for (HttpRequestInterceptor hrq : reqintercepts) {
-      cb.addInterceptorLast(hrq);
-    }
-    for (HttpResponseInterceptor hrs : rspintercepts) {
-      cb.addInterceptorLast(hrs);
-    }
-    // Add debug interceptors
-    for (HttpRequestInterceptor hrq : dbgreq) {
-      cb.addInterceptorFirst(hrq);
-    }
-    for (HttpResponseInterceptor hrs : dbgrsp) {
-      cb.addInterceptorFirst(hrs);
-    }
-    // Hack: add Content-Encoding suppressor
-    cb.addInterceptorFirst(CEKILL);
+  public HTTPIntercepts getIntercepts() {
+    return this.interceptors;
   }
 
-  //////////////////////////////////////////////////
-  // Accessor(s)
+  public HTTPIntercepts.DebugInterceptRequest getDebugRequestInterceptor() {
+    return this.interceptors.debugRequestInterceptor();
+  }
+
+  public synchronized void resetInterceptors() {
+    this.interceptors.resetInterceptors();
+  }
 
   public AuthScope getAuthScope() {
     return this.scope;
@@ -1072,6 +970,18 @@ public class HTTPSession implements Closeable {
     return builder.build();
   }
 
+  public synchronized void setDebugInterceptors() {
+    if (this.interceptors == null)
+      this.interceptors = new HTTPIntercepts();
+    this.interceptors.addDebugInterceptors();
+  }
+
+  public void activateInterceptors(HttpClientBuilder cb) {
+    if (this.interceptors == null)
+      this.interceptors = new HTTPIntercepts();
+    this.interceptors.activateInterceptors(cb);
+  }
+
   //////////////////////////////////////////////////
   // Utilities
 
@@ -1115,66 +1025,6 @@ public class HTTPSession implements Closeable {
     if (sessionList == null)
       sessionList = new ConcurrentSkipListSet<HTTPSession>();
     sessionList.add(session);
-  }
-
-  public static synchronized void setInterceptors(boolean print) {
-    if (!TESTING) {
-      throw new UnsupportedOperationException();
-    }
-    HTTPUtil.InterceptRequest rq = new HTTPUtil.InterceptRequest();
-    HTTPUtil.InterceptResponse rs = new HTTPUtil.InterceptResponse();
-    rq.setPrint(print);
-    rs.setPrint(print);
-    /* remove any previous */
-    for (int i = reqintercepts.size() - 1; i >= 0; i--) {
-      HttpRequestInterceptor hr = reqintercepts.get(i);
-      if (hr instanceof HTTPUtil.InterceptCommon) {
-        reqintercepts.remove(i);
-      }
-    }
-    for (int i = rspintercepts.size() - 1; i >= 0; i--) {
-      HttpResponseInterceptor hr = rspintercepts.get(i);
-      if (hr instanceof HTTPUtil.InterceptCommon) {
-        rspintercepts.remove(i);
-      }
-    }
-    reqintercepts.add(rq);
-    rspintercepts.add(rs);
-  }
-
-  public static void resetInterceptors() {
-    if (!TESTING) {
-      throw new UnsupportedOperationException();
-    }
-    for (HttpRequestInterceptor hri : reqintercepts) {
-      if (hri instanceof HTTPUtil.InterceptCommon) {
-        ((HTTPUtil.InterceptCommon) hri).clear();
-      }
-    }
-  }
-
-  public static HTTPUtil.InterceptRequest debugRequestInterceptor() {
-    if (!TESTING) {
-      throw new UnsupportedOperationException();
-    }
-    for (HttpRequestInterceptor hri : reqintercepts) {
-      if (hri instanceof HTTPUtil.InterceptRequest) {
-        return ((HTTPUtil.InterceptRequest) hri);
-      }
-    }
-    return null;
-  }
-
-  public static HTTPUtil.InterceptResponse debugResponseInterceptor() {
-    if (!TESTING) {
-      throw new UnsupportedOperationException();
-    }
-    for (HttpResponseInterceptor hri : rspintercepts) {
-      if (hri instanceof HTTPUtil.InterceptResponse) {
-        return ((HTTPUtil.InterceptResponse) hri);
-      }
-    }
-    return null;
   }
 
   /* Only allow if debugging */
@@ -1240,11 +1090,6 @@ public class HTTPSession implements Closeable {
   @Deprecated
   public static int getRetryCount() {
     throw new UnsupportedOperationException();
-  }
-
-  @Deprecated
-  public static void setGlobalCompression() {
-    setGlobalCompression("gzip,deflate");
   }
 
   @Deprecated

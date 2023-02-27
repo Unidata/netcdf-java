@@ -17,13 +17,8 @@ import java.nio.LongBuffer;
 import java.nio.ShortBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Formatter;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.TimeZone;
+import java.util.*;
+
 import ucar.ma2.Array;
 import ucar.ma2.ArrayChar;
 import ucar.ma2.ArrayObject;
@@ -44,7 +39,6 @@ import ucar.nc2.Group.Builder;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.CDM;
-import ucar.nc2.filter.Filter;
 import ucar.nc2.internal.iosp.hdf4.HdfEos;
 import ucar.nc2.internal.iosp.hdf4.HdfHeaderIF;
 import ucar.nc2.internal.iosp.hdf5.H5objects.DataObject;
@@ -498,7 +492,7 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
         }
 
         if (facadeNested.dobj.mdt.map != null) {
-          EnumTypedef enumTypedef = parentGroup.findEnumTypedef(facadeNested.name).orElse(null);
+          EnumTypedef enumTypedef = parentGroup.findEnumTypedef(facadeNested.name, true).orElse(null);
           if (enumTypedef == null) {
             DataType basetype;
             switch (facadeNested.dobj.mdt.byteSize) {
@@ -554,7 +548,7 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
             }
             // This code apparently addresses the possibility of an anonymous enum LOOK ??
             if (enumTypeName.isEmpty()) {
-              EnumTypedef enumTypedef = parentGroup.findEnumTypedef(facadeNested.name).orElse(null);
+              EnumTypedef enumTypedef = parentGroup.findEnumTypedef(facadeNested.name, true).get();
               if (enumTypedef == null) {
                 enumTypedef = new EnumTypedef(facadeNested.name, facadeNested.dobj.mdt.map);
                 parentGroup.addEnumTypedef(enumTypedef);
@@ -793,7 +787,7 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
             log.warn("DIMENSION_LIST: failed to read on variable {}", facade.getName());
 
           } else if (att.getLength() != facade.dobj.mds.dimLength.length) { // some attempts to writing hdf5 directly
-                                                                            // fail here
+            // fail here
             log.warn("DIMENSION_LIST: must have same number of dimension scales as dimensions att={} on variable {}",
                 att, facade.getName());
 
@@ -1553,18 +1547,72 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
 
     // set the enumTypedef
     if (dt.isEnum()) {
-      // TODO Not sure why, but there may be both a user type and a "local" mdt enum. May need to do a value match?
-      EnumTypedef enumTypedef = parent.findEnumTypedef(mdt.enumTypeName).orElse(null);
-      if (enumTypedef == null) { // if shared object, wont have a name, shared version gets added later
-        EnumTypedef local = new EnumTypedef(mdt.enumTypeName, mdt.map);
-        enumTypedef = parent.enumTypedefs.stream().filter((e) -> e.equalsMapOnly(local)).findFirst().orElse(local);
-        parent.addEnumTypedef(enumTypedef);
-      }
-      v.setEnumTypeName(enumTypedef.getShortName());
-    }
+      // dmh: An HDF5 file, at least as used by netcdf-4, may define an enumeration
+      // type one or more times:
+      // 1. There may be an explicit, independent enum type definition.
+      // 2. A variable/HDF5-Dataset may define an implicit enum type with the same name as the variable.
+      // 3. A variable may define an implicit enum type that is a copy of a case 1 enum type;
+      // the implicit enum type will have the same name as the independent enum type.
+      //
+      // The algorithm to infer (and if necessary, create) the proper EnumTypeDef is as follows:
+      // Step 1. If there exists a case 1 enum type with the same name as the variable's enum type,
+      // then use that.
+      // Step 2. If the variable's enum type has the same name as the variable, then we need to
+      // look for a case 1 enum type that is structurally the same as the variable's enum type.
+      // If such exists, then use that.
+      // Step 3: Otherwise, create a new enum type and use that. The new enum type
+      // will have these properties:
+      // a. It is defined in the same group as the variable
+      // b. It has a mutated name similar to the variable's name, namely <variablename>_enum_t.
 
+      EnumTypedef actualEnumTypedef = null; // The final chosen EnumTypedef
+
+      // Step 1:
+      // See if an independent enum type already exists with the same name
+      Optional<EnumTypedef> candidate = parent.findEnumTypedef(mdt.enumTypeName, true);
+      if (candidate.isPresent()) {
+        // There is an independent type, so use it.
+        actualEnumTypedef = candidate.get();
+      }
+
+      // Step 2:
+      // See if an independent enum type already exists that is structurally similar.
+      if (actualEnumTypedef == null && mdt.enumTypeName.equals(v.shortName)) {
+        // Materialize a enum type def for search purposes; name is irrelevant
+        EnumTypedef template = new EnumTypedef(mdt.enumTypeName, mdt.map);
+        // Search for a structurally similar enum type def
+        candidate = parent.findSimilarEnumTypedef(template, true);
+        if (candidate.isPresent()) {
+          // There is an independent type, so use it.
+          actualEnumTypedef = candidate.get();
+        }
+      }
+
+      // Step 3: Create an independent type
+      if (actualEnumTypedef == null) {
+        String newname = null;
+        if (mdt.enumTypeName.equals(v.shortName)) {
+          // Create mutated name to avoid name conflict
+          newname = mdt.enumTypeName + "_enum_t";
+        } else {
+          newname = mdt.enumTypeName;
+        }
+        actualEnumTypedef = new EnumTypedef(newname, mdt.map);
+        // Add to the current group(builder)
+        parent.addEnumTypedef(actualEnumTypedef);
+      }
+
+      if (actualEnumTypedef == null) {
+        log.warn("Missing EnumTypedef: {}", mdt.enumTypeName);
+        throw new IllegalStateException("Missing EnumTypedef: " + mdt.enumTypeName);
+      }
+
+      // associate with the variable
+      v.setEnumTypeName(actualEnumTypedef.getShortName());
+    }
     return true;
   }
+
 
   @Override
   public Builder getRootGroup() {
@@ -1601,7 +1649,7 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
 
     // chunked stuff
     boolean isChunked;
-    DataBTree btree; // only if isChunked
+    public DataBTree btree; // only if isChunked
 
     MessageDatatype mdt;
     MessageDataspace mds;
@@ -1609,6 +1657,10 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
 
     boolean useFillValue;
     byte[] fillValue;
+
+    public DataBTree getBtree() {
+      return btree;
+    }
 
     public String getCompression() {
       if (mfp == null)

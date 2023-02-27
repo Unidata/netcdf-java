@@ -1,0 +1,35 @@
+netcdf test_struct_array.8.nc.dap {
+  variables:
+
+    Structure {
+      int x;
+        string x:_CoordinateAxisType = "GeoX";
+      int y;
+        string y:_CoordinateAxisType = "GeoY";
+    } s(2, 2);
+
+
+  // global attributes:
+  string :_dap4.ce = "/s[0:2:3][0:1]";
+  :_DAP4_Little_Endian = 1B;
+  string :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
+
+  data:
+    s = 
+      {
+        x = 1
+        y = -1
+      } s(0)
+      {
+        x = 17
+        y = 37
+      } s(1)
+      {
+        x = -4
+        y = 12
+      } s(2)
+      {
+        x = -8
+        y = 8
+      } s(3)
+}

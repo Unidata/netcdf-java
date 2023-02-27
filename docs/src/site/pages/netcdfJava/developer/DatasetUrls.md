@@ -275,15 +275,14 @@ The `cdmRemoteURL` must be an endpoint for a `cdmremote` web service, which prov
 ### DAP4 datasets
 
 `NetcdfDataset` can open datasets through the DAP4 protocol.
-The url should either begin with `dap4:` or `dap4:http:`.
+The following url templates will be recognized as indicating the DAP4 protocol.
+* *dap4://<host>/<path>/<filename>*
+* *https://<host>/<path>/<filename>#dap4*
 Examples:
-
 * `dap4:http://thredds.ucar.edu:8080/thredds/fmrc/NCEP/GFS/CONUS_95km/files/GFS_CONUS_95km_20070319_0600.grib1`
-* `dap4://thredds.ucar.edu:8080/thredds/models/NCEP/GFS/Global_5x2p5deg/GFS_Global_5x2p5deg_20070313_1200.nc`
+* `https://thredds.ucar.edu:8080/thredds/models/NCEP/GFS/Global_5x2p5deg/GFS_Global_5x2p5deg_20070313_1200.nc#dap4`
 
-To avoid confusion with other protocols using HTTP URLs, DAP4 URLs are often converted to use the `dap4:` prefix.
-Also note that when passing a DAP4 dataset URL to the netCDF-Java library, do not include any of the access suffixes, e.g. `.dmr`, `.dap`, `.dst`, etc.
-
+Note that when passing a DAP4 dataset URL to the netCDF-Java library, do not include any of the access suffixes, e.g. `.dmr`, `.dap`, `.dsr`, `.xml` etc.
 
 ## `ucar.nc2.ft.FeatureDatasetFactoryManager.open()`
 

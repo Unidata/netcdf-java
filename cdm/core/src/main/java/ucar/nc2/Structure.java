@@ -23,6 +23,7 @@ import ucar.ma2.Section;
 import ucar.ma2.StructureData;
 import ucar.ma2.StructureDataIterator;
 import ucar.ma2.StructureMembers;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.util.Indent;
 
 /**
@@ -637,7 +638,7 @@ public class Structure extends Variable {
     buf.format(";%s%n", extraInfo());
 
     for (Attribute att : attributes()) {
-      if (Attribute.isspecial(att))
+      if (CDM.isspecial(att))
         continue;
       buf.format("%s", indent);
       att.writeCDL(buf, strict, getShortName());

@@ -1,0 +1,137 @@
+netcdf nc4_nc_classic_no_comp {
+  dimensions:
+    lat = 6;
+    lon = 5;
+    time = 2;
+  variables:
+    float t(time, lat, lon);
+
+    double p(time, lat, lon);
+      p:_FillValue = -9999.0;
+
+    short rh(time, lat, lon);
+      rh:_FillValue = -1S;
+
+    short pixel(lat, lon);
+
+    string source(lat);
+      source:string_length = 5;
+
+    int lat(lat);
+      string lat:units = "degrees_north";
+      string lat:_CoordinateAxisType = "Lat";
+
+    int lon(lon);
+      string lon:units = "degrees_east";
+      string lon:_CoordinateAxisType = "Lon";
+
+    int time(time);
+      string time:units = "seconds";
+
+    float z(time, lat, lon);
+      z:valid_range = 0.0, 5000.0;
+      z:_FillValue = 1.0f;
+      string z:units = "meters";
+      string z:_CoordinateAxisType = "Height";
+
+  // global attributes:
+  string :NC_GLOBAL.title = "Hyrax/netcdf handler test file 1";
+  :NC_GLOBAL.version = 1.0;
+  string :NC_GLOBAL.description = "This file has all of the NC_CLASSIC_MODEL data types.";
+  string :DODS_EXTRA.Unlimited_Dimension = "time";
+  string :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
+
+  data:
+    t = 
+      {
+        {
+          {1.0, 1.0, 1.0, 1.0, 1.0},
+          {1.0, 1.0, 1.0, 1.0, 1.0},
+          {1.0, 1.0, 1.0, 1.0, 1.0},
+          {1.0, 1.0, 1.0, 1.0, 1.0},
+          {1.0, 1.0, 1.0, 1.0, 1.0},
+          {1.0, 1.0, 1.0, 1.0, 1.0}
+        },
+        {
+          {1.0, 1.0, 1.0, 1.0, 1.0},
+          {1.0, 1.0, 1.0, 1.0, 1.0},
+          {1.0, 1.0, 1.0, 1.0, 1.0},
+          {1.0, 1.0, 1.0, 1.0, 1.0},
+          {1.0, 1.0, 1.0, 1.0, 1.0},
+          {1.0, 1.0, 1.0, 1.0, 1.0}
+        }
+      }
+    p = 
+      {
+        {
+          {0.1, 0.1, 0.1, 0.1, 0.1},
+          {0.1, 0.1, 0.1, 0.1, 0.1},
+          {0.1, 0.1, 0.1, 0.1, 0.1},
+          {0.1, 0.1, 0.1, 0.1, 0.1},
+          {0.1, 0.1, 0.1, 0.1, 0.1},
+          {0.1, 0.1, 0.1, 0.1, 0.1}
+        },
+        {
+          {0.1, 0.1, 0.1, 0.1, 0.1},
+          {0.1, 0.1, 0.1, 0.1, 0.1},
+          {0.1, 0.1, 0.1, 0.1, 0.1},
+          {0.1, 0.1, 0.1, 0.1, 0.1},
+          {0.1, 0.1, 0.1, 0.1, 0.1},
+          {0.1, 0.1, 0.1, 0.1, 0.1}
+        }
+      }
+    rh = 
+      {
+        {
+          {2, 2, 2, 2, 2},
+          {2, 2, 2, 2, 2},
+          {2, 2, 2, 2, 2},
+          {2, 2, 2, 2, 2},
+          {2, 2, 2, 2, 2},
+          {2, 2, 2, 2, 2}
+        },
+        {
+          {2, 2, 2, 2, 2},
+          {2, 2, 2, 2, 2},
+          {2, 2, 2, 2, 2},
+          {2, 2, 2, 2, 2},
+          {2, 2, 2, 2, 2},
+          {2, 2, 2, 2, 2}
+        }
+      }
+    pixel = 
+      {
+        {7, 7, 7, 7, 7},
+        {7, 7, 7, 7, 7},
+        {7, 7, 7, 7, 7},
+        {7, 7, 7, 7, 7},
+        {7, 7, 7, 7, 7},
+        {7, 7, 7, 7, 7}
+      }
+    source =   "aaaaa",   "aaaaa",   "aaaaa",   "aaaaa",   "aaaaa",   "aaaaa"
+    lat = 
+      {0, 10, 20, 30, 40, 50}
+    lon = 
+      {-140, -118, -96, -84, -52}
+    time = 
+      {1, 2}
+    z = 
+      {
+        {
+          {10.0, 10.0, 10.0, 10.0, 10.0},
+          {10.0, 10.0, 10.0, 10.0, 10.0},
+          {10.0, 10.0, 10.0, 10.0, 10.0},
+          {10.0, 10.0, 10.0, 10.0, 10.0},
+          {10.0, 10.0, 10.0, 10.0, 10.0},
+          {10.0, 10.0, 10.0, 10.0, 10.0}
+        },
+        {
+          {10.0, 10.0, 10.0, 10.0, 10.0},
+          {10.0, 10.0, 10.0, 10.0, 10.0},
+          {10.0, 10.0, 10.0, 10.0, 10.0},
+          {10.0, 10.0, 10.0, 10.0, 10.0},
+          {10.0, 10.0, 10.0, 10.0, 10.0},
+          {10.0, 10.0, 10.0, 10.0, 10.0}
+        }
+      }
+}

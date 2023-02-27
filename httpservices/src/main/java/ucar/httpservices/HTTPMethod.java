@@ -137,8 +137,7 @@ import org.slf4j.LoggerFactory;
  * is accessible.
  * </ul>
  * <p>
- * For testing purposes, and to allow use of Spring Servlet Mocking,
- * it is possible to set a special execution action (see executeRaw).
+ * For testing purposes, it is possible to set a special execution action (see executeRaw).
  */
 
 @NotThreadSafe
@@ -158,14 +157,11 @@ public class HTTPMethod implements Closeable, Comparable<HTTPMethod> {
 
   public static boolean TESTING = false;
 
-  /* External tests can Set this to true if they are using Spring Servlet Mocking */
-  public static Executor MOCKEXECUTOR = null;
-
   //////////////////////////////////////////////////
   // Instance fields
 
   protected HTTPSession session = null;
-  protected boolean localsession = false;
+  protected boolean islocalsession = false;
   protected URI methodurl = null;
   protected String userinfo = null;
   protected HttpEntity content = null;
@@ -224,7 +220,7 @@ public class HTTPMethod implements Closeable, Comparable<HTTPMethod> {
 
     if (session == null) {
       session = HTTPFactory.newSession(url);
-      localsession = true;
+      islocalsession = true;
     }
     this.session = session;
     // user info may contain encoded characters (such as a username containing
@@ -305,7 +301,7 @@ public class HTTPMethod implements Closeable, Comparable<HTTPMethod> {
     }
     if (session != null) {
       session.removeMethod(this);
-      if (localsession) {
+      if (islocalsession) {
         session.close();
         session = null;
       }
@@ -346,7 +342,7 @@ public class HTTPMethod implements Closeable, Comparable<HTTPMethod> {
     this.executed = true;
     if (this.methodurl == null)
       throw new HTTPException("HTTPMethod: no url specified");
-    if (!localsession && !sessionCompatible(this.methodurl))
+    if (!islocalsession && !sessionCompatible(this.methodurl))
       throw new HTTPException("HTTPMethod: session incompatible url: " + this.methodurl);
 
     // Capture the current state of the parent HTTPSession; never to be modified in this class
@@ -371,12 +367,7 @@ public class HTTPMethod implements Closeable, Comparable<HTTPMethod> {
       configClient(cb, this.settings);
       session.setAuthenticationAndProxy(cb);
       HttpClient httpclient = cb.build();
-      if (MOCKEXECUTOR != null) {
-        URI uri = this.lastrequest.getURI();
-        this.lastresponse = MOCKEXECUTOR.execute(this.lastrequest);
-      } else {
-        this.lastresponse = httpclient.execute(targethost, this.lastrequest, session.getContext());
-      }
+      this.lastresponse = httpclient.execute(targethost, this.lastrequest, session.getContext());
       if (this.lastresponse == null)
         throw new HTTPException("HTTPMethod.execute: Response was null");
       return this.lastresponse;
@@ -422,7 +413,7 @@ public class HTTPMethod implements Closeable, Comparable<HTTPMethod> {
     String agent = (String) settings.get(Prop.USER_AGENT);
     if (agent != null)
       cb.setUserAgent(agent);
-    session.setInterceptors(cb);
+    session.activateInterceptors(cb);
     session.setContentDecoderRegistry(cb);
     session.setClientManager(cb, this);
     session.setRetryHandler(cb);
@@ -722,7 +713,7 @@ public class HTTPMethod implements Closeable, Comparable<HTTPMethod> {
   }
 
   public boolean isSessionLocal() {
-    return this.localsession;
+    return this.islocalsession;
   }
 
   public boolean hasStreamOpen() {
@@ -742,7 +733,7 @@ public class HTTPMethod implements Closeable, Comparable<HTTPMethod> {
   // Pass thru's to HTTPSession
 
   public HTTPMethod setCompression(String compressors) {
-    this.session.setGlobalCompression(compressors);
+    this.session.setCompression(compressors);
     return this;
   }
 

@@ -70,7 +70,7 @@ public class NetcdfFiles {
       registerIOProvider("ucar.nc2.internal.iosp.hdf5.H5iospNew");
     } catch (Throwable e) {
       if (loadWarnings)
-        log.info("Cant load class H5iosp", e);
+        log.info("Cant load class H5iospNew", e);
     }
     try {
       registerIOProvider("ucar.nc2.stream.NcStreamIosp");

@@ -1458,7 +1458,6 @@ public class ToolsUI extends JPanel {
       for (String arg : args) {
         System.out.println(" " + arg);
       }
-      HTTPSession.setInterceptors(true);
     }
 
     // handle multiple versions of ToolsUI, along with passing a dataset name
@@ -1505,7 +1504,6 @@ public class ToolsUI extends JPanel {
       for (String arg : args) {
         System.out.println(" " + arg);
       }
-      HTTPSession.setInterceptors(true);
     }
 
     // look for command-line arguments

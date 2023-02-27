@@ -17,7 +17,7 @@ public enum ServiceType {
   CdmrFeature("Provides coordinate subsetting on remote CDM Feature Datasets, using ncstream.", AccessType.DataAccess,
       "cdmrFeature"), //
   Compound, //
-  DAP4("Access dataset through OPeNDAP using the DAP4 protocol.", AccessType.DataAccess, "dap4"), //
+  DAP4("Access dataset using the DAP4 protocol.", AccessType.DataAccess, "dap4"), //
   DODS, // deprecated
   File, // deprecated
   FTP, //

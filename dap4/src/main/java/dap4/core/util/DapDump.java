@@ -1,0 +1,137 @@
+/*
+ * Copyright 2012, UCAR/Unidata.
+ * See the LICENSE file for more information.
+ */
+
+
+package dap4.core.util;
+
+import java.io.*;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.util.Arrays;
+
+public abstract class DapDump {
+  //////////////////////////////////////////////////
+  // Provide a simple dump of binary data
+  // (Static method)
+
+  //////////////////////////////////////////////////
+  // Constants
+
+  static int MAXLIMIT = 20000;
+  //////////////////////////////////////////////////
+  // Provide a simple dump of binary data
+
+  static public void dumpbytesbuf(ByteBuffer buf0, boolean skipdmr) {
+    int savepos = buf0.position();
+    int limit0 = buf0.limit();
+    int skipcount = 0;
+    if (limit0 > MAXLIMIT)
+      limit0 = MAXLIMIT;
+    if (limit0 >= buf0.limit())
+      limit0 = buf0.limit();
+    if (skipdmr) {
+      ByteOrder saveorder = buf0.order();
+      buf0.order(ByteOrder.BIG_ENDIAN); // must read in network order
+      skipcount = buf0.getInt(); // dmr count
+      buf0.order(saveorder);
+      skipcount &= 0xFFFFFF; // mask off the flags to get true count
+      skipcount += 4; // skip the count also
+    }
+    byte[] bytes = new byte[(limit0 + 8) - skipcount];
+    Arrays.fill(bytes, (byte) 0);
+    buf0.position(savepos + skipcount);
+    buf0.get(bytes, 0, limit0 - skipcount);
+    buf0.position(savepos);
+
+    System.err.println("order=" + buf0.order());
+
+    ByteBuffer buf = ByteBuffer.wrap(bytes).order(buf0.order());
+    dumpbytesbuf(buf);
+  }
+
+  /**
+   * Dump the contents of a buffer from 0 to position
+   *
+   * @param buf0 byte buffer to dump
+   */
+  static public void dumpbytesbuf(ByteBuffer buf0) {
+    int stop = buf0.limit();
+    int size = stop + 8;
+    int savepos = buf0.position();
+    assert savepos == 0;
+    byte[] bytes = new byte[size];
+    Arrays.fill(bytes, (byte) 0);
+    buf0.get(bytes, 0, stop);
+    buf0.position(savepos);
+    ByteBuffer buf = ByteBuffer.wrap(bytes).order(buf0.order());
+    buf.position(0);
+    buf.limit(size);
+    int i = 0;
+    try {
+      System.err.printf("[pos]  X    U   S    C\t       I            UI         XI           Sh       USh%n");
+      System.err.println("-------------------------------------------------------------------------------------");
+      for (i = 0; buf.position() < stop; i++) {
+        savepos = buf.position();
+        int iv = buf.getInt();
+        buf.position(savepos);
+        long lv = buf.getLong();
+        buf.position(savepos);
+        short sv = buf.getShort();
+        buf.position(savepos);
+        byte b = buf.get();
+        int ub = ((int) b) & 0x000000FF;
+        long uiv = ((long) iv) & 0xFFFFFFFFL;
+        int usv = ((int) sv) & 0xFFFF;
+        int ib = (int) b;
+        char c = (char) ub;
+        String s = Character.toString(c);
+        if (c == '\r')
+          s = "\\r";
+        else if (c == '\n')
+          s = "\\n";
+        else if (c < ' ' || c >= 0x7f)
+          s = "?";
+        System.err.printf("[%03d] 0x%02x %03d %04d '%s'", i, ub, ub, ib, s);
+        System.err.printf("\t%12d  %12d  0x%08x", iv, uiv, uiv);
+        System.err.printf("  %8d  %8d", sv, usv);
+        System.err.println();
+        System.err.flush();
+      }
+
+    } catch (Exception e) {
+      System.err.println("failure:" + e);
+    } finally {
+      System.err.flush();
+      // new Exception().printStackTrace(System.err);
+      System.err.flush();
+    }
+  }
+
+  static public void dumpbytesstream(OutputStream stream, ByteOrder order, String tag) {
+    if (stream instanceof ByteArrayOutputStream) {
+      byte[] content = ((ByteArrayOutputStream) stream).toByteArray();
+      dumpbytesraw(content, order, tag);
+    }
+  }
+
+  static public void dumpbytesrawbuf(ByteBuffer buf, ByteOrder order, String tag) {
+    dumpbytesraw(buf.array(), 0, buf.limit(), order, tag);
+  }
+
+  static public void dumpbytesraw(byte[] content, ByteOrder order, String tag) {
+    dumpbytesraw(content, 0, content.length, order, tag);
+  }
+
+  static public void dumpbytesraw(byte[] content, int start, int len, ByteOrder order, String tag) {
+    System.err.println("++++++++++ " + tag + " ++++++++++ ");
+    ByteBuffer tmp = ByteBuffer.wrap(content).order(order);
+    tmp.position(start);
+    tmp.limit(len);
+    DapDump.dumpbytesbuf(tmp);
+    System.err.println("++++++++++ " + tag + " ++++++++++ ");
+    System.err.flush();
+  }
+
+}
