@@ -617,7 +617,7 @@ public class HTTPSession implements Closeable {
 
   protected URI requestURI = null; // full uri from the HTTPMethod call
 
-  protected HTTPIntercepts interceptors = null;
+  protected HTTPIntercepts interceptors = new HTTPIntercepts(); /* never null */
 
   // cached and recreated as needed
   protected boolean cachevalid = false; // Are cached items up-to-date?
@@ -660,14 +660,17 @@ public class HTTPSession implements Closeable {
   // Accessor(s)
 
   public HTTPIntercepts getIntercepts() {
+    assert this.interceptors != null;
     return this.interceptors;
   }
 
   public HTTPIntercepts.DebugInterceptRequest getDebugRequestInterceptor() {
+    assert this.interceptors != null;
     return this.interceptors.debugRequestInterceptor();
   }
 
   public synchronized void resetInterceptors() {
+    assert this.interceptors != null;
     this.interceptors.resetInterceptors();
   }
 
@@ -677,7 +680,6 @@ public class HTTPSession implements Closeable {
 
   public String getSessionURI() {
     return this.sessionURI;
-
   }
 
   /**
@@ -971,14 +973,10 @@ public class HTTPSession implements Closeable {
   }
 
   public synchronized void setDebugInterceptors() {
-    if (this.interceptors == null)
-      this.interceptors = new HTTPIntercepts();
     this.interceptors.addDebugInterceptors();
   }
 
   public void activateInterceptors(HttpClientBuilder cb) {
-    if (this.interceptors == null)
-      this.interceptors = new HTTPIntercepts();
     this.interceptors.activateInterceptors(cb);
   }
 
