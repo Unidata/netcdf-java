@@ -21,6 +21,7 @@ import ucar.gcdm.GcdmNetcdfProto.Data;
 import ucar.gcdm.GcdmNetcdfProto.StructureMemberProto;
 import ucar.ma2.Array;
 import ucar.ma2.ArrayObject;
+import ucar.ma2.ArraySequence;
 import ucar.ma2.ArrayStructure;
 import ucar.ma2.ArrayStructureW;
 import ucar.ma2.DataType;
@@ -726,6 +727,10 @@ public class GcdmConverter {
     for (GcdmNetcdfProto.StructureDataProto row : arrayStructureProto.getRowsList()) {
       result.setStructureData(decodeStructureData(row, members), index);
       index++;
+    }
+
+    if (dataType == DataType.SEQUENCE) {
+      return new ArraySequence(members, result.getStructureDataIterator(), -1);
     }
 
     return result;
