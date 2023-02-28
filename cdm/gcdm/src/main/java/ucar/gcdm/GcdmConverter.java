@@ -71,7 +71,7 @@ public class GcdmConverter {
     return groupBuilder;
   }
 
-  public static GcdmNetcdfProto.Attribute.Builder encodeAtt(Attribute att) {
+  private static GcdmNetcdfProto.Attribute.Builder encodeAtt(Attribute att) {
     GcdmNetcdfProto.Attribute.Builder attBuilder = GcdmNetcdfProto.Attribute.newBuilder();
     attBuilder.setName(att.getShortName());
     attBuilder.setDataType(convertDataType(att.getDataType()));
@@ -197,7 +197,7 @@ public class GcdmConverter {
     }
   }
 
-  public static Data encodePrimitiveData(DataType dataType, Array data) {
+  private static Data encodePrimitiveData(DataType dataType, Array data) {
     Data.Builder builder = Data.newBuilder();
     builder.setDataType(convertDataType(dataType));
     encodeShape(builder, data.getShape());
@@ -264,7 +264,7 @@ public class GcdmConverter {
     return builder.build();
   }
 
-  public static Data encodeVlenData(DataType dataType, ArrayObject data) {
+  private static Data encodeVlenData(DataType dataType, ArrayObject data) {
     Data.Builder builder = Data.newBuilder();
     builder.setDataType(convertDataType(dataType));
     encodeShape(builder, data.getShape());
@@ -288,7 +288,7 @@ public class GcdmConverter {
     return sbuilder.build();
   }
 
-  public static Data encodeArrayStructureData(DataType dataType, ArrayStructure arrayStructure) {
+  private static Data encodeArrayStructureData(DataType dataType, ArrayStructure arrayStructure) {
     Data.Builder builder = Data.newBuilder();
     builder.setDataType(convertDataType(dataType));
     encodeShape(builder, arrayStructure.getShape());
@@ -315,7 +315,7 @@ public class GcdmConverter {
     return builder.build();
   }
 
-  public static GcdmNetcdfProto.StructureDataProto encodeStructureData(StructureData structData) {
+  private static GcdmNetcdfProto.StructureDataProto encodeStructureData(StructureData structData) {
     GcdmNetcdfProto.StructureDataProto.Builder builder = GcdmNetcdfProto.StructureDataProto.newBuilder();
     for (Member member : structData.getMembers()) {
       Array data = structData.getArray(member);
@@ -367,7 +367,7 @@ public class GcdmConverter {
     return new EnumTypedef(enumType.getName(), map, basetype);
   }
 
-  public static Attribute decodeAtt(GcdmNetcdfProto.Attribute attp) {
+  private static Attribute decodeAtt(GcdmNetcdfProto.Attribute attp) {
     DataType dtUse = convertDataType(attp.getDataType());
     int len = attp.getLength();
     if (len == 0) { // deal with empty attribute
@@ -452,7 +452,7 @@ public class GcdmConverter {
   }
 
   @Nonnull
-  public static Section decodeSection(GcdmNetcdfProto.Section proto) {
+  private static Section decodeSection(GcdmNetcdfProto.Section proto) {
     Section.Builder section = Section.builder();
 
     for (GcdmNetcdfProto.Range pr : proto.getRangesList()) {
@@ -501,7 +501,7 @@ public class GcdmConverter {
   }
 
   // Note that this converts to Objects, so not very efficient ??
-  public static Array decodePrimitiveData(Data data) {
+  private static Array decodePrimitiveData(Data data) {
     DataType dataType = convertDataType(data.getDataType());
     int[] shape = decodeShape(data);
 
@@ -603,7 +603,7 @@ public class GcdmConverter {
     }
   }
 
-  public static Array decodeVlenData(Data data) {
+  private static Array decodeVlenData(Data data) {
     Preconditions.checkArgument(data.getVlenCount() > 0);
     int[] shape = decodeShape(data);
     int length = (int) Index.computeSize(shape);
@@ -704,7 +704,7 @@ public class GcdmConverter {
     throw new IllegalStateException("illegal data type " + dtype);
   }
 
-  public static ArrayStructure decodeArrayStructureData(Data arrayStructureProto) {
+  private static ArrayStructure decodeArrayStructureData(Data arrayStructureProto) {
     DataType dataType = convertDataType(arrayStructureProto.getDataType());
     int nrows = arrayStructureProto.getRowsCount();
     int[] shape = decodeShape(arrayStructureProto);
@@ -744,7 +744,7 @@ public class GcdmConverter {
     return membersb.build();
   }
 
-  public static StructureData decodeStructureData(GcdmNetcdfProto.StructureDataProto structDataProto,
+  private static StructureData decodeStructureData(GcdmNetcdfProto.StructureDataProto structDataProto,
       StructureMembers members) {
     StructureDataW sdata = new StructureDataW(members);
     for (int i = 0; i < structDataProto.getMemberDataCount(); i++) {
