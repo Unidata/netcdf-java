@@ -418,7 +418,7 @@ public class GcdmConverter {
 
     if (var.hasData()) {
       Array data = decodeData(var.getData());
-      ncvar.setCachedData(data, false); // TODO check bool
+      ncvar.setCachedData(data, false);
     }
 
     return ncvar;
