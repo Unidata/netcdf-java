@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.gcdm.client.GcdmNetcdfFile;
 import ucar.nc2.NetcdfFile;
+import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.util.CompareNetcdf2;
 import ucar.nc2.util.Misc;
@@ -187,8 +188,12 @@ public class TestGcdmNetcdfFileProblem {
     try (NetcdfFile ncfile = NetcdfDatasets.openFile(path.toString(), null);
         GcdmNetcdfFile gcdmFile = GcdmNetcdfFile.builder().setRemoteURI(gcdmUrl).build()) {
 
+      Variable ncVar = ncfile.findVariable(varName);
+      Variable gcdmVar = gcdmFile.findVariable(varName);
+
       Formatter formatter = new Formatter();
-      boolean ok = CompareNetcdf2.compareFiles(ncfile, gcdmFile, formatter, true, false, true);
+      CompareNetcdf2 compareNetcdf2 = new CompareNetcdf2(formatter, false, true, true);
+      boolean ok = compareNetcdf2.compareVariable(ncVar, gcdmVar, CompareNetcdf2.IDENTITY_FILTER);
       logger.debug(formatter.toString());
       assertThat(ok).isTrue();
     }
