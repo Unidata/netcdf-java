@@ -105,7 +105,7 @@ public class GcdmNetcdfFile extends NetcdfFile {
     if (results.size() == 1) {
       return results.get(0);
     } else {
-      return Array.factoryCopy(v.getDataType(), sectionWanted.getShape(), (List) results); // TODO generics
+      return Array.factoryCopy(v.getDataType(), sectionWanted.getShape(), results);
     }
   }
 
