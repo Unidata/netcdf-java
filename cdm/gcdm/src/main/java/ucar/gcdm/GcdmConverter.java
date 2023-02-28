@@ -590,10 +590,6 @@ public class GcdmConverter {
         }
         return Array.factory(dataType, shape, array);
       }
-      case SEQUENCE:
-      case STRUCTURE: {
-        return decodeArrayStructureData(data); // TODO is this reached since structures are separate in decodeData?
-      }
       case OPAQUE: {
         int i = 0;
         Object[] array = new Object[data.getBdataCount()];
