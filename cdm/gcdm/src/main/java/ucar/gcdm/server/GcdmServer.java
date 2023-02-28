@@ -232,7 +232,7 @@ public class GcdmServer {
           count = 0;
         }
       }
-      return (start + count) * members.getStructureSize();
+      return (long) (start + count) * members.getStructureSize();
     }
   } // GcdmImpl
 }
