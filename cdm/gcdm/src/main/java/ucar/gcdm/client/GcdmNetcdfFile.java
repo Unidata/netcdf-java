@@ -87,12 +87,12 @@ public class GcdmNetcdfFile extends NetcdfFile {
       }
 
     } catch (StatusRuntimeException e) {
-      log.warn("readSection requestData failed failed: ", e);
+      log.warn("readSection requestData failed: ", e);
       throw new IOException(e);
 
     } catch (Throwable t) {
       System.out.printf(" ** failed after %s%n", stopwatch);
-      log.warn("readSection requestData failed failed: ", t);
+      log.warn("readSection requestData failed: ", t);
       throw new IOException(t);
     }
     if (showRequest) {
