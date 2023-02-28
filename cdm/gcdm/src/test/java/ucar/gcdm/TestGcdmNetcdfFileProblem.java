@@ -27,6 +27,7 @@ import java.nio.file.Paths;
 /** Test {@link GcdmNetcdfFile} problems */
 public class TestGcdmNetcdfFileProblem {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+  private static final String gcdmPrefix = "gcdm://localhost:16111/";
 
   /*
    * ushort EV_1KM_RefSB(Band_1KM_RefSB=15, 10*nscans=2030, Max_EV_frames=1354);
@@ -171,7 +172,7 @@ public class TestGcdmNetcdfFileProblem {
   ////////////////////////////////////////////////////////////////////////////
 
   public void compareArrayToArray(Path path) throws Exception {
-    String gcdmUrl = "gcdm://localhost:16111/" + path.toAbsolutePath();
+    String gcdmUrl = gcdmPrefix + path.toAbsolutePath();
     try (NetcdfFile ncfile = NetcdfDatasets.openFile(path.toString(), null);
         GcdmNetcdfFile gcdmFile = GcdmNetcdfFile.builder().setRemoteURI(gcdmUrl).build()) {
 
@@ -184,7 +185,7 @@ public class TestGcdmNetcdfFileProblem {
 
 
   public void compareArrayToArray(Path path, String varName) throws Exception {
-    String gcdmUrl = "gcdm://localhost:16111/" + path.toAbsolutePath();
+    String gcdmUrl = gcdmPrefix + path.toAbsolutePath();
     try (NetcdfFile ncfile = NetcdfDatasets.openFile(path.toString(), null);
         GcdmNetcdfFile gcdmFile = GcdmNetcdfFile.builder().setRemoteURI(gcdmUrl).build()) {
 

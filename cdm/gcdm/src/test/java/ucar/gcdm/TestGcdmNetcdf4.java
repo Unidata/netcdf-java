@@ -33,6 +33,7 @@ import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 @Category(NeedsCdmUnitTest.class)
 public class TestGcdmNetcdf4 {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+  private static final String gcdmPrefix = "gcdm://localhost:16111/";
 
   private static final Predicate<Object[]> filesToSkip = new Predicate<Object[]>() {
     @Override
@@ -63,8 +64,7 @@ public class TestGcdmNetcdf4 {
 
   public TestGcdmNetcdf4(String filename) {
     this.filename = filename;
-    // LOOK kludge for now. Also, need to auto start up CmdrServer
-    this.gcdmUrl = "gcdm://localhost:16111/" + filename;
+    this.gcdmUrl = gcdmPrefix + filename;
   }
 
   @Test
