@@ -181,9 +181,7 @@ public class GcdmConverter {
 
   public static GcdmNetcdfProto.Data encodeData(DataType dataType, Array data) {
     GcdmNetcdfProto.Data result;
-    if (dataType == DataType.OPAQUE) { // TODO why is this a separate case
-      result = encodePrimitiveData(dataType, data);
-    } else if (data.isVlen()) {
+    if (data.isVlen()) {
       result = encodeVlenData(dataType, (ArrayObject) data);
     } else if (data instanceof ArrayStructure) {
       result = encodeArrayStructureData(dataType, (ArrayStructure) data);
