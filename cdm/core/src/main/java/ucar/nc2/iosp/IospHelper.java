@@ -284,6 +284,9 @@ public class IospHelper {
     if (dataType == DataType.STRUCTURE) {
       size *= layout.getElemSize();
     }
+    if (size > Integer.MAX_VALUE) {
+      throw new RuntimeException("Read request size of " + size + " is too large.");
+    }
     Object arr = (fillValue == null) ? makePrimitiveArray((int) size, dataType)
         : makePrimitiveArray((int) size, dataType, fillValue);
     return readData(layout, dataType, arr);
