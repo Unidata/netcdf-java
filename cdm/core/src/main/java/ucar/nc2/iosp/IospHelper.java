@@ -281,8 +281,9 @@ public class IospHelper {
    */
   public static Object readDataFill(LayoutBB layout, DataType dataType, Object fillValue) {
     long size = layout.getTotalNelems();
-    if (dataType == DataType.STRUCTURE)
+    if (dataType == DataType.STRUCTURE) {
       size *= layout.getElemSize();
+    }
     Object arr = (fillValue == null) ? makePrimitiveArray((int) size, dataType)
         : makePrimitiveArray((int) size, dataType, fillValue);
     return readData(layout, dataType, arr);
