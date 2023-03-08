@@ -377,6 +377,55 @@ public abstract class Array {
     return factory(org.getDataType(), shape, org.getStorage());
   }
 
+  /**
+   * Combine list of Arrays by copying the underlying Arrays into a single primitive array
+   *
+   * @param dataType the DataType
+   * @param shape the shape of the combined array
+   * @param arrays non-empty list of arrays of dataType to combine
+   * @return a new Array containing data from the arrays
+   */
+  public static Array factoryCopy(DataType dataType, int[] shape, List<Array> arrays) {
+    if (arrays.isEmpty()) {
+      throw new IllegalArgumentException("Expected a non-empty list of Arrays to combine");
+    } else if (arrays.size() == 1) {
+      return factory(dataType, shape, arrays.get(0).getStorage());
+    }
+    final long size = Index.computeSize(shape);
+    if (size > Integer.MAX_VALUE) {
+      throw new OutOfMemoryError("Could not combine Arrays");
+    }
+    if (dataType == DataType.STRUCTURE) {
+      return combineArrayStructures(size, arrays);
+    }
+    return combinePrimitiveArrays(dataType, shape, arrays);
+  }
+
+  private static Array combinePrimitiveArrays(DataType dataType, int[] shape, List<Array> arrays) {
+    final Array combinedArray = factory(dataType, shape);
+
+    int start = 0;
+    for (Array array : arrays) {
+      Array.arraycopy(array, 0, combinedArray, start, (int) array.getSize());
+      start += array.getSize();
+    }
+    return combinedArray;
+  }
+
+  private static Array combineArrayStructures(long size, List<Array> arrays) {
+    final StructureData[] combinedStructureData = new StructureData[(int) size];
+    final StructureMembers members = ((ArrayStructure) arrays.get(0)).getStructureMembers();
+
+    int count = 0;
+    for (Array array : arrays) {
+      final ArrayStructure arrayStructure = (ArrayStructure) array;
+      for (StructureData structureData : arrayStructure) {
+        combinedStructureData[count++] = structureData;
+      }
+    }
+    return new ArrayStructureW(members, new int[] {count}, combinedStructureData);
+  }
+
   /////////////////////////////////////////////////////
   protected final DataType dataType;
   protected final Index indexCalc;
