@@ -11,10 +11,7 @@ import io.grpc.ServerInterceptor;
 import io.grpc.stub.StreamObserver;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.Formatter;
-import java.util.Iterator;
 import java.util.concurrent.TimeUnit;
-
 import ucar.gcdm.GcdmGrpc.GcdmImplBase;
 import ucar.gcdm.GcdmNetcdfProto;
 import ucar.gcdm.GcdmNetcdfProto.DataRequest;
@@ -37,7 +34,6 @@ import ucar.nc2.ParsedSectionSpec;
 import ucar.nc2.Sequence;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDatasets;
-import ucar.nc2.util.Misc;
 import ucar.nc2.write.ChunkingIndex;
 
 /** Server that manages startup/shutdown of a gCDM Server. */
