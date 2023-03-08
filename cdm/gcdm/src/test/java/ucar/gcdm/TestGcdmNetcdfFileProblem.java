@@ -8,6 +8,7 @@ import static com.google.common.truth.Truth.assertThat;
 
 import java.lang.invoke.MethodHandles;
 import java.util.Formatter;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
@@ -79,12 +80,21 @@ public class TestGcdmNetcdfFileProblem {
     compareArrayToArray(path, "MODIS_SWATH_Type_L1B/Data_Fields/EV_250_Aggr1km_RefSB");
   }
 
+  @Ignore("This variable is too large and causes an out of memory exception unrelated to gcdm.")
   @Test
   @Category(NeedsCdmUnitTest.class)
   public void testCombineStructure() throws Exception {
     String localFilename = TestDir.cdmUnitTestDir + "formats/hdf5/IASI/IASI.h5";
     Path path = Paths.get(localFilename);
     compareArrayToArray(path, "U-MARF/EPS/IASI_xxx_1C/DATA/MDR_1C_IASI_L1_ARRAY_000001");
+  }
+
+  @Test
+  @Category(NeedsCdmUnitTest.class)
+  public void testCombineStructureMember() throws Exception {
+    String localFilename = TestDir.cdmUnitTestDir + "formats/hdf5/IASI/IASI.h5";
+    Path path = Paths.get(localFilename);
+    compareArrayToArray(path, "U-MARF/EPS/IASI_xxx_1C/DATA/MDR_1C_IASI_L1_ARRAY_000001.GCcsRadAnalStd-value");
   }
 
   @Test
