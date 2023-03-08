@@ -141,9 +141,7 @@ public class TestGcdmNetcdfFileProblem {
     compareArrayToArray(path);
   }
 
-  ////////////////////////////////////////////////////////////////////////////
-
-  public void compareArrayToArray(Path path) throws Exception {
+  private static void compareArrayToArray(Path path) throws Exception {
     String gcdmUrl = gcdmPrefix + path.toAbsolutePath();
     try (NetcdfFile ncfile = NetcdfDatasets.openFile(path.toString(), null);
         GcdmNetcdfFile gcdmFile = GcdmNetcdfFile.builder().setRemoteURI(gcdmUrl).build()) {
@@ -155,8 +153,7 @@ public class TestGcdmNetcdfFileProblem {
     }
   }
 
-
-  public void compareArrayToArray(Path path, String varName) throws Exception {
+  private static void compareArrayToArray(Path path, String varName) throws Exception {
     String gcdmUrl = gcdmPrefix + path.toAbsolutePath();
     try (NetcdfFile ncfile = NetcdfDatasets.openFile(path.toString(), null);
         GcdmNetcdfFile gcdmFile = GcdmNetcdfFile.builder().setRemoteURI(gcdmUrl).build()) {
