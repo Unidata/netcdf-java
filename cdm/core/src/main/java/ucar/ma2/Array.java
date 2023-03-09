@@ -382,8 +382,9 @@ public abstract class Array {
    *
    * @param dataType the DataType
    * @param shape the shape of the combined array
-   * @param arrays non-empty list of arrays of dataType to combine
+   * @param arrays non-empty list of arrays of the same dataType to combine
    * @return a new Array containing data from the arrays
+   * @throws IllegalArgumentException if arrays is empty or if it contains ArrayStructures with different Members
    */
   public static Array factoryCopy(DataType dataType, int[] shape, List<Array> arrays) {
     if (arrays.isEmpty()) {
@@ -416,6 +417,10 @@ public abstract class Array {
   private static Array combineArrayStructures(long size, List<Array> arrays) {
     final StructureData[] combinedStructureData = new StructureData[(int) size];
     final StructureMembers members = ((ArrayStructure) arrays.get(0)).getStructureMembers();
+
+    if (arrays.stream().anyMatch(array -> !((ArrayStructure) array).getStructureMembers().equals(members))) {
+      throw new IllegalArgumentException("Expected ArrayStructures to be combined to have the same members");
+    }
 
     int count = 0;
     for (Array array : arrays) {
