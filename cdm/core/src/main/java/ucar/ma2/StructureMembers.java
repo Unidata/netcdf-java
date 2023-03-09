@@ -360,8 +360,8 @@ public final class StructureMembers {
         return false;
       }
       Member other = (Member) o;
-      return getFullName().equals(other.getName()) && getDescription().equals(other.getDescription())
-          && getUnitsString().equals(other.getUnitsString()) && getDataType() == other.getDataType()
+      return getFullName().equals(other.getName()) && Objects.equals(getDescription(), other.getDescription())
+          && Objects.equals(getUnitsString(), other.getUnitsString()) && getDataType() == other.getDataType()
           && getSize() == other.getSize() && Arrays.equals(getShape(), other.getShape())
           && Objects.equals(getStructureMembers(), other.getStructureMembers());
     }
