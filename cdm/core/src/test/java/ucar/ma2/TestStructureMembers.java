@@ -56,6 +56,7 @@ public class TestStructureMembers {
     final Member otherMember = StructureMembers.builder().addMember(name, description, units, dataType, shape).build();
 
     assertThat(member.equals(otherMember)).isEqualTo(isEqual);
+    assertThat(otherMember.equals(member)).isEqualTo(isEqual);
   }
 
   @Test
@@ -68,6 +69,7 @@ public class TestStructureMembers {
     final StructureMembers otherStructureMembers = StructureMembers.builder().addMember(otherMember).build();
 
     assertThat(structureMembers.equals(otherStructureMembers)).isEqualTo(isEqual);
+    assertThat(otherStructureMembers.equals(structureMembers)).isEqualTo(isEqual);
   }
 
   @Test
@@ -87,6 +89,7 @@ public class TestStructureMembers {
         StructureMembers.builder().addMember(otherMemberBuilder).addMember(otherMemberBuilder2).build();
 
     assertThat(structureMembers.equals(otherStructureMembers)).isEqualTo(isEqual);
+    assertThat(otherStructureMembers.equals(structureMembers)).isEqualTo(isEqual);
   }
 
   @Test
@@ -106,5 +109,6 @@ public class TestStructureMembers {
             .setStructureMembers(otherInnerStructureMembers).build();
 
     assertThat(member.equals(otherMember)).isEqualTo(isEqual);
+    assertThat(otherMember.equals(member)).isEqualTo(isEqual);
   }
 }
