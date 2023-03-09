@@ -388,7 +388,8 @@ public abstract class Array {
   public static Array factoryCopy(DataType dataType, int[] shape, List<Array> arrays) {
     if (arrays.isEmpty()) {
       throw new IllegalArgumentException("Expected a non-empty list of Arrays to combine");
-    } else if (arrays.size() == 1) {
+    }
+    if (arrays.size() == 1) {
       return factory(dataType, shape, arrays.get(0).getStorage());
     }
     final long size = Index.computeSize(shape);
