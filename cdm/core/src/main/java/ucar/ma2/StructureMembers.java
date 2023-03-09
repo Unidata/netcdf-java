@@ -8,8 +8,10 @@ import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Formatter;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import ucar.nc2.util.Indent;
@@ -153,6 +155,19 @@ public final class StructureMembers {
   public String toString() {
     return MoreObjects.toStringHelper(this).add("name", name).add("members", members)
         .add("structureSize", structureSize).toString();
+  }
+
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (!(o instanceof StructureMembers)) {
+      return false;
+    }
+    StructureMembers other = (StructureMembers) o;
+    return getName().equals(other.getName()) && getStructureSize() == other.getStructureSize()
+        && getMembers().size() == other.getMembers().size()
+        && getMembers().stream().allMatch(m -> m.equals(other.findMember(m.getName())));
   }
 
   /** A member of a StructureData. */
@@ -335,6 +350,20 @@ public final class StructureMembers {
      */
     public boolean isScalar() {
       return size == 1;
+    }
+
+    public boolean equals(Object o) {
+      if (this == o) {
+        return true;
+      }
+      if (!(o instanceof Member)) {
+        return false;
+      }
+      Member other = (Member) o;
+      return getFullName().equals(other.getName()) && getDescription().equals(other.getDescription())
+          && getUnitsString().equals(other.getUnitsString()) && getDataType() == other.getDataType()
+          && getSize() == other.getSize() && Arrays.equals(getShape(), other.getShape())
+          && Objects.equals(getStructureMembers(), other.getStructureMembers());
     }
 
     ////////////////////////////////////////////////
