@@ -55,7 +55,7 @@ public class GcdmNetcdfFile extends NetcdfFile {
     String spec = ParsedSectionSpec.makeSectionSpecString(v, sectionWanted.getRanges());
     if (logger.isDebugEnabled()) {
       long expected = sectionWanted.computeSize() * v.getElementSize();
-      logger.debug("GcdmNetcdfFile data request forspec=({})\n url='{}'\n path='{}' request bytes = {}\n", spec,
+      logger.debug("GcdmNetcdfFile data request for spec=({})\n url='{}'\n path='{}' request bytes = {}\n", spec,
           this.remoteURI, this.path, expected);
     }
     final Stopwatch stopwatch = Stopwatch.createStarted();
