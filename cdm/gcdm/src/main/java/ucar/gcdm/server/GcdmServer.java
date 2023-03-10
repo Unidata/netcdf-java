@@ -58,7 +58,7 @@ public class GcdmServer {
     });
 
     logger.info("Server started, listening on " + port);
-    System.out.println("---> Server started, listening on " + port);
+    System.out.println("---> Server started, listening on " + port); // Used for gradle startDaemon
   }
 
   private void stop() throws InterruptedException {
@@ -85,7 +85,7 @@ public class GcdmServer {
 
     @Override
     public void getNetcdfHeader(HeaderRequest req, StreamObserver<HeaderResponse> responseObserver) {
-      System.out.printf("GcdmServer getHeader open %s%n", req.getLocation());
+      logger.info("GcdmServer getHeader " + req.getLocation());
       HeaderResponse.Builder response = HeaderResponse.newBuilder();
       try (NetcdfFile ncfile = NetcdfDatasets.openFile(req.getLocation(), null)) {
         Header.Builder header = Header.newBuilder().setLocation(req.getLocation())
@@ -93,7 +93,6 @@ public class GcdmServer {
         response.setHeader(header);
         responseObserver.onNext(response.build());
         responseObserver.onCompleted();
-        logger.info("GcdmServer getHeader " + req.getLocation());
       } catch (Throwable t) {
         logger.warn("GcdmServer getHeader failed ", t);
         t.printStackTrace();
@@ -103,7 +102,7 @@ public class GcdmServer {
 
     @Override
     public void getNetcdfData(DataRequest req, StreamObserver<DataResponse> responseObserver) {
-      System.out.printf("GcdmServer getData %s %s%n", req.getLocation(), req.getVariableSpec());
+      logger.info("GcdmServer getData {} {}", req.getLocation(), req.getVariableSpec());
       final Stopwatch stopwatch = Stopwatch.createStarted();
       long size = -1;
 
@@ -118,8 +117,6 @@ public class GcdmServer {
           getNetcdfData(ncfile, varSection, responseObserver);
         }
         responseObserver.onCompleted();
-        logger.info("GcdmServer getData " + req.getLocation());
-
       } catch (Throwable t) {
         logger.warn("GcdmServer getData failed ", t);
         t.printStackTrace();
@@ -130,7 +127,7 @@ public class GcdmServer {
         responseObserver.onNext(response.build());
       }
 
-      System.out.printf(" ** size=%d took=%s%n", size, stopwatch.stop());
+      logger.debug(" ** size={} took={}", size, stopwatch.stop());
     }
 
     private void getNetcdfData(NetcdfFile ncfile, ParsedSectionSpec varSection,
@@ -176,8 +173,7 @@ public class GcdmServer {
       response.setData(GcdmConverter.encodeData(data.getDataType(), data));
 
       responseObserver.onNext(response.build());
-      System.out.printf(" Send one chunk %s size=%d bytes%n", spec,
-          data.getSize() * varSection.getVariable().getElementSize());
+      logger.debug("Send one chunk {} size={} bytes", spec, data.getSize() * varSection.getVariable().getElementSize());
     }
 
 

@@ -75,7 +75,6 @@ public class TestGcdmNetcdfFile {
 
   @Test
   public void doOne() throws Exception {
-    System.out.printf("TestGcdmNetcdfFile %s%n", filename);
     try (NetcdfFile ncfile = NetcdfDatasets.openFile(filename, null);
         GcdmNetcdfFile gcdmFile = GcdmNetcdfFile.builder().setRemoteURI(gcdmUrl).build()) {
 
@@ -85,5 +84,4 @@ public class TestGcdmNetcdfFile {
       assertThat(ok).isTrue();
     }
   }
-
 }
