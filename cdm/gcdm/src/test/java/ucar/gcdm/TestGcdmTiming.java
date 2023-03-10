@@ -37,22 +37,22 @@ public class TestGcdmTiming {
     long total = 0;
     Stopwatch stopwatchAll = Stopwatch.createStarted();
     try (GcdmNetcdfFile gcdmFile = GcdmNetcdfFile.builder().setRemoteURI(gcdmUrl).build()) {
-      System.out.println("Test input: " + gcdmFile.getLocation());
+      logger.debug("Test input: " + gcdmFile.getLocation());
       boolean ok = true;
       for (Variable v : gcdmFile.getVariables()) {
-        System.out.printf("  read variable though array : %s %s", v.getDataType(), v.getShortName());
+        logger.debug("  read variable though array : {} {}", v.getDataType(), v.getShortName());
         Stopwatch stopwatch = Stopwatch.createStarted();
         Array data = v.read();
         stopwatch.stop();
         long size = data.getSize();
         double rate = ((double) size) / stopwatch.elapsed(TimeUnit.MICROSECONDS);
-        System.out.printf("    size = %d, time = %s rate = %10.4f MB/sec%n", size, stopwatch, rate);
+        logger.debug("    size = {}, time = {} rate = {} MB/sec", size, stopwatch, rate);
         total += size;
       }
       assertThat(ok).isTrue();
     }
     stopwatchAll.stop();
     double rate = ((double) total) / stopwatchAll.elapsed(TimeUnit.MICROSECONDS);
-    System.out.printf("*** %d bytes took %s = %10.4f MB/sec%n", total, stopwatchAll, rate);
+    logger.debug("*** {} bytes took {} = {} MB/sec", total, stopwatchAll, rate);
   }
 }

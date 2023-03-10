@@ -34,17 +34,12 @@ import ucar.nc2.Variable;
 
 /** A remote CDM NetcdfFile, using gprc protocol to communicate. */
 public class GcdmNetcdfFile extends NetcdfFile {
-  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(GcdmNetcdfFile.class);
+  private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(GcdmNetcdfFile.class);
   private static final int MAX_DATA_WAIT_SECONDS = 30;
   private static final int MAX_MESSAGE = 101 * 1000 * 1000; // 101 Mb
-  private static boolean showRequest = true;
 
   public static final String PROTOCOL = "gcdm";
   public static final String SCHEME = PROTOCOL + ":";
-
-  public static void setDebugFlags(ucar.nc2.util.DebugFlags debugFlag) {
-    showRequest = debugFlag.isSet("Gcdm/showRequest");
-  }
 
   @Override
   protected StructureDataIterator getStructureIterator(Structure s, int bufferSize) throws IOException {
@@ -58,9 +53,9 @@ public class GcdmNetcdfFile extends NetcdfFile {
   @Nullable
   protected ucar.ma2.Array readData(Variable v, ucar.ma2.Section sectionWanted) throws IOException {
     String spec = ParsedSectionSpec.makeSectionSpecString(v, sectionWanted.getRanges());
-    if (showRequest) {
+    if (logger.isDebugEnabled()) {
       long expected = sectionWanted.computeSize() * v.getElementSize();
-      System.out.printf("GcdmNetcdfFile data request forspec=(%s)%n url='%s'%n path='%s' request bytes = %d%n", spec,
+      logger.debug("GcdmNetcdfFile data request forspec=({})\n url='{}'\n path='{}' request bytes = {}\n", spec,
           this.remoteURI, this.path, expected);
     }
     final Stopwatch stopwatch = Stopwatch.createStarted();
@@ -80,25 +75,22 @@ public class GcdmNetcdfFile extends NetcdfFile {
         ucar.ma2.Array result = GcdmConverter.decodeData(response.getData());
         results.add(result);
         size += result.getSize() * v.getElementSize();
-        if (showRequest) {
-          long received = result.getSize() * v.getElementSize();
-          System.out.printf("  readArrayData bytes received = %d %n", received);
+        if (logger.isDebugEnabled()) {
+          logger.debug("  readArrayData bytes received = {}", result.getSize() * v.getElementSize());
         }
       }
 
     } catch (StatusRuntimeException e) {
-      log.warn("readSection requestData failed: ", e);
+      logger.warn("readSection requestData failed: ", e);
       throw new IOException(e);
 
     } catch (Throwable t) {
-      System.out.printf(" ** failed after %s%n", stopwatch);
-      log.warn("readSection requestData failed: ", t);
+      logger.debug(" ** failed after {}", stopwatch);
+      logger.warn("readSection requestData failed: ", t);
       throw new IOException(t);
     }
-    if (showRequest) {
-      double rate = ((double) size) / stopwatch.elapsed(TimeUnit.MICROSECONDS);
-      System.out.printf(" ** received=%d took=%s rate=%.2f MB/sec%n", size, stopwatch.stop(), rate);
-    }
+    logger.debug(" ** received={} took={} rate={} MB/sec", size, stopwatch.stop(),
+        ((double) size) / stopwatch.elapsed(TimeUnit.MICROSECONDS));
 
     if (results.size() == 1) {
       return results.get(0);
@@ -122,7 +114,7 @@ public class GcdmNetcdfFile extends NetcdfFile {
     try {
       channel.shutdownNow().awaitTermination(5, TimeUnit.SECONDS);
     } catch (InterruptedException interruptedException) {
-      log.warn("GcdmNetcdfFile shutdown interrupted");
+      logger.warn("GcdmNetcdfFile shutdown interrupted");
       // fall through
     }
   }
@@ -213,7 +205,7 @@ public class GcdmNetcdfFile extends NetcdfFile {
         try {
           channel.shutdownNow().awaitTermination(5, TimeUnit.SECONDS);
         } catch (InterruptedException interruptedException) {
-          log.warn("Shutdown interrupted ", e);
+          logger.warn("Shutdown interrupted ", e);
           // fall through
         }
         e.printStackTrace();
@@ -222,7 +214,7 @@ public class GcdmNetcdfFile extends NetcdfFile {
     }
 
     private void readHeader(String location) {
-      log.info("GcdmNetcdfFile request header for " + location);
+      logger.info("GcdmNetcdfFile request header for " + location);
       HeaderRequest request = HeaderRequest.newBuilder().setLocation(location).build();
       HeaderResponse response = blockingStub.getNetcdfHeader(request);
       if (response.hasError()) {
