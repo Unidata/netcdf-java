@@ -146,14 +146,14 @@ public class GcdmServer {
         StreamObserver<DataResponse> responseObserver) throws IOException, InvalidRangeException {
 
       Variable var = varSection.getVariable();
+      Section section = varSection.getArraySection();
       long maxChunkElems = MAX_MESSAGE / var.getElementSize();
-      // LOOK wrong this assumes starts at 0, should start at varSection
-      ChunkingIndex index = new ChunkingIndex(var.getShape());
+      ChunkingIndex index = new ChunkingIndex(section.getShape());
       while (index.currentElement() < index.getSize()) {
         int[] chunkOrigin = index.getCurrentCounter();
         int[] chunkShape = index.computeChunkShape(maxChunkElems);
-        Section section = new Section(chunkOrigin, chunkShape);
-        ParsedSectionSpec spec = new ParsedSectionSpec(var, section);
+        Section chunkSection = new Section(chunkOrigin, chunkShape);
+        ParsedSectionSpec spec = new ParsedSectionSpec(var, chunkSection);
         getOneChunk(ncfile, spec, responseObserver);
         index.setCurrentCounter(index.currentElement() + (int) Index.computeSize(chunkShape));
       }
