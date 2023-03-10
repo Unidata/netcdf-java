@@ -82,7 +82,6 @@ public class GcdmServer {
   }
 
   static class GcdmImpl extends GcdmImplBase {
-
     @Override
     public void getNetcdfHeader(HeaderRequest req, StreamObserver<HeaderResponse> responseObserver) {
       logger.info("GcdmServer getHeader " + req.getLocation());
@@ -175,7 +174,6 @@ public class GcdmServer {
       responseObserver.onNext(response.build());
       logger.debug("Send one chunk {} size={} bytes", spec, data.getSize() * varSection.getVariable().getElementSize());
     }
-
 
     private long getSequenceData(NetcdfFile ncfile, ParsedSectionSpec varSection,
         StreamObserver<DataResponse> responseObserver) throws InvalidRangeException, IOException {

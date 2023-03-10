@@ -21,5 +21,4 @@ public class GcdmNetcdfFileProvider implements NetcdfFileProvider {
   public NetcdfFile open(String location, CancelTask cancelTask) {
     return GcdmNetcdfFile.builder().setRemoteURI(location).build();
   }
-
 }
