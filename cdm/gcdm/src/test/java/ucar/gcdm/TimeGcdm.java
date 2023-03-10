@@ -29,7 +29,7 @@ public class TimeGcdm {
       TestDir.cdmUnitTestDir + "formats/netcdf4/e562p1_fp.inst3_3d_asm_Nv.20100907_00z+20100909_1200z.nc4";
 
   @Test
-  public void readCmdrArray() throws IOException {
+  public void readGcdmArray() throws IOException {
     String gcdmUrl = "gcdm://localhost:16111/" + localFilename;
 
     long total = 0;
