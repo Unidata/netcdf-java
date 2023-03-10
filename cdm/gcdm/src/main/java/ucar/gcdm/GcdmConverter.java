@@ -754,5 +754,4 @@ public class GcdmConverter {
     }
     return sdata;
   }
-
 }

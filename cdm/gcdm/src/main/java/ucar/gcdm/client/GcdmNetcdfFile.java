@@ -229,7 +229,5 @@ public class GcdmNetcdfFile extends NetcdfFile {
         GcdmConverter.decodeGroup(header.getRoot(), this.rootGroup);
       }
     }
-
   }
-
 }
