@@ -25,7 +25,7 @@ import ucar.unidata.util.test.category.Slow;
 /** Time {@link GcdmNetcdfFile} takes ~ 3 minutes */
 @Ignore("TODO This test fails due to deadline exceeded after 30s")
 @Category({NeedsCdmUnitTest.class, Slow.class})
-public class TimeGcdm {
+public class TestGcdmTiming {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
   String localFilename =
       TestDir.cdmUnitTestDir + "formats/netcdf4/e562p1_fp.inst3_3d_asm_Nv.20100907_00z+20100909_1200z.nc4";
