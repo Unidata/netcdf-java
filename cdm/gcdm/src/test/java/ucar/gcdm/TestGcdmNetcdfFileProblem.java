@@ -14,6 +14,7 @@ import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.gcdm.client.GcdmNetcdfFile;
+import ucar.ma2.Array;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDatasets;
@@ -68,6 +69,46 @@ public class TestGcdmNetcdfFileProblem {
     String localFilename = TestDir.cdmUnitTestDir + "formats/hdf5/IASI/IASI.h5";
     Path path = Paths.get(localFilename);
     compareArrayToArray(path, "U-MARF/EPS/IASI_xxx_1C/DATA/MDR_1C_IASI_L1_ARRAY_000001.GCcsRadAnalStd-value");
+  }
+
+  @Test
+  public void testReadSection() throws Exception {
+    String localFilename = "../../dap4/d4tests/src/test/data/resources/testfiles/test_atomic_array.nc";
+    String varName = "v16";
+    String gcdmUrl = gcdmPrefix + Paths.get(localFilename).toAbsolutePath();
+    try (GcdmNetcdfFile gcdmFile = GcdmNetcdfFile.builder().setRemoteURI(gcdmUrl).build()) {
+      Variable gcdmVar = gcdmFile.findVariable(varName);
+      assertThat((Object) gcdmVar).isNotNull();
+
+      Array array = gcdmVar.read();
+      assertThat(array.getSize()).isEqualTo(4);
+
+      Array subset1 = gcdmVar.read("0:1");
+      assertThat(subset1.getSize()).isEqualTo(2);
+      assertThat(subset1.getShort(0)).isEqualTo(array.getShort(0));
+      assertThat(subset1.getShort(1)).isEqualTo(array.getShort(1));
+
+      Array subset2 = gcdmVar.read("2:3");
+      assertThat(subset2.getSize()).isEqualTo(2);
+      assertThat(subset2.getShort(0)).isEqualTo(array.getShort(2));
+      assertThat(subset2.getShort(1)).isEqualTo(array.getShort(3));
+    }
+  }
+
+  @Test
+  @Category(NeedsCdmUnitTest.class)
+  public void testReadSectionOfArrayStructure() throws Exception {
+    String localFilename = TestDir.cdmUnitTestDir + "formats/hdf5/IASI/IASI.h5";
+    String varName = "U-MARF/EPS/IASI_xxx_1C/DATA/MDR_1C_IASI_L1_ARRAY_000001";
+    String gcdmUrl = gcdmPrefix + Paths.get(localFilename).toAbsolutePath();
+    try (GcdmNetcdfFile gcdmFile = GcdmNetcdfFile.builder().setRemoteURI(gcdmUrl).build()) {
+      Variable gcdmVar = gcdmFile.findVariable(varName);
+      assertThat((Object) gcdmVar).isNotNull();
+
+      assertThat(gcdmVar.read().getSize()).isEqualTo(720);
+      assertThat(gcdmVar.read("0:130").getSize()).isEqualTo(131);
+      assertThat(gcdmVar.read("718:719").getSize()).isEqualTo(2);
+    }
   }
 
   @Test
