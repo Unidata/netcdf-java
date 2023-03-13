@@ -8,6 +8,8 @@ import static com.google.common.truth.Truth.assertThat;
 
 import java.lang.invoke.MethodHandles;
 import java.util.Formatter;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -29,6 +31,17 @@ import java.nio.file.Paths;
 public class TestGcdmNetcdfFileProblem {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
   private static final String gcdmPrefix = "gcdm://localhost:16111/";
+
+  @BeforeClass
+  static public void before() {
+    // make sure to fetch data through gcdm every time
+    Variable.permitCaching = false;
+  }
+
+  @AfterClass
+  static public void after() {
+    Variable.permitCaching = true;
+  }
 
   @Test
   @Category(NeedsCdmUnitTest.class)
@@ -74,24 +87,34 @@ public class TestGcdmNetcdfFileProblem {
   @Test
   public void testReadSection() throws Exception {
     String localFilename = "../../dap4/d4tests/src/test/data/resources/testfiles/test_atomic_array.nc";
-    String varName = "v16";
+    String varName = "vs"; // Variable is non-numeric so values are not read when header is
+    String[] expectedValues = {"hello\tworld", "\r\n", "Καλημέα", "abc"};
     String gcdmUrl = gcdmPrefix + Paths.get(localFilename).toAbsolutePath();
     try (GcdmNetcdfFile gcdmFile = GcdmNetcdfFile.builder().setRemoteURI(gcdmUrl).build()) {
       Variable gcdmVar = gcdmFile.findVariable(varName);
       assertThat((Object) gcdmVar).isNotNull();
 
       Array array = gcdmVar.read();
-      assertThat(array.getSize()).isEqualTo(4);
+      assertThat(array.getSize()).isEqualTo(expectedValues.length);
+      assertThat(array.getObject(0)).isEqualTo(expectedValues[0]);
+      assertThat(array.getObject(1)).isEqualTo(expectedValues[1]);
+      assertThat(array.getObject(2)).isEqualTo(expectedValues[2]);
+      assertThat(array.getObject(3)).isEqualTo(expectedValues[3]);
 
-      Array subset1 = gcdmVar.read("0:1");
+      Array subset1 = gcdmVar.read("0:0, 0:1");
       assertThat(subset1.getSize()).isEqualTo(2);
-      assertThat(subset1.getShort(0)).isEqualTo(array.getShort(0));
-      assertThat(subset1.getShort(1)).isEqualTo(array.getShort(1));
+      assertThat(subset1.getObject(0)).isEqualTo(expectedValues[0]);
+      assertThat(subset1.getObject(1)).isEqualTo(expectedValues[1]);
 
-      Array subset2 = gcdmVar.read("2:3");
+      Array subset2 = gcdmVar.read("1:1, 0:1");
       assertThat(subset2.getSize()).isEqualTo(2);
-      assertThat(subset2.getShort(0)).isEqualTo(array.getShort(2));
-      assertThat(subset2.getShort(1)).isEqualTo(array.getShort(3));
+      assertThat(subset2.getObject(0)).isEqualTo(expectedValues[2]);
+      assertThat(subset2.getObject(1)).isEqualTo(expectedValues[3]);
+
+      Array subset3 = gcdmVar.read("0:1, 1:1");
+      assertThat(subset3.getSize()).isEqualTo(2);
+      assertThat(subset3.getObject(0)).isEqualTo(expectedValues[1]);
+      assertThat(subset3.getObject(1)).isEqualTo(expectedValues[3]);
     }
   }
 
