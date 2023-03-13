@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 1998-2023 University Corporation for Atmospheric Research/Unidata
+ * See LICENSE for license information.
+ */
 package ucar.gcdm.server;
 
 import com.google.common.base.Stopwatch;
