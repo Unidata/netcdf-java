@@ -75,7 +75,7 @@ public class GcdmConverter {
     attBuilder.setLength(att.getLength());
 
     // values
-    if (att.getLength() > 0) {
+    if (att.getValues() != null && att.getLength() > 0) {
       if (att.isString()) {
         Data.Builder datab = Data.newBuilder();
         for (int i = 0; i < att.getLength(); i++) {
