@@ -16,7 +16,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.annotation.Nonnull;
 import ucar.gcdm.GcdmNetcdfProto.Data;
 import ucar.gcdm.GcdmNetcdfProto.StructureMemberProto;
 import ucar.ma2.Array;
@@ -27,8 +26,6 @@ import ucar.ma2.ArrayStructureW;
 import ucar.ma2.DataType;
 import ucar.ma2.Index;
 import ucar.ma2.IndexIterator;
-import ucar.ma2.InvalidRangeException;
-import ucar.ma2.Range;
 import ucar.ma2.Section;
 import ucar.ma2.StructureData;
 import ucar.ma2.StructureDataW;
@@ -276,18 +273,6 @@ public class GcdmConverter {
     return builder.build();
   }
 
-  public static GcdmNetcdfProto.Section encodeSection(Section section) {
-    GcdmNetcdfProto.Section.Builder sbuilder = GcdmNetcdfProto.Section.newBuilder();
-    for (Range r : section.getRanges()) {
-      GcdmNetcdfProto.Range.Builder rbuilder = GcdmNetcdfProto.Range.newBuilder();
-      rbuilder.setStart(r.first());
-      rbuilder.setSize(r.length());
-      rbuilder.setStride(r.stride());
-      sbuilder.addRanges(rbuilder);
-    }
-    return sbuilder.build();
-  }
-
   private static Data encodeArrayStructureData(DataType dataType, ArrayStructure arrayStructure) {
     Data.Builder builder = Data.newBuilder();
     builder.setDataType(convertDataType(dataType));
@@ -449,37 +434,6 @@ public class GcdmConverter {
     }
 
     return ncvar;
-  }
-
-  @Nonnull
-  private static Section decodeSection(GcdmNetcdfProto.Section proto) {
-    Section.Builder section = Section.builder();
-
-    for (GcdmNetcdfProto.Range pr : proto.getRangesList()) {
-      try {
-        long stride = pr.getStride();
-        if (stride == 0)
-          stride = 1; // default in protobuf2 was 1, but protobuf3 is 0, luckily 0 is illegal
-        if (pr.getSize() == 0)
-          section.appendRange(Range.EMPTY); // used for scalars LOOK really used ??
-        else {
-          // this.last = first + (this.length-1) * stride;
-          section.appendRange((int) pr.getStart(), (int) (pr.getStart() + (pr.getSize() - 1) * stride), (int) stride);
-        }
-
-      } catch (InvalidRangeException e) {
-        throw new RuntimeException("Bad Section in Gcdm", e);
-      }
-    }
-    return section.build();
-  }
-
-  public static Section decodeSection(GcdmNetcdfProto.Variable var) {
-    Section.Builder section = Section.builder();
-    for (GcdmNetcdfProto.Dimension dim : var.getShapesList()) {
-      section.appendRange((int) dim.getLength());
-    }
-    return section.build();
   }
 
   public static Array decodeData(GcdmNetcdfProto.Data data) {

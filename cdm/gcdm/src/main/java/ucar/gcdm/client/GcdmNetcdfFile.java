@@ -72,7 +72,6 @@ public class GcdmNetcdfFile extends NetcdfFile {
         if (response.hasError()) {
           throw new IOException(response.getError().getMessage());
         }
-        // Section sectionReturned = GcdmConverter.decodeSection(response.getSection());
         Array result = GcdmConverter.decodeData(response.getData());
         results.add(result);
         size += result.getSize() * v.getElementSize();
