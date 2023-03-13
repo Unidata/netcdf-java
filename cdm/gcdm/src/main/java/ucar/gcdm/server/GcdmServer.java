@@ -173,7 +173,7 @@ public class GcdmServer {
     }
 
     private long getSequenceData(NetcdfFile ncfile, ParsedSectionSpec varSection,
-        StreamObserver<DataResponse> responseObserver) throws InvalidRangeException, IOException {
+        StreamObserver<DataResponse> responseObserver) throws IOException {
 
       String spec = varSection.makeSectionSpecString();
       Sequence seq = (Sequence) varSection.getVariable();
