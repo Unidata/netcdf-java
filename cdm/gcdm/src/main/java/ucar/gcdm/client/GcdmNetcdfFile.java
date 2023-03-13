@@ -40,7 +40,6 @@ public class GcdmNetcdfFile extends NetcdfFile {
   private static final int MAX_MESSAGE = 101 * 1000 * 1000; // 101 Mb
 
   public static final String PROTOCOL = "gcdm";
-  public static final String SCHEME = PROTOCOL + ":";
 
   @Override
   protected StructureDataIterator getStructureIterator(Structure s, int bufferSize) throws IOException {
