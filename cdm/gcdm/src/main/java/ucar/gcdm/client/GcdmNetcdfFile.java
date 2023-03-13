@@ -25,6 +25,7 @@ import ucar.gcdm.GcdmNetcdfProto.HeaderRequest;
 import ucar.gcdm.GcdmNetcdfProto.HeaderResponse;
 import ucar.ma2.Array;
 import ucar.ma2.ArrayStructure;
+import ucar.ma2.Section;
 import ucar.ma2.StructureDataIterator;
 import ucar.nc2.Group;
 import ucar.nc2.NetcdfFile;
@@ -51,7 +52,7 @@ public class GcdmNetcdfFile extends NetcdfFile {
   }
 
   @Nullable
-  protected ucar.ma2.Array readData(Variable v, ucar.ma2.Section sectionWanted) throws IOException {
+  protected Array readData(Variable v, Section sectionWanted) throws IOException {
     String spec = ParsedSectionSpec.makeSectionSpecString(v, sectionWanted.getRanges());
     if (logger.isDebugEnabled()) {
       long expected = sectionWanted.computeSize() * v.getElementSize();
@@ -60,7 +61,7 @@ public class GcdmNetcdfFile extends NetcdfFile {
     }
     final Stopwatch stopwatch = Stopwatch.createStarted();
 
-    List<ucar.ma2.Array> results = new ArrayList<>();
+    List<Array> results = new ArrayList<>();
     long size = 0;
     DataRequest request = DataRequest.newBuilder().setLocation(this.path).setVariableSpec(spec).build();
     try {
@@ -72,7 +73,7 @@ public class GcdmNetcdfFile extends NetcdfFile {
           throw new IOException(response.getError().getMessage());
         }
         // Section sectionReturned = GcdmConverter.decodeSection(response.getSection());
-        ucar.ma2.Array result = GcdmConverter.decodeData(response.getData());
+        Array result = GcdmConverter.decodeData(response.getData());
         results.add(result);
         size += result.getSize() * v.getElementSize();
         if (logger.isDebugEnabled()) {

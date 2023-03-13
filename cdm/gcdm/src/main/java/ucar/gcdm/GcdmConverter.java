@@ -43,7 +43,7 @@ import ucar.nc2.Sequence;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
 
-/** Convert between Gcdm Protos and Netcdf objects, using ucar.ma2.Array for data. */
+/** Convert between Gcdm Protos and Netcdf objects, using Array for data. */
 public class GcdmConverter {
   public static GcdmNetcdfProto.Group.Builder encodeGroup(Group g, int sizeToCache) throws IOException {
     GcdmNetcdfProto.Group.Builder groupBuilder = GcdmNetcdfProto.Group.newBuilder();
@@ -474,8 +474,8 @@ public class GcdmConverter {
     return section.build();
   }
 
-  public static ucar.ma2.Section decodeSection(GcdmNetcdfProto.Variable var) {
-    ucar.ma2.Section.Builder section = ucar.ma2.Section.builder();
+  public static Section decodeSection(GcdmNetcdfProto.Variable var) {
+    Section.Builder section = Section.builder();
     for (GcdmNetcdfProto.Dimension dim : var.getShapesList()) {
       section.appendRange((int) dim.getLength());
     }
