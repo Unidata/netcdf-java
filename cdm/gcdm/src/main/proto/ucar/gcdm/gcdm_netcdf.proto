@@ -30,9 +30,8 @@ message DataResponse {
   string location = 3;
   string variable_spec = 4;    // the requested variableSpec
   string var_full_name = 5;    // Variable full name
-  Section section = 6;         // this is the Section of the entire variable. Its shape matches the data.
 
-  Data data = 7;
+  Data data = 6;
 }
 
 message Error {
@@ -128,16 +127,6 @@ message Variable {
 }
 
 //////////////////////////////////
-
-message Range {
-  uint64 start = 1;
-  uint64 size = 2;
-  uint64 stride = 3;
-}
-
-message Section {
-  repeated Range ranges = 1;
-}
 
 message Data {
   DataType data_type = 1;
