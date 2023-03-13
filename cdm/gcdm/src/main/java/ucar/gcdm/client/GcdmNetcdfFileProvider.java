@@ -9,7 +9,7 @@ import ucar.nc2.util.CancelTask;
 public class GcdmNetcdfFileProvider implements NetcdfFileProvider {
   @Override
   public String getProtocol() {
-    return "gcdm";
+    return GcdmNetcdfFile.PROTOCOL;
   }
 
   @Override
