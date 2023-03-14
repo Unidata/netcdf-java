@@ -38,7 +38,9 @@ import ucar.nc2.write.ChunkingIndex;
 /** Server that manages startup/shutdown of a gCDM Server. */
 public class GcdmServer {
   private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(GcdmServer.class);
-  private static final int MAX_MESSAGE = 50 * 1000 * 1000; // 50 Mb LOOK could be tuned
+
+  // public for testing
+  public static final int MAX_MESSAGE = 50 * 1000 * 1000; // 50 Mb LOOK could be tuned
   private static final int SEQUENCE_CHUNK = 1000;
 
   private Server server;
@@ -142,6 +144,7 @@ public class GcdmServer {
       }
     }
 
+    // TODO this returns structure member data in one chunk no matter the size, see testDataChunkingForStructures
     private void getDataInChunks(NetcdfFile ncfile, ParsedSectionSpec varSection,
         StreamObserver<DataResponse> responseObserver) throws IOException, InvalidRangeException {
 
@@ -176,6 +179,7 @@ public class GcdmServer {
       logger.debug("Send one chunk {} size={} bytes", spec, data.getSize() * varSection.getVariable().getElementSize());
     }
 
+    // TODO count >= SEQUENCE_CHUNK is not covered in tests
     private long getSequenceData(NetcdfFile ncfile, ParsedSectionSpec varSection,
         StreamObserver<DataResponse> responseObserver) throws IOException {
 
