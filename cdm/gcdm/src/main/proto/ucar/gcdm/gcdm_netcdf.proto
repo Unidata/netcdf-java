@@ -104,8 +104,8 @@ message Group {
 
 message Header {
   string location = 1;
-  string title = 2;  // ??
-  string id = 3;     // ??
+  string title = 2;
+  string id = 3;
 
   Group root = 4;
 }
