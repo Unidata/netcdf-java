@@ -9,6 +9,8 @@ import ucar.nc2.constants.AxisType;
 import ucar.nc2.util.Optional;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import static com.google.common.truth.Truth.assertThat;
+
 
 public class TestCoverageCoordAxis1D {
 
@@ -33,15 +35,15 @@ public class TestCoverageCoordAxis1D {
     CoverageCoordAxis1D timeAxis = create1DTimeAxis();
     Optional<CoverageCoordAxis> subsetTimeAxis = timeAxis.subset(presentSubsetParams);
 
-    assert subsetTimeAxis.isPresent();
+    assertThat(subsetTimeAxis.isPresent()).isTrue();
 
     if (!subsetTimeAxis.isPresent()) {
       return;
     }
 
-    assert subsetTimeAxis.get().startValue == timeDelta;
-    assert subsetTimeAxis.get().endValue == timeDelta;
-    assert subsetTimeAxis.get().isSubset();
+    assertThat(subsetTimeAxis.get().startValue).isEqualTo(timeDelta);
+    assertThat( subsetTimeAxis.get().endValue).isEqualTo(timeDelta);
+    assertThat(subsetTimeAxis.get().isSubset()).isTrue();
   }
 
   private CoverageCoordAxis1D create1DTimeAxis() {
