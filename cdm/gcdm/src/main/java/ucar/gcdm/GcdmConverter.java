@@ -476,16 +476,19 @@ public class GcdmConverter {
     final DataType dataType = convertDataType(data.getDataType());
     final int[] shape = decodeShape(data);
 
+    final Object storage = decodePrimitiveData(data, dataType);
+    return Array.factory(dataType, shape, storage);
+  }
+
+  private static Object decodePrimitiveData(Data data, DataType dataType) {
     switch (dataType) {
       case CHAR: {
-        final byte[] array = data.getByteData(0).toByteArray();
-        return Array.factory(dataType, shape, convertByteToChar(array));
+        return convertByteToChar(data.getByteData(0).toByteArray());
       }
       case ENUM1:
       case UBYTE:
       case BYTE: {
-        final byte[] array = data.getByteData(0).toByteArray();
-        return Array.factory(dataType, shape, array);
+        return data.getByteData(0).toByteArray();
       }
       case SHORT: {
         int i = 0;
@@ -493,7 +496,7 @@ public class GcdmConverter {
         for (int val : data.getIntDataList()) {
           array[i++] = (short) val;
         }
-        return Array.factory(dataType, shape, array);
+        return array;
       }
       case INT: {
         int i = 0;
@@ -501,7 +504,7 @@ public class GcdmConverter {
         for (int val : data.getIntDataList()) {
           array[i++] = val;
         }
-        return Array.factory(dataType, shape, array);
+        return array;
       }
       case ENUM2:
       case USHORT: {
@@ -510,7 +513,7 @@ public class GcdmConverter {
         for (int val : data.getUintDataList()) {
           array[i++] = (short) val;
         }
-        return Array.factory(dataType, shape, array);
+        return array;
       }
       case ENUM4:
       case UINT: {
@@ -519,7 +522,7 @@ public class GcdmConverter {
         for (int val : data.getUintDataList()) {
           array[i++] = val;
         }
-        return Array.factory(dataType, shape, array);
+        return array;
       }
       case LONG: {
         int i = 0;
@@ -527,7 +530,7 @@ public class GcdmConverter {
         for (long val : data.getLongDataList()) {
           array[i++] = val;
         }
-        return Array.factory(dataType, shape, array);
+        return array;
       }
       case ULONG: {
         int i = 0;
@@ -535,7 +538,7 @@ public class GcdmConverter {
         for (long val : data.getUlongDataList()) {
           array[i++] = val;
         }
-        return Array.factory(dataType, shape, array);
+        return array;
       }
       case FLOAT: {
         int i = 0;
@@ -543,7 +546,7 @@ public class GcdmConverter {
         for (float val : data.getFloatDataList()) {
           array[i++] = val;
         }
-        return Array.factory(dataType, shape, array);
+        return array;
       }
       case DOUBLE: {
         int i = 0;
@@ -551,7 +554,7 @@ public class GcdmConverter {
         for (double val : data.getDoubleDataList()) {
           array[i++] = val;
         }
-        return Array.factory(dataType, shape, array);
+        return array;
       }
       case STRING: {
         int i = 0;
@@ -559,7 +562,7 @@ public class GcdmConverter {
         for (String val : data.getStringDataList()) {
           array[i++] = val;
         }
-        return Array.factory(dataType, shape, array);
+        return array;
       }
       case OPAQUE: {
         int i = 0;
@@ -567,7 +570,7 @@ public class GcdmConverter {
         for (ByteString val : data.getByteDataList()) {
           array[i++] = ByteBuffer.wrap(val.toByteArray());
         }
-        return Array.factory(dataType, shape, array);
+        return array;
       }
       default:
         throw new IllegalStateException("Unknown datatype " + dataType);
