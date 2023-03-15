@@ -87,9 +87,9 @@ public class GcdmServer {
     @Override
     public void getNetcdfHeader(HeaderRequest req, StreamObserver<HeaderResponse> responseObserver) {
       logger.info("GcdmServer getHeader " + req.getLocation());
-      HeaderResponse.Builder response = HeaderResponse.newBuilder();
+      final HeaderResponse.Builder response = HeaderResponse.newBuilder();
       try (NetcdfFile ncfile = NetcdfDatasets.openFile(req.getLocation(), null)) {
-        Header.Builder header = Header.newBuilder().setLocation(req.getLocation())
+        final Header.Builder header = Header.newBuilder().setLocation(req.getLocation())
             .setRoot(GcdmConverter.encodeGroup(ncfile.getRootGroup(), 100).build());
         response.setHeader(header);
         responseObserver.onNext(response.build());
@@ -108,12 +108,12 @@ public class GcdmServer {
       long size = -1;
 
       try (NetcdfFile ncfile = NetcdfDatasets.openFile(req.getLocation(), null)) { // LOOK cache ncfile?
-        ParsedSectionSpec varSection = ParsedSectionSpec.parseVariableSection(ncfile, req.getVariableSpec());
-        Variable var = varSection.getVariable();
+        final ParsedSectionSpec varSection = ParsedSectionSpec.parseVariableSection(ncfile, req.getVariableSpec());
+        final Variable var = varSection.getVariable();
         if (var instanceof Sequence) {
           size = getSequenceData(ncfile, varSection, responseObserver);
         } else {
-          Section wantSection = varSection.getArraySection();
+          final Section wantSection = varSection.getArraySection();
           size = var.getElementSize() * wantSection.computeSize();
           getNetcdfData(ncfile, varSection, responseObserver);
         }
@@ -121,7 +121,7 @@ public class GcdmServer {
       } catch (Throwable t) {
         logger.warn("GcdmServer getData failed ", t);
         t.printStackTrace();
-        DataResponse.Builder response =
+        final DataResponse.Builder response =
             DataResponse.newBuilder().setLocation(req.getLocation()).setVariableSpec(req.getVariableSpec());
         response.setError(
             GcdmNetcdfProto.Error.newBuilder().setMessage(t.getMessage() == null ? "N/A" : t.getMessage()).build());
@@ -133,8 +133,8 @@ public class GcdmServer {
 
     private void getNetcdfData(NetcdfFile ncfile, ParsedSectionSpec varSection,
         StreamObserver<DataResponse> responseObserver) throws IOException, InvalidRangeException {
-      Variable var = varSection.getVariable();
-      Section wantSection = varSection.getArraySection();
+      final Variable var = varSection.getVariable();
+      final Section wantSection = varSection.getArraySection();
       long size = var.getElementSize() * wantSection.computeSize();
       if (size > MAX_MESSAGE) {
         getDataInChunks(ncfile, varSection, responseObserver);
@@ -147,15 +147,15 @@ public class GcdmServer {
     private void getDataInChunks(NetcdfFile ncfile, ParsedSectionSpec varSection,
         StreamObserver<DataResponse> responseObserver) throws IOException, InvalidRangeException {
 
-      Variable var = varSection.getVariable();
-      Section section = varSection.getArraySection();
+      final Variable var = varSection.getVariable();
+      final Section section = varSection.getArraySection();
       long maxChunkElems = MAX_MESSAGE / var.getElementSize();
-      ChunkingIndex index = new ChunkingIndex(section.getShape());
+      final ChunkingIndex index = new ChunkingIndex(section.getShape());
       while (index.currentElement() < index.getSize()) {
-        int[] chunkOrigin = index.getCurrentCounter();
-        int[] chunkShape = index.computeChunkShape(maxChunkElems);
-        Section chunkSection = new Section(chunkOrigin, chunkShape);
-        ParsedSectionSpec spec = new ParsedSectionSpec(var, chunkSection);
+        final int[] chunkOrigin = index.getCurrentCounter();
+        final int[] chunkShape = index.computeChunkShape(maxChunkElems);
+        final Section chunkSection = new Section(chunkOrigin, chunkShape);
+        final ParsedSectionSpec spec = new ParsedSectionSpec(var, chunkSection);
         getOneChunk(ncfile, spec, responseObserver);
         index.setCurrentCounter(index.currentElement() + (int) Index.computeSize(chunkShape));
       }
@@ -164,14 +164,14 @@ public class GcdmServer {
     private void getOneChunk(NetcdfFile ncfile, ParsedSectionSpec varSection,
         StreamObserver<DataResponse> responseObserver) throws IOException, InvalidRangeException {
 
-      String spec = varSection.makeSectionSpecString();
-      Variable var = varSection.getVariable();
-      Section wantSection = varSection.getArraySection();
+      final String spec = varSection.makeSectionSpecString();
+      final Variable var = varSection.getVariable();
+      final Section wantSection = varSection.getArraySection();
 
-      DataResponse.Builder response = DataResponse.newBuilder().setLocation(ncfile.getLocation()).setVariableSpec(spec)
-          .setVarFullName(var.getFullName());
+      final DataResponse.Builder response = DataResponse.newBuilder().setLocation(ncfile.getLocation())
+          .setVariableSpec(spec).setVarFullName(var.getFullName());
 
-      Array data = var.read(wantSection);
+      final Array data = var.read(wantSection);
       response.setData(GcdmConverter.encodeData(data.getDataType(), data));
 
       responseObserver.onNext(response.build());
@@ -182,9 +182,9 @@ public class GcdmServer {
     private long getSequenceData(NetcdfFile ncfile, ParsedSectionSpec varSection,
         StreamObserver<DataResponse> responseObserver) throws IOException {
 
-      String spec = varSection.makeSectionSpecString();
-      Sequence seq = (Sequence) varSection.getVariable();
-      StructureMembers members = seq.makeStructureMembers();
+      final String spec = varSection.makeSectionSpecString();
+      final Sequence seq = (Sequence) varSection.getVariable();
+      final StructureMembers members = seq.makeStructureMembers();
 
       StructureData[] structureData = new StructureData[SEQUENCE_CHUNK];
       int start = 0;
@@ -194,9 +194,9 @@ public class GcdmServer {
         structureData[count++] = it.next();
 
         if (count >= SEQUENCE_CHUNK || !it.hasNext()) {
-          StructureData[] correctSizeArray = Arrays.copyOf(structureData, count);
-          ArrayStructureW arrayStructure = new ArrayStructureW(members, new int[] {count}, correctSizeArray);
-          DataResponse.Builder response = DataResponse.newBuilder().setLocation(ncfile.getLocation())
+          final StructureData[] correctSizeArray = Arrays.copyOf(structureData, count);
+          final ArrayStructureW arrayStructure = new ArrayStructureW(members, new int[] {count}, correctSizeArray);
+          final DataResponse.Builder response = DataResponse.newBuilder().setLocation(ncfile.getLocation())
               .setVariableSpec(spec).setVarFullName(seq.getFullName());
           response.setData(GcdmConverter.encodeData(DataType.SEQUENCE, arrayStructure));
           responseObserver.onNext(response.build());

@@ -43,35 +43,35 @@ public class GcdmNetcdfFile extends NetcdfFile {
 
   @Override
   protected StructureDataIterator getStructureIterator(Structure structure, int bufferSize) throws IOException {
-    Array data = readData(structure, structure.getShapeAsSection());
+    final Array data = readData(structure, structure.getShapeAsSection());
     Preconditions.checkNotNull(data);
     Preconditions.checkArgument(data instanceof ArrayStructure);
-    ArrayStructure arrayStructure = (ArrayStructure) data;
+    final ArrayStructure arrayStructure = (ArrayStructure) data;
     return arrayStructure.getStructureDataIterator();
   }
 
   @Nullable
   protected Array readData(Variable variable, Section sectionWanted) throws IOException {
-    String spec = ParsedSectionSpec.makeSectionSpecString(variable, sectionWanted.getRanges());
+    final String spec = ParsedSectionSpec.makeSectionSpecString(variable, sectionWanted.getRanges());
     if (logger.isDebugEnabled()) {
-      long expected = sectionWanted.computeSize() * variable.getElementSize();
+      final long expected = sectionWanted.computeSize() * variable.getElementSize();
       logger.debug("GcdmNetcdfFile data request for spec=({})\n url='{}'\n path='{}' request bytes = {}\n", spec,
           this.remoteURI, this.path, expected);
     }
     final Stopwatch stopwatch = Stopwatch.createStarted();
 
-    List<Array> results = new ArrayList<>();
+    final List<Array> results = new ArrayList<>();
     long size = 0;
-    DataRequest request = DataRequest.newBuilder().setLocation(this.path).setVariableSpec(spec).build();
+    final DataRequest request = DataRequest.newBuilder().setLocation(this.path).setVariableSpec(spec).build();
     try {
-      Iterator<DataResponse> responses =
+      final Iterator<DataResponse> responses =
           blockingStub.withDeadlineAfter(MAX_DATA_WAIT_SECONDS, TimeUnit.SECONDS).getNetcdfData(request);
       while (responses.hasNext()) {
-        DataResponse response = responses.next();
+        final DataResponse response = responses.next();
         if (response.hasError()) {
           throw new IOException(response.getError().getMessage());
         }
-        Array result = GcdmConverter.decodeData(response.getData());
+        final Array result = GcdmConverter.decodeData(response.getData());
         results.add(result);
         size += result.getSize() * variable.getElementSize();
         if (logger.isDebugEnabled()) {
@@ -178,8 +178,8 @@ public class GcdmNetcdfFile extends NetcdfFile {
 
     private void openChannel() {
       // parse the URI
-      URI uri = java.net.URI.create(this.remoteURI);
-      String target = uri.getAuthority();
+      final URI uri = java.net.URI.create(this.remoteURI);
+      final String target = uri.getAuthority();
       this.path = uri.getPath();
       if (this.path.startsWith("/")) {
         this.path = this.path.substring(1);
@@ -215,12 +215,12 @@ public class GcdmNetcdfFile extends NetcdfFile {
 
     private void readHeader(String location) {
       logger.info("GcdmNetcdfFile request header for " + location);
-      HeaderRequest request = HeaderRequest.newBuilder().setLocation(location).build();
-      HeaderResponse response = blockingStub.getNetcdfHeader(request);
+      final HeaderRequest request = HeaderRequest.newBuilder().setLocation(location).build();
+      final HeaderResponse response = blockingStub.getNetcdfHeader(request);
       if (response.hasError()) {
         throw new RuntimeException(response.getError().getMessage());
       } else {
-        Header header = response.getHeader();
+        final Header header = response.getHeader();
         setId(header.getId());
         setTitle(header.getTitle());
         setLocation(remoteURI);
