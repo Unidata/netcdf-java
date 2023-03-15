@@ -79,7 +79,6 @@ public class GcdmConverter {
     attributeBuilder.setDataType(convertDataType(attribute.getDataType()));
     attributeBuilder.setLength(attribute.getLength());
 
-    // values
     if (attribute.getValues() != null && attribute.getLength() > 0) {
       if (attribute.isString()) {
         final Data.Builder dataBuilder = Data.newBuilder();
