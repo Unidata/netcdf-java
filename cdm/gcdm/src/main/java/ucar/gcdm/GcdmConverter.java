@@ -46,24 +46,29 @@ public class GcdmConverter {
     GcdmNetcdfProto.Group.Builder groupBuilder = GcdmNetcdfProto.Group.newBuilder();
     groupBuilder.setName(group.getShortName());
 
-    for (Dimension dimension : group.getDimensions())
+    for (Dimension dimension : group.getDimensions()) {
       groupBuilder.addDims(encodeDim(dimension));
-
-    for (Attribute attribute : group.attributes())
-      groupBuilder.addAtts(encodeAttribute(attribute));
-
-    for (EnumTypedef enumType : group.getEnumTypedefs())
-      groupBuilder.addEnumTypes(encodeEnumTypedef(enumType));
-
-    for (Variable variable : group.getVariables()) {
-      if (variable instanceof Structure)
-        groupBuilder.addStructs(encodeStructure((Structure) variable));
-      else
-        groupBuilder.addVars(encodeVariable(variable, sizeToCache));
     }
 
-    for (Group nestedGroup : group.getGroups())
+    for (Attribute attribute : group.attributes()) {
+      groupBuilder.addAtts(encodeAttribute(attribute));
+    }
+
+    for (EnumTypedef enumType : group.getEnumTypedefs()) {
+      groupBuilder.addEnumTypes(encodeEnumTypedef(enumType));
+    }
+
+    for (Variable variable : group.getVariables()) {
+      if (variable instanceof Structure) {
+        groupBuilder.addStructs(encodeStructure((Structure) variable));
+      } else {
+        groupBuilder.addVars(encodeVariable(variable, sizeToCache));
+      }
+    }
+
+    for (Group nestedGroup : group.getGroups()) {
       groupBuilder.addGroups(encodeGroup(nestedGroup, sizeToCache));
+    }
 
     return groupBuilder;
   }
@@ -94,10 +99,12 @@ public class GcdmConverter {
 
   private static GcdmNetcdfProto.Dimension.Builder encodeDim(Dimension dimension) {
     GcdmNetcdfProto.Dimension.Builder dimensionBuilder = GcdmNetcdfProto.Dimension.newBuilder();
-    if (dimension.getShortName() != null)
+    if (dimension.getShortName() != null) {
       dimensionBuilder.setName(dimension.getShortName());
-    if (!dimension.isVariableLength())
+    }
+    if (!dimension.isVariableLength()) {
       dimensionBuilder.setLength(dimension.getLength());
+    }
     dimensionBuilder.setIsPrivate(!dimension.isShared());
     dimensionBuilder.setIsVlen(dimension.isVariableLength());
     dimensionBuilder.setIsUnlimited(dimension.isUnlimited());
@@ -127,8 +134,9 @@ public class GcdmConverter {
     builder.setDataType(convertDataType(variable.getDataType()));
     if (variable.getDataType().isEnum()) {
       EnumTypedef enumType = variable.getEnumTypedef();
-      if (enumType != null)
+      if (enumType != null) {
         builder.setEnumType(enumType.getShortName());
+      }
     }
 
     for (Dimension dimension : variable.getDimensions()) {
@@ -155,17 +163,20 @@ public class GcdmConverter {
     builder.setName(structure.getShortName());
     builder.setDataType(convertDataType(structure.getDataType()));
 
-    for (Dimension dimension : structure.getDimensions())
+    for (Dimension dimension : structure.getDimensions()) {
       builder.addShapes(encodeDim(dimension));
+    }
 
-    for (Attribute attribute : structure.attributes())
+    for (Attribute attribute : structure.attributes()) {
       builder.addAtts(encodeAttribute(attribute));
+    }
 
     for (Variable variable : structure.getVariables()) {
-      if (variable instanceof Structure)
+      if (variable instanceof Structure) {
         builder.addStructs(GcdmConverter.encodeStructure((Structure) variable));
-      else
+      } else {
         builder.addVars(encodeVariable(variable, -1));
+      }
     }
 
     return builder;
@@ -318,20 +329,25 @@ public class GcdmConverter {
 
   public static void decodeGroup(GcdmNetcdfProto.Group protoGroup, Group.Builder groupBuilder) {
 
-    for (GcdmNetcdfProto.Dimension dim : protoGroup.getDimsList())
+    for (GcdmNetcdfProto.Dimension dim : protoGroup.getDimsList()) {
       groupBuilder.addDimension(GcdmConverter.decodeDimension(dim)); // always added to group? what if private ??
+    }
 
-    for (GcdmNetcdfProto.Attribute att : protoGroup.getAttsList())
+    for (GcdmNetcdfProto.Attribute att : protoGroup.getAttsList()) {
       groupBuilder.addAttribute(GcdmConverter.decodeAttribute(att));
+    }
 
-    for (GcdmNetcdfProto.EnumTypedef enumType : protoGroup.getEnumTypesList())
+    for (GcdmNetcdfProto.EnumTypedef enumType : protoGroup.getEnumTypesList()) {
       groupBuilder.addEnumTypedef(GcdmConverter.decodeEnumTypedef(enumType));
+    }
 
-    for (GcdmNetcdfProto.Variable var : protoGroup.getVarsList())
+    for (GcdmNetcdfProto.Variable var : protoGroup.getVarsList()) {
       groupBuilder.addVariable(GcdmConverter.decodeVariable(var));
+    }
 
-    for (GcdmNetcdfProto.Structure s : protoGroup.getStructsList())
+    for (GcdmNetcdfProto.Structure s : protoGroup.getStructsList()) {
       groupBuilder.addVariable(GcdmConverter.decodeStructure(s));
+    }
 
     for (GcdmNetcdfProto.Group nestedProtoGroup : protoGroup.getGroupsList()) {
       Group.Builder nestedGroup = Group.builder().setName(nestedProtoGroup.getName());
@@ -367,8 +383,9 @@ public class GcdmConverter {
         return new Attribute(protoAttribute.getName(), values.get(0));
       } else {
         Array data = Array.factory(dataType, new int[] {length});
-        for (int i = 0; i < length; i++)
+        for (int i = 0; i < length; i++) {
           data.setObject(i, values.get(i));
+        }
         return Attribute.builder(protoAttribute.getName()).setValues(data).build();
       }
     } else {
@@ -396,8 +413,9 @@ public class GcdmConverter {
     }
     variableBuilder.addDimensions(dimensions);
 
-    for (GcdmNetcdfProto.Attribute attribute : protoVariable.getAttsList())
+    for (GcdmNetcdfProto.Attribute attribute : protoVariable.getAttsList()) {
       variableBuilder.addAttribute(decodeAttribute(attribute));
+    }
 
     if (protoVariable.hasData()) {
       Array data = decodeData(protoVariable.getData());

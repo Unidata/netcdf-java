@@ -168,8 +168,9 @@ public class GcdmNetcdfFile extends NetcdfFile {
     }
 
     public GcdmNetcdfFile build() {
-      if (built)
+      if (built) {
         throw new IllegalStateException("already built");
+      }
       built = true;
       openChannel();
       return new GcdmNetcdfFile(this);
