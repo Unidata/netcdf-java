@@ -42,19 +42,19 @@ public class GcdmNetcdfFile extends NetcdfFile {
   public static final String PROTOCOL = "gcdm";
 
   @Override
-  protected StructureDataIterator getStructureIterator(Structure s, int bufferSize) throws IOException {
-    Array data = readData(s, s.getShapeAsSection());
+  protected StructureDataIterator getStructureIterator(Structure structure, int bufferSize) throws IOException {
+    Array data = readData(structure, structure.getShapeAsSection());
     Preconditions.checkNotNull(data);
     Preconditions.checkArgument(data instanceof ArrayStructure);
-    ArrayStructure sdata = (ArrayStructure) data;
-    return sdata.getStructureDataIterator();
+    ArrayStructure arrayStructure = (ArrayStructure) data;
+    return arrayStructure.getStructureDataIterator();
   }
 
   @Nullable
-  protected Array readData(Variable v, Section sectionWanted) throws IOException {
-    String spec = ParsedSectionSpec.makeSectionSpecString(v, sectionWanted.getRanges());
+  protected Array readData(Variable variable, Section sectionWanted) throws IOException {
+    String spec = ParsedSectionSpec.makeSectionSpecString(variable, sectionWanted.getRanges());
     if (logger.isDebugEnabled()) {
-      long expected = sectionWanted.computeSize() * v.getElementSize();
+      long expected = sectionWanted.computeSize() * variable.getElementSize();
       logger.debug("GcdmNetcdfFile data request for spec=({})\n url='{}'\n path='{}' request bytes = {}\n", spec,
           this.remoteURI, this.path, expected);
     }
@@ -73,9 +73,9 @@ public class GcdmNetcdfFile extends NetcdfFile {
         }
         Array result = GcdmConverter.decodeData(response.getData());
         results.add(result);
-        size += result.getSize() * v.getElementSize();
+        size += result.getSize() * variable.getElementSize();
         if (logger.isDebugEnabled()) {
-          logger.debug("  readArrayData bytes received = {}", result.getSize() * v.getElementSize());
+          logger.debug("  readArrayData bytes received = {}", result.getSize() * variable.getElementSize());
         }
       }
 
@@ -94,7 +94,7 @@ public class GcdmNetcdfFile extends NetcdfFile {
     if (results.size() == 1) {
       return results.get(0);
     } else {
-      return Array.factoryCopy(v.getDataType(), sectionWanted.getShape(), results);
+      return Array.factoryCopy(variable.getDataType(), sectionWanted.getShape(), results);
     }
   }
 

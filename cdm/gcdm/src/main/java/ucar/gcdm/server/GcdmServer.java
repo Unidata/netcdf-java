@@ -186,19 +186,19 @@ public class GcdmServer {
       Sequence seq = (Sequence) varSection.getVariable();
       StructureMembers members = seq.makeStructureMembers();
 
-      StructureData[] sdata = new StructureData[SEQUENCE_CHUNK];
+      StructureData[] structureData = new StructureData[SEQUENCE_CHUNK];
       int start = 0;
       int count = 0;
       StructureDataIterator it = seq.getStructureIterator();
       while (it.hasNext()) {
-        sdata[count++] = it.next();
+        structureData[count++] = it.next();
 
         if (count >= SEQUENCE_CHUNK || !it.hasNext()) {
-          StructureData[] correctSizeArray = Arrays.copyOf(sdata, count);
-          ArrayStructureW sdataArray = new ArrayStructureW(members, new int[] {count}, correctSizeArray);
+          StructureData[] correctSizeArray = Arrays.copyOf(structureData, count);
+          ArrayStructureW arrayStructure = new ArrayStructureW(members, new int[] {count}, correctSizeArray);
           DataResponse.Builder response = DataResponse.newBuilder().setLocation(ncfile.getLocation())
               .setVariableSpec(spec).setVarFullName(seq.getFullName());
-          response.setData(GcdmConverter.encodeData(DataType.SEQUENCE, sdataArray));
+          response.setData(GcdmConverter.encodeData(DataType.SEQUENCE, arrayStructure));
           responseObserver.onNext(response.build());
           start = count;
           count = 0;
