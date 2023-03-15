@@ -47,11 +47,11 @@ public class GcdmConverter {
     groupBuilder.setName(group.getShortName());
 
     for (Dimension dimension : group.getDimensions()) {
-      groupBuilder.addDims(encodeDim(dimension));
+      groupBuilder.addDimensions(encodeDim(dimension));
     }
 
     for (Attribute attribute : group.attributes()) {
-      groupBuilder.addAtts(encodeAttribute(attribute));
+      groupBuilder.addAttributes(encodeAttribute(attribute));
     }
 
     for (EnumTypedef enumType : group.getEnumTypedefs()) {
@@ -60,9 +60,9 @@ public class GcdmConverter {
 
     for (Variable variable : group.getVariables()) {
       if (variable instanceof Structure) {
-        groupBuilder.addStructs(encodeStructure((Structure) variable));
+        groupBuilder.addStructures(encodeStructure((Structure) variable));
       } else {
-        groupBuilder.addVars(encodeVariable(variable, sizeToCache));
+        groupBuilder.addVariables(encodeVariable(variable, sizeToCache));
       }
     }
 
@@ -83,7 +83,7 @@ public class GcdmConverter {
       if (attribute.isString()) {
         final Data.Builder dataBuilder = Data.newBuilder();
         for (int i = 0; i < attribute.getLength(); i++) {
-          dataBuilder.addSdata(attribute.getStringValue(i));
+          dataBuilder.addStringData(attribute.getStringValue(i));
         }
         dataBuilder.setDataType(convertDataType(attribute.getDataType()));
         attributeBuilder.setData(dataBuilder);
@@ -144,7 +144,7 @@ public class GcdmConverter {
     }
 
     for (Attribute attribute : variable.attributes()) {
-      builder.addAtts(encodeAttribute(attribute));
+      builder.addAttributes(encodeAttribute(attribute));
     }
 
     // put small amounts of data in header "immediate mode"
@@ -168,14 +168,14 @@ public class GcdmConverter {
     }
 
     for (Attribute attribute : structure.attributes()) {
-      builder.addAtts(encodeAttribute(attribute));
+      builder.addAttributes(encodeAttribute(attribute));
     }
 
     for (Variable variable : structure.getVariables()) {
       if (variable instanceof Structure) {
         builder.addStructs(GcdmConverter.encodeStructure((Structure) variable));
       } else {
-        builder.addVars(encodeVariable(variable, -1));
+        builder.addVariables(encodeVariable(variable, -1));
       }
     }
 
@@ -207,20 +207,20 @@ public class GcdmConverter {
     switch (dataType) {
       case CHAR: {
         final byte[] array = convertCharToByte((char[]) data.get1DJavaArray(DataType.CHAR));
-        builder.addBdata(ByteString.copyFrom(array));
+        builder.addByteData(ByteString.copyFrom(array));
         break;
       }
       case ENUM1:
       case UBYTE:
       case BYTE: {
         final byte[] array = (byte[]) data.get1DJavaArray(DataType.UBYTE);
-        builder.addBdata(ByteString.copyFrom(array));
+        builder.addByteData(ByteString.copyFrom(array));
         break;
       }
       case SHORT:
       case INT:
         while (indexIterator.hasNext()) {
-          builder.addIdata(indexIterator.getIntNext());
+          builder.addIntData(indexIterator.getIntNext());
         }
         break;
       case ENUM2:
@@ -228,38 +228,38 @@ public class GcdmConverter {
       case USHORT:
       case UINT:
         while (indexIterator.hasNext()) {
-          builder.addUidata(indexIterator.getIntNext());
+          builder.addUintData(indexIterator.getIntNext());
         }
         break;
       case LONG:
         while (indexIterator.hasNext()) {
-          builder.addLdata(indexIterator.getLongNext());
+          builder.addLongData(indexIterator.getLongNext());
         }
         break;
       case ULONG:
         while (indexIterator.hasNext()) {
-          builder.addUldata(indexIterator.getLongNext());
+          builder.addUlongData(indexIterator.getLongNext());
         }
         break;
       case FLOAT:
         while (indexIterator.hasNext()) {
-          builder.addFdata(indexIterator.getFloatNext());
+          builder.addFloatData(indexIterator.getFloatNext());
         }
         break;
       case DOUBLE:
         while (indexIterator.hasNext()) {
-          builder.addDdata(indexIterator.getDoubleNext());
+          builder.addDoubleData(indexIterator.getDoubleNext());
         }
         break;
       case STRING:
         while (indexIterator.hasNext()) {
-          builder.addSdata((String) indexIterator.getObjectNext());
+          builder.addStringData((String) indexIterator.getObjectNext());
         }
         break;
       case OPAQUE:
         while (indexIterator.hasNext()) {
           final ByteBuffer bb = (ByteBuffer) indexIterator.getObjectNext();
-          builder.addBdata(ByteString.copyFrom(bb.array()));
+          builder.addByteData(ByteString.copyFrom(bb.array()));
         }
         break;
       default:
@@ -275,7 +275,7 @@ public class GcdmConverter {
     final IndexIterator objectIterator = data.getIndexIterator();
     while (objectIterator.hasNext()) {
       final Array array = (Array) objectIterator.next();
-      builder.addVlen(encodeData(dataType, array));
+      builder.addVlenData(encodeData(dataType, array));
     }
     return builder.build();
   }
@@ -328,11 +328,11 @@ public class GcdmConverter {
   }
 
   public static void decodeGroup(GcdmNetcdfProto.Group protoGroup, Group.Builder groupBuilder) {
-    for (GcdmNetcdfProto.Dimension dim : protoGroup.getDimsList()) {
+    for (GcdmNetcdfProto.Dimension dim : protoGroup.getDimensionsList()) {
       groupBuilder.addDimension(GcdmConverter.decodeDimension(dim)); // always added to group? what if private ??
     }
 
-    for (GcdmNetcdfProto.Attribute att : protoGroup.getAttsList()) {
+    for (GcdmNetcdfProto.Attribute att : protoGroup.getAttributesList()) {
       groupBuilder.addAttribute(GcdmConverter.decodeAttribute(att));
     }
 
@@ -340,11 +340,11 @@ public class GcdmConverter {
       groupBuilder.addEnumTypedef(GcdmConverter.decodeEnumTypedef(enumType));
     }
 
-    for (GcdmNetcdfProto.Variable var : protoGroup.getVarsList()) {
+    for (GcdmNetcdfProto.Variable var : protoGroup.getVariablesList()) {
       groupBuilder.addVariable(GcdmConverter.decodeVariable(var));
     }
 
-    for (GcdmNetcdfProto.Structure s : protoGroup.getStructsList()) {
+    for (GcdmNetcdfProto.Structure s : protoGroup.getStructuresList()) {
       groupBuilder.addVariable(GcdmConverter.decodeStructure(s));
     }
 
@@ -374,7 +374,7 @@ public class GcdmConverter {
 
     final Data attributeData = protoAttribute.getData();
     if (dataType == DataType.STRING) {
-      final List<String> values = attributeData.getSdataList();
+      final List<String> values = attributeData.getStringDataList();
       if (values.size() != length) {
         throw new IllegalStateException();
       }
@@ -413,7 +413,7 @@ public class GcdmConverter {
     }
     variableBuilder.addDimensions(dimensions);
 
-    for (GcdmNetcdfProto.Attribute attribute : protoVariable.getAttsList()) {
+    for (GcdmNetcdfProto.Attribute attribute : protoVariable.getAttributesList()) {
       variableBuilder.addAttribute(decodeAttribute(attribute));
     }
 
@@ -438,11 +438,11 @@ public class GcdmConverter {
     }
     structureBuilder.addDimensions(dimensions);
 
-    for (GcdmNetcdfProto.Attribute attribute : protoStructure.getAttsList()) {
+    for (GcdmNetcdfProto.Attribute attribute : protoStructure.getAttributesList()) {
       structureBuilder.addAttribute(decodeAttribute(attribute));
     }
 
-    for (GcdmNetcdfProto.Variable protoVariable : protoStructure.getVarsList()) {
+    for (GcdmNetcdfProto.Variable protoVariable : protoStructure.getVariablesList()) {
       structureBuilder.addMemberVariable(decodeVariable(protoVariable));
     }
 
@@ -454,7 +454,7 @@ public class GcdmConverter {
   }
 
   public static Array decodeData(GcdmNetcdfProto.Data protoData) {
-    if (protoData.getVlenCount() > 0) {
+    if (protoData.getVlenDataCount() > 0) {
       return decodeVlenData(protoData);
     } else if (protoData.hasMembers()) {
       return decodeArrayStructureData(protoData);
@@ -478,27 +478,27 @@ public class GcdmConverter {
 
     switch (dataType) {
       case CHAR: {
-        final byte[] array = data.getBdata(0).toByteArray();
+        final byte[] array = data.getByteData(0).toByteArray();
         return Array.factory(dataType, shape, convertByteToChar(array));
       }
       case ENUM1:
       case UBYTE:
       case BYTE: {
-        final byte[] array = data.getBdata(0).toByteArray();
+        final byte[] array = data.getByteData(0).toByteArray();
         return Array.factory(dataType, shape, array);
       }
       case SHORT: {
         int i = 0;
-        final short[] array = new short[data.getIdataCount()];
-        for (int val : data.getIdataList()) {
+        final short[] array = new short[data.getIntDataCount()];
+        for (int val : data.getIntDataList()) {
           array[i++] = (short) val;
         }
         return Array.factory(dataType, shape, array);
       }
       case INT: {
         int i = 0;
-        final int[] array = new int[data.getIdataCount()];
-        for (int val : data.getIdataList()) {
+        final int[] array = new int[data.getIntDataCount()];
+        for (int val : data.getIntDataList()) {
           array[i++] = val;
         }
         return Array.factory(dataType, shape, array);
@@ -506,8 +506,8 @@ public class GcdmConverter {
       case ENUM2:
       case USHORT: {
         int i = 0;
-        final short[] array = new short[data.getUidataCount()];
-        for (int val : data.getUidataList()) {
+        final short[] array = new short[data.getUintDataCount()];
+        for (int val : data.getUintDataList()) {
           array[i++] = (short) val;
         }
         return Array.factory(dataType, shape, array);
@@ -515,56 +515,56 @@ public class GcdmConverter {
       case ENUM4:
       case UINT: {
         int i = 0;
-        final int[] array = new int[data.getUidataCount()];
-        for (int val : data.getUidataList()) {
+        final int[] array = new int[data.getUintDataCount()];
+        for (int val : data.getUintDataList()) {
           array[i++] = val;
         }
         return Array.factory(dataType, shape, array);
       }
       case LONG: {
         int i = 0;
-        final long[] array = new long[data.getLdataCount()];
-        for (long val : data.getLdataList()) {
+        final long[] array = new long[data.getLongDataCount()];
+        for (long val : data.getLongDataList()) {
           array[i++] = val;
         }
         return Array.factory(dataType, shape, array);
       }
       case ULONG: {
         int i = 0;
-        final long[] array = new long[data.getUldataCount()];
-        for (long val : data.getUldataList()) {
+        final long[] array = new long[data.getUlongDataCount()];
+        for (long val : data.getUlongDataList()) {
           array[i++] = val;
         }
         return Array.factory(dataType, shape, array);
       }
       case FLOAT: {
         int i = 0;
-        final float[] array = new float[data.getFdataCount()];
-        for (float val : data.getFdataList()) {
+        final float[] array = new float[data.getFloatDataCount()];
+        for (float val : data.getFloatDataList()) {
           array[i++] = val;
         }
         return Array.factory(dataType, shape, array);
       }
       case DOUBLE: {
         int i = 0;
-        final double[] array = new double[data.getDdataCount()];
-        for (double val : data.getDdataList()) {
+        final double[] array = new double[data.getDoubleDataCount()];
+        for (double val : data.getDoubleDataList()) {
           array[i++] = val;
         }
         return Array.factory(dataType, shape, array);
       }
       case STRING: {
         int i = 0;
-        final Object[] array = new Object[data.getSdataCount()];
-        for (String val : data.getSdataList()) {
+        final Object[] array = new Object[data.getStringDataCount()];
+        for (String val : data.getStringDataList()) {
           array[i++] = val;
         }
         return Array.factory(dataType, shape, array);
       }
       case OPAQUE: {
         int i = 0;
-        final Object[] array = new Object[data.getBdataCount()];
-        for (ByteString val : data.getBdataList()) {
+        final Object[] array = new Object[data.getByteDataCount()];
+        for (ByteString val : data.getByteDataList()) {
           array[i++] = ByteBuffer.wrap(val.toByteArray());
         }
         return Array.factory(dataType, shape, array);
@@ -575,14 +575,14 @@ public class GcdmConverter {
   }
 
   private static Array decodeVlenData(Data vlenData) {
-    Preconditions.checkArgument(vlenData.getVlenCount() > 0);
+    Preconditions.checkArgument(vlenData.getVlenDataCount() > 0);
     final int[] shape = decodeShape(vlenData);
     final int length = (int) Index.computeSize(shape);
-    Preconditions.checkArgument(length == vlenData.getVlenCount());
+    Preconditions.checkArgument(length == vlenData.getVlenDataCount());
     final Array[] storage = new Array[length];
 
     for (int i = 0; i < length; i++) {
-      final Data inner = vlenData.getVlen(i);
+      final Data inner = vlenData.getVlenData(i);
       storage[i] = decodeData(inner);
     }
 
