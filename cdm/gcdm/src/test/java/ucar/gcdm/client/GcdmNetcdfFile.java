@@ -194,10 +194,10 @@ public class GcdmNetcdfFile extends NetcdfFile {
           .enableFullStreamDecompression() //
           .maxInboundMessageSize(MAX_MESSAGE) //
           .build();
+
       try {
         this.blockingStub = GcdmGrpc.newBlockingStub(channel);
         readHeader(path);
-
       } catch (Exception e) {
         // ManagedChannels use resources like threads and TCP connections. To prevent leaking these
         // resources the channel should be shut down when it will no longer be used. If it may be used
@@ -217,6 +217,7 @@ public class GcdmNetcdfFile extends NetcdfFile {
       logger.info("GcdmNetcdfFile request header for " + location);
       final HeaderRequest request = HeaderRequest.newBuilder().setLocation(location).build();
       final HeaderResponse response = blockingStub.getNetcdfHeader(request);
+
       if (response.hasError()) {
         throw new RuntimeException(response.getError().getMessage());
       } else {
