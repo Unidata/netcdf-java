@@ -170,12 +170,6 @@ public class GcdmConverter {
     return builder;
   }
 
-  public static GcdmNetcdfProto.Error encodeErrorMessage(String message) {
-    GcdmNetcdfProto.Error.Builder builder = GcdmNetcdfProto.Error.newBuilder();
-    builder.setMessage(message);
-    return builder.build();
-  }
-
   public static GcdmNetcdfProto.Data encodeData(DataType dataType, Array data) {
     GcdmNetcdfProto.Data result;
     if (data.isVlen()) {
