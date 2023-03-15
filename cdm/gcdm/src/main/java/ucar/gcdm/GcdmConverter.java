@@ -47,7 +47,7 @@ public class GcdmConverter {
     groupBuilder.setName(group.getShortName());
 
     for (Dimension dimension : group.getDimensions()) {
-      groupBuilder.addDimensions(encodeDim(dimension));
+      groupBuilder.addDimensions(encodeDimension(dimension));
     }
 
     for (Attribute attribute : group.attributes()) {
@@ -96,7 +96,7 @@ public class GcdmConverter {
     return attributeBuilder;
   }
 
-  private static GcdmNetcdfProto.Dimension.Builder encodeDim(Dimension dimension) {
+  private static GcdmNetcdfProto.Dimension.Builder encodeDimension(Dimension dimension) {
     final GcdmNetcdfProto.Dimension.Builder dimensionBuilder = GcdmNetcdfProto.Dimension.newBuilder();
     if (dimension.getShortName() != null) {
       dimensionBuilder.setName(dimension.getShortName());
@@ -140,7 +140,7 @@ public class GcdmConverter {
     }
 
     for (Dimension dimension : variable.getDimensions()) {
-      builder.addShapes(encodeDim(dimension));
+      builder.addShapes(encodeDimension(dimension));
     }
 
     for (Attribute attribute : variable.attributes()) {
@@ -164,7 +164,7 @@ public class GcdmConverter {
     builder.setDataType(convertDataType(structure.getDataType()));
 
     for (Dimension dimension : structure.getDimensions()) {
-      builder.addShapes(encodeDim(dimension));
+      builder.addShapes(encodeDimension(dimension));
     }
 
     for (Attribute attribute : structure.attributes()) {
