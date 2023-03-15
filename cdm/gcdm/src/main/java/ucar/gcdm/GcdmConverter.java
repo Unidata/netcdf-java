@@ -206,6 +206,7 @@ public class GcdmConverter {
     builder.setDataType(convertDataType(dataType));
     encodeShape(builder, data.getShape());
     final IndexIterator indexIterator = data.getIndexIterator();
+
     switch (dataType) {
       case CHAR: {
         final byte[] array = convertCharToByte((char[]) data.get1DJavaArray(DataType.CHAR));
@@ -330,7 +331,6 @@ public class GcdmConverter {
   }
 
   public static void decodeGroup(GcdmNetcdfProto.Group protoGroup, Group.Builder groupBuilder) {
-
     for (GcdmNetcdfProto.Dimension dim : protoGroup.getDimsList()) {
       groupBuilder.addDimension(GcdmConverter.decodeDimension(dim)); // always added to group? what if private ??
     }
@@ -707,6 +707,7 @@ public class GcdmConverter {
   private static StructureMembers decodeStructureMembers(GcdmNetcdfProto.StructureMembersProto membersProto) {
     final StructureMembers.Builder structureMembersBuilder = StructureMembers.builder();
     structureMembersBuilder.setName(membersProto.getName());
+
     for (StructureMemberProto memberProto : membersProto.getMembersList()) {
       final MemberBuilder memberBuilder = StructureMembers.memberBuilder().setName(memberProto.getName())
           .setDataType(convertDataType(memberProto.getDataType())).setShape(Ints.toArray(memberProto.getShapesList()));
@@ -721,6 +722,7 @@ public class GcdmConverter {
   private static StructureData decodeStructureData(GcdmNetcdfProto.StructureDataProto structDataProto,
       StructureMembers members) {
     final StructureDataW structureData = new StructureDataW(members);
+
     for (int i = 0; i < structDataProto.getMemberDataCount(); i++) {
       final Data data = structDataProto.getMemberData(i);
       final Member member = members.getMember(i);
