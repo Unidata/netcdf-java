@@ -42,13 +42,12 @@ public class GcdmServer {
   // public for testing
   public static final int MAX_MESSAGE = 50 * 1000 * 1000; // 50 Mb LOOK could be tuned
   private static final int SEQUENCE_CHUNK = 1000;
+  private static final int PORT = 16111;
 
   private Server server;
 
   private void start() throws IOException {
-    /* The port on which the server should run */
-    int port = 16111;
-    server = ServerBuilder.forPort(port).addService(new GcdmImpl()).build().start();
+    server = ServerBuilder.forPort(PORT).addService(new GcdmImpl()).build().start();
     Runtime.getRuntime().addShutdownHook(new Thread(() -> {
       // Use stderr here since the logger may have been reset by its JVM shutdown hook.
       System.err.println("*** shutting down gRPC server since JVM is shutting down");
@@ -60,8 +59,8 @@ public class GcdmServer {
       System.err.println("*** server shut down");
     }));
 
-    logger.info("Server started, listening on " + port);
-    System.out.println("---> Server started, listening on " + port); // Used for gradle startDaemon
+    logger.info("Server started, listening on " + PORT);
+    System.out.println("---> Server started, listening on " + PORT); // Used for gradle startDaemon
   }
 
   private void stop() throws InterruptedException {
