@@ -94,10 +94,10 @@ message EnumTypedef {
 
 message Group {
   string name = 1;                // short name
-  repeated Dimension dims = 2;
-  repeated Variable vars = 3;
-  repeated Structure structs = 4;
-  repeated Attribute atts = 5;
+  repeated Dimension dimensions = 2;
+  repeated Variable variables = 3;
+  repeated Structure structures = 4;
+  repeated Attribute attributes = 5;
   repeated Group groups = 6;
   repeated EnumTypedef enum_types = 7;
 }
@@ -114,8 +114,8 @@ message Structure {
   string name = 1;                // short name
   DataType data_type = 2;         // STRUCTURE or SEQUENCE
   repeated Dimension shapes = 3;   // actual dimension instead of reference
-  repeated Attribute atts = 4;
-  repeated Variable vars = 5;     // members that are not structs
+  repeated Attribute attributes = 4;
+  repeated Variable variables = 5;     // members that are not structs
   repeated Structure structs = 6; // struct members that are structs
 }
 
@@ -123,7 +123,7 @@ message Variable {
   string name = 1; // short name
   DataType data_type = 2;
   repeated Dimension shapes = 3;   // actual dimension instead of reference
-  repeated Attribute atts = 4;
+  repeated Attribute attributes = 4;
   string enum_type = 5;   // EnumTypedef name, only for enum types
   Data data = 6;        // "immediate" - store small data in header
 }
@@ -135,15 +135,15 @@ message Data {
   repeated uint32 shapes = 2;
 
   // oneof, depends on data_type
-  repeated bytes bdata = 3;   // ENUM1, BYTE, OPAQUE, CHAR
-  repeated sint32 idata = 4;  // SHORT, INT, ENUM2, USHORT
-  repeated uint32 uidata = 5; // ENUM4, UINT
-  repeated sint64 ldata = 6;  // LONG
-  repeated uint64 uldata = 7; // ULONG
-  repeated float fdata = 8;   // FLOAT
-  repeated double ddata = 9;  // DOUBLE
-  repeated string sdata = 10; // STRING
-  repeated Data vlen = 11;    // VLEN
+  repeated bytes byte_data = 3;   // ENUM1, BYTE, OPAQUE, CHAR
+  repeated sint32 int_data = 4;  // SHORT, INT, ENUM2, USHORT
+  repeated uint32 uint_data = 5; // ENUM4, UINT
+  repeated sint64 long_data = 6;  // LONG
+  repeated uint64 ulong_data = 7; // ULONG
+  repeated float float_data = 8;   // FLOAT
+  repeated double double_data = 9;  // DOUBLE
+  repeated string string_data = 10; // STRING
+  repeated Data vlen_data = 11;    // VLEN
 
   // STRUCTURE, SEQUENCE
   StructureMembersProto members = 12;
