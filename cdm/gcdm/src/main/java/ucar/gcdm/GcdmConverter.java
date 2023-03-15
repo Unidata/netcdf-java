@@ -183,15 +183,13 @@ public class GcdmConverter {
   }
 
   public static GcdmNetcdfProto.Data encodeData(DataType dataType, Array data) {
-    GcdmNetcdfProto.Data result;
     if (data.isVlen()) {
-      result = encodeVlenData(dataType, (ArrayObject) data);
+      return encodeVlenData(dataType, (ArrayObject) data);
     } else if (data instanceof ArrayStructure) {
-      result = encodeArrayStructureData(dataType, (ArrayStructure) data);
+      return encodeArrayStructureData(dataType, (ArrayStructure) data);
     } else {
-      result = encodePrimitiveData(dataType, data);
+      return encodePrimitiveData(dataType, data);
     }
-    return result;
   }
 
   private static void encodeShape(GcdmNetcdfProto.Data.Builder data, int[] shape) {
