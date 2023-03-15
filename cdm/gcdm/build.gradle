@@ -32,7 +32,6 @@ dependencies {
   runtimeOnly project(':bufr')
   runtimeOnly project(':grib')
   runtimeOnly "io.grpc:grpc-netty-shaded:${depVersion.grpc}"
-  runtimeOnly 'org.slf4j:slf4j-api'
 
   testImplementation project(':netcdf4')
 
@@ -43,8 +42,10 @@ dependencies {
   testImplementation 'commons-io:commons-io'
   testImplementation 'org.mockito:mockito-core'
   testImplementation "io.grpc:grpc-testing:${depVersion.grpc}"
-  testImplementation 'org.slf4j:slf4j-api'
 
+  // logging
+  implementation 'org.slf4j:slf4j-api'
+  runtimeOnly 'ch.qos.logback:logback-classic'
   testRuntimeOnly 'ch.qos.logback:logback-classic'
 }
 
