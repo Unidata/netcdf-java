@@ -10,4 +10,8 @@
     <root level="WARN">
         <appender-ref ref="STDOUT" />
     </root>
+
+  <logger name="ucar.gcdm.client" level="INFO" additivity="false">
+    <appender-ref ref="STDOUT" />
+  </logger>
 </configuration>
