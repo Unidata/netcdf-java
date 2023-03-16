@@ -30,7 +30,7 @@ public class TestCoverageCoordAxis1D {
     }
 
     assertThat(subsetTimeAxis.get().startValue).isEqualTo(timeDelta);
-    assertThat( subsetTimeAxis.get().endValue).isEqualTo(timeDelta);
+    assertThat(subsetTimeAxis.get().endValue).isEqualTo(timeDelta);
     assertThat(subsetTimeAxis.get().isSubset()).isTrue();
   }
 
