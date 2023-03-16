@@ -1,31 +1,19 @@
 package ucar.nc2.ft2.coverage;
 
-import org.joda.time.DateTimeUtils;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import ucar.ma2.DataType;
 import ucar.nc2.constants.AxisType;
+import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time.CalendarPeriod;
 import ucar.nc2.util.Optional;
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import static com.google.common.truth.Truth.assertThat;
 
 
 public class TestCoverageCoordAxis1D {
 
-  private static final Instant testInstant = Instant.parse("2023-02-17T00:00:00Z");
+  private static final CalendarDate testDate = CalendarDate.present();
+
   private final int timeDelta = 2;
-
-  @BeforeClass
-  public static void SetupTests() {
-    DateTimeUtils.setCurrentMillisFixed(testInstant.toEpochMilli());
-  }
-
-  @AfterClass
-  public static void TeardownTests() {
-    DateTimeUtils.setCurrentMillisSystem();
-  }
 
   @Test
   public void TestSubsetPresentTime1D() {
@@ -47,8 +35,8 @@ public class TestCoverageCoordAxis1D {
   }
 
   private CoverageCoordAxis1D create1DTimeAxis() {
-    Instant refTime = testInstant.minus(timeDelta, ChronoUnit.DAYS);
-    String timeUnit = "Day since " + refTime.toString();
+    CalendarDate refTime = testDate.subtract(CalendarPeriod.of(timeDelta, CalendarPeriod.Field.Day));
+    String timeUnit = "Day since " + refTime;
 
     int valuesLen = 10;
     double[] values = new double[valuesLen];
