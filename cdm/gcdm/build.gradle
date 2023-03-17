@@ -1,7 +1,7 @@
 plugins {
   // Provide convenience executables for testing
   id 'application'
-  id 'com.github.psxpaul.execfork' version '0.1.13'
+  id 'com.github.psxpaul.execfork' version '0.2.2'
 }
 
 import com.github.psxpaul.task.JavaExecFork
@@ -77,8 +77,8 @@ task startDaemon(type: JavaExecFork) {
   main = 'ucar.gcdm.server.GcdmServer'
   jvmArgs = [ '-Xmx512m', '-Djava.awt.headless=true',
               '-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005' ]
-  standardOutput = "$buildDir/gcdm_logs/gcdm.log"
-  errorOutput = "$buildDir/gcdm_logs/gcdm-error.log"
+  standardOutput = new File("$buildDir/gcdm_logs/gcdm.log")
+  errorOutput = new File("$buildDir/gcdm_logs/gcdm-error.log")
   stopAfter = test
   waitForPort = 16111
   waitForOutput = 'Server started, listening on 16111'
