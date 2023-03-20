@@ -24,11 +24,6 @@ public class TestCoverageCoordAxis1D {
     Optional<CoverageCoordAxis> subsetTimeAxis = timeAxis.subset(presentSubsetParams);
 
     assertThat(subsetTimeAxis.isPresent()).isTrue();
-
-    if (!subsetTimeAxis.isPresent()) {
-      return;
-    }
-
     assertThat(subsetTimeAxis.get().startValue).isEqualTo(timeDelta);
     assertThat(subsetTimeAxis.get().endValue).isEqualTo(timeDelta);
     assertThat(subsetTimeAxis.get().isSubset()).isTrue();
@@ -38,11 +33,8 @@ public class TestCoverageCoordAxis1D {
     CalendarDate refTime = testDate.subtract(CalendarPeriod.of(timeDelta, CalendarPeriod.Field.Day));
     String timeUnit = "Day since " + refTime;
 
-    int valuesLen = 10;
-    double[] values = new double[valuesLen];
-    for (int i = 0; i < valuesLen; i++) {
-      values[i] = i + 1;
-    }
+    double[] values = new double[] {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+
     final CoverageCoordAxisBuilder coordAxisBuilder = new CoverageCoordAxisBuilder("time", timeUnit,
         "GRIB forecast or observation time", DataType.DOUBLE, AxisType.Time, null,
         CoverageCoordAxis.DependenceType.independent, null, CoverageCoordAxis.Spacing.regularPoint, values.length,
