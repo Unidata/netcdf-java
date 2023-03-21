@@ -278,6 +278,7 @@ public class TestGcdmNetcdfFileProblem {
   }
 
   @Test
+  @Category(NeedsCdmUnitTest.class)
   public void testSequenceData() throws IOException {
     String filename = TestDir.cdmUnitTestDir + "formats/bufr/userExamples/test1.bufr";
     String gcdmUrl = gcdmPrefix + filename;
