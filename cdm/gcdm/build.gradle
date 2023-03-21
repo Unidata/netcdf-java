@@ -75,8 +75,9 @@ sourceSets {
 task startDaemon(type: JavaExecFork) {
   classpath = sourceSets.main.runtimeClasspath
   main = 'ucar.gcdm.server.GcdmServer'
-  jvmArgs = [ '-Xmx512m', '-Djava.awt.headless=true',
-              '-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005' ]
+  // To attach the debugger to the gcdm server add to the jvmArgs
+  // '-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005'
+  jvmArgs = [ '-Xmx512m', '-Djava.awt.headless=true' ]
   standardOutput = new File("$buildDir/gcdm_logs/gcdm.log")
   errorOutput = new File("$buildDir/gcdm_logs/gcdm-error.log")
   stopAfter = test
