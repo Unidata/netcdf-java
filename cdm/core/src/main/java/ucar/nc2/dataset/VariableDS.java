@@ -272,8 +272,16 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
       if (this.isVariableLength) {
         return data;
       }
-      return scaleMissingUnsignedProxy.convert(data, enhancements.contains(Enhance.ConvertUnsigned),
-          enhancements.contains(Enhance.ApplyScaleOffset), enhancements.contains(Enhance.ConvertMissing));
+      if (enhancements.contains(Enhance.ConvertUnsigned)) {
+        data = unsignedConversion.convertUnsigned(data);
+      }
+      if (enhancements.contains(Enhance.ApplyScaleOffset) && scaleOffset != null) {
+        data = scaleOffset.removeScaleOffset(data);
+      }
+      if (enhancements.contains(Enhance.ConvertMissing)) {
+        data = convertMissing.convertMissing(data);
+      }
+      return data;
     }
   }
 
@@ -724,7 +732,7 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
   @Nullable
   @Override
   public DataType getScaledOffsetType() {
-    return scaleOffset.getScaledOffsetType();
+    return scaleOffset != null ? scaleOffset.getScaledOffsetType() : dataType;
   }
 
   @Override
@@ -822,7 +830,7 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
       }
       if (this.enhanceMode.contains(Enhance.ApplyScaleOffset) && (dataType.isNumeric() || dataType == DataType.CHAR)) {
         this.scaleOffset = ScaleOffset.createFromVariable(this);
-        this.dataType = scaleOffset.getScaledOffsetType();
+        this.dataType = scaleOffset != null ? scaleOffset.getScaledOffsetType() : this.dataType;
       }
       if (this.enhanceMode.contains(Enhance.ConvertMissing)) {
         this.convertMissing = ConvertMissing.createFromVariable(this);

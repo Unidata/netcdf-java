@@ -47,6 +47,7 @@ public class UnsignedConversion {
   }
 
   public Number convertUnsigned(Number value) {
+    Number newVal = DataType.widenNumberIfNegative(value);
     return DataType.widenNumberIfNegative(value);
   }
 

@@ -100,7 +100,7 @@ public class TestFilters {
     // test empty props
     Map<String, Object> props2 = new HashMap<>();
     props2.put("id", "fixedscaleoffset");
-    props2.put("dtype", "<f4");
+    props2.put("dtype", "<i4");
     Filter filter2 = new ScaleOffset(props2);
     byte[] out2 = filter2.encode(decoded_data);
     assertThat(out2).isEqualTo(decoded_data);
