@@ -10,8 +10,6 @@ import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.iosp.netcdf3.N3iosp;
 import ucar.nc2.util.Misc;
 
-import java.util.Arrays;
-
 public class ConvertMissing {
 
   private boolean hasValidMin, hasValidMax;
@@ -243,12 +241,32 @@ public class ConvertMissing {
     }
   }
 
+  @Deprecated
+  public void setFillValueIsMissing(boolean b) {
+    this.fillValueIsMissing = b;
+  }
+
+  @Deprecated
+  public void setInvalidDataIsMissing(boolean b) {
+    this.invalidDataIsMissing = b;
+  }
+
+  @Deprecated
+  public void setMissingDataIsMissing(boolean b) {
+    this.missingDataIsMissing = b;
+  }
+
   public Number convertMissing(Number value) {
     return isMissing(value.doubleValue()) ? Double.NaN : value;
   }
 
   public Array convertMissing(Array in) {
-    Array out = Array.factory(in.getDataType(), in.getShape());
+    DataType type = in.getDataType();
+    if (!type.isNumeric()) {
+      return in;
+    }
+
+    Array out = Array.factory(type, in.getShape());
     IndexIterator iterIn = in.getIndexIterator();
     IndexIterator iterOut = out.getIndexIterator();
 
