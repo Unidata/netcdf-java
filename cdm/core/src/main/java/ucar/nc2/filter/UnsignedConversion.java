@@ -3,7 +3,6 @@ package ucar.nc2.filter;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.ma2.IndexIterator;
-import ucar.nc2.Variable;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.dataset.VariableDS;
 
@@ -47,7 +46,6 @@ public class UnsignedConversion {
   }
 
   public Number convertUnsigned(Number value) {
-    Number newVal = DataType.widenNumberIfNegative(value);
     return DataType.widenNumberIfNegative(value);
   }
 

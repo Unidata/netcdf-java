@@ -77,7 +77,7 @@ public class ScaleOffset extends Filter {
     Attribute scaleAtt = var.findAttribute(CDM.SCALE_FACTOR);
     if (scaleAtt != null && !scaleAtt.isString()) {
       scaleType = FilterHelpers.getAttributeDataType(scaleAtt, signedness);
-      scale = var.convertUnsigned(scaleAtt.getNumericValue()).doubleValue();
+      scale = 1 / var.convertUnsigned(scaleAtt.getNumericValue()).doubleValue();
     }
 
     Attribute offsetAtt = var.findAttribute(CDM.ADD_OFFSET);
@@ -92,8 +92,8 @@ public class ScaleOffset extends Filter {
       Map<String, Object> scaleOffsetProps = new HashMap<>();
       scaleOffsetProps.put(ScaleOffset.Keys.OFFSET_KEY, offset);
       scaleOffsetProps.put(ScaleOffset.Keys.SCALE_KEY, scale);
-      scaleOffsetProps.put(ScaleOffset.Keys.DTYPE_KEY, origDataType);
-      scaleOffsetProps.put(ScaleOffset.Keys.ASTYPE_KEY, scaledOffsetType);
+      scaleOffsetProps.put(ScaleOffset.Keys.DTYPE_KEY, scaledOffsetType);
+      scaleOffsetProps.put(ScaleOffset.Keys.ASTYPE_KEY, origDataType);
       return new ScaleOffset(scaleOffsetProps);
     }
     return null;
@@ -154,26 +154,32 @@ public class ScaleOffset extends Filter {
   }
 
   public DataType getScaledOffsetType() {
-    return this.astype;
+    return this.dtype;
   }
 
   @Override
   public byte[] encode(byte[] dataIn) {
-    if (scale == DEFAULT_SCALE && offset == DEFAULT_OFFSET) { return dataIn; }
+    if (scale == DEFAULT_SCALE && offset == DEFAULT_OFFSET) {
+      return dataIn;
+    }
     Array out = applyScaleOffset(FilterHelpers.bytesToArray(dataIn, dtype, dtypeOrder));
     return FilterHelpers.arrayToBytes(out, astype, astypeOrder);
   }
 
   @Override
   public byte[] decode(byte[] dataIn) {
-    if (scale == DEFAULT_SCALE && offset == DEFAULT_OFFSET) { return dataIn; }
+    if (scale == DEFAULT_SCALE && offset == DEFAULT_OFFSET) {
+      return dataIn;
+    }
     Array out = removeScaleOffset(FilterHelpers.bytesToArray(dataIn, astype, astypeOrder));
     return FilterHelpers.arrayToBytes(out, dtype, dtypeOrder);
   }
 
   // not used anywhere yet
   public Array applyScaleOffset(Array in) {
-    if (scale == DEFAULT_SCALE && offset == DEFAULT_OFFSET) { return in; }
+    if (scale == DEFAULT_SCALE && offset == DEFAULT_OFFSET) {
+      return in;
+    }
     // use wider datatype if unsigned
     DataType outType = astype;
     if (astype.getSignedness() == Signedness.UNSIGNED) {
@@ -197,7 +203,9 @@ public class ScaleOffset extends Filter {
   }
 
   public Array removeScaleOffset(Array in) {
-    if (scale == DEFAULT_SCALE && offset == DEFAULT_OFFSET) { return in; }
+    if (scale == DEFAULT_SCALE && offset == DEFAULT_OFFSET) {
+      return in;
+    }
     // use wider datatype if unsigned
     DataType outType = dtype;
     if (dtype.getSignedness() == Signedness.UNSIGNED) {
