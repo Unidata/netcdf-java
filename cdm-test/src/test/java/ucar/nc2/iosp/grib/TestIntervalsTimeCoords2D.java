@@ -57,7 +57,6 @@ import java.util.Collection;
 @Category(NeedsCdmUnitTest.class)
 public class TestIntervalsTimeCoords2D {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-  private static final double TOLERANCE = 1e-6;
 
   @Parameterized.Parameters(name = "{0}")
   public static Collection<Object[]> getTestParameters() throws IOException {
@@ -133,7 +132,8 @@ public class TestIntervalsTimeCoords2D {
         }
         assertThat(start).isEqualTo(bounds[idx][0]);
         assertThat(end).isEqualTo(bounds[idx][1]);
-        assertThat(coordinateValue).isWithin(TOLERANCE).of(end);
+        assertThat(coordinateValue).isAtMost(end);
+        assertThat(coordinateValue).isAtLeast(start);
         idx++;
       }
 

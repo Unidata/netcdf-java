@@ -48,12 +48,12 @@ class CoardsConventions extends CoordSystemBuilder {
    * time in such cases.
    */
 
-  CoardsConventions(NetcdfDataset.Builder datasetBuilder) {
+  CoardsConventions(NetcdfDataset.Builder<?> datasetBuilder) {
     super(datasetBuilder);
     this.conventionName = CONVENTION_NAME;
   }
 
-  boolean checkTimeVarForCalendar(VariableDS.Builder vb) {
+  boolean checkTimeVarForCalendar(VariableDS.Builder<?> vb) {
     boolean hasChanged = false;
     String unit = vb.getUnits();
     if (unit != null) {
@@ -72,9 +72,9 @@ class CoardsConventions extends CoordSystemBuilder {
 
   @Override
   protected void augmentDataset(CancelTask cancelTask) throws IOException {
-    for (Variable.Builder vb : rootGroup.vbuilders) {
+    for (Variable.Builder<?> vb : rootGroup.vbuilders) {
       if (vb instanceof VariableDS.Builder) {
-        checkTimeVarForCalendar((VariableDS.Builder) vb);
+        checkTimeVarForCalendar((VariableDS.Builder<?>) vb);
       }
     }
   }

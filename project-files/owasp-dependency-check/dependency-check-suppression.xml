@@ -6,7 +6,7 @@
        reason: Fixed in junit-4.13.1 for applications running JDK 1.7 and later. We require Java 1.8
                at a minimum, so we're good with regards to this CVE.
                See https://nvd.nist.gov/vuln/detail/CVE-2020-15250.
-      ]]></notes>
+    ]]></notes>
     <packageUrl regex="true">^pkg:maven/junit/junit@.*$</packageUrl>
     <vulnerabilityName>CVE-2020-15250</vulnerabilityName>
   </suppress>
@@ -14,8 +14,48 @@
     <notes><![CDATA[
        file name: jdom2-2.0.6.jar
        reason: mitigated by https://github.com/Unidata/netcdf-java/pull/801
-     ]]></notes>
+    ]]></notes>
     <packageUrl regex="true">^pkg:maven/org\.jdom/jdom2@.*$</packageUrl>
     <cve>CVE-2021-33813</cve>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+       file name: eccodes-2.12.0-Source.tar.gz: eccodes-2.12.0-Source.tar: jquery.js
+       reason: not using jquery in netcdf-java
+    ]]></notes>
+    <sha1>d539c36ab347d5df35659b174d28b94e6d2536ed</sha1>
+    <cve>CVE-2019-11358</cve>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+       file name: eccodes-2.12.0-Source.tar.gz: eccodes-2.12.0-Source.tar: jquery.js
+       reason: not using jquery in netcdf-java
+    ]]></notes>
+   <sha1>d539c36ab347d5df35659b174d28b94e6d2536ed</sha1>
+   <cve>CVE-2012-6708</cve>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+       file name: eccodes-2.12.0-Source.tar.gz: eccodes-2.12.0-Source.tar: jquery.js
+       reason: not using jquery in netcdf-java
+    ]]></notes>
+   <sha1>d539c36ab347d5df35659b174d28b94e6d2536ed</sha1>
+   <cve>CVE-2015-9251</cve>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+       file name: eccodes-2.12.0-Source.tar.gz: eccodes-2.12.0-Source.tar: jquery.js
+       reason: not using jquery in netcdf-java
+    ]]></notes>
+    <sha1>d539c36ab347d5df35659b174d28b94e6d2536ed</sha1>
+    <cve>CVE-2020-11022</cve>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+       file name: eccodes-2.12.0-Source.tar.gz: eccodes-2.12.0-Source.tar: jquery.js
+       reason: not using jquery in netcdf-java
+    ]]></notes>
+   <sha1>d539c36ab347d5df35659b174d28b94e6d2536ed</sha1>
+   <cve>CVE-2020-11023</cve>
   </suppress>
 </suppressions>

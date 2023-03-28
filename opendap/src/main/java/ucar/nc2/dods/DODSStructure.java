@@ -71,6 +71,8 @@ public class DODSStructure extends ucar.nc2.Structure implements DODSNode {
   }
 
   // for section and slice
+  /** @deprecated Use {@link #toBuilder()} */
+  @Deprecated
   @Override
   protected DODSStructure copy() {
     return new DODSStructure(this); // dont need to reparent

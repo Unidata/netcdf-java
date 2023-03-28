@@ -283,7 +283,7 @@ public class NcmlReader {
    * @throws IOException on read error
    */
   public static NetcdfDataset.Builder mergeNcml(NetcdfFile ref, @Nullable Element ncmlElem) throws IOException {
-    NetcdfDataset.Builder targetDS = new NetcdfDataset(ref.toBuilder()).toBuilder(); // no enhance
+    NetcdfDataset.Builder targetDS = NetcdfDataset.builder(ref); // no enhance
 
     if (ncmlElem != null) {
       NcmlReader reader = new NcmlReader();
@@ -665,13 +665,20 @@ public class NcmlReader {
     boolean newName = (nameInFile != null) && !nameInFile.equals(name);
     if (nameInFile == null) {
       nameInFile = name;
-    } else if (null == findAttribute(ref, nameInFile)) { // has to exists
+    } else if (findAttribute(ref, nameInFile) == null && findAttribute(dest, nameInFile) == null) { // has to exist
       errlog.format("NcML attribute orgName '%s' doesnt exist. att=%s in=%s%n", nameInFile, name, refName);
       return;
     }
 
     // see if its new
-    ucar.nc2.Attribute oldatt = findAttribute(ref, nameInFile);
+    ucar.nc2.Attribute oldatt = null;
+    if (ref != null) {
+      oldatt = findAttribute(ref, nameInFile);
+    } else {
+      // no reference container but may still need to rename the attribute in the destination container
+      oldatt = findAttribute(dest, nameInFile);
+    }
+
     if (oldatt == null) { // new
       if (debugConstruct) {
         System.out.println(" add new att = " + name);
@@ -1106,6 +1113,12 @@ public class NcmlReader {
     java.util.List<Element> attList = varElem.getChildren("attribute", ncNS);
     for (Element attElem : attList) {
       readAtt(addedFromAgg.getAttributeContainer(), null, attElem);
+    }
+
+    // process remove command
+    java.util.List<Element> removeList = varElem.getChildren("remove", ncNS);
+    for (Element remElem : removeList) {
+      cmdRemove(addedFromAgg, remElem.getAttributeValue("type"), remElem.getAttributeValue("name"));
     }
 
     String typedefS = dtype.isEnum() ? varElem.getAttributeValue("typedef") : null;

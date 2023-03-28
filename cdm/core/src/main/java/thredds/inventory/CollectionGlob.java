@@ -58,7 +58,7 @@ public class CollectionGlob extends CollectionAbstract {
 
     // lets suppose the first "*" indicates the top dir
     int pos = glob.indexOf("*");
-    this.root = glob.substring(0, pos - 1);
+    this.root = glob.substring(0, pos);
     String match = glob.substring(pos);
 
     // count how far to recurse. LAME!!! why doesnt java provide the right thing !!!!

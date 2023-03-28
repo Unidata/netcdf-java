@@ -1626,6 +1626,10 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     return addLocalFieldsToBuilder(builder());
   }
 
+  /**
+   * @deprecated Use NetcdfDataset.builder()
+   */
+  @Deprecated
   public NetcdfDataset(NetcdfFile.Builder<?> builder) {
     super(builder);
     // LOOK this.orgFile = builder.orgFile;

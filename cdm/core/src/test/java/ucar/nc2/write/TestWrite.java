@@ -4,6 +4,8 @@
  */
 package ucar.nc2.write;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import org.junit.*;
 import org.junit.rules.TemporaryFolder;
 import org.junit.runners.MethodSorters;
@@ -19,6 +21,7 @@ import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFiles;
 import ucar.nc2.Variable;
+import ucar.nc2.constants.CDM;
 
 /** Test NetcdfFormatWriter */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
@@ -72,6 +75,7 @@ public class TestWrite {
     writerb.addAttribute(new Attribute("versionI", 1));
     writerb.addAttribute(new Attribute("versionS", (short) 2));
     writerb.addAttribute(new Attribute("versionB", (byte) 3));
+    writerb.addAttribute(new Attribute(CDM.NCPROPERTIES, "test internal attribute is removed when writing"));
 
     // test some errors
     try {
@@ -205,6 +209,13 @@ public class TestWrite {
         e.printStackTrace();
         assert (false);
       }
+    }
+  }
+
+  @Test
+  public void shouldRemoveInternalAttribute() throws IOException {
+    try (NetcdfFile netcdfFile = NetcdfFiles.open(writerLocation)) {
+      assertThat(netcdfFile.findGlobalAttributeIgnoreCase(CDM.NCPROPERTIES)).isNull();
     }
   }
 

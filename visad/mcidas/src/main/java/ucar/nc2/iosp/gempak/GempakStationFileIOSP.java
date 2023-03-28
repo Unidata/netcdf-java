@@ -133,6 +133,39 @@ public abstract class GempakStationFileIOSP extends AbstractIOServiceProvider {
   }
 
   /**
+   * Close any resources like file handles
+   *
+   * @throws IOException problem reading file
+   */
+  @Override
+  public void close() throws IOException {
+    super.close();
+    gemreader.close();
+  }
+
+  /**
+   * Release any resources like file handles
+   *
+   * @throws IOException problem reading file
+   */
+  @Override
+  public void release() throws IOException {
+    super.release();
+    gemreader.close();
+  }
+
+  /**
+   * Reacquire any resources like file handles
+   *
+   * @throws IOException problem reading file
+   */
+  @Override
+  public void reacquire() throws IOException {
+    super.reacquire();
+    gemreader.init(raf, false);
+  }
+
+  /**
    * Initialize the parameter tables.
    */
   private void initTables() throws IOException {

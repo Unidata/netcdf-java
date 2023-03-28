@@ -6,12 +6,15 @@
 package ucar.nc2.iosp;
 
 import javax.annotation.Nullable;
+import thredds.inventory.MFile;
+import thredds.inventory.MFiles;
 import ucar.ma2.Array;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Section;
 import ucar.ma2.StructureDataIterator;
 import ucar.nc2.Group;
 import ucar.nc2.NetcdfFile;
+import ucar.nc2.NetcdfFiles;
 import ucar.nc2.ParsedSectionSpec;
 import ucar.nc2.Structure;
 import ucar.nc2.util.CancelTask;
@@ -97,8 +100,8 @@ public abstract class AbstractIOServiceProvider implements IOServiceProvider {
 
   // reacquire any resources like file handles
   public void reacquire() throws IOException {
-    raf = RandomAccessFile.acquire(location);
-    this.raf.order(rafOrder);
+    raf = NetcdfFiles.getRaf(location, -1);
+    raf.order(rafOrder);
   }
 
   // default implementation, reads into an Array, then writes to WritableByteChannel
@@ -161,8 +164,8 @@ public abstract class AbstractIOServiceProvider implements IOServiceProvider {
    */
   public long getLastModified() {
     if (location != null) {
-      File file = new File(location);
-      return file.lastModified();
+      MFile file = MFiles.create(location);
+      return file != null ? file.getLastModified() : 0;
     } else {
       return 0;
     }

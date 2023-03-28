@@ -25,15 +25,15 @@ public enum ServiceType {
   H5Service, //
   HTTPServer("HTTP file download.", AccessType.DataAccess, "httpserver"), //
   JupyterNotebook("Generate a Jupyter Notebook that uses Siphon to access this dataset.", AccessType.DataViewer, null), //
-  ISO("Provide ISO 19115 metdata representation of a dataset's structure and metadata.", AccessType.Metadata, null), //
+  ISO("Provide ISO 19115 metadata representation of a dataset's structure and metadata.", AccessType.Metadata, null), //
   LAS, //
   NcJSON, //
   NCML("Provide NCML representation of a dataset.", AccessType.Metadata, "ncml"), //
   NetcdfSubset("A web service for subsetting CDM scientific datasets.", AccessType.DataAccess, null), //
-  OPENDAP("Access dataset through OPeNDAP using the DAP2 protcol.", AccessType.DataAccess, "dods"), //
+  OPENDAP("Access dataset through OPeNDAP using the DAP2 protocol.", AccessType.DataAccess, "dods"), //
   OPENDAPG, //
   Resolver, //
-  THREDDS("Access dataset through thredds calalog enty", AccessType.DataAccess, "thredds"), //
+  THREDDS("Access dataset through thredds catalog entry", AccessType.DataAccess, "thredds"), //
   UDDC("An evaluation of how well the metadata contained in the dataset"
       + " conforms to the NetCDF Attribute Convention for Data Discovery (NACDD)", AccessType.Metadata, null), //
   WebForm, // ??

@@ -114,6 +114,9 @@ public class CdmS3Client {
    */
   public static S3Client acquire(CdmS3Uri uri) throws IOException {
     CdmS3Uri key = makeKey(uri);
+    if (key == null) {
+      throw new IOException("Failed to make cache key from the given URI");
+    }
     S3Client s3Client;
     try {
       s3Client = useCache ? s3ClientCache.get(key) : createS3Client(uri);
@@ -137,7 +140,7 @@ public class CdmS3Client {
       int chop = bucketUriString.lastIndexOf("?" + cdmS3Uri.getKey().get());
       // remove everything after the ?key portion of the URI (retains authority and path (bucket) of URI)
       if (chop > 0) {
-        bucketUriString = bucketUriString.substring(0, chop - 1);
+        bucketUriString = bucketUriString.substring(0, chop);
       }
     }
 

@@ -4,6 +4,7 @@
 
 <!ELEMENT global (defaults, standardNames?)>
 
+<!--Deprecated: intervalTime (does not work, to be removed throughout in v6)-->
 <!ELEMENT defaults (allowFeatureInfo, defaultColorScaleRange, defaultPaletteName, defaultNumColorBands, logScaling, intervalTime)>
 
 <!ELEMENT standardNames (standardName*)>
@@ -29,5 +30,5 @@
 <!ELEMENT defaultPaletteName (#PCDATA)>
 <!ELEMENT defaultNumColorBands (#PCDATA)>
 <!ELEMENT logScaling (#PCDATA)>
-<!ELEMENT intervalTime (#PCDATA)> <!-- Allows to use time ranges instead of lists in the capabilities documents -->
+<!ELEMENT intervalTime (#PCDATA)>
 

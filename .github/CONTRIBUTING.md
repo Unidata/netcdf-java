@@ -237,11 +237,7 @@ Oops missed this one thing. This commit fixes that.
 ...
 ~~~
 
-Edit the two commit messages into a single message that describes the overall change:
-
-~~~
-
-Once you have and exit, you will have a change to change the commit message for the new, squashed, mega commit:
+Edit the two commit messages into a single message that describes the overall change. Once you have and exit, you will have a change to change the commit message for the new, squashed, mega commit:
 
 ~~~bash
 

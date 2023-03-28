@@ -32,6 +32,7 @@ public class TestZarrIosp {
   private static final String ZARR_FILENAME = "zarr_test_data.zarr/";
   private static final String ZARR_ZIP_NAME = "zarr_test_data.zip";
   private static final String INVALID_ZARR_FILENAME = "zarr_invalid_data.zarr";
+  private static final String FILL_VALUES_FILENAME = "fill_values.zarr";
 
   // test store paths
   private static final String OBJECT_STORE_ZARR_URI = ZarrTestsCommon.S3_PREFIX + ZarrTestsCommon.AWS_BUCKET_NAME + "?"
@@ -41,6 +42,9 @@ public class TestZarrIosp {
 
   // invalid zarr file
   private static final String INVALID_ZARR_DATA = ZarrTestsCommon.LOCAL_TEST_DATA_PATH + INVALID_ZARR_FILENAME;
+
+  // fill values file
+  private static final String FILL_VALUES_DATA = ZarrTestsCommon.LOCAL_TEST_DATA_PATH + FILL_VALUES_FILENAME;
 
   private static List<String> stores;
 
@@ -271,6 +275,25 @@ public class TestZarrIosp {
     short[] expected = new short[400];
     Arrays.fill(expected, (short) 0);
     assertThat(data.get1DJavaArray(DataType.SHORT)).isEqualTo(expected);
+  }
+
+  @Test
+  public void testFillValues() throws IOException {
+    NetcdfFile ncfile = NetcdfFiles.open(FILL_VALUES_DATA);
+
+    Array float_nan = ncfile.findVariable("float_nan").read();
+    assertThat(float_nan.getFloat(0)).isEqualTo(Float.NaN);
+    Array float_inf = ncfile.findVariable("float_inf").read();
+    assertThat(float_inf.getFloat(0)).isEqualTo(Float.POSITIVE_INFINITY);
+    Array float_ninf = ncfile.findVariable("float_ninf").read();
+    assertThat(float_ninf.getFloat(0)).isEqualTo(Float.NEGATIVE_INFINITY);
+
+    Array double_nan = ncfile.findVariable("float_nan").read();
+    assertThat(double_nan.getDouble(0)).isEqualTo(Double.NaN);
+    Array double_inf = ncfile.findVariable("float_inf").read();
+    assertThat(double_inf.getDouble(0)).isEqualTo(Double.POSITIVE_INFINITY);
+    Array double_ninf = ncfile.findVariable("float_ninf").read();
+    assertThat(double_ninf.getDouble(0)).isEqualTo(Double.NEGATIVE_INFINITY);
   }
 
 }

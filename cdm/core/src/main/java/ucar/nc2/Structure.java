@@ -135,6 +135,8 @@ public class Structure extends Variable {
   }
 
   // for section and slice
+  /** @deprecated Use {@link #toBuilder()} */
+  @Deprecated
   @Override
   protected Structure copy() {
     return new Structure(this);

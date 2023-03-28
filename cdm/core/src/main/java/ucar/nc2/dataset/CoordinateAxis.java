@@ -146,7 +146,8 @@ public class CoordinateAxis extends VariableDS {
   }
 
   // for section and slice
-
+  /** @deprecated Use {@link #toBuilder()} */
+  @Deprecated
   @Override
   protected CoordinateAxis copy() {
     return new CoordinateAxis(this.ncd, this);

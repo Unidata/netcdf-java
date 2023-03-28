@@ -101,16 +101,19 @@ public class ArrayChar extends Array implements Iterable<String> {
   /**
    * create new Array with given indexImpl and same backing store
    */
+  @Override
   protected Array createView(Index index) {
     return ArrayChar.factory(index, storage);
   }
 
   // used only by copyTo1DJavaArray
+  @Override
   public Object getStorage() {
     return storage;
   }
 
   // copy from javaArray to storage using the iterator: used by factory( Object);
+  @Override
   protected void copyFrom1DJavaArray(IndexIterator iter, Object javaArray) {
     char[] ja = (char[]) javaArray;
     for (char aJa : ja)
@@ -118,6 +121,7 @@ public class ArrayChar extends Array implements Iterable<String> {
   }
 
   // copy to javaArray from storage using the iterator: used by copyToNDJavaArray;
+  @Override
   protected void copyTo1DJavaArray(IndexIterator iter, Object javaArray) {
     char[] ja = (char[]) javaArray;
     for (int i = 0; i < ja.length; i++)
@@ -143,6 +147,7 @@ public class ArrayChar extends Array implements Iterable<String> {
   /**
    * Return the element class type
    */
+  @Override
   public Class getElementType() {
     return char.class;
   }
@@ -161,58 +166,72 @@ public class ArrayChar extends Array implements Iterable<String> {
     storage[i.currentElement()] = value;
   }
 
+  @Override
   public double getDouble(Index i) {
     return (double) storage[i.currentElement()];
   }
 
+  @Override
   public void setDouble(Index i, double value) {
     storage[i.currentElement()] = (char) value;
   }
 
+  @Override
   public float getFloat(Index i) {
     return (float) storage[i.currentElement()];
   }
 
+  @Override
   public void setFloat(Index i, float value) {
     storage[i.currentElement()] = (char) value;
   }
 
+  @Override
   public long getLong(Index i) {
     return (long) storage[i.currentElement()];
   }
 
+  @Override
   public void setLong(Index i, long value) {
     storage[i.currentElement()] = (char) value;
   }
 
+  @Override
   public int getInt(Index i) {
     return (int) storage[i.currentElement()];
   }
 
+  @Override
   public void setInt(Index i, int value) {
     storage[i.currentElement()] = (char) value;
   }
 
+  @Override
   public short getShort(Index i) {
     return (short) storage[i.currentElement()];
   }
 
+  @Override
   public void setShort(Index i, short value) {
     storage[i.currentElement()] = (char) value;
   }
 
+  @Override
   public byte getByte(Index i) {
     return (byte) storage[i.currentElement()];
   }
 
+  @Override
   public void setByte(Index i, byte value) {
     storage[i.currentElement()] = (char) value;
   }
 
+  @Override
   public char getChar(Index i) {
     return storage[i.currentElement()];
   }
 
+  @Override
   public void setChar(Index i, char value) {
     storage[i.currentElement()] = value;
   }
@@ -220,6 +239,7 @@ public class ArrayChar extends Array implements Iterable<String> {
   /**
    * not legal, throw ForbiddenConversionException
    */
+  @Override
   public boolean getBoolean(Index i) {
     throw new ForbiddenConversionException();
   }
@@ -227,14 +247,17 @@ public class ArrayChar extends Array implements Iterable<String> {
   /**
    * not legal, throw ForbiddenConversionException
    */
+  @Override
   public void setBoolean(Index i, boolean value) {
     throw new ForbiddenConversionException();
   }
 
+  @Override
   public Object getObject(Index i) {
     return storage[i.currentElement()];
   }
 
+  @Override
   public void setObject(Index i, Object value) {
     storage[i.currentElement()] = (Character) value;
   }
@@ -420,74 +443,92 @@ public class ArrayChar extends Array implements Iterable<String> {
 
 
   // package private : mostly for iterators
+  @Override
   public double getDouble(int index) {
     return (double) storage[index];
   }
 
+  @Override
   public void setDouble(int index, double value) {
     storage[index] = (char) value;
   }
 
+  @Override
   public float getFloat(int index) {
     return storage[index];
   }
 
+  @Override
   public void setFloat(int index, float value) {
     storage[index] = (char) value;
   }
 
+  @Override
   public long getLong(int index) {
     return (long) storage[index];
   }
 
+  @Override
   public void setLong(int index, long value) {
     storage[index] = (char) value;
   }
 
+  @Override
   public int getInt(int index) {
     return (int) storage[index];
   }
 
+  @Override
   public void setInt(int index, int value) {
     storage[index] = (char) value;
   }
 
+  @Override
   public short getShort(int index) {
     return (short) storage[index];
   }
 
+  @Override
   public void setShort(int index, short value) {
     storage[index] = (char) value;
   }
 
+  @Override
   public byte getByte(int index) {
     return (byte) storage[index];
   }
 
+  @Override
   public void setByte(int index, byte value) {
     storage[index] = (char) (value & 0xFF);
   }
 
+  @Override
   public char getChar(int index) {
     return storage[index];
   }
 
+  @Override
   public void setChar(int index, char value) {
     storage[index] = value;
   }
 
+  @Override
   public boolean getBoolean(int index) {
     throw new ForbiddenConversionException();
   }
 
+  @Override
   public void setBoolean(int index, boolean value) {
     throw new ForbiddenConversionException();
   }
 
+  @Override
   public Object getObject(int index) {
     return getChar(index);
   }
 
+  @Override
   public void setObject(int index, Object value) {
     storage[index] = (Character) value;
   }

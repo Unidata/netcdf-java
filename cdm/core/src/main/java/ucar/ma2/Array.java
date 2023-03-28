@@ -40,7 +40,7 @@ import java.nio.*;
  * <p/>
  * The type, shape and backing storage of an Array are immutable.
  * The data itself is read or written using an Index or an IndexIterator, which stores any needed state information
- * for efficient traversal. This makes use of Arrays thread-safe (as long as you dont share the Index or IndexIterator)
+ * for efficient traversal. This makes use of Arrays thread-safe (as long as you don't share the Index or IndexIterator)
  * except for the possibility of non-atomic read/write on long/doubles. If this is the case, you should probably
  * synchronize your calls. Presumably 64-bit CPUs will make those operations atomic also.
  *
@@ -165,7 +165,7 @@ public abstract class Array {
    */
   public static Array factoryConstant(DataType dtype, int[] shape, Object storage) {
     Index index = new IndexConstant(shape);
-    // cant go though the factory, must call the general constructor
+    // can't go through the factory, must call the general constructor
     switch (dtype) {
       case BOOLEAN:
         return new ArrayBoolean(index, (boolean[]) storage);
@@ -337,7 +337,7 @@ public abstract class Array {
       } else if (dtype == DataType.LONG) {
         if (dtype.isUnsigned()) {
           BigInteger biggy = new BigInteger(s);
-          dataI.setLongNext(biggy.longValue()); // > 63 bits will become "negetive".
+          dataI.setLongNext(biggy.longValue()); // > 63 bits will become "negative".
 
         } else {
           long val = Long.parseLong(s);
@@ -375,6 +375,61 @@ public abstract class Array {
     System.arraycopy(org.getShape(), 0, shape, 1, org.getRank());
     shape[0] = 1;
     return factory(org.getDataType(), shape, org.getStorage());
+  }
+
+  /**
+   * Combine list of Arrays by copying the underlying Arrays into a single primitive array
+   *
+   * @param dataType the DataType
+   * @param shape the shape of the combined array
+   * @param arrays non-empty list of arrays of the same dataType to combine
+   * @return a new Array containing data from the arrays
+   * @throws IllegalArgumentException if arrays is empty or if it contains ArrayStructures with different Members
+   */
+  public static Array factoryCopy(DataType dataType, int[] shape, List<Array> arrays) {
+    if (arrays.isEmpty()) {
+      throw new IllegalArgumentException("Expected a non-empty list of Arrays to combine");
+    }
+    if (arrays.size() == 1) {
+      return factory(dataType, shape, arrays.get(0).getStorage());
+    }
+    final long size = Index.computeSize(shape);
+    if (size > Integer.MAX_VALUE) {
+      throw new OutOfMemoryError("Could not combine Arrays");
+    }
+    if (dataType == DataType.STRUCTURE) {
+      return combineArrayStructures(size, arrays);
+    }
+    return combinePrimitiveArrays(dataType, shape, arrays);
+  }
+
+  private static Array combinePrimitiveArrays(DataType dataType, int[] shape, List<Array> arrays) {
+    final Array combinedArray = factory(dataType, shape);
+
+    int start = 0;
+    for (Array array : arrays) {
+      Array.arraycopy(array, 0, combinedArray, start, (int) array.getSize());
+      start += array.getSize();
+    }
+    return combinedArray;
+  }
+
+  private static Array combineArrayStructures(long size, List<Array> arrays) {
+    final StructureData[] combinedStructureData = new StructureData[(int) size];
+    final StructureMembers members = ((ArrayStructure) arrays.get(0)).getStructureMembers();
+
+    if (arrays.stream().anyMatch(array -> !((ArrayStructure) array).getStructureMembers().equals(members))) {
+      throw new IllegalArgumentException("Expected ArrayStructures to be combined to have the same members");
+    }
+
+    int count = 0;
+    for (Array array : arrays) {
+      final ArrayStructure arrayStructure = (ArrayStructure) array;
+      for (StructureData structureData : arrayStructure) {
+        combinedStructureData[count++] = structureData;
+      }
+    }
+    return new ArrayStructureW(members, new int[] {count}, combinedStructureData);
   }
 
   /////////////////////////////////////////////////////
@@ -693,7 +748,7 @@ public abstract class Array {
    * It avoids copying if possible.
    * Only for numeric types (byte, short, int, long, double, float)
    *
-   * @return equivilent data in a ByteBuffer
+   * @return equivalent data in a ByteBuffer
    */
   public ByteBuffer getDataAsByteBuffer() {
     throw new UnsupportedOperationException();
@@ -807,7 +862,7 @@ public abstract class Array {
   }
 
   /**
-   * Copy this array to a n-Dimensional Java primitive array of type getElementType()
+   * Copy this array to an n-Dimensional Java primitive array of type getElementType()
    * and rank getRank(). Makes a copy of the data.
    *
    * @return a Java ND array of type getElementType().
@@ -1258,7 +1313,7 @@ public abstract class Array {
    * Return the next int in the local iterator.
    * Uses the local iterator, which is not thread-safe. Use getIndexIterator if you need thread-safety.
    *
-   * @return next element as a int, same as IndexIterator.getIntNext().
+   * @return next element as an int, same as IndexIterator.getIntNext().
    */
   public int nextInt() {
     return ii.getIntNext();
