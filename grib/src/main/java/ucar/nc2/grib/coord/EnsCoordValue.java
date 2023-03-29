@@ -11,6 +11,12 @@ public class EnsCoordValue implements Comparable<EnsCoordValue> {
   private final int ensMember;
   private final int ensNumber;
 
+  public EnsCoordValue(int code, int ensMember) {
+    this.code = code;
+    this.ensMember = ensMember;
+    this.ensNumber = 0;
+  }
+
   public EnsCoordValue(int code, int ensMember, int ensNumber) {
     this.code = code;
     this.ensMember = ensMember;
