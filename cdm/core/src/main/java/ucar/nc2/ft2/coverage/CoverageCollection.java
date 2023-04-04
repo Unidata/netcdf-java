@@ -129,6 +129,10 @@ public class CoverageCollection implements Closeable, CoordSysContainer {
 
     // we want them to share the same object for efficiency, esp 2D
     for (CoverageCoordSys csys : coordSys) {
+      if (!csys.makeHorizCoordSys().equals(hcs)) {
+        throw new IllegalArgumentException(
+            "Cannot open as a coverage collection because there are multiple horizontal coordinate systems");
+      }
       csys.setHorizCoordSys(hcs);
       csys.setImmutable();
     }

@@ -4,6 +4,7 @@
  */
 package ucar.nc2.ft2.coverage;
 
+import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.*;
@@ -238,6 +239,20 @@ public abstract class CoverageCoordAxis implements Comparable<CoverageCoordAxis>
     Indent indent = new Indent(2);
     toString(f, indent);
     return f.toString();
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    CoverageCoordAxis that = (CoverageCoordAxis) o;
+    return getNcoords() == that.getNcoords() && isSubset() == that.isSubset()
+        && Objects.equals(getName(), that.getName()) && getDataType() == that.getDataType()
+        && getAxisType() == that.getAxisType() && getDependenceType() == that.getDependenceType();
   }
 
   public int[] getShape() {

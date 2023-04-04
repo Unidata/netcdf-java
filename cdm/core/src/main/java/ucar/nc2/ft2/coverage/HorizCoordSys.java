@@ -107,6 +107,21 @@ public class HorizCoordSys {
     }
   }
 
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    HorizCoordSys that = (HorizCoordSys) o;
+    return isProjection() == that.isProjection() && isLatLon1D == that.isLatLon1D && isLatLon2D() == that.isLatLon2D()
+        && Objects.equals(xAxis, that.xAxis) && Objects.equals(yAxis, that.yAxis)
+        && Objects.equals(latAxis, that.latAxis) && Objects.equals(lonAxis, that.lonAxis)
+        && Objects.equals(getLatAxis2D(), that.getLatAxis2D()) && Objects.equals(getLonAxis2D(), that.getLonAxis2D());
+  }
+
   public String getName() {
     if (isProjection)
       return xAxis.getName() + " " + yAxis.getName() + " " + transform.getName();
