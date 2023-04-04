@@ -140,6 +140,7 @@ public class DtCoverageAdapter implements CoverageReader, CoordAxisReader {
   private static CoverageCoordAxis makeCoordAxisFromDimension(Dimension dim) {
     CoverageCoordAxisBuilder builder = new CoverageCoordAxisBuilder();
     builder.name = dim.getFullName();
+    builder.units = "";
     builder.dataType = DataType.INT;
     builder.axisType = AxisType.Dimension;
     builder.dependenceType = CoverageCoordAxis.DependenceType.dimension;
