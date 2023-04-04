@@ -4,7 +4,9 @@
  */
 package ucar.nc2.ft2.coverage;
 
+import com.google.common.base.Preconditions;
 import java.util.Objects;
+import javax.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.*;
@@ -67,24 +69,27 @@ public abstract class CoverageCoordAxis implements Comparable<CoverageCoordAxis>
   protected final double startValue;
   protected final double endValue;
   protected final double resolution;
+  @Nullable
   protected final CoordAxisReader reader;
   protected final boolean isSubset;
 
+  @Nullable
   protected final TimeHelper timeHelper; // AxisType = Time, RunTime only
   protected final String units;
 
   // may be lazy eval
+  @Nullable
   protected double[] values; // null if isRegular, or use CoordAxisReader for lazy eval
 
   protected CoverageCoordAxis(CoverageCoordAxisBuilder builder) {
-    this.name = builder.name;
-    this.units = builder.units;
+    this.name = Preconditions.checkNotNull(builder.name);
+    this.units = Preconditions.checkNotNull(builder.units);
     this.description = builder.description;
-    this.dataType = builder.dataType;
-    this.axisType = builder.axisType;
-    this.attributes = builder.attributes;
-    this.dependenceType = builder.dependenceType;
-    this.spacing = builder.spacing;
+    this.dataType = Preconditions.checkNotNull(builder.dataType);
+    this.axisType = Preconditions.checkNotNull(builder.axisType);
+    this.attributes = Preconditions.checkNotNull(builder.attributes);
+    this.dependenceType = Preconditions.checkNotNull(builder.dependenceType);
+    this.spacing = Preconditions.checkNotNull(builder.spacing);
     this.values = builder.values;
     this.reader = builder.reader; // used only if values == null
     this.dependsOn = builder.dependsOn == null ? Collections.emptyList() : builder.dependsOn;
