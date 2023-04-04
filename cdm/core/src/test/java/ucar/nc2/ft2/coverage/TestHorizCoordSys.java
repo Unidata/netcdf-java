@@ -29,14 +29,17 @@ public class TestHorizCoordSys {
     Locale.setDefault(DEFAULT_LOCALE);
   }
 
+  private static final AttributeContainerMutable attributes = new AttributeContainerMutable("attributes");
+  private static final CoverageTransform transform = new CoverageTransform("transform", attributes, true);
+
   @Test
   public void shouldRemoveNansWhenComputingLatLon() {
     // Include x,y outside of geos transform range so that there will be nans in the lat,lon
     final double[] xValues = new double[] {-0.101346, 0, 0.038626};
     final double[] yValues = new double[] {0.128226, 0, 0.044254};
 
-    final CoverageCoordAxis1D xAxis = createCoverageCoordAxis1D(AxisType.GeoX, xValues);
-    final CoverageCoordAxis1D yAxis = createCoverageCoordAxis1D(AxisType.GeoY, yValues);
+    final CoverageCoordAxis1D xAxis = createCoverageCoordAxis1D(AxisType.GeoX, xValues, "x");
+    final CoverageCoordAxis1D yAxis = createCoverageCoordAxis1D(AxisType.GeoY, yValues, "y");
 
     final AttributeContainerMutable attributes = new AttributeContainerMutable("attributes");
     attributes.addAttribute(CF.GRID_MAPPING_NAME, CF.GEOSTATIONARY);
@@ -81,8 +84,58 @@ public class TestHorizCoordSys {
     }
   }
 
-  private CoverageCoordAxis1D createCoverageCoordAxis1D(AxisType type, double[] values) {
-    final CoverageCoordAxisBuilder coordAxisBuilder = new CoverageCoordAxisBuilder("name", "unit", "description",
+  @Test
+  public void shouldCompareWithXY() {
+    final CoverageCoordAxis1D x = createCoverageCoordAxis1D(AxisType.GeoX, new double[] {0, 1}, "x");
+    final CoverageCoordAxis1D y = createCoverageCoordAxis1D(AxisType.GeoY, new double[] {2, 3}, "y");
+
+    final HorizCoordSys horizCoordSys1 = HorizCoordSys.factory(x, y, null, null, transform);
+    final HorizCoordSys horizCoordSys2 = HorizCoordSys.factory(x, y, null, null, transform);
+
+    assertThat(horizCoordSys1.equals(horizCoordSys2)).isTrue();
+    assertThat(horizCoordSys2.equals(horizCoordSys1)).isTrue();
+  }
+
+  @Test
+  public void shouldCompareXYWithDifferentNames() {
+    final CoverageCoordAxis1D x = createCoverageCoordAxis1D(AxisType.GeoX, new double[] {0, 1}, "x");
+    final CoverageCoordAxis1D x2 = createCoverageCoordAxis1D(AxisType.GeoX, new double[] {0, 1}, "x2");
+    final CoverageCoordAxis1D y = createCoverageCoordAxis1D(AxisType.GeoY, new double[] {2, 3}, "y");
+
+    final HorizCoordSys horizCoordSys1 = HorizCoordSys.factory(x, y, null, null, transform);
+    final HorizCoordSys horizCoordSys2 = HorizCoordSys.factory(x2, y, null, null, transform);
+
+    assertThat(horizCoordSys1.equals(horizCoordSys2)).isFalse();
+    assertThat(horizCoordSys2.equals(horizCoordSys1)).isFalse();
+  }
+
+  @Test
+  public void shouldCompareXYWithDifferentValues() {
+    final CoverageCoordAxis1D x = createCoverageCoordAxis1D(AxisType.GeoX, new double[] {0, 1}, "x");
+    final CoverageCoordAxis1D y = createCoverageCoordAxis1D(AxisType.GeoY, new double[] {2, 3}, "y");
+    final CoverageCoordAxis1D yDifferentValues = createCoverageCoordAxis1D(AxisType.GeoY, new double[] {2, 3, 4}, "y");
+
+    final HorizCoordSys horizCoordSys1 = HorizCoordSys.factory(x, y, null, null, transform);
+    final HorizCoordSys horizCoordSys2 = HorizCoordSys.factory(x, yDifferentValues, null, null, transform);
+
+    assertThat(horizCoordSys1.equals(horizCoordSys2)).isFalse();
+    assertThat(horizCoordSys2.equals(horizCoordSys1)).isFalse();
+  }
+
+  @Test
+  public void shouldCompareWithLatLon() {
+    final CoverageCoordAxis1D lat = createCoverageCoordAxis1D(AxisType.Lat, new double[] {0, 1}, "lat");
+    final CoverageCoordAxis1D lon = createCoverageCoordAxis1D(AxisType.Lon, new double[] {2, 3}, "lon");
+
+    final HorizCoordSys horizCoordSys1 = HorizCoordSys.factory(null, null, lat, lon, null);
+    final HorizCoordSys horizCoordSys2 = HorizCoordSys.factory(null, null, lat, lon, null);
+
+    assertThat(horizCoordSys1.equals(horizCoordSys2)).isTrue();
+    assertThat(horizCoordSys2.equals(horizCoordSys1)).isTrue();
+  }
+
+  private CoverageCoordAxis1D createCoverageCoordAxis1D(AxisType type, double[] values, String name) {
+    final CoverageCoordAxisBuilder coordAxisBuilder = new CoverageCoordAxisBuilder(name, "unit", "description",
         DataType.DOUBLE, type, null, CoverageCoordAxis.DependenceType.independent, null, Spacing.irregularPoint,
         values.length, values[0], values[values.length - 1], values[1] - values[0], values, null);
     return new CoverageCoordAxis1D(coordAxisBuilder);
