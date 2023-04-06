@@ -837,7 +837,7 @@ public class HorizCoordSys {
     StringBuilder sb = new StringBuilder("POLYGON((");
 
     for (LatLonPointNoNormalize point : points) {
-      sb.append(String.format("%.3f %.3f, ", point.getLongitude(), point.getLatitude()));
+      sb.append(String.format(Locale.ROOT, "%.3f %.3f, ", point.getLongitude(), point.getLatitude()));
     }
 
     sb.delete(sb.length() - 2, sb.length()); // Nuke trailing comma and space.

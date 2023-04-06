@@ -1570,10 +1570,7 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
       // Step 1:
       // See if an independent enum type already exists with the same name
       Optional<EnumTypedef> candidate = parent.findEnumTypedef(mdt.enumTypeName, true);
-      if (candidate.isPresent()) {
-        // There is an independent type, so use it.
-        actualEnumTypedef = candidate.get();
-      }
+      actualEnumTypedef = candidate.orElse(null);
 
       // Step 2:
       // See if an independent enum type already exists that is structurally similar.
@@ -1582,10 +1579,7 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
         EnumTypedef template = new EnumTypedef(mdt.enumTypeName, mdt.map);
         // Search for a structurally similar enum type def
         candidate = parent.findSimilarEnumTypedef(template, true);
-        if (candidate.isPresent()) {
-          // There is an independent type, so use it.
-          actualEnumTypedef = candidate.get();
-        }
+        actualEnumTypedef = candidate.orElse(null);
       }
 
       // Step 3: Create an independent type
@@ -1600,11 +1594,6 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
         actualEnumTypedef = new EnumTypedef(newname, mdt.map);
         // Add to the current group(builder)
         parent.addEnumTypedef(actualEnumTypedef);
-      }
-
-      if (actualEnumTypedef == null) {
-        log.warn("Missing EnumTypedef: {}", mdt.enumTypeName);
-        throw new IllegalStateException("Missing EnumTypedef: " + mdt.enumTypeName);
       }
 
       // associate with the variable
