@@ -1649,7 +1649,7 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
 
     // chunked stuff
     boolean isChunked;
-    public DataBTree btree; // only if isChunked
+    DataBTree btree; // only if isChunked
 
     MessageDatatype mdt;
     MessageDataspace mds;
