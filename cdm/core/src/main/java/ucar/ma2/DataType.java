@@ -35,6 +35,7 @@ public enum DataType {
 
   OPAQUE("opaque", 1, ByteBuffer.class, false), // byte blobs
 
+  // TODO deprecate and remove in v6?
   OBJECT("object", 1, Object.class, false), // added for use with Array
 
   UBYTE("ubyte", 1, byte.class, true), // unsigned byte
