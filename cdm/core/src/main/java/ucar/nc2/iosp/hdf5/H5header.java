@@ -1802,20 +1802,6 @@ public class H5header extends NCheader implements H5headerIF {
 
       // associate with the variable
       v.setEnumTypedef(actualEnumTypedef);
-      /*
-       * Group ncGroup = v.getParentGroupOrRoot();
-       * EnumTypedef local = new EnumTypedef(mdt.enumTypeName, mdt.map);
-       * EnumTypedef enumTypedef =
-       * ncGroup.getEnumTypedefs().stream().filter((e) -> e.equalsMapOnly(local)).findFirst().orElse(local);
-       * if (enumTypedef != null) {
-       * // if found, make sure it is added to the group
-       * ncGroup.addEnumeration(enumTypedef);
-       * } else { // if shared object, wont have a name, shared version gets added later
-       * enumTypedef = new EnumTypedef(mdt.enumTypeName, mdt.map);
-       * ncGroup.addEnumeration(enumTypedef);
-       * }
-       * v.setEnumTypedef(enumTypedef);
-       */
     }
 
     return true;
