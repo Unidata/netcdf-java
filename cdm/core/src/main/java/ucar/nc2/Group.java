@@ -419,6 +419,7 @@ public class Group extends CDMNode implements AttributeContainer {
       Group gb = getParentGroup();
       if (gb != null)
         ed = gb.findSimilarEnumTypedef(template, searchup);
+	return ed;
     }
     return null;
   }
