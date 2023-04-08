@@ -292,6 +292,7 @@ public class DatasetUrl {
     if (path.matches("^.*[.](dmr|dap|dsr)([.](xml|html))?$"))
       return ServiceType.DAP4;
 
+    // This has to be last so that DAP4 request are not mis-identified as NCML.
     if (path.endsWith(".xml") || path.endsWith(".ncml"))
       return ServiceType.NCML;
     return null;

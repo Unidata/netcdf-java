@@ -410,13 +410,9 @@ public class Group extends CDMNode implements AttributeContainer {
    * @param searchup if true, then search this group and then parent groups.
    */
   public EnumTypedef findSimilarEnumTypedef(EnumTypedef template, boolean searchup) {
-    EnumTypedef ed = null;
     assert (template != null);
     // search this group builders's EnumTypedefs but with constraint on name
-    {
-      Optional<EnumTypedef> edopt = this.enumTypedefs.stream().filter(e -> (e.equalsMapOnly(template))).findFirst();
-      ed = (edopt.isPresent() ? edopt.get() : null);
-    }
+    EnumTypedef ed = enumTypedefs.stream().filter(e -> e.equalsMapOnly(template)).findFirst().orElse(null);
     if (ed != null)
       return ed;
     // Optionally search parents
@@ -424,8 +420,7 @@ public class Group extends CDMNode implements AttributeContainer {
       Group gb = getParentGroup();
       if (gb != null)
         ed = gb.findSimilarEnumTypedef(template, searchup);
-      if (ed != null)
-        return ed;
+      return ed;
     }
     return null;
   }
@@ -1193,7 +1188,6 @@ public class Group extends CDMNode implements AttributeContainer {
     public Optional<EnumTypedef> findEnumTypedef(String name, boolean searchup) {
       if (name == null)
         return Optional.empty();
-      // name = NetcdfFile.makeNameUnescaped(name);
       // search this group builders's EnumTypedefs
       Optional<EnumTypedef> ed = this.enumTypedefs.stream().filter(e -> e.shortName.equals(name)).findFirst();
       if (ed.isPresent())
