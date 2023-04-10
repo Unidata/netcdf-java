@@ -337,7 +337,7 @@ public class HorizCoordSys {
     double end = lonAxis.getEndValue();
 
     // use MAMath.MinMax as a container for two values, min and max
-    List<MAMath.MinMax> lonIntvs = subsetLonIntervals(wantMin, wantMax, start, end);
+    List<MAMath.MinMax> lonIntvs = subsetLonIntervals(wantMin, wantMax, start, end, llbb.containsAllLongitude());
 
     if (lonIntvs.isEmpty())
       return Optional.empty(
@@ -361,6 +361,8 @@ public class HorizCoordSys {
    * wantMin may be less than or greater than wantMax.
    * 
    * cases:
+   * 0. contains all longitude, return all longitude
+   * (could be normalized such that wantMin == wantMax so handle separately)
    * A. wantMin < wantMax
    * 1 wantMin, wantMax > end : empty
    * 2 wantMin < end : [wantMin, min(wantMax,end)]
@@ -369,7 +371,11 @@ public class HorizCoordSys {
    * 1 wantMin, wantMax > end : all [start, end]
    * 2 wantMin, wantMax < end : 2 pieces: [wantMin, end] + [start, max]
    */
-  private List<MAMath.MinMax> subsetLonIntervals(double wantMin, double wantMax, double start, double end) {
+  private List<MAMath.MinMax> subsetLonIntervals(double wantMin, double wantMax, double start, double end,
+      boolean containsAllLongitude) {
+    if (containsAllLongitude) {
+      return Lists.newArrayList(new MAMath.MinMax(start, end));
+    }
     if (wantMin <= wantMax) {
       if (wantMin > end) { // none A.1
         return ImmutableList.of();
