@@ -97,7 +97,7 @@ public class H5iospNew extends AbstractIOServiceProvider {
     return "Hierarchical Data Format, version 5";
   }
 
-  RandomAccessFile getRandomAccessFile() {
+  public RandomAccessFile getRandomAccessFile() {
     return raf;
   }
 

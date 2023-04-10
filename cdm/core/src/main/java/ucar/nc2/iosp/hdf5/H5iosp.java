@@ -90,7 +90,7 @@ public class H5iosp extends AbstractIOServiceProvider {
     }
   }
 
-  RandomAccessFile getRandomAccessFile() {
+  public RandomAccessFile getRandomAccessFile() {
     return raf;
   }
 

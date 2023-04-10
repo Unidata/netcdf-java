@@ -52,7 +52,7 @@ public class TestCoordSysCompare {
     try (NetcdfDataset org = NetcdfDataset.openDataset(fileLocation)) {
       try (NetcdfDataset withBuilder = NetcdfDatasets.openDataset(fileLocation)) {
         Formatter f = new Formatter();
-        CompareNetcdf2 compare = new CompareNetcdf2(f, false, false, true);
+        CompareNetcdf2 compare = new CompareNetcdf2(f, false, false, true, false);
         boolean ok = compare.compare(org, withBuilder, new CoordsObjFilter());
         System.out.printf("%s %s%n", ok ? "OK" : "NOT OK", f);
         System.out.printf("org = %s%n", org.getRootGroup().findAttributeString(_Coordinate._CoordSysBuilder, ""));
