@@ -330,14 +330,15 @@ public class HorizCoordSys {
   }
 
   // here's where to deal with crossing seam
-  private Optional<CoverageCoordAxis> subsetLon(LatLonRect llbb, int stride) {
-    double wantMin = LatLonPoints.lonNormalFrom(llbb.getLonMin(), lonAxis.getStartValue());
-    double wantMax = LatLonPoints.lonNormalFrom(llbb.getLonMax(), lonAxis.getStartValue());
+  private Optional<CoverageCoordAxis> subsetLon(LatLonRect latLonBoundingBox, int stride) {
+    double wantMin = LatLonPoints.lonNormalFrom(latLonBoundingBox.getLonMin(), lonAxis.getStartValue());
+    double wantMax = LatLonPoints.lonNormalFrom(latLonBoundingBox.getLonMax(), lonAxis.getStartValue());
     double start = lonAxis.getStartValue();
     double end = lonAxis.getEndValue();
 
     // use MAMath.MinMax as a container for two values, min and max
-    List<MAMath.MinMax> lonIntvs = subsetLonIntervals(wantMin, wantMax, start, end, llbb.containsAllLongitude());
+    List<MAMath.MinMax> lonIntvs =
+        subsetLonIntervals(wantMin, wantMax, start, end, latLonBoundingBox.containsAllLongitude());
 
     if (lonIntvs.isEmpty())
       return Optional.empty(
