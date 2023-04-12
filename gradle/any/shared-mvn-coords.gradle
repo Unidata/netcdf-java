@@ -21,6 +21,6 @@ ext {
   // best we can do is define the version here, which can then be applied in all of the places we need the full maven
   // coords.
   depVersion = [:]
-  depVersion.slf4j = '1.7.28'
+  depVersion.slf4j = '2.0.7'
   depVersion.protobuf = '3.21.7'
 }

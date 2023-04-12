@@ -9,8 +9,8 @@ javaPlatform {
 }
 
 dependencies {
-  def awsVersion = '2.17.290'
-  def jacksonVersion = '2.14.0-rc1'
+  def awsVersion = '2.20.44'
+  def jacksonVersion = '2.14.2'
   api enforcedPlatform("software.amazon.awssdk:bom:${awsVersion}")
   api enforcedPlatform("com.fasterxml.jackson:jackson-bom:${jacksonVersion}")
   constraints {
@@ -20,7 +20,7 @@ dependencies {
     // general dependencies
     api "com.google.protobuf:protobuf-java:${depVersion.protobuf}"
     api "com.google.protobuf:protoc:${depVersion.protobuf}"
-    api 'com.google.guava:guava:30.1-jre'
+    api 'com.google.guava:guava:31.1-jre'
     api 'com.google.re2j:re2j:1.3'
     api 'org.jdom:jdom2:2.0.6'
     api 'joda-time:joda-time:2.10.3' // replace by javax.time
@@ -51,7 +51,7 @@ dependencies {
     api "com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}"
 
     // toolsUI (everything else is happy with the aws BOM)
-    api "software.amazon.awssdk:s3:2.17.290:${awsVersion}"
+    api "software.amazon.awssdk:s3:2.20.44:${awsVersion}"
     api "software.amazon.awssdk:apache-client:${awsVersion}"
     runtime "software.amazon.awssdk:sts:${awsVersion}"
 
