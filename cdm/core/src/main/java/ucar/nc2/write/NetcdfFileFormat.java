@@ -148,12 +148,28 @@ public enum NetcdfFileFormat {
     return formatName;
   }
 
-  public boolean isNetdf3format() {
+  public boolean isNetcdf3Format() {
     return this == NETCDF3 || this == NETCDF3_64BIT_OFFSET || this == NETCDF3_64BIT_DATA;
   }
 
-  public boolean isNetdf4format() {
+  /**
+   * @deprecated use {@link #isNetcdf3Format()}
+   * @return
+   */
+  public boolean isNetdf3format() {
+    return isNetcdf3Format();
+  }
+
+  public boolean isNetcdf4Format() {
     return this == NETCDF4 || this == NETCDF4_CLASSIC;
+  }
+
+  /**
+   * @deprecated use {@link #isNetcdf4Format()}
+   * @return
+   */
+  public boolean isNetdf4format() {
+    return isNetcdf4Format();
   }
 
   public boolean isExtendedModel() {

@@ -277,7 +277,7 @@ public class NetcdfFormatWriter implements Closeable {
     this.extraHeaderBytes = builder.extraHeaderBytes;
     this.preallocateSize = builder.preallocateSize;
     this.chunker = builder.chunker;
-    this.useJna = builder.useJna || format.isNetdf4format();
+    this.useJna = builder.useJna || format.isNetcdf4Format();
 
     this.ncout = NetcdfFile.builder().setRootGroup(builder.rootGroup).setLocation(builder.location).build();
     this.rootGroup = this.ncout.getRootGroup();
