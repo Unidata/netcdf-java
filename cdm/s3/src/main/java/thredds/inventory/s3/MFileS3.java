@@ -104,6 +104,19 @@ public class MFileS3 implements MFile {
   }
 
   @Nullable
+  private HeadBucketResponse getHeadBucketResponse() {
+    HeadBucketResponse response = null;
+    S3Client client = getClient();
+
+    if (client != null) {
+      HeadBucketRequest headBucketRequest = HeadBucketRequest.builder().bucket(cdmS3Uri.getBucket()).build();
+      response = client.headBucket(headBucketRequest);
+    }
+
+    return response;
+  }
+
+  @Nullable
   private S3Client getClient() {
     S3Client client = null;
     try {
@@ -285,13 +298,44 @@ public class MFileS3 implements MFile {
     return exists;
   }
 
-  // Update file exists by fetching from a head request
   private void updateExists() {
+    if (isDirectory()) {
+      exists = directoryExists();
+    } else {
+      exists = key == null ? bucketExists() : objectExists();
+    }
+  }
+
+  private boolean directoryExists() {
+    final S3Client client = getClient();
+    if (client == null) {
+      return false;
+    }
+
+    try {
+      final ListObjectsV2Response listObjects =
+          client.listObjectsV2(ListObjectsV2Request.builder().bucket(cdmS3Uri.getBucket()).prefix(key).build());
+      return !listObjects.contents().isEmpty();
+    } catch (NoSuchBucketException e) {
+      return false;
+    }
+  }
+
+  private boolean bucketExists() {
+    try {
+      getHeadBucketResponse();
+      return true;
+    } catch (NoSuchBucketException e) {
+      return false;
+    }
+  }
+
+  private boolean objectExists() {
     try {
       headObjectResponse.get();
-      exists = true;
+      return true;
     } catch (NoSuchKeyException e) {
-      exists = false;
+      return false;
     }
   }
 
