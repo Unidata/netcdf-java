@@ -248,6 +248,60 @@ public class TestMFileS3 {
   }
 
   @Test
+  public void shouldCheckExistsForExistingDirectory() throws IOException {
+    final MFile withFragmentWithSlash = new MFileS3(AWS_G16_S3_URI_DIR + "/" + DELIMITER_FRAGMENT);
+    assertThat(withFragmentWithSlash.exists()).isEqualTo(true);
+
+    final MFile withoutFragmentWithSlash = new MFileS3(AWS_G16_S3_URI_DIR + "/");
+    assertThat(withoutFragmentWithSlash.exists()).isEqualTo(false);
+
+    final MFile withFragmentWithoutSlash = new MFileS3(AWS_G16_S3_URI_DIR + DELIMITER_FRAGMENT);
+    assertThat(withFragmentWithoutSlash.exists()).isEqualTo(false);
+
+    final MFile withoutFragmentWithoutSlash = new MFileS3(AWS_G16_S3_URI_DIR);
+    assertThat(withoutFragmentWithoutSlash.exists()).isEqualTo(false);
+  }
+
+  @Test
+  public void shouldReturnFalseForNonExistingDirectory() throws IOException {
+    final MFile withFragmentWithSlash = new MFileS3(AWS_G16_S3_URI_DIR + "/notADirectory/" + DELIMITER_FRAGMENT);
+    assertThat(withFragmentWithSlash.exists()).isEqualTo(false);
+
+    final MFile withoutFragmentWithSlash = new MFileS3(AWS_G16_S3_URI_DIR + "/notADirectory/");
+    assertThat(withoutFragmentWithSlash.exists()).isEqualTo(false);
+
+    final MFile withFragmentWithoutSlash = new MFileS3(AWS_G16_S3_URI_DIR + "/notADirectory" + DELIMITER_FRAGMENT);
+    assertThat(withFragmentWithoutSlash.exists()).isEqualTo(false);
+
+    final MFile withoutFragmentWithoutSlash = new MFileS3(AWS_G16_S3_URI_DIR + "/notADirectory");
+    assertThat(withoutFragmentWithoutSlash.exists()).isEqualTo(false);
+  }
+
+  @Test
+  public void shouldReturnFalseForKeyPrefixMatch() throws IOException {
+    final MFile mFile = new MFileS3(AWS_G16_S3_OBJECT_1.substring(0, AWS_G16_S3_OBJECT_1.length() - 5));
+    assertThat(mFile.exists()).isEqualTo(false);
+  }
+
+  @Test
+  public void shouldReturnTrueForBucket() throws IOException {
+    final MFile bucketWithDelimiter = new MFileS3(S3TestsCommon.TOP_LEVEL_AWS_BUCKET + DELIMITER_FRAGMENT);
+    assertThat(bucketWithDelimiter.exists()).isEqualTo(true);
+
+    final MFile bucketWithoutDelimiter = new MFileS3(S3TestsCommon.TOP_LEVEL_AWS_BUCKET);
+    assertThat(bucketWithoutDelimiter.exists()).isEqualTo(true);
+  }
+
+  @Test
+  public void shouldReturnFalseForNonExistentBucket() throws IOException {
+    final MFile bucketWithDelimiter = new MFileS3("cdms3:notABucket" + DELIMITER_FRAGMENT);
+    assertThat(bucketWithDelimiter.exists()).isEqualTo(false);
+
+    final MFile bucketWithoutDelimiter = new MFileS3("cdms3:notABucket");
+    assertThat(bucketWithoutDelimiter.exists()).isEqualTo(false);
+  }
+
+  @Test
   public void shouldGetInputStream() throws IOException {
     final MFile mFile = new MFileS3(AWS_G16_S3_OBJECT_1);
     try (final InputStream inputStream = mFile.getInputStream()) {
