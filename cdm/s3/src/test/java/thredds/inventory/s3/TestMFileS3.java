@@ -229,7 +229,7 @@ public class TestMFileS3 {
 
   @Test
   public void shouldNotWriteNonExistingObjectToStream() throws IOException {
-    final MFile mFile = new MFileS3(AWS_G16_S3_URI_DIR + "?NotARealKey");
+    final MFile mFile = new MFileS3(AWS_G16_S3_URI_DIR + "/NotARealKey");
 
     final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
     assertThrows(NoSuchKeyException.class, () -> mFile.writeToStream(outputStream));
@@ -243,7 +243,7 @@ public class TestMFileS3 {
 
   @Test
   public void shouldReturnFalseForNonExistingFile() throws IOException {
-    final MFile mFile = new MFileS3(AWS_G16_S3_URI_DIR + "?NotARealKey");
+    final MFile mFile = new MFileS3(AWS_G16_S3_URI_DIR + "/NotARealKey");
     assertThat(mFile.exists()).isEqualTo(false);
   }
 
