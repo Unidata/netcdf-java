@@ -217,7 +217,7 @@ public class DatasetWriter extends JPanel {
       return;
     }
 
-    if (data.format.isNetdf4format()) {
+    if (data.format.isNetcdf4Format()) {
       if (!NetcdfClibrary.isLibraryPresent()) {
         JOptionPane.showMessageDialog(this, "NetCDF-4 C library is not loaded");
         return;

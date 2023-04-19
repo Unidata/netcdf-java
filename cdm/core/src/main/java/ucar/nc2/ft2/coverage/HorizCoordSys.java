@@ -330,14 +330,15 @@ public class HorizCoordSys {
   }
 
   // here's where to deal with crossing seam
-  private Optional<CoverageCoordAxis> subsetLon(LatLonRect llbb, int stride) {
-    double wantMin = LatLonPoints.lonNormalFrom(llbb.getLonMin(), lonAxis.getStartValue());
-    double wantMax = LatLonPoints.lonNormalFrom(llbb.getLonMax(), lonAxis.getStartValue());
+  private Optional<CoverageCoordAxis> subsetLon(LatLonRect latLonBoundingBox, int stride) {
+    double wantMin = LatLonPoints.lonNormalFrom(latLonBoundingBox.getLonMin(), lonAxis.getStartValue());
+    double wantMax = LatLonPoints.lonNormalFrom(latLonBoundingBox.getLonMax(), lonAxis.getStartValue());
     double start = lonAxis.getStartValue();
     double end = lonAxis.getEndValue();
 
     // use MAMath.MinMax as a container for two values, min and max
-    List<MAMath.MinMax> lonIntvs = subsetLonIntervals(wantMin, wantMax, start, end);
+    List<MAMath.MinMax> lonIntvs =
+        subsetLonIntervals(wantMin, wantMax, start, end, latLonBoundingBox.containsAllLongitude());
 
     if (lonIntvs.isEmpty())
       return Optional.empty(
@@ -361,6 +362,8 @@ public class HorizCoordSys {
    * wantMin may be less than or greater than wantMax.
    * 
    * cases:
+   * 0. contains all longitude, return all longitude
+   * (could be normalized such that wantMin == wantMax so handle separately)
    * A. wantMin < wantMax
    * 1 wantMin, wantMax > end : empty
    * 2 wantMin < end : [wantMin, min(wantMax,end)]
@@ -369,7 +372,11 @@ public class HorizCoordSys {
    * 1 wantMin, wantMax > end : all [start, end]
    * 2 wantMin, wantMax < end : 2 pieces: [wantMin, end] + [start, max]
    */
-  private List<MAMath.MinMax> subsetLonIntervals(double wantMin, double wantMax, double start, double end) {
+  private List<MAMath.MinMax> subsetLonIntervals(double wantMin, double wantMax, double start, double end,
+      boolean containsAllLongitude) {
+    if (containsAllLongitude) {
+      return Lists.newArrayList(new MAMath.MinMax(start, end));
+    }
     if (wantMin <= wantMax) {
       if (wantMin > end) { // none A.1
         return ImmutableList.of();
