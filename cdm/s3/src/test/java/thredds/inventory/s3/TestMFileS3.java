@@ -302,6 +302,42 @@ public class TestMFileS3 {
   }
 
   @Test
+  public void shouldGetChildMFileFromBucket() throws IOException {
+    final MFileS3 withDelimiter = new MFileS3("cdms3:bucket" + DELIMITER_FRAGMENT);
+    final MFileS3 newMFileWithDelimiter = withDelimiter.getChild("newKey");
+    assertThat(newMFileWithDelimiter).isNotNull();
+    assertThat(newMFileWithDelimiter.getPath()).isEqualTo("cdms3:bucket?newKey" + DELIMITER_FRAGMENT);
+
+    final MFileS3 withoutDelimiter = new MFileS3("cdms3:bucket");
+    final MFileS3 newMFileWithoutDelimiter = withoutDelimiter.getChild("newKey");
+    assertThat(newMFileWithoutDelimiter).isNotNull();
+    assertThat(newMFileWithoutDelimiter.getPath()).isEqualTo("cdms3:bucket?newKey");
+  }
+
+  @Test
+  public void shouldGetChildMFileFromBucketAndKey() throws IOException {
+    final MFileS3 withDelimiterWithSlash = new MFileS3("cdms3:bucket?key/" + DELIMITER_FRAGMENT);
+    final MFileS3 newMFileWithDelimiterWithSlash = withDelimiterWithSlash.getChild("newKey");
+    assertThat(newMFileWithDelimiterWithSlash).isNotNull();
+    assertThat(newMFileWithDelimiterWithSlash.getPath()).isEqualTo("cdms3:bucket?key/newKey" + DELIMITER_FRAGMENT);
+
+    final MFileS3 withoutDelimiterWithSlash = new MFileS3("cdms3:bucket?key/");
+    final MFileS3 newMFileWithoutDelimiterWithSlash = withoutDelimiterWithSlash.getChild("newKey");
+    assertThat(newMFileWithoutDelimiterWithSlash).isNotNull();
+    assertThat(newMFileWithoutDelimiterWithSlash.getPath()).isEqualTo("cdms3:bucket?key/newKey");
+
+    final MFileS3 withDelimiterWithoutSlash = new MFileS3("cdms3:bucket?key" + DELIMITER_FRAGMENT);
+    final MFileS3 newMFileWithDelimiterWithoutSlash = withDelimiterWithoutSlash.getChild("newKey");
+    assertThat(newMFileWithDelimiterWithoutSlash).isNotNull();
+    assertThat(newMFileWithDelimiterWithoutSlash.getPath()).isEqualTo("cdms3:bucket?key/newKey" + DELIMITER_FRAGMENT);
+
+    final MFileS3 withoutDelimiterWithoutSlash = new MFileS3("cdms3:bucket?key");
+    final MFileS3 newMFileWithoutDelimiterWithoutSlash = withoutDelimiterWithoutSlash.getChild("newKey");
+    assertThat(newMFileWithoutDelimiterWithoutSlash).isNotNull();
+    assertThat(newMFileWithoutDelimiterWithoutSlash.getPath()).isEqualTo("cdms3:bucket?keynewKey");
+  }
+
+  @Test
   public void shouldGetInputStream() throws IOException {
     final MFile mFile = new MFileS3(AWS_G16_S3_OBJECT_1);
     try (final InputStream inputStream = mFile.getInputStream()) {

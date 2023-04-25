@@ -168,6 +168,11 @@ public class CollectionManagerCatalog extends CollectionManagerAbstract implemen
     public void writeToStream(OutputStream outputStream, long offset, long maxBytes) {
       throw new UnsupportedOperationException("Writing MFileRemote not implemented. Filename: " + getName());
     }
+
+    @Override
+    public MFileRemote getChild(String newFilename) {
+      throw new UnsupportedOperationException("MFileRemote::getChild not implemented. Filename: " + getName());
+    }
   }
 
   ///////////////////////////////
