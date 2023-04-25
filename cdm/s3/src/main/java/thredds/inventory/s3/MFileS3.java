@@ -368,6 +368,20 @@ public class MFileS3 implements MFile {
     }
   }
 
+  @Nullable
+  @Override
+  public MFileS3 getChild(String newFilename) {
+    final String existingKey = cdmS3Uri.getKey().orElse("");
+    final boolean addDelimiter = delimiter != null && !existingKey.endsWith(delimiter) && !existingKey.isEmpty();
+    final String newKey = addDelimiter ? existingKey + delimiter + newFilename : existingKey + newFilename;
+
+    try {
+      return new MFileS3(cdmS3Uri.resolveNewKey(newKey));
+    } catch (URISyntaxException e) {
+      return null;
+    }
+  }
+
   public static class Provider implements MFileProvider {
 
     private static String protocol = CdmS3Uri.SCHEME_CDM_S3;

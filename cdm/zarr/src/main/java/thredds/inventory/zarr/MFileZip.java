@@ -174,6 +174,11 @@ public class MFileZip implements MFile {
         "Writing MFileZip with a byte range to stream not implemented. Filename: " + getName());
   }
 
+  @Override
+  public MFileZip getChild(String newFilename) {
+    throw new UnsupportedOperationException("MFileZip::getChild not implemented. Filename: " + getName());
+  }
+
   public Path getRootPath() {
     return rootPath;
   }

@@ -9,6 +9,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import javax.annotation.Nullable;
 
 /**
  * An abstraction for java.io.File / java.nio.file.Path
@@ -95,4 +96,13 @@ public interface MFile extends Comparable<MFile> {
    * @param maxBytes the maximum number of bytes to copy
    */
   void writeToStream(OutputStream outputStream, long offset, long maxBytes) throws IOException;
+
+  /**
+   * Get child MFile of this MFile
+   *
+   * @param newFileName the relative file path of the new MFile
+   * @return the new MFile or null if the file can't be resolved
+   */
+  @Nullable
+  MFile getChild(String newFileName);
 }

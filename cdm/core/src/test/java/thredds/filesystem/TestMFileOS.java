@@ -90,6 +90,15 @@ public class TestMFileOS {
         assertThat(inputStream.read()).isNotEqualTo(-1);
       }
     }
+
+    @Test
+    public void shouldGetChildMFile() {
+      final MFileOS mFile = new MFileOS(tempFolder.getRoot() + "/testFile");
+      final MFileOS newMFile = mFile.getChild("newFile");
+      assertThat(newMFile.getName()).isEqualTo("newFile");
+      assertThat(newMFile.getParent().getPath()).isEqualTo(mFile.getPath());
+      assertThat(newMFile.getPath()).isEqualTo(tempFolder.getRoot() + "/testFile/newFile");
+    }
   }
 
   private static File createTemporaryFile(int size) throws IOException {
