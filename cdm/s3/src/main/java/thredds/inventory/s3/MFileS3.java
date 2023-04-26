@@ -315,7 +315,7 @@ public class MFileS3 implements MFile {
     try {
       final ListObjectsV2Response listObjects =
           client.listObjectsV2(ListObjectsV2Request.builder().bucket(cdmS3Uri.getBucket()).prefix(key).build());
-      return !listObjects.contents().isEmpty();
+      return listObjects.sdkHttpResponse().isSuccessful() && !listObjects.contents().isEmpty();
     } catch (NoSuchBucketException e) {
       return false;
     }
@@ -323,8 +323,8 @@ public class MFileS3 implements MFile {
 
   private boolean bucketExists() {
     try {
-      getHeadBucketResponse();
-      return true;
+      final HeadBucketResponse response = getHeadBucketResponse();
+      return response != null && response.sdkHttpResponse().isSuccessful();
     } catch (NoSuchBucketException e) {
       return false;
     }
@@ -332,8 +332,8 @@ public class MFileS3 implements MFile {
 
   private boolean objectExists() {
     try {
-      headObjectResponse.get();
-      return true;
+      final HeadObjectResponse response = headObjectResponse.get();
+      return response != null && response.sdkHttpResponse().isSuccessful();
     } catch (NoSuchKeyException e) {
       return false;
     }
