@@ -165,7 +165,7 @@ public abstract class AbstractIOServiceProvider implements IOServiceProvider {
   public long getLastModified() {
     if (location != null) {
       MFile file = MFiles.create(location);
-      return file != null ? file.getLastModified() : 0;
+      return file.getLastModified();
     } else {
       return 0;
     }
