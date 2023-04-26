@@ -121,7 +121,7 @@ public class ControllerS3 implements MController {
         logger.error("Error creating MFile for {} bucket {}", commonPrefix, initialUri.getBucket(), e);
       }
     }
-    return mFiles.iterator();
+    return new FilteredIterator(mc, mFiles.iterator(), true);
   }
 
   @Override
