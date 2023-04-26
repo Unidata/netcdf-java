@@ -8,6 +8,7 @@ package thredds.inventory;
 import java.io.IOException;
 import java.util.ServiceLoader;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import thredds.filesystem.MFileOS;
@@ -47,5 +48,22 @@ public class MFiles {
       logger.error("Error creating MFile at {}.", location, ioe);
     }
     return new MFileOS(location);
+  }
+
+  /**
+   * Create an {@link thredds.inventory.MFile} from a given location if it exists, otherwise return
+   * null.
+   *
+   * @param location location of file (local or remote) to be used to back the MFile object
+   * @return {@link thredds.inventory.MFile}
+   */
+  @Nullable
+  public static MFile createIfExists(String location) {
+    if (location == null) {
+      return null;
+    }
+
+    final MFile mFile = create(location);
+    return mFile.exists() ? mFile : null;
   }
 }

@@ -72,7 +72,7 @@ class AggDataset implements Comparable<AggDataset> {
   protected AggDataset(String cacheLocation, String location, @Nullable String id,
       @Nullable EnumSet<Enhance> wantEnhance, @Nullable ucar.nc2.util.cache.FileFactory reader,
       @Nullable Object spiObject, @Nullable Element ncmlElem) {
-    this.mfile = location == null ? null : MFiles.create(location);
+    this.mfile = MFiles.createIfExists(location);
     this.cacheLocation = cacheLocation;
     this.id = id;
     this.enhance = (wantEnhance == null) ? NetcdfDataset.getEnhanceNone() : wantEnhance;
