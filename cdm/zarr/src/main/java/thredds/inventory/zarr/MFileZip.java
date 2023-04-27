@@ -7,11 +7,11 @@ package thredds.inventory.zarr;
 
 import java.io.InputStream;
 import java.io.OutputStream;
+import javax.annotation.Nonnull;
 import thredds.filesystem.MFileOS;
 import thredds.inventory.MFile;
 import thredds.inventory.MFileProvider;
 
-import javax.annotation.Nullable;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -200,7 +200,7 @@ public class MFileZip implements MFile {
       return location != null && location.contains(ext);
     }
 
-    @Nullable
+    @Nonnull
     @Override
     public MFile create(String location) throws IOException {
       return new MFileZip(location);
