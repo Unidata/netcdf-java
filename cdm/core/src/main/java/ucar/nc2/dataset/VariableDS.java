@@ -9,12 +9,14 @@ import com.google.common.collect.Sets;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
+import ucar.nc2.constants.DataFormatType;
 import ucar.nc2.dataset.NetcdfDataset.Enhance;
 import ucar.nc2.filter.ConvertMissing;
 import ucar.nc2.filter.FilterHelpers;
 import ucar.nc2.filter.ScaleOffset;
 import ucar.nc2.filter.UnsignedConversion;
 import ucar.nc2.internal.dataset.CoordinatesHelper;
+import ucar.nc2.iosp.netcdf3.N3iosp;
 import ucar.nc2.util.CancelTask;
 import javax.annotation.Nullable;
 import java.io.IOException;
@@ -170,6 +172,8 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
     this.unsignedConversion = vds.unsignedConversion;
     this.scaleOffset = vds.scaleOffset;
     this.convertMissing = vds.convertMissing;
+    this.fillValue = vds.getFillValue();
+    this.hasFillValue = vds.hasFillValue();
 
     // Add this so that old VariableDS units agrees with new VariableDS units.
     String units = vds.getUnitsString();
@@ -241,6 +245,26 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
     if (this.enhanceMode.contains(Enhance.ConvertUnsigned) && !dataType.isString()) {
       this.unsignedConversion = UnsignedConversion.createFromVar(this);
       this.dataType = unsignedConversion.getOutType();
+    }
+    // need fill value info before convertMissing
+    Attribute fillValueAtt = findAttribute(CDM.FILL_VALUE);
+    if (fillValueAtt != null && !fillValueAtt.isString()) {
+      fillValue = convertUnsigned(fillValueAtt.getNumericValue()).doubleValue();
+      fillValue = applyScaleOffset(fillValue); // This will fail when _FillValue is CHAR.
+      hasFillValue = true;
+    } else {
+      // No _FillValue attribute found. Instead, if file is NetCDF and variable is numeric, use the default fill value.
+      String fileTypeId = getFileTypeId();
+      boolean isNetcdfIosp = DataFormatType.NETCDF.getDescription().equals(fileTypeId)
+          || DataFormatType.NETCDF4.getDescription().equals(fileTypeId);
+
+      if (isNetcdfIosp) {
+        DataType unsignedConversionType = getUnsignedConversionType();
+        if (unsignedConversionType.isNumeric()) {
+          fillValue = applyScaleOffset(N3iosp.getFillValueDefault(unsignedConversionType));
+          hasFillValue = true;
+        }
+      }
     }
     if (this.enhanceMode.contains(Enhance.ApplyScaleOffset) && (dataType.isNumeric() || dataType == DataType.CHAR)) {
       this.scaleOffset = ScaleOffset.createFromVariable(this);
@@ -542,8 +566,8 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
     }
 
     Array array = Array.factoryConstant(getDataType(), shape, storage);
-    if (convertMissing != null && convertMissing.hasFillValue()) {
-      array.setObject(0, convertMissing.getFillValue());
+    if (hasFillValue) {
+      array.setObject(0, fillValue);
     }
     return array;
   }
@@ -672,12 +696,12 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
 
   @Override
   public boolean hasFillValue() {
-    return convertMissing != null ? convertMissing.hasFillValue() : false;
+    return hasFillValue;
   }
 
   @Override
   public double getFillValue() {
-    return convertMissing != null ? convertMissing.getFillValue() : Double.MAX_VALUE;
+    return fillValue;
   }
 
   @Override
@@ -816,6 +840,9 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
   protected String orgName; // in case Variable was renamed, and we need to keep track of the original name
   String orgFileTypeId; // the original fileTypeId.
 
+  private boolean hasFillValue = false;
+  private double fillValue = Double.MAX_VALUE;
+
   protected VariableDS(Builder<?> builder, Group parentGroup) {
     super(builder, parentGroup);
 
@@ -847,6 +874,27 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
     if (this.enhanceMode.contains(Enhance.ApplyScaleOffset) && (dataType.isNumeric() || dataType == DataType.CHAR)) {
       this.scaleOffset = ScaleOffset.createFromVariable(this);
       this.dataType = scaleOffset != null ? scaleOffset.getScaledOffsetType() : this.dataType;
+    }
+
+    // need fill value info before convertMissing
+    Attribute fillValueAtt = findAttribute(CDM.FILL_VALUE);
+    if (fillValueAtt != null && !fillValueAtt.isString()) {
+      fillValue = convertUnsigned(fillValueAtt.getNumericValue()).doubleValue();
+      fillValue = applyScaleOffset(fillValue); // This will fail when _FillValue is CHAR.
+      hasFillValue = true;
+    } else {
+      // No _FillValue attribute found. Instead, if file is NetCDF and variable is numeric, use the default fill value.
+      String fileTypeId = getFileTypeId();
+      boolean isNetcdfIosp = DataFormatType.NETCDF.getDescription().equals(fileTypeId)
+          || DataFormatType.NETCDF4.getDescription().equals(fileTypeId);
+
+      if (isNetcdfIosp) {
+        DataType unsignedConversionType = getUnsignedConversionType();
+        if (unsignedConversionType.isNumeric()) {
+          fillValue = applyScaleOffset(N3iosp.getFillValueDefault(unsignedConversionType));
+          hasFillValue = true;
+        }
+      }
     }
     if (this.enhanceMode.contains(Enhance.ConvertMissing)) {
       this.convertMissing = ConvertMissing.createFromVariable(this);
