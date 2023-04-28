@@ -87,28 +87,9 @@ public class ConvertMissing {
       }
     }
 
-    /// _FillValue
-    double fillValue = Double.MAX_VALUE;
-    boolean hasFillValue = false;
-    Attribute fillValueAtt = var.findAttribute(CDM.FILL_VALUE);
-    if (fillValueAtt != null && !fillValueAtt.isString()) {
-      fillValue = var.convertUnsigned(fillValueAtt.getNumericValue()).doubleValue();
-      fillValue = var.applyScaleOffset(fillValue); // This will fail when _FillValue is CHAR.
-      hasFillValue = true;
-    } else {
-      // No _FillValue attribute found. Instead, if file is NetCDF and variable is numeric, use the default fill value.
-      String fileTypeId = var.getFileTypeId();
-      boolean isNetcdfIosp = DataFormatType.NETCDF.getDescription().equals(fileTypeId)
-          || DataFormatType.NETCDF4.getDescription().equals(fileTypeId);
-
-      if (isNetcdfIosp) {
-        DataType unsignedConversionType = var.getUnsignedConversionType();
-        if (unsignedConversionType.isNumeric()) {
-          fillValue = var.applyScaleOffset(N3iosp.getFillValueDefault(unsignedConversionType));
-          hasFillValue = true;
-        }
-      }
-    }
+    /// fill_value
+    boolean hasFillValue = var.hasFillValue();
+    double fillValue = var.getFillValue();
 
     /// missing_value
     double[] missingValue = null;
