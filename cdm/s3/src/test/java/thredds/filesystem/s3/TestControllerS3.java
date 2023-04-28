@@ -18,6 +18,8 @@ import org.slf4j.LoggerFactory;
 import software.amazon.awssdk.regions.Region;
 import thredds.inventory.CollectionConfig;
 import thredds.inventory.MFile;
+import thredds.inventory.MFileFilter;
+import thredds.inventory.filter.WildcardMatchOnName;
 import ucar.unidata.io.s3.CdmS3Uri;
 import ucar.unidata.io.s3.S3TestsCommon;
 import ucar.unidata.io.s3.TestS3Read;
@@ -275,6 +277,41 @@ public class TestControllerS3 {
     checkSubdirsCount(uri, 0);
   }
 
+  @Test
+  public void shouldFilterTopFiles() throws URISyntaxException {
+    final CdmS3Uri uri = new CdmS3Uri(S3TestsCommon.THREDDS_TEST_BUCKET + "?test-dataset-scan/" + DELIMITER_FRAGMENT);
+
+    final CollectionConfig noFilter = new CollectionConfig(uri.getBucket(), uri.toString(), true, null, null);
+    assertThat(topInventoryCount(noFilter)).isEqualTo(3);
+
+    final MFileFilter filter = new WildcardMatchOnName("*.nc$");
+    final CollectionConfig withFilter = new CollectionConfig(uri.getBucket(), uri.toString(), true, filter, null);
+    assertThat(topInventoryCount(withFilter)).isEqualTo(2);
+  }
+
+  @Test
+  public void shouldFilterAllFiles() throws URISyntaxException {
+    final CdmS3Uri uri = new CdmS3Uri(S3TestsCommon.THREDDS_TEST_BUCKET + "?test-dataset-scan/" + DELIMITER_FRAGMENT);
+
+    final CollectionConfig noFilter = new CollectionConfig(uri.getBucket(), uri.toString(), true, null, null);
+    checkInventoryAllCount(noFilter, 8);
+
+    final MFileFilter filter = new WildcardMatchOnName("*.nc$");
+    final CollectionConfig withFilter = new CollectionConfig(uri.getBucket(), uri.toString(), true, filter, null);
+    checkInventoryAllCount(withFilter, 4);
+  }
+
+  @Test
+  public void shouldFilterSubDirs() throws URISyntaxException {
+    final CdmS3Uri uri = new CdmS3Uri(S3TestsCommon.THREDDS_TEST_BUCKET + "?test-dataset-scan/" + DELIMITER_FRAGMENT);
+    final CollectionConfig noFilter = new CollectionConfig(uri.getBucket(), uri.toString(), true, null, null);
+    checkSubdirsCount(noFilter, 2);
+
+    final MFileFilter filter = new WildcardMatchOnName("sub-dir");
+    final CollectionConfig withFilter = new CollectionConfig(uri.getBucket(), uri.toString(), true, filter, null);
+    checkSubdirsCount(withFilter, 1);
+  }
+
   @AfterClass
   public static void teardown() {
     System.clearProperty(AWS_REGION_PROP_NAME);
@@ -298,25 +335,37 @@ public class TestControllerS3 {
 
   private int topInventoryCount(CdmS3Uri uri) {
     logger.debug("getInventoryTop: {}", uri);
+    return topInventoryCount(getCollectionConfig(uri));
+  }
+
+  private int topInventoryCount(CollectionConfig collectionConfig) {
     ControllerS3 controller = new ControllerS3();
     controller.limit = true;
-    Iterator<MFile> it = controller.getInventoryTop(getCollectionConfig(uri), false);
+    Iterator<MFile> it = controller.getInventoryTop(collectionConfig, false);
     return countObjects(it);
   }
 
   private void checkInventoryAllCount(CdmS3Uri uri, int expectedCount) {
     logger.debug("getInventoryAll: {}", uri);
+    checkInventoryAllCount(getCollectionConfig(uri), expectedCount);
+  }
+
+  private void checkInventoryAllCount(CollectionConfig collectionConfig, int expectedCount) {
     ControllerS3 controller = new ControllerS3();
     controller.limit = true;
-    Iterator<MFile> it = controller.getInventoryAll(getCollectionConfig(uri), false);
+    Iterator<MFile> it = controller.getInventoryAll(collectionConfig, false);
     assertThat(countObjects(it)).isEqualTo(expectedCount);
   }
 
   private void checkSubdirsCount(CdmS3Uri uri, int expectedCount) {
     logger.debug("getSubdirs: {}", uri);
+    checkSubdirsCount(getCollectionConfig(uri), expectedCount);
+  }
+
+  private void checkSubdirsCount(CollectionConfig collectionConfig, int expectedCount) {
     ControllerS3 controller = new ControllerS3();
     controller.limit = true;
-    Iterator<MFile> it = controller.getSubdirs(getCollectionConfig(uri), false);
+    Iterator<MFile> it = controller.getSubdirs(collectionConfig, false);
     assertThat(countObjects(it)).isEqualTo(expectedCount);
   }
 

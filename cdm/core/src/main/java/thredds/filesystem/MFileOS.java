@@ -139,4 +139,9 @@ public class MFileOS implements MFile {
   public File getFile() {
     return file;
   }
+
+  @Override
+  public MFileOS getChild(String newFilename) {
+    return new MFileOS(new File(file, newFilename));
+  }
 }

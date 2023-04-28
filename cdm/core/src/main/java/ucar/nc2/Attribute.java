@@ -38,7 +38,7 @@ public class Attribute extends CDMNode {
 
   /** @deprecated move to jni.Nc4Iosp */
   @Deprecated
-  static final String[] SPECIALS =
+  static public final String[] SPECIALS =
       {CDM.NCPROPERTIES, CDM.ISNETCDF4, CDM.SUPERBLOCKVERSION, CDM.DAP4_LITTLE_ENDIAN, CDM.EDU_UCAR_PREFIX};
 
   /**

@@ -21,6 +21,7 @@ import ucar.nc2.ft2.coverage.CoverageCoordAxis.Spacing;
 import ucar.nc2.grib.collection.Grib;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.util.Misc;
+import ucar.nc2.util.Optional;
 import ucar.unidata.geoloc.*;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.category.NeedsExternalResource;
@@ -274,10 +275,10 @@ public class TestCoverageHorizSubset {
   public void shouldSubsetLongitudeAndLatitude() {
     // longitude is regularPoint with spacing 60, so boundaries should be -121 and 119
     final double[] lonValues = new double[] {-91.0, -31.0, 29.0, 89.0};
-    final CoverageCoordAxis1D lonAxis = createCoverageCoordAxis1D(AxisType.Lon, lonValues);
+    final CoverageCoordAxis1D lonAxis = createCoverageCoordAxis1D(AxisType.Lon, lonValues, Spacing.regularPoint);
 
     final double[] latValues = new double[] {-90.0, 0.0, 90.0};
-    final CoverageCoordAxis1D latAxis = createCoverageCoordAxis1D(AxisType.Lat, latValues);
+    final CoverageCoordAxis1D latAxis = createCoverageCoordAxis1D(AxisType.Lat, latValues, Spacing.regularPoint);
 
     final HorizCoordSys horizCoordSys = HorizCoordSys.factory(null, null, latAxis, lonAxis, null);
     final LatLonRect boundingBox = horizCoordSys.calcLatLonBoundingBox();
@@ -293,10 +294,10 @@ public class TestCoverageHorizSubset {
   public void shouldSubsetEntireWorld() {
     // longitude is regularPoint with spacing 60, so boundaries should be -181=179 and 179
     final double[] lonValues = new double[] {-151.0, -91.0, -31.0, 29.0, 89.0, 149.0};
-    final CoverageCoordAxis1D lonAxis = createCoverageCoordAxis1D(AxisType.Lon, lonValues);
+    final CoverageCoordAxis1D lonAxis = createCoverageCoordAxis1D(AxisType.Lon, lonValues, Spacing.regularPoint);
 
     final double[] latValues = new double[] {-90.0, 0.0, 90.0};
-    final CoverageCoordAxis1D latAxis = createCoverageCoordAxis1D(AxisType.Lat, latValues);
+    final CoverageCoordAxis1D latAxis = createCoverageCoordAxis1D(AxisType.Lat, latValues, Spacing.regularPoint);
 
     final HorizCoordSys horizCoordSys = HorizCoordSys.factory(null, null, latAxis, lonAxis, null);
     final LatLonRect boundingBox = horizCoordSys.calcLatLonBoundingBox();
@@ -308,10 +309,34 @@ public class TestCoverageHorizSubset {
     assertThat(boundingBox.getLatMax()).isEqualTo(90.0);
   }
 
-  private CoverageCoordAxis1D createCoverageCoordAxis1D(AxisType type, double[] values) {
+  @Test
+  public void shouldSubsetAllLongitudes() {
+    final double[] lonValues = new double[] {0.0, 90.0, 180.0, 270.0};
+    final CoverageCoordAxis1D lonAxis = createCoverageCoordAxis1D(AxisType.Lon, lonValues, Spacing.regularInterval);
+    final double[] latValues = new double[] {-90.0, -45.0, 0.0, 45.0};
+    final CoverageCoordAxis1D latAxis = createCoverageCoordAxis1D(AxisType.Lat, latValues, Spacing.regularInterval);
+    final HorizCoordSys horizCoordSys = HorizCoordSys.factory(null, null, latAxis, lonAxis, null);
+
+    // request partial latitudes and all longitudes but shifted from the start of the longitude axis
+    final LatLonRect latLon = new LatLonRect(LatLonPoint.create(-45, -180), 10.0, 360.0);
+    final SubsetParams subsetParams = new SubsetParams().setLatLonBoundingBox(latLon);
+    final Optional<HorizCoordSys> subsetHorizCoordSys = horizCoordSys.subset(subsetParams);
+    assertThat(subsetHorizCoordSys.isPresent()).isTrue();
+
+    final LatLonRect subsetBoundingBox = subsetHorizCoordSys.get().calcLatLonBoundingBox();
+    assertThat(subsetBoundingBox).isNotNull();
+    final CoverageCoordAxis1D subsetLonAxis = subsetHorizCoordSys.get().getXAxis();
+    final CoverageCoordAxis1D subsetLatAxis = subsetHorizCoordSys.get().getYAxis();
+    assertThat(subsetLonAxis.getCoordEdgeFirst()).isEqualTo(0.0);
+    assertThat(subsetLonAxis.getCoordEdgeLast()).isEqualTo(360.0);
+    assertThat(subsetLatAxis.getCoordEdgeFirst()).isEqualTo(-45.0);
+    assertThat(subsetLatAxis.getCoordEdgeLast()).isEqualTo(0.0);
+  }
+
+  private CoverageCoordAxis1D createCoverageCoordAxis1D(AxisType type, double[] values, Spacing spacing) {
     final CoverageCoordAxisBuilder coordAxisBuilder = new CoverageCoordAxisBuilder("name", "unit", "description",
-        DataType.DOUBLE, type, null, CoverageCoordAxis.DependenceType.independent, null, Spacing.regularPoint,
-        values.length, values[0], values[values.length - 1], values[1] - values[0], values, null);
+        DataType.DOUBLE, type, null, CoverageCoordAxis.DependenceType.independent, null, spacing, values.length,
+        values[0], values[values.length - 1], values[1] - values[0], values, null);
     return new CoverageCoordAxis1D(coordAxisBuilder);
   }
 

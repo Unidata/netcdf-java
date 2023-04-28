@@ -9,6 +9,7 @@ import java.io.OutputStream;
 import java.net.URISyntaxException;
 import java.util.Objects;
 import java.util.function.Supplier;
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -100,6 +101,19 @@ public class MFileS3 implements MFile {
       }
       response = client.headObject(headObjectRequestBuilder.build());
     }
+    return response;
+  }
+
+  @Nullable
+  private HeadBucketResponse getHeadBucketResponse() {
+    HeadBucketResponse response = null;
+    S3Client client = getClient();
+
+    if (client != null) {
+      HeadBucketRequest headBucketRequest = HeadBucketRequest.builder().bucket(cdmS3Uri.getBucket()).build();
+      response = client.headBucket(headBucketRequest);
+    }
+
     return response;
   }
 
@@ -285,13 +299,44 @@ public class MFileS3 implements MFile {
     return exists;
   }
 
-  // Update file exists by fetching from a head request
   private void updateExists() {
+    if (isDirectory()) {
+      exists = directoryExists();
+    } else {
+      exists = key == null ? bucketExists() : objectExists();
+    }
+  }
+
+  private boolean directoryExists() {
+    final S3Client client = getClient();
+    if (client == null) {
+      return false;
+    }
+
     try {
-      headObjectResponse.get();
-      exists = true;
+      final ListObjectsV2Response listObjects =
+          client.listObjectsV2(ListObjectsV2Request.builder().bucket(cdmS3Uri.getBucket()).prefix(key).build());
+      return listObjects.sdkHttpResponse().isSuccessful() && !listObjects.contents().isEmpty();
+    } catch (NoSuchBucketException e) {
+      return false;
+    }
+  }
+
+  private boolean bucketExists() {
+    try {
+      final HeadBucketResponse response = getHeadBucketResponse();
+      return response != null && response.sdkHttpResponse().isSuccessful();
+    } catch (NoSuchBucketException e) {
+      return false;
+    }
+  }
+
+  private boolean objectExists() {
+    try {
+      final HeadObjectResponse response = headObjectResponse.get();
+      return response != null && response.sdkHttpResponse().isSuccessful();
     } catch (NoSuchKeyException e) {
-      exists = false;
+      return false;
     }
   }
 
@@ -323,6 +368,20 @@ public class MFileS3 implements MFile {
     }
   }
 
+  @Nullable
+  @Override
+  public MFileS3 getChild(String newFilename) {
+    final String existingKey = cdmS3Uri.getKey().orElse("");
+    final boolean addDelimiter = delimiter != null && !existingKey.endsWith(delimiter) && !existingKey.isEmpty();
+    final String newKey = addDelimiter ? existingKey + delimiter + newFilename : existingKey + newFilename;
+
+    try {
+      return new MFileS3(cdmS3Uri.resolveNewKey(newKey));
+    } catch (URISyntaxException e) {
+      return null;
+    }
+  }
+
   public static class Provider implements MFileProvider {
 
     private static String protocol = CdmS3Uri.SCHEME_CDM_S3;
@@ -332,7 +391,7 @@ public class MFileS3 implements MFile {
       return protocol;
     }
 
-    @Nullable
+    @Nonnull
     @Override
     public MFile create(String location) throws IOException {
       try {
