@@ -49,17 +49,20 @@ public class UnsignedConversion {
     return DataType.widenNumberIfNegative(value);
   }
 
-
   public Array convertUnsigned(Array in) {
     Array out = Array.factory(outType, in.getShape());
     IndexIterator iterIn = in.getIndexIterator();
     IndexIterator iterOut = out.getIndexIterator();
 
-    // iterate and convert elements
-    while (iterIn.hasNext()) {
-      Number value = (Number) iterIn.getObjectNext();
-      value = convertUnsigned(value);
-      iterOut.setObjectNext(value);
+    try {
+      // iterate and convert elements
+      while (iterIn.hasNext()) {
+        Number value = (Number) iterIn.getObjectNext();
+        value = convertUnsigned(value);
+        iterOut.setObjectNext(value);
+      }
+    } catch (ClassCastException ex) {
+      return in;
     }
 
     return out;

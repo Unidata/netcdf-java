@@ -301,7 +301,8 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
       if (enhancements.contains(Enhance.ApplyScaleOffset) && scaleOffset != null) {
         data = scaleOffset.removeScaleOffset(data);
       }
-      if (enhancements.contains(Enhance.ConvertMissing) && convertMissing != null) {
+      if (enhancements.contains(Enhance.ConvertMissing) && convertMissing != null
+          && (dataType == DataType.FLOAT || dataType == DataType.DOUBLE)) {
         data = convertMissing.convertMissing(data);
       }
       return data;
@@ -806,7 +807,9 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
 
   @Override
   public Array convertMissing(Array in) {
-    return convertMissing != null ? convertMissing.convertMissing(in) : in;
+    return (convertMissing != null && (dataType == DataType.FLOAT || dataType == DataType.DOUBLE))
+        ? convertMissing.convertMissing(in)
+        : in;
   }
 
   /**
@@ -815,13 +818,7 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
   @Override
   @Deprecated
   public Array convert(Array in, boolean convertUnsigned, boolean applyScaleOffset, boolean convertMissing) {
-    if (this.unsignedConversion != null) {
-      in = unsignedConversion.convertUnsigned(in);
-    }
-    if (this.scaleOffset != null) {
-      in = scaleOffset.removeScaleOffset(in);
-    }
-    return convertMissing(in);
+    return convertMissing(applyScaleOffset(convertUnsigned(in)));
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////
@@ -867,7 +864,7 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
       this.dataType = DataType.STRING; // LOOK promote enum data type to STRING ????
     }
 
-    if (this.enhanceMode.contains(Enhance.ConvertUnsigned) && !dataType.isString()) {
+    if (this.enhanceMode.contains(Enhance.ConvertUnsigned) && dataType.isIntegral()) {
       this.unsignedConversion = UnsignedConversion.createFromVar(this);
       this.dataType = unsignedConversion.getOutType();
     }
