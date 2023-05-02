@@ -8,6 +8,8 @@ import static ucar.nc2.iosp.IospHelper.convertByteToChar;
 import static ucar.nc2.iosp.IospHelper.convertCharToByte;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.BiMap;
+import com.google.common.collect.ImmutableBiMap;
 import com.google.common.primitives.Ints;
 import com.google.protobuf.ByteString;
 import java.io.IOException;
@@ -42,6 +44,27 @@ import ucar.nc2.Variable;
 
 /** Convert between Gcdm Protos and Netcdf objects, using Array for data. */
 public class GcdmConverter {
+  private static final BiMap<DataType, GcdmNetcdfProto.DataType> dataTypeProtoDataTypeMap =
+      new ImmutableBiMap.Builder<DataType, GcdmNetcdfProto.DataType>()
+          .put(DataType.CHAR, GcdmNetcdfProto.DataType.DATA_TYPE_CHAR)
+          .put(DataType.BYTE, GcdmNetcdfProto.DataType.DATA_TYPE_BYTE)
+          .put(DataType.SHORT, GcdmNetcdfProto.DataType.DATA_TYPE_SHORT)
+          .put(DataType.INT, GcdmNetcdfProto.DataType.DATA_TYPE_INT)
+          .put(DataType.LONG, GcdmNetcdfProto.DataType.DATA_TYPE_LONG)
+          .put(DataType.FLOAT, GcdmNetcdfProto.DataType.DATA_TYPE_FLOAT)
+          .put(DataType.DOUBLE, GcdmNetcdfProto.DataType.DATA_TYPE_DOUBLE)
+          .put(DataType.STRING, GcdmNetcdfProto.DataType.DATA_TYPE_STRING)
+          .put(DataType.STRUCTURE, GcdmNetcdfProto.DataType.DATA_TYPE_STRUCTURE)
+          .put(DataType.SEQUENCE, GcdmNetcdfProto.DataType.DATA_TYPE_SEQUENCE)
+          .put(DataType.ENUM1, GcdmNetcdfProto.DataType.DATA_TYPE_ENUM1)
+          .put(DataType.ENUM2, GcdmNetcdfProto.DataType.DATA_TYPE_ENUM2)
+          .put(DataType.ENUM4, GcdmNetcdfProto.DataType.DATA_TYPE_ENUM4)
+          .put(DataType.OPAQUE, GcdmNetcdfProto.DataType.DATA_TYPE_OPAQUE)
+          .put(DataType.UBYTE, GcdmNetcdfProto.DataType.DATA_TYPE_UBYTE)
+          .put(DataType.USHORT, GcdmNetcdfProto.DataType.DATA_TYPE_USHORT)
+          .put(DataType.UINT, GcdmNetcdfProto.DataType.DATA_TYPE_UINT)
+          .put(DataType.ULONG, GcdmNetcdfProto.DataType.DATA_TYPE_ULONG).build();
+
   public static GcdmNetcdfProto.Group.Builder encodeGroup(Group group, int sizeToCache) throws IOException {
     final GcdmNetcdfProto.Group.Builder groupBuilder = GcdmNetcdfProto.Group.newBuilder();
     groupBuilder.setName(group.getShortName());
@@ -595,87 +618,21 @@ public class GcdmConverter {
   ////////////////////////////////////////////////////////////////
 
   public static GcdmNetcdfProto.DataType convertDataType(DataType dataType) {
-    switch (dataType) {
-      case CHAR:
-        return GcdmNetcdfProto.DataType.DATA_TYPE_CHAR;
-      case BYTE:
-        return GcdmNetcdfProto.DataType.DATA_TYPE_BYTE;
-      case SHORT:
-        return GcdmNetcdfProto.DataType.DATA_TYPE_SHORT;
-      case INT:
-        return GcdmNetcdfProto.DataType.DATA_TYPE_INT;
-      case LONG:
-        return GcdmNetcdfProto.DataType.DATA_TYPE_LONG;
-      case FLOAT:
-        return GcdmNetcdfProto.DataType.DATA_TYPE_FLOAT;
-      case DOUBLE:
-        return GcdmNetcdfProto.DataType.DATA_TYPE_DOUBLE;
-      case STRING:
-        return GcdmNetcdfProto.DataType.DATA_TYPE_STRING;
-      case STRUCTURE:
-        return GcdmNetcdfProto.DataType.DATA_TYPE_STRUCTURE;
-      case SEQUENCE:
-        return GcdmNetcdfProto.DataType.DATA_TYPE_SEQUENCE;
-      case ENUM1:
-        return GcdmNetcdfProto.DataType.DATA_TYPE_ENUM1;
-      case ENUM2:
-        return GcdmNetcdfProto.DataType.DATA_TYPE_ENUM2;
-      case ENUM4:
-        return GcdmNetcdfProto.DataType.DATA_TYPE_ENUM4;
-      case OPAQUE:
-        return GcdmNetcdfProto.DataType.DATA_TYPE_OPAQUE;
-      case UBYTE:
-        return GcdmNetcdfProto.DataType.DATA_TYPE_UBYTE;
-      case USHORT:
-        return GcdmNetcdfProto.DataType.DATA_TYPE_USHORT;
-      case UINT:
-        return GcdmNetcdfProto.DataType.DATA_TYPE_UINT;
-      case ULONG:
-        return GcdmNetcdfProto.DataType.DATA_TYPE_ULONG;
+    final GcdmNetcdfProto.DataType protoDataType = dataTypeProtoDataTypeMap.get(dataType);
+
+    if (protoDataType == null) {
+      throw new IllegalStateException("illegal data type " + dataType);
     }
-    throw new IllegalStateException("illegal data type " + dataType);
+    return protoDataType;
   }
 
-  public static DataType convertDataType(GcdmNetcdfProto.DataType dataType) {
-    switch (dataType) {
-      case DATA_TYPE_CHAR:
-        return DataType.CHAR;
-      case DATA_TYPE_BYTE:
-        return DataType.BYTE;
-      case DATA_TYPE_SHORT:
-        return DataType.SHORT;
-      case DATA_TYPE_INT:
-        return DataType.INT;
-      case DATA_TYPE_LONG:
-        return DataType.LONG;
-      case DATA_TYPE_FLOAT:
-        return DataType.FLOAT;
-      case DATA_TYPE_DOUBLE:
-        return DataType.DOUBLE;
-      case DATA_TYPE_STRING:
-        return DataType.STRING;
-      case DATA_TYPE_STRUCTURE:
-        return DataType.STRUCTURE;
-      case DATA_TYPE_SEQUENCE:
-        return DataType.SEQUENCE;
-      case DATA_TYPE_ENUM1:
-        return DataType.ENUM1;
-      case DATA_TYPE_ENUM2:
-        return DataType.ENUM2;
-      case DATA_TYPE_ENUM4:
-        return DataType.ENUM4;
-      case DATA_TYPE_OPAQUE:
-        return DataType.OPAQUE;
-      case DATA_TYPE_UBYTE:
-        return DataType.UBYTE;
-      case DATA_TYPE_USHORT:
-        return DataType.USHORT;
-      case DATA_TYPE_UINT:
-        return DataType.UINT;
-      case DATA_TYPE_ULONG:
-        return DataType.ULONG;
+  public static DataType convertDataType(GcdmNetcdfProto.DataType protoDataType) {
+    final DataType dataType = dataTypeProtoDataTypeMap.inverse().get(protoDataType);
+
+    if (protoDataType == null) {
+      throw new IllegalStateException("illegal data type " + dataType);
     }
-    throw new IllegalStateException("illegal data type " + dataType);
+    return dataType;
   }
 
   private static ArrayStructure decodeArrayStructureData(Data arrayStructureProto) {
