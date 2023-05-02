@@ -340,8 +340,6 @@ public class GcdmConverter {
     return builder.build();
   }
 
-  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
   private static Dimension decodeDimension(GcdmNetcdfProto.Dimension dimension) {
     final String name = (dimension.getName().isEmpty() ? null : dimension.getName());
     final int dimLen = dimension.getIsVlen() ? -1 : (int) dimension.getLength();
@@ -614,8 +612,6 @@ public class GcdmConverter {
 
     return Array.makeVlenArray(shape, storage);
   }
-
-  ////////////////////////////////////////////////////////////////
 
   public static GcdmNetcdfProto.DataType convertDataType(DataType dataType) {
     final GcdmNetcdfProto.DataType protoDataType = dataTypeProtoDataTypeMap.get(dataType);
