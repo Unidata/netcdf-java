@@ -19,13 +19,20 @@ import ucar.unidata.util.test.category.NeedsExternalResource;
 
 @Category(NeedsExternalResource.class)
 public class TestS3ExternalCompressionRead {
+  private static final String compressedObject = "cdms3:noaa-nexrad-level2?1991/07/20/KTLX/KTLX19910720_160529.gz";
+  private static final String fragment = "#delimiter=/";
 
   @Test
   public void testCompressedObjectRead() throws IOException {
-    String bucket = "noaa-nexrad-level2";
-    String key = "1991/07/20/KTLX/KTLX19910720_160529.gz";
-    String s3uri = "cdms3:" + bucket + "?" + key;
+    testCompressedObjectRead(compressedObject);
+  }
 
+  @Test
+  public void testCompressedObjectReadWithDelimiterFragment() throws IOException {
+    testCompressedObjectRead(compressedObject + fragment);
+  }
+
+  private static void testCompressedObjectRead(String s3uri) throws IOException {
     System.setProperty(S3TestsCommon.AWS_REGION_PROP_NAME, S3TestsCommon.AWS_G16_REGION);
     try (NetcdfFile ncfile = NetcdfFiles.open(s3uri)) {
 
