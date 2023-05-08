@@ -89,7 +89,6 @@ public class ScaleOffset extends Filter {
       offsetType = FilterHelpers.getAttributeDataType(offsetAtt, signedness);
       Number offsetVal = offsetAtt.getNumericValue();
       if (offsetType.isUnsigned()) {
-        ;
         offsetVal = var.convertUnsigned(offsetVal);
       }
       offset = offsetVal.doubleValue();

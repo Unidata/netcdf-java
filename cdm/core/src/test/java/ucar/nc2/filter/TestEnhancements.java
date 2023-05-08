@@ -67,7 +67,7 @@ public class TestEnhancements {
     // unsigned, scaled/offset, and missing value
     Array enhanceAllArray = Array.factory(DataType.SHORT, new int[] {data_len}, signedShorts);
     builder.addVariable("enhanceAll", DataType.SHORT, "dim").addAttribute(new Attribute(CDM.UNSIGNED, "true"))
-        .addAttribute(new Attribute(CDM.SCALE_FACTOR, 10)).addAttribute(new Attribute(CDM.ADD_OFFSET, 10))
+        .addAttribute(new Attribute(CDM.SCALE_FACTOR, 10.0)).addAttribute(new Attribute(CDM.ADD_OFFSET, 10))
         .addAttribute(new Attribute(CDM.VALID_MAX, SIGNED_SCALED_MAX))
         .addAttribute(new Attribute(CDM.FILL_VALUE, SIGNED_SCALED_FILL_VALUE));
 
@@ -136,9 +136,9 @@ public class TestEnhancements {
 
   @Test
   public void testCombinedEnhancements() throws IOException {
-    int[] expected = new int[] {655320, 0, 655340, 655350, 0, 10, 20, 30, 40, 50};
+    double[] expected = new double[] {655320, Double.NaN, 655340, 655350, Double.NaN, 10, 20, 30, 40, 50};
     Variable v = ncd.findVariable("enhanceAll");
     Array data = v.read();
-    assertThat((int[]) data.copyTo1DJavaArray()).isEqualTo(expected);
+    assertThat((double[]) data.copyTo1DJavaArray()).isEqualTo(expected);
   }
 }
