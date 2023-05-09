@@ -354,9 +354,9 @@ public class MFileS3 implements MFile {
 
   @Override
   public void writeToStream(OutputStream outputStream) throws IOException {
-    ResponseInputStream<GetObjectResponse> responseInputStream = getInputStream();
-
-    IO.copy(responseInputStream, outputStream);
+    try (ResponseInputStream<GetObjectResponse> responseInputStream = getInputStream()) {
+      IO.copy(responseInputStream, outputStream);
+    }
   }
 
   @Override
