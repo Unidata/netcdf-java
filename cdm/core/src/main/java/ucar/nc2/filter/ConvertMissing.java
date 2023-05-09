@@ -36,8 +36,8 @@ public class ConvertMissing {
     DataType validType = null;
     if (validRangeAtt != null && !validRangeAtt.isString() && validRangeAtt.getLength() > 1) {
       validType = FilterHelpers.getAttributeDataType(validRangeAtt, signedness);
-      validMin = var.convertUnsigned(validRangeAtt.getNumericValue(0)).doubleValue();
-      validMax = var.convertUnsigned(validRangeAtt.getNumericValue(1)).doubleValue();
+      validMin = var.convertUnsigned(validRangeAtt.getNumericValue(0), validType).doubleValue();
+      validMax = var.convertUnsigned(validRangeAtt.getNumericValue(1), validType).doubleValue();
       hasValidMin = true;
       hasValidMax = true;
     }
@@ -49,13 +49,13 @@ public class ConvertMissing {
     if (!hasValidMin) {
       if (validMinAtt != null && !validMinAtt.isString()) {
         validType = FilterHelpers.getAttributeDataType(validMinAtt, signedness);
-        validMin = var.convertUnsigned(validMinAtt.getNumericValue()).doubleValue();
+        validMin = var.convertUnsigned(validMinAtt.getNumericValue(), validType).doubleValue();
         hasValidMin = true;
       }
 
       if (validMaxAtt != null && !validMaxAtt.isString()) {
         validType = FilterHelpers.largestOf(validType, FilterHelpers.getAttributeDataType(validMaxAtt, signedness));
-        validMax = var.convertUnsigned(validMaxAtt.getNumericValue()).doubleValue();
+        validMax = var.convertUnsigned(validMaxAtt.getNumericValue(), validType).doubleValue();
         hasValidMax = true;
       }
     }
@@ -105,21 +105,20 @@ public class ConvertMissing {
           } else {
             missingValue[0] = svalue.charAt(0);
           }
-
-          hasMissingValue = true;
         } else { // not a CHAR - try to fix problem where they use a numeric value as a String attribute
           try {
             missingValue = new double[1];
             missingValue[0] = Double.parseDouble(svalue);
-            hasMissingValue = true;
           } catch (NumberFormatException ex) {
             // TODO add logger
           }
+          hasMissingValue = true;
         }
       } else { // not a string
         missingValue = new double[missingValueAtt.getLength()];
+        DataType missingType = FilterHelpers.getAttributeDataType(missingValueAtt, signedness);
         for (int i = 0; i < missingValue.length; i++) {
-          missingValue[i] = var.convertUnsigned(missingValueAtt.getNumericValue(i)).doubleValue();
+          missingValue[i] = var.convertUnsigned(missingValueAtt.getNumericValue(i), missingType).doubleValue();
           missingValue[i] = var.applyScaleOffset(missingValue[i]);
         }
 

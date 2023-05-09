@@ -77,21 +77,13 @@ public class ScaleOffset extends Filter {
     Attribute scaleAtt = var.findAttribute(CDM.SCALE_FACTOR);
     if (scaleAtt != null && !scaleAtt.isString()) {
       scaleType = FilterHelpers.getAttributeDataType(scaleAtt, signedness);
-      Number scaleVal = scaleAtt.getNumericValue();
-      if (scaleType.isUnsigned()) {
-        scaleVal = var.convertUnsigned(scaleVal);
-      }
-      scale = 1 / scaleVal.doubleValue();
+      scale = 1 / (var.convertUnsigned(scaleAtt.getNumericValue(), scaleType).doubleValue());
     }
 
     Attribute offsetAtt = var.findAttribute(CDM.ADD_OFFSET);
     if (offsetAtt != null && !offsetAtt.isString()) {
       offsetType = FilterHelpers.getAttributeDataType(offsetAtt, signedness);
-      Number offsetVal = offsetAtt.getNumericValue();
-      if (offsetType.isUnsigned()) {
-        offsetVal = var.convertUnsigned(offsetVal);
-      }
-      offset = offsetVal.doubleValue();
+      offset = var.convertUnsigned(offsetAtt.getNumericValue(), offsetType).doubleValue();
     }
     if (scale != DEFAULT_SCALE || offset != DEFAULT_OFFSET) {
       DataType scaledOffsetType =

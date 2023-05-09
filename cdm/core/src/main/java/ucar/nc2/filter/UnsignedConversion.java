@@ -9,15 +9,17 @@ import ucar.nc2.dataset.VariableDS;
 public class UnsignedConversion {
 
   private DataType outType;
+  private DataType.Signedness signedness;
 
   public static UnsignedConversion createFromVar(VariableDS var) {
     DataType origDataType = var.getDataType();
+    // won't need to convert non-integral types
+    if (origDataType.isIntegral()) {
+      return new UnsignedConversion(origDataType, DataType.Signedness.SIGNED);
+    }
     DataType unsignedConversionType = origDataType;
-
-    // unsignedConversionType is initialized to origDataType, and origDataType may be a non-integral type that doesn't
-    // have an "unsigned flavor" (such as FLOAT and DOUBLE). Furthermore, unsignedConversionType may start out as
-    // integral, but then be widened to non-integral (i.e. LONG -> DOUBLE). For these reasons, we cannot rely upon
-    // unsignedConversionType to store the signedness of the variable. We need a separate field.
+    // unsignedConversionType may start out as integral, but then be widened to non-integral (i.e. LONG -> DOUBLE)
+    // so we cannot rely upon unsignedConversionType to store the signedness of the variable. We need a separate field.
     DataType.Signedness signedness = origDataType.getSignedness();
 
     // In the event of conflict, "unsigned" wins. Potential conflicts include:
@@ -34,22 +36,30 @@ public class UnsignedConversion {
       // We may need a larger data type to hold the results of the unsigned conversion.
       unsignedConversionType = FilterHelpers.nextLarger(origDataType).withSignedness(DataType.Signedness.UNSIGNED);
     }
-    return new UnsignedConversion(unsignedConversionType);
+    return new UnsignedConversion(unsignedConversionType, signedness);
   }
 
-  public UnsignedConversion(DataType outType) {
+  public UnsignedConversion(DataType outType, DataType.Signedness signedness) {
     this.outType = outType;
+    this.signedness = signedness;
   }
 
   public DataType getOutType() {
     return this.outType;
   }
 
+  public DataType.Signedness getSignedness() {
+    return this.signedness;
+  }
+
   public Number convertUnsigned(Number value) {
-    return DataType.widenNumberIfNegative(value);
+    return this.signedness == DataType.Signedness.UNSIGNED ? DataType.widenNumberIfNegative(value) : value;
   }
 
   public Array convertUnsigned(Array in) {
+    if (signedness == DataType.Signedness.SIGNED) {
+      return in;
+    }
     Array out = Array.factory(outType, in.getShape());
     IndexIterator iterIn = in.getIndexIterator();
     IndexIterator iterOut = out.getIndexIterator();
@@ -58,7 +68,7 @@ public class UnsignedConversion {
       // iterate and convert elements
       while (iterIn.hasNext()) {
         Number value = (Number) iterIn.getObjectNext();
-        value = convertUnsigned(value);
+        value = DataType.widenNumberIfNegative(value);
         iterOut.setObjectNext(value);
       }
     } catch (ClassCastException ex) {
@@ -66,5 +76,9 @@ public class UnsignedConversion {
     }
 
     return out;
+  }
+
+  public static Number convertUnsigned(Number value, DataType dataType) {
+    return dataType.isUnsigned() ? DataType.widenNumberIfNegative(value) : value;
   }
 }

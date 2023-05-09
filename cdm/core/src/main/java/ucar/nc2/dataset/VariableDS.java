@@ -235,44 +235,7 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
       setDataType(orgDataType);
     }
 
-    if (this.enhanceMode.contains(Enhance.ConvertEnums) && dataType.isEnum()) {
-      setDataType(DataType.STRING); // LOOK promote data type to STRING ????
-    }
-
-    // Initialize EnhanceScaleMissingUnsignedImpl. We can't do this in the constructors because this object may not
-    // contain all of the relevant attributes at that time. NcMLReader is an example of this: the VariableDS is
-    // constructed first, and then Attributes are added to it later.
-    if (this.enhanceMode.contains(Enhance.ConvertUnsigned) && !dataType.isString()) {
-      this.unsignedConversion = UnsignedConversion.createFromVar(this);
-      this.dataType = unsignedConversion.getOutType();
-    }
-    // need fill value info before convertMissing
-    Attribute fillValueAtt = findAttribute(CDM.FILL_VALUE);
-    if (fillValueAtt != null && !fillValueAtt.isString()) {
-      fillValue = convertUnsigned(fillValueAtt.getNumericValue()).doubleValue();
-      fillValue = applyScaleOffset(fillValue); // This will fail when _FillValue is CHAR.
-      hasFillValue = true;
-    } else {
-      // No _FillValue attribute found. Instead, if file is NetCDF and variable is numeric, use the default fill value.
-      String fileTypeId = getFileTypeId();
-      boolean isNetcdfIosp = DataFormatType.NETCDF.getDescription().equals(fileTypeId)
-          || DataFormatType.NETCDF4.getDescription().equals(fileTypeId);
-
-      if (isNetcdfIosp) {
-        DataType unsignedConversionType = getUnsignedConversionType();
-        if (unsignedConversionType.isNumeric()) {
-          fillValue = applyScaleOffset(N3iosp.getFillValueDefault(unsignedConversionType));
-          hasFillValue = true;
-        }
-      }
-    }
-    if (this.enhanceMode.contains(Enhance.ApplyScaleOffset) && (dataType.isNumeric() || dataType == DataType.CHAR)) {
-      this.scaleOffset = ScaleOffset.createFromVariable(this);
-      this.dataType = scaleOffset != null ? scaleOffset.getScaledOffsetType() : this.dataType;
-    }
-    if (this.enhanceMode.contains(Enhance.ConvertMissing)) {
-      this.convertMissing = ConvertMissing.createFromVariable(this);
-    }
+    createEnhancements();
   }
 
   boolean needConvert() {
@@ -777,7 +740,7 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
 
   @Override
   public DataType.Signedness getSignedness() {
-    return unsignedConversion != null ? DataType.Signedness.SIGNED : dataType.getSignedness();
+    return unsignedConversion != null ? unsignedConversion.getSignedness() : dataType.getSignedness();
   }
 
   @Override
@@ -793,6 +756,10 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
   @Override
   public Number convertUnsigned(Number value) {
     return unsignedConversion != null ? unsignedConversion.convertUnsigned(value) : value;
+  }
+
+  public Number convertUnsigned(Number value, DataType dataType) {
+    return unsignedConversion != null ? unsignedConversion.convertUnsigned(value, dataType) : value;
   }
 
   @Override
@@ -860,13 +827,21 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
     this.orgFileTypeId = builder.orgFileTypeId;
     this.enhanceProxy = new EnhancementsImpl(this, builder.units, builder.getDescription());
 
+    createEnhancements();
+
+    // We have to complete this after the NetcdfDataset is built.
+    this.coordSysNames = builder.coordSysNames;
+  }
+
+  private void createEnhancements() {
+    // Enhancement Objects are created if it is contained in Enhance
     if (this.enhanceMode.contains(Enhance.ConvertEnums) && dataType.isEnum()) {
-      this.dataType = DataType.STRING; // LOOK promote enum data type to STRING ????
+      this.dataType = DataType.STRING;
     }
 
-    if (this.enhanceMode.contains(Enhance.ConvertUnsigned) && dataType.isIntegral()) {
+    if (this.enhanceMode.contains(Enhance.ConvertUnsigned)) {
       this.unsignedConversion = UnsignedConversion.createFromVar(this);
-      this.dataType = unsignedConversion.getOutType();
+      this.dataType = unsignedConversion != null ? unsignedConversion.getOutType() : dataType;
     }
     if (this.enhanceMode.contains(Enhance.ApplyScaleOffset) && (dataType.isNumeric() || dataType == DataType.CHAR)) {
       this.scaleOffset = ScaleOffset.createFromVariable(this);
@@ -876,19 +851,22 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
     // need fill value info before convertMissing
     Attribute fillValueAtt = findAttribute(CDM.FILL_VALUE);
     if (fillValueAtt != null && !fillValueAtt.isString()) {
-      fillValue = convertUnsigned(fillValueAtt.getNumericValue()).doubleValue();
-      fillValue = applyScaleOffset(fillValue); // This will fail when _FillValue is CHAR.
+      DataType fillType = FilterHelpers.getAttributeDataType(fillValueAtt, getSignedness());
+      fillValue = applyScaleOffset(convertUnsigned(fillValueAtt.getNumericValue(), fillType).doubleValue()); // This
+                                                                                                             // will
+                                                                                                             // fail
+                                                                                                             // when
+                                                                                                             // _FillValue
+                                                                                                             // is CHAR.
       hasFillValue = true;
     } else {
       // No _FillValue attribute found. Instead, if file is NetCDF and variable is numeric, use the default fill value.
-      String fileTypeId = getFileTypeId();
-      boolean isNetcdfIosp = DataFormatType.NETCDF.getDescription().equals(fileTypeId)
-          || DataFormatType.NETCDF4.getDescription().equals(fileTypeId);
+      boolean isNetcdfIosp = DataFormatType.NETCDF.getDescription().equals(orgFileTypeId)
+          || DataFormatType.NETCDF4.getDescription().equals(orgFileTypeId);
 
       if (isNetcdfIosp) {
-        DataType unsignedConversionType = getUnsignedConversionType();
-        if (unsignedConversionType.isNumeric()) {
-          fillValue = applyScaleOffset(N3iosp.getFillValueDefault(unsignedConversionType));
+        if (dataType.isNumeric()) {
+          fillValue = applyScaleOffset(N3iosp.getFillValueDefault(dataType));
           hasFillValue = true;
         }
       }
@@ -896,9 +874,6 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
     if (this.enhanceMode.contains(Enhance.ConvertMissing)) {
       this.convertMissing = ConvertMissing.createFromVariable(this);
     }
-
-    // We have to complete this after the NetcdfDataset is built.
-    this.coordSysNames = builder.coordSysNames;
   }
 
   public Builder<?> toBuilder() {

@@ -280,8 +280,8 @@ public class TestScaleOffsetMissingUnsigned {
       Assert.assertEquals(DataType.UINT, var.getDataType());
 
       // These vals are the same as ones from "missingUnsigned", but with a scale_factor of 100 and offset of 1 applied.
-      int[] expecteds = new int[] {14901, 15001, 25001, 25101, 25501, 8001};
-      int[] actuals = (int[]) var.read().getStorage();
+      long[] expecteds = new long[] {14901, 15001, 25001, 25101, 25501, 8001};
+      long[] actuals = (long[]) var.read().getStorage();
       Assert.assertArrayEquals(expecteds, actuals);
     }
   }
@@ -346,10 +346,14 @@ public class TestScaleOffsetMissingUnsigned {
        * data. Otherwise it is in the units of the external (packed) data.</li>
        */
       // As a result, scale_factor will not be applied to it.
+      // with the Builder design, we don't read the enhancement properties unless the corresponding enhancement is
+      // turned on
+      var.addEnhancement(Enhance.ConvertMissing);
       Assert2.assertNearlyEquals(9.9f, (float) var.getValidMin());
       Assert2.assertNearlyEquals(10.1f, (float) var.getValidMax());
 
       Assert.assertEquals(DataType.FLOAT, var.getDataType()); // scale_factor is float.
+      var.removeEnhancement(Enhance.ConvertMissing);
 
       float[] expecteds = new float[] {9.8f, 9.9f, 10.0f, 10.1f, 10.2f};
       float[] actuals = (float[]) var.read().getStorage();
@@ -363,6 +367,7 @@ public class TestScaleOffsetMissingUnsigned {
 
     try (NetcdfDataset ncd = NetcdfDatasets.openDataset(testResource.getAbsolutePath(), true, null)) {
       VariableDS var = (VariableDS) ncd.findVariable("unsignedOffsetAttribute");
+      var.addEnhancement(Enhance.ApplyScaleOffset);
 
       Assert.assertEquals(156, var.getOffset(), 0);
       Assert.assertEquals(DataType.BYTE, var.getDataType()); // No change to data type.
