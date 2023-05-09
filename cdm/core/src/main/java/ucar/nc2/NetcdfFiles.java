@@ -400,7 +400,7 @@ public class NetcdfFiles {
    * @return RandomAccessFile for the object at location
    */
   public static ucar.unidata.io.RandomAccessFile getRaf(String location, int buffer_size) throws IOException {
-    String uriString = location.trim();
+    String uriString = removeFragment(location.trim());
     if (buffer_size <= 0)
       buffer_size = default_buffersize;
 
@@ -471,6 +471,10 @@ public class NetcdfFiles {
     }
 
     return raf;
+  }
+
+  private static String removeFragment(String uriString) {
+    return uriString.split("#")[0];
   }
 
   private static boolean looksCompressed(String filename) {

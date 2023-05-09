@@ -64,6 +64,21 @@ public class TestControllerS3 {
 
   }
 
+  @Test
+  public void shouldReturnSameValueFromHasNext() throws URISyntaxException {
+    final CdmS3Uri uri = new CdmS3Uri("cdms3:thredds-test-data");
+    final MFileFilter filter = new WildcardMatchOnName("testData.nc");
+    final CollectionConfig collectionConfig = new CollectionConfig(uri.getBucket(), uri.toString(), true, filter, null);
+    final ControllerS3 controller = new ControllerS3();
+    final Iterator<MFile> iterator = controller.getInventoryTop(collectionConfig, false);
+
+    assertThat(iterator.hasNext()).isTrue();
+    assertThat(iterator.hasNext()).isTrue();
+    iterator.next();
+    assertThat(iterator.hasNext()).isFalse();
+    assertThat(iterator.hasNext()).isFalse();
+  }
+
   //////////////////////
   // getInventoryTop() tests
   //
