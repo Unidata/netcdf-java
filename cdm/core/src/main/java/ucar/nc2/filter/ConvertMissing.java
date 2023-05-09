@@ -112,8 +112,8 @@ public class ConvertMissing {
           } catch (NumberFormatException ex) {
             // TODO add logger
           }
-          hasMissingValue = true;
         }
+        hasMissingValue = true;
       } else { // not a string
         missingValue = new double[missingValueAtt.getLength()];
         DataType missingType = FilterHelpers.getAttributeDataType(missingValueAtt, signedness);
