@@ -53,8 +53,7 @@ public class TestGcdmDataChunking {
     DataType dataType = DataType.INT;
     Array expectedData = Array.makeArray(dataType, 13_000_000, 0, 1);
 
-    String filename = tempFolder.newFile().getAbsolutePath();
-    writeNetcdfFile(filename, variableName, dataType, expectedData);
+    String filename = writeNetcdfFile(variableName, dataType, expectedData);
     String gcdmUrl = gcdmPrefix + filename;
 
     try (GcdmNetcdfFile gcdmFile = GcdmNetcdfFile.builder().setRemoteURI(gcdmUrl).build()) {
@@ -80,8 +79,7 @@ public class TestGcdmDataChunking {
     DataType dataType = DataType.INT;
     Array expectedData = Array.makeArray(dataType, 13_000_000, 0, 1);
 
-    String filename = tempFolder.newFile().getAbsolutePath();
-    writeNetcdfFileWithStructure(filename, structureName, memberName, dataType, expectedData);
+    String filename = writeNetcdfFileWithStructure(structureName, memberName, dataType, expectedData);
     String gcdmUrl = gcdmPrefix + filename;
 
     try (GcdmNetcdfFile gcdmFile = GcdmNetcdfFile.builder().setRemoteURI(gcdmUrl).build()) {
@@ -100,8 +98,9 @@ public class TestGcdmDataChunking {
     }
   }
 
-  private static void writeNetcdfFile(String filename, String variableName, DataType dataType, Array values)
+  private String writeNetcdfFile(String variableName, DataType dataType, Array values)
       throws IOException, InvalidRangeException {
+    String filename = tempFolder.newFile().getAbsolutePath();
     NetcdfFormatWriter.Builder writerBuilder = NetcdfFormatWriter.createNewNetcdf3(filename);
 
     writerBuilder.addDimension("dimension", (int) values.getSize());
@@ -110,10 +109,12 @@ public class TestGcdmDataChunking {
     try (NetcdfFormatWriter writer = writerBuilder.build()) {
       writer.write(variableName, values);
     }
+    return filename;
   }
 
-  private static void writeNetcdfFileWithStructure(String filename, String structureName, String memberName,
-      DataType dataType, Array values) throws IOException, InvalidRangeException {
+  private String writeNetcdfFileWithStructure(String structureName, String memberName, DataType dataType, Array values)
+      throws IOException, InvalidRangeException {
+    String filename = tempFolder.newFile().getAbsolutePath();
     String structureDimensionName = "structureDimension";
     String memberDimensionName = "memberDimension";
     NetcdfFormatWriter.Builder writerBuilder =
@@ -141,5 +142,6 @@ public class TestGcdmDataChunking {
 
       writer.write(structureName, arrayStructure);
     }
+    return filename;
   }
 }
