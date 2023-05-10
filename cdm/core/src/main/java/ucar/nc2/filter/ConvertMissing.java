@@ -63,7 +63,7 @@ public class ConvertMissing {
     // check if validData values are stored packed or unpacked
     if (hasValidMin || hasValidMax) {
       if (FilterHelpers.rank(validType) == FilterHelpers.rank(var.getScaledOffsetType())
-          && FilterHelpers.rank(validType) > FilterHelpers.rank(var.getUnsignedConversionType())) {
+          && FilterHelpers.rank(validType) > FilterHelpers.rank(var.getOriginalDataType())) {
         // If valid_range is the same type as the wider of scale_factor and add_offset, PLUS
         // it is wider than the (packed) data, we know that the valid_range values were stored as unpacked.
         // We already assumed that this was the case when we first read the attribute values, so there's

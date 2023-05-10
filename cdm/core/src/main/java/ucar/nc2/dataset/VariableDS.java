@@ -814,6 +814,9 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
     this.orgVar = builder.orgVar;
     this.orgDataType = builder.orgDataType;
     this.orgName = builder.orgName;
+    if (this.orgDataType == null) {
+      this.orgDataType = dataType;
+    }
 
     // Make sure that units has been trimmed.
     // Replace with correct case
