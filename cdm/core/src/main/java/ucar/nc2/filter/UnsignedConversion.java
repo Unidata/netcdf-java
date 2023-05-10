@@ -14,7 +14,7 @@ public class UnsignedConversion {
   public static UnsignedConversion createFromVar(VariableDS var) {
     DataType origDataType = var.getDataType();
     // won't need to convert non-integral types
-    if (origDataType.isIntegral()) {
+    if (!origDataType.isIntegral()) {
       return new UnsignedConversion(origDataType, DataType.Signedness.SIGNED);
     }
     DataType unsignedConversionType = origDataType;

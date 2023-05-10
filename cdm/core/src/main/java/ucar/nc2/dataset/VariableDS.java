@@ -852,12 +852,7 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
     Attribute fillValueAtt = findAttribute(CDM.FILL_VALUE);
     if (fillValueAtt != null && !fillValueAtt.isString()) {
       DataType fillType = FilterHelpers.getAttributeDataType(fillValueAtt, getSignedness());
-      fillValue = applyScaleOffset(convertUnsigned(fillValueAtt.getNumericValue(), fillType).doubleValue()); // This
-                                                                                                             // will
-                                                                                                             // fail
-                                                                                                             // when
-                                                                                                             // _FillValue
-                                                                                                             // is CHAR.
+      fillValue = applyScaleOffset(convertUnsigned(fillValueAtt.getNumericValue(), fillType).doubleValue());
       hasFillValue = true;
     } else {
       // No _FillValue attribute found. Instead, if file is NetCDF and variable is numeric, use the default fill value.
