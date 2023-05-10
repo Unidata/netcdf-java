@@ -4,12 +4,11 @@
  */
 package ucar.gcdm;
 
-import static com.google.common.truth.Truth.assertThat;
+import static ucar.gcdm.TestUtils.*;
 
 import java.io.FileFilter;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
-import java.util.Formatter;
 import java.util.List;
 import org.apache.commons.io.filefilter.SuffixFileFilter;
 import org.junit.Test;
@@ -19,9 +18,6 @@ import org.junit.runners.Parameterized;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.gcdm.client.GcdmNetcdfFile;
-import ucar.nc2.NetcdfFile;
-import ucar.nc2.dataset.NetcdfDatasets;
-import ucar.nc2.util.CompareNetcdf2;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
@@ -30,7 +26,6 @@ import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 @Category(NeedsCdmUnitTest.class)
 public class TestGcdmNetcdfFile {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-  private static final String gcdmPrefix = "gcdm://localhost:16111/";
 
   @Parameterized.Parameters(name = "{0}")
   public static List<Object[]> getTestParameters() {
@@ -66,22 +61,13 @@ public class TestGcdmNetcdfFile {
   }
 
   private final String filename;
-  private final String gcdmUrl;
 
   public TestGcdmNetcdfFile(String filename) {
     this.filename = filename.replace("\\", "/");
-    this.gcdmUrl = gcdmPrefix + this.filename;
   }
 
   @Test
   public void doOne() throws Exception {
-    try (NetcdfFile ncfile = NetcdfDatasets.openFile(filename, null);
-        GcdmNetcdfFile gcdmFile = GcdmNetcdfFile.builder().setRemoteURI(gcdmUrl).build()) {
-
-      Formatter formatter = new Formatter();
-      boolean ok = CompareNetcdf2.compareFiles(ncfile, gcdmFile, formatter, true, true, true);
-      logger.debug(formatter.toString());
-      assertThat(ok).isTrue();
-    }
+    compareFiles(filename);
   }
 }
