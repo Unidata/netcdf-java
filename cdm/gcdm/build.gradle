@@ -46,7 +46,6 @@ dependencies {
   // logging
   implementation 'org.slf4j:slf4j-api'
   runtimeOnly 'ch.qos.logback:logback-classic'
-  testRuntimeOnly 'ch.qos.logback:logback-classic'
 }
 
 protobuf {
