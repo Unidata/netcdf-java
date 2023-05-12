@@ -121,7 +121,7 @@ public class ControllerS3 implements MController {
         logger.error("Error creating MFile for {} bucket {}", commonPrefix, initialUri.getBucket(), e);
       }
     }
-    return mFiles.iterator();
+    return new FilteredIterator(mc, mFiles.iterator(), true);
   }
 
   @Override
@@ -141,6 +141,7 @@ public class ControllerS3 implements MController {
       this.mc = mc;
       this.wantDirs = wantDirs;
       this.fullInventory = false;
+      this.next = nextFilteredFile();
     }
 
     FilteredIterator(CollectionConfig mc, Iterator<MFile> iter, boolean wantDirs, boolean fullInventory) {
@@ -148,17 +149,19 @@ public class ControllerS3 implements MController {
       this.mc = mc;
       this.wantDirs = wantDirs;
       this.fullInventory = fullInventory;
+      this.next = nextFilteredFile();
     }
 
     public boolean hasNext() {
-      next = nextFilteredFile();
       return (next != null);
     }
 
     public MFile next() {
       if (next == null)
         throw new NoSuchElementException();
-      return next;
+      final MFile mFile = next;
+      next = nextFilteredFile();
+      return mFile;
     }
 
     public void remove() {
