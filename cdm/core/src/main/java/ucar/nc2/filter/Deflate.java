@@ -13,6 +13,7 @@ import java.util.zip.Deflater;
 import java.util.zip.DeflaterOutputStream;
 import java.util.zip.Inflater;
 import java.util.zip.InflaterInputStream;
+import ucar.nc2.util.IO;
 
 /**
  * Filter implementation of zlib compression.
@@ -71,10 +72,7 @@ public class Deflate extends Filter {
     InflaterInputStream iis = new InflaterInputStream(in, new Inflater(), dataIn.length);
 
     ByteArrayOutputStream os = new ByteArrayOutputStream();
-    int read;
-    while ((read = iis.read()) != -1) {
-      os.write(read);
-    }
+    IO.copyB(iis, os, IO.default_socket_buffersize);
     // close everything and return
     in.close();
     iis.close();

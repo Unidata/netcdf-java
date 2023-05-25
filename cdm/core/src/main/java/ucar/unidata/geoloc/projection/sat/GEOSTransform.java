@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2023 University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 
@@ -170,9 +170,15 @@ public class GEOSTransform {
     double theta_sat = Double.NaN;
 
     if (scan_geom.equals(GEOS)) { // GEOS (eg. SEVIRI, MSG) CGMS 03, 4.4.3.2, Normalized Geostationary Projection
+      if (h * (h - r_1) < r_3 * r_3 + r_eq * r_eq * r_2 * r_2 / (r_pol * r_pol)) {
+        return new double[] {Double.NaN, Double.NaN};
+      }
       lamda_sat = Math.atan(-r_2 / r_1);
       theta_sat = Math.asin(r_3 / Math.sqrt(r_1 * r_1 + r_2 * r_2 + r_3 * r_3));
     } else if (scan_geom.equals(GOES)) { // GOES (eg. GOES-R ABI)
+      if (h * (h - r_1) < r_2 * r_2 + r_eq * r_eq * r_3 * r_3 / (r_pol * r_pol)) {
+        return new double[] {Double.NaN, Double.NaN};
+      }
       lamda_sat = Math.asin(-r_2 / Math.sqrt(r_1 * r_1 + r_2 * r_2 + r_3 * r_3));
       theta_sat = Math.atan(r_3 / r_1);
     }

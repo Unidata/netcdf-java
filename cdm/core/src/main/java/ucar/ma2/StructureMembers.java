@@ -460,6 +460,10 @@ public final class StructureMembers {
     }
   }
 
+  public static MemberBuilder memberBuilder() {
+    return new MemberBuilder();
+  }
+
   public static class MemberBuilder {
     private String name, desc, units;
     private DataType dtype;
