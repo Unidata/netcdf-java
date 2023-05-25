@@ -38,8 +38,8 @@ public class TestGcdmNetcdfFile {
               && !pathname.getName().startsWith("test_vlen9") && !pathname.getName().startsWith("test_vlen10");
       String skipStructuresWithVlens2 = "vlen/IntTimSciSamp.nc vlen/cdm_sea_soundings.nc4";
 
-      TestDir.actOnAllParameterized("../../dap4/d4tests/src/test/data/resources/testfiles/", skipStructuresWithVlens,
-          result, false);
+      TestDir.actOnAllParameterized("../../dap4/src/test/data/resources/nctestfiles/", skipStructuresWithVlens, result,
+          false);
 
       TestDir.actOnAllParameterized(TestDir.cdmLocalTestDataDir, new SuffixFileFilter(".nc"), result, true);
 
