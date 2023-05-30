@@ -1,5 +1,6 @@
 package ucar.nc2.ft.point.remote;
 
+import java.util.Formatter;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -8,14 +9,10 @@ import org.junit.runners.Parameterized;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
 import ucar.nc2.ft.FeatureDatasetPoint;
-import ucar.nc2.ft.NoFactoryFoundException;
 import ucar.nc2.ft.PointFeatureCollection;
 import ucar.nc2.ft.point.FlattenedDatasetPointCollection;
 import ucar.nc2.ft.point.PointTestUtil;
-import ucar.nc2.ft.point.remote.PointCollectionStreamLocal;
-import ucar.nc2.ft.point.remote.PointStream;
 import ucar.unidata.util.test.TestDir;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -51,12 +48,11 @@ public class TestPointStream {
   }
 
   @Test
-  public void roundTrip() throws IOException, NoFactoryFoundException {
-
-
+  public void roundTrip() throws IOException {
     File outFile = temporaryFolder.newFile();
+    Formatter errlog = new Formatter();
     try (FeatureDatasetPoint fdPoint =
-        (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(FeatureType.ANY_POINT, location, null)) {
+        (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(FeatureType.ANY_POINT, location, null, errlog)) {
 
       PointFeatureCollection origPointCol = new FlattenedDatasetPointCollection(fdPoint);
       PointStream.write(origPointCol, outFile);
@@ -64,9 +60,5 @@ public class TestPointStream {
 
       assertThat(PointTestUtil.equals(origPointCol, roundTrippedPointCol)).isTrue();
     }
-
   }
-
-
-
 }
