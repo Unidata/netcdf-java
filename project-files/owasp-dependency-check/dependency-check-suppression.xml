@@ -20,27 +20,6 @@
   </suppress>
   <suppress>
     <notes><![CDATA[
-       file name: eccodes-2.12.0-Source.tar.gz: eccodes-2.12.0-Source.tar: jquery.js
-       reason: not using jquery in netcdf-java
-    ]]></notes>
-    <sha1>d539c36ab347d5df35659b174d28b94e6d2536ed</sha1>
-    <cve>CVE-2019-11358</cve>
-    <cve>CVE-2012-6708</cve>
-    <cve>CVE-2015-9251</cve>
-    <cve>CVE-2020-7656</cve>
-    <cve>CVE-2020-11022</cve>
-    <cve>CVE-2020-11023</cve>
-  </suppress>
-  <suppress>
-    <notes><![CDATA[
-      file name: guava-31.1-jre.jar
-      reason: NetCDF-Java does not use the vulnerable function (com.google.common.io.Files.createTempDir())
-    ]]></notes>
-    <packageUrl regex="true">^pkg:maven/com\.google\.guava/guava@.*$</packageUrl>
-    <cve>CVE-2020-8908</cve>
-  </suppress>
-  <suppress>
-    <notes><![CDATA[
       file name: screenshot_sync
       reason: False positive.  We do not use the fredsmith utils.
     ]]></notes>
