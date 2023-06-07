@@ -432,7 +432,7 @@ abstract class GribCollectionBuilderFromIndex {
         for (int i = 0; i < pc.getValuesCount(); i++) {
           double val1 = pc.getValues(i);
           double val2 = pc.getBound(i);
-          ecoords.add(new EnsCoordValue((int) val1, (int) val2, i + 1));
+          ecoords.add(new EnsCoordValue((int) val1, (int) val2));
         }
         return new CoordinateEns(code, ecoords);
     }
