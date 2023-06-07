@@ -24,6 +24,8 @@ import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFiles;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
+import ucar.nc2.constants.CDM;
+import ucar.nc2.iosp.netcdf4.Nc4;
 import ucar.nc2.util.Indent;
 import ucar.unidata.util.StringUtil2;
 
@@ -157,7 +159,7 @@ public class CDLWriter {
 
       for (Attribute att : group.attributes()) {
         // String name = strict ? NetcdfFile.escapeNameCDL(getShortName()) : getShortName();
-        if (!Attribute.isspecial(att)) {
+        if (!CDM.isspecial(att)) {
           out.format("%s", indent);
           writeCDL(att, null);
           out.format(";");
@@ -292,8 +294,12 @@ public class CDLWriter {
         out.format("enum UNKNOWN");
       else
         out.format("enum %s", NetcdfFile.makeValidCDLName(v.getEnumTypedef().getShortName()));
-    } else
-      out.format("%s", dataType.toString());
+    } else {
+      String printname = dataType.toString();
+      if (strict)
+        printname = printname.toLowerCase();
+      out.format("%s", printname);
+    }
 
     // if (isVariableLength) out.append("(*)"); // LOOK
     out.format(" ");
@@ -303,7 +309,7 @@ public class CDLWriter {
 
     indent.incr();
     for (Attribute att : v.attributes()) {
-      if (Attribute.isspecial(att))
+      if (CDM.isspecial(att))
         continue;
       out.format("%s", indent);
       writeCDL(att, v.getShortName());
@@ -347,7 +353,7 @@ public class CDLWriter {
     out.format(";%n");
 
     for (Attribute att : s.attributes()) {
-      if (Attribute.isspecial(att))
+      if (CDM.isspecial(att))
         continue;
       out.format("%s", indent);
       writeCDL(att, s.getShortName());

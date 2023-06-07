@@ -1,0 +1,14 @@
+netcdf test_test {
+  types:
+    byte enum enum_t { c1 = 1, c2 = 2, c3 = 3};
+
+  variables:
+    enum enum_t v1;
+
+  // global attributes:
+  :_DAP4_Little_Endian = 1B;
+  string :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
+
+  data:
+    v1 = 1
+}

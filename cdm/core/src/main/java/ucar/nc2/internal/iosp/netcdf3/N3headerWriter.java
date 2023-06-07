@@ -19,6 +19,7 @@ import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
+import ucar.nc2.constants.CDM;
 import ucar.unidata.io.RandomAccessFile;
 
 /** Class to write a netcdf3 header. */
@@ -217,8 +218,8 @@ class N3headerWriter extends N3headerNew {
 
   private void writeAtts(Iterable<Attribute> atts, Formatter fout) throws IOException {
 
-    final List<Attribute> attributesToWrite = StreamSupport.stream(atts.spliterator(), false)
-        .filter(att -> !Attribute.isspecial(att)).collect(Collectors.toList());
+    final List<Attribute> attributesToWrite =
+        StreamSupport.stream(atts.spliterator(), false).filter(att -> !CDM.isspecial(att)).collect(Collectors.toList());
 
     int n = Iterables.size(attributesToWrite);
     if (n == 0) {

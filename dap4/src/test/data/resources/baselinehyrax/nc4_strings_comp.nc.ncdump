@@ -1,0 +1,36 @@
+netcdf nc4_strings_comp {
+  dimensions:
+    lat = 6;
+    lon = 5;
+  variables:
+    string station(lat, lon);
+      string station:names = "site_1", "site_2", "site_3";
+      string station:who = "james";
+
+    string scan_line(lon);
+
+    string codec_name;
+
+    int lat(lat);
+      string lat:_CoordinateAxisType = "Lat";
+
+    int lon(lon);
+      string lon:_CoordinateAxisType = "Lon";
+
+  // global attributes:
+  string :NC_GLOBAL.title = "Hyrax/netcdf handler test file 2";
+  :NC_GLOBAL.version = 1.0;
+  string :NC_GLOBAL.description = "This file has all of the new netcdf 4 unsigned data types.";
+  string :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
+
+  data:
+    station = 
+      {  "one",   "two",   "three",   "four",   "five",  "one_b",   "two_b",   "three_b",   "four_b",   "five_b",  "one_c",   "two_c",   "three_c",   "four_c",   "five_c",  "one",   "two",   "three",   "four",   "five",  "one",   "two",   "three",   "four",   "five",  "one_f",   "two_f",   "three_f",   "four_f",   "five_f"
+      }
+    scan_line =   "r",   "r1",   "r2",   "r3",   "r4"
+    codec_name =   "mp3"
+    lat = 
+      {0, 10, 20, 30, 40, 50}
+    lon = 
+      {-140, -118, -96, -84, -52}
+}

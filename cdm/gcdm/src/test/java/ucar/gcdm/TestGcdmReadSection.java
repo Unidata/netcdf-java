@@ -37,7 +37,7 @@ public class TestGcdmReadSection {
 
   @Test
   public void testReadSection() throws Exception {
-    String localFilename = "../../dap4/d4tests/src/test/data/resources/testfiles/test_atomic_array.nc";
+    String localFilename = "../../dap4/src/test/data/resources/nctestfiles/test_atomic_array.nc";
     String varName = "vs"; // Variable is non-numeric so values are not read when header is
     String[] expectedValues = {"hello\tworld", "\r\n", "Καλημέα", "abc"};
     String gcdmUrl = gcdmPrefix + Paths.get(localFilename).toAbsolutePath();

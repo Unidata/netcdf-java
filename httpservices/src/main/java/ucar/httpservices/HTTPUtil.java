@@ -5,35 +5,20 @@
 
 package ucar.httpservices;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
+import java.io.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
-import org.apache.http.Header;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpEntityEnclosingRequest;
-import org.apache.http.HttpException;
-import org.apache.http.HttpRequest;
-import org.apache.http.HttpRequestInterceptor;
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpResponseInterceptor;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.ZipInputStream;
+import org.apache.http.client.entity.InputStreamFactory;
 import org.apache.http.client.utils.URIBuilder;
-import org.apache.http.message.BasicHeader;
-import org.apache.http.protocol.HttpContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,117 +41,21 @@ public abstract class HTTPUtil {
   }
 
   //////////////////////////////////////////////////
-  // Interceptors
+  // Inner classes
 
-  abstract static class InterceptCommon {
-    private static final Logger logger = LoggerFactory.getLogger(InterceptCommon.class);
-
-    protected HttpContext context = null;
-    protected List<Header> headers = new ArrayList<Header>();
-    protected HttpRequest request = null;
-    protected HttpResponse response = null;
-    protected boolean printheaders = false;
-
-    public InterceptCommon setPrint(boolean tf) {
-      this.printheaders = tf;
-      return this;
-    }
-
-    public void clear() {
-      context = null;
-      headers.clear();
-      request = null;
-      response = null;
-    }
-
-    public synchronized HttpRequest getRequest() {
-      return this.request;
-    }
-
-    public synchronized HttpResponse getResponse() {
-      return this.response;
-    }
-
-    public synchronized HttpContext getContext() {
-      return this.context;
-    }
-
-    public synchronized HttpEntity getRequestEntity() {
-      if (this.request != null && this.request instanceof HttpEntityEnclosingRequest) {
-        return ((HttpEntityEnclosingRequest) this.request).getEntity();
-      } else
-        return null;
-    }
-
-    synchronized HttpEntity getResponseEntity() {
-      if (this.response != null) {
-        return this.response.getEntity();
-      } else
-        return null;
-    }
-
-    public synchronized List<Header> getHeaders(String key) {
-      List<Header> keyh = new ArrayList<Header>();
-      for (Header h : this.headers) {
-        if (h.getName().equalsIgnoreCase(key.trim()))
-          keyh.add(h);
-      }
-      return keyh;
-    }
-
-    synchronized List<Header> getHeaders() {
-      return this.headers;
-    }
-
-    void printHeaders() {
-      if (this.request != null) {
-        Header[] hdrs = this.request.getAllHeaders();
-        if (hdrs == null)
-          hdrs = new Header[0];
-        logger.debug("Request Headers:");
-        for (Header h : hdrs) {
-          logger.debug(h.toString());
-        }
-      }
-      if (this.response != null) {
-        Header[] hdrs = this.response.getAllHeaders();
-        if (hdrs == null)
-          hdrs = new Header[0];
-        logger.debug("Response Headers:");
-        for (Header h : hdrs) {
-          logger.debug(h.toString());
-        }
-      }
+  static class ZipStreamFactory implements InputStreamFactory {
+    // InputStreamFactory methods
+    @Override
+    public InputStream create(InputStream instream) throws IOException {
+      return new ZipInputStream(instream, HTTPUtil.UTF8);
     }
   }
 
-  public static class InterceptResponse extends InterceptCommon implements HttpResponseInterceptor {
-    public synchronized void process(HttpResponse response, HttpContext context) throws HttpException, IOException {
-      this.response = response;
-      this.context = context;
-      if (this.printheaders)
-        printHeaders();
-      else if (this.response != null) {
-        Header[] hdrs = this.response.getAllHeaders();
-        for (int i = 0; i < hdrs.length; i++) {
-          headers.add(hdrs[i]);
-        }
-      }
-    }
-  }
-
-  public static class InterceptRequest extends InterceptCommon implements HttpRequestInterceptor {
-    public synchronized void process(HttpRequest request, HttpContext context) throws HttpException, IOException {
-      this.request = request;
-      this.context = context;
-      if (this.printheaders)
-        printHeaders();
-      else if (this.request != null) {
-        Header[] hdrs = this.request.getAllHeaders();
-        for (int i = 0; i < hdrs.length; i++) {
-          headers.add(hdrs[i]);
-        }
-      }
+  static class GZIPStreamFactory implements InputStreamFactory {
+    // InputStreamFactory methods
+    @Override
+    public InputStream create(InputStream instream) throws IOException {
+      return new GZIPInputStream(instream);
     }
   }
 
@@ -312,40 +201,6 @@ public abstract class HTTPUtil {
       return urib.build();
     } catch (URISyntaxException e) {
       throw new IllegalArgumentException(e.getMessage());
-    }
-  }
-
-  /**
-   * Temporary hack to remove Content-Encoding: XXX-Endian headers
-   */
-  static class ContentEncodingInterceptor extends InterceptCommon implements HttpResponseInterceptor {
-    public synchronized void process(HttpResponse response, HttpContext context) throws HttpException, IOException {
-      if (response == null)
-        return;
-      Header[] hdrs = response.getAllHeaders();
-      if (hdrs == null)
-        return;
-      boolean modified = false;
-      for (int i = 0; i < hdrs.length; i++) {
-        Header h = hdrs[i];
-        if (!h.getName().equalsIgnoreCase("content-encoding"))
-          continue;
-        String value = h.getValue();
-        if (value.trim().toLowerCase().endsWith("-endian")) {
-          hdrs[i] = new BasicHeader("X-Content-Encoding", value);
-          modified = true;
-        }
-      }
-      if (modified)
-        response.setHeaders(hdrs);
-      // Similarly, suppress encoding for Entity
-      HttpEntity entity = response.getEntity();
-      if (entity != null) {
-        Header ceheader = entity.getContentEncoding();
-        if (ceheader != null) {
-          String value = ceheader.getValue();
-        }
-      }
     }
   }
 
