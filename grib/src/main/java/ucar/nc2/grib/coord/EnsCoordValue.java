@@ -12,9 +12,7 @@ public class EnsCoordValue implements Comparable<EnsCoordValue> {
   private final int ensNumber;
 
   public EnsCoordValue(int code, int ensMember) {
-    this.code = code;
-    this.ensMember = ensMember;
-    this.ensNumber = 0;
+    this(code, ensMember, 0);
   }
 
   public EnsCoordValue(int code, int ensMember, int ensNumber) {
