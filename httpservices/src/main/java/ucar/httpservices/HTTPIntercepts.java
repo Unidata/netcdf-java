@@ -144,7 +144,7 @@ public class HTTPIntercepts {
 
   // Global set debug interceptors
   static public void setGlobalDebugInterceptors(boolean tf) {
-    defaultinterception = true;
+    defaultinterception = tf;
   }
 
   // Use this flag to have debug interceptors print their info
