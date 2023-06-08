@@ -303,7 +303,7 @@ public abstract class CDMUtil {
    * @return list of corresponding slices
    */
 
-  static public List<Slice> indexToSlices(Index indices) throws DapException {
+  public static List<Slice> indexToSlices(Index indices) throws DapException {
     // short circuit the scalar case
     int rank = indices.getRank();
     if (rank == 0)
@@ -326,7 +326,7 @@ public abstract class CDMUtil {
    * @return Index corresponding to slices
    * @throws DapException
    */
-  static public Index slicesToIndex(List<Slice> slices) throws DapException {
+  public static Index slicesToIndex(List<Slice> slices) throws DapException {
     int[] positions = new int[slices.size()];
     int[] dimsizes = new int[slices.size()];
     for (int i = 0; i < positions.length; i++) {

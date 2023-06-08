@@ -57,7 +57,7 @@ abstract public class DataToCDM {
   //////////////////////////////////////////////////
   // Correlate CDM Variables with ucar.ma2.Array objects
 
-  static public Map<Variable, Array> createDataMap(D4DSP dsp, NodeMap nodemap) throws DapException {
+  public static Map<Variable, Array> createDataMap(D4DSP dsp, NodeMap nodemap) throws DapException {
     Map<DapVariable, D4Array> datamap = dsp.getVariableDataMap();
     DapDataset dmr = dsp.getDMR();
     Map<Variable, Array> arraymap = new HashMap<>();

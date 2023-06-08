@@ -58,7 +58,7 @@ public class TestGhcnm {
   }
 
   // LOOK make into test
-  static public void main2(String args[]) throws IOException {
+  public static void main2(String args[]) throws IOException {
     Set<Integer> stns = new HashSet<>(10 * 1000);
     stnDuplicates("C:/data/ghcnm/ghcnm.v3.0.0-beta1.20101207.qae.inv", stns, false);
     stnDuplicates("C:/data/ghcnm/ghcnm.v3.0.0-beta1.20101207.qca.inv", stns, true);

@@ -57,7 +57,7 @@ public class TestDuplicates extends UnitTestCommon {
   }
 
   // Collect results locally
-  static public class Result {
+  public static class Result {
     String title;
     String url;
     String cdl;

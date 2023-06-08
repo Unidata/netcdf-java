@@ -23,7 +23,7 @@ public abstract class DapDump {
   //////////////////////////////////////////////////
   // Provide a simple dump of binary data
 
-  static public void dumpbytesbuf(ByteBuffer buf0, boolean skipdmr) {
+  public static void dumpbytesbuf(ByteBuffer buf0, boolean skipdmr) {
     int savepos = buf0.position();
     int limit0 = buf0.limit();
     int skipcount = 0;
@@ -56,7 +56,7 @@ public abstract class DapDump {
    *
    * @param buf0 byte buffer to dump
    */
-  static public void dumpbytesbuf(ByteBuffer buf0) {
+  public static void dumpbytesbuf(ByteBuffer buf0) {
     int stop = buf0.limit();
     int size = stop + 8;
     int savepos = buf0.position();
@@ -109,22 +109,22 @@ public abstract class DapDump {
     }
   }
 
-  static public void dumpbytesstream(OutputStream stream, ByteOrder order, String tag) {
+  public static void dumpbytesstream(OutputStream stream, ByteOrder order, String tag) {
     if (stream instanceof ByteArrayOutputStream) {
       byte[] content = ((ByteArrayOutputStream) stream).toByteArray();
       dumpbytesraw(content, order, tag);
     }
   }
 
-  static public void dumpbytesrawbuf(ByteBuffer buf, ByteOrder order, String tag) {
+  public static void dumpbytesrawbuf(ByteBuffer buf, ByteOrder order, String tag) {
     dumpbytesraw(buf.array(), 0, buf.limit(), order, tag);
   }
 
-  static public void dumpbytesraw(byte[] content, ByteOrder order, String tag) {
+  public static void dumpbytesraw(byte[] content, ByteOrder order, String tag) {
     dumpbytesraw(content, 0, content.length, order, tag);
   }
 
-  static public void dumpbytesraw(byte[] content, int start, int len, ByteOrder order, String tag) {
+  public static void dumpbytesraw(byte[] content, int start, int len, ByteOrder order, String tag) {
     System.err.println("++++++++++ " + tag + " ++++++++++ ");
     ByteBuffer tmp = ByteBuffer.wrap(content).order(order);
     tmp.position(start);

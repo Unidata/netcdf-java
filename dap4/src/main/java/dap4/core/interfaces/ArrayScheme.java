@@ -19,7 +19,7 @@ public enum ArrayScheme {
   //////////////////////////////////////////////////
   // Static methods
 
-  static public ArrayScheme schemeFor(DapVariable field) {
+  public static ArrayScheme schemeFor(DapVariable field) {
     DapType ftype = field.getBaseType();
     ArrayScheme scheme = null;
     boolean isscalar = field.getRank() == 0;

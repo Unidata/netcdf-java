@@ -97,7 +97,7 @@ public class Dap4Server {
     return ok;
   }
 
-  static public Dap4Server findServer() throws DapException {
+  public static Dap4Server findServer() throws DapException {
     // Find the server to use
     for (Dap4Server svc : registry) {
       if (svc.ping())

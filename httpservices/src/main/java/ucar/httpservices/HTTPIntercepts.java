@@ -37,7 +37,7 @@ public class HTTPIntercepts {
   }
 
   // Default printer
-  static public Printer logprinter = new Printer() {
+  public static Printer logprinter = new Printer() {
     public void print(String s) {
       logger.debug(s);
     }
@@ -140,25 +140,25 @@ public class HTTPIntercepts {
   // Static Variables
 
   // Use this flag to indicate that all instances should set debug.
-  static protected boolean defaultinterception = false;
+  protected static boolean defaultinterception = false;
 
   // Global set debug interceptors
-  static public void setGlobalDebugInterceptors(boolean tf) {
-    defaultinterception = tf;
+  public static void setGlobalDebugInterceptors(boolean tf) {
+    defaultinterception = true;
   }
 
   // Use this flag to have debug interceptors print their info
   // in addition to whatever else it does
-  static protected Printer defaultprinter = null;
+  protected static Printer defaultprinter = null;
 
-  static public void setGlobalPrinter(Printer printer) {
+  public static void setGlobalPrinter(Printer printer) {
     defaultprinter = printer;
   }
 
   //////////////////////////////////////////////////
   // Specific Interceptors
 
-  static public class DebugInterceptResponse extends HTTPIntercepts.InterceptCommon implements HttpResponseInterceptor {
+  public static class DebugInterceptResponse extends HTTPIntercepts.InterceptCommon implements HttpResponseInterceptor {
     protected StatusLine statusline = null; // Status Line
 
     public int getStatusCode() {
@@ -180,7 +180,7 @@ public class HTTPIntercepts {
     }
   }
 
-  static public class DebugInterceptRequest extends InterceptCommon implements HttpRequestInterceptor {
+  public static class DebugInterceptRequest extends InterceptCommon implements HttpRequestInterceptor {
     protected RequestLine requestline = null; // request Line
 
     public String getMethod() {

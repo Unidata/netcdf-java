@@ -137,7 +137,7 @@ public class TestMetarEncoding extends java.util.TimerTask {
     runC();
   }
 
-  static public void main(String[] args) {
+  public static void main(String[] args) {
     Calendar c = Calendar.getInstance(); // contains current startup time
     // c.add(Calendar.SECOND, 30); // starting in 30 seconds
     Timer timer = new Timer();

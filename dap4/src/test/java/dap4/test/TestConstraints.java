@@ -40,22 +40,22 @@ public class TestConstraints extends DapTestCommon implements Dap4ManifestIF {
   // Constants
 
   // Define the server to use
-  static protected final String SERVERNAME = "d4ts";
-  static protected final String SERVER = "remotetest.unidata.ucar.edu";
-  static protected final int SERVERPORT = -1;
-  static protected final String SERVERPATH = "d4ts/testfiles";
+  protected static final String SERVERNAME = "d4ts";
+  protected static final String SERVER = "remotetest.unidata.ucar.edu";
+  protected static final int SERVERPORT = -1;
+  protected static final String SERVERPATH = "d4ts/testfiles";
 
   // Define the input set location(s)
-  static protected final String INPUTEXT = ".nc"; // note that the .dap is deliberately left off
-  static protected final String INPUTQUERY = "?" + DapConstants.CHECKSUMTAG + "=false&";
-  static protected final String INPUTFRAG = "#dap4";
+  protected static final String INPUTEXT = ".nc"; // note that the .dap is deliberately left off
+  protected static final String INPUTQUERY = "?" + DapConstants.CHECKSUMTAG + "=false&";
+  protected static final String INPUTFRAG = "#dap4";
 
-  static protected final String BASELINEDIR = "/baselineconstraints";
-  static protected final String BASELINEEXT = ".nc.ncdump";
+  protected static final String BASELINEDIR = "/baselineconstraints";
+  protected static final String BASELINEEXT = ".nc.ncdump";
 
   // Following files cannot be tested because of flaws in sequence handling
   // by the CDM code in ucar.nc2.dataset.
-  static protected String[] EXCLUSIONS =
+  protected static String[] EXCLUSIONS =
       {"test_vlen2", "test_vlen3", "test_vlen4", "test_vlen5", "test_vlen6", "test_vlen7", "test_vlen8"};
 
   //////////////////////////////////////////////////
@@ -63,8 +63,8 @@ public class TestConstraints extends DapTestCommon implements Dap4ManifestIF {
 
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  static public String resourceroot;
-  static public Dap4Server server;
+  public static String resourceroot;
+  public static Dap4Server server;
 
   static {
     // This test uses remotetest
@@ -99,7 +99,7 @@ public class TestConstraints extends DapTestCommon implements Dap4ManifestIF {
   // Test Generator
 
   @Parameterized.Parameters(name = "{index}: {0}")
-  static public List<TestCaseCommon> defineTestCases() {
+  public static List<TestCaseCommon> defineTestCases() {
     assert (server != null);
     List<TestCaseCommon> testcases = new ArrayList<>();
     String[][] manifest = excludeNames(constraint_manifest, EXCLUSIONS);

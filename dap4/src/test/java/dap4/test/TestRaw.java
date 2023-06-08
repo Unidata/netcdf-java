@@ -40,17 +40,17 @@ public class TestRaw extends DapTestCommon implements Dap4ManifestIF {
   // Constants
 
   // Define the input set location(s)
-  static protected final String INPUTDIR = "/rawtestfiles";
-  static protected final String INPUTEXT = ".nc.dap";
-  static protected final String INPUTQUERY = "?" + DapConstants.CHECKSUMTAG + "=false";
-  static protected final String INPUTFRAG = "";
-  static protected final String BASELINEDIR = "/baselineraw";
-  static protected final String BASELINEEXT = ".nc.ncdump";
+  protected static final String INPUTDIR = "/rawtestfiles";
+  protected static final String INPUTEXT = ".nc.dap";
+  protected static final String INPUTQUERY = "?" + DapConstants.CHECKSUMTAG + "=false";
+  protected static final String INPUTFRAG = "";
+  protected static final String BASELINEDIR = "/baselineraw";
+  protected static final String BASELINEEXT = ".nc.ncdump";
 
 
   // Following files cannot be tested because of flaws in sequence handling
   // by the CDM code in ucar.nc2.dataset.
-  static protected String[] EXCLUSIONS =
+  protected static String[] EXCLUSIONS =
       {"test_vlen2", "test_vlen3", "test_vlen4", "test_vlen5", "test_vlen6", "test_vlen7", "test_vlen8"};
 
   // Attribute suppression
@@ -64,7 +64,7 @@ public class TestRaw extends DapTestCommon implements Dap4ManifestIF {
 
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  static public String resourceroot;
+  public static String resourceroot;
 
   static {
     resourceroot = getResourceRoot();
@@ -94,7 +94,7 @@ public class TestRaw extends DapTestCommon implements Dap4ManifestIF {
   // Test Generator
 
   @Parameterized.Parameters(name = "{index}: {0}")
-  static public List<TestCaseCommon> defineTestCases() {
+  public static List<TestCaseCommon> defineTestCases() {
     List<TestCaseCommon> testcases = new ArrayList<>();
     String[][] manifest = excludeNames(dap4_manifest, EXCLUSIONS);
     for (String[] tuple : manifest) {
@@ -188,7 +188,7 @@ public class TestRaw extends DapTestCommon implements Dap4ManifestIF {
   //////////////////////////////////////////////////
   // Support Methods
 
-  static protected String buildURL(String name) {
+  protected static String buildURL(String name) {
     StringBuilder url = new StringBuilder();
     url.append("file://");
     url.append(resourceroot);

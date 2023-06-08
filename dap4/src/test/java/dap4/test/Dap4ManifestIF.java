@@ -14,7 +14,7 @@ package dap4.test;
 public interface Dap4ManifestIF {
 
   // List of all file names
-  static public final String[][] dap4_manifest = {{"test_one_var"}, {"test_atomic_array"}, {"test_atomic_types"},
+  public static final String[][] dap4_manifest = {{"test_one_var"}, {"test_atomic_array"}, {"test_atomic_types"},
       {"test_enum_1"}, {"test_enum_2"}, {"test_enum_3"}, {"test_enum_array"}, {"test_fill"}, {"test_fill_2"},
       {"test_groups1"}, {"test_misc1"}, {"test_one_vararray"}, {"test_opaque"}, {"test_opaque_array"}, {"test_struct1"},
       {"test_struct_array"}, {"test_struct_nested"}, {"test_struct_nested3"}, {"test_struct_type"}, {"test_test"},
@@ -22,7 +22,7 @@ public interface Dap4ManifestIF {
       {"test_vlen4"}, {"test_vlen5"}, {"test_vlen6"}, {"test_vlen7"}, {"test_vlen8"}, {"test_zerodim"}}; // dap4manifest
 
   // Define the Manifest of constrained tests
-  static public final String[][] constraint_manifest =
+  public static final String[][] constraint_manifest =
       {{"test_atomic_array", "1", "/vu8[1][0:2:2];/vd[1];/vs[1][0];/vo[0][1]"},
           {"test_atomic_array", "2", "/v16[0:1,3]"}, {"test_atomic_array", "3", "/v16[3,0:1]"},
           {"test_one_vararray", "4", "/t[1]"}, {"test_one_vararray", "5", "/t[0:1]"},

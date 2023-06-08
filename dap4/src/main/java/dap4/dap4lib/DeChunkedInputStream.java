@@ -40,7 +40,7 @@ public class DeChunkedInputStream extends InputStream {
   //////////////////////////////////////////////////
   // Types
 
-  static protected class Chunk { // Could we use ByteBuffer?
+  protected static class Chunk { // Could we use ByteBuffer?
     public byte[] chunk;
     public int size; // note that chunk.length > size is possible
     public int avail;
@@ -56,7 +56,7 @@ public class DeChunkedInputStream extends InputStream {
     }
   }
 
-  static public enum State {
+  public static enum State {
     INITIAL, MORE, END, ERROR;
   }
 

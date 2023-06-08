@@ -25,13 +25,13 @@ public class TestGcdmReadSection {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @BeforeClass
-  static public void before() {
+  public static void before() {
     // make sure to fetch data through gcdm every time
     Variable.permitCaching = false;
   }
 
   @AfterClass
-  static public void after() {
+  public static void after() {
     Variable.permitCaching = true;
   }
 

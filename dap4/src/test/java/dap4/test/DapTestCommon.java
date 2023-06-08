@@ -30,18 +30,18 @@ abstract public class DapTestCommon extends UnitTestCommon {
 
   static final String DEFAULTTREEROOT = "dap4";
 
-  static public final String FILESERVER = "file://localhost:8080";
+  public static final String FILESERVER = "file://localhost:8080";
 
-  static public final String ORDERTAG = "ucar.littleendian";
-  static public final String TRANSLATETAG = "ucar.translate";
-  static public final String TESTTAG = "ucar.testing";
+  public static final String ORDERTAG = "ucar.littleendian";
+  public static final String TRANSLATETAG = "ucar.translate";
+  public static final String TESTTAG = "ucar.testing";
 
   static final String D4TESTDIRNAME = "";
 
   // Equivalent to the path to the webapp/d4ts for testing purposes
-  static protected final String DFALTRESOURCEPATH = "/src/test/data/resources";
+  protected static final String DFALTRESOURCEPATH = "/src/test/data/resources";
 
-  static protected final String[] LEGALEXTENSIONS = {".dap", ".dmr", ".nc", "dmp", ".ncdump", ".dds", ".das", ".dods"};
+  protected static final String[] LEGALEXTENSIONS = {".dap", ".dmr", ".nc", "dmp", ".ncdump", ".dds", ".das", ".dods"};
 
   //////////////////////////////////////////////////
 
@@ -105,7 +105,7 @@ abstract public class DapTestCommon extends UnitTestCommon {
     }
   }
 
-  static public class TestCaseCommon {
+  public static class TestCaseCommon {
     public String name;
 
     public TestCaseCommon() {
@@ -120,11 +120,11 @@ abstract public class DapTestCommon extends UnitTestCommon {
   //////////////////////////////////////////////////
   // Static variables
 
-  static protected String dap4root = null;
-  static protected String dap4testroot = null;
-  static protected String dap4resourcedir = null;
+  protected static String dap4root = null;
+  protected static String dap4testroot = null;
+  protected static String dap4resourcedir = null;
 
-  static protected TestProperties props = null;
+  protected static TestProperties props = null;
 
   static {
     dap4root = locateDAP4Root(threddsroot);
@@ -138,11 +138,11 @@ abstract public class DapTestCommon extends UnitTestCommon {
   //////////////////////////////////////////////////
   // Static methods
 
-  static protected String getD4TestsRoot() {
+  protected static String getD4TestsRoot() {
     return dap4testroot;
   }
 
-  static protected String getResourceRoot() {
+  protected static String getResourceRoot() {
     return dap4resourcedir;
   }
 
@@ -266,7 +266,7 @@ abstract public class DapTestCommon extends UnitTestCommon {
    * @param exclusions The array of excluded names
    * @return manifest with excluded names removed
    */
-  static public String[][] excludeNames(String[][] manifest, String[] exclusions) {
+  public static String[][] excludeNames(String[][] manifest, String[] exclusions) {
     List<String[]> xlist = new ArrayList<>(manifest.length);
     for (int i = 0; i < manifest.length; i++) {
       String name = manifest[i][0]; // Assume tuple element 0 is always the name
@@ -283,7 +283,7 @@ abstract public class DapTestCommon extends UnitTestCommon {
 
   // Filter a document with respect to a set of regular expressions
   // Used to remove e.g. unwanted attributes
-  static public boolean regexpFilter(StringBuilder document, String regexp, boolean repeat) {
+  public static boolean regexpFilter(StringBuilder document, String regexp, boolean repeat) {
     boolean changed = false;
     String doc = document.toString();
     Pattern p = Pattern.compile(regexp, Pattern.DOTALL);
@@ -298,7 +298,7 @@ abstract public class DapTestCommon extends UnitTestCommon {
     return changed;
   }
 
-  static public boolean regexpFilters(StringBuilder sbdoc, String[] regexps, boolean repeat) {
+  public static boolean regexpFilters(StringBuilder sbdoc, String[] regexps, boolean repeat) {
     boolean changed = false;
     for (String re : regexps) {
       if (regexpFilter(sbdoc, re, repeat))
@@ -311,7 +311,7 @@ abstract public class DapTestCommon extends UnitTestCommon {
 
   // Filter a document with respect to a set of regular expressions
   // on a per-line basis
-  static public boolean regexpFilterLine(StringBuilder document, String regexp, boolean repeat) {
+  public static boolean regexpFilterLine(StringBuilder document, String regexp, boolean repeat) {
     boolean changed = false;
     Pattern p = Pattern.compile(regexp, Pattern.DOTALL);
     String[] lines = document.toString().split("\r?\n");

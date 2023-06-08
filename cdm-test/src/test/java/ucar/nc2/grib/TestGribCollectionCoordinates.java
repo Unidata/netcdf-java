@@ -36,7 +36,7 @@ public class TestGribCollectionCoordinates {
   private static CollectionUpdateType updateMode = CollectionUpdateType.always;
 
   @BeforeClass
-  static public void before() throws IOException {
+  public static void before() throws IOException {
     GribIosp.debugIndexOnlyCount = 0;
     GribCollectionImmutable.countGC = 0;
     PartitionCollectionImmutable.countPC = 0;
@@ -48,7 +48,7 @@ public class TestGribCollectionCoordinates {
   }
 
   @AfterClass
-  static public void after() {
+  public static void after() {
     Grib.setDebugFlags(new DebugFlagsImpl());
     /*
      * Formatter out = new Formatter(System.out);

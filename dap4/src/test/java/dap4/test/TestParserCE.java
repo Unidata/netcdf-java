@@ -108,7 +108,7 @@ public class TestParserCE extends DapTestCommon implements Dap4ManifestIF {
   // Test Generator
 
   @Parameterized.Parameters(name = "{index}: {0}")
-  static public List<TestCaseCommon> defineTestCases() {
+  public static List<TestCaseCommon> defineTestCases() {
     List<TestCaseCommon> testcases = new ArrayList<>();
     for (String[] triple : testinputs) {
       TestCase tc = new TestCase(triple[0], triple[1], triple[2]);

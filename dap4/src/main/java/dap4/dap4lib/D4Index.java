@@ -24,7 +24,7 @@ public class D4Index extends ucar.ma2.Index {
    * compute the set of dimension indices that correspond
    * to the offset.
    */
-  static public Index offsetToIndex(int offset, int[] shape) {
+  public static Index offsetToIndex(int offset, int[] shape) {
     // offset = d3*(d2*(d1*(x1))+x2)+x3
     int[] indices = new int[shape.length];
     for (int i = shape.length - 1; i >= 0; i--) {
@@ -41,7 +41,7 @@ public class D4Index extends ucar.ma2.Index {
    * @return list of corresponding slices
    */
 
-  static public List<Slice> indexToSlices(ucar.ma2.Index indices) throws DapException {
+  public static List<Slice> indexToSlices(ucar.ma2.Index indices) throws DapException {
     // short circuit the scalar case
     int rank = indices.getRank();
     if (rank == 0)
@@ -64,7 +64,7 @@ public class D4Index extends ucar.ma2.Index {
    * @return Index corresponding to slices
    * @throws DapException
    */
-  static public D4Index slicesToIndex(List<Slice> slices) throws DapException {
+  public static D4Index slicesToIndex(List<Slice> slices) throws DapException {
     int[] positions = new int[slices.size()];
     int[] dimsizes = new int[slices.size()];
     for (int i = 0; i < positions.length; i++) {
