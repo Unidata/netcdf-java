@@ -35,13 +35,13 @@ public class TestRdaCoordsMatchGbx {
   private static final boolean showFileCounters = true;
 
   @BeforeClass
-  static public void before() {
+  public static void before() {
     Grib.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
     countersAll = GribCoordsMatchGbx.getCounters();
   }
 
   @AfterClass
-  static public void after() {
+  public static void after() {
     Grib.setDebugFlags(new DebugFlagsImpl());
     System.out.printf("countersAll = %s%n", countersAll);
   }

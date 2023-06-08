@@ -34,16 +34,16 @@ public class TestS3NetcdfFileCache {
   private static final String S3_URI = "cdms3:" + BUCKET + "?" + FILENAME;
 
   @BeforeClass
-  static public void setUp() {
+  public static void setUp() {
     cache = new FileCache(5, 100, 60 * 60);
   }
 
   @AfterClass
-  static public void tearDown() {
+  public static void tearDown() {
     cache.clearCache(true);
   }
 
-  static public class MyFileFactory implements FileFactory {
+  public static class MyFileFactory implements FileFactory {
     public FileCacheable open(DatasetUrl location, int buffer_size, CancelTask cancelTask, Object iospMessage)
         throws IOException {
       return NetcdfDatasets.openFile(location, buffer_size, cancelTask, iospMessage);

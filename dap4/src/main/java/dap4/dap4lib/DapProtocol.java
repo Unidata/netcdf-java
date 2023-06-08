@@ -31,9 +31,9 @@ public abstract class DapProtocol implements DapCodes {
   //////////////////////////////////////////////////
   // Static variables
 
-  static protected final Set<String> DAP4EXTENSIONS;
-  static protected final Set<String> DAP4QUERYMARKERS;
-  static protected final Set<String> DAP4SCHEMES;
+  protected static final Set<String> DAP4EXTENSIONS;
+  protected static final Set<String> DAP4QUERYMARKERS;
+  protected static final Set<String> DAP4SCHEMES;
 
   static {
     DAP4EXTENSIONS = new HashSet<String>();
@@ -56,7 +56,7 @@ public abstract class DapProtocol implements DapCodes {
   // Map RequestMode X ResponseFormat => ContentType
   public static Map<String, ContentType> contenttypes;
 
-  static public String contentKey(RequestMode mode, ResponseFormat format) {
+  public static String contentKey(RequestMode mode, ResponseFormat format) {
     return mode.id() + "." + format.id();
   }
 
@@ -120,7 +120,7 @@ public abstract class DapProtocol implements DapCodes {
    * @param xuri parsed uri
    * @return true if this uri appears to be processible by DAP4
    */
-  static public boolean isDap4URI(XURI xuri) {
+  public static boolean isDap4URI(XURI xuri) {
     boolean found = false;
     // This is definitive
     if ("dap4".equalsIgnoreCase(xuri.getScheme()))
@@ -152,7 +152,7 @@ public abstract class DapProtocol implements DapCodes {
     return false;
   }
 
-  static public boolean isDap4URI(String uri) {
+  public static boolean isDap4URI(String uri) {
     try {
       XURI xuri = new XURI(uri);
       return isDap4URI(xuri);

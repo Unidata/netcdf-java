@@ -12,7 +12,7 @@ import java.util.HashMap;
 public class Stat {
   static private HashMap<String, Stat> map = new HashMap<String, Stat>();
 
-  static public Stat factory(String name) {
+  public static Stat factory(String name) {
     Stat s = map.get(name);
     if (s == null) {
       s = new Stat(name, false);

@@ -66,7 +66,7 @@ public class TestGribCollectionsBig {
   // String topdir = "B:/rdavm"; // use for local windows to get around samba bug
 
   @BeforeClass
-  static public void before() {
+  public static void before() {
     GribIosp.debugIndexOnlyCount = 0;
     GribCollectionImmutable.countGC = 0;
     PartitionCollectionImmutable.countPC = 0;
@@ -78,7 +78,7 @@ public class TestGribCollectionsBig {
   }
 
   @AfterClass
-  static public void after() {
+  public static void after() {
     Grib.setDebugFlags(new DebugFlagsImpl());
     Formatter out = new Formatter(System.out);
 

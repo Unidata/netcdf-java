@@ -542,7 +542,7 @@ public class HTTPSession implements Closeable {
     }
   }
 
-  static protected synchronized String checkCompressors(String compressors) {
+  protected static synchronized String checkCompressors(String compressors) {
     // Syntactic check of compressors
     Set<String> cset = new HashSet<>();
     compressors = compressors.replace(',', ' ');

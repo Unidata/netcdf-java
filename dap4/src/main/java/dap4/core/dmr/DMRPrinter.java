@@ -47,7 +47,7 @@ public class DMRPrinter {
 
   public static final boolean ALLOWFIELDMAPS = false;
 
-  static public final String XMLDOCUMENTHEADER = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>";
+  public static final String XMLDOCUMENTHEADER = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>";
 
   //////////////////////////////////////////////////
   // Types
@@ -58,7 +58,7 @@ public class DMRPrinter {
 
   //////////////////////////////////////////////////
   // Static Methods
-  static public void print(DapDataset dmr, PrintStream stream) {
+  public static void print(DapDataset dmr, PrintStream stream) {
     try {
       PrintWriter pw = new PrintWriter(stream);
       new DMRPrinter(dmr, pw).print();
@@ -67,7 +67,7 @@ public class DMRPrinter {
     } ;
   }
 
-  static public String printAsString(DapDataset dmr) {
+  public static String printAsString(DapDataset dmr) {
     String s = null;
     try {
       StringWriter sw = new StringWriter();

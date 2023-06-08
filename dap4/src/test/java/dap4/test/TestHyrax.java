@@ -39,18 +39,18 @@ public class TestHyrax extends DapTestCommon implements Dap4ManifestIF {
   // Constants
 
   // Define the server to use
-  static protected final String SERVERNAME = "hyrax";
-  static protected final String SERVER = "test.opendap.org";
-  static protected final int SERVERPORT = -1;
-  static protected final String SERVERPATH = "opendap";
+  protected static final String SERVERNAME = "hyrax";
+  protected static final String SERVER = "test.opendap.org";
+  protected static final int SERVERPORT = -1;
+  protected static final String SERVERPATH = "opendap";
 
   // Define the input set location(s)
-  static protected final String INPUTEXT = "";
-  static protected final String INPUTQUERY = "?dap4.checksum=true";
-  static protected final String INPUTFRAG = "#dap4&hyrax";
+  protected static final String INPUTEXT = "";
+  protected static final String INPUTQUERY = "?dap4.checksum=true";
+  protected static final String INPUTFRAG = "#dap4&hyrax";
 
-  static protected final String BASELINEDIR = "/baselinehyrax";
-  static protected final String BASELINEEXT = ".ncdump";
+  protected static final String BASELINEDIR = "/baselinehyrax";
+  protected static final String BASELINEEXT = ".ncdump";
 
   static final String[][] hyrax_manifest = new String[][] {{"nc4_nc_classic_no_comp.nc", "nc4_test_files", null},
       {"nc4_nc_classic_comp.nc", "nc4_test_files", null}, {"nc4_unsigned_types.nc", "nc4_test_files", null},
@@ -66,8 +66,8 @@ public class TestHyrax extends DapTestCommon implements Dap4ManifestIF {
 
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  static public String resourceroot;
-  static public Dap4Server server;
+  public static String resourceroot;
+  public static Dap4Server server;
 
   static {
     server = new Dap4Server("hyrax", SERVER, SERVERPORT, SERVERPATH);
@@ -101,7 +101,7 @@ public class TestHyrax extends DapTestCommon implements Dap4ManifestIF {
   // Test Generator
 
   @Parameterized.Parameters(name = "{index}: {0}")
-  static public List<TestCaseCommon> defineTestCases() {
+  public static List<TestCaseCommon> defineTestCases() {
     assert (server != null);
     List<TestCaseCommon> testcases = new ArrayList<>();
     String[][] manifest = excludeNames(hyrax_manifest, HYRAX_EXCLUSIONS);

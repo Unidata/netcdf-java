@@ -21,7 +21,7 @@ public class Dump {
   //////////////////////////////////////////////////
   // Constants
 
-  static public boolean DUMPCSUM = false;
+  public static boolean DUMPCSUM = false;
 
   static final String LBRACE = "{";
   static final String RBRACE = "}";
@@ -32,7 +32,7 @@ public class Dump {
   // Type decls
 
   // Place to insert the command list
-  static public interface Commands {
+  public static interface Commands {
     public void run(Dump printer) throws IOException;
   }
 

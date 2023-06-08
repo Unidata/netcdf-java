@@ -70,7 +70,7 @@ public class TestEnumTypedef extends UnitTestCommon {
   // Test Generator
 
   @Parameterized.Parameters(name = "{index}: {0}")
-  static public List<TestCase> defineTestCases() {
+  public static List<TestCase> defineTestCases() {
     List<TestCase> testcases = new ArrayList<>();
     TestCase tc;
     String file;

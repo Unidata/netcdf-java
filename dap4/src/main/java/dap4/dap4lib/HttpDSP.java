@@ -39,7 +39,7 @@ public class HttpDSP extends D4DSP {
   //////////////////////////////////////////////////
   // Static methods
 
-  static public void setHttpDebug() {
+  public static void setHttpDebug() {
     HTTPIntercepts.setGlobalDebugInterceptors(true);
   }
 

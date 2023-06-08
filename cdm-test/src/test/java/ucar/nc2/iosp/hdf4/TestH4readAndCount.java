@@ -29,7 +29,7 @@ import java.util.List;
 public class TestH4readAndCount {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  static public String testDir = TestDir.cdmUnitTestDir + "formats/hdf4/";
+  public static String testDir = TestDir.cdmUnitTestDir + "formats/hdf4/";
 
   @Parameterized.Parameters(name = "{0}")
   public static List<Object[]> getTestParameters() {

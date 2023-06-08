@@ -30,8 +30,8 @@ public class XURI {
   static final char PAIRSEP = '=';
 
   // static final String DRIVELETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-  static protected final Pattern drivelettertest = Pattern.compile("^([/]?)[a-zA-Z][:]");
-  static protected final Pattern filedrivelettertest = Pattern.compile("^(file://)([a-zA-Z][:].*)");
+  protected static final Pattern drivelettertest = Pattern.compile("^([/]?)[a-zA-Z][:]");
+  protected static final Pattern filedrivelettertest = Pattern.compile("^(file://)([a-zA-Z][:].*)");
 
   // Define assembly flags
 
@@ -487,7 +487,7 @@ public class XURI {
    *
    * @param s part of the url
    */
-  static public String canonical(String s) {
+  public static String canonical(String s) {
     if (s != null) {
       s = s.trim();
       if (s.length() == 0)
@@ -503,7 +503,7 @@ public class XURI {
    * @param path
    * @return true, if path has drive letter
    */
-  static public boolean hasDriveLetter(String path) {
+  public static boolean hasDriveLetter(String path) {
     Matcher m = drivelettertest.matcher(path);
     return m.lookingAt();
   }
@@ -514,7 +514,7 @@ public class XURI {
    *
    * @return repaired path
    */
-  static public String hideDriveLetter(String path) {
+  public static String hideDriveLetter(String path) {
     Matcher m = drivelettertest.matcher(path);
     if (m.lookingAt()) {
       if (m.group(1).equals(""))
@@ -529,7 +529,7 @@ public class XURI {
    * @parem xu url string
    * @return vector of schemes
    */
-  static public String[] allSchemes(String xu) {
+  public static String[] allSchemes(String xu) {
     int endschemes = xu.indexOf("//");
     if (endschemes < 0)
       return new String[0];
@@ -544,7 +544,7 @@ public class XURI {
    * @param path
    * @return repaired path
    */
-  static public String truePath(String path) {
+  public static String truePath(String path) {
     // Check for a windows drive and repair
     Matcher m = drivelettertest.matcher(path);
     if (m.lookingAt() && m.group(1) != null)

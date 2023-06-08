@@ -29,7 +29,7 @@ public class TestH5npoess {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @AfterClass
-  static public void after() {
+  public static void after() {
     H5header.setDebugFlags(new DebugFlagsImpl("")); // make sure debug flags are off
   }
 

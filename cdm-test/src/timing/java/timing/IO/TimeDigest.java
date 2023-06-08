@@ -10,7 +10,7 @@ import java.security.Provider;
 import java.util.Set;
 
 public class TimeDigest {
-  static public void main(String args[]) {
+  public static void main(String args[]) {
     testDigest();
   }
 

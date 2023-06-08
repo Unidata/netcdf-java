@@ -53,7 +53,7 @@ import java.net.URISyntaxException;
 public class TestURIParse extends UnitTestCommon {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  static public boolean DEBUG = false;
+  public static boolean DEBUG = false;
 
   static final String CARON = "http://" + TestDir.remoteTestServer
       + "/thredds/cdmremote/scanCdmUnitTests/formats/hdf5/grid_1_3d_xyz_aug.h5?req=data&var=HDFEOS_INFORMATION/StructMetadata\\.0";
@@ -120,7 +120,7 @@ public class TestURIParse extends UnitTestCommon {
     Assert.assertTrue("TestMisc.testURX", pass);
   }
 
-  static protected boolean uriCompare(URI uri1, URI uri2) {
+  protected static boolean uriCompare(URI uri1, URI uri2) {
     boolean ok = true;
     ok = ok && uriPartCompare(uri1.getScheme(), uri2.getScheme());
     ok = ok && uriPartCompare(uri1.getHost(), uri2.getHost());
@@ -131,7 +131,7 @@ public class TestURIParse extends UnitTestCommon {
     return ok;
   }
 
-  static protected boolean uriCompareRaw(URI uri1, URI uri2) {
+  protected static boolean uriCompareRaw(URI uri1, URI uri2) {
     boolean ok = true;
     ok = ok && uriPartCompare(uri1.getScheme(), uri2.getScheme());
     ok = ok && uriPartCompare(uri1.getHost(), uri2.getHost());
@@ -142,7 +142,7 @@ public class TestURIParse extends UnitTestCommon {
     return ok;
   }
 
-  static protected boolean uriPartCompare(String s1, String s2) {
+  protected static boolean uriPartCompare(String s1, String s2) {
     if (s1 == s2)
       return true;
     if (s1 == null || s2 == null)
@@ -150,7 +150,7 @@ public class TestURIParse extends UnitTestCommon {
     return (s1.equals(s2));
   }
 
-  static protected String dump(URI uri) {
+  protected static String dump(URI uri) {
     StringBuilder buf = new StringBuilder();
     buf.append(uri.getScheme()).append("://");
     buf.append(uri.getHost());
@@ -165,7 +165,7 @@ public class TestURIParse extends UnitTestCommon {
     return buf.toString();
   }
 
-  static protected String dumpraw(URI uri) {
+  protected static String dumpraw(URI uri) {
     StringBuilder buf = new StringBuilder();
     buf.append(uri.getScheme()).append("://");
     buf.append(uri.getHost());

@@ -33,7 +33,7 @@ public class TestH4readAll {
   static private String testDir = TestDir.cdmUnitTestDir + "formats/hdf4/";
 
   @AfterClass
-  static public void after() {
+  public static void after() {
     H4header.setDebugFlags(new DebugFlagsImpl("")); // make sure debug flags are off
   }
 

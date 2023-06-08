@@ -66,7 +66,7 @@ public class CDM {
   public static final String ISNETCDF4 = "_IsNetcdf4";
   public static final String SUPERBLOCKVERSION = "_SuperblockVersion";
 
-  static public final String[] SPECIALS = {NCPROPERTIES, ISNETCDF4, SUPERBLOCKVERSION};
+  public static final String[] SPECIALS = {NCPROPERTIES, ISNETCDF4, SUPERBLOCKVERSION};
 
   public static final String DAP4_LITTLE_ENDIAN = "_DAP4_Little_Endian";
   public static final String EDU_UCAR_PREFIX = "_edu.ucar";

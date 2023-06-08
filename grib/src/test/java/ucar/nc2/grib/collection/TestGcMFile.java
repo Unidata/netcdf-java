@@ -27,7 +27,7 @@ public class TestGcMFile {
   public static class TestGcMFileParameterized {
 
     @Parameterized.Parameters(name = "{0}")
-    static public List<Integer> getTestParameters() {
+    public static List<Integer> getTestParameters() {
       return Arrays.asList(0, 1, 60000, 100000);
     }
 
