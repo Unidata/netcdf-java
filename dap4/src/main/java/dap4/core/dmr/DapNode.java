@@ -105,7 +105,7 @@ public abstract class DapNode {
     else if (this instanceof DapMap)
       this.sort = DapSort.MAP;
     else
-      assert (false) : "Internal error";
+      throw new IllegalStateException("Unexpected type = " + this.getClass());
   }
 
   public DapNode(String shortname) {
