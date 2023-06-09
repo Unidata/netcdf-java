@@ -385,7 +385,7 @@ public class D4DataCompiler {
       case STRUCTURE:
       case SEQUENCE:
       default:
-        assert false;
+        throw new IllegalStateException("Unexpected scheme = " + schemeFor(var));
     }
     return array;
   }

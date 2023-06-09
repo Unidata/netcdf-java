@@ -323,12 +323,11 @@ public class DMRPrinter {
           printer.outdent();
           printer.marginPrint("</" + type.getTypeSort().name() + ">");
         } else
-          assert false : "Illegal variable base type";
+          throw new IllegalStateException("Illegal variable base type");
         break;
 
       default:
-        assert (false) : "Unexpected sort: " + sort.name();
-        break;
+        throw new IllegalStateException("Unexpected sort: " + sort.name());
     }
     return true;
   }

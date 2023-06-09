@@ -386,7 +386,7 @@ public class DOM4Parser implements Dap4Parser {
         field.setParent(t);
         break;
       default:
-        assert false : "Container must be struct or seq";
+        throw new IllegalStateException("Container must be struct or seq, sort = " + t.getTypeSort());
     }
   }
 

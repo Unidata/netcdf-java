@@ -179,7 +179,7 @@ public class CEParserImpl extends CEBisonParser {
         case 5: // [f:s:]
           break;
         default:
-          assert false : "Illegal slice case";
+          throw new ParseException("Illegal slice case, state = " + state);
       }
     } catch (DapException de) {
       throw new ParseException(de);

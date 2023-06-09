@@ -177,8 +177,9 @@ public class DMRToCDM {
         cdmvar.addAttribute(warning);
       }
 
-    } else
-      assert (false) : "Unknown variable sort: " + dapvar.getSort();
+    } else {
+      throw new IllegalStateException("Unknown variable sort: " + dapvar.getSort());
+    }
     int rank = dapvar.getRank();
     List<Dimension> cdmdims = new ArrayList<Dimension>(rank + 1); // +1 for vlen
     for (int i = 0; i < rank; i++) {

@@ -69,7 +69,7 @@ public class CECompiler {
         dimredef(ast);
         break;
       default:
-        assert false : "uknown CEAST node type";
+        throw new IllegalStateException("unknown CEAST node type = " + ast.sort);
     }
   }
 
@@ -118,7 +118,7 @@ public class CECompiler {
               node = seq.findByName(ast.name);
               break;
             default:
-              assert false : "Container cannot be atomic variable";
+              throw new DapException("Container cannot be atomic variable, sort = " + parent.getSort());
           }
         default:
           throw new DapException("relative names must be WRT to structure|dataset object: " + parent.getFQN());

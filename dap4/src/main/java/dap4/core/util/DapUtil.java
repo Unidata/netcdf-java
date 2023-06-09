@@ -360,7 +360,7 @@ public abstract class DapUtil // Should only contain static methods
           structpath.add((DapVariable) node);
           break;
         default:
-          assert false : "Internal error";
+          throw new IllegalStateException("Internal error, sort = " + node.getSort());
       }
     }
     return structpath;

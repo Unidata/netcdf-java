@@ -138,7 +138,7 @@ public class DapGroup extends DapNode implements DapDecl {
     assert (groups.size() == this.groups.size()) : "Update groups: not same size";
     for (DapGroup g : groups) {
       if (!this.groups.contains(g))
-        assert (false) : "Update groups: attempt to add new group";
+        throw new IllegalStateException("Update groups: attempt to add new group");
     }
   }
 

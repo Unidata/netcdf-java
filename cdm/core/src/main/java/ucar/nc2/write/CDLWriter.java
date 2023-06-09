@@ -265,7 +265,7 @@ public class CDLWriter {
         basetype = "";
         break;
       default:
-        assert false : "Internal error";
+        throw new IllegalStateException("Unexpected basetype = " + e.getBaseType());
     }
     out.format("%s%senum %s { ", indent, basetype, name);
     int count = 0;
