@@ -699,6 +699,9 @@ public class NcStreamDataCol {
     StructureMembers.MemberBuilder result = members.addMember(name, null, null, dataType, msection.getShape());
     Array data = decode(memberData, parentSection);
     result.setDataArray(data);
+    if (data instanceof ArrayStructure) {
+      result.setStructureMembers(((ArrayStructure) data).getStructureMembers());
+    }
   }
 
 }
