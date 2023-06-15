@@ -163,6 +163,9 @@ public class CF {
   public static final String PROJECTION_X_COORDINATE = "projection_x_coordinate";
   public static final String PROJECTION_Y_COORDINATE = "projection_y_coordinate";
 
+  public static final String PROJECTION_X_ANG_COORDINATE = "projection_x_angular_coordinate";
+  public static final String PROJECTION_Y_ANG_COORDINATE = "projection_y_angular_coordinate";
+
   // cf_role
   public static final String PROFILE_ID = "profile_id";
   public static final String TIMESERIES_ID = "timeseries_id"; // alias STATION_ID
