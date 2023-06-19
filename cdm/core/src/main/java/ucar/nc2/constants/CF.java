@@ -118,6 +118,8 @@ public class CF {
   public static final String GRID_MAPPING_NAME = "grid_mapping_name";
   public static final String GRID_NORTH_POLE_LATITUDE = "grid_north_pole_latitude"; // rotated grid
   public static final String GRID_NORTH_POLE_LONGITUDE = "grid_north_pole_longitude"; // rotated grid
+  public static final String ROTATED_LATITUDE = "rotated_latitude";
+  public static final String ROTATED_LONGITUDE = "rotated_longitude";
   public static final String INVERSE_FLATTENING = "inverse_flattening";
   public static final String LATITUDE_OF_PROJECTION_ORIGIN = "latitude_of_projection_origin";
   public static final String LONGITUDE_OF_PROJECTION_ORIGIN = "longitude_of_projection_origin";
