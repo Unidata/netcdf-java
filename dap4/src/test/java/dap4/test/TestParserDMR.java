@@ -45,20 +45,20 @@ public class TestParserDMR extends DapTestCommon implements Dap4ManifestIF {
   static final boolean PARSEDEBUG = false;
 
   // Define the input set location(s)
-  static protected final String INPUTDIR = "/rawtestfiles";
-  static protected final String INPUTEXT = ".nc.dmr";
+  protected static final String INPUTDIR = "/rawtestfiles";
+  protected static final String INPUTEXT = ".nc.dmr";
 
   // Define some common DMR filter regular expression
   static String RE_ENDIAN = "\n[ \t]*<Attribute[ \t]+name=[\"]_DAP4_Little_Endian[\"].*?</Attribute>[ \t]*";
   static String RE_NCPROPS = "\n[ \t]*<Attribute[ \t]+name=[\"]_NCProperties[\"].*?</Attribute>[ \t]*";
-  static protected final String RE_UNLIMITED = "[ \t]+_edu.ucar.isunlimited=\"1\"";
+  protected static final String RE_UNLIMITED = "[ \t]+_edu.ucar.isunlimited=\"1\"";
 
   //////////////////////////////////////////////////
   // Static Fields
 
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  static public String resourceroot;
+  public static String resourceroot;
 
   static {
     resourceroot = getResourceRoot();
@@ -87,7 +87,7 @@ public class TestParserDMR extends DapTestCommon implements Dap4ManifestIF {
   // Test Generator
 
   @Parameterized.Parameters(name = "{index}: {0}")
-  static public List<TestCaseCommon> defineTestCases() {
+  public static List<TestCaseCommon> defineTestCases() {
     List<TestCaseCommon> testcases = new ArrayList<>();
     for (String[] tuple : dap4_manifest) {
       String name = tuple[0];

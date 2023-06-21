@@ -33,7 +33,7 @@ public class TestCheckFileType extends UnitTestCommon {
   static final String PREFIX = "thredds/public/testdata/";
 
   @Parameterized.Parameters(name = "{1}")
-  static public List<Object[]> getTestParameters() {
+  public static List<Object[]> getTestParameters() {
     List<Object[]> result = new ArrayList<>();
     result.add(new Object[] {NCheader.NC_FORMAT_NETCDF3, "testData.nc"});
     result.add(new Object[] {NCheader.NC_FORMAT_64BIT_OFFSET, "nc_test_cdf2.nc"});

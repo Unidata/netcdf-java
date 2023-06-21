@@ -254,7 +254,7 @@ public class TestNcmlRead extends TestCase {
     return Math.abs((d1 - d2) / d1) < 1.0e-5;
   }
 
-  static public class TestRead2 extends TestNcmlRead {
+  public static class TestRead2 extends TestNcmlRead {
 
     // equivalent dataset using "readMetadata"
     public TestRead2(String name) {
@@ -264,7 +264,7 @@ public class TestNcmlRead extends TestCase {
     }
   }
 
-  static public class TestReadHttps extends TestNcmlRead {
+  public static class TestReadHttps extends TestNcmlRead {
 
     // Test handling of incorrect https variant of NcML namespace URI.
     // See note in Catalog.java.

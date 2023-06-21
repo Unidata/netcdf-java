@@ -28,24 +28,24 @@ public abstract class DapUtil // Should only contain static methods
   //////////////////////////////////////////////////
   // Constants
 
-  static public final BigInteger BIG_UMASK64 = new BigInteger("FFFFFFFFFFFFFFFF", 16);
-  static public final Charset UTF8 = Charset.forName("UTF-8");
+  public static final BigInteger BIG_UMASK64 = new BigInteger("FFFFFFFFFFFFFFFF", 16);
+  public static final Charset UTF8 = Charset.forName("UTF-8");
 
   // Define the Serialization Constants common to servlet and client
 
-  static public final ByteOrder NETWORK_ORDER = ByteOrder.BIG_ENDIAN;
-  static public final ByteOrder NATIVE_ORDER = ByteOrder.nativeOrder();
+  public static final ByteOrder NETWORK_ORDER = ByteOrder.BIG_ENDIAN;
+  public static final ByteOrder NATIVE_ORDER = ByteOrder.nativeOrder();
 
-  static public final String LF = "\n";
-  static public final String CRLF = "\r\n";
-  static public final int CRLFSIZE = 2;
+  public static final String LF = "\n";
+  public static final String CRLF = "\r\n";
+  public static final int CRLFSIZE = 2;
 
-  static public Pattern DAP4EXT_RE = Pattern.compile("^.*(.dmr|.dap|.dsr|.xml|.html)$");
+  public static Pattern DAP4EXT_RE = Pattern.compile("^.*(.dmr|.dap|.dsr|.xml|.html)$");
 
   //////////////////////////////////////////////////
   // return last name part of an fqn; result will be escaped.
 
-  static public String fqnSuffix(String fqn) {
+  public static String fqnSuffix(String fqn) {
     int structindex = fqn.lastIndexOf('.');
     int groupindex = fqn.lastIndexOf('/');
     if (structindex >= 0)
@@ -55,7 +55,7 @@ public abstract class DapUtil // Should only contain static methods
   }
 
   // return prefix name part of an fqn; result will be escaped.
-  static public String fqnPrefix(String fqn) {
+  public static String fqnPrefix(String fqn) {
     int structindex = fqn.lastIndexOf('.');
     int groupindex = fqn.lastIndexOf('/');
     if (structindex >= 0)
@@ -73,7 +73,7 @@ public abstract class DapUtil // Should only contain static methods
    * @return a List of strings (all with escaping still intact)
    *         representing s split at unescaped instances of sep.
    */
-  static public List<String> backslashSplit(String s, char sep) {
+  public static List<String> backslashSplit(String s, char sep) {
     List<String> path = new ArrayList<String>();
     int len = s.length();
     StringBuilder piece = new StringBuilder();
@@ -93,7 +93,7 @@ public abstract class DapUtil // Should only contain static methods
     return path;
   }
 
-  static public Integer stringToInteger(String s) {
+  public static Integer stringToInteger(String s) {
     try {
       return Integer.parseInt(s);
     } catch (NumberFormatException e) {
@@ -101,7 +101,7 @@ public abstract class DapUtil // Should only contain static methods
     }
   }
 
-  static public boolean hasSequence(DapNode node) {
+  public static boolean hasSequence(DapNode node) {
     switch (node.getSort()) {
       case SEQUENCE:
         return true;
@@ -138,7 +138,7 @@ public abstract class DapUtil // Should only contain static methods
    *        false if we are looking for a file
    * @return absolute path of the file or null
    */
-  static public String locateFile(String filename, String abspath, boolean wantdir) {
+  public static String locateFile(String filename, String abspath, boolean wantdir) {
     Deque<String> q = new ArrayDeque<String>();
     // clean up the path and filename
     filename = filename.trim().replace('\\', '/');
@@ -185,7 +185,7 @@ public abstract class DapUtil // Should only contain static methods
    *        false if we are looking for a file
    * @return absolute path of the file|dir wrt to abspath
    */
-  static public String locateRelative(String relpath, String abspath, boolean wantdir) {
+  public static String locateRelative(String relpath, String abspath, boolean wantdir) {
     // clean up the path and filename
     relpath = relpath.trim().replace('\\', '/');
     if (relpath.charAt(0) == '/')
@@ -215,7 +215,7 @@ public abstract class DapUtil // Should only contain static methods
    * @param path convert this path
    * @return canonicalized version
    */
-  static public String canonicalpath(String path) {
+  public static String canonicalpath(String path) {
     if (path == null)
       return null;
     path = path.trim();
@@ -233,7 +233,7 @@ public abstract class DapUtil // Should only contain static methods
     return path;
   }
 
-  static public String relativize(String path) {
+  public static String relativize(String path) {
     if (path == null)
       return path;
     path = path.replace('\\', '/');
@@ -246,13 +246,13 @@ public abstract class DapUtil // Should only contain static methods
     return path;
   }
 
-  static public String absolutize(String path) {
+  public static String absolutize(String path) {
     if (path != null && !path.startsWith("/") && !hasDriveLetter(path))
       path = "/" + path;
     return path;
   }
 
-  static public boolean checkFixedSize(DapVariable var) {
+  public static boolean checkFixedSize(DapVariable var) {
     DapType dt = var.getBaseType();
     switch (dt.getTypeSort()) {
       case Structure:
@@ -276,7 +276,7 @@ public abstract class DapUtil // Should only contain static methods
    *        as defined by the buffer limit.
    * @return The byte array contents of the buffer
    */
-  static public byte[] extract(ByteBuffer buf) {
+  public static byte[] extract(ByteBuffer buf) {
     int len = buf.limit();
     byte[] bytes = new byte[len];
     buf.rewind();
@@ -284,7 +284,7 @@ public abstract class DapUtil // Should only contain static methods
     return bytes;
   }
 
-  static public byte[] readbinaryfile(InputStream stream) throws IOException {
+  public static byte[] readbinaryfile(InputStream stream) throws IOException {
     // Extract the stream into a bytebuffer
     ByteArrayOutputStream bytes = new ByteArrayOutputStream();
     byte[] tmp = new byte[1 << 16];
@@ -312,7 +312,7 @@ public abstract class DapUtil // Should only contain static methods
    * @return amount actually read
    * @throws IOException
    */
-  static public int readbinaryfilepartial(InputStream stream, byte[] buffer, int count) throws IOException {
+  public static int readbinaryfilepartial(InputStream stream, byte[] buffer, int count) throws IOException {
     try {
       // Extract the stream into a bytebuffer
       int offset = 0;
@@ -330,7 +330,7 @@ public abstract class DapUtil // Should only contain static methods
     }
   }
 
-  static public String readtextfile(InputStream stream) throws IOException {
+  public static String readtextfile(InputStream stream) throws IOException {
     StringBuilder buf = new StringBuilder();
     InputStreamReader rdr = new InputStreamReader(stream, UTF8);
     for (;;) {
@@ -347,7 +347,7 @@ public abstract class DapUtil // Should only contain static methods
    * top-level variable to and including the given variable
    * such that all but the last element is a structure.
    */
-  static public List<DapVariable> getStructurePath(DapVariable var) {
+  public static List<DapVariable> getStructurePath(DapVariable var) {
     List<DapNode> path = var.getPath();
     List<DapVariable> structpath = new ArrayList<DapVariable>();
     for (int i = 0; i < path.size(); i++) {
@@ -372,7 +372,7 @@ public abstract class DapUtil // Should only contain static methods
    * @param path
    * @return path or ""
    */
-  static public String denullify(String path) {
+  public static String denullify(String path) {
     return (path == null ? "" : path);
   }
 
@@ -382,7 +382,7 @@ public abstract class DapUtil // Should only contain static methods
    * @param obj
    * @return obj or ""
    */
-  static public Object stringable(Object obj) {
+  public static Object stringable(Object obj) {
     return (obj == null ? "" : obj);
   }
 
@@ -392,11 +392,11 @@ public abstract class DapUtil // Should only contain static methods
    * @param path
    * @return path or null
    */
-  static public String nullify(String path) {
+  public static String nullify(String path) {
     return (path != null && path.length() == 0 ? null : path);
   }
 
-  static public long[] getDimSizes(List<DapDimension> dims) {
+  public static long[] getDimSizes(List<DapDimension> dims) {
     long[] sizes = new long[dims.size()];
     for (int i = 0; i < dims.size(); i++) {
       sizes[i] = dims.get(i).getSize();
@@ -404,7 +404,7 @@ public abstract class DapUtil // Should only contain static methods
     return sizes;
   }
 
-  static public long dimProduct(List<DapDimension> dimset) // dimension crossproduct
+  public static long dimProduct(List<DapDimension> dimset) // dimension crossproduct
   {
     long count = 1;
     for (DapDimension dim : dimset) {
@@ -446,7 +446,7 @@ public abstract class DapUtil // Should only contain static methods
    * @param dimset the list of DapDimension
    * @return true if slices is whole wrt dimset; false otherwise
    */
-  static public boolean isWhole(List<Slice> slices, List<DapDimension> dimset) {
+  public static boolean isWhole(List<Slice> slices, List<DapDimension> dimset) {
     if (slices.size() != dimset.size())
       return false;
     for (int i = 0; i < slices.size(); i++) {
@@ -458,7 +458,7 @@ public abstract class DapUtil // Should only contain static methods
     return true;
   }
 
-  static public long sliceProduct(List<Slice> slices) // another crossproduct
+  public static long sliceProduct(List<Slice> slices) // another crossproduct
   {
     long count = 1;
     if (slices != null)
@@ -468,7 +468,7 @@ public abstract class DapUtil // Should only contain static methods
     return count;
   }
 
-  static public boolean hasStrideOne(List<Slice> slices) {
+  public static boolean hasStrideOne(List<Slice> slices) {
     for (Slice slice : slices) {
       if (slice.getStride() != 1)
         return false;
@@ -487,7 +487,7 @@ public abstract class DapUtil // Should only contain static methods
    * @param upto end point for join (exclusive)
    * @return the join
    */
-  static public String join(String[] array, String sep, int from, int upto) {
+  public static String join(String[] array, String sep, int from, int upto) {
     if (sep == null)
       sep = "";
     if (from < 0 || upto > array.length)
@@ -510,7 +510,7 @@ public abstract class DapUtil // Should only contain static methods
    * @param path
    * @return Relativized path
    */
-  static public String xrelpath(String path) {
+  public static String xrelpath(String path) {
     return DapUtil.canonicalpath(path);
   }
 
@@ -521,7 +521,7 @@ public abstract class DapUtil // Should only contain static methods
    * @param path
    * @return true, if path has drive letter
    */
-  static public boolean hasDriveLetter(String path) {
+  public static boolean hasDriveLetter(String path) {
     return XURI.hasDriveLetter(path);
   }
 
@@ -532,7 +532,7 @@ public abstract class DapUtil // Should only contain static methods
    * @param path
    * @return repaired path
    */
-  static public String repairPath(String path) {
+  public static String repairPath(String path) {
     return XURI.hideDriveLetter(path);
   }
 
@@ -543,7 +543,7 @@ public abstract class DapUtil // Should only contain static methods
    * @param breakpoint return the index past last protocol
    * @return list of leading protocols without the trailing :
    */
-  static public List<String> getProtocols(String url, int[] breakpoint) {
+  public static List<String> getProtocols(String url, int[] breakpoint) {
     // break off any leading protocols;
     // there may be more than one.
     // Watch out for Windows paths starting with a drive letter.
@@ -573,7 +573,7 @@ public abstract class DapUtil // Should only contain static methods
     return allprotocols;
   }
 
-  static public String merge(String[] pieces, String sep) {
+  public static String merge(String[] pieces, String sep) {
     if (pieces == null)
       return "";
     StringBuilder buf = new StringBuilder();
@@ -606,12 +606,12 @@ public abstract class DapUtil // Should only contain static methods
   /**
    * Re-throw run-time exceptions
    */
-  static public void checkruntime(Exception e) {
+  public static void checkruntime(Exception e) {
     if (e instanceof RuntimeException)
       throw (RuntimeException) e;
   }
 
-  static public String canonjoin(String prefix, String suffix) {
+  public static String canonjoin(String prefix, String suffix) {
     StringBuilder result = new StringBuilder();
     if (prefix == null)
       prefix = "";
@@ -632,7 +632,7 @@ public abstract class DapUtil // Should only contain static methods
     return result.toString();
   }
 
-  static public boolean hasWindowsDrive(final String path) {
+  public static boolean hasWindowsDrive(final String path) {
     if (path != null && path.length() >= 2 && path.charAt(1) == ':') {
       final char c = path.charAt(0);
       return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z');
@@ -640,17 +640,17 @@ public abstract class DapUtil // Should only contain static methods
     return false;
   }
 
-  static public boolean isAbsolutePath(final String path) {
+  public static boolean isAbsolutePath(final String path) {
     return path != null && (hasWindowsDrive(path) || path.charAt(0) == '/' || path.charAt(0) == '\\');
   }
 
-  static public String canonFileURL(String url) {
+  public static String canonFileURL(String url) {
     if (url == null || url.startsWith("file:"))
       return url;
     return "file:" + absolutize(url);
   }
 
-  static public String stripDap4Extensions(String path) {
+  public static String stripDap4Extensions(String path) {
     for (;;) {
       Matcher m = DAP4EXT_RE.matcher(path);
       if (!m.matches())
@@ -676,7 +676,7 @@ public abstract class DapUtil // Should only contain static methods
    * @param slices
    * @return true, if contiguous
    */
-  static public boolean isContiguous(List<Slice> slices) {
+  public static boolean isContiguous(List<Slice> slices) {
     for (Slice sl : slices) {
       if (sl.getStride() != 1)
         return false;
@@ -690,7 +690,7 @@ public abstract class DapUtil // Should only contain static methods
    * @param slices
    * @return true, if single position
    */
-  static public boolean isSinglePoint(List<Slice> slices) {
+  public static boolean isSinglePoint(List<Slice> slices) {
     for (Slice sl : slices) {
       if (sl.getCount() != 1)
         return false;
@@ -699,7 +699,7 @@ public abstract class DapUtil // Should only contain static methods
   }
 
 
-  static public List<Slice> dimsetToSlices(List<DapDimension> dimset) throws dap4.core.util.DapException {
+  public static List<Slice> dimsetToSlices(List<DapDimension> dimset) throws dap4.core.util.DapException {
     if (dimset == null || dimset.size() == 0)
       return Slice.SCALARSLICES;
     List<Slice> slices = new ArrayList<Slice>(dimset.size());
@@ -711,21 +711,21 @@ public abstract class DapUtil // Should only contain static methods
     return slices;
   }
 
-  static public boolean isScalarSlices(List<Slice> slices) {
+  public static boolean isScalarSlices(List<Slice> slices) {
     if (slices == null || slices.size() != 1)
       return false;
     Slice s = slices.get(0);
     return (s.getFirst() == 0 && s.getStop() == 1);
   }
 
-  static public long[] longvector(int[] iv) {
+  public static long[] longvector(int[] iv) {
     long[] lv = new long[iv.length];
     for (int i = 0; i < iv.length; i++)
       lv[i] = (long) iv[i];
     return lv;
   }
 
-  static public int[] intvector(long[] lv) {
+  public static int[] intvector(long[] lv) {
     int[] iv = new int[lv.length];
     for (int i = 0; i < lv.length; i++)
       iv[i] = (int) lv[i];

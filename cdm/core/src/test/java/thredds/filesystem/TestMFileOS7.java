@@ -28,7 +28,7 @@ public class TestMFileOS7 {
   public static class TestMFileOS7Parameterized {
 
     @Parameterized.Parameters(name = "{0}")
-    static public List<Integer> getTestParameters() {
+    public static List<Integer> getTestParameters() {
       return Arrays.asList(0, 1, 60000, 100000);
     }
 

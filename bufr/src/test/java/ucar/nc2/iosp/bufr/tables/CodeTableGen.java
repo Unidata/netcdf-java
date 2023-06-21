@@ -95,7 +95,7 @@ public class CodeTableGen {
 
   // try to pretty print the WORD xml
 
-  static public void prettyPrint() throws IOException {
+  public static void prettyPrint() throws IOException {
     org.jdom2.Document doc;
     try {
       SAXBuilder builder = new SAXBuilder();
@@ -121,7 +121,7 @@ public class CodeTableGen {
 
   ///////////////////////////////////////////////////////////////////////
 
-  static public void transform(Element elem, Element telem) {
+  public static void transform(Element elem, Element telem) {
     String name = elem.getName();
 
     if (name.equals("sub-section") || name.equals("tc")) {
@@ -166,7 +166,7 @@ public class CodeTableGen {
   // tranform the WORD xml into something more pareseable
   // unfortunately, we then have to hand-edit the result
   // next time, probably beter to start with the NCEP HTML pages
-  static public void passOne() throws IOException {
+  public static void passOne() throws IOException {
     org.jdom2.Document orgDoc;
     try {
       SAXBuilder builder = new SAXBuilder();
@@ -248,7 +248,7 @@ public class CodeTableGen {
 
 
   // pass 2 - transform the hand-edited XML to its final form
-  static public void passTwo() throws IOException {
+  public static void passTwo() throws IOException {
     org.jdom2.Document tdoc;
     try {
       SAXBuilder builder = new SAXBuilder();
@@ -334,7 +334,7 @@ public class CodeTableGen {
   }
 
   // pass 3 - look for problems
-  static public void passThree() throws IOException {
+  public static void passThree() throws IOException {
     org.jdom2.Document tdoc;
     try {
       SAXBuilder builder = new SAXBuilder();
@@ -367,7 +367,7 @@ public class CodeTableGen {
   static Formatter f = new Formatter(System.out);
 
 
-  static public void main(String args[]) throws IOException {
+  public static void main(String args[]) throws IOException {
     // passTwo();
     passThree();
   }

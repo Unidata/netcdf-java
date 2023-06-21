@@ -35,7 +35,7 @@ import java.util.List;
 @RunWith(Parameterized.class)
 public class TestCFPointDatasets {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-  static public String CFpointObs_topdir = TestDir.cdmLocalFromTestDataDir + "point/";
+  public static String CFpointObs_topdir = TestDir.cdmLocalFromTestDataDir + "point/";
 
   public static List<Object[]> getPointDatasets() {
     List<Object[]> result = new ArrayList<>();

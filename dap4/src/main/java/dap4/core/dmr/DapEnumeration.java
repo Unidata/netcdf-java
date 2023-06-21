@@ -21,7 +21,7 @@ public class DapEnumeration extends DapType {
   // Static Methods
 
   // See if two enumeration objects appear to be identical
-  static public boolean same(DapEnumeration enum1, DapEnumeration enum2) {
+  public static boolean same(DapEnumeration enum1, DapEnumeration enum2) {
     if (!enum1.getShortName().equals(enum2.getShortName()))
       return false;
     if (enum1.getBaseType() != enum2.getBaseType())

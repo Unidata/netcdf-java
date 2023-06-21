@@ -44,7 +44,7 @@ public class TestDap4Url extends DapTestCommon implements Dap4ManifestIF {
   // Constants
 
   // Legal url formats
-  static protected String[] urls = {"https://remotetest.unidata.ucar.edu/d4ts/testfiles/test_one_var.nc#dap4",
+  protected static String[] urls = {"https://remotetest.unidata.ucar.edu/d4ts/testfiles/test_one_var.nc#dap4",
       "dap4://remotetest.unidata.ucar.edu/d4ts/testfiles/test_one_var.nc",
       "https://remotetest.unidata.ucar.edu/d4ts/testfiles/test_one_var.nc",
       // "https://remotetest.unidata.ucar.edu/thredds/dap4/testAll/H.1.1.nc",
@@ -55,7 +55,7 @@ public class TestDap4Url extends DapTestCommon implements Dap4ManifestIF {
 
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  static public String resourceroot;
+  public static String resourceroot;
 
   static {
     resourceroot = getResourceRoot();
@@ -82,7 +82,7 @@ public class TestDap4Url extends DapTestCommon implements Dap4ManifestIF {
   // Test Generator
 
   @Parameterized.Parameters(name = "{index}: {0}")
-  static public List<TestCaseCommon> defineTestCases() {
+  public static List<TestCaseCommon> defineTestCases() {
     List<TestCaseCommon> testcases = new ArrayList<>();
     for (String u : urls) {
       TestCase tc = new TestCase(u);

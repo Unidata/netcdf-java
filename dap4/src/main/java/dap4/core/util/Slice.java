@@ -35,19 +35,19 @@ public class Slice {
   // its "last" value is the UNDEFINED value).
   // This will primarily be used in the constraint expression parser
 
-  static public final int UNDEFINED = -1;
+  public static final int UNDEFINED = -1;
 
   // Define maximum legal dimension based on the spec
 
-  static public final int MAXLENGTH = 0x3FFFFFFF;
+  public static final int MAXLENGTH = 0x3FFFFFFF;
 
-  static public enum Sort {
+  public static enum Sort {
     Single, Multi;
   }
 
   // Define a set of slices indicating the canonical scalar set
-  static public List<Slice> SCALARSLICES;
-  static public Slice SCALARSLICE;
+  public static List<Slice> SCALARSLICES;
+  public static Slice SCALARSLICE;
 
   static {
     try {
@@ -336,7 +336,7 @@ public class Slice {
    * @return new, composed Range
    * @throws DapException
    */
-  static public Slice compose(Slice target, Slice src) throws DapException {
+  public static Slice compose(Slice target, Slice src) throws DapException {
     int sr_stride = target.getStride() * src.getStride();
     int sr_first = MAP(target, src.getFirst());
     int lastx = MAP(target, src.getLast());

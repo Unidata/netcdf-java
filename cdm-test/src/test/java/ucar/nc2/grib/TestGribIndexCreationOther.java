@@ -34,7 +34,7 @@ public class TestGribIndexCreationOther {
   private static final boolean show = false;
 
   @BeforeClass
-  static public void before() {
+  public static void before() {
     GribIosp.debugIndexOnlyCount = 0;
     GribCollectionImmutable.countGC = 0;
     PartitionCollectionImmutable.countPC = 0;
@@ -46,7 +46,7 @@ public class TestGribIndexCreationOther {
   }
 
   @AfterClass
-  static public void after() {
+  public static void after() {
     Grib.setDebugFlags(new DebugFlagsImpl());
     Formatter out = new Formatter(System.out);
 
