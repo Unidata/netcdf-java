@@ -23,17 +23,17 @@ public class StandardScaler extends Filter {
     scaleOffset = new ScaleOffset(props);
   }
 
-  public double[] flattenArray(double[][] arr) {
-    double[] result= new double[arr.length * arr[0].length];
-    int index = 0;
-    for (int i = 0; i < arr.length; i++) {
-      for (int j = 0; j < arr[0].length; j++) {
-        result[index] = arr[i][j];
-        index++;
-      }
-    }
-    return result;
-  }
+//  public double[] flattenArray(double[][] arr) {
+//    double[] result= new double[arr.length * arr[0].length];
+//    int index = 0;
+//    for (int i = 0; i < arr.length; i++) {
+//      for (int j = 0; j < arr[0].length; j++) {
+//        result[index] = arr[i][j];
+//        index++;
+//      }
+//    }
+//    return result;
+//  }
   private double calculateMean(double[] data) {
     SummaryStatistics curr = new SummaryStatistics();
     for (int a = 0; a < data.length; a++) {
