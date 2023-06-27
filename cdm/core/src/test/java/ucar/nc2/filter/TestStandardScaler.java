@@ -5,8 +5,11 @@ import static org.junit.Assert.assertEquals;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.util.Arrays;
 import org.apache.commons.math.stat.descriptive.DescriptiveStatistics;
 import org.junit.Test;
+import ucar.ma2.Array;
+import ucar.ma2.DataType;
 
 public class TestStandardScaler {
 
@@ -27,10 +30,13 @@ public class TestStandardScaler {
     double dataMean = filter.getMean();
     double dataStdDev = filter.getStdDev();
     double[] dataStandardScaler = filter.calculateStandardScaler(data, dataMean, dataStdDev);
-    byte[] barray = createByteArray(data);
+//     FilterHelpers helper = new FilterHelpers();
+    byte[] barray = FilterHelpers.arrayToBytes(Array.makeFromJavaArray(data), DataType.DOUBLE, ByteOrder.BIG_ENDIAN);
+//    byte[] barray = createByteArray(data);
     byte[] encoded = filter.encode(barray);
-    double[] dencoded = createDoubleArray(encoded);
-    assertThat(dencoded).isEqualTo(dataStandardScaler);
+    Array dencoded = FilterHelpers.bytesToArray(encoded, DataType.DOUBLE, ByteOrder.BIG_ENDIAN);
+//    double[] dencoded = createDoubleArray(encoded);
+    assertThat(dencoded.getStorage()).isEqualTo(dataStandardScaler);
   }
 //  @Test
 //  public void testFlattenArray(){

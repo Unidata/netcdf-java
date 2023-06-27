@@ -18,7 +18,7 @@ public class StandardScaler extends Filter {
     stdDev = calculateStandardDeviation(arr);
     Map<String, Object> props = new HashMap<>();
     props.put("offset", mean);
-    props.put("scale", (int) stdDev);
+    props.put("scale", 1/stdDev);
     props.put("dtype", ">f8");
     scaleOffset = new ScaleOffset(props);
   }
@@ -50,8 +50,7 @@ public class StandardScaler extends Filter {
   public double[] calculateStandardScaler(double[] data, double mean, double stdDev){
     double[] scaledData = new double[data.length];
     for (int i = 0; i < data.length; i++) {
-      // remove int conversion later
-      scaledData[i] = (data[i] - mean) / (int) stdDev;
+      scaledData[i] = (data[i] - mean) / stdDev;
     }
     return scaledData;
   }
