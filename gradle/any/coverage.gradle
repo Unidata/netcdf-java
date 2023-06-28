@@ -21,7 +21,7 @@ tasksExtendedByJacoco.all {
  * in cdm/src/main only.
  *
  * That's fine for :cdm, but we have subprojects that contain no code in their 'main' source set, namely :it,
- * :cdm-test, and :dap4:d4tests. They only have code in their 'test' SourceSets. As a result, the default
+ * and :cdm-test. They only have code in their 'test' SourceSets. As a result, the default
  * 'jacocoTestReport' task added to those tasks will generate an empty report, because there's nothing to report on.
  *
  * We could remedy this by adding main SourceSets from other projects to report on. This would be particularly

@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
@@ -93,11 +94,11 @@ public class TestMFileOS {
 
     @Test
     public void shouldGetChildMFile() {
-      final MFileOS mFile = new MFileOS(tempFolder.getRoot() + "/testFile");
+      final MFileOS mFile = new MFileOS(new File(tempFolder.getRoot(), "testFile"));
       final MFileOS newMFile = mFile.getChild("newFile");
       assertThat(newMFile.getName()).isEqualTo("newFile");
       assertThat(newMFile.getParent().getPath()).isEqualTo(mFile.getPath());
-      assertThat(newMFile.getPath()).isEqualTo(tempFolder.getRoot() + "/testFile/newFile");
+      assertThat(newMFile.getPath()).isEqualTo(Paths.get(mFile.getPath(), "newFile").toString());
     }
   }
 

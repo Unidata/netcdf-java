@@ -35,7 +35,7 @@ public class TestGeoTiffWriter2 {
 
   @Rule
   public final TemporaryFolder tempFolder = new TemporaryFolder();
-  static public String topdir = TestDir.cdmUnitTestDir;
+  public static String topdir = TestDir.cdmUnitTestDir;
 
   @Parameterized.Parameters(name = "{0}")
   public static List<Object[]> getTestParameters() {

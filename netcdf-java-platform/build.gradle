@@ -10,7 +10,7 @@ javaPlatform {
 
 dependencies {
   def awsVersion = '2.17.290'
-  def jacksonVersion = '2.14.0-rc1'
+  def jacksonVersion = '2.15.2'
   api enforcedPlatform("software.amazon.awssdk:bom:${awsVersion}")
   api enforcedPlatform("com.fasterxml.jackson:jackson-bom:${jacksonVersion}")
   constraints {
@@ -20,12 +20,12 @@ dependencies {
     // general dependencies
     api "com.google.protobuf:protobuf-java:${depVersion.protobuf}"
     api "com.google.protobuf:protoc:${depVersion.protobuf}"
-    api 'com.google.guava:guava:30.1-jre'
+    api 'com.google.guava:guava:32.0.0-jre'
     api 'com.google.re2j:re2j:1.3'
     api 'org.jdom:jdom2:2.0.6'
     api 'joda-time:joda-time:2.10.3' // replace by javax.time
 
-    // netcdf4, dap4:d4lib
+    // netcdf4, dap4
     // Tricky dependency here. We need to make sure that we keep in-line with the version
     // that chronicle-map uses in the TDS, or else we see bad things happen on the TDS side.
     api 'net.java.dev.jna:jna:5.12.1'

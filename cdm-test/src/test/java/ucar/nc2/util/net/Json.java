@@ -31,14 +31,14 @@ abstract public class Json {
 
   //////////////////////////////////////////////////
 
-  static public Object parse(String text) throws IOException {
+  public static Object parse(String text) throws IOException {
     Parser parser = new Parser();
     return parser.parse(text);
   }
 
   //////////////////////////////////////////////////
 
-  static protected class Parser {
+  protected static class Parser {
 
     public Parser() {}
 
@@ -160,17 +160,17 @@ abstract public class Json {
     }
   }
 
-  static public String toString(Object o) {
+  public static String toString(Object o) {
     return toString(o, "");
   }
 
-  static public String toString(Object o, String demark) {
+  public static String toString(Object o, String demark) {
     StringBuilder buf = new StringBuilder();
     toStringR(o, buf, demark, 0);
     return buf.toString();
   }
 
-  static protected void toStringR(Object o, StringBuilder buf, String demark, int indent) {
+  protected static void toStringR(Object o, StringBuilder buf, String demark, int indent) {
     boolean first = true;
     if (o instanceof List) {
       List<Object> list = (List<Object>) o;
@@ -230,7 +230,7 @@ abstract public class Json {
 
   static String blanks = "                                                  ";
 
-  static protected String indent(int n) {
+  protected static String indent(int n) {
     while (n > blanks.length()) {
       blanks = blanks + blanks;
     }

@@ -28,6 +28,7 @@ import java.util.ArrayList;
  */
 public class CompareNetcdf2 {
   public static final ObjFilter IDENTITY_FILTER = new ObjFilter() {};
+  private static final int MAX_SIZE_TO_READ = 10_000_000;
 
   public interface ObjFilter {
     // if true, compare attribute, else skip comparison
@@ -361,7 +362,7 @@ public class CompareNetcdf2 {
       try {
         ok &= compareVariableData(org, copy, showCompare, justOne);
 
-      } catch (IOException e) {
+      } catch (IOException | InvalidRangeException e) {
         StringWriter sw = new StringWriter(5000);
         e.printStackTrace(new PrintWriter(sw));
         f.format("%s", sw.toString());
@@ -686,10 +687,21 @@ public class CompareNetcdf2 {
     return ok;
   }
 
+  private static int[] makeShapeSubset(int[] shape) {
+    // Arrays can be 1-7 dimensions so the largest one we could make this way is 10^7 elements
+    final int maxLength = 10;
+    return Arrays.stream(shape).sequential().map(s -> Math.min(maxLength, s)).toArray();
+  }
+
   private boolean compareVariableData(Variable var1, Variable var2, boolean showCompare, boolean justOne)
-      throws IOException {
-    Array data1 = var1.read();
-    Array data2 = var2.read();
+      throws IOException, InvalidRangeException {
+    final long size = var1.getSize() * var1.getElementSize();
+    final Section section = size > MAX_SIZE_TO_READ ? new Section(makeShapeSubset(var1.getShape())) : null;
+    if (showCompare && section != null) {
+      f.format(" compareArrays %s too large so only comparing section %s%n", var1.getNameAndDimensions(), section);
+    }
+    Array data1 = var1.read(section);
+    Array data2 = var2.read(section);
 
     if (showCompare)
       f.format(" compareArrays %s unlimited=%s size=%d%n", var1.getNameAndDimensions(), var1.isUnlimited(),

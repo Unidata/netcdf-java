@@ -1,0 +1,14 @@
+netcdf test_opaque_array.7.nc.dap {
+  variables:
+    opaque vo2(1, 2);
+
+  // global attributes:
+  string :_dap4.ce = "/vo2[1][0:1]";
+  :_DAP4_Little_Endian = 1B;
+  string :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
+
+  data:
+    vo2 =       0xfedcba9876543210,
+      0xfedcba9876543210;
+
+}

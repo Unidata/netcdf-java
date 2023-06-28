@@ -64,12 +64,6 @@ public class TestCDF5Reading extends UnitTestCommon {
     try (NetcdfFile jni = openJni(location)) {
       jni.setLocation(location + " (jni)");
       Array data = read(jni, "f4", "0:2");
-      if (prop_visual) {
-        String dump = Ncdump.printArray(data);
-        logger.debug(dump);
-        String testresult = dump.replace('r', ' ').replace('\n', ' ').trim();
-        visual("CDF Read", testresult);
-      }
       Assert.assertTrue("***Fail: data mismatch", MAMath.nearlyEquals(data, BASELINE));
       System.err.println("***Pass");
     }

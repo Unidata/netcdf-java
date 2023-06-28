@@ -269,7 +269,7 @@ public class LzmaBench {
     PrintRating(rating);
   }
 
-  static public int LzmaBenchmark(int numIterations, int dictionarySize) throws Exception {
+  public static int LzmaBenchmark(int numIterations, int dictionarySize) throws Exception {
     if (numIterations <= 0)
       return 0;
     if (dictionarySize < (1 << 18)) {

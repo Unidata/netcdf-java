@@ -174,6 +174,14 @@ public class ParsedSectionSpec {
     this.child = null;
   }
 
+  public Variable getVariable() {
+    return v;
+  }
+
+  public Section getArraySection() {
+    return section;
+  }
+
   @Override
   public String toString() {
     return "ParsedSectionSpec{" + "v=" + v.getFullName() + ", section=" + section + ", child=" + child + '}';

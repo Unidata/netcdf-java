@@ -1,7 +1,7 @@
 package SevenZip;
 
 public class LzmaAlone {
-  static public class CommandLine {
+  public static class CommandLine {
     public static final int kEncode = 0;
     public static final int kDecode = 1;
     public static final int kBenchmak = 2;

@@ -1,0 +1,25 @@
+netcdf test_vlen1 {
+  variables:
+
+    Sequence {
+      int x;
+        string x:_CoordinateAxisType = "GeoX";
+    } x(*);
+    x:_FillValue = 0;
+
+
+  // global attributes:
+  :_DAP4_Little_Endian = 1B;
+  string :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
+
+  data:
+    x = 
+      {        x = 1
+      } x
+      {        x = 3
+      } x
+      {        x = 5
+      } x
+      {        x = 7
+      } x
+}

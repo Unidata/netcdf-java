@@ -8,14 +8,17 @@ import java.lang.invoke.MethodHandles;
 import java.net.URISyntaxException;
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.net.URI;
+import ucar.unidata.util.test.category.NeedsExternalResource;
 
 
 /**
- * Unit tests for catalog builder port validation
+ * Unit tests for catalog builder port validation using thredds-test server
  */
+@Category(NeedsExternalResource.class)
 public class TestCatalogBuilder {
 
   public static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
