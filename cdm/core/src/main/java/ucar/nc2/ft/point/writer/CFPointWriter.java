@@ -16,6 +16,7 @@ import ucar.nc2.*;
 import ucar.nc2.constants.*;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.ft.*;
+import ucar.nc2.ft.point.StationFeature;
 import ucar.nc2.ft.point.StationPointFeature;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateFormatter;
@@ -452,6 +453,48 @@ public abstract class CFPointWriter implements Closeable {
 
   protected void makeMiddleVariables(StructureData middleData, boolean isExtended) {
     // NOOP
+  }
+
+  protected void writeHeader(List<VariableSimpleIF> obsCoords, List<StationFeature> stnFeatureList) throws IOException {
+
+    this.recordDim = writer.addUnlimitedDimension(recordDimName);
+    addExtraVariables();
+
+    for (StationFeature stnFeature : stnFeatureList) {
+      assert stnFeature instanceof StationTimeSeriesFeature : "Expected pointFeat to be a StationTimeSeriesFeature, not a "
+              + stnFeature.getClass().getSimpleName();
+
+      for (PointFeature pointFeat : (StationTimeSeriesFeature) stnFeature) {
+        assert pointFeat instanceof StationPointFeature : "Expected pointFeat to be a StationPointFeature, not a "
+                + pointFeat.getClass().getSimpleName();
+
+        StationFeature sf = ((StationPointFeature) pointFeat).getStation();
+        StructureData featureData = sf.getFeatureData();
+        StructureData obsData = pointFeat.getFeatureData();
+
+        Formatter coordNames = new Formatter().format("%s %s %s", ((StationTimeSeriesFeature) stnFeature).getTimeName(), latName, lonName);
+        if (useAlt)
+          coordNames.format(" %s", stationAltName);
+
+        if (writer.getVersion().isExtendedModel()) {
+          makeFeatureVariables(featureData, true);
+          record = (Structure) writer.addVariable(null, recordName, DataType.STRUCTURE, recordDimName);
+          addCoordinatesExtended(record, obsCoords);
+          addDataVariablesExtended(obsData, coordNames.toString());
+
+        } else {
+            if(writer.findDimension(stationDimName) == null)
+              makeFeatureVariables(featureData, false);
+          }
+          addCoordinatesClassic(recordDim, obsCoords, dataMap);
+          addDataVariablesClassic(recordDim, obsData, dataMap, coordNames.toString());
+      }
+    }
+    writer.create();
+    if(!(writer.getVersion().isExtendedModel()))
+      record = writer.addRecordStructure(); // for netcdf3
+    writeExtraVariables();
+
   }
 
   protected void writeHeader(List<VariableSimpleIF> obsCoords, StructureData featureData, StructureData obsData,
