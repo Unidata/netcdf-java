@@ -59,6 +59,56 @@ public class WriterCFStationCollection extends CFPointWriter {
         "Timeseries of station data in the indexed ragged array representation, H.2.5"));
   }
 
+  public void writeHeader(List<StationFeature> stns) throws IOException {
+    this.stnList = stns;
+
+    // see if there's altitude, wmoId for any stations
+    for (Station stn : stnList) {
+      if (!Double.isNaN(stn.getAltitude()))
+        useAlt = true;
+      if ((stn.getWmoId() != null) && (!stn.getWmoId().trim().isEmpty()))
+        useWmoId = true;
+      if ((stn.getDescription() != null) && (!stn.getDescription().trim().isEmpty()))
+        useDesc = true;
+
+      // find string lengths
+      id_strlen = Math.max(id_strlen, stn.getName().length());
+      if (stn.getDescription() != null)
+        desc_strlen = Math.max(desc_strlen, stn.getDescription().length());
+      if (stn.getWmoId() != null)
+        wmo_strlen = Math.max(wmo_strlen, stn.getWmoId().length());
+    }
+
+    llbb = CFPointWriterUtils.getBoundingBox(stnList); // gets written in super.finish();
+
+    List<VariableSimpleIF> coords = new ArrayList<>();
+
+    for(StationFeature stn : this.stnList){
+      if(stn instanceof DsgFeatureCollection) {
+        coords.add(VariableSimpleBuilder.makeScalar(((DsgFeatureCollection) stn).getTimeName(),
+                "time of measurement", ((DsgFeatureCollection) stn).getTimeUnit().getUdUnit(),
+                DataType.DOUBLE).build());
+      }
+      else{
+        coords.add(VariableSimpleBuilder.makeScalar(timeName, "time of measurement", timeUnit.getUdUnit(), DataType.DOUBLE)
+                .addAttribute(CF.CALENDAR, timeUnit.getCalendar().toString()).build());
+      }
+    }
+    coords.add(VariableSimpleBuilder
+            .makeScalar(stationIndexName, "station index for this observation record", null, DataType.INT)
+            .addAttribute(CF.INSTANCE_DIMENSION, stationDimName).build());
+
+    super.writeHeader(coords, stnList);
+
+    int count = 0;
+    stationIndexMap = new HashMap<>(2 * stns.size());
+    for (StationFeature stn : stnList) {
+      writeStationData(stn);
+      stationIndexMap.put(stn.getName(), count);
+      count++;
+    }
+  }
+
   public void writeHeader(List<StationFeature> stns, StationPointFeature spf) throws IOException {
     this.stnList = stns;
 
