@@ -11,6 +11,7 @@ import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
 import ucar.nc2.dataset.conv.CF1Convention;
+import ucar.nc2.ft.DsgFeatureCollection;
 import ucar.nc2.ft.PointFeature;
 import ucar.nc2.ft.point.StationFeature;
 import ucar.nc2.ft.point.StationPointFeature;
@@ -221,10 +222,33 @@ public class WriterCFStationCollection extends CFPointWriter {
   }
 
   public void writeRecord(Station s, PointFeature sobs, StructureData sdata) throws IOException {
-    writeRecord(s.getName(), sobs.getObservationTime(), sobs.getObservationTimeAsCalendarDate(), sdata);
+    if(s instanceof DsgFeatureCollection) {
+      writeRecord(s.getName(), ((DsgFeatureCollection) s).getTimeName(), sobs.getObservationTime(), sobs.getObservationTimeAsCalendarDate(), sdata);
+    }
+    else{
+      writeRecord(s.getName(), sobs.getObservationTime(), sobs.getObservationTimeAsCalendarDate(), sdata);
+    }
   }
 
   private int obsRecno;
+
+  public void writeRecord(String stnName, String timeCoordName, double timeCoordValue, CalendarDate obsDate, StructureData sdata)
+          throws IOException {
+    trackBB(null, obsDate);
+
+    Integer parentIndex = stationIndexMap.get(stnName);
+    if (parentIndex == null)
+      throw new RuntimeException("Cant find station " + stnName);
+
+    StructureMembers.Builder smb = StructureMembers.builder().setName("Coords");
+    smb.addMemberScalar(timeCoordName, null, null, DataType.DOUBLE, timeCoordValue);
+    smb.addMemberScalar(stationIndexName, null, null, DataType.INT, parentIndex);
+    StructureData coords = new StructureDataFromMember(smb.build());
+
+    // coords first so it takes precedence
+    StructureDataComposite sdall = StructureDataComposite.create(ImmutableList.of(coords, sdata));
+    obsRecno = super.writeStructureData(obsRecno, record, sdall, dataMap);
+  }
 
   public void writeRecord(String stnName, double timeCoordValue, CalendarDate obsDate, StructureData sdata)
       throws IOException {
