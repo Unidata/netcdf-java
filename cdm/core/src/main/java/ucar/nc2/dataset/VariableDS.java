@@ -167,6 +167,7 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
     this.orgVar = vds;
     this.orgDataType = vds.orgDataType;
     this.orgName = vds.orgName;
+    this.enhanceMode = vds.enhanceMode;
 
     this.enhanceProxy = new EnhancementsImpl(this); // decouple coordinate systems
     this.unsignedConversion = vds.unsignedConversion;

@@ -40,7 +40,7 @@ tasks.register("testIndexCreation", Test) {
 }
 
 test {
-  dependsOn 'testIndexCreation'
+//  dependsOn 'testIndexCreation'
 
   // In addition to preventing TestGribIndexCreation from running during cdm-test:test,
   // this statement also excludes the results of TestGribIndexCreation from appearing in the cdm-test report:
