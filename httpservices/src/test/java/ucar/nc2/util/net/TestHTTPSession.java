@@ -88,15 +88,15 @@ public class TestHTTPSession extends UnitTestCommon {
     logger.debug("*** URL: {}", TESTURL1);
     logger.debug("Test: HTTPSession.setGlobalUserAgent({})", GLOBALAGENT);
 
-    HTTPSession.setInterceptors(false);
     HTTPSession.setGlobalUserAgent(GLOBALAGENT);
     try (HTTPSession session = HTTPFactory.newSession(TESTURL1)) {
+      session.setDebugInterceptors(); // indicate we want debug intercepts
       List<Header> agents = null;
       HTTPMethod method = HTTPFactory.Get(session, TESTURL1);
       method.execute();
       // Use special interface to access the request
       // Look for the user agent header
-      agents = HTTPSession.debugRequestInterceptor().getHeaders(HTTPSession.HEADER_USERAGENT);
+      agents = session.getDebugRequestInterceptor().getHeaders(HTTPSession.HEADER_USERAGENT);
       Assert.assertFalse("User-Agent Header not found", agents.size() == 0);
       // It is possible to see multiple same headers, so verify that they have same value
       String agentvalue = null;
@@ -113,12 +113,12 @@ public class TestHTTPSession extends UnitTestCommon {
       // method.close();
 
       logger.debug("Test: HTTPSession.setUserAgent({})", SESSIONAGENT);
-      HTTPSession.resetInterceptors();
+      session.resetInterceptors();
       session.setUserAgent(SESSIONAGENT);
       method = HTTPFactory.Get(session, TESTURL1);
       method.execute();
       // Use special interface to access the request
-      agents = HTTPSession.debugRequestInterceptor().getHeaders(HTTPSession.HEADER_USERAGENT);
+      agents = session.getDebugRequestInterceptor().getHeaders(HTTPSession.HEADER_USERAGENT);
       Assert.assertFalse("User-Agent Header not found", agents.size() == 0);
       agentvalue = null;
       for (Header h : agents) {

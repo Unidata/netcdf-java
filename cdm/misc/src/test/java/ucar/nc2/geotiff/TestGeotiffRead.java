@@ -28,7 +28,7 @@ import java.util.List;
 @RunWith(Parameterized.class)
 public class TestGeotiffRead {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-  static public File topdir = new File(TestDir.cdmUnitTestDir + "/formats/geotiff/");
+  public static File topdir = new File(TestDir.cdmUnitTestDir + "/formats/geotiff/");
 
   // Even if this class is being excluded due to the NeedsCdmUnitTest annotation, JUnit still calls this method.
   // So, it mustn't throw an exception. Instead, when cdmUnitTest/ isn't available, it'll return an empty list.

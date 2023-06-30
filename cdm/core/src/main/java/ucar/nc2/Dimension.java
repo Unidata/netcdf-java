@@ -457,9 +457,6 @@ public class Dimension extends CDMNode implements Comparable<Dimension> {
     } else if (isUnlimited) {
       if (n < 0)
         throw new IllegalArgumentException("Unlimited Dimension length =" + n + " must >= 0");
-    } else {
-      if (n < 1)
-        throw new IllegalArgumentException("Dimension length =" + n + " must be > 0");
     }
     this.length = n;
   }

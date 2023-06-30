@@ -25,19 +25,19 @@ public class TestGcdmReadSection {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @BeforeClass
-  static public void before() {
+  public static void before() {
     // make sure to fetch data through gcdm every time
     Variable.permitCaching = false;
   }
 
   @AfterClass
-  static public void after() {
+  public static void after() {
     Variable.permitCaching = true;
   }
 
   @Test
   public void testReadSection() throws Exception {
-    String localFilename = "../../dap4/d4tests/src/test/data/resources/testfiles/test_atomic_array.nc";
+    String localFilename = "../../dap4/src/test/data/resources/nctestfiles/test_atomic_array.nc";
     String varName = "vs"; // Variable is non-numeric so values are not read when header is
     String[] expectedValues = {"hello\tworld", "\r\n", "Καλημέα", "abc"};
     String gcdmUrl = gcdmPrefix + Paths.get(localFilename).toAbsolutePath();

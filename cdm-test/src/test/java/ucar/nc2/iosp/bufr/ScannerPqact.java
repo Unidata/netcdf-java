@@ -290,7 +290,7 @@ public class ScannerPqact extends Scanner {
   static Formatter out = new Formatter(System.out);
 
   // LOOK turn this into a test
-  static public void main(String args[]) throws IOException {
+  public static void main(String args[]) throws IOException {
 
     // read pattern matching
     readPqactTable("D:/bufr/pqact.txt");

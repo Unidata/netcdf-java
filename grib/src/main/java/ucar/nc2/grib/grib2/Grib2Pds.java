@@ -66,6 +66,8 @@ public abstract class Grib2Pds {
         return new Grib2Pds32(input);
       case 48:
         return new Grib2Pds48(input);
+      case 60:
+        return new Grib2Pds60(input);
       case 61:
         return new Grib2Pds61(input);
       default:
@@ -661,6 +663,35 @@ public abstract class Grib2Pds {
         ti.show(f);
       }
     }
+  }
+
+  //////////////////////////////////////////////////////////////////////////////////////////////
+
+  /**
+   * Product definition template 4.60 -
+   * individual ensemble reforecast, control and perturbed, at a horizontal level or in a horizontal layer at a point
+   * in time
+   */
+  private static class Grib2Pds60 extends Grib2Pds1 implements PdsEnsemble {
+
+    Grib2Pds60(byte[] input) {
+      super(input);
+    }
+
+    /**
+     * Model version date
+     *
+     * @return Model version date
+     */
+    public CalendarDate getModelVersionDate() {
+      return calcTime(38);
+    }
+
+    @Override
+    public int templateLength() {
+      return 44;
+    }
+
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////

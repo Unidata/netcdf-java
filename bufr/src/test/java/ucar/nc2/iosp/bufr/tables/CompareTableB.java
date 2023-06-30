@@ -134,7 +134,7 @@ public class CompareTableB {
     compare2(robbMap, bmTable);
   }
 
-  static public void mainBrit(String args[]) throws IOException {
+  public static void mainBrit(String args[]) throws IOException {
     CompareTableB ct = new CompareTableB();
     ct.compareBrit();
   }
@@ -202,7 +202,7 @@ public class CompareTableB {
     System.out.printf("%s lines=%d elems=%d avg name len=%d%n", filename, count, n, avg / n);
   }
 
-  static public void main(String args[]) throws IOException {
+  public static void main(String args[]) throws IOException {
     CompareTableB ct = new CompareTableB();
     Map<Integer, Feature> wmoMap = new TreeMap<Integer, Feature>();
     ct.readWmoCsv("C:/docs/BC_TableB.csv", wmoMap);
@@ -551,7 +551,7 @@ public class CompareTableB {
     return sb.toString();
   }
 
-  static public void main2(String args[]) throws IOException {
+  public static void main2(String args[]) throws IOException {
     CompareTableB ct = new CompareTableB();
     ct.compareAll();
   }

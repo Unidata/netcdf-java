@@ -30,7 +30,7 @@ public class TestCoordinatesMatchGbx {
   private static final boolean showFileCounters = false;
 
   @BeforeClass
-  static public void before() {
+  public static void before() {
     Grib.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
     countersAll = GribCoordsMatchGbx.getCounters();
 
@@ -39,7 +39,7 @@ public class TestCoordinatesMatchGbx {
   }
 
   @AfterClass
-  static public void after() {
+  public static void after() {
     Grib.setDebugFlags(new DebugFlagsImpl());
     logger.debug("countersAll = {}", countersAll);
     Variable.permitCaching = true;

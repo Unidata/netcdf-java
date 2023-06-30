@@ -95,7 +95,7 @@ public class TestNexrad2 {
 
   }
 
-  static public boolean testCoordSystem(NetcdfFile nexrad2) throws IOException {
+  public static boolean testCoordSystem(NetcdfFile nexrad2) throws IOException {
     Dimension scanR = nexrad2.findDimension("scanR");
     assert null != scanR;
     Dimension scanV = nexrad2.findDimension("scanV");

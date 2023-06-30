@@ -15,7 +15,7 @@ import ucar.nc2.dataset.NetcdfDatasets;
 
 public class TestReadArrayStructure {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-  private static final String testDir = "../../dap4/d4tests/src/test/data/resources/testfiles/";
+  private static final String testDir = "../../dap4/src/test/data/resources/nctestfiles/";
 
   @Test
   public void shouldReadScalarStructure() throws IOException {

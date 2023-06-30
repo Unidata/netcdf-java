@@ -30,13 +30,13 @@ import java.net.URL;
 public class TestDapParser extends TestFiles {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  static protected boolean VISUAL = false;
+  protected static boolean VISUAL = false;
 
-  static protected final int ISUNKNOWN = 0;
-  static protected final int ISDAS = 1;
-  static protected final int ISDDS = 2;
-  static protected final int ISDDX = 3;
-  static protected final int ISERR = 4;
+  protected static final int ISUNKNOWN = 0;
+  protected static final int ISDAS = 1;
+  protected static final int ISDDS = 2;
+  protected static final int ISDDX = 3;
+  protected static final int ISERR = 4;
 
   protected boolean isddx = false;
 
