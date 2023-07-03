@@ -29,15 +29,8 @@ public class TestNcmlRenameVar {
   static String filename = "file:./" + TestNcmlRead.topDir + "renameVar.xml";
 
   @BeforeClass
-  public static void setUp() {
-    try {
-      ncfile = NcmlReader.readNcml(filename, null, null).build();
-    } catch (java.net.MalformedURLException e) {
-      System.out.println("bad URL error = " + e);
-    } catch (IOException e) {
-      System.out.println("IO error = " + e);
-      e.printStackTrace();
-    }
+  public static void setUp() throws IOException {
+    ncfile = NcmlReader.readNcml(filename, null, null).build();
   }
 
   @AfterClass
@@ -79,7 +72,7 @@ public class TestNcmlRenameVar {
   }
 
   @Test
-  public void testReadCoordvar() {
+  public void testReadCoordvar() throws IOException {
     Variable lat = ncfile.findVariable("lat");
     assert null != lat;
     assert lat.getShortName().equals("lat");
@@ -100,24 +93,20 @@ public class TestNcmlRenameVar {
     assert att.getNumericValue() == null;
     assert att.getNumericValue(3) == null;
 
-    try {
-      Array data = lat.read();
-      assert data.getRank() == 1;
-      assert data.getSize() == 3;
-      assert data.getShape()[0] == 3;
-      assert data.getElementType() == float.class;
+    Array data = lat.read();
+    assert data.getRank() == 1;
+    assert data.getSize() == 3;
+    assert data.getShape()[0] == 3;
+    assert data.getElementType() == float.class;
 
-      IndexIterator dataI = data.getIndexIterator();
-      assert nearlyEquals(dataI.getDoubleNext(), 41.0);
-      assert nearlyEquals(dataI.getDoubleNext(), 40.0);
-      assert nearlyEquals(dataI.getDoubleNext(), 39.0);
-    } catch (IOException io) {
-    }
-
+    IndexIterator dataI = data.getIndexIterator();
+    assert nearlyEquals(dataI.getDoubleNext(), 41.0);
+    assert nearlyEquals(dataI.getDoubleNext(), 40.0);
+    assert nearlyEquals(dataI.getDoubleNext(), 39.0);
   }
 
   @Test
-  public void testReadData() {
+  public void testReadData() throws IOException {
     Variable v = ncfile.findVariable("ReletiveHumidity");
     assert null != v;
     assert v.getShortName().equals("ReletiveHumidity");
@@ -144,82 +133,65 @@ public class TestNcmlRenameVar {
     assert att.getNumericValue() == null;
     assert att.getNumericValue(3) == null;
 
-    try {
-      Array data = v.read();
-      assert data.getRank() == 3;
-      assert data.getSize() == 48;
-      assert data.getShape()[0] == 4;
-      assert data.getShape()[1] == 3;
-      assert data.getShape()[2] == 4;
-      assert data.getElementType() == int.class;
+    Array data = v.read();
+    assert data.getRank() == 3;
+    assert data.getSize() == 48;
+    assert data.getShape()[0] == 4;
+    assert data.getShape()[1] == 3;
+    assert data.getShape()[2] == 4;
+    assert data.getElementType() == int.class;
 
-      IndexIterator dataI = data.getIndexIterator();
-      assert dataI.getIntNext() == 1;
-      assert dataI.getIntNext() == 2;
-      assert dataI.getIntNext() == 3;
-      assert dataI.getIntNext() == 4;
-      assert dataI.getIntNext() == 5;
-    } catch (IOException io) {
-    }
+    IndexIterator dataI = data.getIndexIterator();
+    assert dataI.getIntNext() == 1;
+    assert dataI.getIntNext() == 2;
+    assert dataI.getIntNext() == 3;
+    assert dataI.getIntNext() == 4;
+    assert dataI.getIntNext() == 5;
   }
 
   @Test
-  public void testReadSlice() {
+  public void testReadSlice() throws InvalidRangeException, IOException {
     Variable v = ncfile.findVariable("ReletiveHumidity");
     int[] origin = new int[3];
     int[] shape = {2, 3, 1};
 
-    try {
-      Array data = v.read(origin, shape);
-      assert data.getRank() == 3;
-      assert data.getSize() == 6;
-      assert data.getShape()[0] == 2;
-      assert data.getShape()[1] == 3;
-      assert data.getShape()[2] == 1;
-      assert data.getElementType() == int.class;
+    Array data = v.read(origin, shape);
+    assert data.getRank() == 3;
+    assert data.getSize() == 6;
+    assert data.getShape()[0] == 2;
+    assert data.getShape()[1] == 3;
+    assert data.getShape()[2] == 1;
+    assert data.getElementType() == int.class;
 
-      IndexIterator dataI = data.getIndexIterator();
-      assert dataI.getIntNext() == 1;
-      assert dataI.getIntNext() == 5;
-      assert dataI.getIntNext() == 9;
-      assert dataI.getIntNext() == 21;
-      assert dataI.getIntNext() == 25;
-      assert dataI.getIntNext() == 29;
-    } catch (InvalidRangeException io) {
-      assert false;
-    } catch (IOException io) {
-      io.printStackTrace();
-      assert false;
-    }
+    IndexIterator dataI = data.getIndexIterator();
+    assert dataI.getIntNext() == 1;
+    assert dataI.getIntNext() == 5;
+    assert dataI.getIntNext() == 9;
+    assert dataI.getIntNext() == 21;
+    assert dataI.getIntNext() == 25;
+    assert dataI.getIntNext() == 29;
   }
 
   @Test
-  public void testReadSlice2() {
+  public void testReadSlice2() throws InvalidRangeException, IOException {
     Variable v = ncfile.findVariable("ReletiveHumidity");
     int[] origin = new int[3];
     int[] shape = {2, 1, 3};
 
-    try {
-      Array data = v.read(origin, shape).reduce();
-      assert data.getRank() == 2;
-      assert data.getSize() == 6;
-      assert data.getShape()[0] == 2;
-      assert data.getShape()[1] == 3;
-      assert data.getElementType() == int.class;
+    Array data = v.read(origin, shape).reduce();
+    assert data.getRank() == 2;
+    assert data.getSize() == 6;
+    assert data.getShape()[0] == 2;
+    assert data.getShape()[1] == 3;
+    assert data.getElementType() == int.class;
 
-      IndexIterator dataI = data.getIndexIterator();
-      assert dataI.getIntNext() == 1;
-      assert dataI.getIntNext() == 2;
-      assert dataI.getIntNext() == 3;
-      assert dataI.getIntNext() == 21;
-      assert dataI.getIntNext() == 22;
-      assert dataI.getIntNext() == 23;
-    } catch (InvalidRangeException io) {
-      assert false;
-    } catch (IOException io) {
-      io.printStackTrace();
-      assert false;
-    }
+    IndexIterator dataI = data.getIndexIterator();
+    assert dataI.getIntNext() == 1;
+    assert dataI.getIntNext() == 2;
+    assert dataI.getIntNext() == 3;
+    assert dataI.getIntNext() == 21;
+    assert dataI.getIntNext() == 22;
+    assert dataI.getIntNext() == 23;
   }
 
 }
