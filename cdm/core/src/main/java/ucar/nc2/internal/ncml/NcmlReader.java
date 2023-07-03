@@ -806,10 +806,7 @@ public class NcmlReader {
       return;
     }
 
-    String nameInFile = dimElem.getAttributeValue("orgName");
-    if (nameInFile == null) {
-      nameInFile = name;
-    }
+    String nameInFile = dimElem.getAttributeValue("orgName") != null ? dimElem.getAttributeValue("orgName") : name;
 
     // LOOK this is wrong, groupBuilder may already have the dimension.
     // see if it already exists
