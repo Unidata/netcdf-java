@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2"
+  location="nc/example.nc">
+
+  <dimension name="newTime" orgName="time"/>
+
+  <variable name="time" shape="newTime"/>
+  <variable name="rh" shape="newTime lat lon"/>
+  <variable name="T" shape="newTime lat lon"/>
+</netcdf>
