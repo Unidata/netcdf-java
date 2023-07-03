@@ -831,9 +831,6 @@ public class NcmlReader {
 
       int len = isVariableLength ? Dimension.VLEN.getLength() : Integer.parseInt(lengthS);
 
-      if (debugConstruct) {
-        System.out.println(" add new dim = " + name);
-      }
       // LOOK change to replaceDimension to get fort.54 working.
       groupBuilder.replaceDimension(Dimension.builder().setName(name).setIsShared(isShared).setIsUnlimited(isUnlimited)
           .setIsVariableLength(isVariableLength).setLength(len).build());
@@ -862,10 +859,6 @@ public class NcmlReader {
       if ((lengthS != null) && !dim.isVariableLength()) {
         int len = Integer.parseInt(lengthS);
         newDim.setLength(len);
-      }
-
-      if (debugConstruct) {
-        System.out.println(" modify existing dim = " + name);
       }
 
       groupBuilder.removeDimension(name);
