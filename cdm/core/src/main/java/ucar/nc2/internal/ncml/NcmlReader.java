@@ -562,7 +562,7 @@ public class NcmlReader {
   /**
    * Read the NcML group element, and nested elements.
    *
-   * @param parent the parent group builder, or null when its the root group.
+   * @param parent the parent group builder, or null when it's the root group.
    * @param refParent parent Group in referenced dataset, may be null
    * @param groupElem ncml group element
    */
@@ -670,7 +670,7 @@ public class NcmlReader {
       return;
     }
 
-    // see if its new
+    // see if it's new
     ucar.nc2.Attribute oldatt = null;
     if (ref != null) {
       oldatt = findAttribute(ref, nameInFile);
@@ -1597,7 +1597,7 @@ public class NcmlReader {
   }
 
   /////////////////////////////////////////////
-  // command procesing
+  // command processing
 
   private void cmdRemove(Group.Builder g, String type, String name) {
     boolean err = false;
