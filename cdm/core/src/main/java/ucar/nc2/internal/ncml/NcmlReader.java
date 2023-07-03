@@ -858,7 +858,7 @@ public class NcmlReader {
         newDim.setLength(len);
       }
 
-      groupBuilder.removeDimension(name);
+      groupBuilder.removeDimension(nameInFile);
       groupBuilder.addDimension(newDim.build());
     }
   }
