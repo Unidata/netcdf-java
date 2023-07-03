@@ -827,10 +827,7 @@ public class NcmlReader {
 
       boolean isUnlimited = "true".equalsIgnoreCase(isUnlimitedS);
       boolean isVariableLength = "true".equalsIgnoreCase(isVariableLengthS);
-      boolean isShared = true;
-      if ("false".equalsIgnoreCase(isSharedS)) {
-        isShared = false;
-      }
+      boolean isShared = !"false".equalsIgnoreCase(isSharedS);
 
       int len;
       if (isVariableLength) {
