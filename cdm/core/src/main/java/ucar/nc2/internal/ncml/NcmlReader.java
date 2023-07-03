@@ -829,12 +829,7 @@ public class NcmlReader {
       boolean isVariableLength = "true".equalsIgnoreCase(isVariableLengthS);
       boolean isShared = !"false".equalsIgnoreCase(isSharedS);
 
-      int len;
-      if (isVariableLength) {
-        len = Dimension.VLEN.getLength();
-      } else {
-        len = Integer.parseInt(lengthS);
-      }
+      int len = isVariableLength ? Dimension.VLEN.getLength() : Integer.parseInt(lengthS);
 
       if (debugConstruct) {
         System.out.println(" add new dim = " + name);
