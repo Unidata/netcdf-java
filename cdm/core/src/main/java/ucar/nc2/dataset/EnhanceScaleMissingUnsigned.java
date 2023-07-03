@@ -38,7 +38,7 @@ import javax.annotation.Nullable;
  *
  * <ol>
  * <li>If scale_factor and/or add_offset variable attributes are present, then this is a "packed" Variable.</li>
- * <li>The data type of the variable will be set to the {@link EnhanceScaleMissingUnsignedImpl#largestOf largest of}:
+ * <li>The data type of the variable will be set to the {@link ucar.nc2.filter.FilterHelpers#largestOf largest of}:
  * <ul>
  * <li>the original data type</li>
  * <li>the unsigned conversion type, if applicable</li>

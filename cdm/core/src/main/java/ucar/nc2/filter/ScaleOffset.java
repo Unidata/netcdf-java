@@ -175,7 +175,6 @@ public class ScaleOffset extends Filter {
     return FilterHelpers.arrayToBytes(out, dtype, dtypeOrder);
   }
 
-  // not used anywhere yet
   public Array applyScaleOffset(Array in) {
     if (scale == DEFAULT_SCALE && offset == DEFAULT_OFFSET) {
       return in;
@@ -251,7 +250,7 @@ public class ScaleOffset extends Filter {
 
   public double applyScaleOffset(Number value) {
     double convertedValue = value.doubleValue();
-    return Math.round((convertedValue - offset) * scale);
+    return (convertedValue - offset) * scale;
   }
 
   public double removeScaleOffset(Number value) {

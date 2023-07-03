@@ -628,7 +628,7 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
 
   @Override
   public boolean hasMissing() {
-    return convertMissing != null ? convertMissing.hasMissing() : false;
+    return convertMissing != null && convertMissing.hasMissing();
   }
 
   @Override
@@ -636,12 +636,12 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
     if (Double.isNaN(val)) {
       return true;
     }
-    return convertMissing != null ? convertMissing.isMissing(val) : false;
+    return convertMissing != null && convertMissing.isMissing(val);
   }
 
   @Override
   public boolean hasValidData() {
-    return convertMissing != null ? convertMissing.hasMissingValue() : false;
+    return convertMissing != null && convertMissing.hasMissingValue();
   }
 
   @Override
@@ -656,7 +656,7 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
 
   @Override
   public boolean isInvalidData(double val) {
-    return convertMissing != null ? convertMissing.isInvalidData(val) : false;
+    return convertMissing != null && convertMissing.isInvalidData(val);
   }
 
   @Override
@@ -671,12 +671,12 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
 
   @Override
   public boolean isFillValue(double val) {
-    return convertMissing != null ? convertMissing.isFillValue(val) : false;
+    return convertMissing != null && convertMissing.isFillValue(val);
   }
 
   @Override
   public boolean hasMissingValue() {
-    return convertMissing != null ? convertMissing.hasMissingValue() : false;
+    return convertMissing != null && convertMissing.hasMissingValue();
   }
 
   @Override
@@ -686,7 +686,7 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
 
   @Override
   public boolean isMissingValue(double val) {
-    return convertMissing != null ? convertMissing.isMissingValue(val) : false;
+    return convertMissing != null && convertMissing.isMissingValue(val);
   }
 
   /** @deprecated Use NetcdfDataset.builder() */

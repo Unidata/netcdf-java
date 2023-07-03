@@ -98,13 +98,13 @@ public class TestFilters {
     assertThat(decoded).isEqualTo(input);
 
     // test empty props
-    Map<String, Object> props2 = new HashMap<>();
-    props2.put("id", "fixedscaleoffset");
-    props2.put("dtype", "<i4");
-    Filter filter2 = new ScaleOffset(props2);
-    byte[] out2 = filter2.encode(decoded_data);
+    Map<String, Object> emptyProps = new HashMap<>();
+    emptyProps.put("id", "fixedscaleoffset");
+    emptyProps.put("dtype", "<i4");
+    Filter emptyFilter = new ScaleOffset(emptyProps);
+    byte[] out2 = emptyFilter.encode(decoded_data);
     assertThat(out2).isEqualTo(decoded_data);
-    byte[] out3 = filter2.decode(decoded_data);
+    byte[] out3 = emptyFilter.decode(decoded_data);
     assertThat(out3).isEqualTo(decoded_data);
   }
 

@@ -37,12 +37,12 @@ public class TestEnhancements {
 
   @BeforeClass
   public static void setUp() throws IOException, InvalidRangeException {
-    final int data_len = 10;
+    final int dataLen = 10;
     String filePath = tempFolder.newFile().getAbsolutePath();
     NetcdfFormatWriter.Builder builder = NetcdfFormatWriter.createNewNetcdf3(filePath);
-    builder.addDimension("dim", data_len);
+    builder.addDimension("dim", dataLen);
 
-    Array signedData = Array.factory(DataType.SHORT, new int[] {data_len}, signedShorts);
+    Array signedData = Array.factory(DataType.SHORT, new int[] {dataLen}, signedShorts);
     // signed shorts
     builder.addVariable("signedVar", DataType.SHORT, "dim");
     // unsigned shorts
@@ -51,8 +51,10 @@ public class TestEnhancements {
     // scaled and offset data
     builder.addVariable("scaleOffsetVar", DataType.SHORT, "dim").addAttribute(new Attribute(CDM.SCALE_FACTOR, 10))
         .addAttribute(new Attribute(CDM.ADD_OFFSET, 10));
+    // scaled data no offset
+    builder.addVariable("scaleNoOffsetVar", DataType.SHORT, "dim").addAttribute(new Attribute(CDM.SCALE_FACTOR, 10));
 
-    Array missingDataArray = Array.factory(DataType.FLOAT, new int[] {data_len}, missingData);
+    Array missingDataArray = Array.factory(DataType.FLOAT, new int[] {dataLen}, missingData);
     // Data with min
     builder.addVariable("validMin", DataType.FLOAT, "dim").addAttribute(new Attribute(CDM.VALID_MIN, VALID_MIN));
     // Data with min and max
@@ -65,7 +67,7 @@ public class TestEnhancements {
         .addAttribute(Attribute.builder(CDM.FILL_VALUE).setNumericValue(FILL_VALUE, true).build());
 
     // unsigned, scaled/offset, and missing value
-    Array enhanceAllArray = Array.factory(DataType.SHORT, new int[] {data_len}, signedShorts);
+    Array enhanceAllArray = Array.factory(DataType.SHORT, new int[] {dataLen}, signedShorts);
     builder.addVariable("enhanceAll", DataType.SHORT, "dim").addAttribute(new Attribute(CDM.UNSIGNED, "true"))
         .addAttribute(new Attribute(CDM.SCALE_FACTOR, 10.0)).addAttribute(new Attribute(CDM.ADD_OFFSET, 10))
         .addAttribute(new Attribute(CDM.VALID_MAX, SIGNED_SCALED_MAX))
@@ -76,6 +78,7 @@ public class TestEnhancements {
     writer.write(writer.findVariable("signedVar"), new int[1], signedData);
     writer.write(writer.findVariable("unsignedVar"), new int[1], signedData);
     writer.write(writer.findVariable("scaleOffsetVar"), new int[1], signedData);
+    writer.write(writer.findVariable("scaleNoOffsetVar"), new int[1], signedData);
     writer.write(writer.findVariable("validMin"), new int[1], missingDataArray);
     writer.write(writer.findVariable("validMinMax"), new int[1], missingDataArray);
     writer.write(writer.findVariable("validRange"), new int[1], missingDataArray);
@@ -104,10 +107,16 @@ public class TestEnhancements {
 
   @Test
   public void testScaleOffset() throws IOException {
-    final int[] expected = new int[] {-40, -30, -20, -10, 0, 10, 20, 30, 40, 50};
-    // signed var
+    int[] expected = new int[] {-40, -30, -20, -10, 0, 10, 20, 30, 40, 50};
     Variable v = ncd.findVariable("scaleOffsetVar");
     Array data = v.read();
+    assertThat(data.isUnsigned()).isFalse();
+    assertThat(data.getDataType()).isEqualTo(DataType.INT);
+    assertThat((int[]) data.copyTo1DJavaArray()).isEqualTo(expected);
+
+    expected = new int[] {-50, -40, -30, -20, -10, 0, 10, 20, 30, 40};
+    v = ncd.findVariable("scaleNoOffsetVar");
+    data = v.read();
     assertThat(data.isUnsigned()).isFalse();
     assertThat(data.getDataType()).isEqualTo(DataType.INT);
     assertThat((int[]) data.copyTo1DJavaArray()).isEqualTo(expected);

@@ -108,47 +108,47 @@ public class TestPointDatasets {
   private static List<Object[]> getPlugDatasets() {
     List<Object[]> result = new ArrayList<>();
 
-//    // cosmic
-//    result
-//        .add(new Object[] {TestDir.cdmUnitTestDir + "ft/trajectory/cosmic/wetPrf_C005.2007.294.16.22.G17_0001.0002_nc",
-//            FeatureType.TRAJECTORY, 383});
-//    // ndbc
-//    result.add(new Object[] {TestDir.cdmUnitTestDir + "ft/station/ndbc/41001h1976.nc", FeatureType.STATION, 1405});
-//    result.add(new Object[] {TestDir.cdmUnitTestDir + "ft/station/suomi/suoHWV_2006.105.00.00.0060_nc",
-//        FeatureType.STATION, 124});
-//    result.add(new Object[] {TestDir.cdmUnitTestDir + "ft/station/suomi/gsuPWV_2006.105.00.00.1440_nc",
-//        FeatureType.STATION, 4848});
-//    // fsl wind profilers
-//    result.add(new Object[] {TestDir.cdmUnitTestDir + "ft/stationProfile/PROFILER_RASS_01hr_20091027_1500.nc",
-//        FeatureType.STATION_PROFILE, 198});
-//    result.add(new Object[] {TestDir.cdmUnitTestDir + "ft/stationProfile/PROFILER_RASS_06min_20091028_2318.nc",
-//        FeatureType.STATION_PROFILE, 198});
-//    result.add(new Object[] {TestDir.cdmUnitTestDir + "ft/stationProfile/PROFILER_wind_01hr_20091024_1200.nc",
-//        FeatureType.STATION_PROFILE, 1728});
-//    result.add(new Object[] {TestDir.cdmUnitTestDir + "ft/stationProfile/PROFILER_wind_06min_20091030_2330.nc",
-//        FeatureType.STATION_PROFILE, 2088});
-//    // netcdf buoy / synoptic / metars ( robb's perl decoder output)
-//    result.add(new Object[] {TestDir.cdmUnitTestDir + "ft/point/netcdf/Surface_METAR_latest.nc", FeatureType.POINT, 7});
-//    result.add(new Object[] {TestDir.cdmUnitTestDir + "ft/point/netcdf/Surface_Buoy_20090921_0000.nc",
-//        FeatureType.POINT, 32452});
-//    result.add(new Object[] {TestDir.cdmUnitTestDir + "ft/point/netcdf/Surface_Synoptic_20090921_0000.nc",
-//        FeatureType.POINT, 1516});
-//    // RAF-Nimbus
-//    result.add(
-//        new Object[] {TestDir.cdmUnitTestDir + "ft/trajectory/aircraft/135_ordrd.nc", FeatureType.TRAJECTORY, 7741});
-//    result.add(
-//        new Object[] {TestDir.cdmUnitTestDir + "ft/trajectory/aircraft/raftrack.nc", FeatureType.TRAJECTORY, 8157});
-//    // Madis
-//    result.add(new Object[] {TestDir.cdmUnitTestDir + "ft/trajectory/acars/acars_20091109_0800.nc",
-//        FeatureType.TRAJECTORY, 5063});
+    // cosmic
+    result
+        .add(new Object[] {TestDir.cdmUnitTestDir + "ft/trajectory/cosmic/wetPrf_C005.2007.294.16.22.G17_0001.0002_nc",
+            FeatureType.TRAJECTORY, 383});
+    // ndbc
+    result.add(new Object[] {TestDir.cdmUnitTestDir + "ft/station/ndbc/41001h1976.nc", FeatureType.STATION, 1405});
+    result.add(new Object[] {TestDir.cdmUnitTestDir + "ft/station/suomi/suoHWV_2006.105.00.00.0060_nc",
+        FeatureType.STATION, 124});
+    result.add(new Object[] {TestDir.cdmUnitTestDir + "ft/station/suomi/gsuPWV_2006.105.00.00.1440_nc",
+        FeatureType.STATION, 4848});
+    // fsl wind profilers
+    result.add(new Object[] {TestDir.cdmUnitTestDir + "ft/stationProfile/PROFILER_RASS_01hr_20091027_1500.nc",
+        FeatureType.STATION_PROFILE, 198});
+    result.add(new Object[] {TestDir.cdmUnitTestDir + "ft/stationProfile/PROFILER_RASS_06min_20091028_2318.nc",
+        FeatureType.STATION_PROFILE, 198});
+    result.add(new Object[] {TestDir.cdmUnitTestDir + "ft/stationProfile/PROFILER_wind_01hr_20091024_1200.nc",
+        FeatureType.STATION_PROFILE, 1728});
+    result.add(new Object[] {TestDir.cdmUnitTestDir + "ft/stationProfile/PROFILER_wind_06min_20091030_2330.nc",
+        FeatureType.STATION_PROFILE, 2088});
+    // netcdf buoy / synoptic / metars ( robb's perl decoder output)
+    result.add(new Object[] {TestDir.cdmUnitTestDir + "ft/point/netcdf/Surface_METAR_latest.nc", FeatureType.POINT, 7});
+    result.add(new Object[] {TestDir.cdmUnitTestDir + "ft/point/netcdf/Surface_Buoy_20090921_0000.nc",
+        FeatureType.POINT, 32452});
+    result.add(new Object[] {TestDir.cdmUnitTestDir + "ft/point/netcdf/Surface_Synoptic_20090921_0000.nc",
+        FeatureType.POINT, 1516});
+    // RAF-Nimbus
+    result.add(
+        new Object[] {TestDir.cdmUnitTestDir + "ft/trajectory/aircraft/135_ordrd.nc", FeatureType.TRAJECTORY, 7741});
+    result.add(
+        new Object[] {TestDir.cdmUnitTestDir + "ft/trajectory/aircraft/raftrack.nc", FeatureType.TRAJECTORY, 8157});
+    // Madis
+    result.add(new Object[] {TestDir.cdmUnitTestDir + "ft/trajectory/acars/acars_20091109_0800.nc",
+        FeatureType.TRAJECTORY, 5063});
     result.add(new Object[] {TestDir.cdmUnitTestDir + "ft/point/netcdf/19981110_1200", FeatureType.POINT, 2499});
-//    result.add(
-//        new Object[] {TestDir.cdmUnitTestDir + "ft/station/madis2/hydro/20050729_1200", FeatureType.STATION, 1374});
-//    result.add(
-//        new Object[] {TestDir.cdmUnitTestDir + "ft/sounding/netcdf/20070612_1200", FeatureType.STATION_PROFILE, 1788});
-//    // unidata point obs
-//    result.add(new Object[] {TestDir.cdmUnitTestDir + "ft/station/200501q3h-gr.nc", FeatureType.STATION, 5023});
-//    result.add(new Object[] {TestDir.cdmUnitTestDir + "ft/point/netcdf/20080814_LMA.ncml", FeatureType.POINT, 277477});
+    result.add(
+        new Object[] {TestDir.cdmUnitTestDir + "ft/station/madis2/hydro/20050729_1200", FeatureType.STATION, 1374});
+    result.add(
+        new Object[] {TestDir.cdmUnitTestDir + "ft/sounding/netcdf/20070612_1200", FeatureType.STATION_PROFILE, 1788});
+    // unidata point obs
+    result.add(new Object[] {TestDir.cdmUnitTestDir + "ft/station/200501q3h-gr.nc", FeatureType.STATION, 5023});
+    result.add(new Object[] {TestDir.cdmUnitTestDir + "ft/point/netcdf/20080814_LMA.ncml", FeatureType.POINT, 277477});
 
     // FslRaob
     // assert 63 == checkPointDataset(TestDir.testdataDir + "sounding/netcdf/raob_soundings20216.cdf",
@@ -174,9 +174,9 @@ public class TestPointDatasets {
   public static List<Object[]> getTestParameters() {
     List<Object[]> result = new ArrayList<>();
 
-//    result.addAll(getCFDatasets());
+    result.addAll(getCFDatasets());
     result.addAll(getPlugDatasets());
-//    result.addAll(getMiscDatasets());
+    result.addAll(getMiscDatasets());
 
     return result;
   }
