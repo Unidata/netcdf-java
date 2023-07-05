@@ -9,7 +9,7 @@ import ucar.ma2.DataType;
 import ucar.ma2.IndexIterator;
 import ucar.nc2.dataset.VariableDS;
 
-public class Standardizer extends Filter {
+public class Standardizer {
 
   private final ScaleOffset scaleOffset;
   private static final String name = "Standardizer";
@@ -17,15 +17,19 @@ public class Standardizer extends Filter {
   private final double mean;
   private final double stdDev;
 
-  public static Standardizer createFromVariable(VariableDS var) throws IOException {
-    Array arr = var.read();
-    DataType type = var.getDataType();
-    return new Standardizer(arr, type);
+  public static Standardizer createFromVariable(VariableDS var) {
+    try {
+      Array arr = var.read();
+      DataType type = var.getDataType();
+      return new Standardizer(arr, type);
+    } catch(IOException e) {
+      return new Standardizer(0.0, 1.0, var.getDataType());
+    }
   }
 
-  public Standardizer(Array arr, DataType type){
-    mean = calculateMean(arr);
-    stdDev = calculateStandardDeviation(arr);
+  private Standardizer(double mean, double stdDev, DataType type){
+    this.mean = mean;
+    this.stdDev = stdDev;
     Map<String, Object> props = new HashMap<>();
     props.put("offset", mean);
     props.put("scale", 1/stdDev); // update to stdDev after changing scale offset
@@ -33,7 +37,11 @@ public class Standardizer extends Filter {
     scaleOffset = new ScaleOffset(props);
   }
 
-  private double calculateMean(Array arr) {
+  public Standardizer(Array arr, DataType type) {
+    this(calculateMean(arr), calculateStandardDeviation(arr), type);
+  }
+
+  private static double calculateMean(Array arr) {
     SummaryStatistics cur = new SummaryStatistics();
     IndexIterator iterArr = arr.getIndexIterator();
     while (iterArr.hasNext()) {
@@ -45,7 +53,7 @@ public class Standardizer extends Filter {
     return cur.getMean();
   }
 
-  private double calculateStandardDeviation(Array arr) {
+  private static double calculateStandardDeviation(Array arr) {
     SummaryStatistics cur = new SummaryStatistics();
     IndexIterator iterArr = arr.getIndexIterator();
     while (iterArr.hasNext()) {
@@ -57,32 +65,16 @@ public class Standardizer extends Filter {
     return cur.getStandardDeviation();
   }
 
+  public Array convert(Array arr){
+    return scaleOffset.applyScaleOffset(arr);
+  }
+
   public double getMean(){
     return mean;
   }
 
   public double getStdDev() {
     return stdDev;
-  }
-
-  @Override
-  public String getName() {
-    return name;
-  }
-
-  @Override
-  public int getId() {
-    return id;
-  }
-
-  @Override
-  public byte[] encode(byte[] dataIn) {
-    return scaleOffset.encode(dataIn);
-  }
-
-  @Override
-  public byte[] decode(byte[] dataIn) {
-    return scaleOffset.decode(dataIn);
   }
 }
 
