@@ -9,26 +9,26 @@ import ucar.ma2.DataType;
 import ucar.ma2.IndexIterator;
 import ucar.nc2.dataset.VariableDS;
 
-public class StandardScaler extends Filter {
+public class Standardizer extends Filter {
 
   private final ScaleOffset scaleOffset;
-  private static final String name = "Standard Scaler";
+  private static final String name = "Standardizer";
   private static final int id = -1;
   private final double mean;
   private final double stdDev;
 
-  public static StandardScaler createFromVariable(VariableDS var) throws IOException {
+  public static Standardizer createFromVariable(VariableDS var) throws IOException {
     Array arr = var.read();
     DataType type = var.getDataType();
-    return new StandardScaler(arr, type);
+    return new Standardizer(arr, type);
   }
 
-  public StandardScaler(Array arr, DataType type){
+  public Standardizer(Array arr, DataType type){
     mean = calculateMean(arr);
     stdDev = calculateStandardDeviation(arr);
     Map<String, Object> props = new HashMap<>();
     props.put("offset", mean);
-    props.put("scale", 1/stdDev);
+    props.put("scale", 1/stdDev); // update to stdDev after changing scale offset
     props.put("dtype", type);
     scaleOffset = new ScaleOffset(props);
   }
