@@ -104,7 +104,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     /** Apply scale and offset to values, promoting the data type if needed. */
     ApplyScaleOffset,
     /**
-     * Replace {@link EnhanceScaleMissingUnsigned#isMissing missing} data with NaNs, for efficiency. Note that if the
+     * Replace {@link ucar.nc2.filter.ConvertMissing#isMissing missing} data with NaNs, for efficiency. Note that if the
      * enhanced data type is not {@code FLOAT} or {@code DOUBLE}, this has no effect.
      */
     ConvertMissing,

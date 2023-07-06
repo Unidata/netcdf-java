@@ -31,6 +31,7 @@ public class TestEnhancements {
 
   private static final Short SIGNED_SCALED_MAX = -2;
   private static final Short SIGNED_SCALED_FILL_VALUE = -4;
+  private static final Short SIGNED_SCALED_MISSING_VALUE = -3;
 
   @ClassRule
   public static final TemporaryFolder tempFolder = new TemporaryFolder();
@@ -71,7 +72,8 @@ public class TestEnhancements {
     builder.addVariable("enhanceAll", DataType.SHORT, "dim").addAttribute(new Attribute(CDM.UNSIGNED, "true"))
         .addAttribute(new Attribute(CDM.SCALE_FACTOR, 10.0)).addAttribute(new Attribute(CDM.ADD_OFFSET, 10))
         .addAttribute(new Attribute(CDM.VALID_MAX, SIGNED_SCALED_MAX))
-        .addAttribute(new Attribute(CDM.FILL_VALUE, SIGNED_SCALED_FILL_VALUE));
+        .addAttribute(new Attribute(CDM.FILL_VALUE, SIGNED_SCALED_FILL_VALUE))
+        .addAttribute(new Attribute(CDM.MISSING_VALUE, SIGNED_SCALED_MISSING_VALUE));
 
     // write data
     NetcdfFormatWriter writer = builder.build();
@@ -145,7 +147,7 @@ public class TestEnhancements {
 
   @Test
   public void testCombinedEnhancements() throws IOException {
-    double[] expected = new double[] {655320, Double.NaN, 655340, 655350, Double.NaN, 10, 20, 30, 40, 50};
+    double[] expected = new double[] {655320, Double.NaN, Double.NaN, 655350, Double.NaN, 10, 20, 30, 40, 50};
     Variable v = ncd.findVariable("enhanceAll");
     Array data = v.read();
     assertThat((double[]) data.copyTo1DJavaArray()).isEqualTo(expected);

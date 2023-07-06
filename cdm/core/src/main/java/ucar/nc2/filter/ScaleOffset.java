@@ -250,11 +250,17 @@ public class ScaleOffset extends Filter {
 
   public double applyScaleOffset(Number value) {
     double convertedValue = value.doubleValue();
-    return Math.round((convertedValue - offset) * scale);
+    if (astype.isIntegral()) {
+      return Math.round((convertedValue - offset) * scale);
+    }
+    return (convertedValue - offset) * scale;
   }
 
   public double removeScaleOffset(Number value) {
     double convertedValue = value.doubleValue();
+    if (dtype.isIntegral()) {
+      return Math.round(convertedValue / scale + offset);
+    }
     return convertedValue / scale + offset;
   }
 

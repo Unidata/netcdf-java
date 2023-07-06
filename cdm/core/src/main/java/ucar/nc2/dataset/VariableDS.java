@@ -265,8 +265,7 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
       if (enhancements.contains(Enhance.ApplyScaleOffset) && scaleOffset != null) {
         data = scaleOffset.removeScaleOffset(data);
       }
-      if (enhancements.contains(Enhance.ConvertMissing) && convertMissing != null
-          && (dataType == DataType.FLOAT || dataType == DataType.DOUBLE)) {
+      if (enhancements.contains(Enhance.ConvertMissing) && convertMissing != null) {
         data = convertMissing.convertMissing(data);
       }
       return data;
@@ -870,7 +869,8 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
         }
       }
     }
-    if (this.enhanceMode.contains(Enhance.ConvertMissing)) {
+    if (this.enhanceMode.contains(Enhance.ConvertMissing)
+        && (dataType == DataType.FLOAT || dataType == DataType.DOUBLE)) {
       this.convertMissing = ConvertMissing.createFromVariable(this);
     }
   }
