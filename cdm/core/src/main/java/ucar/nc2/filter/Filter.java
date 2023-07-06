@@ -10,6 +10,9 @@ import java.nio.ByteOrder;
 import java.util.Formatter;
 import java.util.Map;
 
+/**
+ * A class implementing a conversion to be applied on large chunk of data
+ */
 public abstract class Filter {
 
   public abstract String getName();

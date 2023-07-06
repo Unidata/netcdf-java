@@ -96,6 +96,16 @@ public class TestFilters {
     // test decode
     byte[] decoded = filter.decode(encoded);
     assertThat(decoded).isEqualTo(input);
+
+    // test empty props
+    Map<String, Object> emptyProps = new HashMap<>();
+    emptyProps.put("id", "fixedscaleoffset");
+    emptyProps.put("dtype", "<i4");
+    Filter emptyFilter = new ScaleOffset(emptyProps);
+    byte[] out2 = emptyFilter.encode(decoded_data);
+    assertThat(out2).isEqualTo(decoded_data);
+    byte[] out3 = emptyFilter.decode(decoded_data);
+    assertThat(out3).isEqualTo(decoded_data);
   }
 
   private void testEncodeDecode(Filter filter, String filename) throws IOException {

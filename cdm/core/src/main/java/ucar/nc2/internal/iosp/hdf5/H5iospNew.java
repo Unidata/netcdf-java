@@ -509,7 +509,7 @@ public class H5iospNew extends AbstractIOServiceProvider {
           // vlenarray extracts the i'th vlen contents (struct not supported).
           Array vlenArray = header.readHeapVlen(bb, destPos, m.getDataType(), endian);
           fieldarray[i] = vlenArray;
-          destPos += VLEN_T_SIZE; // Apparentlly no way to compute VLEN_T_SIZE on the fly
+          destPos += VLEN_T_SIZE; // Apparently no way to compute VLEN_T_SIZE on the fly
         }
         Array result;
         if (prefixrank == 0) // if scalar, return just the singleton vlen array
