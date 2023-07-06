@@ -760,7 +760,7 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
   }
 
   public Number convertUnsigned(Number value, DataType dataType) {
-    return unsignedConversion != null ? unsignedConversion.convertUnsigned(value, dataType) : value;
+    return unsignedConversion != null ? UnsignedConversion.convertUnsigned(value, dataType) : value;
   }
 
   @Override
