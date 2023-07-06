@@ -115,10 +115,16 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
      * every dimension in a variable has a corresponding coordinate variable.
      */
     IncompleteCoordSystems,
+    /**
+     * Calculate mean and standard deviation and apply to data: (z-mean)/standard_deviation.
+     * If the enhanced data type is not {@code FLOAT} or {@code DOUBLE}, this has no effect.
+     */
+    ApplyStandardizer,
   }
 
   private static Set<Enhance> EnhanceAll = Collections.unmodifiableSet(EnumSet.of(Enhance.ConvertEnums,
-      Enhance.ConvertUnsigned, Enhance.ApplyScaleOffset, Enhance.ConvertMissing, Enhance.CoordSystems));
+      Enhance.ConvertUnsigned, Enhance.ApplyScaleOffset, Enhance.ConvertMissing, Enhance.CoordSystems,
+      Enhance.ApplyStandardizer));
   private static Set<Enhance> EnhanceNone = Collections.unmodifiableSet(EnumSet.noneOf(Enhance.class));
   private static Set<Enhance> defaultEnhanceMode = EnhanceAll;
 

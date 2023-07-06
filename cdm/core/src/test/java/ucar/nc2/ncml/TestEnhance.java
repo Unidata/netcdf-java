@@ -76,7 +76,7 @@ public class TestEnhance {
 
   @Test
   public void testStandaloneEnhanceDataset() throws IOException {
-    try (NetcdfFile ncfile = NetcdfDatasets.openDataset(dataDir + "testStandaloneNoEnhance.ncml", true, null)) {
+    try (NetcdfFile ncfile = NetcdfDatasets.openDataset(dataDir + "testStandaloneEnhance.ncml", true, null)) {
       Variable unvar = ncfile.findVariable("unvar");
       assertThat((Object) unvar).isNotNull();
       assertThat(unvar.getDataType()).isEqualTo(DataType.UINT);
