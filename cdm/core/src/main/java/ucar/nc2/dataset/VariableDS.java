@@ -265,7 +265,8 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
       if (enhancements.contains(Enhance.ApplyScaleOffset) && scaleOffset != null) {
         data = scaleOffset.removeScaleOffset(data);
       }
-      if (enhancements.contains(Enhance.ConvertMissing) && convertMissing != null) {
+      if (enhancements.contains(Enhance.ConvertMissing) && convertMissing != null
+          && (dataType == DataType.FLOAT || dataType == DataType.DOUBLE)) {
         data = convertMissing.convertMissing(data);
       }
       return data;
@@ -680,7 +681,7 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
 
   @Override
   public double[] getMissingValues() {
-    return convertMissing != null ? convertMissing.getMissingValues() : new double[0];
+    return convertMissing != null ? convertMissing.getMissingValues() : new double[] {0};
   }
 
   @Override
@@ -759,7 +760,7 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
   }
 
   public Number convertUnsigned(Number value, DataType dataType) {
-    return unsignedConversion != null ? UnsignedConversion.convertUnsigned(value, dataType) : value;
+    return unsignedConversion != null ? unsignedConversion.convertUnsigned(value, dataType) : value;
   }
 
   @Override
@@ -869,8 +870,7 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
         }
       }
     }
-    if (this.enhanceMode.contains(Enhance.ConvertMissing)
-        && (dataType == DataType.FLOAT || dataType == DataType.DOUBLE)) {
+    if (this.enhanceMode.contains(Enhance.ConvertMissing)) {
       this.convertMissing = ConvertMissing.createFromVariable(this);
     }
   }
