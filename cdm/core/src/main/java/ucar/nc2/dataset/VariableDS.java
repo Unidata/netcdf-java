@@ -680,7 +680,7 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
 
   @Override
   public double[] getMissingValues() {
-    return convertMissing != null ? convertMissing.getMissingValues() : new double[] {0};
+    return convertMissing != null ? convertMissing.getMissingValues() : new double[0];
   }
 
   @Override
@@ -759,7 +759,7 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
   }
 
   public Number convertUnsigned(Number value, DataType dataType) {
-    return unsignedConversion != null ? unsignedConversion.convertUnsigned(value, dataType) : value;
+    return unsignedConversion != null ? UnsignedConversion.convertUnsigned(value, dataType) : value;
   }
 
   @Override
