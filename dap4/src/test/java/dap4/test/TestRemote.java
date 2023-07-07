@@ -8,6 +8,7 @@ package dap4.test;
 import dap4.core.util.DapConstants;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -31,6 +32,7 @@ import java.util.List;
  * tests by adding fields to the TestCase object.
  */
 
+@Ignore("Disable while RemoteTest server is not working")
 @RunWith(Parameterized.class)
 public class TestRemote extends DapTestCommon implements Dap4ManifestIF {
 
