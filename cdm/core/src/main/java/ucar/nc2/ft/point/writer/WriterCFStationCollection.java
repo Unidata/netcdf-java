@@ -84,11 +84,18 @@ public class WriterCFStationCollection extends CFPointWriter {
 
     List<VariableSimpleIF> coords = new ArrayList<>();
 
+    coords.add(VariableSimpleBuilder.makeScalar(timeName,
+            "time of measurement", timeUnit.getUdUnit(),
+            DataType.DOUBLE).build());
+
+    // add additional time coordinates
     for(StationFeature stn : this.stnList){
       if(stn instanceof DsgFeatureCollection) {
-        coords.add(VariableSimpleBuilder.makeScalar(((DsgFeatureCollection) stn).getTimeName(),
-                "time of measurement", ((DsgFeatureCollection) stn).getTimeUnit().getUdUnit(),
-                DataType.DOUBLE).build());
+        if (((DsgFeatureCollection) stn).getTimeName() != timeName) {
+          coords.add(VariableSimpleBuilder.makeScalar(((DsgFeatureCollection) stn).getTimeName(),
+                  "time of measurement", ((DsgFeatureCollection) stn).getTimeUnit().getUdUnit(),
+                  DataType.DOUBLE).build());
+        }
       }
       else{
         coords.add(VariableSimpleBuilder.makeScalar(timeName, "time of measurement", timeUnit.getUdUnit(), DataType.DOUBLE)
