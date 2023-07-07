@@ -161,6 +161,7 @@ public class CoverageAsPoint {
 
     CoverageAsStationProfileCollection(VarGroup varGroup) {
       super(varGroup.name + " AsStationProfileCollection", varGroup.dateUnit, varGroup.zUnit);
+      this.timeName = varGroup.timeAxis != null ? varGroup.timeAxis.getName() : "time";
       this.varGroup = varGroup;
       this.collectionFeatureType = varGroup.fType;
     }
@@ -196,7 +197,8 @@ public class CoverageAsPoint {
     private VarGroup varGroup;
 
     CoverageAsStationFeatureCollection(VarGroup varGroup) {
-      super(varGroup.name + " AsStationFeatureCollection", varGroup.timeAxis.getName(), varGroup.dateUnit, varGroup.zUnit);
+      super(varGroup.name + " AsStationFeatureCollection", varGroup.dateUnit, varGroup.zUnit);
+      this.timeName = varGroup.timeAxis != null ? varGroup.timeAxis.getName() : "time";
       this.varGroup = varGroup;
       this.collectionFeatureType = varGroup.fType;
     }
