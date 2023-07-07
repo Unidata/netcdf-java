@@ -459,6 +459,7 @@ public abstract class CFPointWriter implements Closeable {
 
     this.recordDim = writer.addUnlimitedDimension(recordDimName);
     addExtraVariables();
+    addCoordinatesClassic(recordDim, obsCoords, dataMap);
 
     for (StationFeature stnFeature : stnFeatureList) {
       assert stnFeature instanceof StationTimeSeriesFeature : "Expected pointFeat to be a StationTimeSeriesFeature, not a "
@@ -486,7 +487,6 @@ public abstract class CFPointWriter implements Closeable {
             if(writer.findDimension(stationDimName) == null)
               makeFeatureVariables(featureData, false);
           }
-          addCoordinatesClassic(recordDim, obsCoords, dataMap);
           addDataVariablesClassic(recordDim, obsData, dataMap, coordNames.toString());
       }
     }
