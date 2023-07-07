@@ -122,9 +122,9 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     ApplyStandardizer,
   }
 
-  private static Set<Enhance> EnhanceAll = Collections.unmodifiableSet(EnumSet.of(Enhance.ConvertEnums,
-      Enhance.ConvertUnsigned, Enhance.ApplyScaleOffset, Enhance.ConvertMissing, Enhance.CoordSystems,
-      Enhance.ApplyStandardizer));
+  private static Set<Enhance> EnhanceAll =
+      Collections.unmodifiableSet(EnumSet.of(Enhance.ConvertEnums, Enhance.ConvertUnsigned, Enhance.ApplyScaleOffset,
+          Enhance.ConvertMissing, Enhance.CoordSystems, Enhance.ApplyStandardizer));
   private static Set<Enhance> EnhanceNone = Collections.unmodifiableSet(EnumSet.noneOf(Enhance.class));
   private static Set<Enhance> defaultEnhanceMode = EnhanceAll;
 

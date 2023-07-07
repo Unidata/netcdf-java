@@ -17,7 +17,8 @@ public class TestEnhanceStandardizer {
   private static String dataDir = TestDir.cdmLocalTestDataDir + "ncml/enhance/";
   public static final double[] DOUBLES = {-1.26491106406735, -0.63245553203368, 0, 0.63245553203368, 1.26491106406735};
   public static final Array DATA_DOUBLES = Array.makeFromJavaArray(DOUBLES);
-  public static final float[] FLOATS = {-1.26491106406735F, -0.63245553203368F, 0, 0.63245553203368F, 1.26491106406735F};
+  public static final float[] FLOATS =
+      {-1.26491106406735F, -0.63245553203368F, 0, 0.63245553203368F, 1.26491106406735F};
   public static final Array DATA_FLOATS = Array.makeFromJavaArray(FLOATS);
   public static final int[] INTS = {1, 2, 3, 4, 5};
   public static final Array DATA_INTS = Array.makeFromJavaArray(INTS);

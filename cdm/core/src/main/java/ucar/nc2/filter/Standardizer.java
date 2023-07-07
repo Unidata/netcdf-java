@@ -22,17 +22,17 @@ public class Standardizer {
       Array arr = var.read();
       DataType type = var.getDataType();
       return new Standardizer(arr, type);
-    } catch(IOException e) {
+    } catch (IOException e) {
       return new Standardizer(0.0, 1.0, var.getDataType());
     }
   }
 
-  private Standardizer(double mean, double stdDev, DataType type){
+  private Standardizer(double mean, double stdDev, DataType type) {
     this.mean = mean;
     this.stdDev = stdDev;
     Map<String, Object> props = new HashMap<>();
     props.put("offset", mean);
-    props.put("scale", 1/stdDev); // update to stdDev after changing scale offset
+    props.put("scale", 1 / stdDev); // update to stdDev after changing scale offset
     props.put("dtype", type);
     scaleOffset = new ScaleOffset(props);
   }
@@ -46,7 +46,7 @@ public class Standardizer {
     IndexIterator iterArr = arr.getIndexIterator();
     while (iterArr.hasNext()) {
       Number value = (Number) iterArr.getObjectNext();
-      if (!Double.isNaN(value.doubleValue())){
+      if (!Double.isNaN(value.doubleValue())) {
         cur.addValue(value.doubleValue());
       }
     }
@@ -65,11 +65,11 @@ public class Standardizer {
     return cur.getStandardDeviation();
   }
 
-  public Array convert(Array arr){
+  public Array convert(Array arr) {
     return scaleOffset.applyScaleOffset(arr);
   }
 
-  public double getMean(){
+  public double getMean() {
     return mean;
   }
 
