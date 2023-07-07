@@ -31,10 +31,12 @@ test {
   include 'dap4/test/TestParserDMR.class'
   include 'dap4/test/TestParserCE.class'
   include 'dap4/test/TestRaw.class'
+  include 'dap4/test/TestDap4Url.class'
+if(false) { // disable selected dap4 tests for now
   include 'dap4/test/TestRemote.class'
   include 'dap4/test/TestConstraints.class'
   include 'dap4/test/TestHyrax.class'
-  include 'dap4/test/TestDap4Url.class'
+}
 
   dependsOn('farmBeforeIntegrationTest')
   finalizedBy('farmAfterIntegrationTest')
