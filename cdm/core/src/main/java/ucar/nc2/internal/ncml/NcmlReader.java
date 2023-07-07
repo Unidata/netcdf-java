@@ -562,7 +562,7 @@ public class NcmlReader {
   /**
    * Read the NcML group element, and nested elements.
    *
-   * @param parent the parent group builder, or null when its the root group.
+   * @param parent the parent group builder, or null when it's the root group.
    * @param refParent parent Group in referenced dataset, may be null
    * @param groupElem ncml group element
    */
@@ -670,7 +670,7 @@ public class NcmlReader {
       return;
     }
 
-    // see if its new
+    // see if it's new
     ucar.nc2.Attribute oldatt = null;
     if (ref != null) {
       oldatt = findAttribute(ref, nameInFile);
@@ -806,10 +806,7 @@ public class NcmlReader {
       return;
     }
 
-    String nameInFile = dimElem.getAttributeValue("orgName");
-    if (nameInFile == null) {
-      nameInFile = name;
-    }
+    String nameInFile = dimElem.getAttributeValue("orgName") != null ? dimElem.getAttributeValue("orgName") : name;
 
     // LOOK this is wrong, groupBuilder may already have the dimension.
     // see if it already exists
@@ -827,21 +824,10 @@ public class NcmlReader {
 
       boolean isUnlimited = "true".equalsIgnoreCase(isUnlimitedS);
       boolean isVariableLength = "true".equalsIgnoreCase(isVariableLengthS);
-      boolean isShared = true;
-      if ("false".equalsIgnoreCase(isSharedS)) {
-        isShared = false;
-      }
+      boolean isShared = !"false".equalsIgnoreCase(isSharedS);
 
-      int len;
-      if (isVariableLength) {
-        len = Dimension.VLEN.getLength();
-      } else {
-        len = Integer.parseInt(lengthS);
-      }
+      int len = isVariableLength ? Dimension.VLEN.getLength() : Integer.parseInt(lengthS);
 
-      if (debugConstruct) {
-        System.out.println(" add new dim = " + name);
-      }
       // LOOK change to replaceDimension to get fort.54 working.
       groupBuilder.replaceDimension(Dimension.builder().setName(name).setIsShared(isShared).setIsUnlimited(isUnlimited)
           .setIsVariableLength(isVariableLength).setLength(len).build());
@@ -870,10 +856,6 @@ public class NcmlReader {
       if ((lengthS != null) && !dim.isVariableLength()) {
         int len = Integer.parseInt(lengthS);
         newDim.setLength(len);
-      }
-
-      if (debugConstruct) {
-        System.out.println(" modify existing dim = " + name);
       }
 
       groupBuilder.removeDimension(name);
@@ -1600,7 +1582,7 @@ public class NcmlReader {
   }
 
   /////////////////////////////////////////////
-  // command procesing
+  // command processing
 
   private void cmdRemove(Group.Builder g, String type, String name) {
     boolean err = false;
