@@ -32,7 +32,7 @@ public class Standardizer {
     this.stdDev = stdDev;
     Map<String, Object> props = new HashMap<>();
     props.put("offset", mean);
-    props.put("scale", 1 / stdDev); // update to stdDev after changing scale offset
+    props.put("scale", 1 / stdDev);
     props.put("dtype", type);
     scaleOffset = new ScaleOffset(props);
   }

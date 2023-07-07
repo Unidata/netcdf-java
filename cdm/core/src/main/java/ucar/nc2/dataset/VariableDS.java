@@ -857,8 +857,7 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
       this.dataType = scaleOffset != null ? scaleOffset.getScaledOffsetType() : this.dataType;
     }
     Attribute standardizerAtt = findAttribute(CDM.STANDARDIZE);
-    if (standardizerAtt != null && this.enhanceMode.contains(Enhance.ApplyStandardizer)
-        && (dataType == DataType.DOUBLE || dataType == DataType.FLOAT)) {
+    if (standardizerAtt != null && this.enhanceMode.contains(Enhance.ApplyStandardizer) && dataType.isFloatingPoint()) {
       this.standardizer = Standardizer.createFromVariable(this);
     }
 
