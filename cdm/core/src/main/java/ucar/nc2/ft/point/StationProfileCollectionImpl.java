@@ -31,7 +31,11 @@ public abstract class StationProfileCollectionImpl extends PointFeatureCCCImpl
   private volatile StationHelper stationHelper;
 
   public StationProfileCollectionImpl(String name, CalendarDateUnit timeUnit, String altUnits) {
-    super(name, timeUnit, altUnits, FeatureType.STATION_PROFILE);
+    super(name, "time", timeUnit, altUnits, FeatureType.STATION_PROFILE);
+  }
+
+  public StationProfileCollectionImpl(String name, String timeName, CalendarDateUnit timeUnit, String altUnits) {
+    super(name, timeName, timeUnit, altUnits, FeatureType.STATION_PROFILE);
   }
 
   // Double-check idiom for lazy initialization of instance fields. See Effective Java 2nd Ed, p. 283.
