@@ -4,36 +4,51 @@ netcdf test_atomic_types {
 
   variables:
     byte v8;
+      v8:_DAP4_Checksum_CRC32 = 1069182125;
 
     ubyte vu8;
+      vu8:_DAP4_Checksum_CRC32 = -16777216;
 
     short v16;
+      v16:_DAP4_Checksum_CRC32 = -1402891809;
 
     ushort vu16;
+      vu16:_DAP4_Checksum_CRC32 = -65536;
 
     int v32;
+      v32:_DAP4_Checksum_CRC32 = 306674911;
 
     uint vu32;
+      vu32:_DAP4_Checksum_CRC32 = -1;
 
     long v64;
+      v64:_DAP4_Checksum_CRC32 = -855876548;
 
     ulong vu64;
+      vu64:_DAP4_Checksum_CRC32 = 558161692;
 
     float vf;
+      vf:_DAP4_Checksum_CRC32 = -1943399579;
 
     double vd;
+      vd:_DAP4_Checksum_CRC32 = -222639246;
 
     char vc;
+      vc:_DAP4_Checksum_CRC32 = -1528910307;
 
     string vs;
+      vs:_DAP4_Checksum_CRC32 = 915515092;
 
     opaque vo;
+      vo:_DAP4_Checksum_CRC32 = -766649635;
 
     enum cloud_class_t primary_cloud;
       string primary_cloud:_FillValue = "Missing";
+      primary_cloud:_DAP4_Checksum_CRC32 = 1007455905;
 
     enum cloud_class_t secondary_cloud;
       string secondary_cloud:_FillValue = "Missing";
+      secondary_cloud:_DAP4_Checksum_CRC32 = 314082080;
 
   // global attributes:
   :_DAP4_Little_Endian = 1B;

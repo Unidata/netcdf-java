@@ -3,9 +3,11 @@ netcdf test_vlen1 {
 
     Sequence {
       int x;
+        x:_DAP4_Checksum_CRC32 = 0;
         string x:_CoordinateAxisType = "GeoX";
     } x(*);
     x:_FillValue = 0;
+    x:_DAP4_Checksum_CRC32 = -972676669;
 
 
   // global attributes:

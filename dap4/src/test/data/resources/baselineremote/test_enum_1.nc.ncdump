@@ -5,6 +5,7 @@ netcdf test_enum_1 {
   variables:
     enum cloud_class_t primary_cloud;
       string primary_cloud:_FillValue = "Missing";
+      primary_cloud:_DAP4_Checksum_CRC32 = 1007455905;
 
   // global attributes:
   :_DAP4_Little_Endian = 1B;

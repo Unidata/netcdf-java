@@ -3,8 +3,10 @@ netcdf test_vlen11 {
 
     Sequence {
       int v;
+        v:_DAP4_Checksum_CRC32 = 0;
     } v(*);
     v:_FillValue = 0;
+    v:_DAP4_Checksum_CRC32 = -1061524850;
 
 
   // global attributes:

@@ -334,7 +334,7 @@ public class CEConstraint {
     Segment seg = findSegment(var);
     if (seg != null)
       slices = seg.slices;
-    if (slices == null)
+    if (slices == null || slices.size() == 0)
       slices = Universal.universalSlices(var);
     return slices;
   }

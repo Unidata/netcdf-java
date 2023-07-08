@@ -5,21 +5,25 @@ netcdf test_unlim {
     lat = 3;
   variables:
     float lon(lon);
+      lon:_DAP4_Checksum_CRC32 = 27072276;
       string lon:units = "degrees_east";
       string lon:_CoordinateAxisType = "Lon";
 
     float pr(time, lat, lon);
       pr:_ChunkSizes = 1, 3, 2;
+      pr:_DAP4_Checksum_CRC32 = 826391215;
       string pr:standard_name = "air_pressure_at_sea_level";
       string pr:units = "hPa";
       string pr:_CoordinateAxisType = "Pressure";
 
     double time(time);
       time:_ChunkSizes = 512;
+      time:_DAP4_Checksum_CRC32 = -1907298714;
       string time:units = "seconds since 2009-01-01";
       string time:_CoordinateAxisType = "Time";
 
     float lat(lat);
+      lat:_DAP4_Checksum_CRC32 = 431075914;
       string lat:units = "degrees_north";
       string lat:_CoordinateAxisType = "Lat";
 
