@@ -34,44 +34,44 @@ public class TestStandardizer {
 
   @Test
   public void testConvertDouble() {
-    Standardizer filter = new Standardizer(DATA_DOUBLES, DataType.DOUBLE);
-    double[] dataStandardizer = standardize(DATA_DOUBLES);
-    Array convertedDecoded = filter.convert(DATA_DOUBLES);
-    assertThat(nearlyEquals(convertedDecoded, Array.makeFromJavaArray(dataStandardizer))).isTrue();
+    Standardizer filter = Standardizer.createFromArray(DATA_DOUBLES, DataType.DOUBLE);
+    double[] dataStandardized = standardize(DATA_DOUBLES);
+    Array dataConverted = filter.convert(DATA_DOUBLES);
+    assertThat(nearlyEquals(dataConverted, Array.makeFromJavaArray(dataStandardized))).isTrue();
   }
 
   @Test
   public void testConvertFloat() {
-    Standardizer filter = new Standardizer(DATA_FLOATS, DataType.FLOAT);
-    double[] dataStandardizer = standardize(DATA_FLOATS);
-    Array convertedDecoded = filter.convert(DATA_FLOATS);
-    assertThat(nearlyEquals(convertedDecoded, Array.makeFromJavaArray(dataStandardizer))).isTrue();
+    Standardizer filter = Standardizer.createFromArray(DATA_FLOATS, DataType.FLOAT);
+    double[] dataStandardized = standardize(DATA_FLOATS);
+    Array dataConverted = filter.convert(DATA_FLOATS);
+    assertThat(nearlyEquals(dataConverted, Array.makeFromJavaArray(dataStandardized))).isTrue();
   }
 
   @Test
   public void testCalculateMean() {
-    Standardizer filter = new Standardizer(DATA_DOUBLES, DataType.DOUBLE);
+    Standardizer filter = Standardizer.createFromArray(DATA_DOUBLES, DataType.DOUBLE);
     double calcMean = filter.getMean();
     assertThat(calcMean).isWithin(TOLERANCE).of(DATA_MEAN);
   }
 
   @Test
   public void testCalculateMeanFloat() {
-    Standardizer filter = new Standardizer(DATA_FLOATS, DataType.FLOAT);
+    Standardizer filter = Standardizer.createFromArray(DATA_FLOATS, DataType.FLOAT);
     double calcMean = filter.getMean();
     assertThat(calcMean).isWithin(TOLERANCE).of(DATA_MEAN);
   }
 
   @Test
   public void testCalculateStandardDeviation() {
-    Standardizer filter = new Standardizer(DATA_DOUBLES, DataType.DOUBLE);
+    Standardizer filter = Standardizer.createFromArray(DATA_DOUBLES, DataType.DOUBLE);
     double calcStd = filter.getStdDev();
     assertThat(calcStd).isWithin(TOLERANCE).of(DATA_STDDEV);
   }
 
   @Test
   public void testCalculateStandardDeviationFloat() {
-    Standardizer filter = new Standardizer(DATA_FLOATS, DataType.FLOAT);
+    Standardizer filter = Standardizer.createFromArray(DATA_FLOATS, DataType.FLOAT);
     double calcStd = filter.getStdDev();
     assertThat(calcStd).isWithin(TOLERANCE).of(DATA_STDDEV);
   }

@@ -45,7 +45,8 @@ public class TestEnhanceStandardizer {
       assertThat(intVar.getDataType()).isEqualTo(DataType.INT);
       assertThat(intVar.attributes().hasAttribute("standardize")).isTrue();
       Array data = intVar.read();
-      assertThat(nearlyEquals(data, DATA_INTS)).isTrue();
+      assertThat(nearlyEquals(data, DATA_INTS)).isTrue(); // The enhancement doesn't apply to ints, so the data should
+                                                          // be equal to the input array
     }
   }
 

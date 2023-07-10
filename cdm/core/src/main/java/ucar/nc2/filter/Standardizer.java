@@ -12,8 +12,6 @@ import ucar.nc2.dataset.VariableDS;
 public class Standardizer {
 
   private final ScaleOffset scaleOffset;
-  private static final String name = "Standardizer";
-  private static final int id = -1;
   private final double mean;
   private final double stdDev;
 
@@ -21,10 +19,15 @@ public class Standardizer {
     try {
       Array arr = var.read();
       DataType type = var.getDataType();
-      return new Standardizer(arr, type);
+      return createFromArray(arr, type);
     } catch (IOException e) {
       return new Standardizer(0.0, 1.0, var.getDataType());
     }
+  }
+
+  public static Standardizer createFromArray(Array arr, DataType type) {
+    SummaryStatistics statistics = calculationHelper(arr);
+    return new Standardizer(statistics.getMean(), statistics.getStandardDeviation(), type);
   }
 
   private Standardizer(double mean, double stdDev, DataType type) {
@@ -37,32 +40,16 @@ public class Standardizer {
     scaleOffset = new ScaleOffset(props);
   }
 
-  public Standardizer(Array arr, DataType type) {
-    this(calculateMean(arr), calculateStandardDeviation(arr), type);
-  }
-
-  private static double calculateMean(Array arr) {
-    SummaryStatistics cur = new SummaryStatistics();
+  private static SummaryStatistics calculationHelper(Array arr) {
+    SummaryStatistics sumStat = new SummaryStatistics();
     IndexIterator iterArr = arr.getIndexIterator();
     while (iterArr.hasNext()) {
       Number value = (Number) iterArr.getObjectNext();
       if (!Double.isNaN(value.doubleValue())) {
-        cur.addValue(value.doubleValue());
+        sumStat.addValue(value.doubleValue());
       }
     }
-    return cur.getMean();
-  }
-
-  private static double calculateStandardDeviation(Array arr) {
-    SummaryStatistics cur = new SummaryStatistics();
-    IndexIterator iterArr = arr.getIndexIterator();
-    while (iterArr.hasNext()) {
-      Number value = (Number) iterArr.getObjectNext();
-      if (!Double.isNaN(value.doubleValue())) {
-        cur.addValue(value.doubleValue());
-      }
-    }
-    return cur.getStandardDeviation();
+    return sumStat;
   }
 
   public Array convert(Array arr) {
