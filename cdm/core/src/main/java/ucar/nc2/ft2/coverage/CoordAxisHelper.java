@@ -25,6 +25,8 @@ import ucar.nc2.util.Optional;
 class CoordAxisHelper {
   private final CoverageCoordAxis1D axis;
 
+  private static final int MUTIPLE_HITS = -2;
+
   CoordAxisHelper(CoverageCoordAxis1D axis) {
     this.axis = axis;
   }
@@ -204,13 +206,14 @@ class CoordAxisHelper {
   // LOOK not using bounded
   private int findCoordElementDiscontiguousInterval(double target, boolean bounded) {
     int idx = findSingleHit(target);
-    if (idx >= 0)
-      return idx;
-    if (idx == -1)
-      return -1; // no hits
-
     // multiple hits = choose closest (definition of closest will be based on axis type)
-    return findClosestDiscontiguousInterval(target);
+    if (idx == MUTIPLE_HITS) {
+      return findClosestDiscontiguousInterval(target);
+    }
+    if (bounded && (idx >= axis.getNcoords())) {
+      return -1;
+    }
+    return idx;
   }
 
   boolean intervalContains(double target, int coordIdx) {
@@ -229,22 +232,25 @@ class CoordAxisHelper {
     return lowerVal <= target && target <= upperVal;
   }
 
-  // return index if only one match, if no matches return -1, if > 1 match return -nhits
+  // return index if only one match
+  // return MULTIPLE_HITS if in several
   private int findSingleHit(double target) {
-    int hits = 0;
+    // edge cases: outside first interval
+    double firstCoord = axis.getCoordEdge1(0);
+    if ((axis.isAscending() && target < firstCoord) || (!axis.isAscending() && target > firstCoord)) {
+      return -1;
+    }
     int idxFound = -1;
     int n = axis.getNcoords();
     for (int i = 0; i < n; i++) {
       if (intervalContains(target, i)) {
-        hits++;
+        if (idxFound >= 0) {
+          return MUTIPLE_HITS;
+        }
         idxFound = i;
       }
     }
-    if (hits == 1)
-      return idxFound;
-    if (hits == 0)
-      return -1;
-    return -hits;
+    return idxFound > -1 ? idxFound : n;
   }
 
   // return index of closest value to target
@@ -273,7 +279,7 @@ class CoordAxisHelper {
         // must be greater than or equal to the target.
         if (coord >= target) {
           // compute the width (in time) of the interval
-          double width = axis.getCoordEdge2(i) - axis.getCoordEdge1(i);
+          double width = coord - axis.getCoordEdge1(i);
           // we want to identify the interval with the end point closest to our target
           // why? Because a statistic computed over a time window will only have meaning at the end
           // of that interval, so the closer we can get to that the better.
