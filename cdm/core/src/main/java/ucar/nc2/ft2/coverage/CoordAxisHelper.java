@@ -11,7 +11,7 @@ import ucar.ma2.RangeIterator;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
-import ucar.nc2.util.Misc;
+
 import javax.annotation.Nonnull;
 import java.util.Arrays;
 import ucar.nc2.util.Optional;
@@ -25,7 +25,7 @@ import ucar.nc2.util.Optional;
 class CoordAxisHelper {
   private final CoverageCoordAxis1D axis;
 
-  private static final int MUTIPLE_HITS = -2;
+  private static final int MULTIPLE_HITS = -2;
 
   CoordAxisHelper(CoverageCoordAxis1D axis) {
     this.axis = axis;
@@ -203,11 +203,10 @@ class CoordAxisHelper {
   }
 
   // same contract as findCoordElement(); in addition, -1 is returned when the target is not contained in any interval
-  // LOOK not using bounded
   private int findCoordElementDiscontiguousInterval(double target, boolean bounded) {
     int idx = findSingleHit(target);
     // multiple hits = choose closest (definition of closest will be based on axis type)
-    if (idx == MUTIPLE_HITS) {
+    if (idx == MULTIPLE_HITS) {
       return findClosestDiscontiguousInterval(target);
     }
     if (bounded && (idx >= axis.getNcoords())) {
@@ -245,7 +244,7 @@ class CoordAxisHelper {
     for (int i = 0; i < n; i++) {
       if (intervalContains(target, i)) {
         if (idxFound >= 0) {
-          return MUTIPLE_HITS;
+          return MULTIPLE_HITS;
         }
         idxFound = i;
       }
