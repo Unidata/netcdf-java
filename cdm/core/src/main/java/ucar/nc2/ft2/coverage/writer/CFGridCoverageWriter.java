@@ -155,14 +155,14 @@ public class CFGridCoverageWriter {
     }
     addCFAnnotations(subsetDataset, rootGroup, shouldAddLatLon2D);
 
+    // test if its too large
+    long totalSizeOfVars = writer.calcSize();
+    if (maxBytes > 0 && totalSizeOfVars > maxBytes) {
+      return Result.create(totalSizeOfVars, false, TOO_LARGE_MESSAGE);
+    }
+
     // Actually create file and write variable data to it.
     try (NetcdfFormatWriter ncwriter = writer.build()) {
-      // test if its too large
-      long totalSizeOfVars = ncwriter.calcSize();
-      if (maxBytes > 0 && totalSizeOfVars > maxBytes) {
-        return Result.create(totalSizeOfVars, false, TOO_LARGE_MESSAGE);
-      }
-
       writeCoordinateData(subsetDataset, ncwriter);
       writeCoverageData(gdsOrg, subsetParams, subsetDataset, ncwriter);
 
