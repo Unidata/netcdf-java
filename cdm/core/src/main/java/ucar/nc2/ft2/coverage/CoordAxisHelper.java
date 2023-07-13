@@ -237,7 +237,8 @@ class CoordAxisHelper {
     // edge cases: outside first interval
     double firstCoord1 = axis.getCoordEdge1(0);
     double firstCoord2 = axis.getCoordEdge2(0);
-    if ((axis.isAscending() && target < Math.min(firstCoord1, firstCoord2)) || (!axis.isAscending() && target > Math.max(firstCoord1, firstCoord2))) {
+    if ((axis.isAscending() && target < Math.min(firstCoord1, firstCoord2))
+        || (!axis.isAscending() && target > Math.max(firstCoord1, firstCoord2))) {
       return -1;
     }
     int idxFound = -1;
