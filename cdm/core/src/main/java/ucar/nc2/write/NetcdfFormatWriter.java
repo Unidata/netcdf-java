@@ -245,6 +245,7 @@ public class NetcdfFormatWriter implements Closeable {
       rootGroup.addVariable(vb);
       return vb;
     }
+
     public long calcSize() {
       return calcSize(this.rootGroup);
     }
