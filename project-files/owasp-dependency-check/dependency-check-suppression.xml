@@ -25,4 +25,11 @@
     ]]></notes>
     <cve>CVE-2021-4277</cve>
   </suppress>
+  <suppress>
+    <notes><![CDATA[
+      file name: ncIdv-5.5.4-SNAPSHOT.jar
+      reason: CVE disputed by vendor.
+    ]]></notes>
+    <cve>CVE-2023-35116</cve>
+  </suppress>
 </suppressions>
