@@ -235,8 +235,10 @@ class CoordAxisHelper {
   // return MULTIPLE_HITS if in several
   private int findSingleHit(double target) {
     // edge cases: outside first interval
-    double firstCoord = axis.getCoordEdge1(0);
-    if ((axis.isAscending() && target < firstCoord) || (!axis.isAscending() && target > firstCoord)) {
+    double firstCoord1 = axis.getCoordEdge1(0);
+    double firstCoord2 = axis.getCoordEdge2(0);
+    if ((axis.isAscending() && target < Math.min(firstCoord1, firstCoord2))
+        || (!axis.isAscending() && target > Math.max(firstCoord1, firstCoord2))) {
       return -1;
     }
     int idxFound = -1;
