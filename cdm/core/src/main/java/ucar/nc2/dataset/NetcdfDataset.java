@@ -120,11 +120,16 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
      * If the enhanced data type is not {@code FLOAT} or {@code DOUBLE}, this has no effect.
      */
     ApplyStandardizer,
+    /**
+     * Calculate minimum value and range (maximum - minimum) and apply to data: (z - min)/range.
+     * If the enhanced data type is not {@code FLOAT} or {@code DOUBLE}, this has no effect.
+     */
+    ApplyNormalizer,
   }
 
   private static Set<Enhance> EnhanceAll =
       Collections.unmodifiableSet(EnumSet.of(Enhance.ConvertEnums, Enhance.ConvertUnsigned, Enhance.ApplyScaleOffset,
-          Enhance.ConvertMissing, Enhance.CoordSystems, Enhance.ApplyStandardizer));
+          Enhance.ConvertMissing, Enhance.CoordSystems, Enhance.ApplyStandardizer, Enhance.ApplyNormalizer));
   private static Set<Enhance> EnhanceNone = Collections.unmodifiableSet(EnumSet.noneOf(Enhance.class));
   private static Set<Enhance> defaultEnhanceMode = EnhanceAll;
 

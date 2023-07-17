@@ -57,6 +57,7 @@ public class CDM {
   public static final String TIME_OFFSET_HOUR = "hoursFrom0z";
   public static final String RUNTIME_COORDINATE = "runtimeCoordinate";
   public static final String STANDARDIZE = "standardize";
+  public static final String NORMALIZE = "normalize";
 
   // Special attributes
 
