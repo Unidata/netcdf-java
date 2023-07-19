@@ -13,7 +13,6 @@ import ucar.nc2.constants.DataFormatType;
 import ucar.nc2.dataset.NetcdfDataset.Enhance;
 import ucar.nc2.filter.ConvertMissing;
 import ucar.nc2.filter.FilterHelpers;
-import ucar.nc2.filter.Normalizer;
 import ucar.nc2.filter.ScaleOffset;
 import ucar.nc2.filter.Standardizer;
 import ucar.nc2.filter.Normalizer;
