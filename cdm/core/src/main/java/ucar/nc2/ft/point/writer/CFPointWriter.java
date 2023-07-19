@@ -465,12 +465,21 @@ public abstract class CFPointWriter implements Closeable {
       assert stnFeature instanceof StationTimeSeriesFeature : "Expected pointFeat to be a StationTimeSeriesFeature, not a "
               + stnFeature.getClass().getSimpleName();
 
+      StructureData featureData = stnFeature.getFeatureData();
+      if (writer.getVersion().isExtendedModel()) {
+        makeFeatureVariables(featureData, true);
+        record = (Structure) writer.addVariable(null, recordName, DataType.STRUCTURE, recordDimName);
+        addCoordinatesExtended(record, obsCoords);
+
+      } else {
+        if(writer.findDimension(stationDimName) == null)
+          makeFeatureVariables(featureData, false);
+      }
+
       for (PointFeature pointFeat : (StationTimeSeriesFeature) stnFeature) {
         assert pointFeat instanceof StationPointFeature : "Expected pointFeat to be a StationPointFeature, not a "
                 + pointFeat.getClass().getSimpleName();
 
-        StationFeature sf = ((StationPointFeature) pointFeat).getStation();
-        StructureData featureData = sf.getFeatureData();
         StructureData obsData = pointFeat.getFeatureData();
 
         Formatter coordNames = new Formatter().format("%s %s %s", ((StationTimeSeriesFeature) stnFeature).getTimeName(), latName, lonName);
@@ -478,15 +487,9 @@ public abstract class CFPointWriter implements Closeable {
           coordNames.format(" %s", stationAltName);
 
         if (writer.getVersion().isExtendedModel()) {
-          makeFeatureVariables(featureData, true);
-          record = (Structure) writer.addVariable(null, recordName, DataType.STRUCTURE, recordDimName);
-          addCoordinatesExtended(record, obsCoords);
           addDataVariablesExtended(obsData, coordNames.toString());
 
-        } else {
-            if(writer.findDimension(stationDimName) == null)
-              makeFeatureVariables(featureData, false);
-          }
+        }
           addDataVariablesClassic(recordDim, obsData, dataMap, coordNames.toString());
       }
     }
