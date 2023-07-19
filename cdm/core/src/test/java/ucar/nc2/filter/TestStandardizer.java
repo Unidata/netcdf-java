@@ -41,6 +41,7 @@ public class TestStandardizer {
     Array dataConverted = filter.convert(DATA_DOUBLES);
     assertThat(nearlyEquals(dataConverted, Array.makeFromJavaArray(dataStandardized))).isTrue();
   }
+
   @Test
   public void testConvertSameDouble() {
     Standardizer filter = Standardizer.createFromArray(DATA_SAMEDOUBLES, DataType.DOUBLE);

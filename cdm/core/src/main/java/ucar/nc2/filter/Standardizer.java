@@ -27,7 +27,7 @@ public class Standardizer {
 
   public static Standardizer createFromArray(Array arr, DataType type) {
     SummaryStatistics statistics = calculationHelper(arr);
-    if (statistics.getStandardDeviation() == 0){
+    if (statistics.getStandardDeviation() == 0) {
       return new Standardizer(0.0, 1.0, type);
     }
     return new Standardizer(statistics.getMean(), statistics.getStandardDeviation(), type);

@@ -39,7 +39,9 @@ public class TestEnhanceNormalizer {
       assertThat(sameDoubleVar.getDataType()).isEqualTo(DataType.DOUBLE);
       assertThat(sameDoubleVar.attributes().hasAttribute("normalize")).isTrue();
       Array dataSameDoubles = sameDoubleVar.read();
-      assertThat(nearlyEquals(dataSameDoubles, DATA_SAMEDOUBLES)).isTrue(); // The enhancement doesn't apply if all the values are the equal, so it returns the same data
+      assertThat(nearlyEquals(dataSameDoubles, DATA_SAMEDOUBLES)).isTrue(); // The enhancement doesn't apply if all the
+                                                                            // values are the equal, so it returns the
+                                                                            // same data
 
       Variable floatVar = ncfile.findVariable("floatvar");
       assertThat((Object) floatVar).isNotNull();
