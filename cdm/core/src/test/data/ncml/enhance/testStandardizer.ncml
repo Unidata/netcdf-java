@@ -9,6 +9,10 @@
         <attribute name="standardize"/>
         <values>1.0 2.0 3.0 4.0 5.0</values>
     </variable>
+    <variable name="samedoublevar" shape="5" type="double">
+        <attribute name="standardize"/>
+        <values>5.0 5.0 5.0 5.0 5.0</values>
+    </variable>
     <variable name="floatvar" shape="5" type="float">
         <attribute name="standardize"/>
         <values>1.0 2.0 3.0 4.0 5.0</values>

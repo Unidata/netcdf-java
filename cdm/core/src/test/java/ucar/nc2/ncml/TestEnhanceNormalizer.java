@@ -17,6 +17,8 @@ public class TestEnhanceNormalizer {
   private static String dataDir = TestDir.cdmLocalTestDataDir + "ncml/enhance/";
   public static final double[] DOUBLES = {0.0, 0.25, 0.50, 0.75, 1.0};
   public static final Array DATA_DOUBLES = Array.makeFromJavaArray(DOUBLES);
+  public static final double[] SAMEDOUBLES = {5.0, 5.0, 5.0, 5.0, 5.0};
+  public static final Array DATA_SAMEDOUBLES = Array.makeFromJavaArray(SAMEDOUBLES);
   public static final float[] FLOATS = {0.0F, 0.25F, 0.50F, 0.75F, 1.0F};
   public static final Array DATA_FLOATS = Array.makeFromJavaArray(FLOATS);
   public static final int[] INTS = {1, 2, 3, 4, 5};
@@ -31,6 +33,13 @@ public class TestEnhanceNormalizer {
       assertThat(doubleVar.attributes().hasAttribute("normalize")).isTrue();
       Array dataDoubles = doubleVar.read();
       assertThat(nearlyEquals(dataDoubles, DATA_DOUBLES)).isTrue();
+
+      Variable sameDoubleVar = ncfile.findVariable("samedoublevar");
+      assertThat((Object) sameDoubleVar).isNotNull();
+      assertThat(sameDoubleVar.getDataType()).isEqualTo(DataType.DOUBLE);
+      assertThat(sameDoubleVar.attributes().hasAttribute("normalize")).isTrue();
+      Array dataSameDoubles = sameDoubleVar.read();
+      assertThat(nearlyEquals(dataSameDoubles, DATA_SAMEDOUBLES)).isTrue(); // The enhancement doesn't apply if all the values are the equal, so it returns the same data
 
       Variable floatVar = ncfile.findVariable("floatvar");
       assertThat((Object) floatVar).isNotNull();

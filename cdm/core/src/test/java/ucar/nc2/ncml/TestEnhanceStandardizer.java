@@ -15,8 +15,10 @@ import ucar.unidata.util.test.TestDir;
 public class TestEnhanceStandardizer {
 
   private static String dataDir = TestDir.cdmLocalTestDataDir + "ncml/enhance/";
-  public static final double[] DOUBLES = {-1.26491106406735, -0.63245553203368, 0, 0.63245553203368, 1.26491106406735};
+  public static final double[] DOUBLES = {-1.26491106406735, -0.63245553203368, 0.0, 0.63245553203368, 1.26491106406735};
   public static final Array DATA_DOUBLES = Array.makeFromJavaArray(DOUBLES);
+  public static final double[] SAMEDOUBLES = {5.0, 5.0, 5.0, 5.0, 5.0};
+  public static final Array DATA_SAMEDOUBLES = Array.makeFromJavaArray(SAMEDOUBLES);
   public static final float[] FLOATS =
       {-1.26491106406735F, -0.63245553203368F, 0, 0.63245553203368F, 1.26491106406735F};
   public static final Array DATA_FLOATS = Array.makeFromJavaArray(FLOATS);
@@ -32,6 +34,13 @@ public class TestEnhanceStandardizer {
       assertThat(doubleVar.attributes().hasAttribute("standardize")).isTrue();
       Array dataDoubles = doubleVar.read();
       assertThat(nearlyEquals(dataDoubles, DATA_DOUBLES)).isTrue();
+
+      Variable sameDoubleVar = ncfile.findVariable("samedoublevar");
+      assertThat((Object) sameDoubleVar).isNotNull();
+      assertThat(sameDoubleVar.getDataType()).isEqualTo(DataType.DOUBLE);
+      assertThat(sameDoubleVar.attributes().hasAttribute("standardize")).isTrue();
+      Array dataSameDoubles = sameDoubleVar.read();
+      assertThat(nearlyEquals(dataSameDoubles, DATA_SAMEDOUBLES)).isTrue(); // The enhancement doesn't apply if all the values are the equal, so it returns the same data
 
       Variable floatVar = ncfile.findVariable("floatvar");
       assertThat((Object) floatVar).isNotNull();

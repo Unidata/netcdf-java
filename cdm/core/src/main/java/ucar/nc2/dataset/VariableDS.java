@@ -866,7 +866,7 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
       this.standardizer = Standardizer.createFromVariable(this);
     }
     Attribute normalizerAtt = findAttribute(CDM.NORMALIZE);
-    if (normalizerAtt != null && this.enhanceMode.contains(Enhance.ApplyStandardizer) && dataType.isFloatingPoint()) {
+    if (normalizerAtt != null && this.enhanceMode.contains(Enhance.ApplyNormalizer) && dataType.isFloatingPoint()) {
       this.normalizer = Normalizer.createFromVariable(this);
     }
 

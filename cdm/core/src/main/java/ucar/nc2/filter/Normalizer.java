@@ -27,6 +27,9 @@ public class Normalizer {
 
   public static Normalizer createFromArray(Array arr, DataType type) {
     SummaryStatistics statistics = calculationHelper(arr);
+    if ((statistics.getMax() - statistics.getMin()) == 0){
+      return new Normalizer(0.0, 1.0, type);
+    }
     return new Normalizer(statistics.getMin(), (statistics.getMax() - statistics.getMin()), type);
   }
 

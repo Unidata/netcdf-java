@@ -17,6 +17,9 @@ public class TestNormalizer {
   public static final double[] DOUBLES = {Double.NaN, -5.0, -4.0, -3.0, -2.0, -1.0, 0.0, 1.0, 2.0, 3.0, 4.0, 5.0};
   public static final Array DATA_DOUBLES = Array.makeFromJavaArray(DOUBLES);
 
+  public static final double[] SAMEDOUBLES = {Double.NaN, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0};
+  public static final Array DATA_SAMEDOUBLES = Array.makeFromJavaArray(SAMEDOUBLES);
+
   public static final float[] FLOATS =
       {Float.NaN, -5.0F, -4.0F, -3.0F, -2.0F, -1.0F, 0.0F, 1.0F, 2.0F, 3.0F, 4.0F, 5.0F};
   public static final Array DATA_FLOATS = Array.makeFromJavaArray(FLOATS);
@@ -37,6 +40,12 @@ public class TestNormalizer {
     double[] dataNormalized = normalize(DATA_DOUBLES);
     Array dataConverted = filter.convert(DATA_DOUBLES);
     assertThat(nearlyEquals(dataConverted, Array.makeFromJavaArray(dataNormalized))).isTrue();
+  }
+  @Test
+  public void testConvertSameDouble() {
+    Normalizer filter = Normalizer.createFromArray(DATA_SAMEDOUBLES, DataType.DOUBLE);
+    Array dataConverted = filter.convert(DATA_SAMEDOUBLES);
+    assertThat(nearlyEquals(dataConverted, DATA_SAMEDOUBLES)).isTrue();
   }
 
   @Test
