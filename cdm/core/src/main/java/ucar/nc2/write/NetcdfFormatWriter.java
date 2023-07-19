@@ -246,6 +246,22 @@ public class NetcdfFormatWriter implements Closeable {
       return vb;
     }
 
+    public long calcSize() {
+      return calcSize(this.rootGroup);
+    }
+
+    // Note that we have enough info to try to estimate effects of compression, if its a Netcdf4 file.
+    private long calcSize(Group.Builder group) {
+      long totalSizeOfVars = 0;
+      for (Variable.Builder var : this.rootGroup.vbuilders) {
+        totalSizeOfVars += Dimensions.getSize(var.getDimensions()) * var.getElementSize();
+      }
+      for (Group.Builder nested : group.gbuilders) {
+        totalSizeOfVars += calcSize(nested);
+      }
+      return totalSizeOfVars;
+    }
+
     /** Once this is called, do not use the Builder again. */
     public NetcdfFormatWriter build() throws IOException {
       return new NetcdfFormatWriter(this);
