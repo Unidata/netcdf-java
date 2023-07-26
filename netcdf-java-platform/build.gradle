@@ -36,6 +36,9 @@ dependencies {
     // command line parser
     api 'com.beust:jcommander:1.78'
 
+    // cdm-core
+    api 'commons-math:commons-math:1.2'
+
     // cdm-grib
     api 'edu.ucar:jj2000:5.4'
     api 'org.jsoup:jsoup:1.11.2' // HTML scraper used in GRIB

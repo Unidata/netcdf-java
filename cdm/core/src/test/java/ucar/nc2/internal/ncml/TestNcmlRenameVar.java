@@ -4,7 +4,7 @@
  */
 package ucar.nc2.internal.ncml;
 
-import static ucar.nc2.util.Misc.nearlyEquals;
+import static com.google.common.truth.Truth.assertThat;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import org.junit.AfterClass;
@@ -24,20 +24,14 @@ import ucar.nc2.ncml.TestNcmlRead;
 
 public class TestNcmlRenameVar {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+  private static final double TOLERANCE = 1e-8;
 
   static NetcdfFile ncfile = null;
   static String filename = "file:./" + TestNcmlRead.topDir + "renameVar.xml";
 
   @BeforeClass
-  public static void setUp() {
-    try {
-      ncfile = NcmlReader.readNcml(filename, null, null).build();
-    } catch (java.net.MalformedURLException e) {
-      System.out.println("bad URL error = " + e);
-    } catch (IOException e) {
-      System.out.println("IO error = " + e);
-      e.printStackTrace();
-    }
+  public static void setUp() throws IOException {
+    ncfile = NcmlReader.readNcml(filename, null, null).build();
   }
 
   @AfterClass
@@ -48,178 +42,157 @@ public class TestNcmlRenameVar {
   @Test
   public void testStructure() {
     Attribute att = ncfile.findGlobalAttribute("title");
-    assert null != att;
-    assert !att.isArray();
-    assert att.isString();
-    assert att.getDataType() == DataType.STRING;
-    assert att.getStringValue().equals("Example Data");
-    assert att.getNumericValue() == null;
-    assert att.getNumericValue(3) == null;
+    assertThat(att).isNotNull();
+    assertThat(!att.isArray()).isTrue();
+    assertThat(att.isString()).isTrue();
+    assertThat(att.getDataType()).isEqualTo(DataType.STRING);
+    assertThat(att.getStringValue()).isEqualTo("Example Data");
+    assertThat(att.getNumericValue()).isNull();
+    assertThat(att.getNumericValue(3)).isNull();
 
     att = ncfile.findGlobalAttribute("testFloat");
-    assert null != att;
-    assert att.isArray();
-    assert !att.isString();
-    assert att.getDataType() == DataType.FLOAT;
-    assert att.getStringValue() == null;
-    assert att.getNumericValue().equals(1.0f);
-    assert att.getNumericValue(3).equals(4.0f);
+    assertThat(att).isNotNull();
+    assertThat(att.isArray()).isTrue();
+    assertThat(att.isString()).isFalse();
+    assertThat(att.getDataType()).isEqualTo(DataType.FLOAT);
+    assertThat(att.getStringValue()).isNull();
+    assertThat(att.getNumericValue()).isEqualTo(1.0f);
+    assertThat(att.getNumericValue(3)).isEqualTo(4.0f);
 
     Dimension latDim = ncfile.findDimension("lat");
-    assert null != latDim;
-    assert latDim.getShortName().equals("lat");
-    assert latDim.getLength() == 3;
-    assert !latDim.isUnlimited();
+    assertThat(latDim).isNotNull();
+    assertThat(latDim.getShortName()).isEqualTo("lat");
+    assertThat(latDim.getLength()).isEqualTo(3);
+    assertThat(latDim.isUnlimited()).isFalse();
 
     Dimension timeDim = ncfile.findDimension("time");
-    assert null != timeDim;
-    assert timeDim.getShortName().equals("time");
-    assert timeDim.getLength() == 4;
-    assert timeDim.isUnlimited();
+    assertThat(timeDim).isNotNull();
+    assertThat(timeDim.getShortName()).isEqualTo("time");
+    assertThat(timeDim.getLength()).isEqualTo(4);
+    assertThat(timeDim.isUnlimited()).isTrue();
   }
 
   @Test
-  public void testReadCoordvar() {
+  public void testReadCoordvar() throws IOException {
     Variable lat = ncfile.findVariable("lat");
-    assert null != lat;
-    assert lat.getShortName().equals("lat");
-    assert lat.getRank() == 1;
-    assert lat.getSize() == 3;
-    assert lat.getShape()[0] == 3;
-    assert lat.getDataType() == DataType.FLOAT;
+    assertThat((Object) lat).isNotNull();
+    assertThat(lat.getShortName()).isEqualTo("lat");
+    assertThat(lat.getRank()).isEqualTo(1);
+    assertThat(lat.getSize()).isEqualTo(3);
+    assertThat(lat.getShape()[0]).isEqualTo(3);
+    assertThat(lat.getDataType()).isEqualTo(DataType.FLOAT);
 
-    assert !lat.isUnlimited();
-    assert lat.getDimension(0) == ncfile.findDimension("lat");
+    assertThat(lat.isUnlimited()).isFalse();
+    assertThat(lat.getDimension(0)).isEqualTo(ncfile.findDimension("lat"));
 
     Attribute att = lat.findAttribute("units");
-    assert null != att;
-    assert !att.isArray();
-    assert att.isString();
-    assert att.getDataType() == DataType.STRING;
-    assert att.getStringValue().equals("degrees_north");
-    assert att.getNumericValue() == null;
-    assert att.getNumericValue(3) == null;
+    assertThat(att).isNotNull();
+    assertThat(att.isArray()).isFalse();
+    assertThat(att.isString()).isTrue();
+    assertThat(att.getDataType()).isEqualTo(DataType.STRING);
+    assertThat(att.getStringValue()).isEqualTo("degrees_north");
+    assertThat(att.getNumericValue()).isNull();
+    assertThat(att.getNumericValue(3)).isNull();
 
-    try {
-      Array data = lat.read();
-      assert data.getRank() == 1;
-      assert data.getSize() == 3;
-      assert data.getShape()[0] == 3;
-      assert data.getElementType() == float.class;
+    Array data = lat.read();
+    assertThat(data.getRank()).isEqualTo(1);
+    assertThat(data.getSize()).isEqualTo(3);
+    assertThat(data.getShape()[0]).isEqualTo(3);
+    assertThat(data.getElementType()).isEqualTo(float.class);
 
-      IndexIterator dataI = data.getIndexIterator();
-      assert nearlyEquals(dataI.getDoubleNext(), 41.0);
-      assert nearlyEquals(dataI.getDoubleNext(), 40.0);
-      assert nearlyEquals(dataI.getDoubleNext(), 39.0);
-    } catch (IOException io) {
-    }
-
+    IndexIterator dataI = data.getIndexIterator();
+    assertThat(dataI.getDoubleNext()).isWithin(TOLERANCE).of(41.0);
+    assertThat(dataI.getDoubleNext()).isWithin(TOLERANCE).of(40.0);
+    assertThat(dataI.getDoubleNext()).isWithin(TOLERANCE).of(39.0);
   }
 
   @Test
-  public void testReadData() {
+  public void testReadData() throws IOException {
     Variable v = ncfile.findVariable("ReletiveHumidity");
-    assert null != v;
-    assert v.getShortName().equals("ReletiveHumidity");
-    assert v.getRank() == 3;
-    assert v.getSize() == 48;
-    assert v.getShape()[0] == 4;
-    assert v.getShape()[1] == 3;
-    assert v.getShape()[2] == 4;
-    assert v.getDataType() == DataType.INT;
+    assertThat((Object) v).isNotNull();
+    assertThat(v.getShortName()).isEqualTo("ReletiveHumidity");
+    assertThat(v.getRank()).isEqualTo(3);
+    assertThat(v.getSize()).isEqualTo(48);
+    assertThat(v.getShape()[0]).isEqualTo(4);
+    assertThat(v.getShape()[1]).isEqualTo(3);
+    assertThat(v.getShape()[2]).isEqualTo(4);
+    assertThat(v.getDataType()).isEqualTo(DataType.INT);
 
-    assert !v.isCoordinateVariable();
-    assert v.isUnlimited();
+    assertThat(v.isCoordinateVariable()).isFalse();
+    assertThat(v.isUnlimited()).isTrue();
 
-    assert v.getDimension(0) == ncfile.findDimension("time");
-    assert v.getDimension(1) == ncfile.findDimension("lat");
-    assert v.getDimension(2) == ncfile.findDimension("lon");
+    assertThat(v.getDimension(0)).isEqualTo(ncfile.findDimension("time"));
+    assertThat(v.getDimension(1)).isEqualTo(ncfile.findDimension("lat"));
+    assertThat(v.getDimension(2)).isEqualTo(ncfile.findDimension("lon"));
 
     Attribute att = v.findAttribute("units");
-    assert null != att;
-    assert !att.isArray();
-    assert att.isString();
-    assert att.getDataType() == DataType.STRING;
-    assert att.getStringValue().equals("percent");
-    assert att.getNumericValue() == null;
-    assert att.getNumericValue(3) == null;
+    assertThat(att).isNotNull();
+    assertThat(att.isArray()).isFalse();
+    assertThat(att.isString()).isTrue();
+    assertThat(att.getDataType()).isEqualTo(DataType.STRING);
+    assertThat(att.getStringValue()).isEqualTo("percent");
+    assertThat(att.getNumericValue()).isNull();
+    assertThat(att.getNumericValue(3)).isNull();
 
-    try {
-      Array data = v.read();
-      assert data.getRank() == 3;
-      assert data.getSize() == 48;
-      assert data.getShape()[0] == 4;
-      assert data.getShape()[1] == 3;
-      assert data.getShape()[2] == 4;
-      assert data.getElementType() == int.class;
+    Array data = v.read();
+    assertThat(data.getRank()).isEqualTo(3);
+    assertThat(data.getSize()).isEqualTo(48);
+    assertThat(data.getShape()[0]).isEqualTo(4);
+    assertThat(data.getShape()[1]).isEqualTo(3);
+    assertThat(data.getShape()[2]).isEqualTo(4);
+    assertThat(data.getElementType()).isEqualTo(int.class);
 
-      IndexIterator dataI = data.getIndexIterator();
-      assert dataI.getIntNext() == 1;
-      assert dataI.getIntNext() == 2;
-      assert dataI.getIntNext() == 3;
-      assert dataI.getIntNext() == 4;
-      assert dataI.getIntNext() == 5;
-    } catch (IOException io) {
-    }
+    IndexIterator dataI = data.getIndexIterator();
+    assertThat(dataI.getIntNext()).isEqualTo(1);
+    assertThat(dataI.getIntNext()).isEqualTo(2);
+    assertThat(dataI.getIntNext()).isEqualTo(3);
+    assertThat(dataI.getIntNext()).isEqualTo(4);
+    assertThat(dataI.getIntNext()).isEqualTo(5);
   }
 
   @Test
-  public void testReadSlice() {
+  public void testReadSlice() throws InvalidRangeException, IOException {
     Variable v = ncfile.findVariable("ReletiveHumidity");
     int[] origin = new int[3];
     int[] shape = {2, 3, 1};
 
-    try {
-      Array data = v.read(origin, shape);
-      assert data.getRank() == 3;
-      assert data.getSize() == 6;
-      assert data.getShape()[0] == 2;
-      assert data.getShape()[1] == 3;
-      assert data.getShape()[2] == 1;
-      assert data.getElementType() == int.class;
+    Array data = v.read(origin, shape);
+    assertThat(data.getRank()).isEqualTo(3);
+    assertThat(data.getSize()).isEqualTo(6);
+    assertThat(data.getShape()[0]).isEqualTo(2);
+    assertThat(data.getShape()[1]).isEqualTo(3);
+    assertThat(data.getShape()[2]).isEqualTo(1);
+    assertThat(data.getElementType()).isEqualTo(int.class);
 
-      IndexIterator dataI = data.getIndexIterator();
-      assert dataI.getIntNext() == 1;
-      assert dataI.getIntNext() == 5;
-      assert dataI.getIntNext() == 9;
-      assert dataI.getIntNext() == 21;
-      assert dataI.getIntNext() == 25;
-      assert dataI.getIntNext() == 29;
-    } catch (InvalidRangeException io) {
-      assert false;
-    } catch (IOException io) {
-      io.printStackTrace();
-      assert false;
-    }
+    IndexIterator dataI = data.getIndexIterator();
+    assertThat(dataI.getIntNext()).isEqualTo(1);
+    assertThat(dataI.getIntNext()).isEqualTo(5);
+    assertThat(dataI.getIntNext()).isEqualTo(9);
+    assertThat(dataI.getIntNext()).isEqualTo(21);
+    assertThat(dataI.getIntNext()).isEqualTo(25);
+    assertThat(dataI.getIntNext()).isEqualTo(29);
   }
 
   @Test
-  public void testReadSlice2() {
+  public void testReadSlice2() throws InvalidRangeException, IOException {
     Variable v = ncfile.findVariable("ReletiveHumidity");
     int[] origin = new int[3];
     int[] shape = {2, 1, 3};
 
-    try {
-      Array data = v.read(origin, shape).reduce();
-      assert data.getRank() == 2;
-      assert data.getSize() == 6;
-      assert data.getShape()[0] == 2;
-      assert data.getShape()[1] == 3;
-      assert data.getElementType() == int.class;
+    Array data = v.read(origin, shape).reduce();
+    assertThat(data.getRank()).isEqualTo(2);
+    assertThat(data.getSize()).isEqualTo(6);
+    assertThat(data.getShape()[0]).isEqualTo(2);
+    assertThat(data.getShape()[1]).isEqualTo(3);
+    assertThat(data.getElementType()).isEqualTo(int.class);
 
-      IndexIterator dataI = data.getIndexIterator();
-      assert dataI.getIntNext() == 1;
-      assert dataI.getIntNext() == 2;
-      assert dataI.getIntNext() == 3;
-      assert dataI.getIntNext() == 21;
-      assert dataI.getIntNext() == 22;
-      assert dataI.getIntNext() == 23;
-    } catch (InvalidRangeException io) {
-      assert false;
-    } catch (IOException io) {
-      io.printStackTrace();
-      assert false;
-    }
+    IndexIterator dataI = data.getIndexIterator();
+    assertThat(dataI.getIntNext()).isEqualTo(1);
+    assertThat(dataI.getIntNext()).isEqualTo(2);
+    assertThat(dataI.getIntNext()).isEqualTo(3);
+    assertThat(dataI.getIntNext()).isEqualTo(21);
+    assertThat(dataI.getIntNext()).isEqualTo(22);
+    assertThat(dataI.getIntNext()).isEqualTo(23);
   }
 
 }

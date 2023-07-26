@@ -265,7 +265,7 @@ public class NetcdfFiles {
    * @param buffer_size RandomAccessFile buffer size, if <= 0, use default size
    * @param cancelTask allow task to be cancelled; may be null.
    * @param iospMessage special iosp tweaking (sent before open is called), may be null
-   * @return NetcdfFile object, or null if cant find IOServiceProver
+   * @return NetcdfFile object, or null if can't find IOServiceProver
    * @throws IOException if error
    */
   public static NetcdfFile open(String location, int buffer_size, ucar.nc2.util.CancelTask cancelTask,
@@ -290,7 +290,7 @@ public class NetcdfFiles {
    * @param iospMessage special iosp tweaking (sent before open is called), may be null
    * @return NetcdfFile object, or null if cant find IOServiceProver
    * @throws IOException if read error
-   * @throws ClassNotFoundException cannat find iospClassName in thye class path
+   * @throws ClassNotFoundException cannot find iospClassName in the class path
    * @throws InstantiationException if class cannot be instantiated
    * @throws IllegalAccessException if class is not accessible
    */

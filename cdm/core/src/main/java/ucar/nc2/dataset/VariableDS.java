@@ -9,8 +9,16 @@ import com.google.common.collect.Sets;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
+import ucar.nc2.constants.DataFormatType;
 import ucar.nc2.dataset.NetcdfDataset.Enhance;
+import ucar.nc2.filter.ConvertMissing;
+import ucar.nc2.filter.FilterHelpers;
+import ucar.nc2.filter.ScaleOffset;
+import ucar.nc2.filter.Standardizer;
+import ucar.nc2.filter.Normalizer;
+import ucar.nc2.filter.UnsignedConversion;
 import ucar.nc2.internal.dataset.CoordinatesHelper;
+import ucar.nc2.iosp.netcdf3.N3iosp;
 import ucar.nc2.util.CancelTask;
 import javax.annotation.Nullable;
 import java.io.IOException;
@@ -161,9 +169,14 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
     this.orgVar = vds;
     this.orgDataType = vds.orgDataType;
     this.orgName = vds.orgName;
+    this.enhanceMode = vds.enhanceMode;
 
     this.enhanceProxy = new EnhancementsImpl(this); // decouple coordinate systems
-    this.scaleMissingUnsignedProxy = vds.scaleMissingUnsignedProxy;
+    this.unsignedConversion = vds.unsignedConversion;
+    this.scaleOffset = vds.scaleOffset;
+    this.convertMissing = vds.convertMissing;
+    this.fillValue = vds.getFillValue();
+    this.hasFillValue = vds.hasFillValue();
 
     // Add this so that old VariableDS units agrees with new VariableDS units.
     String units = vds.getUnitsString();
@@ -225,25 +238,7 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
       setDataType(orgDataType);
     }
 
-    // Initialize EnhanceScaleMissingUnsignedImpl. We can't do this in the constructors because this object may not
-    // contain all of the relevant attributes at that time. NcMLReader is an example of this: the VariableDS is
-    // constructed first, and then Attributes are added to it later.
-    this.scaleMissingUnsignedProxy = new EnhanceScaleMissingUnsignedImpl(this, this.enhanceMode);
-
-    if (this.enhanceMode.contains(Enhance.ConvertEnums) && dataType.isEnum()) {
-      setDataType(DataType.STRING); // LOOK promote data type to STRING ????
-      return; // We can return here, because the other conversions don't apply to STRING.
-    }
-
-    if (this.enhanceMode.contains(Enhance.ConvertUnsigned)) {
-      // We may need a larger data type to hold the results of the unsigned conversion.
-      setDataType(scaleMissingUnsignedProxy.getUnsignedConversionType());
-    }
-
-    if (this.enhanceMode.contains(Enhance.ApplyScaleOffset) && (dataType.isNumeric() || dataType == DataType.CHAR)
-        && scaleMissingUnsignedProxy.hasScaleOffset()) {
-      setDataType(scaleMissingUnsignedProxy.getScaledOffsetType());
-    }
+    createEnhancements();
   }
 
   boolean needConvert() {
@@ -266,8 +261,23 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
       if (this.isVariableLength) {
         return data;
       }
-      return scaleMissingUnsignedProxy.convert(data, enhancements.contains(Enhance.ConvertUnsigned),
-          enhancements.contains(Enhance.ApplyScaleOffset), enhancements.contains(Enhance.ConvertMissing));
+      if (enhancements.contains(Enhance.ConvertUnsigned) && unsignedConversion != null) {
+        data = unsignedConversion.convertUnsigned(data);
+      }
+      if (enhancements.contains(Enhance.ApplyScaleOffset) && scaleOffset != null) {
+        data = scaleOffset.removeScaleOffset(data);
+      }
+      if (enhancements.contains(Enhance.ConvertMissing) && convertMissing != null
+          && (dataType == DataType.FLOAT || dataType == DataType.DOUBLE)) {
+        data = convertMissing.convertMissing(data);
+      }
+      if (enhancements.contains(Enhance.ApplyStandardizer) && standardizer != null) {
+        data = standardizer.convert(data);
+      }
+      if (enhancements.contains(Enhance.ApplyNormalizer) && normalizer != null) {
+        data = normalizer.convert(data);
+      }
+      return data;
     }
   }
 
@@ -529,8 +539,8 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
     }
 
     Array array = Array.factoryConstant(getDataType(), shape, storage);
-    if (scaleMissingUnsignedProxy.hasFillValue()) {
-      array.setObject(0, scaleMissingUnsignedProxy.getFillValue());
+    if (hasFillValue) {
+      array.setObject(0, fillValue);
     }
     return array;
   }
@@ -541,26 +551,28 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
    * @param f put info here
    */
   public void showScaleMissingProxy(Formatter f) {
-    f.format("has missing = %s%n", scaleMissingUnsignedProxy.hasMissing());
-    if (scaleMissingUnsignedProxy.hasMissing()) {
-      if (scaleMissingUnsignedProxy.hasMissingValue()) {
-        f.format("   missing value(s) = ");
-        for (double d : scaleMissingUnsignedProxy.getMissingValues())
-          f.format(" %f", d);
-        f.format("%n");
+    f.format("has missing = %s%n", convertMissing != null);
+    if (convertMissing != null) {
+      if (convertMissing.hasMissing()) {
+        if (convertMissing.hasMissingValue()) {
+          f.format("   missing value(s) = ");
+          for (double d : convertMissing.getMissingValues())
+            f.format(" %f", d);
+          f.format("%n");
+        }
+        if (convertMissing.hasFillValue())
+          f.format("   fillValue = %f%n", convertMissing.getFillValue());
+        if (convertMissing.hasValidData())
+          f.format("   valid min/max = [%f,%f]%n", convertMissing.getValidMin(), convertMissing.getValidMax());
       }
-      if (scaleMissingUnsignedProxy.hasFillValue())
-        f.format("   fillValue = %f%n", scaleMissingUnsignedProxy.getFillValue());
-      if (scaleMissingUnsignedProxy.hasValidData())
-        f.format("   valid min/max = [%f,%f]%n", scaleMissingUnsignedProxy.getValidMin(),
-            scaleMissingUnsignedProxy.getValidMax());
+      f.format("FillValue or default = %s%n", convertMissing.getFillValue());
     }
-    f.format("FillValue or default = %s%n", scaleMissingUnsignedProxy.getFillValue());
 
-    f.format("%nhas scale/offset = %s%n", scaleMissingUnsignedProxy.hasScaleOffset());
-    if (scaleMissingUnsignedProxy.hasScaleOffset()) {
-      double offset = scaleMissingUnsignedProxy.applyScaleOffset(0.0);
-      double scale = scaleMissingUnsignedProxy.applyScaleOffset(1.0) - offset;
+
+    f.format("%nhas scale/offset = %s%n", scaleOffset != null);
+    if (scaleOffset != null) {
+      double offset = scaleOffset.applyScaleOffset(0.0);
+      double scale = scaleOffset.applyScaleOffset(1.0) - offset;
       f.format("   scale_factor = %f add_offset = %f%n", scale, offset);
     }
     f.format("original data type = %s%n", orgDataType);
@@ -609,149 +621,180 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
 
   @Override
   public boolean hasScaleOffset() {
-    return scaleMissingUnsignedProxy.hasScaleOffset();
+    return scaleOffset != null;
   }
 
   @Override
   public double getScaleFactor() {
-    return scaleMissingUnsignedProxy.getScaleFactor();
+    return scaleOffset != null ? scaleOffset.getScaleFactor() : 1;
   }
 
   @Override
   public double getOffset() {
-    return scaleMissingUnsignedProxy.getOffset();
+    return scaleOffset != null ? scaleOffset.getOffset() : 0;
   }
 
   @Override
   public boolean hasMissing() {
-    return scaleMissingUnsignedProxy.hasMissing();
+    return convertMissing != null && convertMissing.hasMissing();
   }
 
   @Override
   public boolean isMissing(double val) {
-    return scaleMissingUnsignedProxy.isMissing(val);
+    if (Double.isNaN(val)) {
+      return true;
+    }
+    return convertMissing != null && convertMissing.isMissing(val);
   }
 
   @Override
   public boolean hasValidData() {
-    return scaleMissingUnsignedProxy.hasValidData();
+    return convertMissing != null && convertMissing.hasMissingValue();
   }
 
   @Override
   public double getValidMin() {
-    return scaleMissingUnsignedProxy.getValidMin();
+    return convertMissing != null ? convertMissing.getValidMin() : -Double.MAX_VALUE;
   }
 
   @Override
   public double getValidMax() {
-    return scaleMissingUnsignedProxy.getValidMax();
+    return convertMissing != null ? convertMissing.getValidMax() : Double.MAX_VALUE;
   }
 
   @Override
   public boolean isInvalidData(double val) {
-    return scaleMissingUnsignedProxy.isInvalidData(val);
+    return convertMissing != null && convertMissing.isInvalidData(val);
   }
 
   @Override
   public boolean hasFillValue() {
-    return scaleMissingUnsignedProxy.hasFillValue();
+    return hasFillValue;
   }
 
   @Override
   public double getFillValue() {
-    return scaleMissingUnsignedProxy.getFillValue();
+    return fillValue;
   }
 
   @Override
   public boolean isFillValue(double val) {
-    return scaleMissingUnsignedProxy.isFillValue(val);
+    return convertMissing != null && convertMissing.isFillValue(val);
   }
 
   @Override
   public boolean hasMissingValue() {
-    return scaleMissingUnsignedProxy.hasMissingValue();
+    return convertMissing != null && convertMissing.hasMissingValue();
   }
 
   @Override
   public double[] getMissingValues() {
-    return scaleMissingUnsignedProxy.getMissingValues();
+    return convertMissing != null ? convertMissing.getMissingValues() : new double[] {0};
   }
 
   @Override
   public boolean isMissingValue(double val) {
-    return scaleMissingUnsignedProxy.isMissingValue(val);
+    return convertMissing != null && convertMissing.isMissingValue(val);
   }
 
   /** @deprecated Use NetcdfDataset.builder() */
   @Deprecated
   @Override
   public void setFillValueIsMissing(boolean b) {
-    scaleMissingUnsignedProxy.setFillValueIsMissing(b);
+    if (convertMissing != null) {
+      convertMissing.setFillValueIsMissing(b);
+    }
   }
 
   /** @deprecated Use NetcdfDataset.builder() */
   @Deprecated
   @Override
   public void setInvalidDataIsMissing(boolean b) {
-    scaleMissingUnsignedProxy.setInvalidDataIsMissing(b);
+    if (convertMissing != null) {
+      convertMissing.setInvalidDataIsMissing(b);
+    }
+  }
+
+  public boolean missingDataIsMissing() {
+    return builder().missingDataIsMissing;
+  }
+
+  public boolean fillValueIsMissing() {
+    return builder().fillValueIsMissing;
+  }
+
+  public boolean invalidDataIsMissing() {
+    return builder().invalidDataIsMissing;
   }
 
   /** @deprecated Use NetcdfDataset.builder() */
   @Deprecated
   @Override
   public void setMissingDataIsMissing(boolean b) {
-    scaleMissingUnsignedProxy.setMissingDataIsMissing(b);
+    if (convertMissing != null) {
+      convertMissing.setMissingDataIsMissing(b);
+    }
   }
 
   @Nullable
   @Override
   public DataType getScaledOffsetType() {
-    return scaleMissingUnsignedProxy.getScaledOffsetType();
+    return scaleOffset != null ? scaleOffset.getScaledOffsetType() : dataType;
   }
 
   @Override
   public DataType getUnsignedConversionType() {
-    return scaleMissingUnsignedProxy.getUnsignedConversionType();
+    return unsignedConversion != null ? unsignedConversion.getOutType() : dataType;
   }
 
   @Override
   public DataType.Signedness getSignedness() {
-    return scaleMissingUnsignedProxy.getSignedness();
+    return unsignedConversion != null ? unsignedConversion.getSignedness() : dataType.getSignedness();
   }
 
   @Override
   public double applyScaleOffset(Number value) {
-    return scaleMissingUnsignedProxy.applyScaleOffset(value);
+    return scaleOffset != null ? scaleOffset.removeScaleOffset(value) : value.doubleValue();
   }
 
   @Override
   public Array applyScaleOffset(Array data) {
-    return scaleMissingUnsignedProxy.applyScaleOffset(data);
+    return scaleOffset != null ? scaleOffset.removeScaleOffset(data) : data;
   }
 
   @Override
   public Number convertUnsigned(Number value) {
-    return scaleMissingUnsignedProxy.convertUnsigned(value);
+    return unsignedConversion != null ? unsignedConversion.convertUnsigned(value) : value;
+  }
+
+  public Number convertUnsigned(Number value, DataType dataType) {
+    return unsignedConversion != null ? unsignedConversion.convertUnsigned(value, dataType) : value;
   }
 
   @Override
   public Array convertUnsigned(Array in) {
-    return scaleMissingUnsignedProxy.convertUnsigned(in);
+    return unsignedConversion != null ? unsignedConversion.convertUnsigned(in) : in;
   }
 
   @Override
   public Number convertMissing(Number value) {
-    return scaleMissingUnsignedProxy.convertMissing(value);
+    return convertMissing != null ? convertMissing.convertMissing(value) : value;
   }
 
   @Override
   public Array convertMissing(Array in) {
-    return scaleMissingUnsignedProxy.convertMissing(in);
+    return (convertMissing != null && (dataType == DataType.FLOAT || dataType == DataType.DOUBLE))
+        ? convertMissing.convertMissing(in)
+        : in;
   }
 
+  /**
+   * @deprecated use implementations in filters package
+   */
   @Override
+  @Deprecated
   public Array convert(Array in, boolean convertUnsigned, boolean applyScaleOffset, boolean convertMissing) {
-    return scaleMissingUnsignedProxy.convert(in, convertUnsigned, applyScaleOffset, convertMissing);
+    return convertMissing(applyScaleOffset(convertUnsigned(in)));
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////
@@ -759,14 +802,21 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
   private EnhancementsImpl enhanceProxy;
   private List<String> coordSysNames;
 
-  // TODO make these final and immutable in 6.
-  private EnhanceScaleMissingUnsignedImpl scaleMissingUnsignedProxy = new EnhanceScaleMissingUnsignedImpl();
+  // TODO make immutable in version 6
+  private UnsignedConversion unsignedConversion;
+  private ScaleOffset scaleOffset;
+  private Standardizer standardizer;
+  private Normalizer normalizer;
+  private ConvertMissing convertMissing;
   private Set<Enhance> enhanceMode = EnumSet.noneOf(Enhance.class); // The set of enhancements that were made.
 
   protected Variable orgVar; // wrap this Variable : use it for the I/O
   protected DataType orgDataType; // keep separate for the case where there is no orgVar.
   protected String orgName; // in case Variable was renamed, and we need to keep track of the original name
   String orgFileTypeId; // the original fileTypeId.
+
+  private boolean hasFillValue = false;
+  private double fillValue = Double.MAX_VALUE;
 
   protected VariableDS(Builder<?> builder, Group parentGroup) {
     super(builder, parentGroup);
@@ -775,6 +825,9 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
     this.orgVar = builder.orgVar;
     this.orgDataType = builder.orgDataType;
     this.orgName = builder.orgName;
+    if (this.orgDataType == null) {
+      this.orgDataType = dataType;
+    }
 
     // Make sure that units has been trimmed.
     // Replace with correct case
@@ -787,27 +840,57 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
 
     this.orgFileTypeId = builder.orgFileTypeId;
     this.enhanceProxy = new EnhancementsImpl(this, builder.units, builder.getDescription());
-    this.scaleMissingUnsignedProxy = new EnhanceScaleMissingUnsignedImpl(this, this.enhanceMode);
-    this.scaleMissingUnsignedProxy.setFillValueIsMissing(builder.fillValueIsMissing);
-    this.scaleMissingUnsignedProxy.setInvalidDataIsMissing(builder.invalidDataIsMissing);
-    this.scaleMissingUnsignedProxy.setMissingDataIsMissing(builder.missingDataIsMissing);
 
-    if (this.enhanceMode.contains(Enhance.ConvertEnums) && dataType.isEnum()) {
-      this.dataType = DataType.STRING; // LOOK promote enum data type to STRING ????
-    }
-
-    if (this.enhanceMode.contains(Enhance.ConvertUnsigned) && !dataType.isEnum()) {
-      // We may need a larger data type to hold the results of the unsigned conversion.
-      this.dataType = scaleMissingUnsignedProxy.getUnsignedConversionType();
-    }
-
-    if (this.enhanceMode.contains(Enhance.ApplyScaleOffset) && (dataType.isNumeric() || dataType == DataType.CHAR)
-        && scaleMissingUnsignedProxy.hasScaleOffset()) {
-      this.dataType = scaleMissingUnsignedProxy.getScaledOffsetType();
-    }
+    createEnhancements();
 
     // We have to complete this after the NetcdfDataset is built.
     this.coordSysNames = builder.coordSysNames;
+  }
+
+  private void createEnhancements() {
+    // Enhancement Objects are created if it is contained in Enhance
+    if (this.enhanceMode.contains(Enhance.ConvertEnums) && dataType.isEnum()) {
+      this.dataType = DataType.STRING;
+    }
+
+    if (this.enhanceMode.contains(Enhance.ConvertUnsigned)) {
+      this.unsignedConversion = UnsignedConversion.createFromVar(this);
+      this.dataType = unsignedConversion != null ? unsignedConversion.getOutType() : dataType;
+    }
+    if (this.enhanceMode.contains(Enhance.ApplyScaleOffset) && (dataType.isNumeric() || dataType == DataType.CHAR)) {
+      this.scaleOffset = ScaleOffset.createFromVariable(this);
+      this.dataType = scaleOffset != null ? scaleOffset.getScaledOffsetType() : this.dataType;
+    }
+    Attribute standardizerAtt = findAttribute(CDM.STANDARDIZE);
+    if (standardizerAtt != null && this.enhanceMode.contains(Enhance.ApplyStandardizer) && dataType.isFloatingPoint()) {
+      this.standardizer = Standardizer.createFromVariable(this);
+    }
+    Attribute normalizerAtt = findAttribute(CDM.NORMALIZE);
+    if (normalizerAtt != null && this.enhanceMode.contains(Enhance.ApplyNormalizer) && dataType.isFloatingPoint()) {
+      this.normalizer = Normalizer.createFromVariable(this);
+    }
+
+    // need fill value info before convertMissing
+    Attribute fillValueAtt = findAttribute(CDM.FILL_VALUE);
+    if (fillValueAtt != null && !fillValueAtt.isString()) {
+      DataType fillType = FilterHelpers.getAttributeDataType(fillValueAtt, getSignedness());
+      fillValue = applyScaleOffset(convertUnsigned(fillValueAtt.getNumericValue(), fillType).doubleValue());
+      hasFillValue = true;
+    } else {
+      // No _FillValue attribute found. Instead, if file is NetCDF and variable is numeric, use the default fill value.
+      boolean isNetcdfIosp = DataFormatType.NETCDF.getDescription().equals(orgFileTypeId)
+          || DataFormatType.NETCDF4.getDescription().equals(orgFileTypeId);
+
+      if (isNetcdfIosp) {
+        if (dataType.isNumeric()) {
+          fillValue = applyScaleOffset(N3iosp.getFillValueDefault(dataType));
+          hasFillValue = true;
+        }
+      }
+    }
+    if (this.enhanceMode.contains(Enhance.ConvertMissing)) {
+      this.convertMissing = ConvertMissing.createFromVariable(this);
+    }
   }
 
   public Builder<?> toBuilder() {
