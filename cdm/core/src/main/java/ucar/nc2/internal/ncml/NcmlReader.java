@@ -283,13 +283,14 @@ public class NcmlReader {
    * @throws IOException on read error
    */
   public static NetcdfDataset.Builder mergeNcml(NetcdfFile ref, @Nullable Element ncmlElem) throws IOException {
-    NetcdfDataset.Builder targetDS = NetcdfDataset.builder(ref); // no enhance
+    NetcdfDataset.Builder targetDS = NetcdfDataset.builder(ref);
 
     if (ncmlElem != null) {
       NcmlReader reader = new NcmlReader();
       reader.readGroup(targetDS, null, null, ncmlElem);
     }
 
+    setEnhanceMode(targetDS, ncmlElem, null);
     return targetDS;
   }
 
@@ -540,6 +541,18 @@ public class NcmlReader {
       throw new IllegalArgumentException("NcML had fatal errors:" + errors);
     }
 
+    setEnhanceMode(builder, netcdfElem, cancelTask);
+
+    /*
+     * LOOK optionally add record structure to netcdf-3
+     * String addRecords = netcdfElem.getAttributeValue("addRecords");
+     * if ("true".equalsIgnoreCase(addRecords))
+     * targetDS.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
+     */
+  }
+
+  private static void setEnhanceMode(NetcdfDataset.Builder builder, Element netcdfElem, @Nullable CancelTask cancelTask)
+      throws IOException {
     // enhance means do scale/offset and/or add CoordSystems
     Set<NetcdfDataset.Enhance> mode = parseEnhanceMode(netcdfElem.getAttributeValue("enhance"));
     if (mode != null) {
@@ -550,13 +563,6 @@ public class NcmlReader {
         builder.setEnhanceMode(mode);
       }
     }
-
-    /*
-     * LOOK optionally add record structure to netcdf-3
-     * String addRecords = netcdfElem.getAttributeValue("addRecords");
-     * if ("true".equalsIgnoreCase(addRecords))
-     * targetDS.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
-     */
   }
 
   /**
