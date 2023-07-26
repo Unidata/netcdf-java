@@ -283,13 +283,14 @@ public class NcmlReader {
    * @throws IOException on read error
    */
   public static NetcdfDataset.Builder mergeNcml(NetcdfFile ref, @Nullable Element ncmlElem) throws IOException {
-    NetcdfDataset.Builder targetDS = NetcdfDataset.builder(ref); // no enhance
+    NetcdfDataset.Builder targetDS = NetcdfDataset.builder(ref);
 
     if (ncmlElem != null) {
       NcmlReader reader = new NcmlReader();
       reader.readGroup(targetDS, null, null, ncmlElem);
     }
 
+    setEnhanceMode(targetDS, ncmlElem, null);
     return targetDS;
   }
 
@@ -540,6 +541,18 @@ public class NcmlReader {
       throw new IllegalArgumentException("NcML had fatal errors:" + errors);
     }
 
+    setEnhanceMode(builder, netcdfElem, cancelTask);
+
+    /*
+     * LOOK optionally add record structure to netcdf-3
+     * String addRecords = netcdfElem.getAttributeValue("addRecords");
+     * if ("true".equalsIgnoreCase(addRecords))
+     * targetDS.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
+     */
+  }
+
+  private static void setEnhanceMode(NetcdfDataset.Builder builder, Element netcdfElem, @Nullable CancelTask cancelTask)
+      throws IOException {
     // enhance means do scale/offset and/or add CoordSystems
     Set<NetcdfDataset.Enhance> mode = parseEnhanceMode(netcdfElem.getAttributeValue("enhance"));
     if (mode != null) {
@@ -550,19 +563,12 @@ public class NcmlReader {
         builder.setEnhanceMode(mode);
       }
     }
-
-    /*
-     * LOOK optionally add record structure to netcdf-3
-     * String addRecords = netcdfElem.getAttributeValue("addRecords");
-     * if ("true".equalsIgnoreCase(addRecords))
-     * targetDS.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
-     */
   }
 
   /**
    * Read the NcML group element, and nested elements.
    *
-   * @param parent the parent group builder, or null when its the root group.
+   * @param parent the parent group builder, or null when it's the root group.
    * @param refParent parent Group in referenced dataset, may be null
    * @param groupElem ncml group element
    */
@@ -670,7 +676,7 @@ public class NcmlReader {
       return;
     }
 
-    // see if its new
+    // see if it's new
     ucar.nc2.Attribute oldatt = null;
     if (ref != null) {
       oldatt = findAttribute(ref, nameInFile);
@@ -806,10 +812,7 @@ public class NcmlReader {
       return;
     }
 
-    String nameInFile = dimElem.getAttributeValue("orgName");
-    if (nameInFile == null) {
-      nameInFile = name;
-    }
+    String nameInFile = dimElem.getAttributeValue("orgName") != null ? dimElem.getAttributeValue("orgName") : name;
 
     // LOOK this is wrong, groupBuilder may already have the dimension.
     // see if it already exists
@@ -827,21 +830,10 @@ public class NcmlReader {
 
       boolean isUnlimited = "true".equalsIgnoreCase(isUnlimitedS);
       boolean isVariableLength = "true".equalsIgnoreCase(isVariableLengthS);
-      boolean isShared = true;
-      if ("false".equalsIgnoreCase(isSharedS)) {
-        isShared = false;
-      }
+      boolean isShared = !"false".equalsIgnoreCase(isSharedS);
 
-      int len;
-      if (isVariableLength) {
-        len = Dimension.VLEN.getLength();
-      } else {
-        len = Integer.parseInt(lengthS);
-      }
+      int len = isVariableLength ? Dimension.VLEN.getLength() : Integer.parseInt(lengthS);
 
-      if (debugConstruct) {
-        System.out.println(" add new dim = " + name);
-      }
       // LOOK change to replaceDimension to get fort.54 working.
       groupBuilder.replaceDimension(Dimension.builder().setName(name).setIsShared(isShared).setIsUnlimited(isUnlimited)
           .setIsVariableLength(isVariableLength).setLength(len).build());
@@ -872,11 +864,7 @@ public class NcmlReader {
         newDim.setLength(len);
       }
 
-      if (debugConstruct) {
-        System.out.println(" modify existing dim = " + name);
-      }
-
-      groupBuilder.removeDimension(name);
+      groupBuilder.removeDimension(nameInFile);
       groupBuilder.addDimension(newDim.build());
     }
   }
@@ -1600,7 +1588,7 @@ public class NcmlReader {
   }
 
   /////////////////////////////////////////////
-  // command procesing
+  // command processing
 
   private void cmdRemove(Group.Builder g, String type, String name) {
     boolean err = false;

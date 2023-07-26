@@ -6,30 +6,19 @@
 package ucar.nc2;
 
 import com.google.common.collect.Sets;
-import java.io.File;
 import java.io.IOException;
-import java.lang.invoke.MethodHandles;
 import java.util.Arrays;
 import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import ucar.ma2.Array;
-import ucar.ma2.ArrayFloat;
-import ucar.ma2.ArraySequence;
-import ucar.ma2.ArrayStructure;
-import ucar.ma2.MAMath;
 import ucar.ma2.StructureData;
 import ucar.ma2.StructureDataIterator;
-import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
 /** Test Sequences constructed when reading NLDN datasets. */
 public class TestSequence {
-  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @Test
   @Category(NeedsCdmUnitTest.class)

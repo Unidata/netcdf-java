@@ -10,6 +10,8 @@ apply plugin: 'groovy'  // For Spock tests.
 
 dependencies {
   api enforcedPlatform(project(':netcdf-java-platform'))
+  implementation 'commons-math:commons-math'
+
   testImplementation enforcedPlatform(project(':netcdf-java-testing-platform'))
 
   compile project(':udunits')
