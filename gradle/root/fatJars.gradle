@@ -114,8 +114,6 @@ configure(fatJarTasks) {
   // Filter out crap from various other packages.
   exclude 'AUTHORS'
   exclude 'DATE'
-  exclude 'LICENCE'
-  exclude 'LICENSE'
   exclude 'NOTICE'
   exclude '*.txt'
   exclude 'META-INF/INDEX.LIST'
