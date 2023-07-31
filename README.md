@@ -73,12 +73,12 @@ THREDDS Catalog documentation (including the specification) is available at
 netCDF-Java is released under the BSD-3 licence, which can be found [here](https://github.com/Unidata/netcdf-java/blob/develop/LICENSE).
 
 Furthermore, this project includes code from third-party open-source software components:
-* [Gretty](https://github.com/akhikhl/gretty): for details, see `buildSrc/README.md`
+* [Gretty](https://github.com/akhikhl/gretty)
 * [ERDDAP](https://coastwatch.pfeg.noaa.gov/erddap/index.html): for details, see `waterml/README.md`
-* [JUnit](https://github.com/junit-team/junit4): for details, see `testUtil/README.md`
+* [JUnit](https://github.com/junit-team/junit4): for details, see `cdm-test-utils/README.md`
 
 Each of these software components have their own license.
-Please see `docs/src/private/licenses/third-party/`.
+Please see `third-party-licenses/`.
 
 ## How to use
 

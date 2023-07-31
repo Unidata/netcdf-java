@@ -6,7 +6,7 @@ Published for internal use by other THREDDS projects.
 ## Inclusion of third-party software
 
 This project contains source code from [JUnit](https://github.com/junit-team/junit4), version 4.12.
-The license for JUnit is available in `docs/src/private/licenses/third-party/junit/`.
+The license for JUnit is available in `third-party-licenses/junit/`.
 
 ### Details of use:
 
