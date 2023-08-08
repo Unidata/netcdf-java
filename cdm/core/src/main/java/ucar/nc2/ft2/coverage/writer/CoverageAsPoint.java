@@ -459,7 +459,7 @@ public class CoverageAsPoint {
     private VarGroup varGroup;
 
     CoverageAsStationFeature(String name, String desc, String wmoId, double lat, double lon, double alt,
-                             String timeName,CalendarDateUnit timeUnit, String altUnits, int npts, VarGroup varGroup) {
+        String timeName, CalendarDateUnit timeUnit, String altUnits, int npts, VarGroup varGroup) {
       // String name, String desc, String wmoId, double lat, double lon, double alt, DateUnit timeUnit, String altUnits,
       // int npts
       super(name, desc, wmoId, lat, lon, alt, timeName, timeUnit, altUnits, npts, StructureData.EMPTY);

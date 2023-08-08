@@ -26,7 +26,7 @@ public abstract class PointFeatureCCCImpl extends DsgCollectionImpl implements P
   }
 
   protected PointFeatureCCCImpl(String name, String timeName, CalendarDateUnit timeUnit, String altUnits,
-                                FeatureType collectionFeatureType) {
+      FeatureType collectionFeatureType) {
     super(name, timeName, timeUnit, altUnits);
     this.collectionFeatureType = collectionFeatureType;
   }

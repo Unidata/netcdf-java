@@ -30,7 +30,7 @@ public abstract class PointFeatureCCImpl extends DsgCollectionImpl implements Po
   }
 
   protected PointFeatureCCImpl(String name, String timeName, CalendarDateUnit timeUnit, String altUnits,
-                               FeatureType collectionFeatureType) {
+      FeatureType collectionFeatureType) {
     super(name, timeName, timeUnit, altUnits);
     this.collectionFeatureType = collectionFeatureType;
   }

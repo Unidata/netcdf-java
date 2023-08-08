@@ -31,6 +31,7 @@ public abstract class PointCollectionImpl extends DsgCollectionImpl implements P
   protected PointCollectionImpl(String name, String timeName, CalendarDateUnit timeUnit, String altUnits) {
     super(name, timeName, timeUnit, altUnits);
   }
+
   @Nonnull
   @Override
   public FeatureType getCollectionFeatureType() {
