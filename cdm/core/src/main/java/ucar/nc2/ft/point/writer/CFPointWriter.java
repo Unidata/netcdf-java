@@ -18,6 +18,7 @@ import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.ft.*;
 import ucar.nc2.ft.point.StationFeature;
 import ucar.nc2.ft.point.StationPointFeature;
+import ucar.nc2.ft.point.StationTimeSeriesCollectionImpl;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateFormatter;
 import ucar.nc2.time.CalendarDateUnit;
@@ -463,7 +464,7 @@ public abstract class CFPointWriter implements Closeable {
 
     for (StationFeature stnFeature : stnFeatureList) {
       assert stnFeature instanceof StationTimeSeriesFeature : "Expected pointFeat to be a StationTimeSeriesFeature, not a "
-              + stnFeature.getClass().getSimpleName();
+          + stnFeature.getClass().getSimpleName();
 
       StructureData featureData = stnFeature.getFeatureData();
       if (writer.getVersion().isExtendedModel()) {
@@ -472,17 +473,18 @@ public abstract class CFPointWriter implements Closeable {
         addCoordinatesExtended(record, obsCoords);
 
       } else {
-        if(writer.findDimension(stationDimName) == null)
+        if (writer.findDimension(stationDimName) == null)
           makeFeatureVariables(featureData, false);
       }
 
       for (PointFeature pointFeat : (StationTimeSeriesFeature) stnFeature) {
         assert pointFeat instanceof StationPointFeature : "Expected pointFeat to be a StationPointFeature, not a "
-                + pointFeat.getClass().getSimpleName();
+            + pointFeat.getClass().getSimpleName();
 
         StructureData obsData = pointFeat.getFeatureData();
 
-        Formatter coordNames = new Formatter().format("%s %s %s", ((StationTimeSeriesFeature) stnFeature).getTimeName(), latName, lonName);
+        Formatter coordNames =
+            new Formatter().format("%s %s %s", ((StationTimeSeriesFeature) stnFeature).getTimeName(), latName, lonName);
         if (useAlt)
           coordNames.format(" %s", stationAltName);
 
@@ -490,11 +492,59 @@ public abstract class CFPointWriter implements Closeable {
           addDataVariablesExtended(obsData, coordNames.toString());
 
         }
-          addDataVariablesClassic(recordDim, obsData, dataMap, coordNames.toString());
+        addDataVariablesClassic(recordDim, obsData, dataMap, coordNames.toString());
       }
     }
     writer.create();
-    if(!(writer.getVersion().isExtendedModel()))
+    if (!(writer.getVersion().isExtendedModel()))
+      record = writer.addRecordStructure(); // for netcdf3
+    writeExtraVariables();
+
+  }
+
+  protected void writeHeader(List<VariableSimpleIF> obsCoords, StationTimeSeriesCollectionImpl pointFeatureList)
+      throws IOException {
+
+    this.recordDim = writer.addUnlimitedDimension(recordDimName);
+    addExtraVariables();
+    addCoordinatesClassic(recordDim, obsCoords, dataMap);
+
+    for (StationFeature stnFeature : pointFeatureList) {
+      assert stnFeature instanceof StationTimeSeriesFeature : "Expected stationFeat to be a StationTimeSeriesFeature, not a "
+          + stnFeature.getClass().getSimpleName();
+
+      StructureData featureData = stnFeature.getFeatureData();
+      if (writer.getVersion().isExtendedModel()) {
+        makeFeatureVariables(featureData, true);
+        record = (Structure) writer.addVariable(null, recordName, DataType.STRUCTURE, recordDimName);
+        addCoordinatesExtended(record, obsCoords);
+
+      } else {
+        if (writer.findDimension(stationDimName) == null)
+          makeFeatureVariables(featureData, false);
+      }
+    }
+    for (PointFeature pointFeat : pointFeatureList.flatten(null, null, null)) {
+      assert pointFeat instanceof StationPointFeature : "Expected pointFeat to be a StationPointFeature, not a "
+          + pointFeat.getClass().getSimpleName();
+
+      StructureData obsData = pointFeat.getFeatureData();
+
+      String timeName = pointFeat.getFeatureCollection().getTimeName();
+
+      Formatter coordNames = new Formatter().format("%s %s %s", timeName, latName, lonName);
+      if (useAlt)
+        coordNames.format(" %s", stationAltName);
+
+      if (writer.getVersion().isExtendedModel()) {
+        addDataVariablesExtended(obsData, coordNames.toString());
+
+      }
+      addDataVariablesClassic(recordDim, obsData, dataMap, coordNames.toString());
+    }
+
+    writer.create();
+    if (!(writer.getVersion().isExtendedModel()))
       record = writer.addRecordStructure(); // for netcdf3
     writeExtraVariables();
 
@@ -652,7 +702,8 @@ public abstract class CFPointWriter implements Closeable {
       } else {
         VariableSimpleIF prevVar = writer.findVariable(oldVar.getShortName());
         if (prevVar != null) {
-          if (extraMap.get(oldVar.getShortName()) != null) { // this is normal, extra got added but not actually needed
+          if (extraMap != null && extraMap.get(oldVar.getShortName()) != null) { // this is normal, extra got added but
+                                                                                 // not actually needed
             writer.deleteVariable(oldVar.getShortName());
             extraMap.remove(oldVar.getShortName());
           }
