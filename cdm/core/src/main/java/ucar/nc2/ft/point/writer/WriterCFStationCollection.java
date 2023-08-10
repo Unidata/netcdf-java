@@ -85,7 +85,7 @@ public class WriterCFStationCollection extends CFPointWriter {
         wmo_strlen = Math.max(wmo_strlen, stn.getWmoId().length());
 
       if (stn instanceof DsgFeatureCollection) {
-        if (((DsgFeatureCollection) stn).getTimeName() != timeName) {
+        if (!((DsgFeatureCollection) stn).getTimeName().equals(timeName)) {
           coords.add(VariableSimpleBuilder
               .makeScalar(((DsgFeatureCollection) stn).getTimeName(), "time of measurement",
                   ((DsgFeatureCollection) stn).getTimeUnit().getUdUnit(), DataType.DOUBLE)
@@ -273,12 +273,11 @@ public class WriterCFStationCollection extends CFPointWriter {
   }
 
 
-  public void writeRecords(StationTimeSeriesFeatureCollection subsettedStationFeatCol,
+  public int writeRecords(StationTimeSeriesFeatureCollection subsettedStationFeatCol,
       List<VariableSimpleIF> wantedVariables) throws IOException {
+    int count = 0;
     for (VariableSimpleIF var : wantedVariables) {
       int obsNo = 0;
-      List<VariableSimpleIF> vars = new ArrayList<>();
-      vars.add(var);
       for (StationTimeSeriesFeature station : subsettedStationFeatCol) {
         String stnName = station.getName();
         Integer parentIndex = stationIndexMap.get(stnName);
@@ -288,7 +287,7 @@ public class WriterCFStationCollection extends CFPointWriter {
           throw new RuntimeException("Cant find station " + stnName);
 
         for (PointFeature pt : station) {
-          if (pt.getFeatureData().getMembers().stream().anyMatch(a -> a.getName() == var.getFullName())) {
+          if (pt.getFeatureData().getMembers().stream().anyMatch(a -> a.getName().equals(var.getFullName()))) {
             StructureMembers.Builder smb = StructureMembers.builder().setName("Coords");
 
             double timeCoordValue = pt.getObservationTime();
@@ -309,10 +308,11 @@ public class WriterCFStationCollection extends CFPointWriter {
             ImmutableList<StructureData> structures = listBuilder.build();
             StructureDataComposite sdall = StructureDataComposite.create(structures);
             obsNo = super.writeStructureData(obsNo, record, sdall, dataMap);
-
+            count++;
           }
         }
       }
     }
+    return count;
   }
 }
