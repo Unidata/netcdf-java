@@ -287,7 +287,7 @@ public class WriterCFStationCollection extends CFPointWriter {
           throw new RuntimeException("Cant find station " + stnName);
 
         for (PointFeature pt : station) {
-          if (pt.getFeatureData().getMembers().stream().anyMatch(a -> a.getName().equals(var.getFullName()))) {
+          if (pt.getFeatureData().getMembers().stream().anyMatch(a -> a.getName().equals(var.getShortName()))) {
             StructureMembers.Builder smb = StructureMembers.builder().setName("Coords");
 
             double timeCoordValue = pt.getObservationTime();
