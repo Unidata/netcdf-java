@@ -866,6 +866,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
     }
 
     coords = (double[]) data.get1DJavaArray(DataType.DOUBLE);
+    this.wasRead = true;
     // IndexIterator iter = data.getIndexIterator();
     // while (iter.hasNext())
     // coords[count++] = iter.getDoubleNext();

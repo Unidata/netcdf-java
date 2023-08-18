@@ -439,11 +439,9 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
 
     // check if already cached - caching in VariableDS only done explicitly by app
     if (hasCachedData())
-      result = super._read();
+      return super._read();
     else
-      result = proxyReader.reallyRead(this, null);
-
-    return convert(result);
+      return proxyReader.reallyRead(this, null);
   }
 
   // section of regular Variable
@@ -455,11 +453,9 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
 
     Array result;
     if (hasCachedData())
-      result = super._read(section);
+      return super._read(section);
     else
-      result = proxyReader.reallyRead(this, section, null);
-
-    return convert(result);
+      return proxyReader.reallyRead(this, section, null);
   }
 
   // do not call directly

@@ -116,19 +116,24 @@ public class DtCoverageDataset implements Closeable {
     this.ncd = ncd;
 
     Set<NetcdfDataset.Enhance> enhance = ncd.getEnhanceMode();
-    if (enhance == null || enhance.isEmpty())
+    if (enhance == null || enhance.isEmpty()) {
       enhance = NetcdfDataset.getDefaultEnhanceMode();
+    }
     ncd = NetcdfDatasets.enhance(ncd, enhance, null);
 
-    DtCoverageCSBuilder facc = DtCoverageCSBuilder.classify(ncd, parseInfo);
-    if (facc != null)
-      this.coverageType = facc.type;
+    // sort by largest size first
+    List<CoordinateSystem> csList = new ArrayList<>(ncd.getCoordinateSystems());
+    csList.sort((o1, o2) -> o2.getCoordinateAxes().size() - o1.getCoordinateAxes().size());
 
     Map<String, Gridset> csHash = new HashMap<>();
-    for (CoordinateSystem cs : ncd.getCoordinateSystems()) {
+    for (CoordinateSystem cs : csList) {
       DtCoverageCSBuilder fac = new DtCoverageCSBuilder(ncd, cs, parseInfo);
-      if (fac.type == null)
+      if (fac.type == null) {
         continue;
+      }
+      if (this.coverageType == null) {
+        this.coverageType = fac.type;
+      }
       DtCoverageCS ccs = fac.makeCoordSys();
       if (ccs == null)
         continue;

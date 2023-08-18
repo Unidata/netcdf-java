@@ -207,11 +207,11 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
     // the axis was created by this classes factory.
     if (this.orgDataType != null && !this.orgDataType.isNumeric()) {
       this.coords = cdates.stream().mapToDouble(cdate -> (double) cdate.getDifferenceInMsecs(cdates.get(0))).toArray();
-      // make sure parent methods do not try to read from the orgVar again
-      this.wasRead = true;
     } else {
       super.readValues();
     }
+    // make sure parent methods do not try to read from the orgVar again
+    this.wasRead = true;
   }
 
   ////////////////////////////////////////////////////////////////////////
