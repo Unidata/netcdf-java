@@ -43,7 +43,7 @@ For potential security issues, please contact security@unidata.ucar.edu directly
 
 Are you looking to contribute to the netCDF-Java efforts?
 That's great!
-Please see our [contributors guide](https://github.com/Unidata/netcdf-java/blob/develop/.github/CONTRIBUTING.md) for more information!
+Please see our [contributors guide](https://github.com/Unidata/netcdf-java/blob/maint-5.x/.github/CONTRIBUTING.md) for more information!
 
 ## NetCDF Markup Language (NcML)
 
@@ -66,19 +66,20 @@ These XML documents are how THREDDS-enabled data consumers find out what data is
 
 THREDDS Catalog documentation (including the specification) is available at
 
-* https://docs.unidata.ucar.edu/tds/5.0/userguide/basic_client_catalog.html
+* https://docs.unidata.ucar.edu/tds/current/userguide/basic_client_catalog.html
 
 ## Licensing
 
-netCDF-Java is released under the BSD-3 licence, which can be found [here](https://github.com/Unidata/netcdf-java/blob/develop/LICENSE).
+netCDF-Java is released under the BSD-3 licence, which can be found [here](https://github.com/Unidata/netcdf-java/blob/maint-5.x/LICENSE).
 
 Furthermore, this project includes code from third-party open-source software components:
-* [Gretty](https://github.com/akhikhl/gretty): for details, see `buildSrc/README.md`
+* [Gretty](https://github.com/akhikhl/gretty)
 * [ERDDAP](https://coastwatch.pfeg.noaa.gov/erddap/index.html): for details, see `waterml/README.md`
-* [JUnit](https://github.com/junit-team/junit4): for details, see `testUtil/README.md`
+* [JUnit](https://github.com/junit-team/junit4): for details, see `cdm-test-utils/README.md`
+* Edal (The University of Reading): The CDM calendars are implemented using classes from Jon Blower's `uk.ac.rdg.resc.edal.time` package.
 
 Each of these software components have their own license.
-Please see `docs/src/private/licenses/third-party/`.
+Please see `third-party-licenses/`.
 
 ## How to use
 
