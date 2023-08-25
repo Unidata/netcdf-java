@@ -12,7 +12,7 @@ package ucar.nc2.constants;
  */
 public enum AxisType {
   RunTime(0, "R"), // runtime / reference time
-  Ensemble(2, "E"), Time(1, "T"), GeoX(5, "X"), GeoY(4, "Y"), GeoZ(3, "Z"), // typically "dimensionless" vertical
+  Ensemble(1, "E"), Time(2, "T"), GeoX(5, "X"), GeoY(4, "Y"), GeoZ(3, "Z"), // typically "dimensionless" vertical
                                                                             // coordinate
   Lat(4, "Y"), Lon(5, "X"), Height(3, "Z"), // vertical height coordinate
   Pressure(3, "Z"), // vertical pressure coordinate
