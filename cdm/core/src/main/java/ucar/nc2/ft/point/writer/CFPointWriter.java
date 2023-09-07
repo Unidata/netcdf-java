@@ -523,24 +523,26 @@ public abstract class CFPointWriter implements Closeable {
         if (writer.findDimension(stationDimName) == null)
           makeFeatureVariables(featureData, false);
       }
-    }
-    for (PointFeature pointFeat : pointFeatureList.flatten(null, null, null)) {
-      assert pointFeat instanceof StationPointFeature : "Expected pointFeat to be a StationPointFeature, not a "
-          + pointFeat.getClass().getSimpleName();
+      for (PointFeature pointFeat : (StationTimeSeriesFeature) stnFeature) {
+        assert pointFeat instanceof StationPointFeature : "Expected pointFeat to be a StationPointFeature, not a "
+                + pointFeat.getClass().getSimpleName();
 
-      StructureData obsData = pointFeat.getFeatureData();
+        StructureData obsData = pointFeat.getFeatureData();
 
-      String timeName = pointFeat.getFeatureCollection().getTimeName();
+        String timeName = pointFeat.getFeatureCollection().getTimeName();
 
-      Formatter coordNames = new Formatter().format("%s %s %s", timeName, latName, lonName);
-      if (useAlt)
-        coordNames.format(" %s", stationAltName);
+        Formatter coordNames = new Formatter().format("%s %s %s", timeName, latName, lonName);
+        if (useAlt)
+          coordNames.format(" %s", stationAltName);
 
-      if (writer.getVersion().isExtendedModel()) {
-        addDataVariablesExtended(obsData, coordNames.toString());
+        if (writer.getVersion().isExtendedModel()) {
+          addDataVariablesExtended(obsData, coordNames.toString());
 
+        }
+        addDataVariablesClassic(recordDim, obsData, dataMap, coordNames.toString());
+
+        break;
       }
-      addDataVariablesClassic(recordDim, obsData, dataMap, coordNames.toString());
     }
 
     writer.create();
