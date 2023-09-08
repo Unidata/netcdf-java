@@ -1844,7 +1844,7 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
       if (dim.isShared()) {
         Dimension sharedDim = this.group.findDimension(dim.getShortName());
         if (sharedDim == null) {
-          throw new IllegalStateException(String.format("Shared Dimension %s does not exist in a parent proup", dim));
+          throw new IllegalStateException(String.format("Shared Dimension %s does not exist in a parent group", dim));
         } else {
           dims.add(sharedDim);
         }
