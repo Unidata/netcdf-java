@@ -235,7 +235,8 @@ public class HorizCoordSys {
           if (isProjection) {
             // we have to transform latlon to projection coordinates
             ProjectionImpl proj = transform.getProjection();
-            final ProjectionRect projectionRectInDefaultUnits = proj.latLonToProjBB(llbb); // allow projection to override
+            final ProjectionRect projectionRectInDefaultUnits = proj.latLonToProjBB(llbb); // allow projection to
+                                                                                           // override
             final double xMinInCorrectUnits = convertFromDefaultUnits(projectionRectInDefaultUnits.getMinX());
             final double xMaxInCorrectUnits = convertFromDefaultUnits(projectionRectInDefaultUnits.getMaxX());
             opt = xAxis.subset(xMinInCorrectUnits, xMaxInCorrectUnits, horizStride);
