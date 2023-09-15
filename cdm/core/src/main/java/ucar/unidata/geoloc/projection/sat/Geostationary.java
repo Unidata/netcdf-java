@@ -73,6 +73,8 @@ public class Geostationary extends ProjectionImpl {
   private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Geostationary.class);
 
   private static final String NAME = CF.GEOSTATIONARY;
+  private static String DEFAULT_UNITS = "radians";
+
   private boolean scaleGeoCoordinate;
   private double geoCoordinateScaleFactor = Double.MIN_VALUE;
 
@@ -87,7 +89,7 @@ public class Geostationary extends ProjectionImpl {
 
   public Geostationary(double subLonDegrees, double perspective_point_height, double semi_minor_axis,
       double semi_major_axis, double inv_flattening, boolean isSweepX, double geoCoordinateScaleFactor) {
-    super(NAME, false);
+    super(NAME, DEFAULT_UNITS, false);
 
     String sweepAngleAxis = "y";
     if (isSweepX) {
@@ -112,19 +114,19 @@ public class Geostationary extends ProjectionImpl {
   }
 
   public Geostationary() {
-    super(NAME, false);
+    super(NAME, DEFAULT_UNITS, false);
     navigation = new GEOSTransform();
     makePP();
   }
 
   public Geostationary(double subLonDegrees) {
-    super(NAME, false);
+    super(NAME, DEFAULT_UNITS, false);
     navigation = new GEOSTransform(subLonDegrees, GEOSTransform.GOES);
     makePP();
   }
 
   public Geostationary(double subLonDegrees, boolean isSweepX) {
-    super(NAME, false);
+    super(NAME, DEFAULT_UNITS, false);
 
     String sweepAngleAxis = "y";
     if (isSweepX) {
@@ -138,7 +140,7 @@ public class Geostationary extends ProjectionImpl {
   }
 
   public Geostationary(double subLonDegrees, String sweepAngleAxis, double geoCoordinateScaleFactor) {
-    super(NAME, false);
+    super(NAME, DEFAULT_UNITS, false);
 
     String scanGeometry = GEOSTransform.sweepAngleAxisToScanGeom(sweepAngleAxis);
 

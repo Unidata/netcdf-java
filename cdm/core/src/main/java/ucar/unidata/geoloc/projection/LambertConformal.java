@@ -23,6 +23,9 @@ import ucar.unidata.util.Parameter;
  */
 
 public class LambertConformal extends ProjectionImpl {
+  private static final String NAME = "LambertConformal";
+  private static String DEFAULT_UNITS = "km";
+
   private final double earth_radius;
   private double lat0, lon0; // lat/lon in radians
   private double par1, par2; // standard parallel 1 and 2 degrees
@@ -100,7 +103,7 @@ public class LambertConformal extends ProjectionImpl {
   public LambertConformal(double lat0, double lon0, double par1, double par2, double false_easting,
       double false_northing, double earth_radius) {
 
-    super("LambertConformal", false);
+    super(NAME, DEFAULT_UNITS, false);
 
     this._lat0 = lat0;
     this._lon0 = lon0;
