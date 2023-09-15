@@ -75,6 +75,7 @@ public class Geostationary extends ProjectionImpl {
   private static final String NAME = CF.GEOSTATIONARY;
   private static final String DEFAULT_UNITS = "radians";
 
+  // Remove in v6.x
   private boolean scaleGeoCoordinate;
   private double geoCoordinateScaleFactor = Double.MIN_VALUE;
 
@@ -83,10 +84,15 @@ public class Geostationary extends ProjectionImpl {
   public Geostationary(double subLonDegrees, double perspective_point_height, double semi_minor_axis,
       double semi_major_axis, double inv_flattening, boolean isSweepX) {
 
-    // scale factors (last two doubles in the sig) less than zero indicate no scaling of map x, y coordinates
+    // scale factors less than zero indicate no scaling of map x, y coordinates
     this(subLonDegrees, perspective_point_height, semi_minor_axis, semi_major_axis, inv_flattening, isSweepX, -1.0);
   }
 
+  /**
+   * @deprecated Remove in v6.x.
+   *             Use constructor without geoCoordinateScaleFactor as units are handled outside of projection classes
+   */
+  @Deprecated
   public Geostationary(double subLonDegrees, double perspective_point_height, double semi_minor_axis,
       double semi_major_axis, double inv_flattening, boolean isSweepX, double geoCoordinateScaleFactor) {
     super(NAME, DEFAULT_UNITS, false);
@@ -139,6 +145,11 @@ public class Geostationary extends ProjectionImpl {
     makePP();
   }
 
+  /**
+   * @deprecated Remove in v6.x.
+   *             Use constructor without geoCoordinateScaleFactor as units are handled outside of projection classes
+   */
+  @Deprecated
   public Geostationary(double subLonDegrees, String sweepAngleAxis, double geoCoordinateScaleFactor) {
     super(NAME, DEFAULT_UNITS, false);
 
@@ -166,6 +177,11 @@ public class Geostationary extends ProjectionImpl {
     addParameter(CF.SEMI_MINOR_AXIS, navigation.r_pol * 1000.0);
   }
 
+  /**
+   * @deprecated Remove in v6.x.
+   *             Units are handled outside of projection classes
+   */
+  @Deprecated
   private boolean isGeoCoordinateScaled() {
     return scaleGeoCoordinate && geoCoordinateScaleFactor > Double.MIN_VALUE;
   }
