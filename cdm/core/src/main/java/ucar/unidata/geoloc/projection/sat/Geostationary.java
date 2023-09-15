@@ -73,7 +73,7 @@ public class Geostationary extends ProjectionImpl {
   private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Geostationary.class);
 
   private static final String NAME = CF.GEOSTATIONARY;
-  private static String DEFAULT_UNITS = "radians";
+  private static final String DEFAULT_UNITS = "radians";
 
   private boolean scaleGeoCoordinate;
   private double geoCoordinateScaleFactor = Double.MIN_VALUE;
