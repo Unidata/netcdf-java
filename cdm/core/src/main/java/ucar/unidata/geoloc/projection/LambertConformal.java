@@ -143,7 +143,7 @@ public class LambertConformal extends ProjectionImpl {
    * Precalculate some stuff
    */
   private void precalculate() {
-    if (Math.abs(lat0) > PI_OVER_2) {
+    if (Math.abs(lat0) > Math.PI / 2.0) {
       throw new IllegalArgumentException("LambertConformal lat0 outside range (-90,90)");
     }
     if (Math.abs(par1) >= 90.0) {
@@ -518,7 +518,7 @@ public class LambertConformal extends ProjectionImpl {
     fromLat = Math.toRadians(fromLat);
     double dlon = LatLonPoints.lonNormal(fromLon - lon0Degrees);
     double theta = n * Math.toRadians(dlon);
-    double tn = Math.pow(Math.tan(PI_OVER_4 + fromLat / 2), n);
+    double tn = Math.pow(Math.tan(Math.PI / 4.0 + fromLat / 2), n);
     double r = earthRadiusTimesF / tn;
     toX = r * Math.sin(theta);
     toY = rho - r * Math.cos(theta);
@@ -595,7 +595,7 @@ public class LambertConformal extends ProjectionImpl {
       fromLat = Math.toRadians(fromLat);
       double dlon = LatLonPoints.lonNormal(fromLon - lon0Degrees);
       double theta = n * Math.toRadians(dlon);
-      double tn = Math.pow(Math.tan(PI_OVER_4 + fromLat / 2), n);
+      double tn = Math.pow(Math.tan(Math.PI / 4.0 + fromLat / 2), n);
       double r = earthRadiusTimesF / tn;
       toX = r * Math.sin(theta);
       toY = rho - r * Math.cos(theta);
@@ -685,7 +685,7 @@ public class LambertConformal extends ProjectionImpl {
       fromLat = Math.toRadians(fromLat);
       double dlon = LatLonPoints.lonNormal(fromLon - lon0Degrees);
       double theta = n * Math.toRadians(dlon);
-      double tn = Math.pow(Math.tan(PI_OVER_4 + fromLat / 2), n);
+      double tn = Math.pow(Math.tan(Math.PI / 4.0 + fromLat / 2), n);
       double r = earthRadiusTimesF / tn;
       toX = r * Math.sin(theta);
       toY = rho - r * Math.cos(theta);
