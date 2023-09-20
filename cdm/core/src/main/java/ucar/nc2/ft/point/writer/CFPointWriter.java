@@ -9,6 +9,8 @@ import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParameterDescription;
 import com.beust.jcommander.ParameterException;
+import com.google.common.collect.Iterators;
+import com.google.common.collect.PeekingIterator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.*;
@@ -19,6 +21,7 @@ import ucar.nc2.ft.*;
 import ucar.nc2.ft.point.StationFeature;
 import ucar.nc2.ft.point.StationPointFeature;
 import ucar.nc2.ft.point.StationTimeSeriesCollectionImpl;
+import ucar.nc2.ft2.coverage.writer.CoverageAsPoint;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateFormatter;
 import ucar.nc2.time.CalendarDateUnit;
@@ -456,52 +459,6 @@ public abstract class CFPointWriter implements Closeable {
     // NOOP
   }
 
-  protected void writeHeader(List<VariableSimpleIF> obsCoords, List<StationFeature> stnFeatureList) throws IOException {
-
-    this.recordDim = writer.addUnlimitedDimension(recordDimName);
-    addExtraVariables();
-    addCoordinatesClassic(recordDim, obsCoords, dataMap);
-
-    for (StationFeature stnFeature : stnFeatureList) {
-      assert stnFeature instanceof StationTimeSeriesFeature : "Expected pointFeat to be a StationTimeSeriesFeature, not a "
-          + stnFeature.getClass().getSimpleName();
-
-      StructureData featureData = stnFeature.getFeatureData();
-      if (writer.getVersion().isExtendedModel()) {
-        makeFeatureVariables(featureData, true);
-        record = (Structure) writer.addVariable(null, recordName, DataType.STRUCTURE, recordDimName);
-        addCoordinatesExtended(record, obsCoords);
-
-      } else {
-        if (writer.findDimension(stationDimName) == null)
-          makeFeatureVariables(featureData, false);
-      }
-
-      for (PointFeature pointFeat : (StationTimeSeriesFeature) stnFeature) {
-        assert pointFeat instanceof StationPointFeature : "Expected pointFeat to be a StationPointFeature, not a "
-            + pointFeat.getClass().getSimpleName();
-
-        StructureData obsData = pointFeat.getFeatureData();
-
-        Formatter coordNames =
-            new Formatter().format("%s %s %s", ((StationTimeSeriesFeature) stnFeature).getTimeName(), latName, lonName);
-        if (useAlt)
-          coordNames.format(" %s", stationAltName);
-
-        if (writer.getVersion().isExtendedModel()) {
-          addDataVariablesExtended(obsData, coordNames.toString());
-
-        }
-        addDataVariablesClassic(recordDim, obsData, dataMap, coordNames.toString());
-      }
-    }
-    writer.create();
-    if (!(writer.getVersion().isExtendedModel()))
-      record = writer.addRecordStructure(); // for netcdf3
-    writeExtraVariables();
-
-  }
-
   protected void writeHeader(List<VariableSimpleIF> obsCoords, StationTimeSeriesCollectionImpl pointFeatureList)
       throws IOException {
 
@@ -509,10 +466,7 @@ public abstract class CFPointWriter implements Closeable {
     addExtraVariables();
     addCoordinatesClassic(recordDim, obsCoords, dataMap);
 
-    for (StationFeature stnFeature : pointFeatureList) {
-      assert stnFeature instanceof StationTimeSeriesFeature : "Expected stationFeat to be a StationTimeSeriesFeature, not a "
-          + stnFeature.getClass().getSimpleName();
-
+    for (StationTimeSeriesFeature stnFeature : pointFeatureList) {
       StructureData featureData = stnFeature.getFeatureData();
       if (writer.getVersion().isExtendedModel()) {
         makeFeatureVariables(featureData, true);
@@ -523,9 +477,11 @@ public abstract class CFPointWriter implements Closeable {
         if (writer.findDimension(stationDimName) == null)
           makeFeatureVariables(featureData, false);
       }
-      for (PointFeature pointFeat : (StationTimeSeriesFeature) stnFeature) {
+      PeekingIterator<PointFeature> iter = Iterators.peekingIterator(stnFeature.iterator());
+      if (iter.hasNext()) {
+        PointFeature pointFeat = iter.peek();
         assert pointFeat instanceof StationPointFeature : "Expected pointFeat to be a StationPointFeature, not a "
-                + pointFeat.getClass().getSimpleName();
+            + pointFeat.getClass().getSimpleName();
 
         StructureData obsData = pointFeat.getFeatureData();
 
@@ -541,7 +497,6 @@ public abstract class CFPointWriter implements Closeable {
         }
         addDataVariablesClassic(recordDim, obsData, dataMap, coordNames.toString());
 
-        break;
       }
     }
 
