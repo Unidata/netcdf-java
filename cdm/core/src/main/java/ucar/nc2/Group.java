@@ -1386,7 +1386,7 @@ public class Group extends CDMNode implements AttributeContainer {
         if (dim.isShared()) {
           Dimension sharedDim = gb.findDimension(dim.getShortName()).orElse(null);
           if (sharedDim == null) {
-            throw new IllegalStateException(String.format("Shared Dimension %s does not exist in a parent proup", dim));
+            throw new IllegalStateException(String.format("Shared Dimension %s does not exist in a parent group", dim));
           } else {
             dims.add(sharedDim);
           }

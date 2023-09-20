@@ -17,12 +17,15 @@ import ucar.nc2.AttributeContainerMutable;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.CF;
 import ucar.nc2.ft2.coverage.CoverageCoordAxis.Spacing;
+import ucar.nc2.util.Optional;
+import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.LatLonPointNoNormalize;
 import ucar.unidata.geoloc.ProjectionPoint;
 
 public class TestHorizCoordSys {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
   private static final Locale DEFAULT_LOCALE = Locale.getDefault();
+  private static final double TOLERANCE = 1.0e-8;
 
   @After
   public void resetLocale() {
@@ -38,14 +41,7 @@ public class TestHorizCoordSys {
     final CoverageCoordAxis1D xAxis = createCoverageCoordAxis1D(AxisType.GeoX, xValues);
     final CoverageCoordAxis1D yAxis = createCoverageCoordAxis1D(AxisType.GeoY, yValues);
 
-    final AttributeContainerMutable attributes = new AttributeContainerMutable("attributes");
-    attributes.addAttribute(CF.GRID_MAPPING_NAME, CF.GEOSTATIONARY);
-    attributes.addAttribute(CF.LONGITUDE_OF_PROJECTION_ORIGIN, -75.0);
-    attributes.addAttribute(CF.PERSPECTIVE_POINT_HEIGHT, 35786023.0);
-    attributes.addAttribute(CF.SEMI_MINOR_AXIS, 6356752.31414);
-    attributes.addAttribute(CF.SEMI_MAJOR_AXIS, 6378137.0);
-    attributes.addAttribute(CF.INVERSE_FLATTENING, 298.2572221);
-    attributes.addAttribute(CF.SWEEP_ANGLE_AXIS, "x");
+    final AttributeContainerMutable attributes = createGeostationaryAttributes();
 
     final CoverageTransform transform = new CoverageTransform("transform", attributes, true);
     final HorizCoordSys horizCoordSys = HorizCoordSys.factory(xAxis, yAxis, null, null, transform);
@@ -60,6 +56,27 @@ public class TestHorizCoordSys {
       assertThat(latLonPoint.getLatitude()).isNotNaN();
       assertThat(latLonPoint.getLongitude()).isNotNaN();
     }
+  }
+
+  @Test
+  public void shouldHandleUnitsInProjectionWhenSubsetting() {
+    final double[] xValues = new double[] {0, -24444.000000022017};
+    final double[] yValues = new double[] {0, 98028.00000000928};
+
+    final CoverageCoordAxis1D xAxis = createCoverageCoordAxis1D(AxisType.GeoX, "microradians", xValues);
+    final CoverageCoordAxis1D yAxis = createCoverageCoordAxis1D(AxisType.GeoY, "microradians", yValues);
+
+    final AttributeContainerMutable attributes = createGeostationaryAttributes();
+
+    final CoverageTransform transform = new CoverageTransform("transform", attributes, true);
+    final HorizCoordSys horizCoordSys = HorizCoordSys.factory(xAxis, yAxis, null, null, transform);
+
+    final LatLonPoint latLon = LatLonPoint.create(35, -85);
+    final SubsetParams subsetParams = new SubsetParams().setLatLonPoint(latLon);
+    final Optional<HorizCoordSys> subsetHorizCoordSys = horizCoordSys.subset(subsetParams);
+    assertThat(subsetHorizCoordSys.isPresent()).isTrue();
+    assertThat(subsetHorizCoordSys.get().getXAxis().getCoord(0)).isWithin(TOLERANCE).of(xValues[1]);
+    assertThat(subsetHorizCoordSys.get().getYAxis().getCoord(0)).isWithin(TOLERANCE).of(yValues[1]);
   }
 
   @Test
@@ -81,8 +98,24 @@ public class TestHorizCoordSys {
     }
   }
 
+  private AttributeContainerMutable createGeostationaryAttributes() {
+    final AttributeContainerMutable attributes = new AttributeContainerMutable("attributes");
+    attributes.addAttribute(CF.GRID_MAPPING_NAME, CF.GEOSTATIONARY);
+    attributes.addAttribute(CF.LONGITUDE_OF_PROJECTION_ORIGIN, -75.0);
+    attributes.addAttribute(CF.PERSPECTIVE_POINT_HEIGHT, 35786023.0);
+    attributes.addAttribute(CF.SEMI_MINOR_AXIS, 6356752.31414);
+    attributes.addAttribute(CF.SEMI_MAJOR_AXIS, 6378137.0);
+    attributes.addAttribute(CF.INVERSE_FLATTENING, 298.2572221);
+    attributes.addAttribute(CF.SWEEP_ANGLE_AXIS, "x");
+    return attributes;
+  }
+
   private CoverageCoordAxis1D createCoverageCoordAxis1D(AxisType type, double[] values) {
-    final CoverageCoordAxisBuilder coordAxisBuilder = new CoverageCoordAxisBuilder("name", "unit", "description",
+    return createCoverageCoordAxis1D(type, "units", values);
+  }
+
+  private CoverageCoordAxis1D createCoverageCoordAxis1D(AxisType type, String units, double[] values) {
+    final CoverageCoordAxisBuilder coordAxisBuilder = new CoverageCoordAxisBuilder("name", units, "description",
         DataType.DOUBLE, type, null, CoverageCoordAxis.DependenceType.independent, null, Spacing.irregularPoint,
         values.length, values[0], values[values.length - 1], values[1] - values[0], values, null);
     return new CoverageCoordAxis1D(coordAxisBuilder);
