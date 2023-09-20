@@ -1306,9 +1306,32 @@ public class NcmlReader {
 
       if (dtype == DataType.CHAR) {
         int nhave = values.length();
-        char[] data = new char[nhave];
-        for (int i = 0; i < nhave; i++) {
-          data[i] = values.charAt(i);
+        int[] theDims = Dimensions.makeShape(v.getDimensions());
+        int totalSize = 1;
+        for (int i = 0; i < theDims.length; i++) {
+          totalSize *= theDims[i];
+        }
+
+        char[] data = new char[totalSize];
+        if (nhave == totalSize) {
+          for (int i = 0; i < totalSize; i++) {
+            data[i] = values.charAt(i);
+          }
+        }
+        // special case when when size of the input does not equal the number of elements * max size
+        // get the values as tokens and pad '0' as needed to reach the correct size
+        else {
+          // per specification the last dimension is the largest size an element can be
+          int maxSize = theDims[theDims.length - 1];
+          List<String> valList = getTokens(values, sep);
+          int startingIndex = 0;
+          for (String value : valList) {
+            for (int i = 0; i < value.length() && i < maxSize; i++) {
+              data[startingIndex + i] = value.charAt(i);
+            }
+            // move to the next word, all unset chars are left se to '0'
+            startingIndex += maxSize;
+          }
         }
         Array dataArray = Array.factory(DataType.CHAR, Dimensions.makeShape(v.getDimensions()), data);
         v.setCachedData(dataArray, true);
