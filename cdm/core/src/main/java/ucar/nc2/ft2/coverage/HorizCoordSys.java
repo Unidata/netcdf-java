@@ -10,6 +10,7 @@ import com.google.common.collect.Lists;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.*;
+import ucar.nc2.units.SimpleUnit;
 import ucar.nc2.util.Optional;
 import ucar.unidata.geoloc.*;
 import javax.annotation.concurrent.Immutable;
@@ -58,6 +59,8 @@ public class HorizCoordSys {
   private final boolean isProjection;
   private final boolean isLatLon1D;
   private boolean isLatLon2D; // isProjection and isLatLon2D may both be "true".
+  // scale factor for x, y axis if they have different units than the projection's default units
+  private final double coordinateConversionFactor;
 
   protected HorizCoordSys(CoverageCoordAxis1D xAxis, CoverageCoordAxis1D yAxis, CoverageCoordAxis latAxis,
       CoverageCoordAxis lonAxis, CoverageTransform transform) {
@@ -68,6 +71,7 @@ public class HorizCoordSys {
     this.isLatLon1D = latAxis instanceof CoverageCoordAxis1D && lonAxis instanceof CoverageCoordAxis1D;
     this.isLatLon2D = latAxis instanceof LatLonAxis2D && lonAxis instanceof LatLonAxis2D;
     assert isProjection || isLatLon1D || isLatLon2D : "missing horiz coordinates (x,y,projection or lat,lon)";
+    coordinateConversionFactor = getCoordinateConversionFactor();
 
     if (isProjection && isLatLon2D) {
       boolean ok = true;
@@ -163,16 +167,14 @@ public class HorizCoordSys {
 
           // we have to transform latlon to projection coordinates
           ProjectionImpl proj = transform.getProjection();
-          final ProjectionPoint projectionPointInKm = proj.latLonToProj(latlon);
-          final double xInCorrectUnits = convertFromKm(projectionPointInKm.getX(), xAxis.units, xAxis.name);
-          optb = xhelper.subsetContaining(xInCorrectUnits);
+          final ProjectionPoint projectionRectInDefaultUnits = proj.latLonToProj(latlon);
+          optb = xhelper.subsetContaining(convertFromDefaultUnits(projectionRectInDefaultUnits.getX()));
           if (optb.isPresent())
             xaxisSubset = new CoverageCoordAxis1D(optb.get());
           else
             errMessages.format("xaxis: %s;%n", optb.getErrorMessage());
 
-          final double yInCorrectUnits = convertFromKm(projectionPointInKm.getY(), yAxis.units, yAxis.name);
-          optb = yhelper.subsetContaining(yInCorrectUnits);
+          optb = yhelper.subsetContaining(convertFromDefaultUnits(projectionRectInDefaultUnits.getY()));
           if (optb.isPresent())
             yaxisSubset = new CoverageCoordAxis1D(optb.get());
           else
@@ -233,17 +235,18 @@ public class HorizCoordSys {
           if (isProjection) {
             // we have to transform latlon to projection coordinates
             ProjectionImpl proj = transform.getProjection();
-            final ProjectionRect projectionRectInKm = proj.latLonToProjBB(llbb); // allow projection to override
-            final double xMinInCorrectUnits = convertFromKm(projectionRectInKm.getMinX(), xAxis.units, xAxis.name);
-            final double xMaxInCorrectUnits = convertFromKm(projectionRectInKm.getMaxX(), xAxis.units, xAxis.name);
+            final ProjectionRect projectionRectInDefaultUnits = proj.latLonToProjBB(llbb); // allow projection to
+                                                                                           // override
+            final double xMinInCorrectUnits = convertFromDefaultUnits(projectionRectInDefaultUnits.getMinX());
+            final double xMaxInCorrectUnits = convertFromDefaultUnits(projectionRectInDefaultUnits.getMaxX());
             opt = xAxis.subset(xMinInCorrectUnits, xMaxInCorrectUnits, horizStride);
             if (opt.isPresent())
               xaxisSubset = (CoverageCoordAxis1D) opt.get();
             else
               errMessages.format("xaxis: %s;%n", opt.getErrorMessage());
 
-            final double yMinInCorrectUnits = convertFromKm(projectionRectInKm.getMinY(), yAxis.units, yAxis.name);
-            final double yMaxInCorrectUnits = convertFromKm(projectionRectInKm.getMaxY(), yAxis.units, yAxis.name);
+            final double yMinInCorrectUnits = convertFromDefaultUnits(projectionRectInDefaultUnits.getMinY());
+            final double yMaxInCorrectUnits = convertFromDefaultUnits(projectionRectInDefaultUnits.getMaxY());
             opt = yAxis.subset(yMinInCorrectUnits, yMaxInCorrectUnits, horizStride);
             if (opt.isPresent())
               yaxisSubset = (CoverageCoordAxis1D) opt.get();
@@ -319,9 +322,7 @@ public class HorizCoordSys {
       double x = xAxis.getCoordMidpoint(xindex);
       double y = yAxis.getCoordMidpoint(yindex);
       ProjectionImpl proj = transform.getProjection();
-      final double xInKm = convertToKm(x, xAxis.units, xAxis.name);
-      final double yInKm = convertToKm(y, yAxis.units, yAxis.name);
-      return proj.projToLatLon(xInKm, yInKm);
+      return proj.projToLatLon(convertToDefaultUnits(x), convertToDefaultUnits(y));
     } else {
       double lat = latAxis.getCoordMidpoint(yindex);
       double lon = lonAxis.getCoordMidpoint(xindex);
@@ -662,8 +663,7 @@ public class HorizCoordSys {
 
     for (ProjectionPoint projPoint : projPoints) {
       final ProjectionPoint projPointInKm =
-          ProjectionPoint.create(convertToKm(projPoint.getX(), xAxis.units, xAxis.name),
-              convertToKm(projPoint.getY(), yAxis.units, yAxis.name));
+          ProjectionPoint.create(convertToDefaultUnits(projPoint.getX()), convertToDefaultUnits(projPoint.getY()));
 
       final LatLonPoint latLonPoint = transform.getProjection().projToLatLon(projPointInKm);
       if (!Double.isNaN(latLonPoint.getLatitude()) && !Double.isNaN(latLonPoint.getLongitude())) {
@@ -674,27 +674,22 @@ public class HorizCoordSys {
     return latLonPoints;
   }
 
-  // TODO is there a better place to handle units?
-  // Some projections are actually just rotations (RotatedPole)
-  // so the "projection" coordinates have units "degrees" and don't need to be converted
-  private static double convertToKm(double coordinate, String unit, String axisName) {
-    if (unit.equals("km") || unit.equals("kilometers")) {
-      return coordinate;
-    } else if (unit.equals("m") || unit.equals("meters")) {
-      return 0.001 * coordinate;
-    } else {
-      return coordinate;
+  private double getCoordinateConversionFactor() {
+    if (!isProjection) {
+      return 1.0;
     }
+
+    final String defaultUnits = transform.getProjection().getDefaultUnits();
+    final String unit = xAxis.getUnits();
+    return SimpleUnit.isCompatible(unit, defaultUnits) ? SimpleUnit.getConversionFactor(unit, defaultUnits) : 1.0;
   }
 
-  private static double convertFromKm(double coordinateInKm, String desiredUnit, String axisName) {
-    if (desiredUnit.equals("km") || desiredUnit.equals("kilometers")) {
-      return coordinateInKm;
-    } else if (desiredUnit.equals("m") || desiredUnit.equals("meters")) {
-      return 1000 * coordinateInKm;
-    } else {
-      return coordinateInKm;
-    }
+  private double convertToDefaultUnits(double coordinate) {
+    return coordinate * coordinateConversionFactor;
+  }
+
+  private double convertFromDefaultUnits(double coordinateInDefaultUnit) {
+    return coordinateInDefaultUnit / coordinateConversionFactor;
   }
 
   private List<LatLonPoint> calcLatLon2DBoundaryPoints(int maxPointsInYEdge, int maxPointsInXEdge) {
