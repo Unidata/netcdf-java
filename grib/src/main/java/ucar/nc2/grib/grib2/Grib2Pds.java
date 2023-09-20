@@ -970,23 +970,23 @@ public abstract class Grib2Pds {
           case 0:
           case 3:
             prob1 = getProbabilityLowerLimit();
-            temp = prob1 != +0.0d ? Double.doubleToLongBits(prob1) : 0L;
+            temp = prob1 != 0.0d ? Double.doubleToLongBits(prob1) : 0L;
             result = (int) (temp ^ (temp >>> 32));
             break;
 
           case 1:
           case 4:
             prob2 = getProbabilityUpperLimit();
-            temp = prob2 != +0.0d ? Double.doubleToLongBits(prob2) : 0L;
+            temp = prob2 != 0.0d ? Double.doubleToLongBits(prob2) : 0L;
             result = (int) (temp ^ (temp >>> 32));
             break;
 
           case 2:
             prob1 = getProbabilityLowerLimit();
             prob2 = getProbabilityUpperLimit();
-            temp = prob1 != +0.0d ? Double.doubleToLongBits(prob1) : 0L;
+            temp = prob1 != 0.0d ? Double.doubleToLongBits(prob1) : 0L;
             result = (int) (temp ^ (temp >>> 32));
-            temp = prob2 != +0.0d ? Double.doubleToLongBits(prob2) : 0L;
+            temp = prob2 != 0.0d ? Double.doubleToLongBits(prob2) : 0L;
             result = 31 * result + (int) (temp ^ (temp >>> 32));
             break;
 

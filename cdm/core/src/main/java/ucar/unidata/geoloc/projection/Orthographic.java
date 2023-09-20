@@ -118,11 +118,11 @@ public class Orthographic extends ProjectionImpl {
   public int hashCode() {
     int result;
     long temp;
-    temp = lat0 != +0.0d ? Double.doubleToLongBits(lat0) : 0L;
+    temp = lat0 != 0.0d ? Double.doubleToLongBits(lat0) : 0L;
     result = (int) (temp ^ (temp >>> 32));
-    temp = lon0 != +0.0d ? Double.doubleToLongBits(lon0) : 0L;
+    temp = lon0 != 0.0d ? Double.doubleToLongBits(lon0) : 0L;
     result = 31 * result + (int) (temp ^ (temp >>> 32));
-    temp = R != +0.0d ? Double.doubleToLongBits(R) : 0L;
+    temp = R != 0.0d ? Double.doubleToLongBits(R) : 0L;
     result = 31 * result + (int) (temp ^ (temp >>> 32));
     return result;
   }

@@ -168,13 +168,13 @@ public class Sinusoidal extends ProjectionImpl {
   public int hashCode() {
     int result;
     long temp;
-    temp = earthRadius != +0.0d ? Double.doubleToLongBits(earthRadius) : 0L;
+    temp = earthRadius != 0.0d ? Double.doubleToLongBits(earthRadius) : 0L;
     result = (int) (temp ^ (temp >>> 32));
-    temp = centMeridian != +0.0d ? Double.doubleToLongBits(centMeridian) : 0L;
+    temp = centMeridian != 0.0d ? Double.doubleToLongBits(centMeridian) : 0L;
     result = 31 * result + (int) (temp ^ (temp >>> 32));
-    temp = falseEasting != +0.0d ? Double.doubleToLongBits(falseEasting) : 0L;
+    temp = falseEasting != 0.0d ? Double.doubleToLongBits(falseEasting) : 0L;
     result = 31 * result + (int) (temp ^ (temp >>> 32));
-    temp = falseNorthing != +0.0d ? Double.doubleToLongBits(falseNorthing) : 0L;
+    temp = falseNorthing != 0.0d ? Double.doubleToLongBits(falseNorthing) : 0L;
     result = 31 * result + (int) (temp ^ (temp >>> 32));
     return result;
   }
