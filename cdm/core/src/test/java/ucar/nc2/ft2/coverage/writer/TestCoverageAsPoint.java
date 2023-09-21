@@ -157,13 +157,18 @@ public class TestCoverageAsPoint {
   }
 
   private void readCoverageAsPoint(List<String> varNames, SubsetParams params, double alt, double[] time,
-      double[] expected) throws IOException {
+                                   double[] expected) throws IOException {
+    readCoverageAsPoint(varNames, params, alt, time, expected, 0);
+  }
+
+  private void readCoverageAsPoint(List<String> varNames, SubsetParams params, double alt, double[] time,
+      double[] expected, int stationIndex) throws IOException {
     FeatureDatasetPoint fdp = new CoverageAsPoint(gds, varNames, params).asFeatureDatasetPoint();
     assertThat(fdp.getFeatureType()).isEqualTo(FeatureType.STATION);
-    final String varName = varNames.get(0);
+    final String varName = varNames.get(stationIndex);
 
     StationTimeSeriesFeatureCollection fc =
-        (StationTimeSeriesFeatureCollection) fdp.getPointFeatureCollectionList().get(0);
+        (StationTimeSeriesFeatureCollection) fdp.getPointFeatureCollectionList().get(stationIndex);
     assertThat(fc).isNotNull();
     assertThat(fc.getCollectionFeatureType()).isEqualTo(FeatureType.STATION);
 
