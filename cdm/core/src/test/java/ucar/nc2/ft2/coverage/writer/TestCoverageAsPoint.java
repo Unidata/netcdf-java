@@ -97,6 +97,15 @@ public class TestCoverageAsPoint {
     varNames.add("T1noZ");
     params.setVariables(varNames);
     readCoverageAsPoint(varNames, params, alts[0], times, vals);
+
+    // test multiple time series
+    varNames = new ArrayList<>();
+    varNames.add("full4");
+    varNames.add("withT1");
+    params.setVariables(varNames);
+    params.setVertCoord(alts[0]);
+    readCoverageAsPoint(varNames, params, alts[0], times, new double[] {11.0, 1011.0}, 0);
+    readCoverageAsPoint(varNames, params, alts[0], times, new double[] {11.0}, 1);
   }
 
   @Test
