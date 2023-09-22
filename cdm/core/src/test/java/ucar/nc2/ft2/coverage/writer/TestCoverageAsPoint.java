@@ -96,7 +96,7 @@ public class TestCoverageAsPoint {
     varNames = new ArrayList<>();
     varNames.add("T1noZ");
     params.setVariables(varNames);
-    readCoverageAsPoint(varNames, params, alts[0], times, vals);
+    readCoverageAsPoint(varNames, params, alts[0], times, vals, 0, "time1");
 
     // test multiple time series
     varNames = new ArrayList<>();
@@ -104,8 +104,8 @@ public class TestCoverageAsPoint {
     varNames.add("withT1");
     params.setVariables(varNames);
     params.setVertCoord(alts[0]);
-    readCoverageAsPoint(varNames, params, alts[0], times, new double[] {11.0, 1011.0}, 0);
-    readCoverageAsPoint(varNames, params, alts[0], times, new double[] {11.0}, 1);
+    readCoverageAsPoint(varNames, params, alts[0], times, new double[] {11.0, 1011.0}, 0, "time");
+    readCoverageAsPoint(varNames, params, alts[0], times, new double[] {11.0}, 1, "time1");
   }
 
   @Test
@@ -167,11 +167,11 @@ public class TestCoverageAsPoint {
 
   private void readCoverageAsPoint(List<String> varNames, SubsetParams params, double alt, double[] time,
                                    double[] expected) throws IOException {
-    readCoverageAsPoint(varNames, params, alt, time, expected, 0);
+    readCoverageAsPoint(varNames, params, alt, time, expected, 0, "time");
   }
 
   private void readCoverageAsPoint(List<String> varNames, SubsetParams params, double alt, double[] time,
-      double[] expected, int stationIndex) throws IOException {
+      double[] expected, int stationIndex, String timeName) throws IOException {
     FeatureDatasetPoint fdp = new CoverageAsPoint(gds, varNames, params).asFeatureDatasetPoint();
     assertThat(fdp.getFeatureType()).isEqualTo(FeatureType.STATION);
     final String varName = varNames.get(stationIndex);
@@ -182,6 +182,7 @@ public class TestCoverageAsPoint {
     assertThat(fc.getCollectionFeatureType()).isEqualTo(FeatureType.STATION);
 
     StationTimeSeriesFeature stationFeature = (StationTimeSeriesFeature) fc.getStationFeatures().get(0);
+
     int i = 0;
     for (PointFeature feat : stationFeature) {
       assertThat(feat).isInstanceOf(StationPointFeature.class);
@@ -191,6 +192,7 @@ public class TestCoverageAsPoint {
       assertThat(station.getLatitude()).isEqualTo(lat);
       assertThat(station.getLongitude()).isEqualTo(lon);
       assertThat(station.getAltitude()).isEqualTo(alt);
+      assertThat(((StationTimeSeriesFeature) station).getTimeName()).isEqualTo(timeName);
       assertThat(feat.getObservationTime()).isEqualTo(time[i]);
 
       // verify point data
