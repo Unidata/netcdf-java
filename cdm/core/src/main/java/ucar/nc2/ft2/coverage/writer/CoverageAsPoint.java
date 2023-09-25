@@ -188,7 +188,7 @@ public class CoverageAsPoint {
     private StationFeature createStationFeature(String name) {
       double stationZ = varGroup.zAxis != null ? varGroup.zAxis.getCoordEdgeFirst() : 0.0;
       return new CoverageAsStationProfile(name, name, null, nearestLatLonPoint.getLatitude(),
-          nearestLatLonPoint.getLongitude(), stationZ, this.timeUnit, this.altUnits, -1, varGroup);
+          nearestLatLonPoint.getLongitude(), stationZ, this.timeName, this.timeUnit, this.altUnits, -1, varGroup);
     }
   }
 
@@ -224,6 +224,12 @@ public class CoverageAsPoint {
    */
   private class CoverageAsStationProfile extends StationProfileFeatureImpl {
     private VarGroup varGroup;
+
+    public CoverageAsStationProfile(String name, String desc, String wmoId, double lat, double lon, double alt,
+        String timeName, CalendarDateUnit timeUnit, String altUnits, int npts, VarGroup varGroup) {
+      super(name, desc, wmoId, lat, lon, alt, timeName, timeUnit, altUnits, npts);
+      this.varGroup = varGroup;
+    }
 
     public CoverageAsStationProfile(String name, String desc, String wmoId, double lat, double lon, double alt,
         CalendarDateUnit timeUnit, String altUnits, int npts, VarGroup varGroup) {
