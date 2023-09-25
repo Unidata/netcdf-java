@@ -139,14 +139,15 @@ public class TestCoverageAsPoint {
     params.setVariables(varNames);
     readCoverageAsProfile(varNames, params, alts, times, expected);
 
-    //test two different time axes
+    // test two different time axes
     varNames = new ArrayList<>();
-    varNames.add("withZ1");
-    varNames.add("withT1Z1");
+    varNames.add("full4");
+    varNames.add("withT1");
     params = new SubsetParams();
     params.setVariables(varNames);
     params.setLatLonPoint(latlon);
-    //readCoverageAsProfile(varNames, params, alts, times, new double[] {11.0, 1011.0});
+    readCoverageAsProfile(varNames, params, alts, times, expected, 0, "time");
+    readCoverageAsProfile(varNames, params, alts, times, Arrays.copyOfRange(expected, 0, 4), 1, "time1");
 
     // test no time different z-axis names
     varNames = new ArrayList<>();
@@ -155,7 +156,7 @@ public class TestCoverageAsPoint {
     params = new SubsetParams();
     params.setVariables(varNames);
     params.setLatLonPoint(latlon);
-    //readCoverageAsProfile(varNames, params, alts, times, Arrays.copyOfRange(expected, 0, 4));
+    // readCoverageAsProfile(varNames, params, alts, times, Arrays.copyOfRange(expected, 0, 4));
 
     // test single timeseries different z-axis names
     varNames = new ArrayList<>();
@@ -164,7 +165,7 @@ public class TestCoverageAsPoint {
     params = new SubsetParams();
     params.setVariables(varNames);
     params.setLatLonPoint(latlon);
-    //readCoverageAsProfile(varNames, params, alts, times, Arrays.copyOfRange(expected, 0, 4));
+    // readCoverageAsProfile(varNames, params, alts, times, Arrays.copyOfRange(expected, 0, 4));
 
     // test different time-axis names and different z-axis names
     varNames = new ArrayList<>();
@@ -173,7 +174,7 @@ public class TestCoverageAsPoint {
     params = new SubsetParams();
     params.setVariables(varNames);
     params.setLatLonPoint(latlon);
-    //readCoverageAsProfile(varNames, params, alts, times, Arrays.copyOfRange(expected, 0, 4));
+    // readCoverageAsProfile(varNames, params, alts, times, Arrays.copyOfRange(expected, 0, 4));
   }
 
   @Test
@@ -202,7 +203,7 @@ public class TestCoverageAsPoint {
   }
 
   private void readCoverageAsPoint(List<String> varNames, SubsetParams params, double alt, double[] time,
-                                   double[] expected) throws IOException {
+      double[] expected) throws IOException {
     readCoverageAsPoint(varNames, params, alt, time, expected, 0, "time");
   }
 
@@ -241,11 +242,17 @@ public class TestCoverageAsPoint {
 
   private void readCoverageAsProfile(List<String> varNames, SubsetParams params, double[] alt, double[] time,
       double[] expected) throws IOException {
+    readCoverageAsProfile(varNames, params, alt, time, expected, 0, "time");
+  }
+
+  private void readCoverageAsProfile(List<String> varNames, SubsetParams params, double[] alt, double[] time,
+      double[] expected, int stationIndex, String timeName) throws IOException {
     FeatureDatasetPoint fdp = new CoverageAsPoint(gds, varNames, params).asFeatureDatasetPoint();
     assertThat(fdp.getFeatureType()).isEqualTo(FeatureType.STATION_PROFILE);
-    final String varName = varNames.get(0);
+    final String varName = varNames.get(stationIndex);
 
-    StationProfileFeatureCollection fc = (StationProfileFeatureCollection) fdp.getPointFeatureCollectionList().get(0);
+    StationProfileFeatureCollection fc =
+        (StationProfileFeatureCollection) fdp.getPointFeatureCollectionList().get(stationIndex);
     assertThat(fc).isNotNull();
     assertThat(fc.getCollectionFeatureType()).isEqualTo(FeatureType.STATION_PROFILE);
 
@@ -260,6 +267,7 @@ public class TestCoverageAsPoint {
         assertThat(station.getLatitude()).isEqualTo(lat);
         assertThat(station.getLongitude()).isEqualTo(lon);
         assertThat(feat.getLocation().getAltitude()).isEqualTo(alts[i % alts.length]);
+        assertThat(((StationProfileFeature) station).getTimeName()).isEqualTo(timeName);
         assertThat(feat.getObservationTime()).isEqualTo(time[i / alts.length]);
         // verify point data
 
