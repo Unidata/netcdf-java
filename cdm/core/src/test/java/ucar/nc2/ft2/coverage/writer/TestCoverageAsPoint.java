@@ -98,7 +98,7 @@ public class TestCoverageAsPoint {
     params.setVariables(varNames);
     readCoverageAsPoint(varNames, params, alts[0], times, vals, 0, "time1");
 
-    // test multiple time series
+    // test multiple time axes
     varNames = new ArrayList<>();
     varNames.add("full4");
     varNames.add("withT1");
@@ -138,6 +138,42 @@ public class TestCoverageAsPoint {
     varNames.add("4D");
     params.setVariables(varNames);
     readCoverageAsProfile(varNames, params, alts, times, expected);
+
+    //test two different time axes
+    varNames = new ArrayList<>();
+    varNames.add("withZ1");
+    varNames.add("withT1Z1");
+    params = new SubsetParams();
+    params.setVariables(varNames);
+    params.setLatLonPoint(latlon);
+    //readCoverageAsProfile(varNames, params, alts, times, new double[] {11.0, 1011.0});
+
+    // test no time different z-axis names
+    varNames = new ArrayList<>();
+    varNames.add("full3");
+    varNames.add("Z1noT");
+    params = new SubsetParams();
+    params.setVariables(varNames);
+    params.setLatLonPoint(latlon);
+    //readCoverageAsProfile(varNames, params, alts, times, Arrays.copyOfRange(expected, 0, 4));
+
+    // test single timeseries different z-axis names
+    varNames = new ArrayList<>();
+    varNames.add("withT1");
+    varNames.add("withT1Z1");
+    params = new SubsetParams();
+    params.setVariables(varNames);
+    params.setLatLonPoint(latlon);
+    //readCoverageAsProfile(varNames, params, alts, times, Arrays.copyOfRange(expected, 0, 4));
+
+    // test different time-axis names and different z-axis names
+    varNames = new ArrayList<>();
+    varNames.add("full4");
+    varNames.add("withT1Z1");
+    params = new SubsetParams();
+    params.setVariables(varNames);
+    params.setLatLonPoint(latlon);
+    //readCoverageAsProfile(varNames, params, alts, times, Arrays.copyOfRange(expected, 0, 4));
   }
 
   @Test
