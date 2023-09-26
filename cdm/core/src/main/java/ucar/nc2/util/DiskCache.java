@@ -342,7 +342,7 @@ public class DiskCache {
   private static class FileAgeComparator implements Comparator<File> {
     static Map<File, Long> lastModified;
 
-    public FileAgeComparator (List<File> fileList) {
+    public FileAgeComparator(List<File> fileList) {
       fileList.stream().forEach(file -> lastModified.put(file, file.lastModified()));
     }
 
