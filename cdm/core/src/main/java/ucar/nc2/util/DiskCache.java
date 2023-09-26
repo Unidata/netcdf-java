@@ -291,43 +291,11 @@ public class DiskCache {
    * @param sbuff write results here, null is ok.
    */
   public static void cleanCache(long maxBytes, StringBuilder sbuff) {
-    if (sbuff != null)
-      sbuff.append("DiskCache clean maxBytes= ").append(maxBytes).append("on dir ").append(root).append("\n");
-
     File dir = new File(root);
-    long total = 0, total_delete = 0;
 
-    final File[] files = dir.listFiles();
-
+    File[] files = dir.listFiles();
     if (files != null) {
-      final List<File> fileList = Arrays.asList(files);
-      final Map<File, Long> lastModifiedLut = new HashMap<File, Long>();
-      for (final File f : fileList) {
-        lastModifiedLut.put(f, f.lastModified());
-      }
-
-      Collections.sort(fileList, new Comparator<File>() {
-        @Override
-        public int compare(final File f1, final File f2) {
-          return lastModifiedLut.get(f2).compareTo(lastModifiedLut.get(f1));
-        }
-      });
-
-      for (File file : fileList) {
-        if (file.length() + total > maxBytes) {
-          total_delete += file.length();
-          if (sbuff != null)
-            sbuff.append(" delete ").append(file).append(" (").append(file.length()).append(")\n");
-          if (!file.delete() && sbuff != null)
-            sbuff.append("Error deleting ").append(file).append("\n");
-        } else {
-          total += file.length();
-        }
-      }
-    }
-    if (sbuff != null) {
-      sbuff.append("Total bytes deleted= ").append(total_delete).append("\n");
-      sbuff.append("Total bytes left in cache= ").append(total).append("\n");
+      cleanCache(maxBytes, new FileAgeComparator(Arrays.asList(files)), sbuff);
     }
   }
 
@@ -335,9 +303,6 @@ public class DiskCache {
    * Remove files if needed to make cache have less than maxBytes bytes file sizes.
    * This will remove files in sort order defined by fileComparator.
    * The first files in the sort order are kept, until the max bytes is exceeded, then they are deleted.
-   *
-   * If a property of a file being compared changes while they are being sorted, the sort may not be correct due
-   * to what is a essentially a race condition. Java verions newer than 6 may detect this and throw an exception.
    *
    * @param maxBytes max number of bytes in cache.
    * @param fileComparator sort files first with this
@@ -370,6 +335,19 @@ public class DiskCache {
     if (sbuff != null) {
       sbuff.append("Total bytes deleted= ").append(total_delete).append("\n");
       sbuff.append("Total bytes left in cache= ").append(total).append("\n");
+    }
+  }
+
+  // reverse sort - latest come first
+  private static class FileAgeComparator implements Comparator<File> {
+    static Map<File, Long> lastModified;
+
+    public FileAgeComparator (List<File> fileList) {
+      fileList.stream().forEach(file -> lastModified.put(file, file.lastModified()));
+    }
+
+    public int compare(File f1, File f2) {
+      return lastModified.get(f2).compareTo(lastModified.get(f1));
     }
   }
 
