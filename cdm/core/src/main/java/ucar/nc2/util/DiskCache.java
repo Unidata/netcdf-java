@@ -341,7 +341,7 @@ public class DiskCache {
 
   // reverse sort - latest come first
   private static class FileAgeComparator implements Comparator<File> {
-    static Map<File, Long> lastModified;
+    static final Map<File, Long> lastModified = new HashMap<>();
 
     public FileAgeComparator(List<File> fileList) {
       fileList.stream().forEach(file -> lastModified.put(file, file.lastModified()));
