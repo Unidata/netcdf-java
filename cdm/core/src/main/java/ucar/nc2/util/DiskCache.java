@@ -348,7 +348,8 @@ public class DiskCache {
     }
 
     public int compare(File f1, File f2) {
-      return lastModified.getOrDefault(f2, DateTime.now().getMillis()).compareTo(lastModified.getOrDefault(f1, DateTime.now().getMillis()));
+      return lastModified.getOrDefault(f2, DateTime.now().getMillis())
+          .compareTo(lastModified.getOrDefault(f1, DateTime.now().getMillis()));
     }
   }
 
