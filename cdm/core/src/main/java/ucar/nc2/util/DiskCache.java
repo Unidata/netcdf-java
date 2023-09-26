@@ -6,6 +6,7 @@ package ucar.nc2.util;
 
 import com.google.common.escape.Escaper;
 import com.google.common.net.UrlEscapers;
+import org.joda.time.DateTime;
 import ucar.unidata.util.StringUtil2;
 import java.io.*;
 import java.util.*;
@@ -347,7 +348,7 @@ public class DiskCache {
     }
 
     public int compare(File f1, File f2) {
-      return lastModified.get(f2).compareTo(lastModified.get(f1));
+      return lastModified.getOrDefault(f2, DateTime.now().getMillis()).compareTo(lastModified.getOrDefault(f1, DateTime.now().getMillis()));
     }
   }
 
