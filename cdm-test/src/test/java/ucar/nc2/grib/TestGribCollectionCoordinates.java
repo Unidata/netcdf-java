@@ -4,6 +4,8 @@
  */
 package ucar.nc2.grib;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -77,7 +79,7 @@ public class TestGribCollectionCoordinates {
           continue;
 
         logger.debug(" {} == {}", vds.getFullName(), vds.getClass().getName());
-        assert vds instanceof CoordinateAxis : vds.getFullName();
+        assertThat((Object) vds).isInstanceOf(CoordinateAxis.class);
 
         // test that zero Intervals are removed
         if (vds instanceof CoordinateAxis1D) {
@@ -110,7 +112,7 @@ public class TestGribCollectionCoordinates {
       }
     }
 
-    assert ok;
+    assertThat(ok).isTrue();
   }
 
   // make sure Best reftimes always increase
@@ -132,7 +134,7 @@ public class TestGribCollectionCoordinates {
           continue;
 
         logger.debug(" {} == {}", vds.getFullName(), vds.getClass().getName());
-        assert vds instanceof CoordinateAxis1D : vds.getFullName();
+        assertThat((Object) vds).isInstanceOf(CoordinateAxis.class);
         CoordinateAxis1D axis = (CoordinateAxis1D) vds;
 
         // test that values are monotonic
@@ -148,7 +150,7 @@ public class TestGribCollectionCoordinates {
       }
     }
 
-    assert ok;
+    assertThat(ok).isTrue();
   }
 
 
