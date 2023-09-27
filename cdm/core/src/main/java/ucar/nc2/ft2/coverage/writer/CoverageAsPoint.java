@@ -162,6 +162,7 @@ public class CoverageAsPoint {
     CoverageAsStationProfileCollection(VarGroup varGroup) {
       super(varGroup.name + " AsStationProfileCollection", varGroup.dateUnit, varGroup.zUnit);
       this.timeName = varGroup.timeAxis != null ? varGroup.timeAxis.getName() : "time";
+      this.altName = varGroup.zAxis != null ? varGroup.zAxis.getName() : "altitude";
       this.varGroup = varGroup;
       this.collectionFeatureType = varGroup.fType;
     }
@@ -188,7 +189,8 @@ public class CoverageAsPoint {
     private StationFeature createStationFeature(String name) {
       double stationZ = varGroup.zAxis != null ? varGroup.zAxis.getCoordEdgeFirst() : 0.0;
       return new CoverageAsStationProfile(name, name, null, nearestLatLonPoint.getLatitude(),
-          nearestLatLonPoint.getLongitude(), stationZ, this.timeName, this.timeUnit, this.altUnits, -1, varGroup);
+          nearestLatLonPoint.getLongitude(), stationZ, this.timeName, this.timeUnit, this.altName, this.altUnits, -1,
+          varGroup);
     }
   }
 
@@ -215,7 +217,7 @@ public class CoverageAsPoint {
     private StationFeature createStationFeature(String name) {
       double stationZ = varGroup.zAxis != null ? varGroup.zAxis.getCoordMidpoint(0) : 0.0;
       return new CoverageAsStationFeature(name, name, null, nearestLatLonPoint.getLatitude(),
-          nearestLatLonPoint.getLongitude(), stationZ, this.timeName, this.timeUnit, null, -1, varGroup);
+          nearestLatLonPoint.getLongitude(), stationZ, this.timeName, this.timeUnit, null, null, -1, varGroup);
     }
   }
 
@@ -226,8 +228,8 @@ public class CoverageAsPoint {
     private VarGroup varGroup;
 
     public CoverageAsStationProfile(String name, String desc, String wmoId, double lat, double lon, double alt,
-        String timeName, CalendarDateUnit timeUnit, String altUnits, int npts, VarGroup varGroup) {
-      super(name, desc, wmoId, lat, lon, alt, timeName, timeUnit, altUnits, npts);
+        String timeName, CalendarDateUnit timeUnit, String altName, String altUnits, int npts, VarGroup varGroup) {
+      super(name, desc, wmoId, lat, lon, alt, timeName, timeUnit, altName, altUnits, npts);
       this.varGroup = varGroup;
     }
 
@@ -465,10 +467,10 @@ public class CoverageAsPoint {
     private VarGroup varGroup;
 
     CoverageAsStationFeature(String name, String desc, String wmoId, double lat, double lon, double alt,
-        String timeName, CalendarDateUnit timeUnit, String altUnits, int npts, VarGroup varGroup) {
+        String timeName, CalendarDateUnit timeUnit, String altName, String altUnits, int npts, VarGroup varGroup) {
       // String name, String desc, String wmoId, double lat, double lon, double alt, DateUnit timeUnit, String altUnits,
       // int npts
-      super(name, desc, wmoId, lat, lon, alt, timeName, timeUnit, altUnits, npts, StructureData.EMPTY);
+      super(name, desc, wmoId, lat, lon, alt, timeName, timeUnit, altName, altUnits, npts, StructureData.EMPTY);
       this.varGroup = varGroup;
     }
 

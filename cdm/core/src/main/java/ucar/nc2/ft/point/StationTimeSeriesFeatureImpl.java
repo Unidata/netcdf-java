@@ -32,8 +32,8 @@ public abstract class StationTimeSeriesFeatureImpl extends PointCollectionImpl i
   }
 
   public StationTimeSeriesFeatureImpl(String name, String desc, String wmoId, double lat, double lon, double alt,
-      String timeName, CalendarDateUnit timeUnit, String altUnits, int npts, StructureData sdata) {
-    super(name, timeName, timeUnit, altUnits);
+      String timeName, CalendarDateUnit timeUnit, String altName, String altUnits, int npts, StructureData sdata) {
+    super(name, timeName, timeUnit, altName, altUnits);
     s = new StationFeatureImpl(name, desc, wmoId, lat, lon, alt, npts, sdata);
   }
 

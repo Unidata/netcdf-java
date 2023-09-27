@@ -53,6 +53,14 @@ public interface DsgFeatureCollection {
   CalendarDateUnit getTimeUnit();
 
   /**
+   * The altitude name string if it exists.
+   *
+   * @return altitude name string, may be null
+   */
+  @Nullable
+  String getAltName();
+
+  /**
    * The altitude unit string if it exists.
    * 
    * @return altitude unit string, may be null

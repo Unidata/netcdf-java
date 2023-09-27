@@ -28,8 +28,9 @@ public abstract class PointCollectionImpl extends DsgCollectionImpl implements P
     super(name, timeUnit, altUnits);
   }
 
-  protected PointCollectionImpl(String name, String timeName, CalendarDateUnit timeUnit, String altUnits) {
-    super(name, timeName, timeUnit, altUnits);
+  protected PointCollectionImpl(String name, String timeName, CalendarDateUnit timeUnit, String altName,
+      String altUnits) {
+    super(name, timeName, timeUnit, altName, altUnits);
   }
 
   @Nonnull

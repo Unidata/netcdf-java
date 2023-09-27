@@ -24,6 +24,7 @@ public abstract class DsgCollectionImpl implements DsgFeatureCollection {
   protected String name;
   protected String timeName;
   protected CalendarDateUnit timeUnit;
+  protected String altName;
   protected String altUnits;
   protected CollectionInfo info;
   protected List<Variable> extras; // variables needed to make CF/DSG writing work
@@ -31,14 +32,17 @@ public abstract class DsgCollectionImpl implements DsgFeatureCollection {
   protected DsgCollectionImpl(String name, CalendarDateUnit timeUnit, String altUnits) {
     this.name = name;
     this.timeName = "time";
+    this.altName = "altitude";
     this.timeUnit = timeUnit;
     this.altUnits = altUnits;
   }
 
-  protected DsgCollectionImpl(String name, String timeName, CalendarDateUnit timeUnit, String altUnits) {
+  protected DsgCollectionImpl(String name, String timeName, CalendarDateUnit timeUnit, String altName,
+      String altUnits) {
     this.name = name;
     this.timeName = timeName;
     this.timeUnit = timeUnit;
+    this.altName = altName;
     this.altUnits = altUnits;
   }
 
@@ -58,6 +62,12 @@ public abstract class DsgCollectionImpl implements DsgFeatureCollection {
   @Override
   public CalendarDateUnit getTimeUnit() {
     return timeUnit;
+  }
+
+  @Nullable
+  @Override
+  public String getAltName() {
+    return altName;
   }
 
   @Nullable
