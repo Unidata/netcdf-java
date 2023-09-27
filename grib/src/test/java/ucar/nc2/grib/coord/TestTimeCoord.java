@@ -33,8 +33,8 @@ public class TestTimeCoord {
 
     final CalendarDate refDate = CalendarDate.parseISOformat(null, "2022-08-16T00:30:00Z");
     final TimeCoordIntvValue timeCoordIntvValue = timeCoordIntvDateValue.convertReferenceDate(refDate, timeUnit);
-    assertThat(timeCoordIntvValue.getBounds1()).isEqualTo(0);
-    assertThat(timeCoordIntvValue.getBounds2()).isEqualTo(11);
+    assertThat(timeCoordIntvValue.getBounds1()).isEqualTo(1);
+    assertThat(timeCoordIntvValue.getBounds2()).isEqualTo(12);
     assertThat(timeCoordIntvValue.getIntervalSize()).isEqualTo(11);
 
     final CalendarDate refDate2 = CalendarDate.parseISOformat(null, "2022-08-16T00:40:00Z");
@@ -45,8 +45,8 @@ public class TestTimeCoord {
 
     final CalendarDate refDate3 = CalendarDate.parseISOformat(null, "2022-08-16T00:20:00Z");
     final TimeCoordIntvValue timeCoordIntvValue3 = timeCoordIntvDateValue.convertReferenceDate(refDate3, timeUnit);
-    assertThat(timeCoordIntvValue3.getBounds1()).isEqualTo(0);
-    assertThat(timeCoordIntvValue3.getBounds2()).isEqualTo(11);
+    assertThat(timeCoordIntvValue3.getBounds1()).isEqualTo(1);
+    assertThat(timeCoordIntvValue3.getBounds2()).isEqualTo(12);
     assertThat(timeCoordIntvValue3.getIntervalSize()).isEqualTo(11);
   }
 
@@ -71,8 +71,8 @@ public class TestTimeCoord {
 
     final CalendarDate refDate3 = CalendarDate.parseISOformat(null, "2022-08-16T01:20:00Z");
     final TimeCoordIntvValue timeCoordIntvValue3 = timeCoordIntvDateValue.convertReferenceDate(refDate3, timeUnit);
-    assertThat(timeCoordIntvValue3.getBounds1()).isEqualTo(-1);
-    assertThat(timeCoordIntvValue3.getBounds2()).isEqualTo(10);
+    assertThat(timeCoordIntvValue3.getBounds1()).isEqualTo(0);
+    assertThat(timeCoordIntvValue3.getBounds2()).isEqualTo(11);
     assertThat(timeCoordIntvValue3.getIntervalSize()).isEqualTo(11);
   }
 }
