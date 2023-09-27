@@ -240,15 +240,6 @@ public class WriterCFStationCollection extends CFPointWriter {
   private int obsRecno;
 
   public void writeRecord(String stnName, String timeCoordName, double timeCoordValue, CalendarDate obsDate,
-      StructureData sdata) {
-    try {
-      writeRecord(stnName, timeCoordName, timeCoordValue, obsDate, "altitude", 0, sdata);
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
-  }
-
-  public void writeRecord(String stnName, String timeCoordName, double timeCoordValue, CalendarDate obsDate,
       String altName, double altValue, StructureData sdata) throws IOException {
     trackBB(null, obsDate);
 
