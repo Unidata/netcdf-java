@@ -184,12 +184,6 @@ public class WriterCFStationCollection extends CFPointWriter {
     stnVars.add(VariableSimpleBuilder.makeScalar(latName, "station latitude", CDM.LAT_UNITS, DataType.DOUBLE).build());
     stnVars.add(VariableSimpleBuilder.makeScalar(lonName, "station longitude", CDM.LON_UNITS, DataType.DOUBLE).build());
 
-    // if (useAlt) {
-    // stnVars.add(VariableSimpleBuilder.makeScalar(stationAltName, "station altitude", altUnits, DataType.DOUBLE)
-    // .addAttribute(CF.STANDARD_NAME, CF.SURFACE_ALTITUDE)
-    // .addAttribute(CF.POSITIVE, CF1Convention.getZisPositive(altName, altUnits)).build());
-    // }
-
     stnVars.add(VariableSimpleBuilder.makeString(stationIdName, "station identifier", null, id_strlen)
         .addAttribute(CF.CF_ROLE, CF.TIMESERIES_ID).build()); // station_id:cf_role = "timeseries_id";
 
