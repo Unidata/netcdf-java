@@ -6,6 +6,7 @@ package ucar.nc2.util;
 
 import com.google.common.escape.Escaper;
 import com.google.common.net.UrlEscapers;
+import org.joda.time.DateTime;
 import ucar.unidata.util.StringUtil2;
 import java.io.*;
 import java.util.*;
@@ -291,7 +292,12 @@ public class DiskCache {
    * @param sbuff write results here, null is ok.
    */
   public static void cleanCache(long maxBytes, StringBuilder sbuff) {
-    cleanCache(maxBytes, new FileAgeComparator(), sbuff);
+    File dir = new File(root);
+
+    File[] files = dir.listFiles();
+    if (files != null) {
+      cleanCache(maxBytes, new FileAgeComparator(Arrays.asList(files)), sbuff);
+    }
   }
 
   /**
@@ -335,10 +341,15 @@ public class DiskCache {
 
   // reverse sort - latest come first
   private static class FileAgeComparator implements Comparator<File> {
+    static final Map<File, Long> lastModified = new HashMap<>();
+
+    public FileAgeComparator(List<File> fileList) {
+      fileList.stream().forEach(file -> lastModified.put(file, file.lastModified()));
+    }
+
     public int compare(File f1, File f2) {
-      long f1Age = f1.lastModified();
-      long f2Age = f2.lastModified();
-      return Long.compare(f2Age, f1Age); // Steve Ansari 6/3/2010
+      return lastModified.getOrDefault(f2, DateTime.now().getMillis())
+          .compareTo(lastModified.getOrDefault(f1, DateTime.now().getMillis()));
     }
   }
 

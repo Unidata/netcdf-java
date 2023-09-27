@@ -268,15 +268,15 @@ public class Mercator extends ProjectionImpl {
   public int hashCode() {
     int result;
     long temp;
-    temp = earthRadius != +0.0d ? Double.doubleToLongBits(earthRadius) : 0L;
+    temp = earthRadius != 0.0d ? Double.doubleToLongBits(earthRadius) : 0L;
     result = (int) (temp ^ (temp >>> 32));
-    temp = lon0 != +0.0d ? Double.doubleToLongBits(lon0) : 0L;
+    temp = lon0 != 0.0d ? Double.doubleToLongBits(lon0) : 0L;
     result = 31 * result + (int) (temp ^ (temp >>> 32));
-    temp = par != +0.0d ? Double.doubleToLongBits(par) : 0L;
+    temp = par != 0.0d ? Double.doubleToLongBits(par) : 0L;
     result = 31 * result + (int) (temp ^ (temp >>> 32));
-    temp = falseEasting != +0.0d ? Double.doubleToLongBits(falseEasting) : 0L;
+    temp = falseEasting != 0.0d ? Double.doubleToLongBits(falseEasting) : 0L;
     result = 31 * result + (int) (temp ^ (temp >>> 32));
-    temp = falseNorthing != +0.0d ? Double.doubleToLongBits(falseNorthing) : 0L;
+    temp = falseNorthing != 0.0d ? Double.doubleToLongBits(falseNorthing) : 0L;
     result = 31 * result + (int) (temp ^ (temp >>> 32));
     return result;
   }
