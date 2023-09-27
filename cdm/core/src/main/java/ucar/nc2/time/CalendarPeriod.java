@@ -175,6 +175,9 @@ public class CalendarPeriod {
    */
   public int subtract(CalendarDate start, CalendarDate end) {
     long diff = end.getDifferenceInMsecs(start);
+    if (diff == 0) {
+      return 0;
+    }
     int thislen = millisecs();
     int signOfDiff = (int) (diff / Math.abs(diff));
     return signOfDiff * Math.round(Math.abs(diff) / (float) thislen);
