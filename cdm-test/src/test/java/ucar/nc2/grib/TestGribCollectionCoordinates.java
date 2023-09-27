@@ -50,32 +50,6 @@ public class TestGribCollectionCoordinates {
   @AfterClass
   public static void after() {
     Grib.setDebugFlags(new DebugFlagsImpl());
-    /*
-     * Formatter out = new Formatter(System.out);
-     * 
-     * FileCacheIF cache = GribCdmIndex.gribCollectionCache;
-     * if (cache != null) {
-     * cache.showTracking(out);
-     * cache.showCache(out);
-     * cache.clearCache(false);
-     * }
-     * 
-     * FileCacheIF rafCache = RandomAccessFile.getGlobalFileCache();
-     * if (rafCache != null) {
-     * rafCache.showCache(out);
-     * }
-     * 
-     * System.out.printf("            countGC=%7d%n", GribCollectionImmutable.countGC);
-     * System.out.printf("            countPC=%7d%n", PartitionCollectionImmutable.countPC);
-     * System.out.printf("    countDataAccess=%7d%n", GribIosp.debugIndexOnlyCount);
-     * System.out.printf(" total files needed=%7d%n", GribCollectionImmutable.countGC +
-     * PartitionCollectionImmutable.countPC + GribIosp.debugIndexOnlyCount);
-     * 
-     * FileCache.shutdown();
-     * RandomAccessFile.setGlobalFileCache(null);
-     * TestDir.checkLeaks();
-     * RandomAccessFile.setDebugLeaks(false);
-     */
   }
 
   /////////////////////////////////////////////////////////
