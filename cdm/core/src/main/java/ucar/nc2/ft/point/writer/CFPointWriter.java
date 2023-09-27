@@ -51,8 +51,8 @@ public abstract class CFPointWriter implements Closeable {
   public static final String recordDimName = "obs";
   public static final String latName = "latitude";
   public static final String lonName = "longitude";
-  public static final String altName = "altitude";
-  public static final String timeName = "time";
+  public static String altName = "altitude";
+  public static String timeName = "time";
 
   public static final String stationStructName = "station";
   public static final String stationDimName = "station";
@@ -485,11 +485,11 @@ public abstract class CFPointWriter implements Closeable {
 
         StructureData obsData = pointFeat.getFeatureData();
 
-        String timeName = pointFeat.getFeatureCollection().getTimeName();
+        timeName = pointFeat.getFeatureCollection().getTimeName();
+        altName = pointFeat.getFeatureCollection().getAltName();
 
         Formatter coordNames = new Formatter().format("%s %s %s", timeName, latName, lonName);
         if (useAlt) {
-          String altName = pointFeat.getFeatureCollection().getAltName();
           coordNames.format(" %s", altName);
         }
 

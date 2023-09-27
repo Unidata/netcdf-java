@@ -201,6 +201,7 @@ public class CoverageAsPoint {
     CoverageAsStationFeatureCollection(VarGroup varGroup) {
       super(varGroup.name + " AsStationFeatureCollection", varGroup.dateUnit, varGroup.zUnit);
       this.timeName = varGroup.timeAxis != null ? varGroup.timeAxis.getName() : "time";
+      this.altName = varGroup.zAxis != null ? varGroup.zAxis.getName() : "altitude";
       this.varGroup = varGroup;
       this.collectionFeatureType = varGroup.fType;
     }
@@ -217,7 +218,8 @@ public class CoverageAsPoint {
     private StationFeature createStationFeature(String name) {
       double stationZ = varGroup.zAxis != null ? varGroup.zAxis.getCoordMidpoint(0) : 0.0;
       return new CoverageAsStationFeature(name, name, null, nearestLatLonPoint.getLatitude(),
-          nearestLatLonPoint.getLongitude(), stationZ, this.timeName, this.timeUnit, null, null, -1, varGroup);
+          nearestLatLonPoint.getLongitude(), stationZ, this.timeName, this.timeUnit, this.altName, this.altUnits, -1,
+          varGroup);
     }
   }
 
