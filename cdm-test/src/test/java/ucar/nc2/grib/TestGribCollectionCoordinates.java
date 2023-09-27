@@ -66,7 +66,7 @@ public class TestGribCollectionCoordinates {
     boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.always, logger);
     String topLevelIndex = GribCdmIndex.getTopIndexFileFromConfig(config).getAbsolutePath();
 
-    System.out.printf("changed = %s%n", changed);
+    logger.debug("changed = {}", changed);
 
     boolean ok = true;
 
@@ -76,7 +76,7 @@ public class TestGribCollectionCoordinates {
         if (!stdname.equalsIgnoreCase("time"))
           continue;
 
-        System.out.printf(" %s == %s%n", vds.getFullName(), vds.getClass().getName());
+        logger.debug(" {} == {}", vds.getFullName(), vds.getClass().getName());
         assert vds instanceof CoordinateAxis : vds.getFullName();
 
         // test that zero Intervals are removed
@@ -86,7 +86,7 @@ public class TestGribCollectionCoordinates {
             for (int i = 0; i < axis.getSize(); i++) {
               double[] bound = axis.getCoordBounds(i);
               if (bound[0] == bound[1]) {
-                System.out.printf("ERR1 %s(%d) = [%f,%f]%n", vds.getFullName(), i, bound[0], bound[1]);
+                logger.debug("ERR1 {}({}) = [{},{}]", vds.getFullName(), i, bound[0], bound[1]);
                 ok = false;
               }
             }
@@ -101,7 +101,7 @@ public class TestGribCollectionCoordinates {
                 double start = bounds.get(i, j, 0);
                 double end = bounds.get(i, j, 1);
                 if (start == end) {
-                  System.out.printf("ERR2 %s(%d,%d) = [%f,%f]%n", vds.getFullName(), i, j, start, end);
+                  logger.debug("ERR2 {}({},{}) = [{},{}]", vds.getFullName(), i, j, start, end);
                   ok = false;
                 }
               }
@@ -121,7 +121,7 @@ public class TestGribCollectionCoordinates {
             TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/.*grib2", null, null, null, "file", null);
 
     boolean changed = GribCdmIndex.updateGribCollection(config, updateMode, logger);
-    System.out.printf("changed = %s%n", changed);
+    logger.debug("changed = {}", changed);
     String topLevelIndex = GribCdmIndex.getTopIndexFileFromConfig(config).getAbsolutePath();
     boolean ok = true;
 
@@ -131,7 +131,7 @@ public class TestGribCollectionCoordinates {
         if (!stdname.equalsIgnoreCase("forecast_reference_time"))
           continue;
 
-        System.out.printf(" %s == %s%n", vds.getFullName(), vds.getClass().getName());
+        logger.debug(" {} == {}", vds.getFullName(), vds.getClass().getName());
         assert vds instanceof CoordinateAxis1D : vds.getFullName();
         CoordinateAxis1D axis = (CoordinateAxis1D) vds;
 
@@ -140,7 +140,7 @@ public class TestGribCollectionCoordinates {
         for (int i = 0; i < axis.getSize(); i++) {
           double val = axis.getCoordValue(i);
           if (i > 0 && (val < last)) {
-            System.out.printf("  %s(%d) == %f < %f%n", vds.getFullName(), i, val, last);
+            logger.debug("  {}({}) == {} < {}", vds.getFullName(), i, val, last);
             ok = false;
           }
           last = val;
