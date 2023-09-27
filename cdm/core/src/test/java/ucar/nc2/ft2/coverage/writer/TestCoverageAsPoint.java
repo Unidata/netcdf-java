@@ -183,8 +183,8 @@ public class TestCoverageAsPoint {
     params.setVariables(varNames);
     params.setLatLonPoint(latlon);
     readCoverageAsProfile(varNames, params, alts, times, expected);
-    readCoverageAsProfile(varNames, params,  Arrays.copyOfRange(alts, 0, 2), times,
-            Arrays.copyOfRange(expected, 0, 4), 1, "time1", "z1");
+    readCoverageAsProfile(varNames, params, Arrays.copyOfRange(alts, 0, 2), times, Arrays.copyOfRange(expected, 0, 4),
+        1, "time1", "z1");
   }
 
   @Test
