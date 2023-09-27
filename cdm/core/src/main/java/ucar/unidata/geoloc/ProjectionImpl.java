@@ -30,7 +30,7 @@ import java.util.*;
  * projection.
  * This value frequently is assigned to eliminate negative numbers.
  * Expressed in the unit of measure identified in Planar Coordinate Units.
- * <li>We dont currently use, assuming that the x and y are just fine as negetive numbers.
+ * <li>We dont currently use, assuming that the x and y are just fine as negative numbers.
  * </ul>
  *
  * @author John Caron
