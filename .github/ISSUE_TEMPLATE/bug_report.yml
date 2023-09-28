@@ -1,6 +1,5 @@
 name: Bug Report
 description: Non-security related issues regarding this software
-title: ""
 labels: [bug]
 body:
   - type: markdown
