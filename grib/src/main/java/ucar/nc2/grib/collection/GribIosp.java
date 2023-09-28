@@ -535,7 +535,9 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
     boolean isScalar = (n == 1); // this is the case of runtime[1]
     String tcName = rtc.getName();
     String dims = isScalar ? null : rtc.getName(); // null means scalar
-    ncfile.addDimension(g, new Dimension(tcName, n));
+    if (!isScalar) {
+      ncfile.addDimension(g, new Dimension(tcName, n));
+    }
 
     Variable v = ncfile.addVariable(g, new Variable(ncfile, g, null, tcName, DataType.DOUBLE, dims));
     v.addAttribute(new Attribute(CDM.UNITS, rtc.getUnit()));
