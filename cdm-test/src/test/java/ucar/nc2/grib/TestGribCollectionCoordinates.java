@@ -6,6 +6,7 @@ package ucar.nc2.grib;
 
 import static com.google.common.truth.Truth.assertThat;
 
+import java.util.List;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -16,6 +17,7 @@ import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.featurecollection.FeatureCollectionType;
 import thredds.inventory.CollectionUpdateType;
 import ucar.ma2.ArrayDouble;
+import ucar.nc2.Dimension;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.*;
 import ucar.nc2.grib.collection.*;
@@ -153,6 +155,15 @@ public class TestGribCollectionCoordinates {
     assertThat(ok).isTrue();
   }
 
+  @Test
+  public void shouldNotAddScalarReftimeDimension() throws IOException {
+    final String path = TestDir.cdmUnitTestDir + "gribCollections/mrms/MRMS_CONUS_BaseReflectivity_20230918_1700.grib2";
 
-
+    try (NetcdfDataset ds = NetcdfDatasets.openDataset(path)) {
+      final List<Dimension> dimensions = ds.getRootGroup().getDimensions();
+      for (Dimension dimension : dimensions) {
+        assertThat(dimension.getName()).doesNotContain("reftime");
+      }
+    }
+  }
 }
