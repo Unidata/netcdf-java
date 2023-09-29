@@ -125,7 +125,7 @@ public class BufrTables {
 
   static final String RESOURCE_PATH = "/resources/bufrTables/";
   private static final String canonicalLookup = "resource:" + RESOURCE_PATH + "local/tablelookup.csv";
-  private static final int latestVersion = 19;
+  private static final int latestVersion = 37;
 
   private static final boolean showTables = false;
   private static final boolean showReadErrs = true;

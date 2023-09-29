@@ -472,7 +472,6 @@ public abstract class Grib1Gds {
       }
     }
 
-
     @Override
     public boolean isLatLon() {
       return true;
@@ -562,6 +561,14 @@ public abstract class Grib1Gds {
       double starty = la1; // startP.getY();
       return new GdsHorizCoordSys(getNameShort(), template, 0, scanMode, proj, startx, getDx(), starty, getDy(),
           getNx(), getNy(), null);
+    }
+
+    public float getLa1() {
+      return la1;
+    }
+
+    public float getLo1() {
+      return lo1;
     }
 
     public void testHorizCoordSys(Formatter f) {
@@ -854,6 +861,22 @@ public abstract class Grib1Gds {
       return dY;
     }
 
+    public float getLa1() {
+      return la1;
+    }
+
+    public float getLo1() {
+      return lo1;
+    }
+
+    public float getLov() {
+      return lov;
+    }
+
+    public int getProjCenterFlag() {
+      return projCenterFlag;
+    }
+
     public GdsHorizCoordSys makeHorizCoordSys() {
       boolean northPole = (projCenterFlag & 128) == 0;
       double latOrigin = northPole ? 90.0 : -90.0;
@@ -972,6 +995,26 @@ public abstract class Grib1Gds {
     @Override
     public float getDyRaw() {
       return dY;
+    }
+
+    public float getLa1() {
+      return la1;
+    }
+
+    public float getLo1() {
+      return lo1;
+    }
+
+    public float getLov() {
+      return lov;
+    }
+
+    public float getLatin1() {
+      return latin1;
+    }
+
+    public float getLatin2() {
+      return latin2;
     }
 
     @Override
@@ -1139,6 +1182,26 @@ public abstract class Grib1Gds {
     @Override
     public float getDyRaw() {
       return dY;
+    }
+
+    public float getLa1() {
+      return la1;
+    }
+
+    public float getLo1() {
+      return lo1;
+    }
+
+    public float getLa2() {
+      return la2;
+    }
+
+    public float getLo2() {
+      return lo2;
+    }
+
+    public float getLatin() {
+      return latin;
     }
 
     @Override
