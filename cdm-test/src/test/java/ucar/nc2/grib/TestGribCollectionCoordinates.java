@@ -4,6 +4,9 @@
  */
 package ucar.nc2.grib;
 
+import static com.google.common.truth.Truth.assertThat;
+
+import java.util.List;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -14,6 +17,7 @@ import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.featurecollection.FeatureCollectionType;
 import thredds.inventory.CollectionUpdateType;
 import ucar.ma2.ArrayDouble;
+import ucar.nc2.Dimension;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.*;
 import ucar.nc2.grib.collection.*;
@@ -50,32 +54,6 @@ public class TestGribCollectionCoordinates {
   @AfterClass
   public static void after() {
     Grib.setDebugFlags(new DebugFlagsImpl());
-    /*
-     * Formatter out = new Formatter(System.out);
-     * 
-     * FileCacheIF cache = GribCdmIndex.gribCollectionCache;
-     * if (cache != null) {
-     * cache.showTracking(out);
-     * cache.showCache(out);
-     * cache.clearCache(false);
-     * }
-     * 
-     * FileCacheIF rafCache = RandomAccessFile.getGlobalFileCache();
-     * if (rafCache != null) {
-     * rafCache.showCache(out);
-     * }
-     * 
-     * System.out.printf("            countGC=%7d%n", GribCollectionImmutable.countGC);
-     * System.out.printf("            countPC=%7d%n", PartitionCollectionImmutable.countPC);
-     * System.out.printf("    countDataAccess=%7d%n", GribIosp.debugIndexOnlyCount);
-     * System.out.printf(" total files needed=%7d%n", GribCollectionImmutable.countGC +
-     * PartitionCollectionImmutable.countPC + GribIosp.debugIndexOnlyCount);
-     * 
-     * FileCache.shutdown();
-     * RandomAccessFile.setGlobalFileCache(null);
-     * TestDir.checkLeaks();
-     * RandomAccessFile.setDebugLeaks(false);
-     */
   }
 
   /////////////////////////////////////////////////////////
@@ -92,7 +70,7 @@ public class TestGribCollectionCoordinates {
     boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.always, logger);
     String topLevelIndex = GribCdmIndex.getTopIndexFileFromConfig(config).getAbsolutePath();
 
-    System.out.printf("changed = %s%n", changed);
+    logger.debug("changed = {}", changed);
 
     boolean ok = true;
 
@@ -102,8 +80,8 @@ public class TestGribCollectionCoordinates {
         if (!stdname.equalsIgnoreCase("time"))
           continue;
 
-        System.out.printf(" %s == %s%n", vds.getFullName(), vds.getClass().getName());
-        assert vds instanceof CoordinateAxis : vds.getFullName();
+        logger.debug(" {} == {}", vds.getFullName(), vds.getClass().getName());
+        assertThat((Object) vds).isInstanceOf(CoordinateAxis.class);
 
         // test that zero Intervals are removed
         if (vds instanceof CoordinateAxis1D) {
@@ -112,7 +90,7 @@ public class TestGribCollectionCoordinates {
             for (int i = 0; i < axis.getSize(); i++) {
               double[] bound = axis.getCoordBounds(i);
               if (bound[0] == bound[1]) {
-                System.out.printf("ERR1 %s(%d) = [%f,%f]%n", vds.getFullName(), i, bound[0], bound[1]);
+                logger.debug("ERR1 {}({}) = [{},{}]", vds.getFullName(), i, bound[0], bound[1]);
                 ok = false;
               }
             }
@@ -127,7 +105,7 @@ public class TestGribCollectionCoordinates {
                 double start = bounds.get(i, j, 0);
                 double end = bounds.get(i, j, 1);
                 if (start == end) {
-                  System.out.printf("ERR2 %s(%d,%d) = [%f,%f]%n", vds.getFullName(), i, j, start, end);
+                  logger.debug("ERR2 {}({},{}) = [{},{}]", vds.getFullName(), i, j, start, end);
                   ok = false;
                 }
               }
@@ -136,7 +114,7 @@ public class TestGribCollectionCoordinates {
       }
     }
 
-    assert ok;
+    assertThat(ok).isTrue();
   }
 
   // make sure Best reftimes always increase
@@ -147,7 +125,7 @@ public class TestGribCollectionCoordinates {
             TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/.*grib2", null, null, null, "file", null);
 
     boolean changed = GribCdmIndex.updateGribCollection(config, updateMode, logger);
-    System.out.printf("changed = %s%n", changed);
+    logger.debug("changed = {}", changed);
     String topLevelIndex = GribCdmIndex.getTopIndexFileFromConfig(config).getAbsolutePath();
     boolean ok = true;
 
@@ -157,8 +135,8 @@ public class TestGribCollectionCoordinates {
         if (!stdname.equalsIgnoreCase("forecast_reference_time"))
           continue;
 
-        System.out.printf(" %s == %s%n", vds.getFullName(), vds.getClass().getName());
-        assert vds instanceof CoordinateAxis1D : vds.getFullName();
+        logger.debug(" {} == {}", vds.getFullName(), vds.getClass().getName());
+        assertThat((Object) vds).isInstanceOf(CoordinateAxis.class);
         CoordinateAxis1D axis = (CoordinateAxis1D) vds;
 
         // test that values are monotonic
@@ -166,7 +144,7 @@ public class TestGribCollectionCoordinates {
         for (int i = 0; i < axis.getSize(); i++) {
           double val = axis.getCoordValue(i);
           if (i > 0 && (val < last)) {
-            System.out.printf("  %s(%d) == %f < %f%n", vds.getFullName(), i, val, last);
+            logger.debug("  {}({}) == {} < {}", vds.getFullName(), i, val, last);
             ok = false;
           }
           last = val;
@@ -174,9 +152,18 @@ public class TestGribCollectionCoordinates {
       }
     }
 
-    assert ok;
+    assertThat(ok).isTrue();
   }
 
+  @Test
+  public void shouldNotAddScalarReftimeDimension() throws IOException {
+    final String path = TestDir.cdmUnitTestDir + "gribCollections/mrms/MRMS_CONUS_BaseReflectivity_20230918_1700.grib2";
 
-
+    try (NetcdfDataset ds = NetcdfDatasets.openDataset(path)) {
+      final List<Dimension> dimensions = ds.getRootGroup().getDimensions();
+      for (Dimension dimension : dimensions) {
+        assertThat(dimension.getName()).doesNotContain("reftime");
+      }
+    }
+  }
 }

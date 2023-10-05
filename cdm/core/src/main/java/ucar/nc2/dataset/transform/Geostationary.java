@@ -78,21 +78,6 @@ public class Geostationary extends AbstractTransformBuilder implements HorizTran
     return TransformType.Projection;
   }
 
-  private double getScaleFactor(String geoCoordinateUnits) {
-    // default value of -1.0 interpreted as no scaling in the class
-    // ucar.unidata.geoloc.projection.sat.Geostationary
-    double scaleFactor = defaultScaleFactor;
-    String neededMapCoordinateUnit = "radian";
-
-    if (SimpleUnit.isCompatible(geoCoordinateUnits, neededMapCoordinateUnit)) {
-      scaleFactor = SimpleUnit.getConversionFactor(geoCoordinateUnits, neededMapCoordinateUnit);
-    }
-
-    logger.debug("geoCoordinateUnits {}, scaleFactor {}", geoCoordinateUnits, scaleFactor);
-
-    return scaleFactor;
-  }
-
   public ProjectionCT makeCoordinateTransform(AttributeContainer ctv, String geoCoordinateUnits) {
     readStandardParams(ctv, geoCoordinateUnits);
 
@@ -145,13 +130,8 @@ public class Geostationary extends AbstractTransformBuilder implements HorizTran
       isSweepX = fixed_angle.equals("y");
     }
 
-    // scales less than zero indicate no scaling of axis (i.e. map coords have units of radians)
-    double geoCoordinateScaleFactor;
-
-    geoCoordinateScaleFactor = getScaleFactor(geoCoordinateUnits);
-
     ProjectionImpl proj = new ucar.unidata.geoloc.projection.sat.Geostationary(subLonDegrees, perspective_point_height,
-        semi_minor_axis, semi_major_axis, inv_flattening, isSweepX, geoCoordinateScaleFactor);
+        semi_minor_axis, semi_major_axis, inv_flattening, isSweepX);
 
     return new ProjectionCT(ctv.getName(), "FGDC", proj);
   }

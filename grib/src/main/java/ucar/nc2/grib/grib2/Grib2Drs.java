@@ -131,7 +131,7 @@ public abstract class Grib2Drs {
 
     @Override
     public int hashCode() {
-      int result = (referenceValue != +0.0f ? Float.floatToIntBits(referenceValue) : 0);
+      int result = (referenceValue != 0.0f ? Float.floatToIntBits(referenceValue) : 0);
       result = 31 * result + binaryScaleFactor;
       result = 31 * result + decimalScaleFactor;
       result = 31 * result + numberOfBits;
@@ -299,8 +299,8 @@ public abstract class Grib2Drs {
     @Override
     public int hashCode() {
       int result = super.hashCode();
-      result = 31 * result + (secondaryMissingValue != +0.0f ? Float.floatToIntBits(secondaryMissingValue) : 0);
-      result = 31 * result + (primaryMissingValue != +0.0f ? Float.floatToIntBits(primaryMissingValue) : 0);
+      result = 31 * result + (secondaryMissingValue != 0.0f ? Float.floatToIntBits(secondaryMissingValue) : 0);
+      result = 31 * result + (primaryMissingValue != 0.0f ? Float.floatToIntBits(primaryMissingValue) : 0);
       result = 31 * result + missingValueManagement;
       result = 31 * result + splittingMethod;
       result = 31 * result + numberOfGroups;
@@ -576,7 +576,7 @@ public abstract class Grib2Drs {
 
     @Override
     public int hashCode() {
-      int result = (referenceValue != +0.0f ? Float.floatToIntBits(referenceValue) : 0);
+      int result = (referenceValue != 0.0f ? Float.floatToIntBits(referenceValue) : 0);
       result = 31 * result + binaryScaleFactor;
       result = 31 * result + decimalScaleFactor;
       result = 31 * result + numberOfBits;

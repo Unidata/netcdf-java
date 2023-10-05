@@ -214,19 +214,19 @@ public class AlbersEqualArea extends ProjectionImpl {
   public int hashCode() {
     int result;
     long temp;
-    temp = lat0 != +0.0d ? Double.doubleToLongBits(lat0) : 0L;
+    temp = lat0 != 0.0d ? Double.doubleToLongBits(lat0) : 0L;
     result = (int) (temp ^ (temp >>> 32));
-    temp = lon0 != +0.0d ? Double.doubleToLongBits(lon0) : 0L;
+    temp = lon0 != 0.0d ? Double.doubleToLongBits(lon0) : 0L;
     result = 31 * result + (int) (temp ^ (temp >>> 32));
-    temp = par1 != +0.0d ? Double.doubleToLongBits(par1) : 0L;
+    temp = par1 != 0.0d ? Double.doubleToLongBits(par1) : 0L;
     result = 31 * result + (int) (temp ^ (temp >>> 32));
-    temp = par2 != +0.0d ? Double.doubleToLongBits(par2) : 0L;
+    temp = par2 != 0.0d ? Double.doubleToLongBits(par2) : 0L;
     result = 31 * result + (int) (temp ^ (temp >>> 32));
-    temp = falseEasting != +0.0d ? Double.doubleToLongBits(falseEasting) : 0L;
+    temp = falseEasting != 0.0d ? Double.doubleToLongBits(falseEasting) : 0L;
     result = 31 * result + (int) (temp ^ (temp >>> 32));
-    temp = falseNorthing != +0.0d ? Double.doubleToLongBits(falseNorthing) : 0L;
+    temp = falseNorthing != 0.0d ? Double.doubleToLongBits(falseNorthing) : 0L;
     result = 31 * result + (int) (temp ^ (temp >>> 32));
-    temp = earth_radius != +0.0d ? Double.doubleToLongBits(earth_radius) : 0L;
+    temp = earth_radius != 0.0d ? Double.doubleToLongBits(earth_radius) : 0L;
     result = 31 * result + (int) (temp ^ (temp >>> 32));
     return result;
   }

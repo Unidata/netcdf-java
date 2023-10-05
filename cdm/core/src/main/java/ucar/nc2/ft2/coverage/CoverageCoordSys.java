@@ -374,11 +374,10 @@ public class CoverageCoordSys {
 
     @Override
     public CoverageCoordAxis findCoordAxis(String axisName) {
-      for (CoverageCoordAxis axis : axes) {
-        if (axis.getName().equalsIgnoreCase(axisName))
-          return axis;
-      }
-      return null;
+      final java.util.Optional<CoverageCoordAxis> matchingCaseAxis =
+          axes.stream().filter(a -> a.getName().equals(axisName)).findFirst();
+      return matchingCaseAxis
+          .orElseGet(() -> axes.stream().filter(a -> a.getName().equalsIgnoreCase(axisName)).findFirst().orElse(null));
     }
   }
 

@@ -709,7 +709,7 @@ public class ThreddsMetadata {
       result = 29 * result + (serviceName != null ? serviceName.hashCode() : 0);
       result = 29 * result + (dataType != null ? dataType.hashCode() : 0);
       result = 29 * result + (dataFormat != null ? dataFormat.hashCode() : 0);
-      temp = dataSize != +0.0d ? Double.doubleToLongBits(dataSize) : 0l;
+      temp = dataSize != 0.0d ? Double.doubleToLongBits(dataSize) : 0l;
       result = 29 * result + (int) (temp ^ (temp >>> 32));
       hashCode = result;
     }

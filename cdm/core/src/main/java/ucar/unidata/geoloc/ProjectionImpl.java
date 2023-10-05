@@ -30,7 +30,7 @@ import java.util.*;
  * projection.
  * This value frequently is assigned to eliminate negative numbers.
  * Expressed in the unit of measure identified in Planar Coordinate Units.
- * <li>We dont currently use, assuming that the x and y are just fine as negetive numbers.
+ * <li>We dont currently use, assuming that the x and y are just fine as negative numbers.
  * </ul>
  *
  * @author John Caron
@@ -74,6 +74,11 @@ public abstract class ProjectionImpl implements Projection, java.io.Serializable
   protected String name; // LOOK should be final, IDV needs setName()
 
   /**
+   * name of the default units for this projection
+   */
+  protected String defaultUnits;
+
+  /**
    * flag for latlon
    */
   protected final boolean isLatLon;
@@ -95,6 +100,12 @@ public abstract class ProjectionImpl implements Projection, java.io.Serializable
    *         TODO return Projection in ver6
    */
   public abstract ProjectionImpl constructCopy();
+
+  protected ProjectionImpl(String name, String defaultUnits, boolean isLatLon) {
+    this.name = name;
+    this.defaultUnits = defaultUnits;
+    this.isLatLon = isLatLon;
+  }
 
   protected ProjectionImpl(String name, boolean isLatLon) {
     this.name = name;
@@ -207,6 +218,15 @@ public abstract class ProjectionImpl implements Projection, java.io.Serializable
   @Deprecated
   public void setName(String name) {
     this.name = name;
+  }
+
+  /**
+   * Get the name of the default units for this projection
+   *
+   * @return the name of the default units
+   */
+  public String getDefaultUnits() {
+    return defaultUnits;
   }
 
   /**

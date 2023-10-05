@@ -1347,7 +1347,7 @@ public abstract class Grib1Gds {
     public int hashCode() {
       if (hashCode == 0) {
         int result = super.hashCode();
-        result = 31 * result + (angleRotation != +0.0f ? Float.floatToIntBits(angleRotation) : 0);
+        result = 31 * result + (angleRotation != 0.0f ? Float.floatToIntBits(angleRotation) : 0);
         hashCode = result;
       }
       return hashCode;

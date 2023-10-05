@@ -1215,6 +1215,7 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
       }
     }
 
+    Collections.sort(coordsSetAxes);
     List<CoverageCoordAxis> geoArrayAxes = new ArrayList<>(coordsSetAxes); // for GeoReferencedArray
     geoArrayAxes.add(subsetCoordSys.getYAxis());
     geoArrayAxes.add(subsetCoordSys.getXAxis());

@@ -23,6 +23,9 @@ import ucar.unidata.util.Parameter;
  */
 
 public class LambertConformal extends ProjectionImpl {
+  private static final String NAME = "LambertConformal";
+  private static final String DEFAULT_UNITS = "km";
+
   private final double earth_radius;
   private double lat0, lon0; // lat/lon in radians
   private double par1, par2; // standard parallel 1 and 2 degrees
@@ -100,7 +103,7 @@ public class LambertConformal extends ProjectionImpl {
   public LambertConformal(double lat0, double lon0, double par1, double par2, double false_easting,
       double false_northing, double earth_radius) {
 
-    super("LambertConformal", false);
+    super(NAME, DEFAULT_UNITS, false);
 
     this._lat0 = lat0;
     this._lon0 = lon0;
@@ -140,7 +143,7 @@ public class LambertConformal extends ProjectionImpl {
    * Precalculate some stuff
    */
   private void precalculate() {
-    if (Math.abs(lat0) > PI_OVER_2) {
+    if (Math.abs(lat0) > Math.PI / 2.0) {
       throw new IllegalArgumentException("LambertConformal lat0 outside range (-90,90)");
     }
     if (Math.abs(par1) >= 90.0) {
@@ -222,19 +225,19 @@ public class LambertConformal extends ProjectionImpl {
   public int hashCode() {
     int result;
     long temp;
-    temp = earth_radius != +0.0d ? Double.doubleToLongBits(earth_radius) : 0L;
+    temp = earth_radius != 0.0d ? Double.doubleToLongBits(earth_radius) : 0L;
     result = (int) (temp ^ (temp >>> 32));
-    temp = lat0 != +0.0d ? Double.doubleToLongBits(lat0) : 0L;
+    temp = lat0 != 0.0d ? Double.doubleToLongBits(lat0) : 0L;
     result = 31 * result + (int) (temp ^ (temp >>> 32));
-    temp = lon0 != +0.0d ? Double.doubleToLongBits(lon0) : 0L;
+    temp = lon0 != 0.0d ? Double.doubleToLongBits(lon0) : 0L;
     result = 31 * result + (int) (temp ^ (temp >>> 32));
-    temp = par1 != +0.0d ? Double.doubleToLongBits(par1) : 0L;
+    temp = par1 != 0.0d ? Double.doubleToLongBits(par1) : 0L;
     result = 31 * result + (int) (temp ^ (temp >>> 32));
-    temp = par2 != +0.0d ? Double.doubleToLongBits(par2) : 0L;
+    temp = par2 != 0.0d ? Double.doubleToLongBits(par2) : 0L;
     result = 31 * result + (int) (temp ^ (temp >>> 32));
-    temp = falseEasting != +0.0d ? Double.doubleToLongBits(falseEasting) : 0L;
+    temp = falseEasting != 0.0d ? Double.doubleToLongBits(falseEasting) : 0L;
     result = 31 * result + (int) (temp ^ (temp >>> 32));
-    temp = falseNorthing != +0.0d ? Double.doubleToLongBits(falseNorthing) : 0L;
+    temp = falseNorthing != 0.0d ? Double.doubleToLongBits(falseNorthing) : 0L;
     result = 31 * result + (int) (temp ^ (temp >>> 32));
     return result;
   }
@@ -515,7 +518,7 @@ public class LambertConformal extends ProjectionImpl {
     fromLat = Math.toRadians(fromLat);
     double dlon = LatLonPoints.lonNormal(fromLon - lon0Degrees);
     double theta = n * Math.toRadians(dlon);
-    double tn = Math.pow(Math.tan(PI_OVER_4 + fromLat / 2), n);
+    double tn = Math.pow(Math.tan(Math.PI / 4.0 + fromLat / 2), n);
     double r = earthRadiusTimesF / tn;
     toX = r * Math.sin(theta);
     toY = rho - r * Math.cos(theta);
@@ -592,7 +595,7 @@ public class LambertConformal extends ProjectionImpl {
       fromLat = Math.toRadians(fromLat);
       double dlon = LatLonPoints.lonNormal(fromLon - lon0Degrees);
       double theta = n * Math.toRadians(dlon);
-      double tn = Math.pow(Math.tan(PI_OVER_4 + fromLat / 2), n);
+      double tn = Math.pow(Math.tan(Math.PI / 4.0 + fromLat / 2), n);
       double r = earthRadiusTimesF / tn;
       toX = r * Math.sin(theta);
       toY = rho - r * Math.cos(theta);
@@ -682,7 +685,7 @@ public class LambertConformal extends ProjectionImpl {
       fromLat = Math.toRadians(fromLat);
       double dlon = LatLonPoints.lonNormal(fromLon - lon0Degrees);
       double theta = n * Math.toRadians(dlon);
-      double tn = Math.pow(Math.tan(PI_OVER_4 + fromLat / 2), n);
+      double tn = Math.pow(Math.tan(Math.PI / 4.0 + fromLat / 2), n);
       double r = earthRadiusTimesF / tn;
       toX = r * Math.sin(theta);
       toY = rho - r * Math.cos(theta);
