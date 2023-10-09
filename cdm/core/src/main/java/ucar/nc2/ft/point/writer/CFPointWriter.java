@@ -486,11 +486,10 @@ public abstract class CFPointWriter implements Closeable {
         StructureData obsData = pointFeat.getFeatureData();
 
         timeName = pointFeat.getFeatureCollection().getTimeName();
-        altName = pointFeat.getFeatureCollection().getAltName();
 
         Formatter coordNames = new Formatter().format("%s %s %s", timeName, latName, lonName);
-        if (useAlt) {
-          coordNames.format(" %s", altName);
+        if (!Double.isNaN(pointFeat.getLocation().getAltitude())) {
+          coordNames.format(" %s", altitudeCoordinateName);
         }
 
         if (writer.getVersion().isExtendedModel()) {
