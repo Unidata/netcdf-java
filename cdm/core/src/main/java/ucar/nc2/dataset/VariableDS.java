@@ -435,11 +435,9 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
 
   @Override
   protected Array _read() throws IOException {
-    Array result;
-
     // check if already cached - caching in VariableDS only done explicitly by app
     if (hasCachedData())
-      return super._read();
+      return convert(super._read());
     else
       return proxyReader.reallyRead(this, null);
   }
@@ -451,9 +449,8 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
     if ((null == section) || section.computeSize() == getSize())
       return _read();
 
-    Array result;
     if (hasCachedData())
-      return super._read(section);
+      return convert(super._read(section));
     else
       return proxyReader.reallyRead(this, section, null);
   }
