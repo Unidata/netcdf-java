@@ -18,10 +18,8 @@ import ucar.nc2.*;
 import ucar.nc2.constants.*;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.ft.*;
-import ucar.nc2.ft.point.StationFeature;
 import ucar.nc2.ft.point.StationPointFeature;
 import ucar.nc2.ft.point.StationTimeSeriesCollectionImpl;
-import ucar.nc2.ft2.coverage.writer.CoverageAsPoint;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateFormatter;
 import ucar.nc2.time.CalendarDateUnit;
@@ -152,22 +150,21 @@ public abstract class CFPointWriter implements Closeable {
 
       cfWriter.setExtraVariables(fc.getExtraVariables());
 
-      ucar.nc2.ft.PointFeatureCollection pfc = fc.flatten(null, null, null); // all data, but no need to sort by station
+      cfWriter.writeHeader(fc);
 
       int count = 0;
-      for (PointFeature pf : pfc) {
-        StationPointFeature spf = (StationPointFeature) pf;
-        if (count == 0)
-          cfWriter.writeHeader(fc.getStationFeatures(), spf);
+      for (PointFeatureCollection pfc : fc) {
+        for (PointFeature pf : pfc) {
+          StationPointFeature spf = (StationPointFeature) pf;
 
-        cfWriter.writeRecord(spf.getStation(), pf, pf.getFeatureData());
-        count++;
-        if (debug && count % 100 == 0)
-          System.out.printf("%d ", count);
-        if (debug && count % 1000 == 0)
-          System.out.printf("%n ");
+          cfWriter.writeRecord(spf.getStation(), pf, pf.getFeatureData());
+          count++;
+          if (debug && count % 100 == 0)
+            System.out.printf("%d ", count);
+          if (debug && count % 1000 == 0)
+            System.out.printf("%n ");
+        }
       }
-
       cfWriter.finish();
       return count;
     }
@@ -459,14 +456,14 @@ public abstract class CFPointWriter implements Closeable {
     // NOOP
   }
 
-  protected void writeHeader(List<VariableSimpleIF> obsCoords, StationTimeSeriesCollectionImpl pointFeatureList)
+  protected void writeHeader(List<VariableSimpleIF> obsCoords, StationTimeSeriesCollectionImpl stationFeatures)
       throws IOException {
 
     this.recordDim = writer.addUnlimitedDimension(recordDimName);
     addExtraVariables();
     addCoordinatesClassic(recordDim, obsCoords, dataMap);
 
-    for (StationTimeSeriesFeature stnFeature : pointFeatureList) {
+    for (StationTimeSeriesFeature stnFeature : stationFeatures) {
       StructureData featureData = stnFeature.getFeatureData();
       if (writer.getVersion().isExtendedModel()) {
         makeFeatureVariables(featureData, true);
