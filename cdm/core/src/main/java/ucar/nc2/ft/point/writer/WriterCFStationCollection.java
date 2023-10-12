@@ -85,12 +85,11 @@ public class WriterCFStationCollection extends CFPointWriter {
 
       if (stn instanceof DsgFeatureCollection) {
         DsgFeatureCollection dsgStation = (DsgFeatureCollection) stn;
-        if (!dsgStation.getTimeName().equals(timeName)) {
+        if (coords.stream().noneMatch(x -> x.getShortName().equals(dsgStation.getTimeName()))) {
           coords.add(VariableSimpleBuilder
               .makeScalar(dsgStation.getTimeName(), "time of measurement", dsgStation.getTimeUnit().getUdUnit(),
                   DataType.DOUBLE)
               .addAttribute(CF.CALENDAR, dsgStation.getTimeUnit().getCalendar().toString()).build());
-
         }
       }
     }
@@ -228,14 +227,14 @@ public class WriterCFStationCollection extends CFPointWriter {
   }
 
   public void writeRecord(Station s, PointFeature sobs, StructureData sdata) throws IOException {
-    /*if (s instanceof DsgFeatureCollection) {
+    if (s instanceof DsgFeatureCollection) {
       DsgFeatureCollection dsgStation = (DsgFeatureCollection) s;
       writeRecord(dsgStation.getName(), dsgStation.getTimeName(), sobs.getObservationTime(),
           sobs.getObservationTimeAsCalendarDate(), dsgStation.getAltName(), sobs.getLocation().getAltitude(), sdata);
-    } else {*/
-      writeRecord(s.getName(), sobs.getFeatureCollection().getTimeName(), sobs.getObservationTime(), sobs.getObservationTimeAsCalendarDate(),
-              sobs.getFeatureCollection().getAltName(), sobs.getLocation().getAltitude(), sdata);
-   // }
+    } else {
+      writeRecord(s.getName(), timeName, sobs.getObservationTime(), sobs.getObservationTimeAsCalendarDate(),
+          this.altitudeCoordinateName, sobs.getLocation().getAltitude(), sdata);
+    }
   }
 
   private int obsRecno;
