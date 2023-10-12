@@ -1,27 +1,17 @@
 name: Bug Report
 description: Non-security related issues regarding this software
-title: "[VERSION]: "
 labels: [bug]
 body:
   - type: markdown
     attributes:
-      value: |
-        :point_up: **Please edit the title above to include the highest version, of which you are aware, of netCDF-Java impacted by this bug in the title of the issue.**
-        
+      value: |        
         Thank you for taking the time to fill out this bug report! If you have a question, suggestion, or feature request, please use the project [GitHub Discussions forum](https://github.com/Unidata/netcdf-java/discussions/).
         
-  - type: dropdown
+  - type: textarea
     id: versions
     attributes:
       label: Versions impacted by the bug
       description: Which version(s) of netCDF-Java are impacted by this bug? If you have only tried with one version, that is ok!
-      multiple: true
-      options:
-        - v5.x
-        - v6.x
-        - v7.x
-    validations:
-      required: true
   - type: textarea
     id: report-details
     attributes:
