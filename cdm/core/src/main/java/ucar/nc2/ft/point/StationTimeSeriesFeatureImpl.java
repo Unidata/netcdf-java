@@ -46,6 +46,16 @@ public abstract class StationTimeSeriesFeatureImpl extends PointCollectionImpl i
     }
   }
 
+  public StationTimeSeriesFeatureImpl(StationFeature s, String timeName, CalendarDateUnit timeUnit, String altName,
+      String altUnits, int nfeatures) {
+    super(s.getName(), timeName, timeUnit, altName, altUnits);
+    this.s = s;
+    if (nfeatures >= 0) {
+      getInfo(); // create the object
+      info.nfeatures = nfeatures;
+    }
+  }
+
   @Override
   public String getWmoId() {
     return s.getWmoId();
