@@ -22,15 +22,17 @@ public class GribTimeCoordIntervalUtils {
    * end point then starting point. That sorting scheme is implemented in
    * ucar.nc2.grib.coord.TimeCoordIntvValue.compareTo(o) -- 21 Dec 2022.
    *
-   * @param timeIntervals   given list of time coord intervals from which to calculate time coordinate values
-   * @param timeCoordValues array for storing generated time coord values, 1D array that may represent a 2D data array (run/forecast)
+   * @param timeIntervals given list of time coord intervals from which to calculate time coordinate values
+   * @param timeCoordValues array for storing generated time coord values, 1D array that may represent a 2D data array
+   *        (run/forecast)
    * @param bounds array for storing interval bounds, may be null if bounds are loaded elsewhere.
    * @param runOffsetIndex
    * @param timeUnitValue time unit
    * @param time2D_Offset
    * @return the index into the timeCoordValues array following the last value written
    */
-  public static int generateTimeCoordValuesFromTimeCoordIntervals(List<TimeCoordIntvValue> timeIntervals, double[] timeCoordValues, double[] bounds, int runOffsetIndex, int timeUnitValue, int time2D_Offset) {
+  public static int generateTimeCoordValuesFromTimeCoordIntervals(List<TimeCoordIntvValue> timeIntervals,
+      double[] timeCoordValues, double[] bounds, int runOffsetIndex, int timeUnitValue, int time2D_Offset) {
     int dataIndex = runOffsetIndex;
     int boundsIndex = runOffsetIndex * 2;
     double[] currentBounds = new double[2];

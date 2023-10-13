@@ -784,10 +784,9 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
           int runOffsetIndex = runIdx * ntimes;
           int timeUnitValue = timeUnit.getValue();
           int time2D_Offset = time2D.getOffset(runIdx);
-          assert(count == runOffsetIndex);
-          count = GribTimeCoordIntervalUtils.generateTimeCoordValuesFromTimeCoordIntervals(
-              timeIntv.getTimeIntervals(), data, null,
-              runOffsetIndex, timeUnitValue, time2D_Offset);
+          assert (count == runOffsetIndex);
+          count = GribTimeCoordIntervalUtils.generateTimeCoordValuesFromTimeCoordIntervals(timeIntv.getTimeIntervals(),
+              data, null, runOffsetIndex, timeUnitValue, time2D_Offset);
         }
         break;
 

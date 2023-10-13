@@ -109,7 +109,7 @@ public class TestDiscontiguousInterval {
       Variable dataVar = nc.findVariable(varName);
       Assert.assertNotNull(dataVar);
 
-      Variable reftimeVar = nc.findVariable( "reftime");
+      Variable reftimeVar = nc.findVariable("reftime");
       Array reftimeValues = reftimeVar.read();
 
       Variable timeOffsetVar = nc.findVariable("timeOffset");
@@ -143,8 +143,7 @@ public class TestDiscontiguousInterval {
     }
   }
 
-  private void checkTimeCoordVariable2D_IsStrictlyMonotonicallyIncreasing(int timeDimLength,
-                                                                               Array timeCoordValues) {
+  private void checkTimeCoordVariable2D_IsStrictlyMonotonicallyIncreasing(int timeDimLength, Array timeCoordValues) {
     double currentValue = timeCoordValues.getDouble(0);
     double prevValue = currentValue;
     StringBuilder valuesSoFar = new StringBuilder();

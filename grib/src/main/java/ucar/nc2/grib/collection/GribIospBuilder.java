@@ -684,7 +684,8 @@ class GribIospBuilder {
       bounds = new double[2 * n];
       List<TimeCoordIntvValue> intervals = (List<TimeCoordIntvValue>) offsets;
       // TODO Should this be using 'timeUnitValue'? Wasn't in previous incarnation.
-      int count = GribTimeCoordIntervalUtils.generateTimeCoordValuesFromTimeCoordIntervals(intervals, data, bounds, 0, timeUnitValue, 0);
+      int count = GribTimeCoordIntervalUtils.generateTimeCoordValuesFromTimeCoordIntervals(intervals, data, bounds, 0,
+          timeUnitValue, 0);
       assert (count == n);
     } else {
       int count = 0;
