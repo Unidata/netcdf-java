@@ -113,6 +113,11 @@ class WriterCFStationCollection extends WriterCFPointAbstract {
         coords.add(VariableSimpleBuilder.makeScalar(timeName, "time of measurement", timeUnit.getUdUnit(), DataType.DOUBLE)
                 .addAttribute(CF.CALENDAR, timeUnit.getCalendar().toString()).build());
       }
+//      if(useAlt && coords.stream().noneMatch(x -> x.getShortName().equals(altitudeCoordinateName))){
+//        coords.add(VariableSimpleBuilder.makeScalar(altitudeCoordinateName, "obs altitude", altUnits, DataType.DOUBLE)
+//                .addAttribute(CF.STANDARD_NAME, "altitude")
+//                .addAttribute(CF.POSITIVE, CF1Convention.getZisPositive(altitudeCoordinateName, altUnits)).build());
+//      }
     }
 
     llbb = ucar.nc2.ft.point.writer.CFPointWriterUtils.getBoundingBox(stnList); // gets written in super.finish();
@@ -191,12 +196,12 @@ class WriterCFStationCollection extends WriterCFPointAbstract {
   }
 
   void writeRecord(Station s, PointFeature sobs, StructureData sdata) throws IOException {
-    writeRecord(s.getName(), sobs.getObservationTime(), sobs.getObservationTimeAsCalendarDate(), sdata);
+    writeRecord(s.getName(), sobs.getObservationTime(), sobs.getObservationTimeAsCalendarDate(), sobs.getLocation().getAltitude(), sdata);
   }
 
   private int obsRecno;
 
-  private void writeRecord(String stnName, double timeCoordValue, CalendarDate obsDate, StructureData sdata)
+  private void writeRecord(String stnName, double timeCoordValue, CalendarDate obsDate, double altCoordValue, StructureData sdata)
       throws IOException {
     trackBB(null, obsDate);
 
@@ -206,6 +211,8 @@ class WriterCFStationCollection extends WriterCFPointAbstract {
 
     StructureMembers.Builder smb = StructureMembers.builder().setName("Coords");
     smb.addMemberScalar(timeName, null, null, DataType.DOUBLE, timeCoordValue);
+    if(!Double.isNaN(altCoordValue))
+      smb.addMemberScalar(altitudeCoordinateName, null, null, DataType.DOUBLE, altCoordValue);
     smb.addMemberScalar(stationIndexName, null, null, DataType.INT, parentIndex);
     StructureData coords = new StructureDataFromMember(smb.build());
 
