@@ -63,9 +63,9 @@ public class TestGribCollectionTimeUnits {
         MIXED_UNITS_SPEC, null, null, null, "file", null);
 
     setTimeUnitConversionFromMinutesToHours(config);
-    // hours get rounded down due to refdate being on the half hour
-    final double[] valuesInHours = new double[] {5.0, 11.0, 17.0, 23.0, 29.0, 35.0, 41.0, 47.0, 53.0, 59.0, 65.0, 71.0};
-    checkVariableNameAndTimeAxis(config, "6_Hour", "time2", "Hour", valuesInHours);
+    // hours get rounded up due to refdate being on the half hour
+    final double[] valuesInHours = new double[] {6.0, 13.0, 19.0, 25.0, 31.0, 37.0, 43.0, 49.0, 55.0, 61.0, 67.0, 73.0};
+    checkVariableNameAndTimeAxis(config, "6_Hour", "time4", "Hour", valuesInHours);
   }
 
   private void setTimeUnitConversionFromMinutesToHours(FeatureCollectionConfig config) {

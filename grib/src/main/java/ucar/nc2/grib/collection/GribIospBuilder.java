@@ -357,8 +357,9 @@ class GribIospBuilder {
     boolean isScalar = (n == 1); // this is the case of runtime[1]
     String tcName = rtc.getName();
     String dims = isScalar ? null : rtc.getName(); // null means scalar
-    g.addDimension(new Dimension(tcName, n));
-
+    if (!isScalar) {
+      g.addDimension(new Dimension(tcName, n));
+    }
 
     Variable.Builder<?> v = Variable.builder().setName(tcName).setDataType(DataType.DOUBLE).setParentGroupBuilder(g)
         .setDimensionsByName(dims);
