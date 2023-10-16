@@ -217,7 +217,7 @@ abstract class WriterCFPointAbstract implements Closeable {
       if (middleData != null) {
         makeMiddleVariables(middleData, isExtendedModel);
       }
-    }
+      }
     Structure.Builder recordb = null;
     if (isExtendedModel) {
       recordb = writerb.addStructure(recordName, recordDimName);
@@ -238,10 +238,10 @@ abstract class WriterCFPointAbstract implements Closeable {
         String timeCoordName = pointFeat.getFeatureCollection().getTimeName();
 
         Formatter coordNames = new Formatter().format("%s %s %s", timeCoordName, latName, lonName);
-        if (!Double.isNaN(((StationPointFeature) pointFeat).getStation().getAltitude())) {
+        if (!Double.isNaN(pointFeat.getLocation().getAltitude())) {
           coordNames.format(" %s", altitudeCoordinateName);
         }
-        if (isExtendedModel) {
+          if (isExtendedModel) {
           addDataVariablesExtended(recordb, obsData, coordNames.toString());
 
         } else {
