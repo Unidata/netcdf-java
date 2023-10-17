@@ -217,7 +217,7 @@ abstract class WriterCFPointAbstract implements Closeable {
       if (middleData != null) {
         makeMiddleVariables(middleData, isExtendedModel);
       }
-      }
+    }
     Structure.Builder recordb = null;
     if (isExtendedModel) {
       recordb = writerb.addStructure(recordName, recordDimName);
@@ -241,7 +241,7 @@ abstract class WriterCFPointAbstract implements Closeable {
         if (!Double.isNaN(pointFeat.getLocation().getAltitude())) {
           coordNames.format(" %s", altitudeCoordinateName);
         }
-          if (isExtendedModel) {
+        if (isExtendedModel) {
           addDataVariablesExtended(recordb, obsData, coordNames.toString());
 
         } else {
@@ -400,7 +400,7 @@ abstract class WriterCFPointAbstract implements Closeable {
       VariableSimpleIF oldVar = findDataVar(m.getName());
       if (oldVar == null)
         continue;
-       if(recordb.findMemberVariable(m.getName()).isPresent())
+      if (recordb.findMemberVariable(m.getName()).isPresent())
         continue;
 
       // make dimension list
