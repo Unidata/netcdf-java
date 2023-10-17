@@ -277,6 +277,7 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
       if (enhancements.contains(Enhance.ApplyNormalizer) && normalizer != null) {
         data = normalizer.convert(data);
       }
+      this.wasConverted = true;
       return data;
     }
   }
@@ -435,24 +436,33 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
 
   @Override
   protected Array _read() throws IOException {
+    Array result;
     // check if already cached - caching in VariableDS only done explicitly by app
-    if (hasCachedData())
-      return convert(super._read());
-    else
-      return proxyReader.reallyRead(this, null);
+    if (hasCachedData()) {
+      result = super._read();
+    } else {
+      result = proxyReader.reallyRead(this, null);
+    }
+
+    return wasConverted ? result : convert(result);
   }
 
   // section of regular Variable
   @Override
   protected Array _read(Section section) throws IOException, InvalidRangeException {
     // really a full read
-    if ((null == section) || section.computeSize() == getSize())
+    if ((null == section) || section.computeSize() == getSize()) {
       return _read();
+    }
 
-    if (hasCachedData())
-      return convert(super._read(section));
-    else
-      return proxyReader.reallyRead(this, section, null);
+    Array result;
+    if (hasCachedData()) {
+      result = super._read(section);
+    } else {
+      result = proxyReader.reallyRead(this, section, null);
+    }
+
+    return wasConverted ? result : convert(result);
   }
 
   // do not call directly
@@ -810,6 +820,8 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
 
   private boolean hasFillValue = false;
   private double fillValue = Double.MAX_VALUE;
+
+  protected boolean wasConverted = false;
 
   protected VariableDS(Builder<?> builder, Group parentGroup) {
     super(builder, parentGroup);
