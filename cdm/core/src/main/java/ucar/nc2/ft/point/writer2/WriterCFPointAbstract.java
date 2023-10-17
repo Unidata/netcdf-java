@@ -400,6 +400,8 @@ abstract class WriterCFPointAbstract implements Closeable {
       VariableSimpleIF oldVar = findDataVar(m.getName());
       if (oldVar == null)
         continue;
+       if(recordb.findMemberVariable(m.getName()).isPresent())
+        continue;
 
       // make dimension list
       StringBuilder dimNames = new StringBuilder();
