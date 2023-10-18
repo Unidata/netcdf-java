@@ -121,7 +121,8 @@ public class CFPointWriter {
       for (PointFeatureCollection pfc : fc) {
         for (PointFeature pf : pfc) {
           StationPointFeature spf = (StationPointFeature) pf;
-          cfWriter.writeRecord(spf.getStation(), pf, pf.getFeatureData());
+          cfWriter.writeRecord(spf.getStation().getName(), pf.getObservationTime(), pf.getObservationTimeAsCalendarDate(),
+                  pf.getLocation().getAltitude(), pf.getFeatureData());
           count++;
           if (debug && count % 100 == 0)
             System.out.printf("%d ", count);

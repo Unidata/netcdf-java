@@ -28,7 +28,6 @@ import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
 import ucar.nc2.dataset.conv.CF1Convention;
 import ucar.nc2.ft.DsgFeatureCollection;
-import ucar.nc2.ft.PointFeature;
 import ucar.nc2.ft.StationTimeSeriesFeatureCollection;
 import ucar.nc2.ft.point.StationFeature;
 import ucar.nc2.ft.point.StationTimeSeriesCollectionImpl;
@@ -81,7 +80,7 @@ class WriterCFStationCollection extends WriterCFPointAbstract {
     stationStruct = findStructure(stationStructName);
   }
 
-  void writeHeader(StationTimeSeriesFeatureCollection stations) throws IOException {
+  protected void writeHeader(StationTimeSeriesFeatureCollection stations) throws IOException {
     this.stnList = stations.getStationFeatures().stream().distinct().collect(Collectors.toList());
     List<VariableSimpleIF> coords = new ArrayList<>();
 
@@ -114,11 +113,6 @@ class WriterCFStationCollection extends WriterCFPointAbstract {
             VariableSimpleBuilder.makeScalar(timeName, "time of measurement", timeUnit.getUdUnit(), DataType.DOUBLE)
                 .addAttribute(CF.CALENDAR, timeUnit.getCalendar().toString()).build());
       }
-      // if(useAlt && coords.stream().noneMatch(x -> x.getShortName().equals(altitudeCoordinateName))){
-      // coords.add(VariableSimpleBuilder.makeScalar(altitudeCoordinateName, "obs altitude", altUnits, DataType.DOUBLE)
-      // .addAttribute(CF.STANDARD_NAME, "altitude")
-      // .addAttribute(CF.POSITIVE, CF1Convention.getZisPositive(altitudeCoordinateName, altUnits)).build());
-      // }
     }
 
     llbb = ucar.nc2.ft.point.writer.CFPointWriterUtils.getBoundingBox(stnList); // gets written in super.finish();
@@ -196,14 +190,9 @@ class WriterCFStationCollection extends WriterCFPointAbstract {
     stnRecno = super.writeStructureData(stnRecno, stationStruct, sdall, featureVarMap);
   }
 
-  void writeRecord(Station s, PointFeature sobs, StructureData sdata) throws IOException {
-    writeRecord(s.getName(), sobs.getObservationTime(), sobs.getObservationTimeAsCalendarDate(),
-        sobs.getLocation().getAltitude(), sdata);
-  }
-
   private int obsRecno;
 
-  private void writeRecord(String stnName, double timeCoordValue, CalendarDate obsDate, double altCoordValue,
+  protected void writeRecord(String stnName, double timeCoordValue, CalendarDate obsDate, double altCoordValue,
       StructureData sdata) throws IOException {
     trackBB(null, obsDate);
 
