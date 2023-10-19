@@ -116,21 +116,19 @@ public class CFPointWriter {
 
       cfWriter.setExtraVariables(fc.getExtraVariables());
 
-      // write all data, but no need to sort by station
-      PointFeatureCollection pfc = fc.flatten(null, null, null);
-
+      cfWriter.writeHeader(fc);
       int count = 0;
-      for (PointFeature pf : pfc) {
-        StationPointFeature spf = (StationPointFeature) pf;
-        if (count == 0)
-          cfWriter.writeHeader(fc.getStationFeatures(), spf);
-
-        cfWriter.writeRecord(spf.getStation(), pf, pf.getFeatureData());
-        count++;
-        if (debug && count % 100 == 0)
-          System.out.printf("%d ", count);
-        if (debug && count % 1000 == 0)
-          System.out.printf("%n ");
+      for (PointFeatureCollection pfc : fc) {
+        for (PointFeature pf : pfc) {
+          StationPointFeature spf = (StationPointFeature) pf;
+          cfWriter.writeRecord(spf.getStation().getName(), pf.getObservationTime(),
+              pf.getObservationTimeAsCalendarDate(), pf.getLocation().getAltitude(), pf.getFeatureData());
+          count++;
+          if (debug && count % 100 == 0)
+            System.out.printf("%d ", count);
+          if (debug && count % 1000 == 0)
+            System.out.printf("%n ");
+        }
       }
 
       cfWriter.finish();

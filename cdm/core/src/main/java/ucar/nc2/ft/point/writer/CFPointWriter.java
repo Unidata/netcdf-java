@@ -9,6 +9,8 @@ import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParameterDescription;
 import com.beust.jcommander.ParameterException;
+import com.google.common.collect.Iterators;
+import com.google.common.collect.PeekingIterator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.*;
@@ -17,6 +19,7 @@ import ucar.nc2.constants.*;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.ft.*;
 import ucar.nc2.ft.point.StationPointFeature;
+import ucar.nc2.ft.point.StationTimeSeriesCollectionImpl;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateFormatter;
 import ucar.nc2.time.CalendarDateUnit;
@@ -46,8 +49,8 @@ public abstract class CFPointWriter implements Closeable {
   public static final String recordDimName = "obs";
   public static final String latName = "latitude";
   public static final String lonName = "longitude";
-  public static final String altName = "altitude";
-  public static final String timeName = "time";
+  public static String altName = "altitude";
+  public static String timeName = "time";
 
   public static final String stationStructName = "station";
   public static final String stationDimName = "station";
@@ -147,22 +150,21 @@ public abstract class CFPointWriter implements Closeable {
 
       cfWriter.setExtraVariables(fc.getExtraVariables());
 
-      ucar.nc2.ft.PointFeatureCollection pfc = fc.flatten(null, null, null); // all data, but no need to sort by station
+      cfWriter.writeHeader(fc);
 
       int count = 0;
-      for (PointFeature pf : pfc) {
-        StationPointFeature spf = (StationPointFeature) pf;
-        if (count == 0)
-          cfWriter.writeHeader(fc.getStationFeatures(), spf);
+      for (PointFeatureCollection pfc : fc) {
+        for (PointFeature pf : pfc) {
+          StationPointFeature spf = (StationPointFeature) pf;
 
-        cfWriter.writeRecord(spf.getStation(), pf, pf.getFeatureData());
-        count++;
-        if (debug && count % 100 == 0)
-          System.out.printf("%d ", count);
-        if (debug && count % 1000 == 0)
-          System.out.printf("%n ");
+          cfWriter.writeRecord(spf.getStation(), pf, pf.getFeatureData());
+          count++;
+          if (debug && count % 100 == 0)
+            System.out.printf("%d ", count);
+          if (debug && count % 1000 == 0)
+            System.out.printf("%n ");
+        }
       }
-
       cfWriter.finish();
       return count;
     }
@@ -454,6 +456,55 @@ public abstract class CFPointWriter implements Closeable {
     // NOOP
   }
 
+  protected void writeHeader(List<VariableSimpleIF> obsCoords, StationTimeSeriesCollectionImpl stationFeatures)
+      throws IOException {
+
+    this.recordDim = writer.addUnlimitedDimension(recordDimName);
+    addExtraVariables();
+    addCoordinatesClassic(recordDim, obsCoords, dataMap);
+
+    for (StationTimeSeriesFeature stnFeature : stationFeatures) {
+      StructureData featureData = stnFeature.getFeatureData();
+      if (writer.getVersion().isExtendedModel()) {
+        makeFeatureVariables(featureData, true);
+        record = (Structure) writer.addVariable(null, recordName, DataType.STRUCTURE, recordDimName);
+        addCoordinatesExtended(record, obsCoords);
+
+      } else {
+        if (writer.findDimension(stationDimName) == null)
+          makeFeatureVariables(featureData, false);
+      }
+      PeekingIterator<PointFeature> iter = Iterators.peekingIterator(stnFeature.iterator());
+      if (iter.hasNext()) {
+        PointFeature pointFeat = iter.peek();
+        assert pointFeat instanceof StationPointFeature : "Expected pointFeat to be a StationPointFeature, not a "
+            + pointFeat.getClass().getSimpleName();
+
+        StructureData obsData = pointFeat.getFeatureData();
+
+        timeName = pointFeat.getFeatureCollection().getTimeName();
+
+        Formatter coordNames = new Formatter().format("%s %s %s", timeName, latName, lonName);
+        if (!Double.isNaN(pointFeat.getLocation().getAltitude())) {
+          coordNames.format(" %s", altitudeCoordinateName);
+        }
+
+        if (writer.getVersion().isExtendedModel()) {
+          addDataVariablesExtended(obsData, coordNames.toString());
+
+        }
+        addDataVariablesClassic(recordDim, obsData, dataMap, coordNames.toString());
+
+      }
+    }
+
+    writer.create();
+    if (!(writer.getVersion().isExtendedModel()))
+      record = writer.addRecordStructure(); // for netcdf3
+    writeExtraVariables();
+
+  }
+
   protected void writeHeader(List<VariableSimpleIF> obsCoords, StructureData featureData, StructureData obsData,
       String coordNames) throws IOException {
     this.recordDim = writer.addUnlimitedDimension(recordDimName);
@@ -606,7 +657,8 @@ public abstract class CFPointWriter implements Closeable {
       } else {
         VariableSimpleIF prevVar = writer.findVariable(oldVar.getShortName());
         if (prevVar != null) {
-          if (extraMap.get(oldVar.getShortName()) != null) { // this is normal, extra got added but not actually needed
+          if (extraMap != null && extraMap.get(oldVar.getShortName()) != null) { // this is normal, extra got added but
+                                                                                 // not actually needed
             writer.deleteVariable(oldVar.getShortName());
             extraMap.remove(oldVar.getShortName());
           }

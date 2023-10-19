@@ -20,7 +20,7 @@ public class StandardPointCollectionImpl extends PointCollectionImpl {
   private NestedTable ft;
 
   StandardPointCollectionImpl(NestedTable ft, CalendarDateUnit timeUnit, String altUnits) {
-    super(ft.getName(), timeUnit, altUnits);
+    super(ft.getName(), ft.getTimeName(), timeUnit, ft.getAltName(), altUnits);
     this.ft = ft;
     this.extras = ft.getExtras();
   }
