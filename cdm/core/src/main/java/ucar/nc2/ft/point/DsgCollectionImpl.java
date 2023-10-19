@@ -22,14 +22,27 @@ import java.util.List;
 public abstract class DsgCollectionImpl implements DsgFeatureCollection {
 
   protected String name;
+  protected String timeName;
   protected CalendarDateUnit timeUnit;
+  protected String altName;
   protected String altUnits;
   protected CollectionInfo info;
   protected List<Variable> extras; // variables needed to make CF/DSG writing work
 
   protected DsgCollectionImpl(String name, CalendarDateUnit timeUnit, String altUnits) {
     this.name = name;
+    this.timeName = "time";
+    this.altName = "altitude";
     this.timeUnit = timeUnit;
+    this.altUnits = altUnits;
+  }
+
+  protected DsgCollectionImpl(String name, String timeName, CalendarDateUnit timeUnit, String altName,
+      String altUnits) {
+    this.name = name;
+    this.timeName = timeName;
+    this.timeUnit = timeUnit;
+    this.altName = altName;
     this.altUnits = altUnits;
   }
 
@@ -41,8 +54,20 @@ public abstract class DsgCollectionImpl implements DsgFeatureCollection {
 
   @Nonnull
   @Override
+  public String getTimeName() {
+    return timeName;
+  }
+
+  @Nonnull
+  @Override
   public CalendarDateUnit getTimeUnit() {
     return timeUnit;
+  }
+
+  @Nullable
+  @Override
+  public String getAltName() {
+    return altName;
   }
 
   @Nullable

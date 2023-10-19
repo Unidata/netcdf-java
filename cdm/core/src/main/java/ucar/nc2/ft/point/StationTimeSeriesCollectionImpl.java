@@ -35,6 +35,11 @@ public abstract class StationTimeSeriesCollectionImpl extends PointFeatureCCImpl
     super(name, timeUnit, altUnits, FeatureType.STATION);
   }
 
+  public StationTimeSeriesCollectionImpl(String name, String timeName, CalendarDateUnit timeUnit, String altName,
+      String altUnits) {
+    super(name, timeName, timeUnit, altName, altUnits, FeatureType.STATION);
+  }
+
   // Double-check idiom for lazy initialization of instance fields. See Effective Java 2nd Ed, p. 283.
   protected StationHelper getStationHelper() {
     if (stationHelper == null) {
@@ -130,7 +135,7 @@ public abstract class StationTimeSeriesCollectionImpl extends PointFeatureCCImpl
     private final List<StationFeature> stations;
 
     StationSubset(StationTimeSeriesCollectionImpl from, List<StationFeature> stations) {
-      super(from.getName(), from.getTimeUnit(), from.getAltUnits());
+      super(from.getName(), from.getTimeName(), from.getTimeUnit(), from.getAltName(), from.getAltUnits());
       this.stations = stations;
     }
 

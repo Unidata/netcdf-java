@@ -1,0 +1,300 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<netcdf xmlns="https://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2">
+   <dimension name="x" length="3" />
+   <dimension name="y" length="5" />
+   <dimension name="z" length="4" />
+   <dimension name="time" length="2" />
+   <dimension name="z1" length="2" />
+   <dimension name="time1" length="2" />
+   <variable name="time" shape="time" type="double">
+      <attribute name="units" value="secs since 1-1-1 00:00" />
+      <values>0 3600</values>
+   </variable>
+   <variable name="z" shape="z" type="double">
+      <attribute name="units" value="meters" />
+      <attribute name="positive" value="up" />
+      <values>0 10 20 30</values>
+   </variable>
+   <variable name="y" shape="y" type="double">
+      <attribute name="units" value="degrees_north" />
+      <values>0 3 6 9 12</values>
+   </variable>
+   <variable name="x" shape="x" type="double">
+      <attribute name="units" value="degrees_east" />
+      <values>0 5 10</values>
+   </variable>
+   <variable name="time1" shape="time1" type="double">
+      <attribute name="units" value="secs since 1-1-1 00:00" />
+      <values>0 3600</values>
+   </variable>
+   <variable name="z1" shape="z1" type="double">
+      <attribute name="units" value="meters" />
+      <attribute name="positive" value="up" />
+      <values>0 10</values>
+   </variable>
+   <variable name="full4" shape="time z y x" type="double">
+      <values>
+          0 1 2
+          10 11 12
+          20 21 22
+          30 31 32
+          40 41 42
+          100 101 102
+          110 111 112
+          120 121 122
+          130 131 132
+          140 141 142
+          200 201 202
+          210 211 212
+          220 221 222
+          230 231 232
+          240 241 242
+          300 301 302
+          310 311 312
+          320 321 322
+          330 331 332
+          340 341 342
+          1000 1001 1002
+          1010 1011 1012
+          1020 1021 1022
+          1030 1031 1032
+          1040 1041 1042
+          1100 1101 1102
+          1110 1111 1112
+          1120 1121 1122
+          1130 1131 1132
+          1140 1141 1142
+          1200 1201 1202
+          1210 1211 1212
+          1220 1221 1222
+          1230 1231 1232
+          1240 1241 1242
+          1300 1301 1302
+          1310 1311 1312
+          1320 1321 1322
+          1330 1331 1332
+          1340 1341 1342
+      </values>
+   </variable>
+   <variable name="withZ1" shape="time z1 y x" type="double">
+      <values>
+          0 1 2
+          10 11 12
+          20 21 22
+          30 31 32
+          40 41 42
+          1000 1001 1002
+          1010 1011 1012
+          1020 1021 1022
+          1030 1031 1032
+          1040 1041 1042
+           0 1 2
+           10 11 12
+           20 21 22
+           30 31 32
+           40 41 42
+           1000 1001 1002
+           1010 1011 1012
+           1020 1021 1022
+           1030 1031 1032
+           1040 1041 1042
+      </values>
+   </variable>
+   <variable name="withT1" shape="time1 z y x" type="double">
+      <values>
+            0 1 2
+            10 11 12
+            20 21 22
+            30 31 32
+            40 41 42
+            100 101 102
+            110 111 112
+            120 121 122
+            130 131 132
+            140 141 142
+            200 201 202
+            210 211 212
+            220 221 222
+            230 231 232
+            240 241 242
+            300 301 302
+            310 311 312
+            320 321 322
+            330 331 332
+            340 341 342
+            1000 1001 1002
+            1010 1011 1012
+            1020 1021 1022
+            1030 1031 1032
+            1040 1041 1042
+            1100 1101 1102
+            1110 1111 1112
+            1120 1121 1122
+            1130 1131 1132
+            1140 1141 1142
+            1200 1201 1202
+            1210 1211 1212
+            1220 1221 1222
+            1230 1231 1232
+            1240 1241 1242
+            1300 1301 1302
+            1310 1311 1312
+            1320 1321 1322
+            1330 1331 1332
+            1340 1341 1342
+      </values>
+   </variable>
+   <variable name="withT1Z1" shape="time1 z1 y x" type="double">
+      <values>
+            0 1 2
+            10 11 12
+            20 21 22
+            30 31 32
+            40 41 42
+            100 101 102
+            110 111 112
+            120 121 122
+            130 131 132
+            140 141 142
+            200 201 202
+            210 211 212
+            220 221 222
+            230 231 232
+            240 241 242
+            300 301 302
+            310 311 312
+            320 321 322
+            330 331 332
+            340 341 342
+        </values>
+   </variable>
+   <variable name="full3" shape="z y x" type="double">
+      <values>
+            0 1 2
+            10 11 12
+            20 21 22
+            30 31 32
+            40 41 42
+            100 101 102
+            110 111 112
+            120 121 122
+            130 131 132
+            140 141 142
+            200 201 202
+            210 211 212
+            220 221 222
+            230 231 232
+            240 241 242
+            300 301 302
+            310 311 312
+            320 321 322
+            330 331 332
+            340 341 342
+        </values>
+   </variable>
+   <variable name="Z1noT" shape="z1 y x" type="double">
+      <values>
+            0 1 2
+            10 11 12
+            20 21 22
+            30 31 32
+            40 41 42
+            100 101 102
+            110 111 112
+            120 121 122
+            130 131 132
+            140 141 142
+</values>
+   </variable>
+   <variable name="T1noZ" shape="time1 y x" type="double">
+      <values>
+            0 1 2
+            10 11 12
+            20 21 22
+            30 31 32
+            40 41 42
+            100  101  102
+            110  111  112
+            120  121  122
+            130  131  132
+            140  141  142
+      </values>
+   </variable>
+   <variable name="2D" shape="y x" type="double">
+      <values>
+            0 1 2
+            10 11 12
+            20 21 22
+            30 31 32
+            40 41 42
+      </values>
+   </variable>
+   <variable name="3D" shape="z y x" type="double">
+      <values>
+            0  1  2
+            10  11  12
+            20  21  22
+            30  31  32
+            40  41  42
+            100  101  102
+            110  111  112
+            120  121  122
+            130  131  132
+            140  141  142
+            200  201  202
+            210  211  212
+            220  221  222
+            230  231  232
+            240  241  242
+            300  301  302
+            310  311  312
+            320  321  322
+            330  331  332
+            340  341  342
+      </values>
+   </variable>
+   <variable name="4D" shape="time z y x" type="double">
+      <values>
+            0 1 2
+            10 11 12
+            20 21 22
+            30 31 32
+            40 41 42
+            100 101 102
+            110 111 112
+            120 121 122
+            130 131 132
+            140 141 142
+            200 201 202
+            210 211 212
+            220 221 222
+            230 231 232
+            240 241 242
+            300 301 302
+            310 311 312
+            320 321 322
+            330 331 332
+            340 341 342
+            1000 1001 1002
+            1010 1011 1012
+            1020 1021 1022
+            1030 1031 1032
+            1040 1041 1042
+            1100 1101 1102
+            1110 1111 1112
+            1120 1121 1122
+            1130 1131 1132
+            1140 1141 1142
+            1200 1201 1202
+            1210 1211 1212
+            1220 1221 1222
+            1230 1231 1232
+            1240 1241 1242
+            1300 1301 1302
+            1310 1311 1312
+            1320 1321 1322
+            1330 1331 1332
+            1340 1341 1342
+      </values>
+   </variable>
+</netcdf>

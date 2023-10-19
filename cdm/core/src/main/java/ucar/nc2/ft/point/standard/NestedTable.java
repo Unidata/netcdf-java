@@ -467,12 +467,28 @@ public class NestedTable {
     return (timeVE != null) && (latVE != null) && (lonVE != null);
   }
 
+  public String getTimeName() {
+    try {
+      return timeVE.axisName;
+    } catch (Exception e) {
+      throw new IllegalArgumentException("Error on time name string = " + timeVE.axisName + " == " + e.getMessage());
+    }
+  }
+
   public CalendarDateUnit getTimeUnit() {
     try {
       return CalendarDateUnit.of(null, timeVE.getUnitsString()); // LOOK dont know the calendar
     } catch (Exception e) {
       throw new IllegalArgumentException("Error on time string = " + timeVE.getUnitsString() + " == " + e.getMessage());
     }
+  }
+
+  public String getAltName() {
+    if (altVE != null)
+      return altVE.axisName;
+    if (stnAltVE != null)
+      return stnAltVE.axisName;
+    return null;
   }
 
   public String getAltUnits() {

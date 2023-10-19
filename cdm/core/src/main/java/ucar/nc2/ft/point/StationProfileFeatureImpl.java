@@ -43,6 +43,20 @@ public abstract class StationProfileFeatureImpl extends PointFeatureCCImpl imple
     this.timeSeriesNpts = npts;
   }
 
+  public StationProfileFeatureImpl(String name, String desc, String wmoId, double lat, double lon, double alt,
+      String timeName, CalendarDateUnit timeUnit, String altName, String altUnits, int npts) {
+    super(name, timeName, timeUnit, altName, altUnits, FeatureType.STATION_PROFILE);
+    station = new StationImpl(name, desc, wmoId, lat, lon, alt, npts);
+    this.timeSeriesNpts = npts;
+  }
+
+  public StationProfileFeatureImpl(Station s, String timeName, CalendarDateUnit timeUnit, String altName,
+      String altUnits, int npts) {
+    super(s.getName(), timeName, timeUnit, altName, altUnits, FeatureType.STATION_PROFILE);
+    this.station = s;
+    this.timeSeriesNpts = npts;
+  }
+
   public StationProfileFeatureImpl(Station s, CalendarDateUnit timeUnit, String altUnits, int npts) {
     super(s.getName(), timeUnit, altUnits, FeatureType.STATION_PROFILE);
     this.station = s;
@@ -120,7 +134,7 @@ public abstract class StationProfileFeatureImpl extends PointFeatureCCImpl imple
     private final CalendarDateRange dateRange;
 
     public StationProfileFeatureSubset(StationProfileFeatureImpl from, CalendarDateRange filter_date) {
-      super(from.station, from.getTimeUnit(), from.getAltUnits(), -1);
+      super(from.station, from.getTimeName(), from.getTimeUnit(), from.getAltName(), from.getAltUnits(), -1);
       this.from = from;
       this.dateRange = filter_date;
     }

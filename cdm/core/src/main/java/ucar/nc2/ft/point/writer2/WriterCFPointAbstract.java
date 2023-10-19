@@ -6,15 +6,11 @@ package ucar.nc2.ft.point.writer2;
 
 import java.io.Closeable;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import javax.annotation.Nullable;
+
+import com.google.common.collect.Iterators;
+import com.google.common.collect.PeekingIterator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.Array;
@@ -39,6 +35,10 @@ import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.dataset.CoordinateAxis;
+import ucar.nc2.ft.PointFeature;
+import ucar.nc2.ft.StationTimeSeriesFeature;
+import ucar.nc2.ft.point.StationPointFeature;
+import ucar.nc2.ft.point.StationTimeSeriesCollectionImpl;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateFormatter;
 import ucar.nc2.time.CalendarDateUnit;
@@ -198,6 +198,63 @@ abstract class WriterCFPointAbstract implements Closeable {
     // NOOP
   }
 
+  protected void writeHeader(List<VariableSimpleIF> obsCoords, StationTimeSeriesCollectionImpl stationFeatures,
+      @Nullable StructureData middleData) throws IOException {
+
+    this.recordDim = Dimension.builder().setName(recordDimName).setIsUnlimited(true).build();
+    writerb.addDimension(recordDim);
+
+    addExtraVariables();
+
+    PeekingIterator<StationTimeSeriesFeature> stIter = Iterators.peekingIterator(stationFeatures.iterator());
+    if (stIter.hasNext()) {
+      StationTimeSeriesFeature stationFeat = stIter.peek();
+
+      StructureData featureData = stationFeat.getFeatureData();
+      if (featureData != null) {
+        makeFeatureVariables(featureData, isExtendedModel);
+      }
+      if (middleData != null) {
+        makeMiddleVariables(middleData, isExtendedModel);
+      }
+    }
+    Structure.Builder recordb = null;
+    if (isExtendedModel) {
+      recordb = writerb.addStructure(recordName, recordDimName);
+      addCoordinatesExtended(recordb, obsCoords);
+    } else {
+      addCoordinatesClassic(recordDim, obsCoords, dataMap);
+    }
+
+    for (StationTimeSeriesFeature stnFeature : stationFeatures) {
+      PeekingIterator<PointFeature> iter = Iterators.peekingIterator(stnFeature.iterator());
+      if (iter.hasNext()) {
+        PointFeature pointFeat = iter.peek();
+        assert pointFeat instanceof StationPointFeature : "Expected pointFeat to be a StationPointFeature, not a "
+            + pointFeat.getClass().getSimpleName();
+
+        StructureData obsData = pointFeat.getFeatureData();
+
+        String timeCoordName = pointFeat.getFeatureCollection().getTimeName();
+
+        Formatter coordNames = new Formatter().format("%s %s %s", timeCoordName, latName, lonName);
+        if (!Double.isNaN(pointFeat.getLocation().getAltitude())) {
+          coordNames.format(" %s", altitudeCoordinateName);
+        }
+        if (isExtendedModel) {
+          addDataVariablesExtended(recordb, obsData, coordNames.toString());
+
+        } else {
+          addDataVariablesClassic(recordDim, obsData, dataMap, coordNames.toString());
+        }
+      }
+    }
+    this.writer = writerb.build();
+
+    writeExtraVariables();
+    finishBuilding();
+  }
+
   void writeHeader(List<VariableSimpleIF> obsCoords, StructureData featureData, @Nullable StructureData middleData,
       StructureData obsData, String coordNames) throws IOException {
     this.recordDim = Dimension.builder().setName(recordDimName).setIsUnlimited(true).build();
@@ -342,6 +399,8 @@ abstract class WriterCFPointAbstract implements Closeable {
     for (StructureMembers.Member m : obsData.getMembers()) {
       VariableSimpleIF oldVar = findDataVar(m.getName());
       if (oldVar == null)
+        continue;
+      if (recordb.findMemberVariable(m.getName()).isPresent())
         continue;
 
       // make dimension list

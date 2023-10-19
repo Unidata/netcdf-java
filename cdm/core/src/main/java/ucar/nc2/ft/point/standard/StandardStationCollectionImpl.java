@@ -32,7 +32,7 @@ public class StandardStationCollectionImpl extends StationTimeSeriesCollectionIm
   private NestedTable ft;
 
   StandardStationCollectionImpl(NestedTable ft, CalendarDateUnit timeUnit, String altUnits) {
-    super(ft.getName(), timeUnit, altUnits);
+    super(ft.getName(), ft.getTimeName(), timeUnit, ft.getAltName(), altUnits);
     this.ft = ft;
     this.extras = ft.getExtras();
   }
@@ -73,7 +73,8 @@ public class StandardStationCollectionImpl extends StationTimeSeriesCollectionIm
     StructureData stationData;
 
     StandardStationFeatureImpl(StationFeature s, CalendarDateUnit dateUnit, StructureData stationData, int recnum) {
-      super(s, dateUnit, StandardStationCollectionImpl.this.getAltUnits(), -1);
+      super(s, StandardStationCollectionImpl.this.getTimeName(), dateUnit,
+          StandardStationCollectionImpl.this.getAltName(), StandardStationCollectionImpl.this.getAltUnits(), -1);
       this.recnum = recnum;
       this.stationData = stationData;
     }
