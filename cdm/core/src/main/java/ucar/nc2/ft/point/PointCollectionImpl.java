@@ -61,7 +61,7 @@ public abstract class PointCollectionImpl extends DsgCollectionImpl implements P
     protected CalendarDateRange filter_date;
 
     public PointCollectionSubset(PointCollectionImpl from, LatLonRect filter_bb, CalendarDateRange filter_date) {
-      super(from.name, from.getTimeUnit(), from.getAltUnits());
+      super(from.name, from.getTimeName(), from.getTimeUnit(), from.getAltName(), from.getAltUnits());
       this.from = from;
       this.filter_bb = filter_bb;
       this.filter_date = filter_date;
