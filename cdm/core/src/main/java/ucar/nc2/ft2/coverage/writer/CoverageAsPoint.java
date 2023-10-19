@@ -229,15 +229,9 @@ public class CoverageAsPoint {
   private class CoverageAsStationProfile extends StationProfileFeatureImpl {
     private VarGroup varGroup;
 
-    public CoverageAsStationProfile(String name, String desc, String wmoId, double lat, double lon, double alt,
+    private CoverageAsStationProfile(String name, String desc, String wmoId, double lat, double lon, double alt,
         String timeName, CalendarDateUnit timeUnit, String altName, String altUnits, int npts, VarGroup varGroup) {
       super(name, desc, wmoId, lat, lon, alt, timeName, timeUnit, altName, altUnits, npts);
-      this.varGroup = varGroup;
-    }
-
-    public CoverageAsStationProfile(String name, String desc, String wmoId, double lat, double lon, double alt,
-        CalendarDateUnit timeUnit, String altUnits, int npts, VarGroup varGroup) {
-      super(name, desc, wmoId, lat, lon, alt, timeUnit, altUnits, npts);
       this.varGroup = varGroup;
     }
 
@@ -468,10 +462,8 @@ public class CoverageAsPoint {
 
     private VarGroup varGroup;
 
-    CoverageAsStationFeature(String name, String desc, String wmoId, double lat, double lon, double alt,
+    private CoverageAsStationFeature(String name, String desc, String wmoId, double lat, double lon, double alt,
         String timeName, CalendarDateUnit timeUnit, String altName, String altUnits, int npts, VarGroup varGroup) {
-      // String name, String desc, String wmoId, double lat, double lon, double alt, DateUnit timeUnit, String altUnits,
-      // int npts
       super(name, desc, wmoId, lat, lon, alt, timeName, timeUnit, altName, altUnits, npts, StructureData.EMPTY);
       this.varGroup = varGroup;
     }
