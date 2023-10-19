@@ -90,14 +90,15 @@ public class WriterCFStationCollection extends CFPointWriter {
               .makeScalar(dsgStation.getTimeName(), "time of measurement", dsgStation.getTimeUnit().getUdUnit(),
                   DataType.DOUBLE)
               .addAttribute(CF.CALENDAR, dsgStation.getTimeUnit().getCalendar().toString()).build());
+        } else {
+          coords.add(
+              VariableSimpleBuilder.makeScalar(timeName, "time of measurement", timeUnit.getUdUnit(), DataType.DOUBLE)
+                  .addAttribute(CF.CALENDAR, timeUnit.getCalendar().toString()).build());
         }
       }
     }
 
     llbb = CFPointWriterUtils.getBoundingBox(stnList); // gets written in super.finish();
-
-    coords.add(VariableSimpleBuilder.makeScalar(timeName, "time of measurement", timeUnit.getUdUnit(), DataType.DOUBLE)
-        .addAttribute(CF.CALENDAR, timeUnit.getCalendar().toString()).build());
 
     coords.add(VariableSimpleBuilder
         .makeScalar(stationIndexName, "station index for this observation record", null, DataType.INT)
@@ -262,10 +263,5 @@ public class WriterCFStationCollection extends CFPointWriter {
     // coords first so it takes precedence
     StructureDataComposite sdall = StructureDataComposite.create(ImmutableList.of(coords, sdata));
     obsRecno = super.writeStructureData(obsRecno, record, sdall, dataMap);
-  }
-
-  public void writeRecord(String stnName, double timeCoordValue, CalendarDate obsDate, StructureData sdata)
-      throws IOException {
-    writeRecord(stnName, timeName, timeCoordValue, obsDate, altName, 0, sdata);
   }
 }
