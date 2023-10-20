@@ -6,14 +6,6 @@ import java.util.List;
 
 public class GribTimeCoordIntervalUtils {
   /**
-   * Default location in a time coordinate interval to use for the corresponding time coordinate value
-   * when generating a time coordinate variable.
-   */
-  enum TimeCoordValueDefaultLocationInIntervals {
-    endPoint, midPoint, startingPoint
-  }
-
-  /**
    * Generate values for 1-D time coordinate variable given an ordered set of time coordinate intervals
    * (supports datasets with 2D run/forecast time),
    * ensures that resulting values are increasing in a strictly-monotonic manner.
