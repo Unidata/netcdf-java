@@ -4,7 +4,7 @@ import ucar.nc2.grib.coord.TimeCoordIntvValue;
 
 import java.util.List;
 
-public class GribTimeCoordIntervalUtils {
+class GribTimeCoordIntervalUtils {
   /**
    * Generate values for 1-D time coordinate variable given an ordered set of time coordinate intervals
    * (supports datasets with 2D run/forecast time),
