@@ -109,21 +109,6 @@ public class TestDiscontiguousInterval {
       Variable dataVar = nc.findVariable(varName);
       Assert.assertNotNull(dataVar);
 
-      Variable reftimeVar = nc.findVariable("reftime");
-      Array reftimeValues = reftimeVar.read();
-
-      Variable timeOffsetVar = nc.findVariable("timeOffset");
-      Array timeOffsetValues = timeOffsetVar.read();
-
-      Variable timeOffsetBoundsVar = nc.findVariable("timeOffset_bounds");
-      Array timeOffsetBoundsValues = timeOffsetBoundsVar.read();
-
-      Variable timeVar = nc.findVariable("time");
-      Array timeValues = timeVar.read();
-
-      Variable timeBoundsVar = nc.findVariable("time_bounds");
-      Array timeBoundsValues = timeBoundsVar.read();
-
       Dimension timeDim = null;
       for (Dimension dim : dataVar.getDimensions()) {
         if (dim.getShortName().startsWith("time")) {
