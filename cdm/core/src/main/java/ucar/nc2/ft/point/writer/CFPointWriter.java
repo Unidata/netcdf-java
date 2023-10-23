@@ -132,9 +132,9 @@ public abstract class CFPointWriter implements Closeable {
         pointWriter.writeRecord(pf, pf.getFeatureData());
         count++;
         if (debug && count % 100 == 0)
-          System.out.printf("%d ", count);
+          logger.debug(String.format("%d ", count));
         if (debug && count % 1000 == 0)
-          System.out.printf("%n ");
+          logger.debug(String.format("%n "));
       }
 
       pointWriter.finish();
@@ -160,9 +160,9 @@ public abstract class CFPointWriter implements Closeable {
           cfWriter.writeRecord(spf.getStation(), pf, pf.getFeatureData());
           count++;
           if (debug && count % 100 == 0)
-            System.out.printf("%d ", count);
+            logger.debug(String.format("%d ", count));
           if (debug && count % 1000 == 0)
-            System.out.printf("%n ");
+            logger.debug(String.format("%n "));
         }
       }
       cfWriter.finish();
@@ -195,9 +195,9 @@ public abstract class CFPointWriter implements Closeable {
       for (ProfileFeature profile : fc) {
         count += cfWriter.writeProfile(profile);
         if (debug && count % 10 == 0)
-          System.out.printf("%d ", count);
+          logger.debug(String.format("%d ", count));
         if (debug && count % 100 == 0)
-          System.out.printf("%n ");
+          logger.debug(String.format("%n "));
       }
 
       cfWriter.finish();
@@ -230,9 +230,9 @@ public abstract class CFPointWriter implements Closeable {
       for (TrajectoryFeature traj : fc) {
         count += cfWriter.writeTrajectory(traj);
         if (debug && count % 10 == 0)
-          System.out.printf("%d ", count);
+          logger.debug(String.format("%d ", count));
         if (debug && count % 100 == 0)
-          System.out.printf("%n ");
+          logger.debug(String.format("%n "));
       }
 
       cfWriter.finish();
@@ -271,9 +271,9 @@ public abstract class CFPointWriter implements Closeable {
 
           count += cfWriter.writeProfile(spf, pf);
           if (debug && count % 100 == 0)
-            System.out.printf("%d ", count);
+            logger.debug(String.format("%d ", count));
           if (debug && count % 1000 == 0)
-            System.out.printf("%n ");
+            logger.debug(String.format("%n "));
         }
       }
 
@@ -317,9 +317,9 @@ public abstract class CFPointWriter implements Closeable {
 
           count += cfWriter.writeProfile(spf, profile);
           if (debug && count % 100 == 0)
-            System.out.printf("%d ", count);
+            logger.debug(String.format("%d ", count));
           if (debug && count % 1000 == 0)
-            System.out.printf("%n ");
+            logger.debug(String.format("%n "));
         }
       }
 

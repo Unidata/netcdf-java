@@ -468,11 +468,7 @@ public class NestedTable {
   }
 
   public String getTimeName() {
-    try {
-      return timeVE.axisName;
-    } catch (Exception e) {
-      throw new IllegalArgumentException("Error on time name string = " + timeVE.axisName + " == " + e.getMessage());
-    }
+    return timeVE.axisName;
   }
 
   public CalendarDateUnit getTimeUnit() {
