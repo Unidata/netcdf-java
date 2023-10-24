@@ -107,7 +107,7 @@ public class WriterCFStationCollection extends CFPointWriter {
     super.writeHeader(coords, (StationTimeSeriesCollectionImpl) stations);
 
     int count = 0;
-    stationIndexMap = new HashMap<>(2 * stnList.size());
+    stationIndexMap = new HashMap<>(stnList.size(), 1.0f);
     for (StationFeature stn : stnList) {
       writeStationData(stn);
       stationIndexMap.put(stn.getName(), count);
@@ -157,7 +157,7 @@ public class WriterCFStationCollection extends CFPointWriter {
     super.writeHeader(coords, stnData, obsData, coordNames.toString());
 
     int count = 0;
-    stationIndexMap = new HashMap<>(2 * stns.size());
+    stationIndexMap = new HashMap<>(stnList.size(), 1.0f);
     for (StationFeature stn : stnList) {
       writeStationData(stn);
       stationIndexMap.put(stn.getName(), count);
