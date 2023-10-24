@@ -16,6 +16,9 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Formatter;
 import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.nc2.NetcdfFileWriter;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft.DsgFeatureCollection;
@@ -42,6 +45,8 @@ import ucar.nc2.write.NetcdfFormatWriter;
 /** Static methods to write Point Feature Collections into netcdf3/4 files in CF 1.6 point obs conventions. */
 public class CFPointWriter {
   private static boolean debug = true;
+  private static final Logger logger = LoggerFactory.getLogger(ucar.nc2.ft.point.writer2.CFPointWriter.class);
+
 
   public static int writeFeatureCollection(FeatureDatasetPoint fdpoint, String fileOut, NetcdfFileFormat format)
       throws IOException {
@@ -98,9 +103,9 @@ public class CFPointWriter {
         pointWriter.writeRecord(pf, pf.getFeatureData());
         count++;
         if (debug && count % 100 == 0)
-          System.out.printf("%d ", count);
+          logger.debug(String.format("%d ", count));
         if (debug && count % 1000 == 0)
-          System.out.printf("%n ");
+          logger.debug(String.format("%n "));
       }
 
       pointWriter.finish();
@@ -116,21 +121,19 @@ public class CFPointWriter {
 
       cfWriter.setExtraVariables(fc.getExtraVariables());
 
-      // write all data, but no need to sort by station
-      PointFeatureCollection pfc = fc.flatten(null, null, null);
-
+      cfWriter.writeHeader(fc);
       int count = 0;
-      for (PointFeature pf : pfc) {
-        StationPointFeature spf = (StationPointFeature) pf;
-        if (count == 0)
-          cfWriter.writeHeader(fc.getStationFeatures(), spf);
-
-        cfWriter.writeRecord(spf.getStation(), pf, pf.getFeatureData());
-        count++;
-        if (debug && count % 100 == 0)
-          System.out.printf("%d ", count);
-        if (debug && count % 1000 == 0)
-          System.out.printf("%n ");
+      for (PointFeatureCollection pfc : fc) {
+        for (PointFeature pf : pfc) {
+          StationPointFeature spf = (StationPointFeature) pf;
+          cfWriter.writeRecord(spf.getStation().getName(), pf.getObservationTime(),
+              pf.getObservationTimeAsCalendarDate(), pf.getLocation().getAltitude(), pf.getFeatureData());
+          count++;
+          if (debug && count % 100 == 0)
+            logger.debug(String.format("%d ", count));
+          if (debug && count % 1000 == 0)
+            logger.debug(String.format("%n "));
+        }
       }
 
       cfWriter.finish();
@@ -171,9 +174,9 @@ public class CFPointWriter {
       for (ProfileFeature profile : fc) {
         count += cfWriter.writeProfile(profile);
         if (debug && count % 10 == 0)
-          System.out.printf("%d ", count);
+          logger.debug(String.format("%d ", count));
         if (debug && count % 100 == 0)
-          System.out.printf("%n ");
+          logger.debug(String.format("%n "));
       }
 
       cfWriter.finish();
@@ -206,9 +209,9 @@ public class CFPointWriter {
       for (TrajectoryFeature traj : fc) {
         count += cfWriter.writeTrajectory(traj);
         if (debug && count % 10 == 0)
-          System.out.printf("%d ", count);
+          logger.debug(String.format("%d ", count));
         if (debug && count % 100 == 0)
-          System.out.printf("%n ");
+          logger.debug(String.format("%n "));
       }
 
       cfWriter.finish();
@@ -246,9 +249,9 @@ public class CFPointWriter {
 
           count += cfWriter.writeProfile(spf, pf);
           if (debug && count % 100 == 0)
-            System.out.printf("%d ", count);
+            logger.debug(String.format("%d ", count));
           if (debug && count % 1000 == 0)
-            System.out.printf("%n ");
+            logger.debug(String.format("%n "));
         }
       }
 
@@ -292,9 +295,9 @@ public class CFPointWriter {
 
           count += cfWriter.writeProfile(spf, profile);
           if (debug && count % 100 == 0)
-            System.out.printf("%d ", count);
+            logger.debug(String.format("%d ", count));
           if (debug && count % 1000 == 0)
-            System.out.printf("%n ");
+            logger.debug(String.format("%n "));
         }
       }
 

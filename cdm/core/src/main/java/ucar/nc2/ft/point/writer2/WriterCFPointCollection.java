@@ -88,7 +88,7 @@ class WriterCFPointCollection extends WriterCFPointAbstract {
     smb.addMemberScalar(latName, null, null, DataType.DOUBLE, loc.getLatitude());
     smb.addMemberScalar(lonName, null, null, DataType.DOUBLE, loc.getLongitude());
     if (altUnits != null)
-      smb.addMemberScalar(altName, null, null, DataType.DOUBLE, loc.getAltitude());
+      smb.addMemberScalar(altitudeCoordinateName, null, null, DataType.DOUBLE, loc.getAltitude());
     StructureData coords = new StructureDataFromMember(smb.build());
 
     // coords first so it takes precedence

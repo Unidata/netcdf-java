@@ -135,7 +135,9 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
     Cursor cursor;
 
     StandardStationProfileFeature(Station s, Cursor cursor, StructureData stationProfileData, int recnum) {
-      super(s, StandardStationProfileCollectionImpl.this.getTimeUnit(),
+      super(s, StandardStationProfileCollectionImpl.this.getTimeName(),
+          StandardStationProfileCollectionImpl.this.getTimeUnit(),
+          StandardStationProfileCollectionImpl.this.getAltName(),
           StandardStationProfileCollectionImpl.this.getAltUnits(), -1);
       this.cursor = cursor;
       // this.recnum = recnum;
