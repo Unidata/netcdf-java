@@ -95,11 +95,10 @@ public class CFPointWriter {
 
       pointWriter.setExtraVariables(pfc.getExtraVariables());
 
+      pointWriter.writeHeader(pfc);
+
       int count = 0;
       for (PointFeature pf : pfc) {
-        if (count == 0)
-          pointWriter.writeHeader(pf);
-
         pointWriter.writeRecord(pf, pf.getFeatureData());
         count++;
         if (debug && count % 100 == 0)
