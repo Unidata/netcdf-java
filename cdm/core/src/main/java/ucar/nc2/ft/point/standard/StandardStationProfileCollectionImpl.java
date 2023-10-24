@@ -228,7 +228,7 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
       @Override
       public PointFeatureCollection next() {
         count++;
-        PointFeatureCollection result = new StandardProfileFeature(station, getTimeUnit(), getAltUnits(),
+        PointFeatureCollection result = new StandardProfileFeature(station, getTimeName(), getTimeUnit(), getAltName(), getAltUnits(),
             ft.getObsTime(cursor), cursor.copy(), profileData);
         prev = (DsgCollectionImpl) result;
         return result;
@@ -247,9 +247,9 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
     private Cursor cursor;
     StructureData profileData;
 
-    StandardProfileFeature(Station s, CalendarDateUnit timeUnit, String altUnits, double time, Cursor cursor,
+    StandardProfileFeature(Station s, String timeName, CalendarDateUnit timeUnit, String altName, String altUnits, double time, Cursor cursor,
         StructureData profileData) {
-      super(timeUnit.makeCalendarDate(time).toString(), timeUnit, altUnits, s.getLatitude(), s.getLongitude(), time,
+      super(timeUnit.makeCalendarDate(time).toString(), timeName, timeUnit, altName, altUnits, s.getLatitude(), s.getLongitude(), time,
           -1);
       this.cursor = cursor;
       this.profileData = profileData;
