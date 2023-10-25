@@ -53,7 +53,6 @@ class WriterCFTrajectoryCollection extends WriterCFPointAbstract {
   int writeTrajectory(TrajectoryFeature traj) throws IOException {
     if (id_strlen == 0)
       id_strlen = traj.getName().length() * 2;
-    writeHeader(traj);
     int count = 0;
     for (PointFeature pf : traj) {
       writeObsData(pf);
@@ -64,7 +63,7 @@ class WriterCFTrajectoryCollection extends WriterCFPointAbstract {
     return count;
   }
 
-  private void writeHeader(TrajectoryFeature feature) throws IOException {
+  protected void writeHeader(TrajectoryFeature feature) throws IOException {
     // obs data
     List<VariableSimpleIF> coords = new ArrayList<>();
     coords.add(VariableSimpleBuilder.makeScalar(timeName, "time of measurement", timeUnit.getUdUnit(), DataType.DOUBLE)

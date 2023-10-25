@@ -67,7 +67,6 @@ class WriterCFTrajectoryProfileCollection extends WriterCFPointAbstract {
     int count = 0;
     if (id_strlen == 0)
       id_strlen = profile.getName().length() * 2;
-    writeHeader(section, profile);
 
     for (PointFeature pf : profile) {
       writeObsData(pf);
@@ -83,7 +82,7 @@ class WriterCFTrajectoryProfileCollection extends WriterCFPointAbstract {
     return count;
   }
 
-  private void writeHeader(TrajectoryProfileFeature section, ProfileFeature profile)
+  protected void writeHeader(TrajectoryProfileFeature section, ProfileFeature profile)
       throws IOException {
 
     StructureData sectionData = section.getFeatureData();

@@ -68,7 +68,6 @@ class WriterCFProfileCollection extends WriterCFPointAbstract {
   int writeProfile(ProfileFeature profile) throws IOException {
     if (id_strlen == 0)
       id_strlen = profile.getName().length() * 2;
-    writeHeader(profile);
     int count = 0;
     for (PointFeature pf : profile) {
       writeObsData(pf);
@@ -79,7 +78,7 @@ class WriterCFProfileCollection extends WriterCFPointAbstract {
     return count;
   }
 
-  private void writeHeader(ProfileFeature profile) throws IOException {
+  protected void writeHeader(ProfileFeature profile) throws IOException {
 
     List<VariableSimpleIF> coords = new ArrayList<>();
     if (useAlt) {

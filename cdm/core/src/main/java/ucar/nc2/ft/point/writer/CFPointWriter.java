@@ -124,11 +124,9 @@ public abstract class CFPointWriter implements Closeable {
 
       pointWriter.setExtraVariables(pfc.getExtraVariables());
 
+      pointWriter.writeHeader(pfc);
       int count = 0;
       for (PointFeature pf : pfc) {
-        if (count == 0)
-          pointWriter.writeHeader(pf);
-
         pointWriter.writeRecord(pf, pf.getFeatureData());
         count++;
         if (debug && count % 100 == 0)
@@ -456,15 +454,14 @@ public abstract class CFPointWriter implements Closeable {
     // NOOP
   }
 
-  protected void writeHeader(List<VariableSimpleIF> obsCoords, StationTimeSeriesCollectionImpl stationFeatures)
+  protected void writeHeader(List<VariableSimpleIF> obsCoords, Iterable<? extends PointFeatureCollection> stationFeatures, StructureData featureData)
       throws IOException {
 
     this.recordDim = writer.addUnlimitedDimension(recordDimName);
     addExtraVariables();
     addCoordinatesClassic(recordDim, obsCoords, dataMap);
 
-    for (StationTimeSeriesFeature stnFeature : stationFeatures) {
-      StructureData featureData = stnFeature.getFeatureData();
+    for (PointFeatureCollection stnFeature : stationFeatures) {
       if (writer.getVersion().isExtendedModel()) {
         makeFeatureVariables(featureData, true);
         record = (Structure) writer.addVariable(null, recordName, DataType.STRUCTURE, recordDimName);
@@ -477,8 +474,6 @@ public abstract class CFPointWriter implements Closeable {
       PeekingIterator<PointFeature> iter = Iterators.peekingIterator(stnFeature.iterator());
       if (iter.hasNext()) {
         PointFeature pointFeat = iter.peek();
-        assert pointFeat instanceof StationPointFeature : "Expected pointFeat to be a StationPointFeature, not a "
-            + pointFeat.getClass().getSimpleName();
 
         StructureData obsData = pointFeat.getFeatureData();
 
@@ -486,6 +481,7 @@ public abstract class CFPointWriter implements Closeable {
 
         Formatter coordNames = new Formatter().format("%s %s %s", timeName, latName, lonName);
         if (!Double.isNaN(pointFeat.getLocation().getAltitude())) {
+          altitudeCoordinateName = pointFeat.getFeatureCollection().getAltName();
           coordNames.format(" %s", altitudeCoordinateName);
         }
 
@@ -496,6 +492,51 @@ public abstract class CFPointWriter implements Closeable {
         addDataVariablesClassic(recordDim, obsData, dataMap, coordNames.toString());
 
       }
+    }
+
+    writer.create();
+    if (!(writer.getVersion().isExtendedModel()))
+      record = writer.addRecordStructure(); // for netcdf3
+    writeExtraVariables();
+
+  }
+
+  protected void writeHeader(List<VariableSimpleIF> obsCoords, PointFeatureCollection stationFeatures, StructureData featureData)
+          throws IOException {
+
+    this.recordDim = writer.addUnlimitedDimension(recordDimName);
+    addExtraVariables();
+    addCoordinatesClassic(recordDim, obsCoords, dataMap);
+
+      if (writer.getVersion().isExtendedModel()) {
+        makeFeatureVariables(featureData, true);
+        record = (Structure) writer.addVariable(null, recordName, DataType.STRUCTURE, recordDimName);
+        addCoordinatesExtended(record, obsCoords);
+
+      } else {
+        if (writer.findDimension(stationDimName) == null)
+          makeFeatureVariables(featureData, false);
+      }
+      PeekingIterator<PointFeature> iter = Iterators.peekingIterator(stationFeatures.iterator());
+      if (iter.hasNext()) {
+        PointFeature pointFeat = iter.peek();
+
+        StructureData obsData = pointFeat.getFeatureData();
+
+        timeName = pointFeat.getFeatureCollection().getTimeName();
+
+        Formatter coordNames = new Formatter().format("%s %s %s", timeName, latName, lonName);
+        if (!Double.isNaN(pointFeat.getLocation().getAltitude())) {
+          altitudeCoordinateName = pointFeat.getFeatureCollection().getAltName();
+          coordNames.format(" %s", altitudeCoordinateName);
+        }
+
+        if (writer.getVersion().isExtendedModel()) {
+          addDataVariablesExtended(obsData, coordNames.toString());
+
+        }
+        addDataVariablesClassic(recordDim, obsData, dataMap, coordNames.toString());
+
     }
 
     writer.create();

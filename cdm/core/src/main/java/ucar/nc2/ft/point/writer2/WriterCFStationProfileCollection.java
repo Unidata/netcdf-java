@@ -97,7 +97,6 @@ class WriterCFStationProfileCollection extends WriterCFPointAbstract {
   int writeProfile(StationProfileFeature spf, ProfileFeature profile) throws IOException {
     if (id_strlen == 0)
       id_strlen = profile.getName().length() * 2;
-    writeHeader(spf, profile);
     int count = 0;
     for (PointFeature pf : profile) {
       writeObsData(pf);
@@ -114,7 +113,7 @@ class WriterCFStationProfileCollection extends WriterCFPointAbstract {
     return count;
   }
 
-  private void writeHeader(StationProfileFeature stn, ProfileFeature profile) throws IOException {
+  protected void writeHeader(StationProfileFeature stn, ProfileFeature profile) throws IOException {
     StructureData profileData = profile.getFeatureData();
 
     List<VariableSimpleIF> obsCoords = new ArrayList<>();

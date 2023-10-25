@@ -171,6 +171,9 @@ public class CFPointWriter {
 
       count = 0;
       for (ProfileFeature profile : fc) {
+        if (count==0)
+        cfWriter.writeHeader(profile);
+
         count += cfWriter.writeProfile(profile);
         if (debug && count % 10 == 0)
           logger.debug(String.format("%d ", count));
@@ -206,6 +209,8 @@ public class CFPointWriter {
 
       count = 0;
       for (TrajectoryFeature traj : fc) {
+        if (count == 0)
+          cfWriter.writeHeader(traj);
         count += cfWriter.writeTrajectory(traj);
         if (debug && count % 10 == 0)
           logger.debug(String.format("%d ", count));
@@ -242,6 +247,9 @@ public class CFPointWriter {
       int count = 0;
       for (StationProfileFeature spf : fc) {
         for (ProfileFeature pf : spf) {
+          if(count== 0)
+            cfWriter.writeHeader(spf, pf);
+
           if (pf.getTime() == null) {
             continue; // assume this means its an "incomplete multidimensional"
           }
@@ -291,6 +299,8 @@ public class CFPointWriter {
         for (ProfileFeature profile : spf) {
           if (profile.getTime() == null)
             continue; // assume this means its a "incomplete multidimensional"
+          if(count == 0)
+            cfWriter.writeHeader(spf, profile);
 
           count += cfWriter.writeProfile(spf, profile);
           if (debug && count % 100 == 0)

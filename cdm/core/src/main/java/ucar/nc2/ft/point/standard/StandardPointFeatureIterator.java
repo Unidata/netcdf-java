@@ -55,7 +55,7 @@ public class StandardPointFeatureIterator extends PointIteratorFromStructureData
 
     double obsTime = ft.getObsTime(this.cursor);
     // must send a copy, since sdata is changing each time, and StandardPointFeature may be stored
-    return new StandardPointFeature(cursor.copy(), timeUnit, obsTime);
+    return new StandardPointFeature(cursor.copy(), ft.getTimeName(), timeUnit, obsTime, ft.getAltName(), ft.getAltUnits());
   }
 
   protected boolean isMissing() throws IOException {
@@ -65,7 +65,7 @@ public class StandardPointFeatureIterator extends PointIteratorFromStructureData
   private class StandardPointFeature extends PointFeatureImpl implements StationPointFeature, StationFeatureHas {
     protected Cursor cursor;
 
-    StandardPointFeature(Cursor cursor, CalendarDateUnit timeUnit, double obsTime) {
+    StandardPointFeature(Cursor cursor, String timeName, CalendarDateUnit timeUnit, double obsTime, String altName, String altUnit) {
       super(collectionDsg, timeUnit);
       this.cursor = cursor;
       cursor.currentIndex = 1; // LOOK ????

@@ -52,7 +52,6 @@ class WriterCFPointCollection extends WriterCFPointAbstract {
     List<VariableSimpleIF> coords = new ArrayList<>();
 
     String timeName = pfc.getTimeName();
-    String altName = pfc.getAltName();
     coords.add(VariableSimpleBuilder.makeScalar(timeName, "time of measurement", timeUnit.getUdUnit(), DataType.DOUBLE)
         .addAttribute(CF.CALENDAR, timeUnit.getCalendar().toString()).build());
 
@@ -62,9 +61,10 @@ class WriterCFPointCollection extends WriterCFPointAbstract {
         VariableSimpleBuilder.makeScalar(lonName, "longitude of measurement", CDM.LON_UNITS, DataType.DOUBLE).build());
     Formatter coordNames = new Formatter().format("%s %s %s", timeName, latName, lonName);
     if (altUnits != null) {
-      coords.add(VariableSimpleBuilder.makeScalar(altName, "altitude of measurement", altUnits, DataType.DOUBLE)
+      altitudeCoordinateName = pfc.getAltName();
+      coords.add(VariableSimpleBuilder.makeScalar(altitudeCoordinateName, "altitude of measurement", altUnits, DataType.DOUBLE)
           .addAttribute(CF.POSITIVE, CF1Convention.getZisPositive(altName, altUnits)).build());
-      coordNames.format(" %s", altName);
+      coordNames.format(" %s", altitudeCoordinateName);
     }
     super.writeHeader( coords, pfc, null,  null);
   }
