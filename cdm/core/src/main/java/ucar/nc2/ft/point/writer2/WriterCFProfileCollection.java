@@ -8,7 +8,6 @@ package ucar.nc2.ft.point.writer2;
 import com.google.common.collect.ImmutableList;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Formatter;
 import java.util.HashSet;
 import java.util.List;
 import ucar.ma2.DataType;
@@ -67,14 +66,11 @@ class WriterCFProfileCollection extends WriterCFPointAbstract {
   }
 
   int writeProfile(ProfileFeature profile) throws IOException {
+    if (id_strlen == 0)
+      id_strlen = profile.getName().length() * 2;
+    writeHeader(profile);
     int count = 0;
     for (PointFeature pf : profile) {
-      if (!headerDone) {
-        if (id_strlen == 0)
-          id_strlen = profile.getName().length() * 2;
-        writeHeader(profile, pf);
-        headerDone = true;
-      }
       writeObsData(pf);
       count++;
     }
@@ -83,18 +79,18 @@ class WriterCFProfileCollection extends WriterCFPointAbstract {
     return count;
   }
 
-  private void writeHeader(ProfileFeature profile, PointFeature obs) throws IOException {
+  private void writeHeader(ProfileFeature profile) throws IOException {
 
-    Formatter coordNames = new Formatter().format("%s %s %s", profileTimeName, latName, lonName);
     List<VariableSimpleIF> coords = new ArrayList<>();
     if (useAlt) {
       coords.add(VariableSimpleBuilder.makeScalar(altitudeCoordinateName, "obs altitude", altUnits, DataType.DOUBLE)
           .addAttribute(CF.STANDARD_NAME, "altitude")
           .addAttribute(CF.POSITIVE, CF1Convention.getZisPositive(altitudeCoordinateName, altUnits)).build());
-      coordNames.format(" %s", altitudeCoordinateName);
     }
 
-    super.writeHeader(coords, profile.getFeatureData(), null, obs.getFeatureData(), coordNames.toString());
+    super.writeHeader(coords, profile, profile.getFeatureData(), null);
+
+    headerDone = true;
   }
 
   @Override

@@ -8,7 +8,6 @@ package ucar.nc2.ft.point.writer2;
 import com.google.common.collect.ImmutableList;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Formatter;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -66,13 +65,11 @@ class WriterCFTrajectoryProfileCollection extends WriterCFPointAbstract {
 
   int writeProfile(TrajectoryProfileFeature section, ProfileFeature profile) throws IOException {
     int count = 0;
+    if (id_strlen == 0)
+      id_strlen = profile.getName().length() * 2;
+    writeHeader(section, profile);
+
     for (PointFeature pf : profile) {
-      if (!headerDone) {
-        if (id_strlen == 0)
-          id_strlen = profile.getName().length() * 2;
-        writeHeader(section, profile, pf);
-        headerDone = true;
-      }
       writeObsData(pf);
       count++;
     }
@@ -86,23 +83,22 @@ class WriterCFTrajectoryProfileCollection extends WriterCFPointAbstract {
     return count;
   }
 
-  private void writeHeader(TrajectoryProfileFeature section, ProfileFeature profile, PointFeature obs)
+  private void writeHeader(TrajectoryProfileFeature section, ProfileFeature profile)
       throws IOException {
 
     StructureData sectionData = section.getFeatureData();
     StructureData profileData = profile.getFeatureData();
-    StructureData obsData = obs.getFeatureData();
 
-    Formatter coordNames = new Formatter().format("%s %s %s", profileTimeName, latName, lonName);
     List<VariableSimpleIF> obsCoords = new ArrayList<>();
     if (useAlt) {
-      obsCoords.add(VariableSimpleBuilder.makeScalar(altitudeCoordinateName, "obs altitude", altUnits, DataType.DOUBLE)
+      obsCoords.add(VariableSimpleBuilder.makeScalar(section.getAltName(), "obs altitude", section.getAltUnits(), DataType.DOUBLE)
           .addAttribute(CF.STANDARD_NAME, "altitude")
-          .addAttribute(CF.POSITIVE, CF1Convention.getZisPositive(altitudeCoordinateName, altUnits)).build());
-      coordNames.format(" %s", altitudeCoordinateName);
+          .addAttribute(CF.POSITIVE, CF1Convention.getZisPositive(section.getAltName(), section.getAltUnits())).build());
     }
 
-    super.writeHeader(obsCoords, sectionData, profileData, obsData, coordNames.toString());
+    super.writeHeader(obsCoords, section, sectionData, profileData);
+
+    headerDone = true;
   }
 
   @Override

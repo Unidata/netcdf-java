@@ -51,14 +51,11 @@ class WriterCFTrajectoryCollection extends WriterCFPointAbstract {
   }
 
   int writeTrajectory(TrajectoryFeature traj) throws IOException {
+    if (id_strlen == 0)
+      id_strlen = traj.getName().length() * 2;
+    writeHeader(traj);
     int count = 0;
     for (PointFeature pf : traj) {
-      if (!headerDone) {
-        if (id_strlen == 0)
-          id_strlen = traj.getName().length() * 2;
-        writeHeader(traj, pf);
-        headerDone = true;
-      }
       writeObsData(pf);
       count++;
     }
@@ -67,7 +64,7 @@ class WriterCFTrajectoryCollection extends WriterCFPointAbstract {
     return count;
   }
 
-  private void writeHeader(TrajectoryFeature feature, PointFeature obs) throws IOException {
+  private void writeHeader(TrajectoryFeature feature) throws IOException {
     // obs data
     List<VariableSimpleIF> coords = new ArrayList<>();
     coords.add(VariableSimpleBuilder.makeScalar(timeName, "time of measurement", timeUnit.getUdUnit(), DataType.DOUBLE)
@@ -84,7 +81,9 @@ class WriterCFTrajectoryCollection extends WriterCFPointAbstract {
       coordNames.format(" %s", altName);
     }
 
-    super.writeHeader(coords, feature.getFeatureData(), null, obs.getFeatureData(), coordNames.toString());
+    super.writeHeader(coords, feature, feature.getFeatureData(), null);
+
+    headerDone = true;
   }
 
   @Override

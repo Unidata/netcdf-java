@@ -23,6 +23,7 @@ import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
 import ucar.nc2.dataset.conv.CF1Convention;
 import ucar.nc2.ft.PointFeature;
+import ucar.nc2.ft.PointFeatureCollection;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateUnit;
 import ucar.unidata.geoloc.EarthLocation;
@@ -47,8 +48,11 @@ class WriterCFPointCollection extends WriterCFPointAbstract {
     writerb.addAttribute(new Attribute(CF.DSG_REPRESENTATION, "Point Data, H.1"));
   }
 
-  void writeHeader(PointFeature pf) throws IOException {
+  void writeHeader(PointFeatureCollection pfc) throws IOException {
     List<VariableSimpleIF> coords = new ArrayList<>();
+
+    String timeName = pfc.getTimeName();
+    String altName = pfc.getAltName();
     coords.add(VariableSimpleBuilder.makeScalar(timeName, "time of measurement", timeUnit.getUdUnit(), DataType.DOUBLE)
         .addAttribute(CF.CALENDAR, timeUnit.getCalendar().toString()).build());
 
@@ -62,8 +66,7 @@ class WriterCFPointCollection extends WriterCFPointAbstract {
           .addAttribute(CF.POSITIVE, CF1Convention.getZisPositive(altName, altUnits)).build());
       coordNames.format(" %s", altName);
     }
-
-    super.writeHeader(coords, null, null, pf.getDataAll(), coordNames.toString());
+    super.writeHeader( coords, pfc, null,  null);
   }
 
   @Override

@@ -30,7 +30,6 @@ import ucar.nc2.dataset.conv.CF1Convention;
 import ucar.nc2.ft.DsgFeatureCollection;
 import ucar.nc2.ft.StationTimeSeriesFeatureCollection;
 import ucar.nc2.ft.point.StationFeature;
-import ucar.nc2.ft.point.StationTimeSeriesCollectionImpl;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateUnit;
 import ucar.unidata.geoloc.Station;
@@ -120,7 +119,7 @@ class WriterCFStationCollection extends WriterCFPointAbstract {
         .makeScalar(stationIndexName, "station index for this observation record", null, DataType.INT)
         .addAttribute(CF.INSTANCE_DIMENSION, stationDimName).build());
 
-    super.writeHeader(coords, (StationTimeSeriesCollectionImpl) stations, null);
+    super.writeHeader(coords, stations, stations.getStationFeatures().get(0).getFeatureData(), null);
     int count = 0;
     stationIndexMap = new HashMap<>(2 * stnList.size());
     for (StationFeature stn : stnList) {

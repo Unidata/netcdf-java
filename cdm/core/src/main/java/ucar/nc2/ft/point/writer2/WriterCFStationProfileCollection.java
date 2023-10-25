@@ -95,14 +95,11 @@ class WriterCFStationProfileCollection extends WriterCFPointAbstract {
   }
 
   int writeProfile(StationProfileFeature spf, ProfileFeature profile) throws IOException {
+    if (id_strlen == 0)
+      id_strlen = profile.getName().length() * 2;
+    writeHeader(spf, profile);
     int count = 0;
     for (PointFeature pf : profile) {
-      if (!headerDone) {
-        if (id_strlen == 0)
-          id_strlen = profile.getName().length() * 2;
-        writeHeader(spf, profile, pf);
-        headerDone = true;
-      }
       writeObsData(pf);
       count++;
     }
@@ -117,10 +114,8 @@ class WriterCFStationProfileCollection extends WriterCFPointAbstract {
     return count;
   }
 
-  private void writeHeader(StationProfileFeature stn, ProfileFeature profile, PointFeature obs) throws IOException {
-    StructureData stnData = stn.getFeatureData();
+  private void writeHeader(StationProfileFeature stn, ProfileFeature profile) throws IOException {
     StructureData profileData = profile.getFeatureData();
-    StructureData obsData = obs.getFeatureData();
 
     List<VariableSimpleIF> obsCoords = new ArrayList<>();
     Formatter coordNames = new Formatter().format("%s %s %s", profileTimeName, latName, lonName);
@@ -129,7 +124,7 @@ class WriterCFStationProfileCollection extends WriterCFPointAbstract {
         .addAttribute(CF.POSITIVE, CF1Convention.getZisPositive(altitudeCoordinateName, altUnits)).build());
     coordNames.format(" %s", altitudeCoordinateName);
 
-    super.writeHeader(obsCoords, stnData, profileData, obsData, coordNames.toString());
+    super.writeHeader(obsCoords, stn, profileData, null);
 
     // write the stations
     int count = 0;
@@ -140,6 +135,7 @@ class WriterCFStationProfileCollection extends WriterCFPointAbstract {
       count++;
     }
 
+    headerDone = true;
   }
 
   void makeFeatureVariables(StructureData stnData, boolean isExtended) {
