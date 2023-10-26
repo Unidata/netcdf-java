@@ -690,7 +690,8 @@ public abstract class CFPointWriter implements Closeable {
         continue;
 
       // skip duplicates
-      // if (record.findVariable(oldVar.getShortName()) != null) continue;
+      if (record.findVariable(oldVar.getShortName()) != null)
+        continue;
 
       // make dimension list
       StringBuilder dimNames = new StringBuilder();
