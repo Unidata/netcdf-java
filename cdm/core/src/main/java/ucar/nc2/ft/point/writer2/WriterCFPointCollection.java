@@ -79,11 +79,12 @@ class WriterCFPointCollection extends WriterCFPointAbstract {
   private int obsRecno;
 
   void writeRecord(PointFeature sobs, StructureData sdata) throws IOException {
-    writeRecord(sobs.getObservationTime(), sobs.getObservationTimeAsCalendarDate(), sobs.getLocation(), sdata);
+    writeRecord(sobs.getFeatureCollection().getTimeName(), sobs.getObservationTime(),
+            sobs.getObservationTimeAsCalendarDate(), sobs.getFeatureCollection().getAltName(), sobs.getLocation(), sdata);
   }
 
-  private void writeRecord(double timeCoordValue, CalendarDate obsDate, EarthLocation loc, StructureData sdata)
-      throws IOException {
+  private void writeRecord(String timeName, double timeCoordValue, CalendarDate obsDate, String altName,
+                           EarthLocation loc, StructureData sdata) throws IOException {
     trackBB(loc.getLatLon(), obsDate);
 
     StructureMembers.Builder smb = StructureMembers.builder().setName("Coords");
@@ -91,7 +92,7 @@ class WriterCFPointCollection extends WriterCFPointAbstract {
     smb.addMemberScalar(latName, null, null, DataType.DOUBLE, loc.getLatitude());
     smb.addMemberScalar(lonName, null, null, DataType.DOUBLE, loc.getLongitude());
     if (altUnits != null)
-      smb.addMemberScalar(altitudeCoordinateName, null, null, DataType.DOUBLE, loc.getAltitude());
+      smb.addMemberScalar(altName, null, null, DataType.DOUBLE, loc.getAltitude());
     StructureData coords = new StructureDataFromMember(smb.build());
 
     // coords first so it takes precedence
