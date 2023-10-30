@@ -145,6 +145,10 @@ class AggDataset implements Comparable<AggDataset> {
         return null;
 
       Variable v = findVariable(ncd, mainv);
+      if (v == null) {
+        Aggregation.logger.error("AggDataset can't find " + mainv.getFullName() + " in " + ncd.getLocation());
+        throw new IllegalArgumentException("Variable '" + mainv.getFullName() + "' does not exist in aggregation.");
+      }
       if (debugRead)
         System.out.printf("Agg.read %s from %s in %s%n", mainv.getNameAndDimensions(), v.getNameAndDimensions(),
             getLocation());
