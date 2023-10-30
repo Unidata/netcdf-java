@@ -143,15 +143,16 @@ public class WriterCFStationCollection extends CFPointWriter {
     StructureData obsData = spf.getFeatureData();
 
     List<VariableSimpleIF> coords = new ArrayList<>();
-    coords.add(VariableSimpleBuilder.makeScalar(timeName, "time of measurement", timeUnit.getUdUnit(), DataType.DOUBLE)
-        .addAttribute(CF.CALENDAR, timeUnit.getCalendar().toString()).build());
+    coords.add(VariableSimpleBuilder.makeScalar(spf.getFeatureCollection().getTimeName(), "time of measurement",
+        timeUnit.getUdUnit(), DataType.DOUBLE).addAttribute(CF.CALENDAR, timeUnit.getCalendar().toString()).build());
 
     coords.add(VariableSimpleBuilder
         .makeScalar(stationIndexName, "station index for this observation record", null, DataType.INT)
         .addAttribute(CF.INSTANCE_DIMENSION, stationDimName).build());
 
 
-    Formatter coordNames = new Formatter().format("%s %s %s", timeName, latName, lonName);
+    Formatter coordNames =
+        new Formatter().format("%s %s %s", spf.getFeatureCollection().getTimeName(), latName, lonName);
     if (useAlt)
       coordNames.format(" %s", stationAltName);
 
@@ -234,8 +235,9 @@ public class WriterCFStationCollection extends CFPointWriter {
       writeRecord(dsgStation.getName(), dsgStation.getTimeName(), sobs.getObservationTime(),
           sobs.getObservationTimeAsCalendarDate(), dsgStation.getAltName(), sobs.getLocation().getAltitude(), sdata);
     } else {
-      writeRecord(s.getName(), timeName, sobs.getObservationTime(), sobs.getObservationTimeAsCalendarDate(),
-          this.altitudeCoordinateName, sobs.getLocation().getAltitude(), sdata);
+      writeRecord(s.getName(), sobs.getFeatureCollection().getTimeName(), sobs.getObservationTime(),
+          sobs.getObservationTimeAsCalendarDate(), this.altitudeCoordinateName, sobs.getLocation().getAltitude(),
+          sdata);
     }
   }
 

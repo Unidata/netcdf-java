@@ -23,7 +23,6 @@ import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
 import ucar.nc2.dataset.conv.CF1Convention;
 import ucar.nc2.ft.PointFeature;
-import ucar.nc2.ft.PointFeatureCollection;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateUnit;
 import ucar.unidata.geoloc.EarthLocation;
@@ -48,25 +47,25 @@ class WriterCFPointCollection extends WriterCFPointAbstract {
     writerb.addAttribute(new Attribute(CF.DSG_REPRESENTATION, "Point Data, H.1"));
   }
 
-  void writeHeader(PointFeatureCollection pfc) throws IOException {
+  void writeHeader(PointFeature pf) throws IOException {
     List<VariableSimpleIF> coords = new ArrayList<>();
-
-    String timeName = pfc.getTimeName();
-    coords.add(VariableSimpleBuilder.makeScalar(timeName, "time of measurement", timeUnit.getUdUnit(), DataType.DOUBLE)
-        .addAttribute(CF.CALENDAR, timeUnit.getCalendar().toString()).build());
+    coords.add(VariableSimpleBuilder.makeScalar(pf.getFeatureCollection().getTimeName(), "time of measurement",
+        timeUnit.getUdUnit(), DataType.DOUBLE).addAttribute(CF.CALENDAR, timeUnit.getCalendar().toString()).build());
 
     coords.add(
         VariableSimpleBuilder.makeScalar(latName, "latitude of measurement", CDM.LAT_UNITS, DataType.DOUBLE).build());
     coords.add(
         VariableSimpleBuilder.makeScalar(lonName, "longitude of measurement", CDM.LON_UNITS, DataType.DOUBLE).build());
-    Formatter coordNames = new Formatter().format("%s %s %s", timeName, latName, lonName);
+    Formatter coordNames =
+        new Formatter().format("%s %s %s", pf.getFeatureCollection().getTimeName(), latName, lonName);
     if (altUnits != null) {
-      altitudeCoordinateName = pfc.getAltName();
+      altitudeCoordinateName =  pf.getFeatureCollection().getAltName();
       coords.add(VariableSimpleBuilder.makeScalar(altitudeCoordinateName, "altitude of measurement", altUnits, DataType.DOUBLE)
           .addAttribute(CF.POSITIVE, CF1Convention.getZisPositive(altName, altUnits)).build());
       coordNames.format(" %s", altitudeCoordinateName);
     }
-    super.writeHeader( coords, pfc, null,  null);
+
+    super.writeHeader(coords, null, null, pf.getDataAll(), coordNames.toString());
   }
 
   @Override

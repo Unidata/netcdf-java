@@ -60,14 +60,15 @@ public class WriterCFTrajectoryCollection extends CFPointWriter {
   private void writeHeader(TrajectoryFeature feature, PointFeature obs) throws IOException {
     // obs data
     List<VariableSimpleIF> coords = new ArrayList<>();
-    coords.add(VariableSimpleBuilder.makeScalar(timeName, "time of measurement", timeUnit.getUdUnit(), DataType.DOUBLE)
-        .addAttribute(CF.CALENDAR, timeUnit.getCalendar().toString()).build());
+    coords.add(VariableSimpleBuilder.makeScalar(obs.getFeatureCollection().getTimeName(), "time of measurement",
+        timeUnit.getUdUnit(), DataType.DOUBLE).addAttribute(CF.CALENDAR, timeUnit.getCalendar().toString()).build());
 
     coords.add(
         VariableSimpleBuilder.makeScalar(latName, "latitude of measurement", CDM.LAT_UNITS, DataType.DOUBLE).build());
     coords.add(
         VariableSimpleBuilder.makeScalar(lonName, "longitude of measurement", CDM.LON_UNITS, DataType.DOUBLE).build());
-    Formatter coordNames = new Formatter().format("%s %s %s", timeName, latName, lonName);
+    Formatter coordNames =
+        new Formatter().format("%s %s %s", obs.getFeatureCollection().getTimeName(), latName, lonName);
     if (altUnits != null) {
       coords.add(VariableSimpleBuilder.makeScalar(altName, "altitude of measurement", altUnits, DataType.DOUBLE)
           .addAttribute(CF.POSITIVE, CF1Convention.getZisPositive(altName, altUnits)).build());
@@ -126,7 +127,7 @@ public class WriterCFTrajectoryCollection extends CFPointWriter {
     trackBB(loc.getLatLon(), timeUnit.makeCalendarDate(pf.getObservationTime()));
 
     StructureMembers.Builder smb = StructureMembers.builder().setName("Coords");
-    smb.addMemberScalar(timeName, null, null, DataType.DOUBLE, pf.getObservationTime());
+    smb.addMemberScalar(pf.getFeatureCollection().getTimeName(), null, null, DataType.DOUBLE, pf.getObservationTime());
     smb.addMemberScalar(latName, null, null, DataType.DOUBLE, loc.getLatitude());
     smb.addMemberScalar(lonName, null, null, DataType.DOUBLE, loc.getLongitude());
     if (altUnits != null)

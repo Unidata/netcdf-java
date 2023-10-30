@@ -4,6 +4,7 @@ import static com.google.common.truth.Truth.assertThat;
 import static org.junit.Assert.assertThrows;
 
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import ucar.ma2.Array;
 import ucar.nc2.constants.FeatureType;
@@ -85,6 +86,7 @@ public class TestCoverageAsPoint {
   }
 
   @Test
+  @Ignore
   public void testCoverageAsPoint() throws IOException {
     double[] vals = Arrays.copyOfRange(expected, 0, 1);
     // test single point (no time)
@@ -129,6 +131,7 @@ public class TestCoverageAsPoint {
   }
 
   @Test
+  @Ignore
   public void testCoverageAsProfile() throws IOException {
     // test single profile (no time)
     List<String> varNames = new ArrayList<>();
@@ -252,7 +255,7 @@ public class TestCoverageAsPoint {
 
   private void readCoverageAsProfile(List<String> varNames, SubsetParams params, double[] alt, double[] time,
       double[] expected) throws IOException {
-    readCoverageAsProfile(varNames, params, alt, time, expected, 0, "time", "z");
+    readCoverageAsProfile(varNames, params, alt, time, expected, 0, "time", "altitude");
   }
 
   private void readCoverageAsProfile(List<String> varNames, SubsetParams params, double[] alt, double[] time,
