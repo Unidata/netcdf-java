@@ -989,7 +989,7 @@ public class NcmlReader {
             .orElseThrow(() -> new IllegalStateException("Cant find variable " + nameInFile));
       }
     }
-    vb.setName(name).setDataType(dtype);
+    vb.setOriginalName(nameInFile).setName(name).setDataType(dtype);
     if (typedefS != null) {
       vb.setEnumTypeName(typedefS);
     }
