@@ -5,6 +5,7 @@ netcdf test_enum_3 {
   group: h {
     variables:
       enum cloud_class_t primary_cloud;
+        primary_cloud:_DAP4_Checksum_CRC32 = -1526341861;
 
   }
 

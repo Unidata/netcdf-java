@@ -94,7 +94,6 @@ public class DMRPrinter {
   // Following extracted from context
   protected ByteOrder order = null;
   protected Map<DapVariable, Long> localchecksummap = null;
-  protected Map<DapVariable, Long> remotechecksummap = null;
 
   protected EnumSet<Controls> controls = EnumSet.noneOf(Controls.class);
 
@@ -120,8 +119,7 @@ public class DMRPrinter {
     this.format = (format == null ? ResponseFormat.XML : format);
     this.cxt = (cxt == null ? new DapContext() : cxt);
     this.order = (ByteOrder) this.cxt.get(DapConstants.DAP4ENDIANTAG);
-    this.localchecksummap = (Map<DapVariable, Long>) this.cxt.get("localchecksummap");
-    this.remotechecksummap = (Map<DapVariable, Long>) this.cxt.get("remotechecksummap");
+    this.localchecksummap = (Map<DapVariable, Long>) this.cxt.get("checksummap");
   }
 
   //////////////////////////////////////////////////

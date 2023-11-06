@@ -179,7 +179,7 @@ public abstract class CDMUtil {
   }
 
   public static boolean hasVLEN(List<Range> ranges) {
-    if (ranges == null || ranges.size() == 0)
+    if (ranges == null || ranges.isEmpty())
       return false;
     return ranges.get(ranges.size() - 1) == Range.VLEN;
   }
@@ -213,7 +213,7 @@ public abstract class CDMUtil {
    * @return effective shape
    */
   public static int[] computeEffectiveShape(List<DapDimension> dimset) {
-    if (dimset == null || dimset.size() == 0)
+    if (dimset == null || dimset.isEmpty())
       return new int[0];
     int effectiverank = dimset.size();
     int[] shape = new int[effectiverank];

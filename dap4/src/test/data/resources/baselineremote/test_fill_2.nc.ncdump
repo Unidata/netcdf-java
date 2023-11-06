@@ -7,15 +7,19 @@ netcdf test_fill_2 {
   variables:
     enum cloud_class_t enumvar(d2);
       string enumvar:_FillValue = "Missing";
+      enumvar:_DAP4_Checksum_CRC32 = -1286267696;
 
     int uv32(d2);
       uv32:_FillValue = 17;
+      uv32:_DAP4_Checksum_CRC32 = 1019008870;
 
     ubyte uv8(d2);
       uv8:_FillValue = 120B;
+      uv8:_DAP4_Checksum_CRC32 = 196807244;
 
     short v16(d2);
       v16:_FillValue = -37S;
+      v16:_DAP4_Checksum_CRC32 = 1719923210;
 
   // global attributes:
   :_DAP4_Little_Endian = 1B;

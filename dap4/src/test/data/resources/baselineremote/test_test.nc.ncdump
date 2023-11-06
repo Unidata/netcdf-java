@@ -4,6 +4,7 @@ netcdf test_test {
 
   variables:
     enum enum_t v1;
+      v1:_DAP4_Checksum_CRC32 = -1526341861;
 
   // global attributes:
   :_DAP4_Little_Endian = 1B;

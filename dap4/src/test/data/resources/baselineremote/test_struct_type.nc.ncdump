@@ -3,10 +3,13 @@ netcdf test_struct_type {
 
     Structure {
       int x;
+        x:_DAP4_Checksum_CRC32 = 0;
         string x:_CoordinateAxisType = "GeoX";
       int y;
+        y:_DAP4_Checksum_CRC32 = 0;
         string y:_CoordinateAxisType = "GeoY";
     } s;
+    s:_DAP4_Checksum_CRC32 = -812672911;
 
 
   // global attributes:

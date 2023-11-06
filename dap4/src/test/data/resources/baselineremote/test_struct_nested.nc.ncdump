@@ -5,18 +5,25 @@ netcdf test_struct_nested {
 
       Structure {
         int x;
+          x:_DAP4_Checksum_CRC32 = 0;
           string x:_CoordinateAxisType = "GeoX";
         int y;
+          y:_DAP4_Checksum_CRC32 = 0;
           string y:_CoordinateAxisType = "GeoY";
       } field1;
+      field1:_DAP4_Checksum_CRC32 = 0;
 
 
       Structure {
         int x;
+          x:_DAP4_Checksum_CRC32 = 0;
         int y;
+          y:_DAP4_Checksum_CRC32 = 0;
       } field2;
+      field2:_DAP4_Checksum_CRC32 = 0;
 
     } x;
+    x:_DAP4_Checksum_CRC32 = -542685669;
 
 
   // global attributes:
