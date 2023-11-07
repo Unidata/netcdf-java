@@ -111,7 +111,7 @@ public class TestDiscontiguousInterval {
 
   @Test
   @Category(NeedsCdmUnitTest.class)
-  public void testFeatureColectionBest_isStrictlyMonotonicallyIncreasing() throws IOException {
+  public void testFeatureCollectionBest_isStrictlyMonotonicallyIncreasing() throws IOException {
     final String spec =
         TestDir.cdmUnitTestDir + "/gribCollections/gfs_conus80/20231027/GFS_CONUS_80km_#yyyyMMdd_HHmm#\\.grib1$";
     final FeatureCollectionConfig config = new FeatureCollectionConfig("testFeatureCollectionBest", "path",
