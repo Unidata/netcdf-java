@@ -11,15 +11,11 @@ import java.util.Formatter;
 import thredds.featurecollection.FeatureCollectionConfig;
 import ucar.nc2.Attribute;
 import ucar.nc2.AttributeContainer;
-import ucar.nc2.NetcdfFile;
-import ucar.nc2.NetcdfFiles;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.DataFormatType;
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.ft2.coverage.CoverageCollection;
 import ucar.nc2.grib.coverage.GribCoverageDataset;
-import ucar.unidata.io.RandomAccessFile;
 
 /**
  * PartitionCollection for Grib2.
@@ -38,9 +34,7 @@ public class Grib2Partition extends PartitionCollectionImmutable implements Clos
       FeatureCollectionConfig config, Formatter errlog, org.slf4j.Logger logger) throws IOException {
 
     ucar.nc2.grib.collection.Grib2Iosp iosp = new ucar.nc2.grib.collection.Grib2Iosp(group, ds.getType());
-    RandomAccessFile raf = (RandomAccessFile) iosp.sendIospMessage(NetcdfFile.IOSP_MESSAGE_RANDOM_ACCESS_FILE);
-    NetcdfFile ncfile = NetcdfFiles.build(iosp, raf, getLocation(), null);
-    return NetcdfDatasets.enhance(ncfile, NetcdfDataset.getDefaultEnhanceMode(), null);
+    return buildNetcdfDataset(iosp, getLocation());
   }
 
   @Override
@@ -48,9 +42,7 @@ public class Grib2Partition extends PartitionCollectionImmutable implements Clos
       FeatureCollectionConfig config, Formatter errlog, org.slf4j.Logger logger) throws IOException {
 
     ucar.nc2.grib.collection.Grib2Iosp iosp = new ucar.nc2.grib.collection.Grib2Iosp(group, ds.getType());
-    RandomAccessFile raf = (RandomAccessFile) iosp.sendIospMessage(NetcdfFile.IOSP_MESSAGE_RANDOM_ACCESS_FILE);
-    NetcdfFile ncfile = NetcdfFiles.build(iosp, raf, getLocation(), null);
-    NetcdfDataset ncd = NetcdfDatasets.enhance(ncfile, NetcdfDataset.getDefaultEnhanceMode(), null);
+    NetcdfDataset ncd = buildNetcdfDataset(iosp, getLocation());
     return new ucar.nc2.dt.grid.GridDataset(ncd);
   }
 
