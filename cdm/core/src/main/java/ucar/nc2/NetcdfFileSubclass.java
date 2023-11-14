@@ -16,7 +16,9 @@ import java.io.IOException;
  *
  * @author caron
  * @since 10/29/2014
+ * @deprecated Use NetcdfFile.builder(). Remove in v6
  */
+@Deprecated
 public class NetcdfFileSubclass extends NetcdfFile {
 
   public NetcdfFileSubclass() {}
