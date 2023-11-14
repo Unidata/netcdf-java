@@ -6,6 +6,7 @@
 package ucar.nc2.grib.collection;
 
 import javax.annotation.Nullable;
+import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.grib.coord.CoordinateTimeAbstract;
 import ucar.ma2.Array;
 import ucar.nc2.*;
@@ -20,6 +21,7 @@ import ucar.nc2.grib.GribNumbers;
 import ucar.nc2.grib.GribTables;
 import ucar.nc2.grib.coverage.GribCoverageDataset;
 import ucar.nc2.grib.grib2.table.Grib2Tables;
+import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.StringUtil2;
 import java.io.IOException;
 import java.util.Formatter;
@@ -43,8 +45,9 @@ public class Grib2Collection extends GribCollectionImmutable {
 
     if (filename == null) {
       Grib2Iosp iosp = new Grib2Iosp(group, ds.getType());
-      NetcdfFile ncfile = new NetcdfFileSubclass(iosp, null, getLocation(), null);
-      return new NetcdfDataset(ncfile);
+      RandomAccessFile raf = (RandomAccessFile) iosp.sendIospMessage(NetcdfFile.IOSP_MESSAGE_RANDOM_ACCESS_FILE);
+      NetcdfFile ncfile = NetcdfFiles.build(iosp, raf, getLocation(), null);
+      return NetcdfDatasets.enhance(ncfile, NetcdfDataset.getDefaultEnhanceMode(), null);
 
     } else {
       MFile wantFile = findMFileByName(filename);
@@ -55,8 +58,9 @@ public class Grib2Collection extends GribCollectionImmutable {
           return null;
 
         Grib2Iosp iosp = new Grib2Iosp(gc);
-        NetcdfFile ncfile = new NetcdfFileSubclass(iosp, null, getLocation(), null);
-        return new NetcdfDataset(ncfile);
+        RandomAccessFile raf = (RandomAccessFile) iosp.sendIospMessage(NetcdfFile.IOSP_MESSAGE_RANDOM_ACCESS_FILE);
+        NetcdfFile ncfile = NetcdfFiles.build(iosp, raf, getLocation(), null);
+        return NetcdfDatasets.enhance(ncfile, NetcdfDataset.getDefaultEnhanceMode(), null);
       }
       return null;
     }
@@ -69,8 +73,9 @@ public class Grib2Collection extends GribCollectionImmutable {
 
     if (filename == null) {
       Grib2Iosp iosp = new Grib2Iosp(group, ds.getType());
-      NetcdfFile ncfile = new NetcdfFileSubclass(iosp, null, getLocation() + "#" + group.getId(), null);
-      NetcdfDataset ncd = new NetcdfDataset(ncfile);
+      RandomAccessFile raf = (RandomAccessFile) iosp.sendIospMessage(NetcdfFile.IOSP_MESSAGE_RANDOM_ACCESS_FILE);
+      NetcdfFile ncfile = NetcdfFiles.build(iosp, raf, getLocation() + "#" + group.getId(), null);
+      NetcdfDataset ncd = NetcdfDatasets.enhance(ncfile, NetcdfDataset.getDefaultEnhanceMode(), null);
       return new ucar.nc2.dt.grid.GridDataset(ncd); // LOOK - replace with custom GridDataset??
 
     } else {
@@ -82,8 +87,9 @@ public class Grib2Collection extends GribCollectionImmutable {
           return null;
 
         Grib2Iosp iosp = new Grib2Iosp(gc);
-        NetcdfFile ncfile = new NetcdfFileSubclass(iosp, null, getLocation(), null);
-        NetcdfDataset ncd = new NetcdfDataset(ncfile);
+        RandomAccessFile raf = (RandomAccessFile) iosp.sendIospMessage(NetcdfFile.IOSP_MESSAGE_RANDOM_ACCESS_FILE);
+        NetcdfFile ncfile = NetcdfFiles.build(iosp, raf, getLocation(), null);
+        NetcdfDataset ncd = NetcdfDatasets.enhance(ncfile, NetcdfDataset.getDefaultEnhanceMode(), null);
         return new ucar.nc2.dt.grid.GridDataset(ncd); // LOOK - replace with custom GridDataset??
       }
       return null;
