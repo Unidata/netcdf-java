@@ -212,6 +212,11 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
     }
     // make sure parent methods do not try to read from the orgVar again
     this.wasRead = true;
+    if (orgVar instanceof CoordinateAxis1D) {
+      CoordinateAxis1D orgAxis = (CoordinateAxis1D) orgVar;
+      this.wasRead = orgAxis.wasRead;
+      this.coords = orgAxis.coords;
+    }
   }
 
   ////////////////////////////////////////////////////////////////////////
@@ -338,6 +343,8 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
     List<CalendarDate> result = new ArrayList<>(ncoords);
 
     Array data = org.read();
+    coords = (double[]) data.get1DJavaArray(DataType.DOUBLE);
+    this.wasRead = true;
 
     int count = 0;
     IndexIterator ii = data.getIndexIterator();

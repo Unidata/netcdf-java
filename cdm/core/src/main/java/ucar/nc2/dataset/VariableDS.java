@@ -907,6 +907,9 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
     builder.setOriginalVariable(this.orgVar).setOriginalDataType(this.orgDataType).setOriginalName(this.orgName)
         .setOriginalFileTypeId(this.orgFileTypeId).setEnhanceMode(this.enhanceMode).setUnits(this.enhanceProxy.units)
         .setDesc(this.enhanceProxy.desc);
+    if (this.coordSysNames != null) {
+      this.coordSysNames.stream().forEach(s -> builder.addCoordinateSystemName(s));
+    }
 
     return (VariableDS.Builder<?>) super.addLocalFieldsToBuilder(builder);
   }

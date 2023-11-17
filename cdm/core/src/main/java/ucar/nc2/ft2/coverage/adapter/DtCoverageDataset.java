@@ -13,11 +13,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import ucar.nc2.Attribute;
-import ucar.nc2.Dimension;
-import ucar.nc2.NetcdfFile;
-import ucar.nc2.Variable;
-import ucar.nc2.VariableSimpleIF;
+
+import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.CoordinateAxis;
@@ -113,13 +110,11 @@ public class DtCoverageDataset implements Closeable {
    * @throws java.io.IOException on read error
    */
   public DtCoverageDataset(NetcdfDataset ncd, Formatter parseInfo) throws IOException {
-    this.ncd = ncd;
-
     Set<NetcdfDataset.Enhance> enhance = ncd.getEnhanceMode();
     if (enhance == null || enhance.isEmpty()) {
       enhance = NetcdfDataset.getDefaultEnhanceMode();
     }
-    ncd = NetcdfDatasets.enhance(ncd, enhance, null);
+    this.ncd = NetcdfDatasets.enhance(ncd, enhance, null);
 
     // sort by largest size first
     List<CoordinateSystem> csList = new ArrayList<>(ncd.getCoordinateSystems());

@@ -53,8 +53,7 @@ public class TestEnhance {
       Variable scaledvar = ncfile.findVariable("scaledvar");
       assertThat((Object) scaledvar).isNotNull();
       assertThat(scaledvar.getDataType()).isEqualTo(DataType.SHORT);
-      assertThat(scaledvar.attributes().hasAttribute("scale_factor")).isTrue();
-      assertThat(scaledvar.attributes().findAttributeDouble("scale_factor", 1.0)).isEqualTo(2.0);
+      assertThat(scaledvar.attributes().hasAttribute("scale_factor")).isFalse();
       assertThat(scaledvar.readScalarShort()).isEqualTo(1);
     }
   }
@@ -72,8 +71,7 @@ public class TestEnhance {
       Variable scaledvar = ncfile.findVariable("scaledvar");
       assertThat((Object) scaledvar).isNotNull();
       assertThat(scaledvar.getDataType()).isEqualTo(DataType.FLOAT);
-      assertThat(scaledvar.attributes().hasAttribute("scale_factor")).isTrue();
-      assertThat(scaledvar.attributes().findAttributeDouble("scale_factor", 1.0)).isEqualTo(2.0);
+      assertThat(scaledvar.attributes().hasAttribute("scale_factor")).isFalse();
       assertThat(scaledvar.readScalarFloat()).isEqualTo(12.0f);
     }
   }
@@ -91,8 +89,7 @@ public class TestEnhance {
       Variable scaledvar = ncfile.findVariable("scaledvar");
       assertThat((Object) scaledvar).isNotNull();
       assertThat(scaledvar.getDataType()).isEqualTo(DataType.FLOAT);
-      assertThat(scaledvar.attributes().hasAttribute("scale_factor")).isTrue();
-      assertThat(scaledvar.attributes().findAttributeDouble("scale_factor", 1.0)).isEqualTo(2.0);
+      assertThat(scaledvar.attributes().hasAttribute("scale_factor")).isFalse();
       assertThat(scaledvar.readScalarFloat()).isEqualTo(12.0f);
     }
   }

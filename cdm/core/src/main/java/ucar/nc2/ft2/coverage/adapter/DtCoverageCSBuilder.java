@@ -5,6 +5,7 @@
 package ucar.nc2.ft2.coverage.adapter;
 
 import com.google.common.collect.Lists;
+import thredds.client.catalog.builder.DatasetBuilder;
 import ucar.nc2.Dimension;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.FeatureType;
@@ -179,6 +180,7 @@ public class DtCoverageCSBuilder {
 
     //////////////////////////////////////////////////////////////
     // time
+    boolean axesChanged = false; // if any time axes are rebuilt by the factory, we need to update the netcdfDataset
     CoordinateAxis rt = cs.findAxis(AxisType.RunTime);
     if (rt != null) {
       if (!rt.isScalar() && !(rt instanceof CoordinateAxis1D)) { // A runtime axis must be scalar or one-dimensional
