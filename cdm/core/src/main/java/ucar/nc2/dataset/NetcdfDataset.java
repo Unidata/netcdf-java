@@ -932,10 +932,6 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     return ImmutableList.copyOf(coordAxes);
   }
 
-  public void setCoordinateAxes(List<CoordinateAxis> axes) {
-    this.coordAxes = axes;
-  }
-
   /**
    * Clear Coordinate System metadata, to allow them to be redone
    * 
@@ -1712,7 +1708,6 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
       group.replaceVariable(axis);
       axis.setParentGroupBuilder(group);
     }
-
 
     public T setOrgFile(NetcdfFile orgFile) {
       this.orgFile = orgFile;

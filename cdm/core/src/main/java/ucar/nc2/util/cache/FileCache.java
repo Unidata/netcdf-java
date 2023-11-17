@@ -390,10 +390,6 @@ public class FileCache implements FileCacheIF {
     return want.ncfile;
   }
 
-  public void replace (Object oldHashKey, Object newHasKey){
-
-  }
-
   // LOOK should you remove the entire CacheElement ?
   private void remove(CacheElement.CacheFile want) {
     want.remove();

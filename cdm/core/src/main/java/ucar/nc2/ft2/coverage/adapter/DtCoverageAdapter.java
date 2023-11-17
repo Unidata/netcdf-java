@@ -155,7 +155,7 @@ public class DtCoverageAdapter implements CoverageReader, CoordAxisReader {
 
   private static ucar.nc2.util.Optional<CoverageCoordAxis> makeCoordAxis(FeatureType ftype,
       ucar.nc2.dataset.CoordinateAxis dtCoordAxis, DtCoverageAdapter reader) {
-   String name = dtCoordAxis.getFullName();
+    String name = dtCoordAxis.getFullName();
     DataType dataType = dtCoordAxis.getDataType();
     AxisType axisType = dtCoordAxis.getAxisType();
     String units = dtCoordAxis.getUnitsString();

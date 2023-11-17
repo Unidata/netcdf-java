@@ -13,7 +13,6 @@ import ucar.nc2.dataset.spi.NetcdfFileProvider;
 import ucar.nc2.internal.dataset.DatasetEnhancer;
 import ucar.nc2.internal.ncml.NcmlReader;
 import ucar.nc2.util.CancelTask;
-import ucar.nc2.util.CompareNetcdf2;
 import ucar.nc2.util.cache.FileCache;
 import ucar.nc2.util.cache.FileCacheIF;
 import ucar.nc2.util.cache.FileFactory;

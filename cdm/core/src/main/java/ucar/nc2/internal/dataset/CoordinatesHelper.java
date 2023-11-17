@@ -53,14 +53,9 @@ public class CoordinatesHelper {
     return coordTransforms;
   }
 
-  // make another constructor that takes a list of axes?
   private CoordinatesHelper(Builder builder, NetcdfDataset ncd) {
     List<CoordinateAxis> axes = new ArrayList<>();
-//    if (builder.coordAxes == null || builder.coordAxes.isEmpty()) {
-      addAxes(ncd.getRootGroup(), axes);
-//    } else {
-//      axes = builder.coordAxes.stream().map(ct -> ct.build(ncd.getRootGroup())).filter(Objects::nonNull).collect(Collectors.toList());
-//    }
+    addAxes(ncd.getRootGroup(), axes);
     coordAxes = ImmutableList.copyOf(axes);
 
     coordTransforms =
