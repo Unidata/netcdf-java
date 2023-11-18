@@ -53,8 +53,10 @@ public class WriterCFPointCollection extends CFPointWriter {
     Formatter coordNames =
         new Formatter().format("%s %s %s", pf.getFeatureCollection().getTimeName(), latName, lonName);
     if (altUnits != null) {
-      coords.add(VariableSimpleBuilder.makeScalar(pf.getFeatureCollection().getAltName(), "altitude of measurement", altUnits, DataType.DOUBLE)
-          .addAttribute(CF.POSITIVE, CF1Convention.getZisPositive(pf.getFeatureCollection().getAltName(), altUnits)).build());
+      coords.add(VariableSimpleBuilder
+          .makeScalar(pf.getFeatureCollection().getAltName(), "altitude of measurement", altUnits, DataType.DOUBLE)
+          .addAttribute(CF.POSITIVE, CF1Convention.getZisPositive(pf.getFeatureCollection().getAltName(), altUnits))
+          .build());
       coordNames.format(" %s", pf.getFeatureCollection().getAltName());
     }
 
@@ -63,16 +65,18 @@ public class WriterCFPointCollection extends CFPointWriter {
 
   public void writeHeader(PointFeatureCollection pfc) throws IOException {
     List<VariableSimpleIF> coords = new ArrayList<>();
-    coords.add(VariableSimpleBuilder.makeScalar(pfc.getTimeName(), "time of measurement", timeUnit.getUdUnit(), DataType.DOUBLE)
-            .addAttribute(CF.CALENDAR, timeUnit.getCalendar().toString()).build());
+    coords.add(VariableSimpleBuilder
+        .makeScalar(pfc.getTimeName(), "time of measurement", timeUnit.getUdUnit(), DataType.DOUBLE)
+        .addAttribute(CF.CALENDAR, timeUnit.getCalendar().toString()).build());
 
     coords.add(
-            VariableSimpleBuilder.makeScalar(latName, "latitude of measurement", CDM.LAT_UNITS, DataType.DOUBLE).build());
+        VariableSimpleBuilder.makeScalar(latName, "latitude of measurement", CDM.LAT_UNITS, DataType.DOUBLE).build());
     coords.add(
-            VariableSimpleBuilder.makeScalar(lonName, "longitude of measurement", CDM.LON_UNITS, DataType.DOUBLE).build());
+        VariableSimpleBuilder.makeScalar(lonName, "longitude of measurement", CDM.LON_UNITS, DataType.DOUBLE).build());
     Formatter coordNames = new Formatter().format("%s %s %s", timeName, latName, lonName);
     if (altUnits != null) {
-      coords.add(VariableSimpleBuilder.makeScalar(pfc.getAltName(), "altitude of measurement", altUnits, DataType.DOUBLE)
+      coords
+          .add(VariableSimpleBuilder.makeScalar(pfc.getAltName(), "altitude of measurement", altUnits, DataType.DOUBLE)
               .addAttribute(CF.POSITIVE, CF1Convention.getZisPositive(altName, altUnits)).build());
       coordNames.format(" %s", pfc.getAltName());
     }
@@ -80,7 +84,7 @@ public class WriterCFPointCollection extends CFPointWriter {
     super.writeHeader(coords, pfc, null);
   }
 
-  protected void makeFeatureVariables(StructureData featureData, boolean isExtended) {
+  protected void makeFeatureVariables(List<StructureData> featureData, boolean isExtended) {
     // NOOP
   }
 
@@ -88,18 +92,19 @@ public class WriterCFPointCollection extends CFPointWriter {
   // writing data
 
   public void writeRecord(PointFeature sobs, StructureData sdata) throws IOException {
-    writeRecord(sobs.getFeatureCollection().getTimeName(), sobs.getObservationTime(), sobs.getObservationTimeAsCalendarDate(), sobs.getFeatureCollection().getAltName(), sobs.getLocation(), sdata);
+    writeRecord(sobs.getFeatureCollection().getTimeName(), sobs.getObservationTime(),
+        sobs.getObservationTimeAsCalendarDate(), sobs.getFeatureCollection().getAltName(), sobs.getLocation(), sdata);
   }
 
   private int obsRecno;
 
   public void writeRecord(double timeCoordValue, CalendarDate obsDate, EarthLocation loc, StructureData sdata)
-          throws IOException {
+      throws IOException {
     writeRecord(timeName, timeCoordValue, obsDate, altName, loc, sdata);
   }
 
-  public void writeRecord(String timeName, double timeCoordValue, CalendarDate obsDate, String altName, EarthLocation loc, StructureData sdata)
-          throws IOException {
+  public void writeRecord(String timeName, double timeCoordValue, CalendarDate obsDate, String altName,
+      EarthLocation loc, StructureData sdata) throws IOException {
     trackBB(loc.getLatLon(), obsDate);
 
     StructureMembers.Builder smb = StructureMembers.builder().setName("Coords");
