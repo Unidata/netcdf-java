@@ -32,13 +32,14 @@
 
 package ucar.nc2.util.net;
 
+import static com.google.common.truth.Truth.assertWithMessage;
+
 import org.apache.http.Header;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.Credentials;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.impl.client.BasicCredentialsProvider;
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
@@ -84,18 +85,18 @@ public class TestHTTPSession extends UnitTestCommon {
       // Use special interface to access the request
       // Look for the user agent header
       agents = session.getDebugRequestInterceptor().getHeaders(HTTPSession.HEADER_USERAGENT);
-      Assert.assertFalse("User-Agent Header not found", agents.size() == 0);
+      assertWithMessage("User-Agent Header not found").that(agents.size()).isNotEqualTo(0);
       // It is possible to see multiple same headers, so verify that they have same value
       String agentvalue = null;
       for (Header h : agents) {
-        Assert.assertTrue("Bad Agent Header", h.getName().equals("User-Agent"));
+        assertWithMessage("Bad Agent Header").that(h.getName()).isEqualTo("User-Agent");
         if (agentvalue == null)
           agentvalue = h.getValue();
         else
-          Assert.assertTrue("Bad Agent Value", h.getValue().equals(agentvalue));
+          assertWithMessage("Bad Agent Value").that(h.getValue()).isEqualTo(agentvalue);
       }
-      Assert.assertTrue(String.format("User-Agent mismatch: expected %s found:%s", GLOBALAGENT, agentvalue),
-          GLOBALAGENT.equals(agentvalue));
+      assertWithMessage(String.format("User-Agent mismatch: expected %s found:%s", GLOBALAGENT, agentvalue))
+          .that(GLOBALAGENT).isEqualTo(agentvalue);
       logger.debug("*** Pass: set global agent");
       // method.close();
 
@@ -106,17 +107,17 @@ public class TestHTTPSession extends UnitTestCommon {
       method.execute();
       // Use special interface to access the request
       agents = session.getDebugRequestInterceptor().getHeaders(HTTPSession.HEADER_USERAGENT);
-      Assert.assertFalse("User-Agent Header not found", agents.size() == 0);
+      assertWithMessage("User-Agent Header not found").that(agents.size()).isNotEqualTo(0);
       agentvalue = null;
       for (Header h : agents) {
-        Assert.assertTrue("Bad Agent Header", h.getName().equals("User-Agent"));
+        assertWithMessage("Bad Agent Header").that(h.getName()).isEqualTo("User-Agent");
         if (agentvalue == null)
           agentvalue = h.getValue();
         else
-          Assert.assertTrue("Bad Agent Value", h.getValue().equals(agentvalue));
+          assertWithMessage("Bad Agent Value").that(h.getValue()).isEqualTo(agentvalue);
       }
-      Assert.assertTrue(String.format("User-Agent mismatch: expected %s found:%s", SESSIONAGENT, agentvalue),
-          SESSIONAGENT.equals(agentvalue));
+      assertWithMessage(String.format("User-Agent mismatch: expected %s found:%s", SESSIONAGENT, agentvalue))
+          .that(SESSIONAGENT).isEqualTo(agentvalue);
       logger.debug("*** Pass: set session agent");
       method.close();
     }
@@ -144,22 +145,22 @@ public class TestHTTPSession extends UnitTestCommon {
 
       boolean b = dbgcfg.isCircularRedirectsAllowed();
       logger.debug("Test: Circular Redirects");
-      Assert.assertTrue("*** Fail: Circular Redirects", b);
+      assertWithMessage("*** Fail: Circular Redirects").that(b).isTrue();
       logger.debug("*** Pass: Circular Redirects");
 
       logger.debug("Test: Max Redirects");
       int n = dbgcfg.getMaxRedirects();
-      Assert.assertTrue("*** Fail: Max Redirects", n == 111);
+      assertWithMessage("*** Fail: Max Redirects").that(n).isEqualTo(111);
       logger.debug("*** Pass: Max Redirects");
 
       logger.debug("Test: SO Timeout");
       n = dbgcfg.getSocketTimeout();
-      Assert.assertTrue("*** Fail: SO Timeout", n == 17777);
+      assertWithMessage("*** Fail: SO Timeout").that(n).isEqualTo(17777);
       logger.debug("*** Pass: SO Timeout");
 
       logger.debug("Test: Connection Timeout");
       n = dbgcfg.getConnectTimeout();
-      Assert.assertTrue("*** Fail: Connection Timeout", n == 37777);
+      assertWithMessage("*** Fail: Connection Timeout").that(n).isEqualTo(37777);
       logger.debug("*** Pass: SO Timeout");
       method.close();
     }
