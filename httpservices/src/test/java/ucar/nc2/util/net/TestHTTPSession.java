@@ -38,7 +38,6 @@ import org.apache.http.auth.Credentials;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.impl.client.BasicCredentialsProvider;
-import org.apache.http.message.BasicHeader;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -56,27 +55,12 @@ import ucar.unidata.util.test.category.NeedsExternalResource;
 public class TestHTTPSession extends UnitTestCommon {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  //////////////////////////////////////////////////
-  // Constants
-
-  // static final String TESTURL1 = "http://" + TestDir.dap2TestServer + "/dts/test.01.dds";
   static final String TESTURL1 = "https://thredds-dev.unidata.ucar.edu";
   static final String GLOBALAGENT = "TestUserAgent123global";
   static final String SESSIONAGENT = "TestUserAgent123session";
 
   static final String USER = "dmh";
   static final String PWD = "FakDennisPassword";
-  //////////////////////////////////////////////////
-  // Define the test sets
-
-  int passcount = 0;
-  int xfailcount = 0;
-  int failcount = 0;
-  boolean verbose = true;
-  boolean pass = false;
-
-  String datadir = null;
-  String threddsroot = null;
 
   public TestHTTPSession() {
     super();
