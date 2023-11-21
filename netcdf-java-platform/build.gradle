@@ -44,7 +44,7 @@ dependencies {
     api 'org.jsoup:jsoup:1.11.2' // HTML scraper used in GRIB
 
     // cdm-mcidas (GEMPAK and McIDAS IOSPs)
-    api 'edu.wisc.ssec:visad-mcidas-slim-ucar-ns:20200507-2'
+    api 'edu.wisc.ssec:visad-mcidas-slim-ucar-ns:20231121'
 
     // cdm-vis5d (vis5d IOSP)
     api 'edu.wisc.ssec:visad:2.0-20130124'
