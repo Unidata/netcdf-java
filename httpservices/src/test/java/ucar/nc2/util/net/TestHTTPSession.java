@@ -56,7 +56,7 @@ import ucar.unidata.util.test.category.NeedsExternalResource;
 public class TestHTTPSession extends UnitTestCommon {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  static final String TESTURL1 = "https://thredds-dev.unidata.ucar.edu";
+  static final String TESTURL1 = "https://thredds-test.unidata.ucar.edu";
   static final String GLOBALAGENT = "TestUserAgent123global";
   static final String SESSIONAGENT = "TestUserAgent123session";
 
