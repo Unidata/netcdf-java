@@ -212,11 +212,6 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
     }
     // make sure parent methods do not try to read from the orgVar again
     this.wasRead = true;
-    if (orgVar instanceof CoordinateAxis1D) {
-      CoordinateAxis1D orgAxis = (CoordinateAxis1D) orgVar;
-      this.wasRead = orgAxis.wasRead;
-      this.coords = orgAxis.coords;
-    }
   }
 
   ////////////////////////////////////////////////////////////////////////
