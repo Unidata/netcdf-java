@@ -342,12 +342,12 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
     int ncoords = (int) org.getSize();
     List<CalendarDate> result = new ArrayList<>(ncoords);
 
-     if(org instanceof CoordinateAxis1D) {
-       coords = ((CoordinateAxis1D)org).getCoordValues();
-     } else {
-       Array data = org.read();
-       coords = (double[]) data.get1DJavaArray(DataType.DOUBLE);
-     }
+    if (org instanceof CoordinateAxis1D) {
+      coords = ((CoordinateAxis1D) org).getCoordValues();
+    } else {
+      Array data = org.read();
+      coords = (double[]) data.get1DJavaArray(DataType.DOUBLE);
+    }
     this.wasRead = true;
 
     int count = 0;
