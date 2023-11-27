@@ -277,7 +277,6 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
       if (enhancements.contains(Enhance.ApplyNormalizer) && normalizer != null) {
         data = normalizer.convert(data);
       }
-      this.wasConverted = true;
       return data;
     }
   }
@@ -444,7 +443,7 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
       result = proxyReader.reallyRead(this, null);
     }
 
-    return wasConverted ? result : convert(result);
+    return convert(result);
   }
 
   // section of regular Variable
@@ -461,8 +460,7 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
     } else {
       result = proxyReader.reallyRead(this, section, null);
     }
-
-    return wasConverted ? result : convert(result);
+    return convert(result);
   }
 
   // do not call directly
@@ -820,8 +818,6 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
 
   private boolean hasFillValue = false;
   private double fillValue = Double.MAX_VALUE;
-
-  protected boolean wasConverted = false;
 
   protected VariableDS(Builder<?> builder, Group parentGroup) {
     super(builder, parentGroup);
