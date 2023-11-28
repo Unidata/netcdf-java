@@ -8,7 +8,6 @@ package ucar.nc2.dataset;
 import static java.lang.Float.NaN;
 
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -85,7 +84,7 @@ public class TestScaleOffsetMissingUnsigned {
     }
 
     Array readEnhanced;
-
+    // read the packed form, enhance using scale/offset, compare to original
     try (NetcdfDataset ncd = NetcdfDatasets.openDataset(filename)) {
       VariableDS vs = (VariableDS) ncd.findVariable("packed");
       vs.removeEnhancement(Enhance.ConvertMissing);
