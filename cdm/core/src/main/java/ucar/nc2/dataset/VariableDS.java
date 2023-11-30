@@ -436,12 +436,12 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
   @Override
   protected Array _read() throws IOException {
     Array result;
-
     // check if already cached - caching in VariableDS only done explicitly by app
-    if (hasCachedData())
+    if (hasCachedData()) {
       result = super._read();
-    else
+    } else {
       result = proxyReader.reallyRead(this, null);
+    }
 
     return convert(result);
   }
@@ -450,15 +450,16 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
   @Override
   protected Array _read(Section section) throws IOException, InvalidRangeException {
     // really a full read
-    if ((null == section) || section.computeSize() == getSize())
+    if ((null == section) || section.computeSize() == getSize()) {
       return _read();
+    }
 
     Array result;
-    if (hasCachedData())
+    if (hasCachedData()) {
       result = super._read(section);
-    else
+    } else {
       result = proxyReader.reallyRead(this, section, null);
-
+    }
     return convert(result);
   }
 
@@ -840,6 +841,7 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
 
     this.orgFileTypeId = builder.orgFileTypeId;
     this.enhanceProxy = new EnhancementsImpl(this, builder.units, builder.getDescription());
+    this.scaleOffset = builder.scaleOffset;
 
     createEnhancements();
 
@@ -858,7 +860,9 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
       this.dataType = unsignedConversion != null ? unsignedConversion.getOutType() : dataType;
     }
     if (this.enhanceMode.contains(Enhance.ApplyScaleOffset) && (dataType.isNumeric() || dataType == DataType.CHAR)) {
-      this.scaleOffset = ScaleOffset.createFromVariable(this);
+      if (this.scaleOffset == null) {
+        this.scaleOffset = ScaleOffset.createFromVariable(this);
+      }
       this.dataType = scaleOffset != null ? scaleOffset.getScaledOffsetType() : this.dataType;
     }
     Attribute standardizerAtt = findAttribute(CDM.STANDARDIZE);
@@ -902,6 +906,10 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
     builder.setOriginalVariable(this.orgVar).setOriginalDataType(this.orgDataType).setOriginalName(this.orgName)
         .setOriginalFileTypeId(this.orgFileTypeId).setEnhanceMode(this.enhanceMode).setUnits(this.enhanceProxy.units)
         .setDesc(this.enhanceProxy.desc);
+    builder.scaleOffset = this.scaleOffset;
+    if (this.coordSysNames != null) {
+      this.coordSysNames.stream().forEach(s -> builder.addCoordinateSystemName(s));
+    }
 
     return (VariableDS.Builder<?>) super.addLocalFieldsToBuilder(builder);
   }
@@ -943,6 +951,8 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
     private boolean invalidDataIsMissing = NetcdfDataset.invalidDataIsMissing;
     private boolean fillValueIsMissing = NetcdfDataset.fillValueIsMissing;
     private boolean missingDataIsMissing = NetcdfDataset.missingDataIsMissing;
+
+    private ScaleOffset scaleOffset;
 
     private boolean built;
 
@@ -1040,6 +1050,7 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
       setFillValueIsMissing(builder.fillValueIsMissing);
       setInvalidDataIsMissing(builder.invalidDataIsMissing);
       setMissingDataIsMissing(builder.missingDataIsMissing);
+      this.scaleOffset = builder.scaleOffset;
       this.orgVar = builder.orgVar;
       this.orgDataType = builder.orgDataType;
       this.orgFileTypeId = builder.orgFileTypeId;
