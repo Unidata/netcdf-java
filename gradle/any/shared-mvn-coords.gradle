@@ -23,5 +23,5 @@ ext {
   depVersion = [:]
   depVersion.slf4j = '1.7.28'
   depVersion.protobuf = '3.23.0'
-  depVersion.grpc = '1.57.2'
+  depVersion.grpc = '1.59.1'
 }
