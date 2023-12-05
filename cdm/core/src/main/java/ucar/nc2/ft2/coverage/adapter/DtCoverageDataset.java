@@ -109,12 +109,12 @@ public class DtCoverageDataset implements Closeable {
    * @param parseInfo put parse info here, may be null
    * @throws java.io.IOException on read error
    */
-  public DtCoverageDataset(NetcdfDataset ncd, Formatter parseInfo) throws IOException {
-    Set<NetcdfDataset.Enhance> enhance = ncd.getEnhanceMode();
+  public DtCoverageDataset(NetcdfDataset ds, Formatter parseInfo) throws IOException {
+    Set<NetcdfDataset.Enhance> enhance = ds.getEnhanceMode();
     if (enhance == null || enhance.isEmpty()) {
       enhance = NetcdfDataset.getDefaultEnhanceMode();
     }
-    this.ncd = NetcdfDatasets.enhance(ncd, enhance, null);
+    this.ncd = NetcdfDatasets.enhance(ds, enhance, null);
 
     // sort by largest size first
     List<CoordinateSystem> csList = new ArrayList<>(ncd.getCoordinateSystems());
