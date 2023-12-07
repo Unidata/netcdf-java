@@ -310,8 +310,8 @@ public class CoverageAsPoint {
       public PointFeatureCollection next() throws IOException {
         double obsTime = this.timeAxis != null ? this.timeAxis.getCoordMidpoint(curr) : 0.0;
         curr++;
-        return new CoverageAsProfileFeature(obsTime, varGroup.timeAxis.getName(), varGroup.dateUnit, varGroup.zAxis.getName(), varGroup.zUnit, getLatitude(), getLongitude(),
-                this.varIters);
+        return new CoverageAsProfileFeature(obsTime, varGroup.timeAxis.getName(), varGroup.dateUnit,
+            varGroup.zAxis.getName(), varGroup.zUnit, getLatitude(), getLongitude(), this.varIters);
       }
     }
 
