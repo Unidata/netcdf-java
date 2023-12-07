@@ -73,12 +73,10 @@ public class WriterCFPointCollection extends CFPointWriter {
         VariableSimpleBuilder.makeScalar(latName, "latitude of measurement", CDM.LAT_UNITS, DataType.DOUBLE).build());
     coords.add(
         VariableSimpleBuilder.makeScalar(lonName, "longitude of measurement", CDM.LON_UNITS, DataType.DOUBLE).build());
-    Formatter coordNames = new Formatter().format("%s %s %s", timeName, latName, lonName);
     if (altUnits != null) {
       coords
           .add(VariableSimpleBuilder.makeScalar(pfc.getAltName(), "altitude of measurement", altUnits, DataType.DOUBLE)
               .addAttribute(CF.POSITIVE, CF1Convention.getZisPositive(altName, altUnits)).build());
-      coordNames.format(" %s", pfc.getAltName());
     }
 
     super.writeHeader(coords, pfc, null);
