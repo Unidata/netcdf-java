@@ -40,7 +40,7 @@ public class StandardSectionCollectionImpl extends SectionCollectionImpl {
   private NestedTable ft;
 
   StandardSectionCollectionImpl(NestedTable ft, CalendarDateUnit timeUnit, String altUnits) {
-    super(ft.getName(), timeUnit, altUnits);
+    super(ft.getName(), ft.getTimeName(), timeUnit, ft.getAltName(), altUnits);
     this.ft = ft;
     this.extras = ft.getExtras();
   }
@@ -122,8 +122,8 @@ public class StandardSectionCollectionImpl extends SectionCollectionImpl {
     StructureData sectionData;
 
     StandardSectionFeature(Cursor cursor, StructureData sectionData) {
-      super(ft.getFeatureName(cursor), StandardSectionCollectionImpl.this.getTimeUnit(),
-          StandardSectionCollectionImpl.this.getAltUnits());
+      super(ft.getFeatureName(cursor), ft.getTimeName(), StandardSectionCollectionImpl.this.getTimeUnit(),
+          ft.getAltName(), StandardSectionCollectionImpl.this.getAltUnits());
       this.cursor = cursor;
       this.sectionData = sectionData;
     }

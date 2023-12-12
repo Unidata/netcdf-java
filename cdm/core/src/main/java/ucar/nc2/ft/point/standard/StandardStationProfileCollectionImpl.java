@@ -47,7 +47,7 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
   private NestedTable ft;
 
   StandardStationProfileCollectionImpl(NestedTable ft, CalendarDateUnit timeUnit, String altUnits) {
-    super(ft.getName(), timeUnit, altUnits);
+    super(ft.getName(), ft.getTimeName(), timeUnit, ft.getAltName(), altUnits);
     this.ft = ft;
   }
 
