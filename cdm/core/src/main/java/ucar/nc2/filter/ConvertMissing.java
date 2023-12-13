@@ -187,7 +187,14 @@ public class ConvertMissing {
     if (!hasMissingValue) {
       return false;
     }
-    return Arrays.stream(missingValue).anyMatch(mVal -> Misc.nearlyEquals(val, mVal, Misc.defaultMaxRelativeDiffFloat));
+    //return Arrays.stream(missingValue).anyMatch(mVal -> Misc.nearlyEquals(val, mVal, Misc.defaultMaxRelativeDiffFloat));
+
+    for (double aMissingValue : missingValue) {
+      if (Misc.nearlyEquals(val, aMissingValue, Misc.defaultMaxRelativeDiffFloat)) {
+        return true;
+      }
+    }
+    return false;
   }
 
   public double[] getMissingValues() {
