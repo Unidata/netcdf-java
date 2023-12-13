@@ -166,8 +166,12 @@ public class ConvertMissing {
   }
 
   public boolean isInvalidData(double val) {
-    if (val > fuzzyValidMax) { return true; }
-    if (val < fuzzyValidMin) { return true; }
+    if (val > fuzzyValidMax) {
+      return true;
+    }
+    if (val < fuzzyValidMin) {
+      return true;
+    }
     return false;
   }
 
@@ -187,7 +191,8 @@ public class ConvertMissing {
     if (!hasMissingValue) {
       return false;
     }
-    //return Arrays.stream(missingValue).anyMatch(mVal -> Misc.nearlyEquals(val, mVal, Misc.defaultMaxRelativeDiffFloat));
+    // return Arrays.stream(missingValue).anyMatch(mVal -> Misc.nearlyEquals(val, mVal,
+    // Misc.defaultMaxRelativeDiffFloat));
 
     for (double aMissingValue : missingValue) {
       if (Misc.nearlyEquals(val, aMissingValue, Misc.defaultMaxRelativeDiffFloat)) {
@@ -214,7 +219,8 @@ public class ConvertMissing {
     if (Double.isNaN(val)) {
       return true;
     } else {
-      return (missingDataIsMissing && hasMissingValue && isMissingValue(val)) || (fillValueIsMissing && hasFillValue && isFillValue(val))
+      return (missingDataIsMissing && hasMissingValue && isMissingValue(val))
+          || (fillValueIsMissing && hasFillValue && isFillValue(val))
           || (invalidDataIsMissing && hasValidData() && isInvalidData(val));
     }
   }
