@@ -8,10 +8,12 @@ import ucar.nc2.constants.CDM;
 import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.util.Misc;
 
+import java.util.Arrays;
+
 public class ConvertMissing {
 
   private boolean hasValidMin, hasValidMax;
-  private double validMin, validMax;
+  private double validMin, validMax, fuzzyValidMin, fuzzyValidMax;
 
   private boolean hasFillValue;
   private double fillValue; // LOOK: making it double not really correct. What about CHAR?
@@ -142,7 +144,9 @@ public class ConvertMissing {
     this.hasValidMin = hasValidMin;
     this.hasValidMax = hasValidMax;
     this.validMin = validMin;
+    this.fuzzyValidMin = validMin - Misc.defaultMaxRelativeDiffFloat;
     this.validMax = validMax;
+    this.fuzzyValidMax = validMax + Misc.defaultMaxRelativeDiffFloat;
     this.hasFillValue = hasFillValue;
     this.fillValue = fillValue;
     this.hasMissingValue = hasMissingValue;
@@ -162,15 +166,9 @@ public class ConvertMissing {
   }
 
   public boolean isInvalidData(double val) {
-    // valid_min and valid_max may have been multiplied by scale_factor, which could be a float, not a double.
-    // That potential loss of precision means that we cannot do the nearlyEquals() comparison with
-    // Misc.defaultMaxRelativeDiffDouble.
-    boolean greaterThanOrEqualToValidMin =
-        Misc.nearlyEquals(val, validMin, Misc.defaultMaxRelativeDiffFloat) || val > validMin;
-    boolean lessThanOrEqualToValidMax =
-        Misc.nearlyEquals(val, validMax, Misc.defaultMaxRelativeDiffFloat) || val < validMax;
-
-    return (hasValidMin && !greaterThanOrEqualToValidMin) || (hasValidMax && !lessThanOrEqualToValidMax);
+    if (val > fuzzyValidMax) { return true; }
+    if (val < fuzzyValidMin) { return true; }
+    return false;
   }
 
   public boolean hasFillValue() {
@@ -189,12 +187,7 @@ public class ConvertMissing {
     if (!hasMissingValue) {
       return false;
     }
-    for (double aMissingValue : missingValue) {
-      if (Misc.nearlyEquals(val, aMissingValue, Misc.defaultMaxRelativeDiffFloat)) {
-        return true;
-      }
-    }
-    return false;
+    return Arrays.stream(missingValue).anyMatch(mVal -> Misc.nearlyEquals(val, mVal, Misc.defaultMaxRelativeDiffFloat));
   }
 
   public double[] getMissingValues() {
@@ -214,8 +207,8 @@ public class ConvertMissing {
     if (Double.isNaN(val)) {
       return true;
     } else {
-      return (missingDataIsMissing && isMissingValue(val)) || (fillValueIsMissing && isFillValue(val))
-          || (invalidDataIsMissing && isInvalidData(val));
+      return (missingDataIsMissing && hasMissingValue && isMissingValue(val)) || (fillValueIsMissing && hasFillValue && isFillValue(val))
+          || (invalidDataIsMissing && hasValidData() && isInvalidData(val));
     }
   }
 
