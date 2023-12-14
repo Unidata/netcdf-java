@@ -64,7 +64,7 @@ public class TestCoverageProjection {
           .that(projectionRect.nearlyEquals(expectedProjectionRect)).isTrue();
 
       final LatLonRect expectedLatLonRect =
-          new LatLonRect(LatLonPoint.create(18.4184, -143.143), LatLonPoint.create(43.3274, -79.9189));
+          new LatLonRect(LatLonPoint.create(18.41837, -143.143), LatLonPoint.create(43.32738, -79.91893));
       final LatLonRect latLonRect = horizCoordSys.calcLatLonBoundingBox();
       assertWithMessage("actual: " + latLonRect + ", expected: " + expectedLatLonRect)
           .that(latLonRect.nearlyEquals(expectedLatLonRect)).isTrue();

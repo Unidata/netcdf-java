@@ -9,6 +9,8 @@ import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.util.Misc;
 
 import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class ConvertMissing {
 
@@ -191,8 +193,6 @@ public class ConvertMissing {
     if (!hasMissingValue) {
       return false;
     }
-    // return Arrays.stream(missingValue).anyMatch(mVal -> Misc.nearlyEquals(val, mVal,
-    // Misc.defaultMaxRelativeDiffFloat));
 
     for (double aMissingValue : missingValue) {
       if (Misc.nearlyEquals(val, aMissingValue, Misc.defaultMaxRelativeDiffFloat)) {
