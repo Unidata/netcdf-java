@@ -73,8 +73,7 @@ public class StandardStationCollectionImpl extends StationTimeSeriesCollectionIm
     StructureData stationData;
 
     StandardStationFeatureImpl(StationFeature s, CalendarDateUnit dateUnit, StructureData stationData, int recnum) {
-      super(s, StandardStationCollectionImpl.this.getTimeName(), dateUnit,
-          StandardStationCollectionImpl.this.getAltName(), StandardStationCollectionImpl.this.getAltUnits(), -1);
+      super(s, ft.getTimeName(), dateUnit, ft.getAltName(), ft.getAltUnits(), -1);
       this.recnum = recnum;
       this.stationData = stationData;
     }

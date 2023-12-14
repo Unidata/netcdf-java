@@ -201,8 +201,8 @@ public class StandardSectionCollectionImpl extends SectionCollectionImpl {
     StructureData profileData;
 
     StandardSectionProfileFeature(Cursor cursor, double time, StructureData profileData) {
-      super(ft.getFeatureName(cursor), StandardSectionCollectionImpl.this.getTimeUnit(),
-          StandardSectionCollectionImpl.this.getAltUnits(), ft.getLatitude(cursor), ft.getLongitude(cursor), time, -1);
+      super(ft.getFeatureName(cursor), ft.getTimeName(), ft.getTimeUnit(), ft.getAltName(),
+         ft.getAltUnits(), ft.getLatitude(cursor), ft.getLongitude(cursor), time, -1);
 
       this.cursor = cursor;
       this.profileData = profileData;
