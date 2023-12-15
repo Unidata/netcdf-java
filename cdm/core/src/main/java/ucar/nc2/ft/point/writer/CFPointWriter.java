@@ -569,31 +569,6 @@ public abstract class CFPointWriter implements Closeable {
     writeExtraVariables();
   }
 
-  protected void writeHeader2(List<VariableSimpleIF> obsCoords, StructureData featureData, StructureData middleData,
-      StructureData obsData, String coordNames) throws IOException {
-    this.recordDim = writer.addUnlimitedDimension(recordDimName);
-
-    addExtraVariables();
-
-    if (writer.getVersion().isExtendedModel()) {
-      makeFeatureVariables(featureData, true);
-      makeMiddleVariables(middleData, true);
-      record = (Structure) writer.addVariable(null, recordName, DataType.STRUCTURE, recordDimName);
-      addCoordinatesExtended(record, obsCoords);
-      addDataVariablesExtended(obsData, coordNames);
-      writer.create();
-
-    } else {
-      makeFeatureVariables(featureData, false);
-      makeMiddleVariables(middleData, false);
-      addCoordinatesClassic(recordDim, obsCoords, dataMap);
-      addDataVariablesClassic(recordDim, obsData, dataMap, coordNames);
-      writer.create();
-      record = writer.addRecordStructure(); // for netcdf3
-    }
-
-    writeExtraVariables();
-  }
 
   protected void addExtraVariables() {
     if (extra == null)
