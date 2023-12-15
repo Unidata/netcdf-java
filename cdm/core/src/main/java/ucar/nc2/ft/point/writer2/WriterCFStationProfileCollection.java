@@ -113,17 +113,29 @@ class WriterCFStationProfileCollection extends WriterCFPointAbstract {
     return count;
   }
 
-  protected void writeHeader(StationProfileFeature stn, ProfileFeature profile) throws IOException {
-    StructureData profileData = profile.getFeatureData();
-
+  protected void writeHeader(List<StationFeature> stations) throws IOException {
+    List<PointFeatureCollection> coverageCollections = new ArrayList<>();
+    List<StructureData> stationData = new ArrayList<>();
+    List<StructureData> profileData = new ArrayList<>();
     List<VariableSimpleIF> obsCoords = new ArrayList<>();
-    Formatter coordNames = new Formatter().format("%s %s %s", profileTimeName, latName, lonName);
-    obsCoords.add(VariableSimpleBuilder.makeScalar(altitudeCoordinateName, "obs altitude", altUnits, DataType.DOUBLE)
-        .addAttribute(CF.STANDARD_NAME, "altitude")
-        .addAttribute(CF.POSITIVE, CF1Convention.getZisPositive(altitudeCoordinateName, altUnits)).build());
-    coordNames.format(" %s", altitudeCoordinateName);
 
-    super.writeHeader(obsCoords, stn, profileData, null);
+    for (StationFeature station : stations) {
+      stationData.add(station.getFeatureData());
+      for (ProfileFeature profile : (StationProfileFeature) station) {
+        profileData.add(profile.getFeatureData());
+        coverageCollections.add(profile);
+
+        obsCoords.add(VariableSimpleBuilder
+            .makeScalar(profile.getTimeName(), "time of measurement", timeUnit.toString(), DataType.DOUBLE).build());
+
+        altitudeCoordinateName = profile.getAltName();
+        obsCoords.add(VariableSimpleBuilder.makeScalar(altitudeCoordinateName, "obs altitude", altUnits, DataType.DOUBLE)
+            .addAttribute(CF.STANDARD_NAME, "altitude")
+            .addAttribute(CF.POSITIVE, CF1Convention.getZisPositive(altitudeCoordinateName, altUnits)).build());
+      }
+    }
+
+    super.writeHeader(obsCoords, coverageCollections, stationData, profileData);
 
     // write the stations
     int count = 0;
@@ -137,7 +149,7 @@ class WriterCFStationProfileCollection extends WriterCFPointAbstract {
     headerDone = true;
   }
 
-  void makeFeatureVariables(StructureData stnData, boolean isExtended) {
+  void makeFeatureVariables(List<StructureData> stnDataStructs, boolean isExtended) {
     // add the dimensions : extended model can use an unlimited dimension
     Dimension stationDim = writerb.addDimension(stationDimName, stnList.size());
 
@@ -147,8 +159,8 @@ class WriterCFStationProfileCollection extends WriterCFPointAbstract {
 
     if (useAlt) {
       stnVars.add(VariableSimpleBuilder.makeScalar(stationAltName, "station altitude", altUnits, DataType.DOUBLE)
-          .addAttribute(CF.STANDARD_NAME, CF.SURFACE_ALTITUDE)
-          .addAttribute(CF.POSITIVE, CF1Convention.getZisPositive(altName, altUnits)).build());
+          .addAttribute(CF.STANDARD_NAME, CF.STATION_ALTITUDE)
+          .addAttribute(CF.POSITIVE, CF1Convention.getZisPositive(stationAltName, altUnits)).build());
     }
 
     stnVars.add(VariableSimpleBuilder.makeString(stationIdName, "station identifier", null, id_strlen)
@@ -162,9 +174,11 @@ class WriterCFStationProfileCollection extends WriterCFPointAbstract {
       stnVars.add(VariableSimpleBuilder.makeString(wmoName, "station WMO id", null, wmo_strlen)
           .addAttribute(CF.STANDARD_NAME, CF.PLATFORM_ID).build());
 
-    for (StructureMembers.Member m : stnData.getMembers()) {
-      if (findDataVar(m.getName()) != null)
-        stnVars.add(VariableSimpleBuilder.fromMember(m).build());
+    for (StructureData stnData : stnDataStructs) {
+      for (StructureMembers.Member m : stnData.getMembers()) {
+        if (findDataVar(m.getName()) != null)
+          stnVars.add(VariableSimpleBuilder.fromMember(m).build());
+      }
     }
 
     if (isExtended) {
@@ -196,8 +210,7 @@ class WriterCFStationProfileCollection extends WriterCFPointAbstract {
     stnRecno = super.writeStructureData(stnRecno, stationStruct, sdall, stationVarMap);
   }
 
-  @Override
-  void makeMiddleVariables(StructureData profileData, boolean isExtended) {
+  void makeMiddleVariables(List<StructureData> profileDataStructs, boolean isExtended) {
     Dimension profileDim = writerb.addDimension(profileDimName, nfeatures);
 
     // add the profile Variables using the profile dimension
@@ -218,10 +231,12 @@ class WriterCFStationProfileCollection extends WriterCFPointAbstract {
         .add(VariableSimpleBuilder.makeScalar(stationIndexName, "station index for this profile", null, DataType.INT)
             .addAttribute(CF.INSTANCE_DIMENSION, stationDimName).build());
 
-    for (StructureMembers.Member m : profileData.getMembers()) {
-      VariableSimpleIF dv = findDataVar(m.getName());
-      if (dv != null)
-        profileVars.add(dv);
+    for (StructureData profileData : profileDataStructs) {
+      for (StructureMembers.Member m : profileData.getMembers()) {
+        VariableSimpleIF dv = findDataVar(m.getName());
+        if (dv != null)
+          profileVars.add(dv);
+      }
     }
 
     if (isExtended) {

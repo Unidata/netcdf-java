@@ -49,7 +49,6 @@ class WriterCFProfileCollection extends WriterCFPointAbstract {
   ///////////////////////////////////////////////////
   private Structure profileStruct; // used for netcdf4 extended
   private HashSet<String> featureVarMap = new HashSet<>();
-  private boolean headerDone;
 
   WriterCFProfileCollection(String fileOut, AttributeContainer globalAtts, List<VariableSimpleIF> dataVars,
       CalendarDateUnit timeUnit, String altUnits, CFPointWriterConfig config) throws IOException {
@@ -78,23 +77,27 @@ class WriterCFProfileCollection extends WriterCFPointAbstract {
     return count;
   }
 
-  protected void writeHeader(ProfileFeature profile) throws IOException {
-
+  protected void writeHeader(List<ProfileFeature> profiles) throws IOException {
     List<VariableSimpleIF> coords = new ArrayList<>();
-    if (useAlt) {
-      coords.add(VariableSimpleBuilder.makeScalar(altitudeCoordinateName, "obs altitude", altUnits, DataType.DOUBLE)
-          .addAttribute(CF.STANDARD_NAME, "altitude")
-          .addAttribute(CF.POSITIVE, CF1Convention.getZisPositive(altitudeCoordinateName, altUnits)).build());
+    List<StructureData> profileData = new ArrayList<>();
+    for (ProfileFeature profile : profiles) {
+      profileData.add(profile.getFeatureData());
+      coords.add(VariableSimpleBuilder
+          .makeScalar(profile.getTimeName(), "time of measurement", profile.getTimeUnit().getUdUnit(), DataType.DOUBLE)
+          .addAttribute(CF.CALENDAR, profile.getTimeUnit().getCalendar().toString()).build());
+      if (useAlt) {
+        altitudeCoordinateName = profile.getAltName();
+        coords.add(VariableSimpleBuilder.makeScalar(altitudeCoordinateName, "obs altitude", altUnits, DataType.DOUBLE)
+            .addAttribute(CF.STANDARD_NAME, "altitude")
+            .addAttribute(CF.POSITIVE, CF1Convention.getZisPositive(altitudeCoordinateName, altUnits)).build());
+      }
     }
 
-    super.writeHeader(coords, profile, profile.getFeatureData(), null);
-
-    headerDone = true;
+    super.writeHeader(coords, profiles, profileData, null);
   }
 
   @Override
-  protected void makeFeatureVariables(StructureData featureData, boolean isExtended) {
-
+  void makeFeatureVariables(List<StructureData> featureDataStruct, boolean isExtended) {
     // LOOK why not unlimited here ?
     Dimension profileDim = writerb.addDimension(profileDimName, nfeatures);
 
@@ -115,11 +118,12 @@ class WriterCFProfileCollection extends WriterCFPointAbstract {
         .makeScalar(profileTimeName, "nominal time of profile", timeUnit.getUdUnit(), DataType.DOUBLE)
         .addAttribute(CF.CALENDAR, timeUnit.getCalendar().toString()).build());
 
-
-    for (StructureMembers.Member m : featureData.getMembers()) {
-      VariableSimpleIF dv = findDataVar(m.getName());
-      if (dv != null)
-        profileVars.add(dv);
+    for (StructureData featureData : featureDataStruct) {
+      for (StructureMembers.Member m : featureData.getMembers()) {
+        VariableSimpleIF dv = findDataVar(m.getName());
+        if (dv != null)
+          profileVars.add(dv);
+      }
     }
 
     if (isExtended) {

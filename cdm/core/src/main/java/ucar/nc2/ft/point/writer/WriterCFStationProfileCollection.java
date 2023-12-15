@@ -104,23 +104,35 @@ public class WriterCFStationProfileCollection extends CFPointWriter {
     return count;
   }
 
-  private void writeHeader(StationProfileFeature stn, ProfileFeature profile, PointFeature obs) throws IOException {
-    StructureData stnData = stn.getFeatureData();
-    StructureData profileData = profile.getFeatureData();
-    StructureData obsData = obs.getFeatureData();
+  protected void writeHeader(List<StationFeature> stations) throws IOException {
 
     List<VariableSimpleIF> obsCoords = new ArrayList<>();
-    // obsCoords.add(VariableSimpleBuilder.makeScalar(timeName, "time of measurement", timeUnit.getUnitsString(),
-    // DataType.DOUBLE)); // LOOK ??
-    Formatter coordNames = new Formatter().format("%s %s %s", profileTimeName, latName, lonName);
-    // if (useAlt) {
-    obsCoords.add(VariableSimpleBuilder.makeScalar(altitudeCoordinateName, "obs altitude", altUnits, DataType.DOUBLE)
-        .addAttribute(CF.STANDARD_NAME, "altitude")
-        .addAttribute(CF.POSITIVE, CF1Convention.getZisPositive(altitudeCoordinateName, altUnits)).build());
-    coordNames.format(" %s", altitudeCoordinateName);
-    // }
+    List<PointFeatureCollection> flattenStations = new ArrayList<>();
+    List<StructureData> featureData = new ArrayList<>();
+    List<StructureData> profileData = new ArrayList<>();
 
-    super.writeHeader2(obsCoords, stnData, profileData, obsData, coordNames.toString());
+    for (StationFeature station : stations) {
+      StationProfileFeature stationProfile = (StationProfileFeature) station;
+      featureData.add(stationProfile.getFeatureData());
+      for (ProfileFeature pfc : stationProfile) {
+        flattenStations.add(pfc);
+        profileData.add(pfc.getFeatureData());
+      }
+
+
+      obsCoords.add(VariableSimpleBuilder
+          .makeScalar(stationProfile.getTimeName(), "time of measurement", timeUnit.toString(), DataType.DOUBLE)
+          .build());
+      if (altUnits != null) {
+      altitudeCoordinateName = stationProfile.getAltName();
+      obsCoords
+          .add(VariableSimpleBuilder.makeScalar(altitudeCoordinateName, "obs altitude", altUnits, DataType.DOUBLE)
+              .addAttribute(CF.STANDARD_NAME, "altitude")
+              .addAttribute(CF.POSITIVE, CF1Convention.getZisPositive(altitudeCoordinateName, altUnits)).build());
+      }
+    }
+
+    super.writeHeader(obsCoords, flattenStations, featureData, profileData);
 
     // write the stations
     int count = 0;
@@ -133,7 +145,7 @@ public class WriterCFStationProfileCollection extends CFPointWriter {
 
   }
 
-  protected void makeFeatureVariables(StructureData stnData, boolean isExtended) {
+  protected void makeFeatureVariables(List<StructureData> stnDataStructs, boolean isExtended) {
     // add the dimensions : extended model can use an unlimited dimension
     // Dimension stationDim = isExtended ? writer.addDimension(null, stationDimName, 0, true, true, false) :
     // writer.addDimension(null, stationDimName, nstns);
@@ -145,8 +157,8 @@ public class WriterCFStationProfileCollection extends CFPointWriter {
 
     if (useAlt) {
       stnVars.add(VariableSimpleBuilder.makeScalar(stationAltName, "station altitude", altUnits, DataType.DOUBLE)
-          .addAttribute(CF.STANDARD_NAME, CF.SURFACE_ALTITUDE)
-          .addAttribute(CF.POSITIVE, CF1Convention.getZisPositive(altName, altUnits)).build());
+          .addAttribute(CF.STANDARD_NAME, CF.STATION_ALTITUDE)
+          .addAttribute(CF.POSITIVE, CF1Convention.getZisPositive(stationAltName, altUnits)).build());
     }
 
     stnVars.add(VariableSimpleBuilder.makeString(stationIdName, "station identifier", null, id_strlen)
@@ -160,9 +172,11 @@ public class WriterCFStationProfileCollection extends CFPointWriter {
       stnVars.add(VariableSimpleBuilder.makeString(wmoName, "station WMO id", null, wmo_strlen)
           .addAttribute(CF.STANDARD_NAME, CF.PLATFORM_ID).build());
 
-    for (StructureMembers.Member m : stnData.getMembers()) {
-      if (getDataVar(m.getName()) != null)
-        stnVars.add(VariableSimpleBuilder.fromMember(m).build());
+    for (StructureData stnData : stnDataStructs) {
+      for (StructureMembers.Member m : stnData.getMembers()) {
+        if (getDataVar(m.getName()) != null)
+          stnVars.add(VariableSimpleBuilder.fromMember(m).build());
+      }
     }
 
     if (isExtended) {
@@ -195,7 +209,7 @@ public class WriterCFStationProfileCollection extends CFPointWriter {
   }
 
   @Override
-  protected void makeMiddleVariables(StructureData profileData, boolean isExtended) {
+  protected void makeMiddleVariables(List<StructureData> profileDataStructs, boolean isExtended) {
     Dimension profileDim = writer.addDimension(null, profileDimName, nfeatures);
 
     // add the profile Variables using the profile dimension
@@ -216,10 +230,12 @@ public class WriterCFStationProfileCollection extends CFPointWriter {
         .add(VariableSimpleBuilder.makeScalar(stationIndexName, "station index for this profile", null, DataType.INT)
             .addAttribute(CF.INSTANCE_DIMENSION, stationDimName).build());
 
-    for (StructureMembers.Member m : profileData.getMembers()) {
-      VariableSimpleIF dv = getDataVar(m.getName());
-      if (dv != null)
-        profileVars.add(dv);
+    for (StructureData profileData : profileDataStructs) {
+      for (StructureMembers.Member m : profileData.getMembers()) {
+        VariableSimpleIF dv = getDataVar(m.getName());
+        if (dv != null)
+          profileVars.add(dv);
+      }
     }
 
     if (isExtended) {
@@ -238,8 +254,6 @@ public class WriterCFStationProfileCollection extends CFPointWriter {
     StructureMembers.Builder smb = StructureMembers.builder().setName("Coords");
     smb.addMemberScalar(latName, null, null, DataType.DOUBLE, profile.getLatLon().getLatitude());
     smb.addMemberScalar(lonName, null, null, DataType.DOUBLE, profile.getLatLon().getLongitude());
-    // Date date = (profile.getTime() != null) ? (double) profile.getTime().getTime() : 0.0; // LOOK (profile.getTime()
-    // != null) ???
     double timeInMyUnits = timeUnit.makeOffsetFromRefDate(profile.getTime());
     smb.addMemberScalar(profileTimeName, null, null, DataType.DOUBLE, timeInMyUnits); // LOOK time not always part
                                                                                       // of profile

@@ -63,11 +63,24 @@ class WriterCFTrajectoryCollection extends WriterCFPointAbstract {
     return count;
   }
 
-  protected void writeHeader(TrajectoryFeature feature) throws IOException {
+  protected void writeHeader(List<TrajectoryFeature> trajectories) throws IOException {
     // obs data
     List<VariableSimpleIF> coords = new ArrayList<>();
-    coords.add(VariableSimpleBuilder.makeScalar(obs.getFeatureCollection().getTimeName(), "time of measurement",
-        timeUnit.getUdUnit(), DataType.DOUBLE).addAttribute(CF.CALENDAR, timeUnit.getCalendar().toString()).build());
+    List<StructureData> trajectoryData = new ArrayList<>();
+
+    for (TrajectoryFeature trajectory : trajectories) {
+      trajectoryData.add(trajectory.getFeatureData());
+      coords.add(VariableSimpleBuilder
+          .makeScalar(trajectory.getTimeName(), "time of measurement", timeUnit.getUdUnit(), DataType.DOUBLE)
+          .addAttribute(CF.CALENDAR, timeUnit.getCalendar().toString()).build());
+
+      if (altUnits != null) {
+        altitudeCoordinateName = trajectory.getAltName();
+        coords.add(
+            VariableSimpleBuilder.makeScalar(altitudeCoordinateName, "altitude of measurement", altUnits, DataType.DOUBLE)
+                .addAttribute(CF.POSITIVE, CF1Convention.getZisPositive(altitudeCoordinateName, altUnits)).build());
+      }
+    }
 
     coords.add(
         VariableSimpleBuilder.makeScalar(latName, "latitude of measurement", CDM.LAT_UNITS, DataType.DOUBLE).build());

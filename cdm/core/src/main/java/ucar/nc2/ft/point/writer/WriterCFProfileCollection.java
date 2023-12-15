@@ -66,21 +66,28 @@ public class WriterCFProfileCollection extends CFPointWriter {
     return count;
   }
 
-  private void writeHeader(ProfileFeature profile, PointFeature obs) throws IOException {
-
-    Formatter coordNames = new Formatter().format("%s %s %s", profileTimeName, latName, lonName);
+  protected void writeHeader(List<ProfileFeature> profiles) throws IOException {
     List<VariableSimpleIF> coords = new ArrayList<>();
-    if (useAlt) {
-      coords.add(VariableSimpleBuilder.makeScalar(altitudeCoordinateName, "obs altitude", altUnits, DataType.DOUBLE)
-          .addAttribute(CF.STANDARD_NAME, "altitude")
-          .addAttribute(CF.POSITIVE, CF1Convention.getZisPositive(altitudeCoordinateName, altUnits)).build());
-      coordNames.format(" %s", altitudeCoordinateName);
+    List<StructureData> profileData = new ArrayList<>();
+
+    for (ProfileFeature profile : profiles) {
+      profileData.add(profile.getFeatureData());
+      coords.add(VariableSimpleBuilder
+          .makeScalar(profile.getTimeName(), "time of measurement", profile.getTimeUnit().getUdUnit(), DataType.DOUBLE)
+          .addAttribute(CF.CALENDAR, profile.getTimeUnit().getCalendar().toString()).build());
+
+      if (useAlt) {
+        altitudeCoordinateName = profile.getAltName();
+        coords.add(VariableSimpleBuilder.makeScalar(altitudeCoordinateName, "obs altitude", altUnits, DataType.DOUBLE)
+            .addAttribute(CF.STANDARD_NAME, "altitude")
+            .addAttribute(CF.POSITIVE, CF1Convention.getZisPositive(altitudeCoordinateName, altUnits)).build());
+      }
     }
 
-    super.writeHeader(coords, profile.getFeatureData(), obs.getFeatureData(), coordNames.toString());
+    super.writeHeader(coords, profiles, profileData, null);
   }
 
-  protected void makeFeatureVariables(StructureData featureData, boolean isExtended) {
+  protected void makeFeatureVariables(List<StructureData> featureDataStructs, boolean isExtended) {
 
     // LOOK why not unlimited here ?
     Dimension profileDim = writer.addDimension(null, profileDimName, nfeatures);
@@ -105,10 +112,12 @@ public class WriterCFProfileCollection extends CFPointWriter {
         .addAttribute(CF.CALENDAR, timeUnit.getCalendar().toString()).build());
 
 
-    for (StructureMembers.Member m : featureData.getMembers()) {
-      VariableSimpleIF dv = getDataVar(m.getName());
-      if (dv != null)
-        profileVars.add(dv);
+    for (StructureData featureData : featureDataStructs) {
+      for (StructureMembers.Member m : featureData.getMembers()) {
+        VariableSimpleIF dv = getDataVar(m.getName());
+        if (dv != null)
+          profileVars.add(dv);
+      }
     }
 
     if (isExtended) {

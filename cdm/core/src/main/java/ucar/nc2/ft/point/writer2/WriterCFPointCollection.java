@@ -8,7 +8,6 @@ package ucar.nc2.ft.point.writer2;
 import com.google.common.collect.ImmutableList;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Formatter;
 import java.util.List;
 import ucar.ma2.DataType;
 import ucar.ma2.StructureData;
@@ -23,9 +22,8 @@ import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
 import ucar.nc2.dataset.conv.CF1Convention;
 import ucar.nc2.ft.PointFeature;
-import ucar.nc2.time.CalendarDate;
+import ucar.nc2.ft.PointFeatureCollection;
 import ucar.nc2.time.CalendarDateUnit;
-import ucar.unidata.geoloc.EarthLocation;
 
 /**
  * Write a CF 1.6 "Discrete Sample" point file.
@@ -47,25 +45,25 @@ class WriterCFPointCollection extends WriterCFPointAbstract {
     writerb.addAttribute(new Attribute(CF.DSG_REPRESENTATION, "Point Data, H.1"));
   }
 
-  void writeHeader(PointFeature pf) throws IOException {
+  void writeHeader(List<PointFeatureCollection> pointCollections) throws IOException {
     List<VariableSimpleIF> coords = new ArrayList<>();
-    coords.add(VariableSimpleBuilder.makeScalar(pf.getFeatureCollection().getTimeName(), "time of measurement",
-        timeUnit.getUdUnit(), DataType.DOUBLE).addAttribute(CF.CALENDAR, timeUnit.getCalendar().toString()).build());
+    for (PointFeatureCollection pointCollection : pointCollections) {
+      coords.add(VariableSimpleBuilder
+          .makeScalar(pointCollection.getTimeName(), "time of measurement", timeUnit.getUdUnit(), DataType.DOUBLE)
+          .addAttribute(CF.CALENDAR, timeUnit.getCalendar().toString()).build());
+      if (altUnits != null) {
+        altitudeCoordinateName = pointCollection.getAltName();
+        coords.add(VariableSimpleBuilder
+            .makeScalar(altitudeCoordinateName, "altitude of measurement", altUnits, DataType.DOUBLE)
+            .addAttribute(CF.POSITIVE, CF1Convention.getZisPositive(altName, altUnits)).build());
+      }
+    }
 
     coords.add(
         VariableSimpleBuilder.makeScalar(latName, "latitude of measurement", CDM.LAT_UNITS, DataType.DOUBLE).build());
     coords.add(
         VariableSimpleBuilder.makeScalar(lonName, "longitude of measurement", CDM.LON_UNITS, DataType.DOUBLE).build());
-    Formatter coordNames =
-        new Formatter().format("%s %s %s", pf.getFeatureCollection().getTimeName(), latName, lonName);
-    if (altUnits != null) {
-      altitudeCoordinateName =  pf.getFeatureCollection().getAltName();
-      coords.add(VariableSimpleBuilder.makeScalar(altitudeCoordinateName, "altitude of measurement", altUnits, DataType.DOUBLE)
-          .addAttribute(CF.POSITIVE, CF1Convention.getZisPositive(altName, altUnits)).build());
-      coordNames.format(" %s", altitudeCoordinateName);
-    }
-
-    super.writeHeader(coords, null, null, pf.getDataAll(), coordNames.toString());
+    super.writeHeader(coords, pointCollections, null, null);
   }
 
   @Override
@@ -98,5 +96,8 @@ class WriterCFPointCollection extends WriterCFPointAbstract {
     StructureDataComposite sdall = StructureDataComposite.create(ImmutableList.of(coords, sdata));
     obsRecno = super.writeStructureData(obsRecno, record, sdall, dataMap);
   }
+
+  @Override
+  void makeFeatureVariables(List<StructureData> featureData, boolean isExtended) {}
 
 }

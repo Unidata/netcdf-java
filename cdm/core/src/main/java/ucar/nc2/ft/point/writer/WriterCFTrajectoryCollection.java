@@ -11,8 +11,7 @@ import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
 import ucar.nc2.dataset.conv.CF1Convention;
-import ucar.nc2.ft.PointFeature;
-import ucar.nc2.ft.TrajectoryFeature;
+import ucar.nc2.ft.*;
 import ucar.nc2.time.CalendarDateUnit;
 import ucar.unidata.geoloc.EarthLocation;
 import java.io.IOException;
@@ -57,28 +56,33 @@ public class WriterCFTrajectoryCollection extends CFPointWriter {
     return count;
   }
 
-  private void writeHeader(TrajectoryFeature feature, PointFeature obs) throws IOException {
-    // obs data
-    List<VariableSimpleIF> coords = new ArrayList<>();
-    coords.add(VariableSimpleBuilder.makeScalar(obs.getFeatureCollection().getTimeName(), "time of measurement",
-        timeUnit.getUdUnit(), DataType.DOUBLE).addAttribute(CF.CALENDAR, timeUnit.getCalendar().toString()).build());
+  protected void writeHeader(List<TrajectoryFeature> trajectories) throws IOException {
+    List<VariableSimpleIF> obsCoords = new ArrayList<>();
+    List<StructureData> featureData = new ArrayList<>();
 
-    coords.add(
-        VariableSimpleBuilder.makeScalar(latName, "latitude of measurement", CDM.LAT_UNITS, DataType.DOUBLE).build());
-    coords.add(
-        VariableSimpleBuilder.makeScalar(lonName, "longitude of measurement", CDM.LON_UNITS, DataType.DOUBLE).build());
-    Formatter coordNames =
-        new Formatter().format("%s %s %s", obs.getFeatureCollection().getTimeName(), latName, lonName);
-    if (altUnits != null) {
-      coords.add(VariableSimpleBuilder.makeScalar(altName, "altitude of measurement", altUnits, DataType.DOUBLE)
-          .addAttribute(CF.POSITIVE, CF1Convention.getZisPositive(altName, altUnits)).build());
-      coordNames.format(" %s", altName);
+    for (TrajectoryFeature trajectory : trajectories) {
+      featureData.add(trajectory.getFeatureData());
+      // obs data
+      obsCoords.add(VariableSimpleBuilder
+          .makeScalar(trajectory.getTimeName(), "time of measurement", timeUnit.getUdUnit(), DataType.DOUBLE)
+          .addAttribute(CF.CALENDAR, timeUnit.getCalendar().toString()).build());
+
+      if (altUnits != null) {
+        altitudeCoordinateName = trajectory.getAltName();
+        obsCoords.add(
+            VariableSimpleBuilder.makeScalar(altitudeCoordinateName, "altitude of measurement", altUnits, DataType.DOUBLE)
+                .addAttribute(CF.POSITIVE, CF1Convention.getZisPositive(altitudeCoordinateName, altUnits)).build());
+      }
     }
+    obsCoords.add(
+        VariableSimpleBuilder.makeScalar(latName, "latitude of measurement", CDM.LAT_UNITS, DataType.DOUBLE).build());
+    obsCoords.add(
+        VariableSimpleBuilder.makeScalar(lonName, "longitude of measurement", CDM.LON_UNITS, DataType.DOUBLE).build());
 
-    super.writeHeader(coords, feature.getFeatureData(), obs.getFeatureData(), coordNames.toString());
+    super.writeHeader(obsCoords, trajectories, featureData, null);
   }
 
-  protected void makeFeatureVariables(StructureData featureData, boolean isExtended) {
+  protected void makeFeatureVariables(List<StructureData> featureDataStructs, boolean isExtended) {
     // LOOK why not unlimited here fro extended model ?
     Dimension profileDim = writer.addDimension(null, trajDimName, nfeatures);
 
@@ -91,10 +95,12 @@ public class WriterCFTrajectoryCollection extends CFPointWriter {
         .add(VariableSimpleBuilder.makeScalar(numberOfObsName, "number of obs for this profile", null, DataType.INT)
             .addAttribute(CF.SAMPLE_DIMENSION, recordDimName).build());
 
-    for (StructureMembers.Member m : featureData.getMembers()) {
-      VariableSimpleIF dv = getDataVar(m.getName());
-      if (dv != null)
-        featureVars.add(dv);
+    for (StructureData featureData : featureDataStructs) {
+      for (StructureMembers.Member m : featureData.getMembers()) {
+        VariableSimpleIF dv = getDataVar(m.getName());
+        if (dv != null)
+          featureVars.add(dv);
+      }
     }
 
     if (isExtended) {
