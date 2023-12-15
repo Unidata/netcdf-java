@@ -545,7 +545,7 @@ public abstract class CFPointWriter implements Closeable {
 
   }
 
-  protected void writeHeader(List<VariableSimpleIF> obsCoords, StructureData featureData, StructureData obsData,
+  protected void writeHeader(List<VariableSimpleIF> obsCoords, List<StructureData> featureData, StructureData obsData,
       String coordNames) throws IOException {
     this.recordDim = writer.addUnlimitedDimension(recordDimName);
 
