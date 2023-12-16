@@ -13,8 +13,12 @@ import ucar.nc2.constants.CDM;
 import ucar.nc2.dataset.VariableDS;
 
 import java.nio.*;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.DoubleStream;
 
 import static ucar.ma2.DataType.*;
 
@@ -228,6 +232,15 @@ public class ScaleOffset extends Filter {
     }
 
     return out;
+  }
+
+  // public double[] removeScaleOffset(double[] in) {
+  // Arrays.stream(in).parallel().forEach(this::removeScaleOffset);
+  // return in;
+  // }
+
+  public double[] removeScaleOffset(double[] in) {
+    return Arrays.stream(in).parallel().map(num -> removeScaleOffset(num)).toArray();
   }
 
   ////////////////////////////////////////////////////

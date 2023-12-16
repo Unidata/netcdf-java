@@ -6,6 +6,11 @@ import ucar.ma2.IndexIterator;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.dataset.VariableDS;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.DoubleStream;
+
 public class UnsignedConversion {
 
   private DataType outType;
@@ -76,6 +81,15 @@ public class UnsignedConversion {
     }
 
     return out;
+  }
+
+  // public double[] convertUnsigned(double[] in) {
+  // Arrays.stream(in).parallel().forEach(this::convertUnsigned);
+  // return in;
+  // }
+
+  public double[] convertUnsigned(double[] in) {
+    return Arrays.stream(in).parallel().map(num -> convertUnsigned(new Double(num)).doubleValue()).toArray();
   }
 
   public static Number convertUnsigned(Number value, DataType dataType) {

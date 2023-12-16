@@ -24,6 +24,8 @@ import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.DoubleStream;
 
 /**
  * A wrapper around a Variable, creating an "enhanced" Variable. The original Variable is used for the I/O.
@@ -261,23 +263,78 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
       if (this.isVariableLength) {
         return data;
       }
-      if (enhancements.contains(Enhance.ConvertUnsigned) && unsignedConversion != null) {
-        data = unsignedConversion.convertUnsigned(data);
+      if (!dataType.isNumeric()) {
+        return data;
       }
-      if (enhancements.contains(Enhance.ApplyScaleOffset) && scaleOffset != null) {
-        data = scaleOffset.removeScaleOffset(data);
+      double[] dataArray = (double[]) data.get1DJavaArray(DataType.DOUBLE);
+
+      List<Double> list = Arrays.stream(dataArray).parallel().map((num) -> {
+        if (enhancements.contains(Enhance.ConvertUnsigned) && unsignedConversion != null) {
+          Number val;
+          switch (data.getDataType()) {
+            case BYTE:
+              val = new Byte((byte) num);
+              break;
+            case SHORT:
+              val = new Short((short) num);
+              break;
+            case INT:
+              val = new Integer((int) num);
+              break;
+            case LONG:
+              val = new Long((long) num);
+              break;
+            default:
+              val = new Double(num);
+          }
+          num = unsignedConversion.convertUnsigned(val).doubleValue();
+        }
+        if (enhancements.contains(Enhance.ApplyScaleOffset) && scaleOffset != null) {
+          num = scaleOffset.removeScaleOffset(num);
+        }
+        if (enhancements.contains(Enhance.ConvertMissing) && convertMissing != null
+            && (dataType == DataType.FLOAT || dataType == DataType.DOUBLE)) {
+          num = convertMissing.convertMissing(num);
+        }
+        if (enhancements.contains(Enhance.ApplyStandardizer) && standardizer != null) {
+          num = standardizer.convert(num);
+        }
+        if (enhancements.contains(Enhance.ApplyNormalizer) && normalizer != null) {
+          num = normalizer.convert(num);
+        }
+        return num;
+      }).boxed().collect(Collectors.toList());
+
+      Array out = Array.factory(dataType, data.getShape());
+      IndexIterator iterOut = out.getIndexIterator();
+      for (int i = 0; i < list.size(); i++) {
+        iterOut.setObjectNext(list.get(i));
       }
-      if (enhancements.contains(Enhance.ConvertMissing) && convertMissing != null
-          && (dataType == DataType.FLOAT || dataType == DataType.DOUBLE)) {
-        data = convertMissing.convertMissing(data);
-      }
-      if (enhancements.contains(Enhance.ApplyStandardizer) && standardizer != null) {
-        data = standardizer.convert(data);
-      }
-      if (enhancements.contains(Enhance.ApplyNormalizer) && normalizer != null) {
-        data = normalizer.convert(data);
-      }
-      return data;
+      return out;
+
+      // if (enhancements.contains(Enhance.ConvertUnsigned) && unsignedConversion != null) {
+      // dataArray = unsignedConversion.convertUnsigned(dataArray);
+      // }
+      // if (enhancements.contains(Enhance.ApplyScaleOffset) && scaleOffset != null) {
+      // dataArray = scaleOffset.removeScaleOffset(dataArray);
+      // }
+      // if (enhancements.contains(Enhance.ConvertMissing) && convertMissing != null
+      // && (dataType == DataType.FLOAT || dataType == DataType.DOUBLE)) {
+      // dataArray = convertMissing.convertMissing(dataArray);
+      // }
+      // if (enhancements.contains(Enhance.ApplyStandardizer) && standardizer != null) {
+      // dataArray = standardizer.convert(dataArray);
+      // }
+      // if (enhancements.contains(Enhance.ApplyNormalizer) && normalizer != null) {
+      // dataArray = normalizer.convert(dataArray);
+      // }
+      //
+      // Array out = Array.factory(dataType, data.getShape());
+      // IndexIterator iterOut = out.getIndexIterator();
+      // for (int i = 0; i < dataArray.length; i++) {
+      // iterOut.setObjectNext(dataArray[i]);
+      // }
+      // return out;
     }
   }
 
