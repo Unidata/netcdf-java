@@ -341,7 +341,7 @@ public class TestStandardVar {
     ima = A.getIndex();
 
     val = A.getFloat(ima.set(1, 1));
-    Assert2.assertNearlyEquals(val, -999.99);
+    Assert2.assertNearlyEquals(val, -999.99, 0.001);
     assert v.isMissing(val);
   }
 

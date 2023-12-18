@@ -1,12 +1,8 @@
 package ucar.nc2.filter;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.DoubleStream;
 
 import org.apache.commons.math.stat.descriptive.SummaryStatistics;
 import ucar.ma2.Array;
@@ -62,16 +58,6 @@ public class Normalizer {
 
   public Array convert(Array arr) {
     return scaleOffset.applyScaleOffset(arr);
-  }
-
-
-  // public double[] convert(double[] in) {
-  // Arrays.stream(in).parallel().forEach(this::convertVal);
-  // return in;
-  // }
-
-  public double[] convert(double[] in) {
-    return Arrays.stream(in).parallel().map(num -> convert(new Double(num))).toArray();
   }
 
   public double convert(Number val) {

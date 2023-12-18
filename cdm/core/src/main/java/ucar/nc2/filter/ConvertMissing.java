@@ -9,9 +9,6 @@ import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.util.Misc;
 
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.DoubleStream;
-import java.util.stream.Stream;
 
 public class ConvertMissing {
 
@@ -120,7 +117,7 @@ public class ConvertMissing {
         DataType missingType = FilterHelpers.getAttributeDataType(missingValueAtt, signedness);
         for (int i = 0; i < missingValue.length; i++) {
           double val = var.convertUnsigned(missingValueAtt.getNumericValue(i), missingType).doubleValue();
-          missingValue[i] = var.applyScaleOffset(val);
+          missingValue[i] = var.convertUnsigned(missingValueAtt.getNumericValue(i), missingType).doubleValue();
           missingValue[i] = var.applyScaleOffset(missingValue[i]);
         }
       }
@@ -186,7 +183,7 @@ public class ConvertMissing {
   }
 
   public boolean isInvalidData(double val) {
-    if (val == Double.NaN) {
+    if (Double.isNaN(val)) {
       return true;
     }
     if (val > fuzzyValidMax) {
@@ -285,9 +282,5 @@ public class ConvertMissing {
     }
 
     return out;
-  }
-
-  public double[] convertMissing(double[] in) {
-    return Arrays.stream(in).parallel().map(num -> convertMissing(new Double(num)).doubleValue()).toArray();
   }
 }

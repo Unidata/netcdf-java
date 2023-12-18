@@ -25,7 +25,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.DoubleStream;
 
 /**
  * A wrapper around a Variable, creating an "enhanced" Variable. The original Variable is used for the I/O.
@@ -266,6 +265,15 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
       if (!dataType.isNumeric()) {
         return data;
       }
+
+      // datatype of the result depends on what enhancements were applied
+      DataType convertedType = data.getDataType();
+      if (enhancements.contains(Enhance.ApplyScaleOffset) && scaleOffset != null) {
+        convertedType = scaleOffset.getScaledOffsetType();
+      } else if (enhancements.contains(Enhance.ConvertUnsigned) && unsignedConversion != null) {
+        convertedType = unsignedConversion.getOutType();
+      }
+
       double[] dataArray = (double[]) data.get1DJavaArray(DataType.DOUBLE);
 
       List<Double> list = Arrays.stream(dataArray).parallel().map((num) -> {
@@ -305,36 +313,12 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
         return num;
       }).boxed().collect(Collectors.toList());
 
-      Array out = Array.factory(dataType, data.getShape());
+      Array out = Array.factory(convertedType, data.getShape());
       IndexIterator iterOut = out.getIndexIterator();
       for (int i = 0; i < list.size(); i++) {
         iterOut.setObjectNext(list.get(i));
       }
       return out;
-
-      // if (enhancements.contains(Enhance.ConvertUnsigned) && unsignedConversion != null) {
-      // dataArray = unsignedConversion.convertUnsigned(dataArray);
-      // }
-      // if (enhancements.contains(Enhance.ApplyScaleOffset) && scaleOffset != null) {
-      // dataArray = scaleOffset.removeScaleOffset(dataArray);
-      // }
-      // if (enhancements.contains(Enhance.ConvertMissing) && convertMissing != null
-      // && (dataType == DataType.FLOAT || dataType == DataType.DOUBLE)) {
-      // dataArray = convertMissing.convertMissing(dataArray);
-      // }
-      // if (enhancements.contains(Enhance.ApplyStandardizer) && standardizer != null) {
-      // dataArray = standardizer.convert(dataArray);
-      // }
-      // if (enhancements.contains(Enhance.ApplyNormalizer) && normalizer != null) {
-      // dataArray = normalizer.convert(dataArray);
-      // }
-      //
-      // Array out = Array.factory(dataType, data.getShape());
-      // IndexIterator iterOut = out.getIndexIterator();
-      // for (int i = 0; i < dataArray.length; i++) {
-      // iterOut.setObjectNext(dataArray[i]);
-      // }
-      // return out;
     }
   }
 
