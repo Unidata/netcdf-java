@@ -10,7 +10,7 @@ import ucar.ma2.DataType;
 import ucar.ma2.IndexIterator;
 import ucar.nc2.dataset.VariableDS;
 
-public class Standardizer {
+public class Standardizer implements Enhancement {
 
   private final ScaleOffset scaleOffset;
   private final double mean;
@@ -60,7 +60,7 @@ public class Standardizer {
     return scaleOffset.applyScaleOffset(arr);
   }
 
-  public double convert(Number val) {
+  public double convert(double val) {
     return scaleOffset.applyScaleOffset(val);
   }
 

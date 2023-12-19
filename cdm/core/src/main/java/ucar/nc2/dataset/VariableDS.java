@@ -11,12 +11,7 @@ import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.DataFormatType;
 import ucar.nc2.dataset.NetcdfDataset.Enhance;
-import ucar.nc2.filter.ConvertMissing;
-import ucar.nc2.filter.FilterHelpers;
-import ucar.nc2.filter.ScaleOffset;
-import ucar.nc2.filter.Standardizer;
-import ucar.nc2.filter.Normalizer;
-import ucar.nc2.filter.UnsignedConversion;
+import ucar.nc2.filter.*;
 import ucar.nc2.internal.dataset.CoordinatesHelper;
 import ucar.nc2.iosp.netcdf3.N3iosp;
 import ucar.nc2.util.CancelTask;
@@ -24,6 +19,7 @@ import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -265,50 +261,35 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
       if (!dataType.isNumeric()) {
         return data;
       }
-
       // datatype of the result depends on what enhancements were applied
       DataType convertedType = data.getDataType();
-      if (enhancements.contains(Enhance.ApplyScaleOffset) && scaleOffset != null) {
-        convertedType = scaleOffset.getScaledOffsetType();
-      } else if (enhancements.contains(Enhance.ConvertUnsigned) && unsignedConversion != null) {
+
+      // TODO: change to a provider for extensible Enhancements
+      List<Enhancement> toApply = new ArrayList<>();
+      if (enhancements.contains(Enhance.ConvertUnsigned) && unsignedConversion != null) {
+        toApply.add(unsignedConversion);
         convertedType = unsignedConversion.getOutType();
+      }
+      if (enhancements.contains(Enhance.ApplyScaleOffset) && scaleOffset != null) {
+        toApply.add(scaleOffset);
+        convertedType = scaleOffset.getScaledOffsetType();
+      }
+      if (enhancements.contains(Enhance.ConvertMissing) && convertMissing != null
+          && (dataType == DataType.FLOAT || dataType == DataType.DOUBLE)) {
+        toApply.add(convertMissing);
+      }
+      if (enhancements.contains(Enhance.ApplyStandardizer) && standardizer != null) {
+        toApply.add(standardizer);
+      }
+      if (enhancements.contains(Enhance.ApplyNormalizer) && normalizer != null) {
+        toApply.add(normalizer);
       }
 
       double[] dataArray = (double[]) data.get1DJavaArray(DataType.DOUBLE);
 
       List<Double> list = Arrays.stream(dataArray).parallel().map((num) -> {
-        if (enhancements.contains(Enhance.ConvertUnsigned) && unsignedConversion != null) {
-          Number val;
-          switch (data.getDataType()) {
-            case BYTE:
-              val = new Byte((byte) num);
-              break;
-            case SHORT:
-              val = new Short((short) num);
-              break;
-            case INT:
-              val = new Integer((int) num);
-              break;
-            case LONG:
-              val = new Long((long) num);
-              break;
-            default:
-              val = new Double(num);
-          }
-          num = unsignedConversion.convertUnsigned(val).doubleValue();
-        }
-        if (enhancements.contains(Enhance.ApplyScaleOffset) && scaleOffset != null) {
-          num = scaleOffset.removeScaleOffset(num);
-        }
-        if (enhancements.contains(Enhance.ConvertMissing) && convertMissing != null
-            && (dataType == DataType.FLOAT || dataType == DataType.DOUBLE)) {
-          num = convertMissing.convertMissing(num);
-        }
-        if (enhancements.contains(Enhance.ApplyStandardizer) && standardizer != null) {
-          num = standardizer.convert(num);
-        }
-        if (enhancements.contains(Enhance.ApplyNormalizer) && normalizer != null) {
-          num = normalizer.convert(num);
+        for (Enhancement e : toApply) {
+          num = e.convert(num);
         }
         return num;
       }).boxed().collect(Collectors.toList());
@@ -796,17 +777,17 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
 
   @Override
   public double applyScaleOffset(Number value) {
-    return scaleOffset != null ? scaleOffset.removeScaleOffset(value) : value.doubleValue();
+    return scaleOffset != null ? scaleOffset.convert(value.doubleValue()) : value.doubleValue();
   }
 
   @Override
   public Array applyScaleOffset(Array data) {
-    return scaleOffset != null ? scaleOffset.removeScaleOffset(data) : data;
+    return scaleOffset != null ? scaleOffset.convert(data) : data;
   }
 
   @Override
   public Number convertUnsigned(Number value) {
-    return unsignedConversion != null ? unsignedConversion.convertUnsigned(value) : value;
+    return unsignedConversion != null ? unsignedConversion.convert(value.doubleValue()) : value;
   }
 
   public Number convertUnsigned(Number value, DataType dataType) {
@@ -820,7 +801,7 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
 
   @Override
   public Number convertMissing(Number value) {
-    return convertMissing != null ? convertMissing.convertMissing(value) : value;
+    return convertMissing != null ? convertMissing.convert(value.doubleValue()) : value;
   }
 
   @Override

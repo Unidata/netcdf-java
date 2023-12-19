@@ -10,7 +10,7 @@ import ucar.ma2.DataType;
 import ucar.ma2.IndexIterator;
 import ucar.nc2.dataset.VariableDS;
 
-public class Normalizer {
+public class Normalizer implements Enhancement {
 
   private final ScaleOffset scaleOffset;
   private final double minimum;
@@ -60,7 +60,7 @@ public class Normalizer {
     return scaleOffset.applyScaleOffset(arr);
   }
 
-  public double convert(Number val) {
+  public double convert(double val) {
     return scaleOffset.applyScaleOffset(val);
   }
 

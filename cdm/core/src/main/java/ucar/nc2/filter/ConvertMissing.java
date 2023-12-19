@@ -10,7 +10,7 @@ import ucar.nc2.util.Misc;
 
 import java.util.*;
 
-public class ConvertMissing {
+public class ConvertMissing implements Enhancement {
 
   private boolean hasValidMin, hasValidMax;
   private double validMin, validMax, fuzzyValidMin, fuzzyValidMax;
@@ -253,11 +253,7 @@ public class ConvertMissing {
     this.missingDataIsMissing = b;
   }
 
-  public Number convertMissing(Number value) {
-    return isMissing(value.doubleValue()) ? Double.NaN : value;
-  }
-
-  public double convertMissing(double value) {
+  public double convert(double value) {
     return isMissing(value) ? Double.NaN : value;
   }
 
@@ -277,7 +273,7 @@ public class ConvertMissing {
     // iterate and convert elements
     while (iterIn.hasNext()) {
       Number value = (Number) iterIn.getObjectNext();
-      value = convertMissing(value);
+      value = convert(value.doubleValue());
       iterOut.setObjectNext(value);
     }
 
