@@ -160,8 +160,7 @@ public class CoverageAsPoint {
     private VarGroup varGroup;
 
     CoverageAsStationProfileCollection(VarGroup varGroup) {
-      super(varGroup.name + " AsStationProfileCollection", varGroup.timeAxis.getName(), varGroup.dateUnit,
-          varGroup.zAxis.getName(), varGroup.zUnit);
+      super(varGroup.name + " AsStationProfileCollection", varGroup.dateUnit, varGroup.zUnit);
       this.timeName = varGroup.timeAxis != null ? varGroup.timeAxis.getName() : "time";
       this.altName = varGroup.zAxis != null ? varGroup.zAxis.getName() : "altitude";
       this.varGroup = varGroup;
@@ -310,8 +309,9 @@ public class CoverageAsPoint {
       @Override
       public PointFeatureCollection next() throws IOException {
         double obsTime = this.timeAxis != null ? this.timeAxis.getCoordMidpoint(curr) : 0.0;
+        String timeName = this.timeAxis != null ? this.timeAxis.getName() : "time";
         curr++;
-        return new CoverageAsProfileFeature(obsTime, varGroup.timeAxis.getName(), varGroup.dateUnit,
+        return new CoverageAsProfileFeature(obsTime, timeName, varGroup.dateUnit,
             varGroup.zAxis.getName(), varGroup.zUnit, getLatitude(), getLongitude(), this.varIters);
       }
     }
