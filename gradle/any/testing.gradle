@@ -4,6 +4,7 @@ apply from: "$rootDir/gradle/any/properties.gradle"
 tasks.withType(Test).all {
   // Propagates system properties set on the Gradle process to the test executors.
   addFilteredSysProps(systemProperties)
+  jvmArgs = ['-Xmx1024m']
 
   if (isJenkins && !isRelease) {
     // On Jenkins, don't let test failures fail the build unless we are doing we release; we want

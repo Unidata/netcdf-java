@@ -287,17 +287,17 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
 
       double[] dataArray = (double[]) data.get1DJavaArray(DataType.DOUBLE);
 
-      List<Double> list = Arrays.stream(dataArray).parallel().map((num) -> {
+      dataArray = Arrays.stream(dataArray).parallel().map((num) -> {
         for (Enhancement e : toApply) {
           num = e.convert(num);
         }
         return num;
-      }).boxed().collect(Collectors.toList());
+      }).toArray();
 
       Array out = Array.factory(convertedType, data.getShape());
       IndexIterator iterOut = out.getIndexIterator();
-      for (int i = 0; i < list.size(); i++) {
-        iterOut.setObjectNext(list.get(i));
+      for (int i = 0; i < data.getSize(); i++) {
+        iterOut.setObjectNext(dataArray[i]);
       }
       return out;
     }
