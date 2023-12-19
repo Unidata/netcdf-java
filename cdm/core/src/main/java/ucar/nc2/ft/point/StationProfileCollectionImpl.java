@@ -34,7 +34,8 @@ public abstract class StationProfileCollectionImpl extends PointFeatureCCCImpl
     super(name, timeUnit, altUnits, FeatureType.STATION_PROFILE);
   }
 
-  public StationProfileCollectionImpl(String name, String timeName, CalendarDateUnit timeUnit, String altName, String altUnits) {
+  public StationProfileCollectionImpl(String name, String timeName, CalendarDateUnit timeUnit, String altName,
+      String altUnits) {
     super(name, timeName, timeUnit, altName, altUnits, FeatureType.STATION_PROFILE);
   }
 

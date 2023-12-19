@@ -121,9 +121,10 @@ class WriterCFStationProfileCollection extends WriterCFPointAbstract {
             .makeScalar(profile.getTimeName(), "time of measurement", timeUnit.toString(), DataType.DOUBLE).build());
 
         altitudeCoordinateName = profile.getAltName();
-        obsCoords.add(VariableSimpleBuilder.makeScalar(altitudeCoordinateName, "obs altitude", altUnits, DataType.DOUBLE)
-            .addAttribute(CF.STANDARD_NAME, "altitude")
-            .addAttribute(CF.POSITIVE, CF1Convention.getZisPositive(altitudeCoordinateName, altUnits)).build());
+        obsCoords
+            .add(VariableSimpleBuilder.makeScalar(altitudeCoordinateName, "obs altitude", altUnits, DataType.DOUBLE)
+                .addAttribute(CF.STANDARD_NAME, "altitude")
+                .addAttribute(CF.POSITIVE, CF1Convention.getZisPositive(altitudeCoordinateName, altUnits)).build());
       }
     }
 
@@ -172,7 +173,7 @@ class WriterCFStationProfileCollection extends WriterCFPointAbstract {
     stnVars.add(VariableSimpleBuilder.makeScalar(latName, "station latitude", CDM.LAT_UNITS, DataType.DOUBLE).build());
     stnVars.add(VariableSimpleBuilder.makeScalar(lonName, "station longitude", CDM.LON_UNITS, DataType.DOUBLE).build());
 
-    if(useAlt){
+    if (useAlt) {
       stnVars.add(VariableSimpleBuilder.makeScalar(stationAltName, "station altitude", altUnits, DataType.DOUBLE)
           .addAttribute(CF.STANDARD_NAME, CF.STATION_ALTITUDE)
           .addAttribute(CF.POSITIVE, CF1Convention.getZisPositive(stationAltName, altUnits)).build());
@@ -294,14 +295,16 @@ class WriterCFStationProfileCollection extends WriterCFPointAbstract {
   }
 
   private int obsRecno;
-  protected void resetObsIndex(){
+
+  protected void resetObsIndex() {
     obsRecno = 0;
   }
 
   private void writeObsData(PointFeature pf) throws IOException {
     StructureMembers.Builder smb = StructureMembers.builder().setName("Coords");
     smb.addMemberScalar(pf.getFeatureCollection().getTimeName(), null, null, DataType.DOUBLE, pf.getObservationTime());
-    smb.addMemberScalar(pf.getFeatureCollection().getAltName(), null, null, DataType.DOUBLE, pf.getLocation().getAltitude());
+    smb.addMemberScalar(pf.getFeatureCollection().getAltName(), null, null, DataType.DOUBLE,
+        pf.getLocation().getAltitude());
     StructureData coords = new StructureDataFromMember(smb.build());
 
     // coords first so it takes precedence

@@ -78,11 +78,13 @@ class WriterCFPointCollection extends WriterCFPointAbstract {
     trackBB(point.getLocation().getLatLon(), point.getObservationTimeAsCalendarDate());
 
     StructureMembers.Builder smb = StructureMembers.builder().setName("Coords");
-    smb.addMemberScalar(point.getFeatureCollection().getTimeName(), null, null, DataType.DOUBLE, point.getObservationTime());
+    smb.addMemberScalar(point.getFeatureCollection().getTimeName(), null, null, DataType.DOUBLE,
+        point.getObservationTime());
     smb.addMemberScalar(latName, null, null, DataType.DOUBLE, point.getLocation().getLatitude());
     smb.addMemberScalar(lonName, null, null, DataType.DOUBLE, point.getLocation().getLongitude());
     if (altUnits != null)
-      smb.addMemberScalar(point.getFeatureCollection().getAltName(), null, null, DataType.DOUBLE, point.getLocation().getAltitude());
+      smb.addMemberScalar(point.getFeatureCollection().getAltName(), null, null, DataType.DOUBLE,
+          point.getLocation().getAltitude());
     StructureData coords = new StructureDataFromMember(smb.build());
 
     // coords first so it takes precedence

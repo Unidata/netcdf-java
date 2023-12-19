@@ -21,7 +21,8 @@ import ucar.nc2.time.CalendarDateUnit;
 
 public abstract class SectionCollectionImpl extends PointFeatureCCCImpl implements TrajectoryProfileFeatureCollection {
 
-  protected SectionCollectionImpl(String name, String timeName, CalendarDateUnit timeUnit, String altName, String altUnits) {
+  protected SectionCollectionImpl(String name, String timeName, CalendarDateUnit timeUnit, String altName,
+      String altUnits) {
     super(name, timeName, timeUnit, altName, altUnits, FeatureType.TRAJECTORY_PROFILE);
   }
 

@@ -48,6 +48,7 @@ public class WriterCFStationProfileCollection extends CFPointWriter {
   // private Formatter coordNames = new Formatter();
   private Structure profileStruct; // used for netcdf4 extended
   private Map<String, Variable> profileVarMap = new HashMap<>();
+
   public WriterCFStationProfileCollection(String fileOut, List<Attribute> globalAtts, List<VariableSimpleIF> dataVars,
       CalendarDateUnit timeUnit, String altUnits, CFPointWriterConfig config) throws IOException {
     super(fileOut, globalAtts, dataVars, timeUnit, altUnits, config);
@@ -107,11 +108,11 @@ public class WriterCFStationProfileCollection extends CFPointWriter {
           .makeScalar(stationProfile.getTimeName(), "time of measurement", timeUnit.toString(), DataType.DOUBLE)
           .build());
       if (altUnits != null) {
-      altitudeCoordinateName = stationProfile.getAltName();
-      obsCoords
-          .add(VariableSimpleBuilder.makeScalar(altitudeCoordinateName, "obs altitude", altUnits, DataType.DOUBLE)
-              .addAttribute(CF.STANDARD_NAME, "altitude")
-              .addAttribute(CF.POSITIVE, CF1Convention.getZisPositive(altitudeCoordinateName, altUnits)).build());
+        altitudeCoordinateName = stationProfile.getAltName();
+        obsCoords
+            .add(VariableSimpleBuilder.makeScalar(altitudeCoordinateName, "obs altitude", altUnits, DataType.DOUBLE)
+                .addAttribute(CF.STANDARD_NAME, "altitude")
+                .addAttribute(CF.POSITIVE, CF1Convention.getZisPositive(altitudeCoordinateName, altUnits)).build());
       }
     }
 
@@ -255,7 +256,7 @@ public class WriterCFStationProfileCollection extends CFPointWriter {
 
   private int profileRecno;
 
-  protected void resetProfileIndex(){
+  protected void resetProfileIndex() {
     profileRecno = 0;
   }
 
@@ -282,14 +283,15 @@ public class WriterCFStationProfileCollection extends CFPointWriter {
 
   private int obsRecno;
 
-  protected void resetObsIndex(){
+  protected void resetObsIndex() {
     obsRecno = 0;
   }
 
   public void writeObsData(PointFeature pf) throws IOException {
     StructureMembers.Builder smb = StructureMembers.builder().setName("Coords");
     smb.addMemberScalar(pf.getFeatureCollection().getTimeName(), null, null, DataType.DOUBLE, pf.getObservationTime());
-    smb.addMemberScalar(pf.getFeatureCollection().getAltName(), null, null, DataType.DOUBLE, pf.getLocation().getAltitude());
+    smb.addMemberScalar(pf.getFeatureCollection().getAltName(), null, null, DataType.DOUBLE,
+        pf.getLocation().getAltitude());
     StructureData coords = new StructureDataFromMember(smb.build());
 
     // coords first so it takes precedence

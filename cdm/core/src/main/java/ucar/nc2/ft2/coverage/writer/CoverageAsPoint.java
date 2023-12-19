@@ -161,7 +161,7 @@ public class CoverageAsPoint {
 
     CoverageAsStationProfileCollection(VarGroup varGroup) {
       super(varGroup.name + " AsStationProfileCollection", varGroup.timeAxis.getName(), varGroup.dateUnit,
-              varGroup.zAxis.getName(), varGroup.zUnit);
+          varGroup.zAxis.getName(), varGroup.zUnit);
       this.timeName = varGroup.timeAxis != null ? varGroup.timeAxis.getName() : "time";
       this.altName = varGroup.zAxis != null ? varGroup.zAxis.getName() : "altitude";
       this.varGroup = varGroup;

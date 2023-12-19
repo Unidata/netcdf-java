@@ -63,9 +63,9 @@ public class WriterCFTrajectoryCollection extends CFPointWriter {
 
       if (altUnits != null) {
         altitudeCoordinateName = trajectory.getAltName();
-        obsCoords.add(
-            VariableSimpleBuilder.makeScalar(altitudeCoordinateName, "altitude of measurement", altUnits, DataType.DOUBLE)
-                .addAttribute(CF.POSITIVE, CF1Convention.getZisPositive(altitudeCoordinateName, altUnits)).build());
+        obsCoords.add(VariableSimpleBuilder
+            .makeScalar(altitudeCoordinateName, "altitude of measurement", altUnits, DataType.DOUBLE)
+            .addAttribute(CF.POSITIVE, CF1Convention.getZisPositive(altitudeCoordinateName, altUnits)).build());
       }
     }
     obsCoords.add(

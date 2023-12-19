@@ -73,9 +73,9 @@ class WriterCFTrajectoryCollection extends WriterCFPointAbstract {
 
       if (altUnits != null) {
         altitudeCoordinateName = trajectory.getAltName();
-        coords.add(
-            VariableSimpleBuilder.makeScalar(altitudeCoordinateName, "altitude of measurement", altUnits, DataType.DOUBLE)
-                .addAttribute(CF.POSITIVE, CF1Convention.getZisPositive(altitudeCoordinateName, altUnits)).build());
+        coords.add(VariableSimpleBuilder
+            .makeScalar(altitudeCoordinateName, "altitude of measurement", altUnits, DataType.DOUBLE)
+            .addAttribute(CF.POSITIVE, CF1Convention.getZisPositive(altitudeCoordinateName, altUnits)).build());
       }
     }
 

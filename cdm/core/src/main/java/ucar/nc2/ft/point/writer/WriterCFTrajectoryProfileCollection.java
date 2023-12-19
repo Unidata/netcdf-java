@@ -89,10 +89,10 @@ public class WriterCFTrajectoryProfileCollection extends CFPointWriter {
 
       if (altUnits != null) {
         altitudeCoordinateName = trajectoryProfile.getAltName();
-        obsCoords.add(VariableSimpleBuilder
-            .makeScalar(altitudeCoordinateName, "obs altitude", altUnits, DataType.DOUBLE)
-            .addAttribute(CF.STANDARD_NAME, "altitude")
-            .addAttribute(CF.POSITIVE, CF1Convention.getZisPositive(altitudeCoordinateName, altUnits)).build());
+        obsCoords
+            .add(VariableSimpleBuilder.makeScalar(altitudeCoordinateName, "obs altitude", altUnits, DataType.DOUBLE)
+                .addAttribute(CF.STANDARD_NAME, "altitude")
+                .addAttribute(CF.POSITIVE, CF1Convention.getZisPositive(altitudeCoordinateName, altUnits)).build());
       }
     }
     super.writeHeader(obsCoords, profileFeatures, trajectoryData, profileData);
@@ -209,7 +209,8 @@ public class WriterCFTrajectoryProfileCollection extends CFPointWriter {
     StructureMembers.Builder smb = StructureMembers.builder().setName("Coords");
     smb.addMemberScalar(pf.getFeatureCollection().getTimeName(), null, null, DataType.DOUBLE, pf.getObservationTime());
     if (altUnits != null)
-      smb.addMemberScalar(pf.getFeatureCollection().getAltName(), null, null, DataType.DOUBLE, pf.getLocation().getAltitude());
+      smb.addMemberScalar(pf.getFeatureCollection().getAltName(), null, null, DataType.DOUBLE,
+          pf.getLocation().getAltitude());
     StructureData coords = new StructureDataFromMember(smb.build());
 
     // coords first so it takes precedence

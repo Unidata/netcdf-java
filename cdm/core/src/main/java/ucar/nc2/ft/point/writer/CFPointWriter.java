@@ -503,8 +503,7 @@ public abstract class CFPointWriter implements Closeable {
 
         PointFeature pointFeat = iter.peek();
 
-        Formatter coordNames =
-            new Formatter().format("%s %s %s", stnFeature.getTimeName(), latName, lonName);
+        Formatter coordNames = new Formatter().format("%s %s %s", stnFeature.getTimeName(), latName, lonName);
         if (!Double.isNaN(pointFeat.getLocation().getAltitude())) {
           altitudeCoordinateName = stnFeature.getAltName();
           coordNames.format(" %s", altitudeCoordinateName);

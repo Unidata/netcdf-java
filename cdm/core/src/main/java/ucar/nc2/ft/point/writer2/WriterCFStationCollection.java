@@ -202,7 +202,8 @@ class WriterCFStationCollection extends WriterCFPointAbstract {
     StructureMembers.Builder smb = StructureMembers.builder().setName("Coords");
     smb.addMemberScalar(pf.getFeatureCollection().getTimeName(), null, null, DataType.DOUBLE, pf.getObservationTime());
     if (altUnits != null)
-      smb.addMemberScalar(pf.getFeatureCollection().getAltName(), null, null, DataType.DOUBLE, pf.getLocation().getAltitude());
+      smb.addMemberScalar(pf.getFeatureCollection().getAltName(), null, null, DataType.DOUBLE,
+          pf.getLocation().getAltitude());
     smb.addMemberScalar(stationIndexName, null, null, DataType.INT, parentIndex);
     StructureData coords = new StructureDataFromMember(smb.build());
 

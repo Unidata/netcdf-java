@@ -23,7 +23,8 @@ import ucar.nc2.time.CalendarDateUnit;
 
 public abstract class SectionFeatureImpl extends PointFeatureCCImpl implements TrajectoryProfileFeature {
 
-  protected SectionFeatureImpl(String name, String timeName, CalendarDateUnit timeUnit, String altName, String altUnits) {
+  protected SectionFeatureImpl(String name, String timeName, CalendarDateUnit timeUnit, String altName,
+      String altUnits) {
     super(name, timeName, timeUnit, altName, altUnits, FeatureType.TRAJECTORY_PROFILE);
   }
 

@@ -187,7 +187,8 @@ public class WriterCFStationCollection extends CFPointWriter {
 
     for (StructureData featureData : featureDataStructs) {
       for (StructureMembers.Member m : featureData.getMembers()) {
-        if (getDataVar(m.getName()) != null && stnVars.stream().noneMatch(x -> x.getShortName().equals(m.getFullName())))
+        if (getDataVar(m.getName()) != null
+            && stnVars.stream().noneMatch(x -> x.getShortName().equals(m.getFullName())))
           stnVars.add(VariableSimpleBuilder.fromMember(m).build());
       }
     }
