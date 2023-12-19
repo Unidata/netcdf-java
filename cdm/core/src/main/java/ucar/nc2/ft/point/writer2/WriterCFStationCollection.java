@@ -177,7 +177,8 @@ class WriterCFStationCollection extends WriterCFPointAbstract {
     StructureMembers.Builder smb = StructureMembers.builder().setName("Coords");
     smb.addMemberScalar(latName, null, null, DataType.DOUBLE, stn.getLatLon().getLatitude());
     smb.addMemberScalar(lonName, null, null, DataType.DOUBLE, stn.getLatLon().getLongitude());
-    smb.addMemberScalar(stationAltName, null, null, DataType.DOUBLE, stn.getAltitude());
+    if (useAlt)
+      smb.addMemberScalar(stationAltName, null, null, DataType.DOUBLE, stn.getAltitude());
     smb.addMemberString(stationIdName, null, null, stn.getName().trim(), id_strlen);
     if (useDesc)
       smb.addMemberString(descName, null, null, stn.getDescription().trim(), desc_strlen);
@@ -191,24 +192,27 @@ class WriterCFStationCollection extends WriterCFPointAbstract {
 
   private int obsRecno;
 
-  protected void writeRecord(String stnName, double timeCoordValue, CalendarDate obsDate, double altCoordValue,
-      StructureData sdata) throws IOException {
-    trackBB(null, obsDate);
-
-    Integer parentIndex = stationIndexMap.get(stnName);
+  protected void writeObsData(PointFeature pf) throws IOException {
+    trackBB(null, pf.getObservationTimeAsCalendarDate());
+    String stationName = pf.getFeatureCollection().getName();
+    Integer parentIndex = stationIndexMap.get(stationName);
     if (parentIndex == null)
-      throw new RuntimeException("Cant find station " + stnName);
+      throw new RuntimeException("Cant find station " + stationName);
 
     StructureMembers.Builder smb = StructureMembers.builder().setName("Coords");
-    smb.addMemberScalar(timeName, null, null, DataType.DOUBLE, timeCoordValue);
-    if (!Double.isNaN(altCoordValue))
-      smb.addMemberScalar(altitudeCoordinateName, null, null, DataType.DOUBLE, altCoordValue);
+    smb.addMemberScalar(pf.getFeatureCollection().getTimeName(), null, null, DataType.DOUBLE, pf.getObservationTime());
+    if (altUnits != null)
+      smb.addMemberScalar(pf.getFeatureCollection().getAltName(), null, null, DataType.DOUBLE, pf.getLocation().getAltitude());
     smb.addMemberScalar(stationIndexName, null, null, DataType.INT, parentIndex);
     StructureData coords = new StructureDataFromMember(smb.build());
 
     // coords first so it takes precedence
-    StructureDataComposite sdall = StructureDataComposite.create(ImmutableList.of(coords, sdata));
+    StructureDataComposite sdall = StructureDataComposite.create(ImmutableList.of(coords, pf.getFeatureData()));
     obsRecno = super.writeStructureData(obsRecno, record, sdall, dataMap);
   }
 
+  protected void resetObsIndex() {
+    obsRecno = 0;
+  }
 }
+

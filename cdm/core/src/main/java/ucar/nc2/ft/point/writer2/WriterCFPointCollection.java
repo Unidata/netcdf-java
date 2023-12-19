@@ -21,6 +21,7 @@ import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
 import ucar.nc2.dataset.conv.CF1Convention;
+import ucar.nc2.ft.DsgFeatureCollection;
 import ucar.nc2.ft.PointFeature;
 import ucar.nc2.ft.PointFeatureCollection;
 import ucar.nc2.time.CalendarDateUnit;
@@ -45,14 +46,16 @@ class WriterCFPointCollection extends WriterCFPointAbstract {
     writerb.addAttribute(new Attribute(CF.DSG_REPRESENTATION, "Point Data, H.1"));
   }
 
-  void writeHeader(List<PointFeatureCollection> pointCollections) throws IOException {
+  void writeHeader(List<DsgFeatureCollection> featureCollections) throws IOException {
     List<VariableSimpleIF> coords = new ArrayList<>();
-    for (PointFeatureCollection pointCollection : pointCollections) {
+    List<PointFeatureCollection> pointCollections = new ArrayList<>();
+    for (DsgFeatureCollection featureCollection : featureCollections) {
+      pointCollections.add((PointFeatureCollection) featureCollection);
       coords.add(VariableSimpleBuilder
-          .makeScalar(pointCollection.getTimeName(), "time of measurement", timeUnit.getUdUnit(), DataType.DOUBLE)
+          .makeScalar(featureCollection.getTimeName(), "time of measurement", timeUnit.getUdUnit(), DataType.DOUBLE)
           .addAttribute(CF.CALENDAR, timeUnit.getCalendar().toString()).build());
       if (altUnits != null) {
-        altitudeCoordinateName = pointCollection.getAltName();
+        altitudeCoordinateName = featureCollection.getAltName();
         coords.add(VariableSimpleBuilder
             .makeScalar(altitudeCoordinateName, "altitude of measurement", altUnits, DataType.DOUBLE)
             .addAttribute(CF.POSITIVE, CF1Convention.getZisPositive(altName, altUnits)).build());
@@ -66,34 +69,24 @@ class WriterCFPointCollection extends WriterCFPointAbstract {
     super.writeHeader(coords, pointCollections, null, null);
   }
 
-  @Override
-  void makeFeatureVariables(StructureData featureData, boolean isExtended) {
-    // NOOP
-  }
 
   /////////////////////////////////////////////////////////
   // writing data
   private int obsRecno;
 
-  void writeRecord(PointFeature sobs, StructureData sdata) throws IOException {
-    writeRecord(sobs.getFeatureCollection().getTimeName(), sobs.getObservationTime(),
-            sobs.getObservationTimeAsCalendarDate(), sobs.getFeatureCollection().getAltName(), sobs.getLocation(), sdata);
-  }
-
-  private void writeRecord(String timeName, double timeCoordValue, CalendarDate obsDate, String altName,
-                           EarthLocation loc, StructureData sdata) throws IOException {
-    trackBB(loc.getLatLon(), obsDate);
+  protected void writeRecord(PointFeature point) throws IOException {
+    trackBB(point.getLocation().getLatLon(), point.getObservationTimeAsCalendarDate());
 
     StructureMembers.Builder smb = StructureMembers.builder().setName("Coords");
-    smb.addMemberScalar(timeName, null, null, DataType.DOUBLE, timeCoordValue);
-    smb.addMemberScalar(latName, null, null, DataType.DOUBLE, loc.getLatitude());
-    smb.addMemberScalar(lonName, null, null, DataType.DOUBLE, loc.getLongitude());
+    smb.addMemberScalar(point.getFeatureCollection().getTimeName(), null, null, DataType.DOUBLE, point.getObservationTime());
+    smb.addMemberScalar(latName, null, null, DataType.DOUBLE, point.getLocation().getLatitude());
+    smb.addMemberScalar(lonName, null, null, DataType.DOUBLE, point.getLocation().getLongitude());
     if (altUnits != null)
-      smb.addMemberScalar(altName, null, null, DataType.DOUBLE, loc.getAltitude());
+      smb.addMemberScalar(point.getFeatureCollection().getAltName(), null, null, DataType.DOUBLE, point.getLocation().getAltitude());
     StructureData coords = new StructureDataFromMember(smb.build());
 
     // coords first so it takes precedence
-    StructureDataComposite sdall = StructureDataComposite.create(ImmutableList.of(coords, sdata));
+    StructureDataComposite sdall = StructureDataComposite.create(ImmutableList.of(coords, point.getFeatureData()));
     obsRecno = super.writeStructureData(obsRecno, record, sdall, dataMap);
   }
 

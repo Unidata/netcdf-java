@@ -79,7 +79,7 @@ public class WriterCFPointCollection extends CFPointWriter {
               .addAttribute(CF.POSITIVE, CF1Convention.getZisPositive(altName, altUnits)).build());
     }
 
-    super.writeHeader(coords, pfc, null);
+    super.writeHeader(coords, Arrays.asList(pfc), null, null);
   }
 
   protected void makeFeatureVariables(List<StructureData> featureData, boolean isExtended) {

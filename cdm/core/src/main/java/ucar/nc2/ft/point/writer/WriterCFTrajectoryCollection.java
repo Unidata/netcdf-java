@@ -29,7 +29,6 @@ public class WriterCFTrajectoryCollection extends CFPointWriter {
   ///////////////////////////////////////////////////
   private Structure featureStruct; // used for netcdf4 extended
   private Map<String, Variable> featureVarMap = new HashMap<>();
-  private boolean headerDone;
 
   public WriterCFTrajectoryCollection(String fileOut, List<Attribute> globalAtts, List<VariableSimpleIF> dataVars,
       CalendarDateUnit timeUnit, String altUnits, CFPointWriterConfig config) throws IOException {
@@ -42,16 +41,11 @@ public class WriterCFTrajectoryCollection extends CFPointWriter {
   public int writeTrajectory(TrajectoryFeature traj) throws IOException {
     int count = 0;
     for (PointFeature pf : traj) {
-      if (!headerDone) {
-        if (id_strlen == 0)
-          id_strlen = traj.getName().length() * 2;
-        writeHeader(traj, pf);
-        headerDone = true;
-      }
+      if (id_strlen == 0)
+        id_strlen = traj.getName().length() * 2;
       writeObsData(pf);
       count++;
     }
-
     writeTrajectoryData(traj, count);
     return count;
   }
@@ -137,7 +131,7 @@ public class WriterCFTrajectoryCollection extends CFPointWriter {
     smb.addMemberScalar(latName, null, null, DataType.DOUBLE, loc.getLatitude());
     smb.addMemberScalar(lonName, null, null, DataType.DOUBLE, loc.getLongitude());
     if (altUnits != null)
-      smb.addMemberScalar(altName, null, null, DataType.DOUBLE, loc.getAltitude());
+      smb.addMemberScalar(pf.getFeatureCollection().getAltName(), null, null, DataType.DOUBLE, loc.getAltitude());
     StructureData coords = new StructureDataFromMember(smb.build());
 
     // coords first so it takes precedence

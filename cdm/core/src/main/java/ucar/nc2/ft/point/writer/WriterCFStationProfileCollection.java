@@ -6,6 +6,7 @@
 package ucar.nc2.ft.point.writer;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterables;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.*;
@@ -13,13 +14,12 @@ import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
 import ucar.nc2.dataset.conv.CF1Convention;
-import ucar.nc2.ft.PointFeature;
-import ucar.nc2.ft.ProfileFeature;
-import ucar.nc2.ft.StationProfileFeature;
+import ucar.nc2.ft.*;
 import ucar.nc2.ft.point.StationFeature;
 import ucar.nc2.time.CalendarDateUnit;
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Write a CF "Discrete Sample" station profile collection file.
@@ -48,8 +48,6 @@ public class WriterCFStationProfileCollection extends CFPointWriter {
   // private Formatter coordNames = new Formatter();
   private Structure profileStruct; // used for netcdf4 extended
   private Map<String, Variable> profileVarMap = new HashMap<>();
-  private boolean headerDone;
-
   public WriterCFStationProfileCollection(String fileOut, List<Attribute> globalAtts, List<VariableSimpleIF> dataVars,
       CalendarDateUnit timeUnit, String altUnits, CFPointWriterConfig config) throws IOException {
     super(fileOut, globalAtts, dataVars, timeUnit, altUnits, config);
@@ -59,12 +57,11 @@ public class WriterCFStationProfileCollection extends CFPointWriter {
   }
 
   public void setStations(List<StationFeature> stns) {
-    this.stnList = stns;
+    this.stnList = stns.stream().distinct().collect(Collectors.toList());
 
     // see if there's altitude, wmoId for any stations
     for (StationFeature stn : stnList) {
-      if (!Double.isNaN(stn.getAltitude()))
-        useAlt = true;
+      useAlt = !Double.isNaN(stn.getAltitude());
       if ((stn.getWmoId() != null) && (!stn.getWmoId().trim().isEmpty()))
         useWmoId = true;
       if ((stn.getDescription() != null) && (!stn.getDescription().trim().isEmpty()))
@@ -84,23 +81,9 @@ public class WriterCFStationProfileCollection extends CFPointWriter {
   public int writeProfile(StationProfileFeature spf, ProfileFeature profile) throws IOException {
     int count = 0;
     for (PointFeature pf : profile) {
-      if (!headerDone) {
-        if (id_strlen == 0)
-          id_strlen = profile.getName().length() * 2;
-        writeHeader(spf, profile, pf);
-        headerDone = true;
-      }
       writeObsData(pf);
       count++;
     }
-
-    Integer stnIndex = stationIndexMap.get(spf.getName());
-    if (stnIndex == null) {
-      log.warn("BAD station {}", spf.getName());
-    } else {
-      writeProfileData(stnIndex, profile, count);
-    }
-
     return count;
   }
 
@@ -140,9 +123,33 @@ public class WriterCFStationProfileCollection extends CFPointWriter {
     for (StationFeature sf : stnList) {
       writeStationData(sf);
       stationIndexMap.put(sf.getName(), count);
+      for (ProfileFeature p : (StationProfileFeature) sf) {
+        int countPoints = 0;
+        if (p.size() >= 0) {
+          countPoints += p.size();
+        } else {
+          countPoints += Iterables.size(p);
+        }
+        writeProfileData(count, p, countPoints);
+      }
       count++;
     }
+  }
 
+  @Override
+  public void setFeatureAuxInfo(int nfeatures, int id_strlen) {
+    int countProfiles = 0;
+    int name_strlen = 0;
+    for (StationFeature s : stnList) {
+      name_strlen = Math.max(name_strlen, s.getName().length());
+      if (((StationProfileFeature) s).size() >= 0)
+        countProfiles += ((StationProfileFeature) s).size();
+      else {
+        countProfiles += Iterables.size(((StationProfileFeature) s));
+      }
+    }
+    this.nfeatures = countProfiles;
+    this.id_strlen = name_strlen;
   }
 
   protected void makeFeatureVariables(List<StructureData> stnDataStructs, boolean isExtended) {
@@ -248,6 +255,10 @@ public class WriterCFStationProfileCollection extends CFPointWriter {
 
   private int profileRecno;
 
+  protected void resetProfileIndex(){
+    profileRecno = 0;
+  }
+
   public void writeProfileData(int stnIndex, ProfileFeature profile, int nobs) throws IOException {
     trackBB(profile.getLatLon(), profile.getTime());
 
@@ -271,9 +282,14 @@ public class WriterCFStationProfileCollection extends CFPointWriter {
 
   private int obsRecno;
 
+  protected void resetObsIndex(){
+    obsRecno = 0;
+  }
+
   public void writeObsData(PointFeature pf) throws IOException {
     StructureMembers.Builder smb = StructureMembers.builder().setName("Coords");
-    smb.addMemberScalar(altitudeCoordinateName, null, null, DataType.DOUBLE, pf.getLocation().getAltitude());
+    smb.addMemberScalar(pf.getFeatureCollection().getTimeName(), null, null, DataType.DOUBLE, pf.getObservationTime());
+    smb.addMemberScalar(pf.getFeatureCollection().getAltName(), null, null, DataType.DOUBLE, pf.getLocation().getAltitude());
     StructureData coords = new StructureDataFromMember(smb.build());
 
     // coords first so it takes precedence
