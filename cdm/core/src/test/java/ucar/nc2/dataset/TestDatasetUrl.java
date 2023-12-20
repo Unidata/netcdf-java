@@ -112,5 +112,16 @@ public class TestDatasetUrl {
     testFind(
         "dynamic:http://thredds.ucar.edu:8080/thredds/fmrc/NCEP/GFS/CONUS_95km/files/GFS_CONUS_95km_20070319_0600.grib1",
         null);
+
+    testFind("file:/path/to/file.ncml", ServiceType.NCML);
+    testFind("/path/to/file.ncml", ServiceType.NCML);
+    testFind("file:/path/to/file.xml", ServiceType.NCML);
+    testFind("/path/to/file.xml", ServiceType.NCML);
+
+    testFind("cdms3:thredds-test-data?testStandalone.ncml#delimiter=/", ServiceType.NCML);
+    testFind("cdms3:thredds-test-data?testStandalone.ncml", ServiceType.NCML);
+    testFind("cdms3:thredds-test-data?ncml/testStandalone.ncml#delimiter=/", ServiceType.NCML);
+    testFind("cdms3:thredds-test-data?ncml/testStandalone.ncml", ServiceType.NCML);
+    testFind("cdms3://profile_name@my.endpoint.edu/bucket-name?super/long/key.ncml#delimiter=/", ServiceType.NCML);
   }
 }
