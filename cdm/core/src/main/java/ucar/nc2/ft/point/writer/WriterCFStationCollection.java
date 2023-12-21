@@ -88,14 +88,13 @@ public class WriterCFStationCollection extends CFPointWriter {
         desc_strlen = Math.max(desc_strlen, stn.getDescription().length());
       if (stn.getWmoId() != null)
         wmo_strlen = Math.max(wmo_strlen, stn.getWmoId().length());
-      if (stn instanceof DsgFeatureCollection) {
-        DsgFeatureCollection dsgStation = (DsgFeatureCollection) stn;
-        if (coords.stream().noneMatch(x -> x.getShortName().equals(dsgStation.getTimeName()))) {
-          coords.add(VariableSimpleBuilder
-              .makeScalar(dsgStation.getTimeName(), "time of measurement", dsgStation.getTimeUnit().getUdUnit(),
-                  DataType.DOUBLE)
-              .addAttribute(CF.CALENDAR, dsgStation.getTimeUnit().getCalendar().toString()).build());
-        }
+      DsgFeatureCollection dsgStation = (DsgFeatureCollection) stn;
+      if (coords.stream().noneMatch(x -> x.getShortName().equals(dsgStation.getTimeName()))) {
+        coords
+            .add(VariableSimpleBuilder
+                .makeScalar(dsgStation.getTimeName(), "time of measurement", dsgStation.getTimeUnit().getUdUnit(),
+                    DataType.DOUBLE)
+                .addAttribute(CF.CALENDAR, dsgStation.getTimeUnit().getCalendar().toString()).build());
       }
     }
 
