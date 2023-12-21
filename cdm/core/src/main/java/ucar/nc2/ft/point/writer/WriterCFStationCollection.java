@@ -61,49 +61,8 @@ public class WriterCFStationCollection extends CFPointWriter {
         "Timeseries of station data in the indexed ragged array representation, H.2.5"));
   }
 
-  public void writeHeader(StationFeatureCollection stations) throws IOException {
-    this.stnList = stations.getStationFeatures().stream().distinct().collect(Collectors.toList());
-    List<VariableSimpleIF> coords = new ArrayList<>();
-
-    // see if there's altitude, wmoId for any stations
-    for (StationFeature stn : stations.getStationFeatures()) {
-      useAlt = !Double.isNaN(stn.getAltitude());
-      if ((stn.getWmoId() != null) && (!stn.getWmoId().trim().isEmpty()))
-        useWmoId = true;
-      if ((stn.getDescription() != null) && (!stn.getDescription().trim().isEmpty()))
-        useDesc = true;
-
-      // find string lengths
-      id_strlen = Math.max(id_strlen, stn.getName().length());
-      if (stn.getDescription() != null)
-        desc_strlen = Math.max(desc_strlen, stn.getDescription().length());
-      if (stn.getWmoId() != null)
-        wmo_strlen = Math.max(wmo_strlen, stn.getWmoId().length());
-
-      if (stn instanceof DsgFeatureCollection) {
-        DsgFeatureCollection dsgStation = (DsgFeatureCollection) stn;
-        if (coords.stream().noneMatch(x -> x.getShortName().equals(dsgStation.getTimeName()))) {
-          coords.add(VariableSimpleBuilder
-              .makeScalar(dsgStation.getTimeName(), "time of measurement", dsgStation.getTimeUnit().getUdUnit(),
-                  DataType.DOUBLE)
-              .addAttribute(CF.CALENDAR, dsgStation.getTimeUnit().getCalendar().toString()).build());
-        }
-      }
-    }
-
-    llbb = CFPointWriterUtils.getBoundingBox(stnList); // gets written in super.finish();
-
-    coords.add(VariableSimpleBuilder
-        .makeScalar(stationIndexName, "station index for this observation record", null, DataType.INT)
-        .addAttribute(CF.INSTANCE_DIMENSION, stationDimName).build());
-
-    int count = 0;
-    stationIndexMap = new HashMap<>(stnList.size(), 1.0f);
-    for (StationFeature stn : stnList) {
-      writeStationData(stn);
-      stationIndexMap.put(stn.getName(), count);
-      count++;
-    }
+  public void writeHeader(StationTimeSeriesFeatureCollection stations) throws IOException {
+    writeHeader(stations.getStationFeatures(), null);
   }
 
   public void writeHeader(List<StationFeature> stns, @Nullable StationPointFeature spf) throws IOException {
