@@ -552,13 +552,12 @@ class GribIospBuilder {
     v.addAttribute(new Attribute(CDM.LONG_NAME, Grib.GRIB_VALID_TIME));
     v.addAttribute(new Attribute(CF.CALENDAR, Calendar.proleptic_gregorian.toString()));
 
-    double[] data = new double[ntimes];
-    int count = 0;
-
-    for (TimeCoordIntvValue tinv : coordTime.getTimeIntervals()) {
-      data[count++] = tinv.getCoordValue();
-    }
-    v.setCachedData(Array.factory(DataType.DOUBLE, new int[] {ntimes}, data), false);
+    double[] timeCoordValues = new double[ntimes];
+    double[] timeCoordBoundsValues = new double[ntimes * 2];
+    int count = GribTimeCoordIntervalUtils.generateTimeCoordValuesFromTimeCoordIntervals(coordTime.getTimeIntervals(),
+        timeCoordValues, timeCoordBoundsValues, 0, coordTime.getTimeUnit().getValue(), 0);
+    assert (count == ntimes);
+    v.setCachedData(Array.factory(DataType.DOUBLE, new int[] {ntimes}, timeCoordValues), false);
 
     // bounds
     String bounds_name = tcName + "_bounds";
@@ -569,13 +568,7 @@ class GribIospBuilder {
     bounds.addAttribute(new Attribute(CDM.UNITS, units));
     bounds.addAttribute(new Attribute(CDM.LONG_NAME, "bounds for " + tcName));
 
-    data = new double[ntimes * 2];
-    count = 0;
-    for (TimeCoordIntvValue tinv : coordTime.getTimeIntervals()) {
-      data[count++] = tinv.getBounds1();
-      data[count++] = tinv.getBounds2();
-    }
-    bounds.setCachedData(Array.factory(DataType.DOUBLE, new int[] {ntimes, 2}, data), false);
+    bounds.setCachedData(Array.factory(DataType.DOUBLE, new int[] {ntimes, 2}, timeCoordBoundsValues), false);
 
     makeTimeAuxReference(g, tcName, units, coordTime);
   }

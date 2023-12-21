@@ -266,6 +266,19 @@ public class XURI {
   }
 
   /**
+   * Allow fragment fields to be inserted
+   *
+   * @param key
+   * @param newval
+   * @return previous value or this value if key not set
+   */
+  public void insertFragmentField(String key, String newval) {
+    // Watch out in case there is no query
+    this.fragfields = insertAmpField(key, newval, parent.getFragment());
+    rebuildQuery();
+  }
+
+  /**
    * Allow queryfields to be removed
    *
    * @param key

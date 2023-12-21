@@ -13,11 +13,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import ucar.nc2.Attribute;
-import ucar.nc2.Dimension;
-import ucar.nc2.NetcdfFile;
-import ucar.nc2.Variable;
-import ucar.nc2.VariableSimpleIF;
+
+import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.CoordinateAxis;
@@ -112,23 +109,26 @@ public class DtCoverageDataset implements Closeable {
    * @param parseInfo put parse info here, may be null
    * @throws java.io.IOException on read error
    */
-  public DtCoverageDataset(NetcdfDataset ncd, Formatter parseInfo) throws IOException {
-    this.ncd = ncd;
-
-    Set<NetcdfDataset.Enhance> enhance = ncd.getEnhanceMode();
-    if (enhance == null || enhance.isEmpty())
+  public DtCoverageDataset(NetcdfDataset ds, Formatter parseInfo) throws IOException {
+    Set<NetcdfDataset.Enhance> enhance = ds.getEnhanceMode();
+    if (enhance == null || enhance.isEmpty()) {
       enhance = NetcdfDataset.getDefaultEnhanceMode();
-    ncd = NetcdfDatasets.enhance(ncd, enhance, null);
+    }
+    this.ncd = NetcdfDatasets.enhance(ds, enhance, null);
 
-    DtCoverageCSBuilder facc = DtCoverageCSBuilder.classify(ncd, parseInfo);
-    if (facc != null)
-      this.coverageType = facc.type;
+    // sort by largest size first
+    List<CoordinateSystem> csList = new ArrayList<>(ncd.getCoordinateSystems());
+    csList.sort((o1, o2) -> o2.getCoordinateAxes().size() - o1.getCoordinateAxes().size());
 
     Map<String, Gridset> csHash = new HashMap<>();
-    for (CoordinateSystem cs : ncd.getCoordinateSystems()) {
+    for (CoordinateSystem cs : csList) {
       DtCoverageCSBuilder fac = new DtCoverageCSBuilder(ncd, cs, parseInfo);
-      if (fac.type == null)
+      if (fac.type == null) {
         continue;
+      }
+      if (this.coverageType == null) {
+        this.coverageType = fac.type;
+      }
       DtCoverageCS ccs = fac.makeCoordSys();
       if (ccs == null)
         continue;

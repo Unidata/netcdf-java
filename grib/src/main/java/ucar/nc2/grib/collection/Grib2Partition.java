@@ -11,8 +11,6 @@ import java.util.Formatter;
 import thredds.featurecollection.FeatureCollectionConfig;
 import ucar.nc2.Attribute;
 import ucar.nc2.AttributeContainer;
-import ucar.nc2.NetcdfFile;
-import ucar.nc2.NetcdfFileSubclass;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.DataFormatType;
 import ucar.nc2.dataset.NetcdfDataset;
@@ -36,8 +34,7 @@ public class Grib2Partition extends PartitionCollectionImmutable implements Clos
       FeatureCollectionConfig config, Formatter errlog, org.slf4j.Logger logger) throws IOException {
 
     ucar.nc2.grib.collection.Grib2Iosp iosp = new ucar.nc2.grib.collection.Grib2Iosp(group, ds.getType());
-    NetcdfFile ncfile = new NetcdfFileSubclass(iosp, null, getLocation(), null);
-    return new NetcdfDataset(ncfile);
+    return buildNetcdfDataset(iosp, getLocation());
   }
 
   @Override
@@ -45,8 +42,7 @@ public class Grib2Partition extends PartitionCollectionImmutable implements Clos
       FeatureCollectionConfig config, Formatter errlog, org.slf4j.Logger logger) throws IOException {
 
     ucar.nc2.grib.collection.Grib2Iosp iosp = new ucar.nc2.grib.collection.Grib2Iosp(group, ds.getType());
-    NetcdfFile ncfile = new NetcdfFileSubclass(iosp, null, getLocation(), null);
-    NetcdfDataset ncd = new NetcdfDataset(ncfile);
+    NetcdfDataset ncd = buildNetcdfDataset(iosp, getLocation());
     return new ucar.nc2.dt.grid.GridDataset(ncd);
   }
 

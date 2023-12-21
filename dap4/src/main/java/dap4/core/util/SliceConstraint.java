@@ -63,7 +63,7 @@ public class SliceConstraint {
   }
 
   protected void add(List<Slice> slices) throws DapException {
-    if (slices == null || slices.size() == 0)
+    if (slices == null || slices.isEmpty())
       throw new DapException("Null slice set");
     if (this.slicesets.size() == this.rank)
       throw new DapException("Sliceset overflow");

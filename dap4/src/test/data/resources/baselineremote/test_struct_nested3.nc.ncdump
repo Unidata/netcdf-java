@@ -7,11 +7,15 @@ netcdf test_struct_nested3 {
 
         Structure {
           int field1;
+            field1:_DAP4_Checksum_CRC32 = 0;
         } field2;
+        field2:_DAP4_Checksum_CRC32 = 0;
 
       } field3;
+      field3:_DAP4_Checksum_CRC32 = 0;
 
     } x;
+    x:_DAP4_Checksum_CRC32 = -907939866;
 
 
   // global attributes:

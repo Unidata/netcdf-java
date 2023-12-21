@@ -84,7 +84,6 @@ public class TestScaleOffsetMissingUnsigned {
     }
 
     Array readEnhanced;
-
     // read the packed form, enhance using scale/offset, compare to original
     try (NetcdfDataset ncd = NetcdfDatasets.openDataset(filename)) {
       VariableDS vs = (VariableDS) ncd.findVariable("packed");
@@ -133,7 +132,6 @@ public class TestScaleOffsetMissingUnsigned {
     }
   }
 
-
   // Asserts that "scale_factor" is applied to "_FillValue".
   // This test demonstrated the bug in https://github.com/Unidata/thredds/issues/1065.
   @Test
@@ -141,7 +139,7 @@ public class TestScaleOffsetMissingUnsigned {
     File testResource = new File(getClass().getResource("testScaledFillValue.ncml").toURI());
 
     // LOOK removeEnhancement does not work in new
-    try (NetcdfDataset ncd = NetcdfDataset.openDataset(testResource.getAbsolutePath(), true, null)) {
+    try (NetcdfDataset ncd = NetcdfDatasets.openDataset(testResource.getAbsolutePath(), true, null)) {
       VariableDS fooVar = (VariableDS) ncd.findVariable("foo");
 
       double expectedFillValue = .99999;

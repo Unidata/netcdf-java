@@ -44,7 +44,7 @@ dependencies {
     api 'org.jsoup:jsoup:1.11.2' // HTML scraper used in GRIB
 
     // cdm-mcidas (GEMPAK and McIDAS IOSPs)
-    api 'edu.wisc.ssec:visad-mcidas-slim-ucar-ns:20200507-2'
+    api 'edu.wisc.ssec:visad-mcidas-slim-ucar-ns:20231121'
 
     // cdm-vis5d (vis5d IOSP)
     api 'edu.wisc.ssec:visad:2.0-20130124'
@@ -76,7 +76,7 @@ dependencies {
 
     // netcdf-java logging
     api "org.slf4j:slf4j-api:${depVersion.slf4j}"
-    runtime 'ch.qos.logback:logback-classic:1.2.9'
+    runtime 'ch.qos.logback:logback-classic:1.4.14'
 
     // legacy gradle module
     // todo: remove with legacy in 6

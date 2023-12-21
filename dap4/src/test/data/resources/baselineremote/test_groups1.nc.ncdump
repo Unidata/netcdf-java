@@ -9,8 +9,10 @@ netcdf test_groups1 {
         dim3 = 7;
       variables:
         int v1(dim1);
+          v1:_DAP4_Checksum_CRC32 = 488449836;
 
         float v2(dim2);
+          v2:_DAP4_Checksum_CRC32 = 266808643;
 
     }
 
@@ -19,8 +21,10 @@ netcdf test_groups1 {
         dim3 = 7;
       variables:
         int v1(dim1);
+          v1:_DAP4_Checksum_CRC32 = -1447780101;
 
         float v3(dim3);
+          v3:_DAP4_Checksum_CRC32 = 703718162;
 
     }
 

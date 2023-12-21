@@ -1344,12 +1344,16 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   public CoordinateAxis addCoordinateAxis(VariableDS v) {
     if (v == null)
       return null;
+
+    final List<CoordinateAxis> coordCopy = new ArrayList<>(coordAxes);
+
     CoordinateAxis oldVar = findCoordinateAxis(v.getFullName());
     if (oldVar != null)
-      coordAxes.remove(oldVar);
+      coordCopy.remove(oldVar);
 
     CoordinateAxis ca = (v instanceof CoordinateAxis) ? (CoordinateAxis) v : CoordinateAxis.factory(this, v);
-    coordAxes.add(ca);
+    coordCopy.add(ca);
+    this.coordAxes = coordCopy;
 
     if (v.isMemberOfStructure()) {
       Structure parentOrg = v.getParentStructure(); // gotta be careful to get the wrapping parent

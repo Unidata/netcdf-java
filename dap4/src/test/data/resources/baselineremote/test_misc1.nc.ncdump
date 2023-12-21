@@ -7,12 +7,15 @@ netcdf test_misc1 {
   variables:
     float var(unlim);
       var:_ChunkSizes = 1024;
+      var:_DAP4_Checksum_CRC32 = -1062079627;
 
     float lon(lon);
+      lon:_DAP4_Checksum_CRC32 = -947018072;
       string lon:units = "degrees_east";
       string lon:_CoordinateAxisType = "Lon";
 
     float lat(lat);
+      lat:_DAP4_Checksum_CRC32 = -1521140044;
       string lat:units = "degrees_north";
       string lat:_CoordinateAxisType = "Lat";
 

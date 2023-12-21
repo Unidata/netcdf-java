@@ -10,21 +10,29 @@ netcdf test_atomic_array {
     d5 = 5;
   variables:
     ubyte vu8(d2, d3);
+      vu8:_DAP4_Checksum_CRC32 = -735091578;
 
     short v16(d4);
+      v16:_DAP4_Checksum_CRC32 = -1835461610;
 
     uint vu32(d2, d3);
+      vu32:_DAP4_Checksum_CRC32 = 207024370;
 
     double vd(d2);
+      vd:_DAP4_Checksum_CRC32 = 2081016750;
 
     char vc(d2);
+      vc:_DAP4_Checksum_CRC32 = 1672337415;
 
     string vs(d2, d2);
+      vs:_DAP4_Checksum_CRC32 = 1731162308;
 
     opaque vo(d1, d2);
+      vo:_DAP4_Checksum_CRC32 = 660035085;
 
     enum cloud_class_t primary_cloud(d5);
       string primary_cloud:_FillValue = "Missing";
+      primary_cloud:_DAP4_Checksum_CRC32 = -1249222022;
 
   // global attributes:
   :_DAP4_Little_Endian = 1B;
