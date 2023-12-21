@@ -311,8 +311,8 @@ public class CoverageAsPoint {
         double obsTime = this.timeAxis != null ? this.timeAxis.getCoordMidpoint(curr) : 0.0;
         String timeName = this.timeAxis != null ? this.timeAxis.getName() : "time";
         curr++;
-        return new CoverageAsProfileFeature(obsTime, timeName, varGroup.dateUnit,
-            varGroup.zAxis.getName(), varGroup.zUnit, getLatitude(), getLongitude(), this.varIters);
+        return new CoverageAsProfileFeature(obsTime, timeName, varGroup.dateUnit, varGroup.zAxis.getName(),
+            varGroup.zUnit, getLatitude(), getLongitude(), this.varIters);
       }
     }
 
