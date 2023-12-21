@@ -1,10 +1,16 @@
 package ucar.nc2.grib.coord;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import thredds.featurecollection.FeatureCollectionConfig;
+import thredds.featurecollection.FeatureCollectionType;
+import thredds.inventory.CollectionUpdateType;
 import ucar.ma2.Array;
 import ucar.nc2.*;
+import ucar.nc2.grib.collection.GribCdmIndex;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
@@ -103,10 +109,30 @@ public class TestDiscontiguousInterval {
     checkTimeCoord2D_fromIntervals_isStrictlyMonotonicallyIncreasing(testfile, varName);
   }
 
+  @Test
+  @Category(NeedsCdmUnitTest.class)
+  public void testFeatureCollectionBest_isStrictlyMonotonicallyIncreasing() throws IOException {
+    final String spec =
+        TestDir.cdmUnitTestDir + "/gribCollections/nonMonotonicTime/GFS_CONUS_80km_#yyyyMMdd_HHmm#\\.grib1$";
+    final FeatureCollectionConfig config = new FeatureCollectionConfig("testFeatureCollectionBest", "path",
+        FeatureCollectionType.GRIB1, spec, null, null, null, "file", null);
+    final boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.always, null);
+    assertThat(changed).isTrue();
+    final String topLevelIndex = GribCdmIndex.getTopIndexFileFromConfig(config).getAbsolutePath();
+
+    final String varName = "Total_precipitation_surface_Mixed_intervals_Accumulation";
+    checkTimeCoord2D_fromIntervals_isStrictlyMonotonicallyIncreasing(topLevelIndex, varName, "Best/");
+  }
+
   private void checkTimeCoord2D_fromIntervals_isStrictlyMonotonicallyIncreasing(String testfile, String varName)
       throws IOException {
+    checkTimeCoord2D_fromIntervals_isStrictlyMonotonicallyIncreasing(testfile, varName, "");
+  }
+
+  private void checkTimeCoord2D_fromIntervals_isStrictlyMonotonicallyIncreasing(String testfile, String varName,
+      String groupName) throws IOException {
     try (NetcdfFile nc = NetcdfFiles.open(testfile)) {
-      Variable dataVar = nc.findVariable(varName);
+      Variable dataVar = nc.findVariable(groupName + varName);
       Assert.assertNotNull(dataVar);
 
       Dimension timeDim = null;
@@ -116,7 +142,7 @@ public class TestDiscontiguousInterval {
           break;
         }
       }
-      Variable timeCoordVar = nc.findVariable(timeDim.getShortName());
+      Variable timeCoordVar = nc.findVariable(groupName + timeDim.getShortName());
       Assert.assertNotNull(timeCoordVar);
 
       Attribute att = timeCoordVar.findAttribute("bounds");

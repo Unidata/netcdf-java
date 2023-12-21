@@ -285,10 +285,8 @@ class AggDatasetOuter extends AggDataset {
 
       Variable v = findVariable(ncd, mainv);
       if (v == null) {
-        Aggregation.logger.error("AggOuterDimension cant find " + mainv.getFullName() + " in " + ncd.getLocation()
-            + "; return all zeroes!!!");
-        return Array.factory(mainv.getDataType(), new Section(section).getShape()); // all zeros LOOK need missing
-                                                                                    // value
+        Aggregation.logger.error("AggOuterDimension can't find " + mainv.getFullName() + " in " + ncd.getLocation());
+        throw new IllegalArgumentException("Variable '" + mainv.getFullName() + "' does not exist in aggregation.");
       }
 
       if (Aggregation.debugRead) {

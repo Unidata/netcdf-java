@@ -337,12 +337,17 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
     int ncoords = (int) org.getSize();
     List<CalendarDate> result = new ArrayList<>(ncoords);
 
-    Array data = org.read();
+    if (org instanceof CoordinateAxis1D) {
+      coords = ((CoordinateAxis1D) org).getCoordValues();
+    } else {
+      Array data = org.read();
+      coords = (double[]) data.get1DJavaArray(DataType.DOUBLE);
+    }
+    this.wasRead = true;
 
     int count = 0;
-    IndexIterator ii = data.getIndexIterator();
     for (int i = 0; i < ncoords; i++) {
-      double val = ii.getDoubleNext();
+      double val = coords[i];
       if (Double.isNaN(val))
         continue; // WTF ??
       result.add(helper.makeCalendarDateFromOffset(val));
@@ -355,12 +360,11 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
       setDimension(0, localDim);
 
       // set the shortened values
-      Array shortData = Array.factory(data.getDataType(), new int[] {count});
+      Array shortData = Array.factory(org.getDataType(), new int[] {count});
       Index ima = shortData.getIndex();
       int count2 = 0;
-      ii = data.getIndexIterator();
       for (int i = 0; i < ncoords; i++) {
-        double val = ii.getDoubleNext();
+        double val = coords[i];
         if (Double.isNaN(val))
           continue;
         shortData.setDouble(ima.set0(count2), val);

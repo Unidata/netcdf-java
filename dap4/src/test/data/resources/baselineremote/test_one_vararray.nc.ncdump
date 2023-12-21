@@ -3,6 +3,7 @@ netcdf test_one_vararray {
     d2 = 2;
   variables:
     int t(d2);
+      t:_DAP4_Checksum_CRC32 = 1121956304;
 
   // global attributes:
   :_DAP4_Little_Endian = 1B;

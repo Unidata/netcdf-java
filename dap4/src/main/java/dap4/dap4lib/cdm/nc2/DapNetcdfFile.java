@@ -128,6 +128,13 @@ public class DapNetcdfFile extends NetcdfFile {
     } catch (URISyntaxException use) {
       throw new IOException(use);
     }
+    // We need to convert the protocol to #dap4
+    if ("dap4".equalsIgnoreCase(xuri.getScheme())) {
+      xuri.setScheme("https"); // Note that this should be https, but
+                               // test.opendap.org still uses http; one
+                               // hopes that other servers are setup to
+                               // redirect http: to https:
+    }
     this.dsplocation = xuri.assemble(XURI.URLQUERY);
     cancel = (cancelTask == null ? nullcancel : cancelTask);
 

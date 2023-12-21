@@ -1,11 +1,14 @@
 netcdf test_fill {
   variables:
     ubyte uv8;
+      uv8:_DAP4_Checksum_CRC32 = 1874795921;
 
     short v16;
+      v16:_DAP4_Checksum_CRC32 = -921460762;
 
     int uv32;
       uv32:_FillValue = 17;
+      uv32:_DAP4_Checksum_CRC32 = -2076724431;
 
   // global attributes:
   :_DAP4_Little_Endian = 1B;

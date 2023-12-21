@@ -4,6 +4,8 @@
  */
 package ucar.nc2.util.cache;
 
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import ucar.nc2.dataset.DatasetUrl;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateFormatter;
@@ -697,13 +699,11 @@ public class FileCache implements FileCacheIF {
   synchronized void cleanup(int maxElements) {
 
     try {
-      /*
-       * int size = counter.get();
-       * int fsize = files.size();
-       * if (debug && (size != fsize)) {
-       * log.warn("FileCache " + name + " counter " + size + " doesnt match files().size=" + fsize);
-       * }
-       */
+      for (CacheElement.CacheFile cacheFile : files.values()) {
+        if (!Files.exists(Paths.get(cacheFile.ncfile.getLocation()))) {
+          remove(cacheFile);
+        }
+      }
 
       int size = files.size();
       if (size <= minElements)
