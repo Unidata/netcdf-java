@@ -88,7 +88,7 @@ public class WriterCFStationProfileCollection extends CFPointWriter {
     return count;
   }
 
-  protected void writeHeader(List<StationFeature> stations) throws IOException {
+  public void writeHeader(List<StationFeature> stations) throws IOException {
 
     List<VariableSimpleIF> obsCoords = new ArrayList<>();
     List<PointFeatureCollection> flattenStations = new ArrayList<>();
