@@ -101,7 +101,7 @@ public class WriterCFPointCollection extends CFPointWriter {
     writeRecord(timeName, timeCoordValue, obsDate, altName, loc, sdata);
   }
 
-  public void writeRecord(String timeName, double timeCoordValue, CalendarDate obsDate, String altName,
+  private void writeRecord(String timeName, double timeCoordValue, CalendarDate obsDate, String altName,
       EarthLocation loc, StructureData sdata) throws IOException {
     trackBB(loc.getLatLon(), obsDate);
 
