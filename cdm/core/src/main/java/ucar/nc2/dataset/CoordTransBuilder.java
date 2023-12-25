@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Formatter;
 import javax.annotation.Nullable;
+
+import com.google.common.collect.ImmutableList;
 import ucar.ma2.DataType;
 import ucar.ma2.Array;
 import ucar.nc2.AttributeContainer;
@@ -160,7 +162,7 @@ public class CoordTransBuilder {
    */
   @Nullable
   public static CoordinateTransform makeCoordinateTransform(NetcdfDataset ds, AttributeContainer ctv,
-      Formatter parseInfo, Formatter errInfo) {
+      Formatter parseInfo, Formatter errInfo, ImmutableList<CoordinateAxis> coordAxes) {
     // standard name
     String transform_name = ctv.findAttributeString("transform_name", null);
     if (null == transform_name)
@@ -220,7 +222,7 @@ public class CoordTransBuilder {
     } else if (builderObject instanceof HorizTransformBuilderIF) {
       HorizTransformBuilderIF horizBuilder = (HorizTransformBuilderIF) builderObject;
       horizBuilder.setErrorBuffer(errInfo);
-      String units = AbstractTransformBuilder.getGeoCoordinateUnits(ds, ctv); // barfola
+      String units = AbstractTransformBuilder.getGeoCoordinateUnits(ds, ctv, coordAxes); // barfola
       ct = horizBuilder.makeCoordinateTransform(ctv, units);
 
     } else {

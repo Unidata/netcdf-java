@@ -177,7 +177,7 @@ public class CoordinateTransform implements Comparable<CoordinateTransform> {
     this.attributeContainer.addAll(builder.attributeContainer);
 
     CoordinateTransform ct =
-        CoordTransBuilder.makeCoordinateTransform(ncd, builder.attributeContainer, new Formatter(), new Formatter());
+        CoordTransBuilder.makeCoordinateTransform(ncd, builder.attributeContainer, new Formatter(), new Formatter(), ncd.getCoordinateAxes());
     ct.attributeContainer = new AttributeContainerMutable(this.name);
     ct.attributeContainer.addAll(builder.attributeContainer);
   }
@@ -244,7 +244,7 @@ public class CoordinateTransform implements Comparable<CoordinateTransform> {
       return self();
     }
 
-    public CoordinateTransform build(NetcdfDataset ncd) {
+    public CoordinateTransform build(NetcdfDataset ncd, ImmutableList<CoordinateAxis> coordAxes) {
       if (built)
         throw new IllegalStateException("already built " + name);
       built = true;
@@ -255,7 +255,7 @@ public class CoordinateTransform implements Comparable<CoordinateTransform> {
 
       // All this trouble because we need ncd before we can build.
       CoordinateTransform ct =
-          CoordTransBuilder.makeCoordinateTransform(ncd, attributeContainer, new Formatter(), new Formatter());
+          CoordTransBuilder.makeCoordinateTransform(ncd, attributeContainer, new Formatter(), new Formatter(), coordAxes);
       if (ct != null) {
         // ct.name = this.name; // LOOK why is this commented out? Dont know name until this point? Not going to
         // work....

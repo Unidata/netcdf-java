@@ -59,7 +59,7 @@ public class CoordinatesHelper {
     coordAxes = ImmutableList.copyOf(axes);
 
     coordTransforms =
-        builder.coordTransforms.stream().map(ct -> ct.build(ncd)).filter(Objects::nonNull).collect(Collectors.toList());
+        builder.coordTransforms.stream().map(ct -> ct.build(ncd, coordAxes)).filter(Objects::nonNull).collect(Collectors.toList());
 
     coordTransforms.addAll(builder.verticalCTBuilders.stream().map(ct -> ct.makeVerticalCT(ncd))
         .filter(Objects::nonNull).collect(Collectors.toList()));

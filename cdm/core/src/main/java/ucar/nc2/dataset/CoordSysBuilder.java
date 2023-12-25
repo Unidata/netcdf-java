@@ -951,7 +951,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
   }
 
   protected CoordinateTransform makeCoordinateTransform(NetcdfDataset ds, Variable ctv) {
-    return CoordTransBuilder.makeCoordinateTransform(ds, ctv, parseInfo, userAdvice);
+    return CoordTransBuilder.makeCoordinateTransform(ds, ctv, parseInfo, userAdvice, ds.getCoordinateAxes());
   }
 
   /**
