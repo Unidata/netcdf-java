@@ -48,11 +48,13 @@ public abstract class AbstractTransformBuilder {
     }
 
     for (CoordinateAxis axis : coordAxes) {
-      if (axis.getAxisType() == AxisType.GeoX) { // kludge - what if there's multiple ones?
-        Variable v = axis.getOriginalVariable(); // LOOK why original variable ?
-        units = (v == null) ? axis.getUnitsString() : v.getUnitsString();
-        break;
+      if (axis.getAxisType() != AxisType.GeoX) { // kludge - what if there's multiple ones?
+        continue;
       }
+
+      Variable v = axis.getOriginalVariable(); // LOOK why original variable ?
+      units = (v == null) ? axis.getUnitsString() : v.getUnitsString();
+      break;
     }
 
     if (units != null) {
