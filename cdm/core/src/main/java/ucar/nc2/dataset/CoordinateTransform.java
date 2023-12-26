@@ -177,7 +177,7 @@ public class CoordinateTransform implements Comparable<CoordinateTransform> {
     this.attributeContainer.addAll(builder.attributeContainer);
 
     CoordinateTransform ct =
-        CoordTransBuilder.makeCoordinateTransform(ncd, builder.attributeContainer, new Formatter(), new Formatter(), ncd.getCoordinateAxes());
+        CoordTransBuilder.makeCoordinateTransform(ncd, builder.attributeContainer, new Formatter(), new Formatter());
     ct.attributeContainer = new AttributeContainerMutable(this.name);
     ct.attributeContainer.addAll(builder.attributeContainer);
   }

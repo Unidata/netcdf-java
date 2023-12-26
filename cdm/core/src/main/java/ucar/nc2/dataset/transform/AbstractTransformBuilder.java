@@ -41,6 +41,10 @@ public abstract class AbstractTransformBuilder {
     return getFalseEastingScaleFactor(units);
   }
 
+  public static String getGeoCoordinateUnits(NetcdfDataset ds, AttributeContainer ctv) {
+    return getGeoCoordinateUnits(ds, ctv, ds.getCoordinateAxes());
+  }
+
   public static String getGeoCoordinateUnits(NetcdfDataset ds, AttributeContainer ctv, ImmutableList<CoordinateAxis> coordAxes) {
     String units = ctv.findAttributeString(CDM.UNITS, null);
     if (units != null && !units.equals("")) {

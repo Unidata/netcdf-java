@@ -153,11 +153,28 @@ public class CoordTransBuilder {
   /**
    * Make a CoordinateTransform object from the parameters in a Coordinate Transform Variable, using an intrinsic or
    * registered CoordTransBuilder.
+   *
+   * @param ds enclosing dataset, only used for vertical transforms
+   * @param ctv the Coordinate Transform Variable - container for the transform parameters
+   * @param parseInfo pass back information about the parsing.
+   * @param errInfo pass back error information.
+   * @return CoordinateTransform, or null if failure.
+   */
+  @Nullable
+  public static CoordinateTransform makeCoordinateTransform(NetcdfDataset ds, AttributeContainer ctv,
+                                                            Formatter parseInfo, Formatter errInfo) {
+    return makeCoordinateTransform(ds, ctv, parseInfo, errInfo, ds.getCoordinateAxes());
+  }
+
+  /**
+   * Make a CoordinateTransform object from the parameters in a Coordinate Transform Variable, using an intrinsic or
+   * registered CoordTransBuilder.
    * 
    * @param ds enclosing dataset, only used for vertical transforms
    * @param ctv the Coordinate Transform Variable - container for the transform parameters
    * @param parseInfo pass back information about the parsing.
    * @param errInfo pass back error information.
+   * @param coordAxes any precomputed coordinate axes
    * @return CoordinateTransform, or null if failure.
    */
   @Nullable
