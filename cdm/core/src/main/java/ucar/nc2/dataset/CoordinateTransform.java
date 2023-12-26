@@ -254,8 +254,8 @@ public class CoordinateTransform implements Comparable<CoordinateTransform> {
       }
 
       // All this trouble because we need ncd before we can build.
-      CoordinateTransform ct =
-          CoordTransBuilder.makeCoordinateTransform(ncd, attributeContainer, new Formatter(), new Formatter(), coordAxes);
+      CoordinateTransform ct = CoordTransBuilder.makeCoordinateTransform(ncd, attributeContainer, new Formatter(),
+          new Formatter(), coordAxes);
       if (ct != null) {
         // ct.name = this.name; // LOOK why is this commented out? Dont know name until this point? Not going to
         // work....

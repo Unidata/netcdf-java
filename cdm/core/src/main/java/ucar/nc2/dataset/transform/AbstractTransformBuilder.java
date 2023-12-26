@@ -45,7 +45,8 @@ public abstract class AbstractTransformBuilder {
     return getGeoCoordinateUnits(ds, ctv, ds.getCoordinateAxes());
   }
 
-  public static String getGeoCoordinateUnits(NetcdfDataset ds, AttributeContainer ctv, ImmutableList<CoordinateAxis> coordAxes) {
+  public static String getGeoCoordinateUnits(NetcdfDataset ds, AttributeContainer ctv,
+      ImmutableList<CoordinateAxis> coordAxes) {
     String units = ctv.findAttributeString(CDM.UNITS, null);
     if (units != null && !units.equals("")) {
       return units;

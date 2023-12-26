@@ -162,7 +162,7 @@ public class CoordTransBuilder {
    */
   @Nullable
   public static CoordinateTransform makeCoordinateTransform(NetcdfDataset ds, AttributeContainer ctv,
-                                                            Formatter parseInfo, Formatter errInfo) {
+      Formatter parseInfo, Formatter errInfo) {
     return makeCoordinateTransform(ds, ctv, parseInfo, errInfo, ds.getCoordinateAxes());
   }
 
