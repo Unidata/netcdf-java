@@ -244,6 +244,10 @@ public class CoordinateTransform implements Comparable<CoordinateTransform> {
       return self();
     }
 
+    public CoordinateTransform build(NetcdfDataset ncd) {
+      return build(ncd, ncd.getCoordinateAxes());
+    }
+
     public CoordinateTransform build(NetcdfDataset ncd, ImmutableList<CoordinateAxis> coordAxes) {
       if (built)
         throw new IllegalStateException("already built " + name);
