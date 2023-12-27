@@ -119,6 +119,24 @@ public abstract class StationProfileFeatureImpl extends PointFeatureCCImpl imple
     return station.getName().compareTo(so.getName());
   }
 
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (!(o instanceof StationProfileFeatureImpl)) {
+      return false;
+    }
+
+    StationProfileFeatureImpl that = (StationProfileFeatureImpl) o;
+    return name.equals(that.name);
+  }
+
+  @Override
+  public int hashCode() {
+    return name.hashCode();
+  }
+
   // @Override
   public StationProfileFeature subset(LatLonRect boundingBox) {
     return this; // only one station - we could check if its in the bb

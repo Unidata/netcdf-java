@@ -21,24 +21,14 @@ import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.StructureData;
 import ucar.ma2.StructureMembers;
-import ucar.nc2.Attribute;
-import ucar.nc2.AttributeContainer;
-import ucar.nc2.Dimension;
-import ucar.nc2.Dimensions;
-import ucar.nc2.NetcdfFile;
-import ucar.nc2.Structure;
-import ucar.nc2.Variable;
-import ucar.nc2.VariableSimpleIF;
+import ucar.nc2.*;
 import ucar.nc2.constants.ACDD;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.dataset.CoordinateAxis;
-import ucar.nc2.ft.PointFeature;
-import ucar.nc2.ft.StationTimeSeriesFeature;
-import ucar.nc2.ft.point.StationPointFeature;
-import ucar.nc2.ft.point.StationTimeSeriesCollectionImpl;
+import ucar.nc2.ft.*;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateFormatter;
 import ucar.nc2.time.CalendarDateUnit;
@@ -104,7 +94,7 @@ abstract class WriterCFPointAbstract implements Closeable {
   Structure record; // used for netcdf3 and netcdf4 extended
   private Dimension recordDim;
   HashSet<String> dataMap = new HashSet<>();
-  private List<Variable> extra;
+  private List<Variable> extra = new ArrayList<>();
 
   LatLonRect llbb;
   private CalendarDate minDate;
@@ -121,7 +111,7 @@ abstract class WriterCFPointAbstract implements Closeable {
    * @param config configuration
    */
   WriterCFPointAbstract(String fileOut, AttributeContainer atts, List<VariableSimpleIF> dataVars,
-      CalendarDateUnit timeUnit, @Nullable String altUnits, CFPointWriterConfig config) throws IOException {
+      CalendarDateUnit timeUnit, @Nullable String altUnits, CFPointWriterConfig config) {
 
     this.dataVars = dataVars;
     this.timeUnit = timeUnit;
@@ -191,33 +181,26 @@ abstract class WriterCFPointAbstract implements Closeable {
   }
 
   // Always overridden
-  abstract void makeFeatureVariables(StructureData featureData, boolean isExtended);
+  abstract void makeFeatureVariables(List<StructureData> featureData, boolean isExtended);
 
   // Supplied when its a two level feature (station profile, trajectory profile)
-  void makeMiddleVariables(StructureData middleData, boolean isExtended) {
+  void makeMiddleVariables(List<StructureData> middleData, boolean isExtended) {
     // NOOP
   }
 
-  protected void writeHeader(List<VariableSimpleIF> obsCoords, StationTimeSeriesCollectionImpl stationFeatures,
-      @Nullable StructureData middleData) throws IOException {
+  protected void writeHeader(List<VariableSimpleIF> obsCoords,
+      Iterable<? extends PointFeatureCollection> stationFeatures, List<StructureData> featureDataStruct,
+      @Nullable List<StructureData> middleDataStruct) throws IOException {
 
     this.recordDim = Dimension.builder().setName(recordDimName).setIsUnlimited(true).build();
     writerb.addDimension(recordDim);
 
     addExtraVariables();
+    if (featureDataStruct != null)
+      makeFeatureVariables(featureDataStruct, isExtendedModel);
+    if (middleDataStruct != null)
+      makeMiddleVariables(middleDataStruct, isExtendedModel);
 
-    PeekingIterator<StationTimeSeriesFeature> stIter = Iterators.peekingIterator(stationFeatures.iterator());
-    if (stIter.hasNext()) {
-      StationTimeSeriesFeature stationFeat = stIter.peek();
-
-      StructureData featureData = stationFeat.getFeatureData();
-      if (featureData != null) {
-        makeFeatureVariables(featureData, isExtendedModel);
-      }
-      if (middleData != null) {
-        makeMiddleVariables(middleData, isExtendedModel);
-      }
-    }
     Structure.Builder recordb = null;
     if (isExtendedModel) {
       recordb = writerb.addStructure(recordName, recordDimName);
@@ -226,73 +209,25 @@ abstract class WriterCFPointAbstract implements Closeable {
       addCoordinatesClassic(recordDim, obsCoords, dataMap);
     }
 
-    for (StationTimeSeriesFeature stnFeature : stationFeatures) {
+    for (PointFeatureCollection stnFeature : stationFeatures) {
       PeekingIterator<PointFeature> iter = Iterators.peekingIterator(stnFeature.iterator());
       if (iter.hasNext()) {
         PointFeature pointFeat = iter.peek();
-        assert pointFeat instanceof StationPointFeature : "Expected pointFeat to be a StationPointFeature, not a "
-            + pointFeat.getClass().getSimpleName();
 
         StructureData obsData = pointFeat.getFeatureData();
 
-        String timeCoordName = pointFeat.getFeatureCollection().getTimeName();
-
-        Formatter coordNames = new Formatter().format("%s %s %s", timeCoordName, latName, lonName);
+        Formatter coordNames = new Formatter().format("%s %s %s", stnFeature.getTimeName(), latName, lonName);
         if (!Double.isNaN(pointFeat.getLocation().getAltitude())) {
-          coordNames.format(" %s", altitudeCoordinateName);
+          coordNames.format(" %s", stnFeature.getAltName());
         }
         if (isExtendedModel) {
           addDataVariablesExtended(recordb, obsData, coordNames.toString());
-
         } else {
           addDataVariablesClassic(recordDim, obsData, dataMap, coordNames.toString());
         }
       }
     }
     this.writer = writerb.build();
-
-    writeExtraVariables();
-    finishBuilding();
-  }
-
-  void writeHeader(List<VariableSimpleIF> obsCoords, StructureData featureData, @Nullable StructureData middleData,
-      StructureData obsData, String coordNames) throws IOException {
-    this.recordDim = Dimension.builder().setName(recordDimName).setIsUnlimited(true).build();
-    writerb.addDimension(recordDim);
-
-    addExtraVariables();
-
-    if (isExtendedModel) {
-      if (featureData != null) {
-        makeFeatureVariables(featureData, true);
-      }
-      if (middleData != null) {
-        makeMiddleVariables(middleData, true);
-      }
-      Structure.Builder recordb = writerb.addStructure(recordName, recordDimName);
-      addCoordinatesExtended(recordb, obsCoords);
-      addDataVariablesExtended(recordb, obsData, coordNames);
-
-    } else {
-      if (featureData != null) {
-        makeFeatureVariables(featureData, false);
-      }
-      if (middleData != null) {
-        makeMiddleVariables(middleData, false);
-      }
-      addCoordinatesClassic(recordDim, obsCoords, dataMap);
-      addDataVariablesClassic(recordDim, obsData, dataMap, coordNames);
-      // record = writer.addRecordStructure(); // for netcdf3
-    }
-
-    // Create the NetcdfFile and write variable metadata to it.
-    this.writer = writerb.build();
-    /*
-     * NetcdfFormatWriter.Result result = writer.create(netcdfBuilder.build(), 0);
-     * if (!result.wasWritten()) {
-     * throw new IOException(result.getErrorMessage());
-     * }
-     */
 
     writeExtraVariables();
     finishBuilding();
@@ -621,5 +556,4 @@ abstract class WriterCFPointAbstract implements Closeable {
   public void close() throws IOException {
     writer.close();
   }
-
 }

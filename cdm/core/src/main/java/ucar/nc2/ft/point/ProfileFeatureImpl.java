@@ -31,6 +31,17 @@ public abstract class ProfileFeatureImpl extends PointCollectionImpl implements 
     }
   }
 
+  public ProfileFeatureImpl(String name, String timeName, CalendarDateUnit timeUnit, String altName, String altUnits,
+      double lat, double lon, double time, int nfeatures) {
+    super(name, timeName, timeUnit, altName, altUnits);
+    this.latlonPoint = LatLonPoint.create(lat, lon);
+    this.time = time;
+    if (nfeatures >= 0) {
+      getInfo(); // create the object
+      info.nfeatures = nfeatures;
+    }
+  }
+
   @Override
   @Nonnull
   public LatLonPoint getLatLon() {

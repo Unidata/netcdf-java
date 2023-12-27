@@ -201,6 +201,8 @@ public class CoverageAsPoint {
     CoverageAsStationFeatureCollection(VarGroup varGroup) {
       super(varGroup.name + " AsStationFeatureCollection", varGroup.dateUnit, varGroup.zUnit);
       this.timeName = varGroup.timeAxis != null ? varGroup.timeAxis.getName() : "time";
+      this.timeUnit =
+          varGroup.timeAxis != null ? varGroup.timeAxis.getCalendarDateUnit() : CalendarDateUnit.unixDateUnit;
       this.altName = varGroup.zAxis != null ? varGroup.zAxis.getName() : "altitude";
       this.varGroup = varGroup;
       this.collectionFeatureType = varGroup.fType;
@@ -307,9 +309,10 @@ public class CoverageAsPoint {
       @Override
       public PointFeatureCollection next() throws IOException {
         double obsTime = this.timeAxis != null ? this.timeAxis.getCoordMidpoint(curr) : 0.0;
+        String timeName = this.timeAxis != null ? this.timeAxis.getName() : "time";
         curr++;
-        return new CoverageAsProfileFeature(obsTime, varGroup.dateUnit, varGroup.zUnit, getLatitude(), getLongitude(),
-            this.varIters);
+        return new CoverageAsProfileFeature(obsTime, timeName, varGroup.dateUnit, varGroup.zAxis.getName(),
+            varGroup.zUnit, getLatitude(), getLongitude(), this.varIters);
       }
     }
 
@@ -317,9 +320,9 @@ public class CoverageAsPoint {
 
       List<VarIter> varIters;
 
-      CoverageAsProfileFeature(double obsTime, CalendarDateUnit timeUnit, String altUnits, double lat, double lon,
-          List<VarIter> varIters) {
-        super("", timeUnit, altUnits, lat, lon, obsTime, -1);
+      CoverageAsProfileFeature(double obsTime, String timeName, CalendarDateUnit timeUnit, String altName,
+          String altUnits, double lat, double lon, List<VarIter> varIters) {
+        super("", timeName, timeUnit, altName, altUnits, lat, lon, obsTime, -1);
         this.varIters = varIters;
       }
 

@@ -8,7 +8,6 @@ package ucar.nc2.ft.point.writer2;
 import com.google.common.collect.ImmutableList;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Formatter;
 import java.util.List;
 import ucar.ma2.DataType;
 import ucar.ma2.StructureData;
@@ -22,10 +21,10 @@ import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
 import ucar.nc2.dataset.conv.CF1Convention;
+import ucar.nc2.ft.DsgFeatureCollection;
 import ucar.nc2.ft.PointFeature;
-import ucar.nc2.time.CalendarDate;
+import ucar.nc2.ft.PointFeatureCollection;
 import ucar.nc2.time.CalendarDateUnit;
-import ucar.unidata.geoloc.EarthLocation;
 
 /**
  * Write a CF 1.6 "Discrete Sample" point file.
@@ -47,54 +46,53 @@ class WriterCFPointCollection extends WriterCFPointAbstract {
     writerb.addAttribute(new Attribute(CF.DSG_REPRESENTATION, "Point Data, H.1"));
   }
 
-  void writeHeader(PointFeature pf) throws IOException {
+  void writeHeader(List<DsgFeatureCollection> featureCollections) throws IOException {
     List<VariableSimpleIF> coords = new ArrayList<>();
-    coords.add(VariableSimpleBuilder.makeScalar(pf.getFeatureCollection().getTimeName(), "time of measurement",
-        timeUnit.getUdUnit(), DataType.DOUBLE).addAttribute(CF.CALENDAR, timeUnit.getCalendar().toString()).build());
+    List<PointFeatureCollection> pointCollections = new ArrayList<>();
+    for (DsgFeatureCollection featureCollection : featureCollections) {
+      pointCollections.add((PointFeatureCollection) featureCollection);
+      coords.add(VariableSimpleBuilder
+          .makeScalar(featureCollection.getTimeName(), "time of measurement", timeUnit.getUdUnit(), DataType.DOUBLE)
+          .addAttribute(CF.CALENDAR, timeUnit.getCalendar().toString()).build());
+      if (altUnits != null) {
+        altitudeCoordinateName = featureCollection.getAltName();
+        coords.add(VariableSimpleBuilder
+            .makeScalar(altitudeCoordinateName, "altitude of measurement", altUnits, DataType.DOUBLE)
+            .addAttribute(CF.POSITIVE, CF1Convention.getZisPositive(altName, altUnits)).build());
+      }
+    }
 
     coords.add(
         VariableSimpleBuilder.makeScalar(latName, "latitude of measurement", CDM.LAT_UNITS, DataType.DOUBLE).build());
     coords.add(
         VariableSimpleBuilder.makeScalar(lonName, "longitude of measurement", CDM.LON_UNITS, DataType.DOUBLE).build());
-    Formatter coordNames =
-        new Formatter().format("%s %s %s", pf.getFeatureCollection().getTimeName(), latName, lonName);
-    if (altUnits != null) {
-      coords.add(VariableSimpleBuilder.makeScalar(altName, "altitude of measurement", altUnits, DataType.DOUBLE)
-          .addAttribute(CF.POSITIVE, CF1Convention.getZisPositive(altName, altUnits)).build());
-      coordNames.format(" %s", altName);
-    }
-
-    super.writeHeader(coords, null, null, pf.getDataAll(), coordNames.toString());
+    super.writeHeader(coords, pointCollections, null, null);
   }
 
-  @Override
-  void makeFeatureVariables(StructureData featureData, boolean isExtended) {
-    // NOOP
-  }
 
   /////////////////////////////////////////////////////////
   // writing data
   private int obsRecno;
 
-  void writeRecord(PointFeature sobs, StructureData sdata) throws IOException {
-    writeRecord(sobs.getObservationTime(), sobs.getObservationTimeAsCalendarDate(), sobs.getLocation(), sdata);
-  }
-
-  private void writeRecord(double timeCoordValue, CalendarDate obsDate, EarthLocation loc, StructureData sdata)
-      throws IOException {
-    trackBB(loc.getLatLon(), obsDate);
+  protected void writeRecord(PointFeature point) throws IOException {
+    trackBB(point.getLocation().getLatLon(), point.getObservationTimeAsCalendarDate());
 
     StructureMembers.Builder smb = StructureMembers.builder().setName("Coords");
-    smb.addMemberScalar(timeName, null, null, DataType.DOUBLE, timeCoordValue);
-    smb.addMemberScalar(latName, null, null, DataType.DOUBLE, loc.getLatitude());
-    smb.addMemberScalar(lonName, null, null, DataType.DOUBLE, loc.getLongitude());
+    smb.addMemberScalar(point.getFeatureCollection().getTimeName(), null, null, DataType.DOUBLE,
+        point.getObservationTime());
+    smb.addMemberScalar(latName, null, null, DataType.DOUBLE, point.getLocation().getLatitude());
+    smb.addMemberScalar(lonName, null, null, DataType.DOUBLE, point.getLocation().getLongitude());
     if (altUnits != null)
-      smb.addMemberScalar(altitudeCoordinateName, null, null, DataType.DOUBLE, loc.getAltitude());
+      smb.addMemberScalar(point.getFeatureCollection().getAltName(), null, null, DataType.DOUBLE,
+          point.getLocation().getAltitude());
     StructureData coords = new StructureDataFromMember(smb.build());
 
     // coords first so it takes precedence
-    StructureDataComposite sdall = StructureDataComposite.create(ImmutableList.of(coords, sdata));
+    StructureDataComposite sdall = StructureDataComposite.create(ImmutableList.of(coords, point.getFeatureData()));
     obsRecno = super.writeStructureData(obsRecno, record, sdall, dataMap);
   }
+
+  @Override
+  void makeFeatureVariables(List<StructureData> featureData, boolean isExtended) {}
 
 }
