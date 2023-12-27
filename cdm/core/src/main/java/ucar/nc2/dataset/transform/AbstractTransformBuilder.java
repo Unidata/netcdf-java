@@ -6,6 +6,8 @@
 package ucar.nc2.dataset.transform;
 
 import javax.annotation.Nullable;
+
+import com.google.common.collect.ImmutableList;
 import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
@@ -35,27 +37,38 @@ public abstract class AbstractTransformBuilder {
    * (projection_y_coordinate).
    */
   public static double getFalseEastingScaleFactor(NetcdfDataset ds, AttributeContainer ctv) {
-    String units = getGeoCoordinateUnits(ds, ctv);
+    String units = getGeoCoordinateUnits(ds, ctv, ds.getCoordinateAxes());
     return getFalseEastingScaleFactor(units);
   }
 
   public static String getGeoCoordinateUnits(NetcdfDataset ds, AttributeContainer ctv) {
+    return getGeoCoordinateUnits(ds, ctv, ds.getCoordinateAxes());
+  }
+
+  public static String getGeoCoordinateUnits(NetcdfDataset ds, AttributeContainer ctv,
+      ImmutableList<CoordinateAxis> coordAxes) {
     String units = ctv.findAttributeString(CDM.UNITS, null);
-    if (units == null) {
-      List<CoordinateAxis> axes = ds.getCoordinateAxes();
-      for (CoordinateAxis axis : axes) {
-        if (axis.getAxisType() == AxisType.GeoX) { // kludge - what if there's multiple ones?
-          Variable v = axis.getOriginalVariable(); // LOOK why original variable ?
-          units = (v == null) ? axis.getUnitsString() : v.getUnitsString();
-          break;
-        }
+    if (units != null && !units.equals("")) {
+      return units;
+    }
+
+    for (CoordinateAxis axis : coordAxes) {
+      if (axis.getAxisType() != AxisType.GeoX) { // kludge - what if there's multiple ones?
+        continue;
       }
-      if (units == null) {
-        Variable xvar = ds.findVariableByAttribute(null, _Coordinate.AxisType.toString(), AxisType.GeoX.toString());
-        if (xvar != null) {
-          units = xvar.getUnitsString();
-        }
-      }
+
+      Variable v = axis.getOriginalVariable(); // LOOK why original variable ?
+      units = (v == null) ? axis.getUnitsString() : v.getUnitsString();
+      break;
+    }
+
+    if (units != null) {
+      return units;
+    }
+
+    Variable xvar = ds.findVariableByAttribute(null, _Coordinate.AxisType.toString(), AxisType.GeoX.toString());
+    if (xvar != null) {
+      units = xvar.getUnitsString();
     }
     return units;
   }
