@@ -40,7 +40,7 @@ public class StandardTrajectoryCollectionImpl extends PointFeatureCCImpl impleme
   }
 
   StandardTrajectoryCollectionImpl(NestedTable ft, CalendarDateUnit timeUnit, String altUnits) {
-    super(ft.getName(), timeUnit, altUnits, FeatureType.TRAJECTORY);
+    super(ft.getName(), ft.getTimeName(), timeUnit, ft.getAltName(), altUnits, FeatureType.TRAJECTORY);
     this.ft = ft;
     this.extras = ft.getExtras();
   }
@@ -57,8 +57,8 @@ public class StandardTrajectoryCollectionImpl extends PointFeatureCCImpl impleme
     StructureData trajData;
 
     StandardTrajectoryFeature(Cursor cursor, StructureData trajData) {
-      super(ft.getFeatureName(cursor), StandardTrajectoryCollectionImpl.this.getTimeUnit(),
-          StandardTrajectoryCollectionImpl.this.getAltUnits(), -1);
+      super(ft.getFeatureName(cursor), ft.getTimeName(), StandardTrajectoryCollectionImpl.this.getTimeUnit(),
+          ft.getAltName(), StandardTrajectoryCollectionImpl.this.getAltUnits(), -1);
       this.cursor = cursor;
       this.trajData = trajData;
     }

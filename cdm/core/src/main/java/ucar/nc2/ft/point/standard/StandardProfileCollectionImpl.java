@@ -63,8 +63,9 @@ public class StandardProfileCollectionImpl extends PointFeatureCCImpl implements
     StructureData profileData;
 
     StandardProfileFeature(Cursor cursor, double time, StructureData profileData) {
-      super(ft.getFeatureName(cursor), StandardProfileCollectionImpl.this.getTimeUnit(),
-          StandardProfileCollectionImpl.this.getAltUnits(), ft.getLatitude(cursor), ft.getLongitude(cursor), time, -1);
+      super(ft.getFeatureName(cursor), ft.getTimeName(), StandardProfileCollectionImpl.this.getTimeUnit(),
+          ft.getAltName(), StandardProfileCollectionImpl.this.getAltUnits(), ft.getLatitude(cursor),
+          ft.getLongitude(cursor), time, -1);
 
       this.cursor = cursor;
       this.profileData = profileData;

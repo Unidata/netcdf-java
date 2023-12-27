@@ -11,9 +11,7 @@ import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
 import ucar.nc2.dataset.conv.CF1Convention;
-import ucar.nc2.ft.PointFeature;
-import ucar.nc2.ft.ProfileFeature;
-import ucar.nc2.ft.TrajectoryProfileFeature;
+import ucar.nc2.ft.*;
 import ucar.nc2.time.CalendarDateUnit;
 import java.io.IOException;
 import java.util.*;
@@ -39,7 +37,6 @@ public class WriterCFTrajectoryProfileCollection extends CFPointWriter {
   ///////////////////////////////////////////////////
   private Structure profileStruct; // used for netcdf4 extended
   private Map<String, Variable> profileVarMap = new HashMap<>();
-  private boolean headerDone;
 
   public WriterCFTrajectoryProfileCollection(String fileOut, List<Attribute> globalAtts,
       List<VariableSimpleIF> dataVars, CalendarDateUnit timeUnit, String altUnits, CFPointWriterConfig config)
@@ -59,12 +56,8 @@ public class WriterCFTrajectoryProfileCollection extends CFPointWriter {
   public int writeProfile(TrajectoryProfileFeature section, ProfileFeature profile) throws IOException {
     int count = 0;
     for (PointFeature pf : profile) {
-      if (!headerDone) {
-        if (id_strlen == 0)
-          id_strlen = profile.getName().length() * 2;
-        writeHeader(section, profile, pf);
-        headerDone = true;
-      }
+      if (id_strlen == 0)
+        id_strlen = profile.getName().length() * 2;
       writeObsData(pf);
       count++;
     }
@@ -78,26 +71,34 @@ public class WriterCFTrajectoryProfileCollection extends CFPointWriter {
     return count;
   }
 
-  private void writeHeader(TrajectoryProfileFeature section, ProfileFeature profile, PointFeature obs)
-      throws IOException {
-
-    StructureData sectionData = section.getFeatureData();
-    StructureData profileData = profile.getFeatureData();
-    StructureData obsData = obs.getFeatureData();
-
-    Formatter coordNames = new Formatter().format("%s %s %s", profileTimeName, latName, lonName);
+  protected void writeHeader(List<TrajectoryProfileFeature> trajectoryProfiles) throws IOException {
     List<VariableSimpleIF> obsCoords = new ArrayList<>();
-    if (useAlt) {
-      obsCoords.add(VariableSimpleBuilder.makeScalar(altitudeCoordinateName, "obs altitude", altUnits, DataType.DOUBLE)
-          .addAttribute(CF.STANDARD_NAME, "altitude")
-          .addAttribute(CF.POSITIVE, CF1Convention.getZisPositive(altitudeCoordinateName, altUnits)).build());
-      coordNames.format(" %s", altitudeCoordinateName);
-    }
+    List<ProfileFeature> profileFeatures = new ArrayList<>();
+    List<StructureData> trajectoryData = new ArrayList<>();
+    List<StructureData> profileData = new ArrayList<>();
 
-    super.writeHeader2(obsCoords, sectionData, profileData, obsData, coordNames.toString());
+    for (TrajectoryProfileFeature trajectoryProfile : trajectoryProfiles) {
+      trajectoryData.add(trajectoryProfile.getFeatureData());
+      for (ProfileFeature profile : trajectoryProfile) {
+        profileData.add(profile.getFeatureData());
+        profileFeatures.add(profile);
+      }
+      obsCoords.add(VariableSimpleBuilder
+          .makeScalar(trajectoryProfile.getTimeName(), "time of measurement", timeUnit.toString(), DataType.DOUBLE)
+          .build());
+
+      if (altUnits != null) {
+        altitudeCoordinateName = trajectoryProfile.getAltName();
+        obsCoords
+            .add(VariableSimpleBuilder.makeScalar(altitudeCoordinateName, "obs altitude", altUnits, DataType.DOUBLE)
+                .addAttribute(CF.STANDARD_NAME, "altitude")
+                .addAttribute(CF.POSITIVE, CF1Convention.getZisPositive(altitudeCoordinateName, altUnits)).build());
+      }
+    }
+    super.writeHeader(obsCoords, profileFeatures, trajectoryData, profileData);
   }
 
-  protected void makeFeatureVariables(StructureData trajData, boolean isExtended) {
+  protected void makeFeatureVariables(List<StructureData> trajDataStructs, boolean isExtended) {
 
     // add the dimensions : extended model can use an unlimited dimension
     Dimension trajDim = writer.addDimension(null, trajDimName, ntraj);
@@ -107,9 +108,11 @@ public class WriterCFTrajectoryProfileCollection extends CFPointWriter {
     trajVars.add(VariableSimpleBuilder.makeString(trajIdName, "trajectory identifier", null, traj_strlen)
         .addAttribute(CF.CF_ROLE, CF.TRAJECTORY_ID).build());
 
-    for (StructureMembers.Member m : trajData.getMembers()) {
-      if (getDataVar(m.getName()) != null)
-        trajVars.add(VariableSimpleBuilder.fromMember(m).build());
+    for (StructureData trajData : trajDataStructs) {
+      for (StructureMembers.Member m : trajData.getMembers()) {
+        if (getDataVar(m.getName()) != null)
+          trajVars.add(VariableSimpleBuilder.fromMember(m).build());
+      }
     }
 
     if (isExtended) {
@@ -136,7 +139,7 @@ public class WriterCFTrajectoryProfileCollection extends CFPointWriter {
   }
 
   @Override
-  protected void makeMiddleVariables(StructureData profileData, boolean isExtended) {
+  protected void makeMiddleVariables(List<StructureData> profileDataStructs, boolean isExtended) {
 
     Dimension profileDim = writer.addDimension(null, profileDimName, nfeatures);
 
@@ -162,10 +165,12 @@ public class WriterCFTrajectoryProfileCollection extends CFPointWriter {
         .add(VariableSimpleBuilder.makeScalar(numberOfObsName, "number of obs for this profile", null, DataType.INT)
             .addAttribute(CF.SAMPLE_DIMENSION, recordDimName).build());
 
-    for (StructureMembers.Member m : profileData.getMembers()) {
-      VariableSimpleIF dv = getDataVar(m.getName());
-      if (dv != null)
-        profileVars.add(dv);
+    for (StructureData profileData : profileDataStructs) {
+      for (StructureMembers.Member m : profileData.getMembers()) {
+        VariableSimpleIF dv = getDataVar(m.getName());
+        if (dv != null)
+          profileVars.add(dv);
+      }
     }
 
     if (isExtended) {
@@ -202,8 +207,10 @@ public class WriterCFTrajectoryProfileCollection extends CFPointWriter {
 
   private void writeObsData(PointFeature pf) throws IOException {
     StructureMembers.Builder smb = StructureMembers.builder().setName("Coords");
-    if (useAlt)
-      smb.addMemberScalar(altitudeCoordinateName, null, null, DataType.DOUBLE, pf.getLocation().getAltitude());
+    smb.addMemberScalar(pf.getFeatureCollection().getTimeName(), null, null, DataType.DOUBLE, pf.getObservationTime());
+    if (altUnits != null)
+      smb.addMemberScalar(pf.getFeatureCollection().getAltName(), null, null, DataType.DOUBLE,
+          pf.getLocation().getAltitude());
     StructureData coords = new StructureDataFromMember(smb.build());
 
     // coords first so it takes precedence

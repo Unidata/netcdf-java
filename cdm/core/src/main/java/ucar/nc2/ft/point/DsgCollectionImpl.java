@@ -38,9 +38,9 @@ public abstract class DsgCollectionImpl implements DsgFeatureCollection {
   protected DsgCollectionImpl(String name, String timeName, CalendarDateUnit timeUnit, String altName,
       String altUnits) {
     this.name = name;
-    // this.timeName = timeName;
+    this.timeName = timeName;
     this.timeUnit = timeUnit;
-    // this.altName = altName;
+    this.altName = altName;
     this.altUnits = altUnits;
   }
 

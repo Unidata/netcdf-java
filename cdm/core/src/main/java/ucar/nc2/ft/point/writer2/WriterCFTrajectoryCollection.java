@@ -8,7 +8,6 @@ package ucar.nc2.ft.point.writer2;
 import com.google.common.collect.ImmutableList;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Formatter;
 import java.util.HashSet;
 import java.util.List;
 import ucar.ma2.DataType;
@@ -40,7 +39,6 @@ import ucar.unidata.geoloc.EarthLocation;
 class WriterCFTrajectoryCollection extends WriterCFPointAbstract {
   private Structure featureStruct; // used for netcdf4 extended
   private HashSet<String> featureVarMap = new HashSet<>();
-  private boolean headerDone;
 
   WriterCFTrajectoryCollection(String fileOut, AttributeContainer globalAtts, List<VariableSimpleIF> dataVars,
       CalendarDateUnit timeUnit, String altUnits, CFPointWriterConfig config) throws IOException {
@@ -51,45 +49,46 @@ class WriterCFTrajectoryCollection extends WriterCFPointAbstract {
   }
 
   int writeTrajectory(TrajectoryFeature traj) throws IOException {
+    if (id_strlen == 0)
+      id_strlen = traj.getName().length() * 2;
     int count = 0;
     for (PointFeature pf : traj) {
-      if (!headerDone) {
-        if (id_strlen == 0)
-          id_strlen = traj.getName().length() * 2;
-        writeHeader(traj, pf);
-        headerDone = true;
-      }
       writeObsData(pf);
       count++;
     }
-
     writeTrajectoryData(traj, count);
     return count;
   }
 
-  private void writeHeader(TrajectoryFeature feature, PointFeature obs) throws IOException {
+  protected void writeHeader(List<TrajectoryFeature> trajectories) throws IOException {
     // obs data
     List<VariableSimpleIF> coords = new ArrayList<>();
-    coords.add(VariableSimpleBuilder.makeScalar(obs.getFeatureCollection().getTimeName(), "time of measurement",
-        timeUnit.getUdUnit(), DataType.DOUBLE).addAttribute(CF.CALENDAR, timeUnit.getCalendar().toString()).build());
+    List<StructureData> trajectoryData = new ArrayList<>();
+
+    for (TrajectoryFeature trajectory : trajectories) {
+      trajectoryData.add(trajectory.getFeatureData());
+      coords.add(VariableSimpleBuilder
+          .makeScalar(trajectory.getTimeName(), "time of measurement", timeUnit.getUdUnit(), DataType.DOUBLE)
+          .addAttribute(CF.CALENDAR, timeUnit.getCalendar().toString()).build());
+
+      if (altUnits != null) {
+        altitudeCoordinateName = trajectory.getAltName();
+        coords.add(VariableSimpleBuilder
+            .makeScalar(altitudeCoordinateName, "altitude of measurement", altUnits, DataType.DOUBLE)
+            .addAttribute(CF.POSITIVE, CF1Convention.getZisPositive(altitudeCoordinateName, altUnits)).build());
+      }
+    }
 
     coords.add(
         VariableSimpleBuilder.makeScalar(latName, "latitude of measurement", CDM.LAT_UNITS, DataType.DOUBLE).build());
     coords.add(
         VariableSimpleBuilder.makeScalar(lonName, "longitude of measurement", CDM.LON_UNITS, DataType.DOUBLE).build());
-    Formatter coordNames =
-        new Formatter().format("%s %s %s", obs.getFeatureCollection().getTimeName(), latName, lonName);
-    if (altUnits != null) {
-      coords.add(VariableSimpleBuilder.makeScalar(altName, "altitude of measurement", altUnits, DataType.DOUBLE)
-          .addAttribute(CF.POSITIVE, CF1Convention.getZisPositive(altName, altUnits)).build());
-      coordNames.format(" %s", altName);
-    }
 
-    super.writeHeader(coords, feature.getFeatureData(), null, obs.getFeatureData(), coordNames.toString());
+    super.writeHeader(coords, trajectories, trajectoryData, null);
   }
 
   @Override
-  void makeFeatureVariables(StructureData featureData, boolean isExtended) {
+  void makeFeatureVariables(List<StructureData> featureDataStructs, boolean isExtended) {
     // LOOK why not unlimited here fro extended model ?
     Dimension trajDim = writerb.addDimension(trajDimName, nfeatures);
 
@@ -102,10 +101,12 @@ class WriterCFTrajectoryCollection extends WriterCFPointAbstract {
         .add(VariableSimpleBuilder.makeScalar(numberOfObsName, "number of obs for this profile", null, DataType.INT)
             .addAttribute(CF.SAMPLE_DIMENSION, recordDimName).build());
 
-    for (StructureMembers.Member m : featureData.getMembers()) {
-      VariableSimpleIF dv = findDataVar(m.getName());
-      if (dv != null)
-        featureVars.add(dv);
+    for (StructureData featureData : featureDataStructs) {
+      for (StructureMembers.Member m : featureData.getMembers()) {
+        VariableSimpleIF dv = findDataVar(m.getName());
+        if (dv != null)
+          featureVars.add(dv);
+      }
     }
 
     if (isExtended) {
@@ -148,7 +149,7 @@ class WriterCFTrajectoryCollection extends WriterCFPointAbstract {
     smb.addMemberScalar(latName, null, null, DataType.DOUBLE, loc.getLatitude());
     smb.addMemberScalar(lonName, null, null, DataType.DOUBLE, loc.getLongitude());
     if (altUnits != null)
-      smb.addMemberScalar(altName, null, null, DataType.DOUBLE, loc.getAltitude());
+      smb.addMemberScalar(pf.getFeatureCollection().getAltName(), null, null, DataType.DOUBLE, loc.getAltitude());
     StructureData coords = new StructureDataFromMember(smb.build());
 
     // coords first so it takes precedence

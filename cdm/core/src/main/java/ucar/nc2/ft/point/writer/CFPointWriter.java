@@ -18,8 +18,8 @@ import ucar.nc2.*;
 import ucar.nc2.constants.*;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.ft.*;
+import ucar.nc2.ft.point.StationFeature;
 import ucar.nc2.ft.point.StationPointFeature;
-import ucar.nc2.ft.point.StationTimeSeriesCollectionImpl;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateFormatter;
 import ucar.nc2.time.CalendarDateUnit;
@@ -124,11 +124,9 @@ public abstract class CFPointWriter implements Closeable {
 
       pointWriter.setExtraVariables(pfc.getExtraVariables());
 
+      pointWriter.writeHeader(pfc);
       int count = 0;
       for (PointFeature pf : pfc) {
-        if (count == 0)
-          pointWriter.writeHeader(pf);
-
         pointWriter.writeRecord(pf, pf.getFeatureData());
         count++;
         if (debug && count % 100 == 0)
@@ -144,25 +142,33 @@ public abstract class CFPointWriter implements Closeable {
 
   private static int writeStationFeatureCollection(FeatureDatasetPoint dataset, StationTimeSeriesFeatureCollection fc,
       String fileOut, CFPointWriterConfig config) throws IOException {
+    int count = 0;
 
     try (WriterCFStationCollection cfWriter = new WriterCFStationCollection(fileOut, dataset.getGlobalAttributes(),
         dataset.getDataVariables(), fc.getTimeUnit(), fc.getAltUnits(), config)) {
 
-      cfWriter.setExtraVariables(fc.getExtraVariables());
+      List<StationFeature> flattenFeatures = new ArrayList<>();
+      List<Variable> extraVariables = new ArrayList<>();
+      for (DsgFeatureCollection station : dataset.getPointFeatureCollectionList()) {
+        extraVariables.addAll(station.getExtraVariables());
+        flattenFeatures.addAll(((StationTimeSeriesFeatureCollection) station).getStationFeatures());
+      }
 
-      cfWriter.writeHeader(fc);
+      cfWriter.setExtraVariables(extraVariables);
+      cfWriter.writeHeader(flattenFeatures, null);
 
-      int count = 0;
-      for (PointFeatureCollection pfc : fc) {
-        for (PointFeature pf : pfc) {
-          StationPointFeature spf = (StationPointFeature) pf;
+      for (DsgFeatureCollection featureCollection : dataset.getPointFeatureCollectionList()) {
+        cfWriter.obsRecno = 0;
+        for (StationTimeSeriesFeature station : (StationTimeSeriesFeatureCollection) featureCollection) {
+          for (PointFeature pf : station) {
 
-          cfWriter.writeRecord(spf.getStation(), pf, pf.getFeatureData());
-          count++;
-          if (debug && count % 100 == 0)
-            logger.debug(String.format("%d ", count));
-          if (debug && count % 1000 == 0)
-            logger.debug(String.format("%n "));
+            cfWriter.writeRecord(((StationPointFeature) pf).getStation(), pf, pf.getFeatureData());
+            count++;
+            if (debug && count % 100 == 0)
+              logger.debug(String.format("%d ", count));
+            if (debug && count % 1000 == 0)
+              logger.debug(String.format("%n "));
+          }
         }
       }
       cfWriter.finish();
@@ -175,21 +181,27 @@ public abstract class CFPointWriter implements Closeable {
 
     try (WriterCFProfileCollection cfWriter = new WriterCFProfileCollection(fileOut, fdpoint.getGlobalAttributes(),
         fdpoint.getDataVariables(), fc.getTimeUnit(), fc.getAltUnits(), config)) {
-
-      cfWriter.setExtraVariables(fc.getExtraVariables());
+      List<Variable> extraVariables = new ArrayList<>();
+      List<ProfileFeature> flattenFeatures = new ArrayList<>();
 
       // LOOK not always needed
       int count = 0;
+      int nprofiles = 0;
       int name_strlen = 0;
-      int nprofiles = fc.size();
-      if (nprofiles < 0) {
-        for (ProfileFeature pf : fc) {
-          name_strlen = Math.max(name_strlen, pf.getName().length());
-          count++;
+      for (DsgFeatureCollection featureCollection : fdpoint.getPointFeatureCollectionList()) {
+        nprofiles += featureCollection.size();
+        if (nprofiles < 0) {
+          for (ProfileFeature profile : (ProfileFeatureCollection) featureCollection) {
+            flattenFeatures.add(profile);
+            name_strlen = Math.max(name_strlen, profile.getName().length());
+            count++;
+          }
+          nprofiles = count;
         }
-        nprofiles = count;
       }
+      cfWriter.setExtraVariables(extraVariables);
       cfWriter.setFeatureAuxInfo(nprofiles, name_strlen);
+      cfWriter.writeHeader(flattenFeatures);
 
       count = 0;
       for (ProfileFeature profile : fc) {
@@ -210,29 +222,32 @@ public abstract class CFPointWriter implements Closeable {
 
     try (WriterCFTrajectoryCollection cfWriter = new WriterCFTrajectoryCollection(fileOut,
         fdpoint.getGlobalAttributes(), fdpoint.getDataVariables(), fc.getTimeUnit(), fc.getAltUnits(), config)) {
+      List<Variable> extraVariables = new ArrayList<>();
+      List<TrajectoryFeature> flattenFeatures = new ArrayList<>();
 
-      cfWriter.setExtraVariables(fc.getExtraVariables());
-
-      // LOOK not always needed
       int count = 0;
       int name_strlen = 0;
-      int ntrajs = fc.size();
-      if (ntrajs < 0) {
-        for (TrajectoryFeature traj : fc) {
-          name_strlen = Math.max(name_strlen, traj.getName().length());
-          count++;
+      int ntrajs = 0;
+      for (DsgFeatureCollection featureCollection : fdpoint.getPointFeatureCollectionList()) {
+        for (TrajectoryFeature trajectory : (TrajectoryFeatureCollection) featureCollection) {
+          flattenFeatures.add(trajectory);
+          extraVariables.addAll(trajectory.getExtraVariables());
+          name_strlen = Math.max(name_strlen, trajectory.getName().length());
+          ntrajs++;
         }
-        ntrajs = count;
       }
+      cfWriter.setExtraVariables(extraVariables);
       cfWriter.setFeatureAuxInfo(ntrajs, name_strlen);
-
+      cfWriter.writeHeader(flattenFeatures);
       count = 0;
-      for (TrajectoryFeature traj : fc) {
-        count += cfWriter.writeTrajectory(traj);
-        if (debug && count % 10 == 0)
-          logger.debug(String.format("%d ", count));
-        if (debug && count % 100 == 0)
-          logger.debug(String.format("%n "));
+      for (DsgFeatureCollection featureCollection : fdpoint.getPointFeatureCollectionList()) {
+        for (TrajectoryFeature trajectory : (TrajectoryFeatureCollection) featureCollection) {
+          count += cfWriter.writeTrajectory(trajectory);
+          if (debug && count % 10 == 0)
+            logger.debug(String.format("%d ", count));
+          if (debug && count % 100 == 0)
+            logger.debug(String.format("%n "));
+        }
       }
 
       cfWriter.finish();
@@ -246,34 +261,34 @@ public abstract class CFPointWriter implements Closeable {
     try (WriterCFStationProfileCollection cfWriter = new WriterCFStationProfileCollection(fileOut,
         dataset.getGlobalAttributes(), dataset.getDataVariables(), fc.getTimeUnit(), fc.getAltUnits(), config)) {
 
-      cfWriter.setExtraVariables(fc.getExtraVariables());
-      cfWriter.setStations(fc.getStationFeatures());
+      List<Variable> extraVariables = new ArrayList<>();
+      List<StationFeature> flattenFeatures = new ArrayList<>();
 
-      int name_strlen = 0;
-      int countProfiles = 0;
-      for (StationProfileFeature spf : fc) {
-        name_strlen = Math.max(name_strlen, spf.getName().length());
-        if (spf.size() >= 0)
-          countProfiles += spf.size();
-        else {
-          for (ProfileFeature pf : spf) {
-            countProfiles++;
-          }
-        }
+      for (DsgFeatureCollection dsgFeatures : dataset.getPointFeatureCollectionList()) {
+        extraVariables.addAll(dsgFeatures.getExtraVariables());
+        flattenFeatures.addAll(((StationProfileFeatureCollection) dsgFeatures).getStationFeatures());
       }
-      cfWriter.setFeatureAuxInfo(countProfiles, name_strlen);
+
+      cfWriter.setExtraVariables(extraVariables);
+      cfWriter.setStations(flattenFeatures);
+      cfWriter.setFeatureAuxInfo(0, 0);
+      cfWriter.writeHeader(flattenFeatures);
 
       int count = 0;
-      for (StationProfileFeature spf : fc) {
-        for (ProfileFeature pf : spf) {
-          if (pf.getTime() == null)
-            continue; // assume this means its an "incomplete multidimensional"
-
-          count += cfWriter.writeProfile(spf, pf);
-          if (debug && count % 100 == 0)
-            logger.debug(String.format("%d ", count));
-          if (debug && count % 1000 == 0)
-            logger.debug(String.format("%n "));
+      for (DsgFeatureCollection featureCollection : dataset.getPointFeatureCollectionList()) {
+        cfWriter.resetObsIndex();
+        for (StationFeature station : ((StationProfileFeatureCollection) featureCollection).getStationFeatures()) {
+          StationProfileFeature spf = (StationProfileFeature) station;
+          cfWriter.resetProfileIndex();
+          for (ProfileFeature pf : spf) {
+            if (pf.getTime() == null)
+              continue; // assume this means its an "incomplete multidimensional"
+            count += cfWriter.writeProfile(spf, pf);
+            if (debug && count % 100 == 0)
+              logger.debug(String.format("%d ", count));
+            if (debug && count % 1000 == 0)
+              logger.debug(String.format("%n "));
+          }
         }
       }
 
@@ -287,39 +302,47 @@ public abstract class CFPointWriter implements Closeable {
 
     try (WriterCFTrajectoryProfileCollection cfWriter = new WriterCFTrajectoryProfileCollection(fileOut,
         dataset.getGlobalAttributes(), dataset.getDataVariables(), fc.getTimeUnit(), fc.getAltUnits(), config)) {
-
-      cfWriter.setExtraVariables(fc.getExtraVariables());
+      List<Variable> extraVariables = new ArrayList<>();
+      List<TrajectoryProfileFeature> flattenFeatures = new ArrayList<>();
 
       int traj_strlen = 0;
       int prof_strlen = 0;
       int countTrajectories = 0;
       int countProfiles = 0;
-      for (TrajectoryProfileFeature spf : fc) {
-        countTrajectories++;
-        traj_strlen = Math.max(traj_strlen, spf.getName().length());
-        if (spf.size() >= 0)
-          countProfiles += spf.size();
-        else {
-          for (ProfileFeature profile : spf) {
-            prof_strlen = Math.max(prof_strlen, profile.getName().length());
-            countProfiles++;
+      for (DsgFeatureCollection featureCollection : dataset.getPointFeatureCollectionList()) {
+        for (TrajectoryProfileFeature trajProfile : (TrajectoryProfileFeatureCollection) featureCollection) {
+          extraVariables.addAll(trajProfile.getExtraVariables());
+          flattenFeatures.add(trajProfile);
+          countTrajectories++;
+          traj_strlen = Math.max(traj_strlen, trajProfile.getName().length());
+          if (trajProfile.size() >= 0)
+            countProfiles += trajProfile.size();
+          else {
+            for (ProfileFeature profile : trajProfile) {
+              prof_strlen = Math.max(prof_strlen, profile.getName().length());
+              countProfiles++;
+            }
           }
         }
       }
+      cfWriter.setExtraVariables(extraVariables);
       cfWriter.setFeatureAuxInfo(countProfiles, prof_strlen);
       cfWriter.setFeatureAuxInfo2(countTrajectories, traj_strlen);
+      cfWriter.writeHeader(flattenFeatures);
 
       int count = 0;
-      for (TrajectoryProfileFeature spf : fc) {
-        for (ProfileFeature profile : spf) {
-          if (profile.getTime() == null)
-            continue; // assume this means its a "incomplete multidimensional"
+      for (DsgFeatureCollection tpfc : dataset.getPointFeatureCollectionList()) {
+        for (TrajectoryProfileFeature spf : (TrajectoryProfileFeatureCollection) tpfc) {
+          for (ProfileFeature profile : spf) {
+            if (profile.getTime() == null)
+              continue; // assume this means its a "incomplete multidimensional"
 
-          count += cfWriter.writeProfile(spf, profile);
-          if (debug && count % 100 == 0)
-            logger.debug(String.format("%d ", count));
-          if (debug && count % 1000 == 0)
-            logger.debug(String.format("%n "));
+            count += cfWriter.writeProfile(spf, profile);
+            if (debug && count % 100 == 0)
+              logger.debug(String.format("%d ", count));
+            if (debug && count % 1000 == 0)
+              logger.debug(String.format("%n "));
+          }
         }
       }
 
@@ -359,7 +382,7 @@ public abstract class CFPointWriter implements Closeable {
   protected List<VariableSimpleIF> dataVars;
 
   private Map<String, Variable> extraMap; // added as variables just as they are
-  protected List<Variable> extra;
+  protected List<Variable> extra = new ArrayList<>();
 
   protected LatLonRect llbb;
   protected CalendarDate minDate;
@@ -381,7 +404,7 @@ public abstract class CFPointWriter implements Closeable {
       CalendarDateUnit timeUnit, String altUnits, CFPointWriterConfig config) throws IOException {
     createWriter(fileOut, config);
     this.dataVars = dataVars;
-    this.timeUnit = timeUnit;
+    this.timeUnit = timeUnit != null ? timeUnit : CalendarDateUnit.unixDateUnit;
     this.altUnits = altUnits;
     this.config = config;
     this.noTimeCoverage = config.noTimeCoverage;
@@ -450,52 +473,51 @@ public abstract class CFPointWriter implements Closeable {
     }
   }
 
-  protected abstract void makeFeatureVariables(StructureData featureData, boolean isExtended);
+  protected abstract void makeFeatureVariables(List<StructureData> featureData, boolean isExtended);
 
-  protected void makeMiddleVariables(StructureData middleData, boolean isExtended) {
+  protected void makeMiddleVariables(List<StructureData> middleData, boolean isExtended) {
     // NOOP
   }
 
-  protected void writeHeader(List<VariableSimpleIF> obsCoords, StationTimeSeriesCollectionImpl stationFeatures)
-      throws IOException {
+  protected void writeHeader(List<VariableSimpleIF> obsCoords, List<? extends PointFeatureCollection> stationFeatures,
+      List<StructureData> featureDataStructs, List<StructureData> middleDataStructs) throws IOException {
 
     this.recordDim = writer.addUnlimitedDimension(recordDimName);
     addExtraVariables();
-    addCoordinatesClassic(recordDim, obsCoords, dataMap);
+    if (writer.getVersion().isExtendedModel()) {
+      record = (Structure) writer.addVariable(null, recordName, DataType.STRUCTURE, recordDimName);
+      addCoordinatesExtended(record, obsCoords);
+    }
 
-    for (StationTimeSeriesFeature stnFeature : stationFeatures) {
-      StructureData featureData = stnFeature.getFeatureData();
-      if (writer.getVersion().isExtendedModel()) {
-        makeFeatureVariables(featureData, true);
-        record = (Structure) writer.addVariable(null, recordName, DataType.STRUCTURE, recordDimName);
-        addCoordinatesExtended(record, obsCoords);
+    if (featureDataStructs != null)
+      makeFeatureVariables(featureDataStructs, writer.getVersion().isExtendedModel());
 
-      } else {
-        if (writer.findDimension(stationDimName) == null)
-          makeFeatureVariables(featureData, false);
-      }
+    if (middleDataStructs != null)
+      makeMiddleVariables(middleDataStructs, writer.getVersion().isExtendedModel());
+
+
+    for (PointFeatureCollection stnFeature : stationFeatures) {
+
       PeekingIterator<PointFeature> iter = Iterators.peekingIterator(stnFeature.iterator());
       if (iter.hasNext()) {
+
         PointFeature pointFeat = iter.peek();
-        assert pointFeat instanceof StationPointFeature : "Expected pointFeat to be a StationPointFeature, not a "
-            + pointFeat.getClass().getSimpleName();
 
-        StructureData obsData = pointFeat.getFeatureData();
-
-        Formatter coordNames =
-            new Formatter().format("%s %s %s", pointFeat.getFeatureCollection().getTimeName(), latName, lonName);
+        Formatter coordNames = new Formatter().format("%s %s %s", stnFeature.getTimeName(), latName, lonName);
         if (!Double.isNaN(pointFeat.getLocation().getAltitude())) {
+          altitudeCoordinateName = stnFeature.getAltName();
           coordNames.format(" %s", altitudeCoordinateName);
         }
 
         if (writer.getVersion().isExtendedModel()) {
-          addDataVariablesExtended(obsData, coordNames.toString());
-
+          addDataVariablesExtended(pointFeat.getFeatureData(), coordNames.toString());
         }
-        addDataVariablesClassic(recordDim, obsData, dataMap, coordNames.toString());
+        addDataVariablesClassic(recordDim, pointFeat.getFeatureData(), dataMap, coordNames.toString());
 
       }
     }
+
+    addCoordinatesClassic(recordDim, obsCoords, dataMap);
 
     writer.create();
     if (!(writer.getVersion().isExtendedModel()))
@@ -504,7 +526,7 @@ public abstract class CFPointWriter implements Closeable {
 
   }
 
-  protected void writeHeader(List<VariableSimpleIF> obsCoords, StructureData featureData, StructureData obsData,
+  protected void writeHeader(List<VariableSimpleIF> obsCoords, List<StructureData> featureData, StructureData obsData,
       String coordNames) throws IOException {
     this.recordDim = writer.addUnlimitedDimension(recordDimName);
 
@@ -528,31 +550,6 @@ public abstract class CFPointWriter implements Closeable {
     writeExtraVariables();
   }
 
-  protected void writeHeader2(List<VariableSimpleIF> obsCoords, StructureData featureData, StructureData middleData,
-      StructureData obsData, String coordNames) throws IOException {
-    this.recordDim = writer.addUnlimitedDimension(recordDimName);
-
-    addExtraVariables();
-
-    if (writer.getVersion().isExtendedModel()) {
-      makeFeatureVariables(featureData, true);
-      makeMiddleVariables(middleData, true);
-      record = (Structure) writer.addVariable(null, recordName, DataType.STRUCTURE, recordDimName);
-      addCoordinatesExtended(record, obsCoords);
-      addDataVariablesExtended(obsData, coordNames);
-      writer.create();
-
-    } else {
-      makeFeatureVariables(featureData, false);
-      makeMiddleVariables(middleData, false);
-      addCoordinatesClassic(recordDim, obsCoords, dataMap);
-      addDataVariablesClassic(recordDim, obsData, dataMap, coordNames);
-      writer.create();
-      record = writer.addRecordStructure(); // for netcdf3
-    }
-
-    writeExtraVariables();
-  }
 
   protected void addExtraVariables() {
     if (extra == null)

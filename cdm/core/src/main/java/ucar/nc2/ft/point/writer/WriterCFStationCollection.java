@@ -10,16 +10,14 @@ import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
-import ucar.nc2.dataset.conv.CF1Convention;
-import ucar.nc2.ft.DsgFeatureCollection;
-import ucar.nc2.ft.PointFeature;
-import ucar.nc2.ft.StationTimeSeriesFeatureCollection;
+import ucar.nc2.ft.*;
 import ucar.nc2.ft.point.StationFeature;
 import ucar.nc2.ft.point.StationPointFeature;
-import ucar.nc2.ft.point.StationTimeSeriesCollectionImpl;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateUnit;
 import ucar.unidata.geoloc.Station;
+
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -64,13 +62,21 @@ public class WriterCFStationCollection extends CFPointWriter {
   }
 
   public void writeHeader(StationTimeSeriesFeatureCollection stations) throws IOException {
-    this.stnList = stations.getStationFeatures().stream().distinct().collect(Collectors.toList());
+    writeHeader(stations.getStationFeatures(), null);
+  }
+
+  public void writeHeader(List<StationFeature> stns, @Nullable StationPointFeature spf) throws IOException {
+    this.stnList = stns.stream().distinct().collect(Collectors.toList());
+
     List<VariableSimpleIF> coords = new ArrayList<>();
+    List<PointFeatureCollection> flattenStations = new ArrayList<>();
+    List<StructureData> stationData = new ArrayList<>();
 
     // see if there's altitude, wmoId for any stations
-    for (Station stn : stations) {
-      if (!Double.isNaN(stn.getAltitude()))
-        useAlt = true;
+    for (StationFeature stn : stns) {
+      flattenStations.add((PointFeatureCollection) stn);
+      stationData.add(stn.getFeatureData());
+      useAlt = !Double.isNaN(stn.getAltitude());
       if ((stn.getWmoId() != null) && (!stn.getWmoId().trim().isEmpty()))
         useWmoId = true;
       if ((stn.getDescription() != null) && (!stn.getDescription().trim().isEmpty()))
@@ -82,19 +88,13 @@ public class WriterCFStationCollection extends CFPointWriter {
         desc_strlen = Math.max(desc_strlen, stn.getDescription().length());
       if (stn.getWmoId() != null)
         wmo_strlen = Math.max(wmo_strlen, stn.getWmoId().length());
-
-      if (stn instanceof DsgFeatureCollection) {
-        DsgFeatureCollection dsgStation = (DsgFeatureCollection) stn;
-        if (coords.stream().noneMatch(x -> x.getShortName().equals(dsgStation.getTimeName()))) {
-          coords.add(VariableSimpleBuilder
-              .makeScalar(dsgStation.getTimeName(), "time of measurement", dsgStation.getTimeUnit().getUdUnit(),
-                  DataType.DOUBLE)
-              .addAttribute(CF.CALENDAR, dsgStation.getTimeUnit().getCalendar().toString()).build());
-        } else {
-          coords.add(
-              VariableSimpleBuilder.makeScalar(timeName, "time of measurement", timeUnit.getUdUnit(), DataType.DOUBLE)
-                  .addAttribute(CF.CALENDAR, timeUnit.getCalendar().toString()).build());
-        }
+      DsgFeatureCollection dsgStation = (DsgFeatureCollection) stn;
+      if (coords.stream().noneMatch(x -> x.getShortName().equals(dsgStation.getTimeName()))) {
+        coords
+            .add(VariableSimpleBuilder
+                .makeScalar(dsgStation.getTimeName(), "time of measurement", dsgStation.getTimeUnit().getUdUnit(),
+                    DataType.DOUBLE)
+                .addAttribute(CF.CALENDAR, dsgStation.getTimeUnit().getCalendar().toString()).build());
       }
     }
 
@@ -104,58 +104,7 @@ public class WriterCFStationCollection extends CFPointWriter {
         .makeScalar(stationIndexName, "station index for this observation record", null, DataType.INT)
         .addAttribute(CF.INSTANCE_DIMENSION, stationDimName).build());
 
-    super.writeHeader(coords, (StationTimeSeriesCollectionImpl) stations);
-
-    int count = 0;
-    stationIndexMap = new HashMap<>(stnList.size(), 1.0f);
-    for (StationFeature stn : stnList) {
-      writeStationData(stn);
-      stationIndexMap.put(stn.getName(), count);
-      count++;
-    }
-  }
-
-  public void writeHeader(List<StationFeature> stns, StationPointFeature spf) throws IOException {
-    this.stnList = stns;
-
-    // see if there's altitude, wmoId for any stations
-    for (Station stn : stnList) {
-      if (!Double.isNaN(stn.getAltitude()))
-        useAlt = true;
-      if ((stn.getWmoId() != null) && (!stn.getWmoId().trim().isEmpty()))
-        useWmoId = true;
-      if ((stn.getDescription() != null) && (!stn.getDescription().trim().isEmpty()))
-        useDesc = true;
-
-      // find string lengths
-      id_strlen = Math.max(id_strlen, stn.getName().length());
-      if (stn.getDescription() != null)
-        desc_strlen = Math.max(desc_strlen, stn.getDescription().length());
-      if (stn.getWmoId() != null)
-        wmo_strlen = Math.max(wmo_strlen, stn.getWmoId().length());
-    }
-
-    llbb = CFPointWriterUtils.getBoundingBox(stnList); // gets written in super.finish();
-
-    StationFeature sf = spf.getStation();
-    StructureData stnData = sf.getFeatureData();
-    StructureData obsData = spf.getFeatureData();
-
-    List<VariableSimpleIF> coords = new ArrayList<>();
-    coords.add(VariableSimpleBuilder.makeScalar(spf.getFeatureCollection().getTimeName(), "time of measurement",
-        timeUnit.getUdUnit(), DataType.DOUBLE).addAttribute(CF.CALENDAR, timeUnit.getCalendar().toString()).build());
-
-    coords.add(VariableSimpleBuilder
-        .makeScalar(stationIndexName, "station index for this observation record", null, DataType.INT)
-        .addAttribute(CF.INSTANCE_DIMENSION, stationDimName).build());
-
-
-    Formatter coordNames =
-        new Formatter().format("%s %s %s", spf.getFeatureCollection().getTimeName(), latName, lonName);
-    if (useAlt)
-      coordNames.format(" %s", stationAltName);
-
-    super.writeHeader(coords, stnData, obsData, coordNames.toString());
+    super.writeHeader(coords, flattenStations, stationData, null);
 
     int count = 0;
     stationIndexMap = new HashMap<>(stnList.size(), 1.0f);
@@ -167,7 +116,7 @@ public class WriterCFStationCollection extends CFPointWriter {
 
   }
 
-  protected void makeFeatureVariables(StructureData featureData, boolean isExtended) {
+  protected void makeFeatureVariables(List<StructureData> featureDataStructs, boolean isExtended) {
 
     // add the dimensions : extendded model can use an unlimited dimension
     // Dimension stationDim = isExtended ? writer.addDimension(null, stationDimName, 0, true, true, false) :
@@ -180,8 +129,7 @@ public class WriterCFStationCollection extends CFPointWriter {
 
     if (useAlt) {
       stnVars.add(VariableSimpleBuilder.makeScalar(stationAltName, "station altitude", altUnits, DataType.DOUBLE)
-          .addAttribute(CF.STANDARD_NAME, CF.SURFACE_ALTITUDE)
-          .addAttribute(CF.POSITIVE, CF1Convention.getZisPositive(altName, altUnits)).build());
+          .addAttribute(CF.STANDARD_NAME, CF.STATION_ALTITUDE).build());
     }
 
     stnVars.add(VariableSimpleBuilder.makeString(stationIdName, "station identifier", null, id_strlen)
@@ -195,9 +143,12 @@ public class WriterCFStationCollection extends CFPointWriter {
       stnVars.add(VariableSimpleBuilder.makeString(wmoName, "station WMO id", null, wmo_strlen)
           .addAttribute(CF.STANDARD_NAME, CF.PLATFORM_ID).build());
 
-    for (StructureMembers.Member m : featureData.getMembers()) {
-      if (getDataVar(m.getName()) != null)
-        stnVars.add(VariableSimpleBuilder.fromMember(m).build());
+    for (StructureData featureData : featureDataStructs) {
+      for (StructureMembers.Member m : featureData.getMembers()) {
+        if (getDataVar(m.getName()) != null
+            && stnVars.stream().noneMatch(x -> x.getShortName().equals(m.getFullName())))
+          stnVars.add(VariableSimpleBuilder.fromMember(m).build());
+      }
     }
 
     if (isExtended) {
@@ -232,19 +183,18 @@ public class WriterCFStationCollection extends CFPointWriter {
     if (s instanceof DsgFeatureCollection) {
       DsgFeatureCollection dsgStation = (DsgFeatureCollection) s;
       writeRecord(dsgStation.getName(), dsgStation.getTimeName(), sobs.getObservationTime(),
-          sobs.getObservationTimeAsCalendarDate(), dsgStation.getAltName(), sobs.getLocation().getAltitude(), sdata);
+          sobs.getObservationTimeAsCalendarDate(), altitudeCoordinateName, sobs.getLocation().getAltitude(), sdata);
     } else {
       writeRecord(s.getName(), sobs.getFeatureCollection().getTimeName(), sobs.getObservationTime(),
-          sobs.getObservationTimeAsCalendarDate(), this.altitudeCoordinateName, sobs.getLocation().getAltitude(),
-          sdata);
+          sobs.getObservationTimeAsCalendarDate(), altitudeCoordinateName, sobs.getLocation().getAltitude(), sdata);
     }
   }
 
-  private int obsRecno;
+  protected int obsRecno;
 
   public void writeRecord(String stnName, double timeCoordValue, CalendarDate obsDate, StructureData sdata)
       throws IOException {
-    writeRecord(stnName, timeName, timeCoordValue, obsDate, altName, 0, sdata);
+    writeRecord(stnName, timeName, timeCoordValue, obsDate, altitudeCoordinateName, 0, sdata);
   }
 
   public void writeRecord(String stnName, String timeCoordName, double timeCoordValue, CalendarDate obsDate,

@@ -53,15 +53,36 @@ public class WriterCFPointCollection extends CFPointWriter {
     Formatter coordNames =
         new Formatter().format("%s %s %s", pf.getFeatureCollection().getTimeName(), latName, lonName);
     if (altUnits != null) {
-      coords.add(VariableSimpleBuilder.makeScalar(altName, "altitude of measurement", altUnits, DataType.DOUBLE)
-          .addAttribute(CF.POSITIVE, CF1Convention.getZisPositive(altName, altUnits)).build());
-      coordNames.format(" %s", altName);
+      coords.add(VariableSimpleBuilder
+          .makeScalar(pf.getFeatureCollection().getAltName(), "altitude of measurement", altUnits, DataType.DOUBLE)
+          .addAttribute(CF.POSITIVE, CF1Convention.getZisPositive(pf.getFeatureCollection().getAltName(), altUnits))
+          .build());
+      coordNames.format(" %s", pf.getFeatureCollection().getAltName());
     }
 
     super.writeHeader(coords, null, pf.getDataAll(), coordNames.toString());
   }
 
-  protected void makeFeatureVariables(StructureData featureData, boolean isExtended) {
+  public void writeHeader(PointFeatureCollection pfc) throws IOException {
+    List<VariableSimpleIF> coords = new ArrayList<>();
+    coords.add(VariableSimpleBuilder
+        .makeScalar(pfc.getTimeName(), "time of measurement", timeUnit.getUdUnit(), DataType.DOUBLE)
+        .addAttribute(CF.CALENDAR, timeUnit.getCalendar().toString()).build());
+
+    coords.add(
+        VariableSimpleBuilder.makeScalar(latName, "latitude of measurement", CDM.LAT_UNITS, DataType.DOUBLE).build());
+    coords.add(
+        VariableSimpleBuilder.makeScalar(lonName, "longitude of measurement", CDM.LON_UNITS, DataType.DOUBLE).build());
+    if (altUnits != null) {
+      coords
+          .add(VariableSimpleBuilder.makeScalar(pfc.getAltName(), "altitude of measurement", altUnits, DataType.DOUBLE)
+              .addAttribute(CF.POSITIVE, CF1Convention.getZisPositive(altName, altUnits)).build());
+    }
+
+    super.writeHeader(coords, Arrays.asList(pfc), null, null);
+  }
+
+  protected void makeFeatureVariables(List<StructureData> featureData, boolean isExtended) {
     // NOOP
   }
 
@@ -69,13 +90,19 @@ public class WriterCFPointCollection extends CFPointWriter {
   // writing data
 
   public void writeRecord(PointFeature sobs, StructureData sdata) throws IOException {
-    writeRecord(sobs.getObservationTime(), sobs.getObservationTimeAsCalendarDate(), sobs.getLocation(), sdata);
+    writeRecord(sobs.getFeatureCollection().getTimeName(), sobs.getObservationTime(),
+        sobs.getObservationTimeAsCalendarDate(), sobs.getFeatureCollection().getAltName(), sobs.getLocation(), sdata);
   }
 
   private int obsRecno;
 
   public void writeRecord(double timeCoordValue, CalendarDate obsDate, EarthLocation loc, StructureData sdata)
       throws IOException {
+    writeRecord(timeName, timeCoordValue, obsDate, altName, loc, sdata);
+  }
+
+  private void writeRecord(String timeName, double timeCoordValue, CalendarDate obsDate, String altName,
+      EarthLocation loc, StructureData sdata) throws IOException {
     trackBB(loc.getLatLon(), obsDate);
 
     StructureMembers.Builder smb = StructureMembers.builder().setName("Coords");
@@ -89,6 +116,6 @@ public class WriterCFPointCollection extends CFPointWriter {
     // coords first so it takes precedence
     StructureDataComposite sdall = StructureDataComposite.create(ImmutableList.of(coords, sdata));
     obsRecno = super.writeStructureData(obsRecno, record, sdall, dataMap);
-  }
 
+  }
 }
