@@ -13,6 +13,8 @@ import javax.annotation.Nullable;
 
 import com.google.common.collect.Multimap;
 import thredds.client.catalog.ServiceType;
+import thredds.inventory.MFile;
+import thredds.inventory.MFiles;
 import ucar.httpservices.HTTPFactory;
 import ucar.httpservices.HTTPMethod;
 import ucar.nc2.util.EscapeStrings;
@@ -59,9 +61,11 @@ public class DatasetUrl {
     StringBuilder buf = new StringBuilder(url);
     // If there are any leading protocols, then they must stop at the first '/'.
     int slashpos = buf.indexOf("/");
-    // Check special case of file:<path> with no slashes after file:
+    // Check special cases of file:<path> or cdms3:<path> with no slashes after:
     if (url.startsWith("file:") && "/\\".indexOf(url.charAt(5)) < 0) {
       allprotocols.add("file");
+    } else if (url.startsWith("cdms3:") && "/\\".indexOf(url.charAt(6)) < 0) {
+      allprotocols.add("cdms3");
     } else if (slashpos >= 0) {
       // Remove everything after the first slash
       buf.delete(slashpos + 1, buf.length());
@@ -128,7 +132,7 @@ public class DatasetUrl {
     }
     pos = location.lastIndexOf('?');
     String query = null;
-    if (pos >= 0) {
+    if (pos >= 0 && !leadProtocol.equals("cdms3")) {
       query = trueUrl.substring(pos + 1);
       trueUrl = trueUrl.substring(0, pos);
     }
@@ -147,9 +151,9 @@ public class DatasetUrl {
       // - we have file://<path> or file:<path>; we need to see if
       // the extension can help, otherwise, start defaulting.
       // - we have a simple url: e.g. http://... ; contact the server
-      if (leadProtocol.equals("file")) {
+      if (leadProtocol.equals("file") || leadProtocol.equals("cdms3")) {
         serviceType = decodePathExtension(trueUrl); // look at the path extension
-        if (serviceType == null && checkIfNcml(new File(location))) {
+        if (serviceType == null && checkIfNcml(MFiles.create(location))) {
           serviceType = ServiceType.NCML;
         }
       } else {
@@ -163,11 +167,10 @@ public class DatasetUrl {
         }
       }
     }
-
     if (serviceType == ServiceType.NCML) { // ??
       // If lead protocol was null, then pretend it was a file
       // Note that technically, this should be 'file://'
-      trueUrl = (allProtocols.isEmpty() ? "file:" + trueUrl : location);
+      trueUrl = (allProtocols.isEmpty() ? "file:" + trueUrl : trueUrl);
     }
 
     // Add back the query and fragment (if any)
@@ -511,12 +514,12 @@ public class DatasetUrl {
     return false;
   }
 
-  private static boolean checkIfNcml(File file) throws IOException {
-    if (!file.exists()) {
+  private static boolean checkIfNcml(MFile mFile) throws IOException {
+    if (!mFile.exists()) {
       return false;
     }
 
-    try (BufferedInputStream in = new BufferedInputStream(new FileInputStream(file), NUM_BYTES_TO_DETERMINE_NCML)) {
+    try (BufferedInputStream in = new BufferedInputStream(mFile.getInputStream(), NUM_BYTES_TO_DETERMINE_NCML)) {
       byte[] bytes = new byte[NUM_BYTES_TO_DETERMINE_NCML];
       int bytesRead = in.read(bytes);
 

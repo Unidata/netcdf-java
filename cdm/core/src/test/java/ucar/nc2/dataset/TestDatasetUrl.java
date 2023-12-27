@@ -21,7 +21,6 @@ import thredds.client.catalog.ServiceType;
  */
 public class TestDatasetUrl {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-  static final boolean show = true;
 
   protected void protocheck(String path, String expected) {
     if (expected == null)
@@ -32,11 +31,6 @@ public class TestDatasetUrl {
     StringBuffer buff = new StringBuffer();
     protocols.forEach(p -> buff.append(p).append(":"));
     String result = buff.toString();
-    boolean ok = expected.equals(result);
-    if (show || !ok)
-      System.out.printf(" %s <- %s%n", result, path);
-    if (!ok)
-      System.out.printf("  !!!EXPECTED '%s'%n", expected);
     assertThat(result).isEqualTo(expected);
   }
 
@@ -76,11 +70,6 @@ public class TestDatasetUrl {
 
   protected void testFind(String path, ServiceType expected) throws IOException {
     DatasetUrl result = DatasetUrl.findDatasetUrl(path);
-    boolean ok = (expected == null) ? result.serviceType == null : expected == result.serviceType;
-    if (show || !ok)
-      System.out.printf(" %s <- %s%n", result.serviceType, path);
-    if (!ok)
-      System.out.printf("  !!!EXPECTED '%s'%n", expected);
     assertThat(result.serviceType).isEqualTo(expected);
   }
 
@@ -123,5 +112,16 @@ public class TestDatasetUrl {
     testFind(
         "dynamic:http://thredds.ucar.edu:8080/thredds/fmrc/NCEP/GFS/CONUS_95km/files/GFS_CONUS_95km_20070319_0600.grib1",
         null);
+
+    testFind("file:/path/to/file.ncml", ServiceType.NCML);
+    testFind("/path/to/file.ncml", ServiceType.NCML);
+    testFind("file:/path/to/file.xml", ServiceType.NCML);
+    testFind("/path/to/file.xml", ServiceType.NCML);
+
+    testFind("cdms3:thredds-test-data?testStandalone.ncml#delimiter=/", ServiceType.NCML);
+    testFind("cdms3:thredds-test-data?testStandalone.ncml", ServiceType.NCML);
+    testFind("cdms3:thredds-test-data?ncml/testStandalone.ncml#delimiter=/", ServiceType.NCML);
+    testFind("cdms3:thredds-test-data?ncml/testStandalone.ncml", ServiceType.NCML);
+    testFind("cdms3://profile_name@my.endpoint.edu/bucket-name?super/long/key.ncml#delimiter=/", ServiceType.NCML);
   }
 }

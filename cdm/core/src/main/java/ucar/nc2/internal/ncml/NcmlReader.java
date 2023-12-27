@@ -18,13 +18,14 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.StringTokenizer;
-import java.net.URL;
 import javax.annotation.Nullable;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.Namespace;
 import org.jdom2.input.SAXBuilder;
 import org.jdom2.output.XMLOutputter;
+import thredds.inventory.MFile;
+import thredds.inventory.MFiles;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.nc2.Attribute;
@@ -346,16 +347,11 @@ public class NcmlReader {
    */
   public static NetcdfDataset.Builder readNcml(String ncmlLocation, String referencedDatasetUri, CancelTask cancelTask)
       throws IOException {
-    URL url = new URL(ncmlLocation);
+    MFile mFile = MFiles.create(ncmlLocation);
 
     if (debugURL) {
       System.out.println(" NcmlReader open " + ncmlLocation);
-      System.out.println("   URL = " + url);
-      System.out.println("   external form = " + url.toExternalForm());
-      System.out.println("   protocol = " + url.getProtocol());
-      System.out.println("   host = " + url.getHost());
-      System.out.println("   path = " + url.getPath());
-      System.out.println("  file = " + url.getFile());
+      System.out.println("   Path = " + mFile.getPath());
     }
 
     org.jdom2.Document doc;
@@ -363,9 +359,9 @@ public class NcmlReader {
       SAXBuilder builder = new SAXBuilder();
       builder.setExpandEntities(false);
       if (debugURL) {
-        System.out.println(" NetcdfDataset URL = <" + url + ">");
+        System.out.println(" NetcdfDataset path = <" + mFile.getPath() + ">");
       }
-      doc = builder.build(url);
+      doc = builder.build(mFile.getInputStream());
     } catch (JDOMException e) {
       throw new IOException(e.getMessage());
     }
