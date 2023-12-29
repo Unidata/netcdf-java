@@ -153,7 +153,8 @@ public class DatasetUrl {
       // - we have a simple url: e.g. http://... ; contact the server
       if (leadProtocol.equals("file") || leadProtocol.equals("cdms3")) {
         serviceType = decodePathExtension(trueUrl); // look at the path extension
-        if (serviceType == null && checkIfNcml(MFiles.create(location))) {
+        // If it's a S3 file, it is expensive to peak inside to check if it's ncml, so we will only check extension
+        if (serviceType == null && !leadProtocol.equals("cdms3") && checkIfNcml(new File(location))) {
           serviceType = ServiceType.NCML;
         }
       } else {
@@ -514,12 +515,12 @@ public class DatasetUrl {
     return false;
   }
 
-  private static boolean checkIfNcml(MFile mFile) throws IOException {
-    if (!mFile.exists()) {
+  private static boolean checkIfNcml(File file) throws IOException {
+    if (!file.exists()) {
       return false;
     }
 
-    try (BufferedInputStream in = new BufferedInputStream(mFile.getInputStream(), NUM_BYTES_TO_DETERMINE_NCML)) {
+    try (BufferedInputStream in = new BufferedInputStream(new FileInputStream(file), NUM_BYTES_TO_DETERMINE_NCML)) {
       byte[] bytes = new byte[NUM_BYTES_TO_DETERMINE_NCML];
       int bytesRead = in.read(bytes);
 
