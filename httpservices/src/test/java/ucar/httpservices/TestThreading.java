@@ -53,17 +53,17 @@ public class TestThreading extends UnitTestCommon {
   ////////////////////////////////////////////////// .
   // Constants
 
-  static public final boolean DEBUG = false;
+  public static final boolean DEBUG = false;
 
-  static public final boolean AWAIT = true;
+  public static final boolean AWAIT = true;
 
 
-  static protected final int DFALTTHREADS = 100;
-  static protected final int DFALTMAXCONNS = (DFALTTHREADS / 2);
+  protected static final int DFALTTHREADS = 100;
+  protected static final int DFALTMAXCONNS = (DFALTTHREADS / 2);
 
-  static protected final String DFALTSERVER = "http://" + TestDir.dap2TestServer;
+  protected static final String DFALTSERVER = "http://" + TestDir.dap2TestServer;
 
-  static protected final String DFALTURLFMT = DFALTSERVER + "/dts/test.%02d";
+  protected static final String DFALTURLFMT = DFALTSERVER + "/dts/test.%02d";
 
   static {
     HTTPSession.TESTING = true;
@@ -200,7 +200,7 @@ public class TestThreading extends UnitTestCommon {
     }
   }
 
-  static public class Failure extends Exception {
+  public static class Failure extends Exception {
     Failure(String m, Exception e) {
       super(m, e);
     }

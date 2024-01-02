@@ -37,12 +37,13 @@ import ucar.unidata.geoloc.LatLonRect;
 public class StandardProfileCollectionImpl extends PointFeatureCCImpl implements ProfileFeatureCollection {
   private NestedTable ft;
 
-  protected StandardProfileCollectionImpl(String name, CalendarDateUnit timeUnit, String altUnits) {
-    super(name, timeUnit, altUnits, FeatureType.PROFILE);
+  protected StandardProfileCollectionImpl(String name, String timeName, CalendarDateUnit timeUnit, String altName,
+      String altUnits) {
+    super(name, timeName, timeUnit, altName, altUnits, FeatureType.PROFILE);
   }
 
   StandardProfileCollectionImpl(NestedTable ft, CalendarDateUnit timeUnit, String altUnits) {
-    super(ft.getName(), timeUnit, altUnits, FeatureType.PROFILE);
+    super(ft.getName(), ft.getTimeName(), timeUnit, ft.getAltName(), altUnits, FeatureType.PROFILE);
     this.ft = ft;
     this.extras = ft.getExtras();
   }
@@ -62,8 +63,9 @@ public class StandardProfileCollectionImpl extends PointFeatureCCImpl implements
     StructureData profileData;
 
     StandardProfileFeature(Cursor cursor, double time, StructureData profileData) {
-      super(ft.getFeatureName(cursor), StandardProfileCollectionImpl.this.getTimeUnit(),
-          StandardProfileCollectionImpl.this.getAltUnits(), ft.getLatitude(cursor), ft.getLongitude(cursor), time, -1);
+      super(ft.getFeatureName(cursor), ft.getTimeName(), StandardProfileCollectionImpl.this.getTimeUnit(),
+          ft.getAltName(), StandardProfileCollectionImpl.this.getAltUnits(), ft.getLatitude(cursor),
+          ft.getLongitude(cursor), time, -1);
 
       this.cursor = cursor;
       this.profileData = profileData;
@@ -133,7 +135,7 @@ public class StandardProfileCollectionImpl extends PointFeatureCCImpl implements
     LatLonRect boundingBox;
 
     StandardProfileCollectionSubset(StandardProfileCollectionImpl from, LatLonRect boundingBox) {
-      super(from.getName() + "-subset", from.getTimeUnit(), from.getAltUnits());
+      super(from.getName() + "-subset", from.getTimeName(), from.getTimeUnit(), from.getAltName(), from.getAltUnits());
       this.from = from;
       this.boundingBox = boundingBox;
     }

@@ -47,7 +47,7 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
   private NestedTable ft;
 
   StandardStationProfileCollectionImpl(NestedTable ft, CalendarDateUnit timeUnit, String altUnits) {
-    super(ft.getName(), timeUnit, altUnits);
+    super(ft.getName(), ft.getTimeName(), timeUnit, ft.getAltName(), altUnits);
     this.ft = ft;
   }
 
@@ -135,7 +135,9 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
     Cursor cursor;
 
     StandardStationProfileFeature(Station s, Cursor cursor, StructureData stationProfileData, int recnum) {
-      super(s, StandardStationProfileCollectionImpl.this.getTimeUnit(),
+      super(s, StandardStationProfileCollectionImpl.this.getTimeName(),
+          StandardStationProfileCollectionImpl.this.getTimeUnit(),
+          StandardStationProfileCollectionImpl.this.getAltName(),
           StandardStationProfileCollectionImpl.this.getAltUnits(), -1);
       this.cursor = cursor;
       // this.recnum = recnum;
@@ -226,8 +228,8 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
       @Override
       public PointFeatureCollection next() {
         count++;
-        PointFeatureCollection result = new StandardProfileFeature(station, getTimeUnit(), getAltUnits(),
-            ft.getObsTime(cursor), cursor.copy(), profileData);
+        PointFeatureCollection result = new StandardProfileFeature(station, getTimeName(), getTimeUnit(), getAltName(),
+            getAltUnits(), ft.getObsTime(cursor), cursor.copy(), profileData);
         prev = (DsgCollectionImpl) result;
         return result;
       }
@@ -245,10 +247,10 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
     private Cursor cursor;
     StructureData profileData;
 
-    StandardProfileFeature(Station s, CalendarDateUnit timeUnit, String altUnits, double time, Cursor cursor,
-        StructureData profileData) {
-      super(timeUnit.makeCalendarDate(time).toString(), timeUnit, altUnits, s.getLatitude(), s.getLongitude(), time,
-          -1);
+    StandardProfileFeature(Station s, String timeName, CalendarDateUnit timeUnit, String altName, String altUnits,
+        double time, Cursor cursor, StructureData profileData) {
+      super(timeUnit.makeCalendarDate(time).toString(), timeName, timeUnit, altName, altUnits, s.getLatitude(),
+          s.getLongitude(), time, -1);
       this.cursor = cursor;
       this.profileData = profileData;
 

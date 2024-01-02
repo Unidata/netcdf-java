@@ -27,7 +27,7 @@ import java.util.List;
 @Category(NeedsCdmUnitTest.class)
 public class TestH5ReadAndCount {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-  static public String testDir = TestH5.testDir;
+  public static String testDir = TestH5.testDir;
 
   @Parameterized.Parameters(name = "{0}")
   public static List<Object[]> getTestParameters() {

@@ -32,14 +32,14 @@ public class TestGrads {
   private static int leaks;
 
   @BeforeClass
-  static public void startup() {
+  public static void startup() {
     RandomAccessFile.setDebugLeaks(true);
     RandomAccessFile.enableDefaultGlobalFileCache();
     leaks = RandomAccessFile.getOpenFiles().size();
   }
 
   @AfterClass
-  static public void checkLeaks() {
+  public static void checkLeaks() {
     FileCache.shutdown();
     RandomAccessFile.setGlobalFileCache(null);
     assert leaks == TestDir.checkLeaks();

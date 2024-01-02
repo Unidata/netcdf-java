@@ -313,7 +313,7 @@ public class CalendarDuration {
     int result;
     long temp;
     result = timeUnit != null ? timeUnit.hashCode() : 0;
-    temp = value != +0.0d ? Double.doubleToLongBits(value) : 0L;
+    temp = value != 0.0d ? Double.doubleToLongBits(value) : 0L;
     result = 31 * result + (int) (temp ^ (temp >>> 32));
     return result;
   }

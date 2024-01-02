@@ -1,0 +1,44 @@
+netcdf test_struct_nested {
+  variables:
+
+    Structure {
+
+      Structure {
+        int x;
+          x:_DAP4_Checksum_CRC32 = 0;
+          string x:_CoordinateAxisType = "GeoX";
+        int y;
+          y:_DAP4_Checksum_CRC32 = 0;
+          string y:_CoordinateAxisType = "GeoY";
+      } field1;
+      field1:_DAP4_Checksum_CRC32 = 0;
+
+
+      Structure {
+        int x;
+          x:_DAP4_Checksum_CRC32 = 0;
+        int y;
+          y:_DAP4_Checksum_CRC32 = 0;
+      } field2;
+      field2:_DAP4_Checksum_CRC32 = 0;
+
+    } x;
+    x:_DAP4_Checksum_CRC32 = -542685669;
+
+
+  // global attributes:
+  :_DAP4_Little_Endian = 1B;
+  string :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
+
+  data:
+    x = 
+      {        field1 = 
+          {            x = 1
+            y = -2
+          } field1(0)
+        field2 = 
+          {            x = 255
+            y = 90
+          } field2(0)
+      } x(0)
+}

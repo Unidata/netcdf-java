@@ -373,17 +373,17 @@ public class Stereographic extends ProjectionImpl {
   public int hashCode() {
     int result;
     long temp;
-    temp = falseEasting != +0.0d ? Double.doubleToLongBits(falseEasting) : 0L;
+    temp = falseEasting != 0.0d ? Double.doubleToLongBits(falseEasting) : 0L;
     result = (int) (temp ^ (temp >>> 32));
-    temp = falseNorthing != +0.0d ? Double.doubleToLongBits(falseNorthing) : 0L;
+    temp = falseNorthing != 0.0d ? Double.doubleToLongBits(falseNorthing) : 0L;
     result = 31 * result + (int) (temp ^ (temp >>> 32));
-    temp = scale != +0.0d ? Double.doubleToLongBits(scale) : 0L;
+    temp = scale != 0.0d ? Double.doubleToLongBits(scale) : 0L;
     result = 31 * result + (int) (temp ^ (temp >>> 32));
-    temp = earthRadius != +0.0d ? Double.doubleToLongBits(earthRadius) : 0L;
+    temp = earthRadius != 0.0d ? Double.doubleToLongBits(earthRadius) : 0L;
     result = 31 * result + (int) (temp ^ (temp >>> 32));
-    temp = latt != +0.0d ? Double.doubleToLongBits(latt) : 0L;
+    temp = latt != 0.0d ? Double.doubleToLongBits(latt) : 0L;
     result = 31 * result + (int) (temp ^ (temp >>> 32));
-    temp = lont != +0.0d ? Double.doubleToLongBits(lont) : 0L;
+    temp = lont != 0.0d ? Double.doubleToLongBits(lont) : 0L;
     result = 31 * result + (int) (temp ^ (temp >>> 32));
     return result;
   }

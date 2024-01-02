@@ -1,0 +1,32 @@
+netcdf amsre_20060131v5.dat {
+  variables:
+    ubyte time_a(3, 6);
+      string time_a:Equator_Crossing_Time = "1:30 PM";
+
+  // global attributes:
+  string :wspd_d.description = "wind speed 10 meters above the water surface, derived from surface  roughness(wind stress); missing due to: sun glint; rain; near sea ice";
+  string :FF_GLOBAL.latitude = "latitude = 0.25*ydim-90.125";
+  string :wspd_a.pass = "ascending";
+  :wspd_d.offset = 0.0f;
+  string :FF_GLOBAL.Server = "DODS FreeFrom based on FFND release 4.2.3", "DODS FreeFrom based on FFND release 4.2.3";
+  string :wspd_a.long_name = "Surface Wind Speed";
+  string :wspd_d.pass = "descending";
+  string :wspd_a.units = "meters/second";
+  :wspd_a.offset = 0.0f;
+  string :FF_GLOBAL.longitude = "longitude = 0.25*xdim-0.125 degreesEast";
+  :wspd_a.scale = 0.2f;
+  string :FF_GLOBAL.Description = "Version-5 AMSR-E Ocean Product";
+  string :wspd_a.description = "wind speed 10 meters above the water surface, derived from surface  roughness(wind stress); missing due to: sun glint; rain; near sea ice";
+  string :wspd_d.units = "meters/second";
+  :wspd_d.scale = 0.2f;
+  string :wspd_d.long_name = "Surface Wind Speed";
+  string :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
+
+  data:
+    time_a = 
+      {
+        {255, 255, 255, 255, 255, 255},
+        {255, 255, 255, 255, 255, 255},
+        {255, 255, 255, 255, 255, 255}
+      }
+}

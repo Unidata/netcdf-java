@@ -4,6 +4,9 @@
  */
 package ucar.nc2.util;
 
+import java.io.IOException;
+import thredds.inventory.MFile;
+import thredds.inventory.MFiles;
 import ucar.unidata.util.StringUtil2;
 import java.io.File;
 import java.net.URI;
@@ -86,6 +89,20 @@ public class URLnaming {
       }
     }
 
+    if (baseUri.startsWith("cdms3:")) {
+      if (relativeUri.startsWith("cdms3:")) {
+        return relativeUri;
+      } else {
+        MFile absoluteMFile;
+        try {
+          absoluteMFile = MFiles.create(baseUri).getParent().getChild(relativeUri);
+        } catch (IOException e) {
+          return relativeUri;
+        }
+        return absoluteMFile == null ? relativeUri : absoluteMFile.getPath();
+      }
+    }
+
     // non-file URLs
 
     // relativeUri = canonicalizeRead(relativeUri);
@@ -116,12 +133,18 @@ public class URLnaming {
     if (baseDir.startsWith("file:"))
       baseDir = baseDir.substring(5);
 
-    File base = new File(baseDir);
-    if (!base.isDirectory())
-      base = base.getParentFile();
+    MFile base = MFiles.create(baseDir);
+    if (!base.isDirectory()) {
+      try {
+        base = base.getParent();
+      } catch (IOException e) {
+        return filepath;
+      }
+    }
     if (base == null)
       return filepath;
-    return base.getAbsolutePath() + "/" + filepath;
+    MFile absoluteFile = base.getChild(filepath);
+    return absoluteFile == null ? filepath : absoluteFile.getPath();
   }
 
 }

@@ -105,6 +105,7 @@ public class ArrayObject extends Array {
   }
 
   /** create new Array with given indexImpl and the same backing store */
+  @Override
   protected Array createView(Index index) {
     return ArrayObject.factory(dataType, elementType, isVlen, index, storage);
   }
@@ -117,11 +118,13 @@ public class ArrayObject extends Array {
   }
 
   /** Get underlying primitive array storage. CAUTION! You may invalidate your warrentee! */
+  @Override
   public Object getStorage() {
     return storage;
   }
 
   // copy from javaArray to storage using the iterator: used by factory( Object);
+  @Override
   protected void copyFrom1DJavaArray(IndexIterator iter, Object javaArray) {
     Object[] ja = (Object[]) javaArray;
     for (Object aJa : ja)
@@ -129,6 +132,7 @@ public class ArrayObject extends Array {
   }
 
   // copy to javaArray from storage using the iterator: used by copyToNDJavaArray;
+  @Override
   protected void copyTo1DJavaArray(IndexIterator iter, Object javaArray) {
     Object[] ja = (Object[]) javaArray;
     for (int i = 0; i < ja.length; i++)
@@ -147,163 +151,199 @@ public class ArrayObject extends Array {
   }
 
   /** not legal, throw ForbiddenConversionException */
+  @Override
   public double getDouble(Index i) {
     throw new ForbiddenConversionException();
   }
 
   /** not legal, throw ForbiddenConversionException */
+  @Override
   public void setDouble(Index i, double value) {
     throw new ForbiddenConversionException();
   }
 
   /** not legal, throw ForbiddenConversionException */
+  @Override
   public float getFloat(Index i) {
     throw new ForbiddenConversionException();
   }
 
   /** not legal, throw ForbiddenConversionException */
+  @Override
   public void setFloat(Index i, float value) {
     throw new ForbiddenConversionException();
   }
 
   /** not legal, throw ForbiddenConversionException */
+  @Override
   public long getLong(Index i) {
     throw new ForbiddenConversionException();
   }
 
   /** not legal, throw ForbiddenConversionException */
+  @Override
   public void setLong(Index i, long value) {
     throw new ForbiddenConversionException();
   }
 
   /** not legal, throw ForbiddenConversionException */
+  @Override
   public int getInt(Index i) {
     throw new ForbiddenConversionException();
   }
 
   /** not legal, throw ForbiddenConversionException */
+  @Override
   public void setInt(Index i, int value) {
     throw new ForbiddenConversionException();
   }
 
   /** not legal, throw ForbiddenConversionException */
+  @Override
   public short getShort(Index i) {
     throw new ForbiddenConversionException();
   }
 
   /** not legal, throw ForbiddenConversionException */
+  @Override
   public void setShort(Index i, short value) {
     throw new ForbiddenConversionException();
   }
 
   /** not legal, throw ForbiddenConversionException */
+  @Override
   public byte getByte(Index i) {
     throw new ForbiddenConversionException();
   }
 
   /** not legal, throw ForbiddenConversionException */
+  @Override
   public void setByte(Index i, byte value) {
     throw new ForbiddenConversionException();
   }
 
   /** not legal, throw ForbiddenConversionException */
+  @Override
   public boolean getBoolean(Index i) {
     throw new ForbiddenConversionException();
   }
 
   /** not legal, throw ForbiddenConversionException */
+  @Override
   public void setBoolean(Index i, boolean value) {
     throw new ForbiddenConversionException();
   }
 
   /** not legal, throw ForbiddenConversionException */
+  @Override
   public char getChar(Index i) {
     throw new ForbiddenConversionException();
   }
 
   /** not legal, throw ForbiddenConversionException */
+  @Override
   public void setChar(Index i, char value) {
     throw new ForbiddenConversionException();
   }
 
+  @Override
   public Object getObject(Index i) {
     return storage[i.currentElement()];
   }
 
+  @Override
   public void setObject(Index i, Object value) {
     storage[i.currentElement()] = value;
   }
 
   // trusted, assumes that individual dimension lengths have been checked
   // package private : mostly for iterators
+  @Override
   public double getDouble(int index) {
     throw new ForbiddenConversionException();
   }
 
+  @Override
   public void setDouble(int index, double value) {
     throw new ForbiddenConversionException();
   }
 
+  @Override
   public float getFloat(int index) {
     throw new ForbiddenConversionException();
   }
 
+  @Override
   public void setFloat(int index, float value) {
     throw new ForbiddenConversionException();
   }
 
+  @Override
   public long getLong(int index) {
     throw new ForbiddenConversionException();
   }
 
+  @Override
   public void setLong(int index, long value) {
     throw new ForbiddenConversionException();
   }
 
+  @Override
   public int getInt(int index) {
     throw new ForbiddenConversionException();
   }
 
+  @Override
   public void setInt(int index, int value) {
     throw new ForbiddenConversionException();
   }
 
+  @Override
   public short getShort(int index) {
     throw new ForbiddenConversionException();
   }
 
+  @Override
   public void setShort(int index, short value) {
     throw new ForbiddenConversionException();
   }
 
+  @Override
   public byte getByte(int index) {
     throw new ForbiddenConversionException();
   }
 
+  @Override
   public void setByte(int index, byte value) {
     throw new ForbiddenConversionException();
   }
 
+  @Override
   public char getChar(int index) {
     throw new ForbiddenConversionException();
   }
 
+  @Override
   public void setChar(int index, char value) {
     throw new ForbiddenConversionException();
   }
 
+  @Override
   public boolean getBoolean(int index) {
     throw new ForbiddenConversionException();
   }
 
+  @Override
   public void setBoolean(int index, boolean value) {
     throw new ForbiddenConversionException();
   }
 
+  @Override
   public Object getObject(int index) {
     return storage[index];
   }
 
+  @Override
   public void setObject(int index, Object value) {
     storage[index] = value;
   }

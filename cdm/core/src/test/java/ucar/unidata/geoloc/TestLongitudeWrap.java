@@ -55,7 +55,7 @@ public class TestLongitudeWrap {
    * @param lon2 end
    * @return
    */
-  static public double lonDiff(double lon1, double lon2) {
+  public static double lonDiff(double lon1, double lon2) {
     return Math.IEEEremainder(lon1 - lon2, 720.0);
   }
 }

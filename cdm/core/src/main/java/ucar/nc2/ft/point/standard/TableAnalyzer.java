@@ -619,7 +619,6 @@ public class TableAnalyzer {
   private Document makeDocument() {
     Element rootElem = new Element("featureDataset");
     Document doc = new Document(rootElem);
-    rootElem.setAttribute("location", ds.getLocation());
     rootElem.addContent(new Element("analyser").setAttribute("class", getName()));
     if (ft != null)
       rootElem.setAttribute("featureType", ft.toString());

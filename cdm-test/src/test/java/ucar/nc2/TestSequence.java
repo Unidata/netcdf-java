@@ -36,16 +36,12 @@ import com.google.common.collect.Sets;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import ucar.ma2.*;
-import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
 import java.io.File;
 import java.io.IOException;
-import java.lang.invoke.MethodHandles;
 import java.util.Arrays;
 import java.util.List;
 
@@ -56,7 +52,6 @@ import java.util.List;
  * @since Nov 10, 2009
  */
 public class TestSequence {
-  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @Test
   @Category(NeedsCdmUnitTest.class)

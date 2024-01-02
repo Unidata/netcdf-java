@@ -1,0 +1,19 @@
+netcdf test_vlen11 {
+  variables:
+
+    Sequence {
+      int v;
+    } v(*);
+    v:_FillValue = 0;
+
+
+  // global attributes:
+  string :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
+
+  data:
+    v = 
+      {        v = 4
+      } v
+      {        v = 754
+      } v
+}

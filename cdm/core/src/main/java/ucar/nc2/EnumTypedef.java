@@ -135,7 +135,7 @@ public class EnumTypedef extends CDMNode {
         basetype = "";
         break;
       default:
-        assert false : "Internal error";
+        throw new IllegalStateException("Unexpected basetype = " + basetype);
     }
     out.format("%s%senum %s { ", indent, basetype, name);
     int count = 0;

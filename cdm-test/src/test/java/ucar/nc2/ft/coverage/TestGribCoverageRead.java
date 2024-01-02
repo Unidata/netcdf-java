@@ -4,6 +4,8 @@
  */
 package ucar.nc2.ft.coverage;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import java.util.Arrays;
 import org.junit.Assert;
 import org.junit.Test;
@@ -11,11 +13,15 @@ import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.Array;
+import ucar.ma2.IndexIterator;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft2.coverage.*;
 import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.util.Misc;
+import ucar.unidata.geoloc.LatLonPoint;
+import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.util.test.Assert2;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
@@ -227,6 +233,32 @@ public class TestGribCoverageRead {
       val = data.getFloat((int) data.getSize() - 1);
       logger.debug("data val last = {}", val);
       Assert2.assertNearlyEquals(0.18079996f, val);
+    }
+  }
+
+  @Test
+  public void shouldNotReturnNaNsWhenReadingMRMSData() throws IOException, InvalidRangeException {
+    String endpoint = TestDir.cdmUnitTestDir + "gribCollections/mrms/MRMS_CONUS_BaseReflectivity_20230914_1750.grib2";
+
+    try (FeatureDatasetCoverage featureDatasetCoverage = CoverageDatasetFactory.open(endpoint)) {
+      assertThat(featureDatasetCoverage).isNotNull();
+      CoverageCollection coverageCollection = featureDatasetCoverage.getCoverageCollections().get(0);
+
+      String coverageName = "MergedReflectivityComposite_altitude_above_msl";
+      Coverage coverage = coverageCollection.findCoverage(coverageName);
+
+      CalendarDate start = CalendarDate.parseISOformat(null, "2023-09-14T17:50:16Z");
+      CalendarDate end = CalendarDate.parseISOformat(null, "2023-09-14T17:58:42Z");
+      CalendarDateRange dateRange = CalendarDateRange.of(start, end);
+      LatLonRect latLonRect = new LatLonRect(LatLonPoint.create(30, -90), LatLonPoint.create(30.01, -89.99));
+      SubsetParams subset = new SubsetParams().setTimeRange(dateRange).setLatLonBoundingBox(latLonRect);
+
+      GeoReferencedArray geo = coverage.readData(subset);
+      Array data = geo.getData();
+      IndexIterator iterator = data.getIndexIterator();
+      while (iterator.hasNext()) {
+        assertThat(iterator.getFloatNext()).isNotNaN();
+      }
     }
   }
 }

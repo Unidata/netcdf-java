@@ -209,16 +209,6 @@ public abstract class UnitTestCommon {
   //////////////////////////////////////////////////
   // Instance variables
 
-  // System properties
-  protected boolean prop_ascii = true;
-  protected boolean prop_diff = true;
-  protected boolean prop_baseline = false;
-  protected boolean prop_visual = false;
-  protected boolean prop_debug = DEBUG;
-  protected boolean prop_generate = true;
-  protected String prop_controls = null;
-  protected boolean prop_display = false;
-
   protected String title = "Testing";
   protected String name = "testcommon";
 
@@ -231,32 +221,6 @@ public abstract class UnitTestCommon {
 
   public UnitTestCommon(String name) {
     this.title = name;
-    setSystemProperties();
-  }
-
-  /**
-   * Try to get the system properties
-   */
-  protected void setSystemProperties() {
-    if (System.getProperty("nodiff") != null)
-      prop_diff = false;
-    if (System.getProperty("baseline") != null)
-      prop_baseline = true;
-    if (System.getProperty("nogenerate") != null)
-      prop_generate = false;
-    if (System.getProperty("debug") != null)
-      prop_debug = true;
-    if (System.getProperty("visual") != null)
-      prop_visual = true;
-    if (System.getProperty("ascii") != null)
-      prop_ascii = true;
-    if (System.getProperty("utf8") != null)
-      prop_ascii = false;
-    if (System.getProperty("hasdisplay") != null)
-      prop_display = true;
-    if (prop_baseline && prop_diff)
-      prop_diff = false;
-    prop_controls = System.getProperty("controls", "");
   }
 
   //////////////////////////////////////////////////
@@ -379,12 +343,10 @@ public abstract class UnitTestCommon {
 
   // Copy result into the a specified dir
   public static void writefile(String path, String content) throws IOException {
-    File f = new File(path);
-    if (f.exists())
-      f.delete();
-    FileWriter out = new FileWriter(f);
-    out.write(content);
-    out.close();
+    // We need to set the Charset to UTF-8, but that is not possible
+    // until JDK level 11, so fake it.
+    byte utf8[] = content.getBytes("UTF-8");
+    writefile(path, utf8);
   }
 
   // Copy result into the a specified dir
@@ -616,75 +578,4 @@ public abstract class UnitTestCommon {
     return false;
   }
 
-  /*
-   * // Replacement for stderr & stdout
-   * static public class STDIO
-   * {
-   * public STDIO(String name)
-   * {
-   * }
-   * 
-   * public void
-   * printf(String format, Object... args)
-   * {
-   * System.err.println(String.format(format, args));
-   * }
-   * 
-   * public void
-   * println(String msg)
-   * {
-   * printf("%s%n", msg);
-   * }
-   * 
-   * public void
-   * print(String msg)
-   * {
-   * printf("%s", msg);
-   * }
-   * 
-   * public void
-   * flush()
-   * {
-   * }
-   * }
-   * 
-   * static public STDIO stderr = new STDIO("test");
-   * static public STDIO stdout = new STDIO("test");
-   * 
-   * static TemporaryFolder temporaryfolder = null;
-   * 
-   * static public File
-   * makeTemporaryDir(String name)
-   * throws IOException
-   * {
-   * if(temporaryfolder == null)
-   * temporaryfolder = new TemporaryFolder();
-   * return temporaryfolder.newFolder(name);
-   * }
-   * 
-   * static public File
-   * makeTemporaryFile(String name)
-   * throws IOException
-   * {
-   * if(temporaryfolder == null)
-   * temporaryfolder = new TemporaryFolder();
-   * return temporaryfolder.newFile(name);
-   * }
-   * static public void
-   * logify(String s)
-   * {
-   * StringReader rs = new StringReader(s);
-   * BufferedReader r = new BufferedReader(rs);
-   * String line = null;
-   * for(; ; ) {
-   * try {
-   * line = r.readLine();
-   * } catch (IOException ioe) {
-   * break;
-   * }
-   * if(line == null) break;
-   * System.err.println(line);
-   * }
-   * }
-   */
 }

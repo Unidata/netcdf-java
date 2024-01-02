@@ -66,6 +66,8 @@ public abstract class Grib2Pds {
         return new Grib2Pds32(input);
       case 48:
         return new Grib2Pds48(input);
+      case 60:
+        return new Grib2Pds60(input);
       case 61:
         return new Grib2Pds61(input);
       default:
@@ -666,6 +668,35 @@ public abstract class Grib2Pds {
   //////////////////////////////////////////////////////////////////////////////////////////////
 
   /**
+   * Product definition template 4.60 -
+   * individual ensemble reforecast, control and perturbed, at a horizontal level or in a horizontal layer at a point
+   * in time
+   */
+  private static class Grib2Pds60 extends Grib2Pds1 implements PdsEnsemble {
+
+    Grib2Pds60(byte[] input) {
+      super(input);
+    }
+
+    /**
+     * Model version date
+     *
+     * @return Model version date
+     */
+    public CalendarDate getModelVersionDate() {
+      return calcTime(38);
+    }
+
+    @Override
+    public int templateLength() {
+      return 44;
+    }
+
+  }
+
+  //////////////////////////////////////////////////////////////////////////////////////////////
+
+  /**
    * Product definition template 4.61 -
    * individual ensemble forecast, control and perturbed, at a horizontal level or in a horizontal layer in a continuous
    * or non-continuous time interval
@@ -939,23 +970,23 @@ public abstract class Grib2Pds {
           case 0:
           case 3:
             prob1 = getProbabilityLowerLimit();
-            temp = prob1 != +0.0d ? Double.doubleToLongBits(prob1) : 0L;
+            temp = prob1 != 0.0d ? Double.doubleToLongBits(prob1) : 0L;
             result = (int) (temp ^ (temp >>> 32));
             break;
 
           case 1:
           case 4:
             prob2 = getProbabilityUpperLimit();
-            temp = prob2 != +0.0d ? Double.doubleToLongBits(prob2) : 0L;
+            temp = prob2 != 0.0d ? Double.doubleToLongBits(prob2) : 0L;
             result = (int) (temp ^ (temp >>> 32));
             break;
 
           case 2:
             prob1 = getProbabilityLowerLimit();
             prob2 = getProbabilityUpperLimit();
-            temp = prob1 != +0.0d ? Double.doubleToLongBits(prob1) : 0L;
+            temp = prob1 != 0.0d ? Double.doubleToLongBits(prob1) : 0L;
             result = (int) (temp ^ (temp >>> 32));
-            temp = prob2 != +0.0d ? Double.doubleToLongBits(prob2) : 0L;
+            temp = prob2 != 0.0d ? Double.doubleToLongBits(prob2) : 0L;
             result = 31 * result + (int) (temp ^ (temp >>> 32));
             break;
 

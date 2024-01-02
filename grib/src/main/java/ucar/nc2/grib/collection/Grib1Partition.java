@@ -33,8 +33,7 @@ public class Grib1Partition extends PartitionCollectionImmutable {
       FeatureCollectionConfig config, Formatter errlog, org.slf4j.Logger logger) throws IOException {
 
     ucar.nc2.grib.collection.Grib1Iosp iosp = new ucar.nc2.grib.collection.Grib1Iosp(group, ds.getType());
-    NetcdfFile ncfile = new NetcdfFileSubclass(iosp, null, getLocation(), null);
-    return new NetcdfDataset(ncfile);
+    return buildNetcdfDataset(iosp, getLocation());
   }
 
   @Override
@@ -42,8 +41,7 @@ public class Grib1Partition extends PartitionCollectionImmutable {
       FeatureCollectionConfig config, Formatter errlog, org.slf4j.Logger logger) throws IOException {
 
     ucar.nc2.grib.collection.Grib1Iosp iosp = new ucar.nc2.grib.collection.Grib1Iosp(group, ds.getType());
-    NetcdfFile ncfile = new NetcdfFileSubclass(iosp, null, getLocation(), null);
-    NetcdfDataset ncd = new NetcdfDataset(ncfile);
+    NetcdfDataset ncd = buildNetcdfDataset(iosp, getLocation());
     return new ucar.nc2.dt.grid.GridDataset(ncd);
   }
 

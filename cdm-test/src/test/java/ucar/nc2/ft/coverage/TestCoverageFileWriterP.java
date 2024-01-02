@@ -85,7 +85,7 @@ public class TestCoverageFileWriterP {
   @Test
   public void writeTestFile() throws IOException, InvalidRangeException {
     // skip test requiring netcdf4 if not present.
-    if (version.isNetdf4format() && !NetcdfClibrary.isLibraryPresent()) {
+    if (version.isNetcdf4Format() && !NetcdfClibrary.isLibraryPresent()) {
       return;
     }
     System.out.printf("Test Dataset %s type %s%n", endpoint, type);

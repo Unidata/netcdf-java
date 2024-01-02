@@ -56,10 +56,10 @@ public class CoordinatesHelper {
   private CoordinatesHelper(Builder builder, NetcdfDataset ncd) {
     List<CoordinateAxis> axes = new ArrayList<>();
     addAxes(ncd.getRootGroup(), axes);
-    this.coordAxes = ImmutableList.copyOf(axes);
+    coordAxes = ImmutableList.copyOf(axes);
 
-    coordTransforms =
-        builder.coordTransforms.stream().map(ct -> ct.build(ncd)).filter(Objects::nonNull).collect(Collectors.toList());
+    coordTransforms = builder.coordTransforms.stream().map(ct -> ct.build(ncd, coordAxes)).filter(Objects::nonNull)
+        .collect(Collectors.toList());
 
     coordTransforms.addAll(builder.verticalCTBuilders.stream().map(ct -> ct.makeVerticalCT(ncd))
         .filter(Objects::nonNull).collect(Collectors.toList()));

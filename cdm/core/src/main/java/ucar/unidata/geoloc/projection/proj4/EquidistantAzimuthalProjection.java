@@ -343,13 +343,13 @@ public class EquidistantAzimuthalProjection extends ProjectionImpl {
   public int hashCode() {
     int result;
     long temp;
-    temp = projectionLatitude != +0.0d ? Double.doubleToLongBits(projectionLatitude) : 0L;
+    temp = projectionLatitude != 0.0d ? Double.doubleToLongBits(projectionLatitude) : 0L;
     result = (int) (temp ^ (temp >>> 32));
-    temp = projectionLongitude != +0.0d ? Double.doubleToLongBits(projectionLongitude) : 0L;
+    temp = projectionLongitude != 0.0d ? Double.doubleToLongBits(projectionLongitude) : 0L;
     result = 31 * result + (int) (temp ^ (temp >>> 32));
-    temp = falseEasting != +0.0d ? Double.doubleToLongBits(falseEasting) : 0L;
+    temp = falseEasting != 0.0d ? Double.doubleToLongBits(falseEasting) : 0L;
     result = 31 * result + (int) (temp ^ (temp >>> 32));
-    temp = falseNorthing != +0.0d ? Double.doubleToLongBits(falseNorthing) : 0L;
+    temp = falseNorthing != 0.0d ? Double.doubleToLongBits(falseNorthing) : 0L;
     result = 31 * result + (int) (temp ^ (temp >>> 32));
     result = 31 * result + (earth != null ? earth.hashCode() : 0);
     return result;

@@ -454,7 +454,7 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
     return sliceV.build(getParentGroupOrRoot());
   }
 
-  /** @deprecated Use Variable.toBuilder() */
+  /** @deprecated Use {@link #toBuilder()} */
   @Deprecated
   protected Variable copy() {
     return new Variable(this);
@@ -1025,7 +1025,7 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
 
     indent.incr();
     for (Attribute att : attributes()) {
-      if (Attribute.isspecial(att))
+      if (CDM.isspecial(att))
         continue;
       buf.format("%s", indent);
       att.writeCDL(buf, strict, getShortName());
@@ -1830,7 +1830,7 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
     this.cache = builder.cache;
 
     if (this.dataType.isEnum()) {
-      this.enumTypedef = this.group.findEnumeration(builder.enumTypeName);
+      this.enumTypedef = this.group.findEnumeration(builder.enumTypeName, true);
       if (this.enumTypedef == null) {
         throw new IllegalStateException(
             String.format("EnumTypedef '%s' does not exist in a parent Group", builder.enumTypeName));
@@ -1844,7 +1844,7 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
       if (dim.isShared()) {
         Dimension sharedDim = this.group.findDimension(dim.getShortName());
         if (sharedDim == null) {
-          throw new IllegalStateException(String.format("Shared Dimension %s does not exist in a parent proup", dim));
+          throw new IllegalStateException(String.format("Shared Dimension %s does not exist in a parent group", dim));
         } else {
           dims.add(sharedDim);
         }

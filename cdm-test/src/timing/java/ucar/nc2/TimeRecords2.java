@@ -43,7 +43,7 @@ public class TimeRecords2 {
     System.out.println(" readOneVariable took=" + took + " secs (" + total + ")");
   }
 
-  static public void main(String[] args) throws IOException {
+  public static void main(String[] args) throws IOException {
     doOne("C:/data/metars/Surface_METAR_20070326_0000.col.nc", "parent_index");
     doOne("C:/data/metars/Surface_METAR_20070326_0000.nc", "parent_index");
   }

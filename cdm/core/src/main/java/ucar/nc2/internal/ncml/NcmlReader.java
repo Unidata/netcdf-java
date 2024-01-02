@@ -18,13 +18,14 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.StringTokenizer;
-import java.net.URL;
 import javax.annotation.Nullable;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.Namespace;
 import org.jdom2.input.SAXBuilder;
 import org.jdom2.output.XMLOutputter;
+import thredds.inventory.MFile;
+import thredds.inventory.MFiles;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.nc2.Attribute;
@@ -283,13 +284,14 @@ public class NcmlReader {
    * @throws IOException on read error
    */
   public static NetcdfDataset.Builder mergeNcml(NetcdfFile ref, @Nullable Element ncmlElem) throws IOException {
-    NetcdfDataset.Builder targetDS = new NetcdfDataset(ref.toBuilder()).toBuilder(); // no enhance
+    NetcdfDataset.Builder targetDS = NetcdfDataset.builder(ref);
 
     if (ncmlElem != null) {
       NcmlReader reader = new NcmlReader();
       reader.readGroup(targetDS, null, null, ncmlElem);
     }
 
+    setEnhanceMode(targetDS, ncmlElem, null);
     return targetDS;
   }
 
@@ -345,16 +347,11 @@ public class NcmlReader {
    */
   public static NetcdfDataset.Builder readNcml(String ncmlLocation, String referencedDatasetUri, CancelTask cancelTask)
       throws IOException {
-    URL url = new URL(ncmlLocation);
+    MFile mFile = MFiles.create(ncmlLocation);
 
     if (debugURL) {
       System.out.println(" NcmlReader open " + ncmlLocation);
-      System.out.println("   URL = " + url);
-      System.out.println("   external form = " + url.toExternalForm());
-      System.out.println("   protocol = " + url.getProtocol());
-      System.out.println("   host = " + url.getHost());
-      System.out.println("   path = " + url.getPath());
-      System.out.println("  file = " + url.getFile());
+      System.out.println("   Path = " + mFile.getPath());
     }
 
     org.jdom2.Document doc;
@@ -362,9 +359,9 @@ public class NcmlReader {
       SAXBuilder builder = new SAXBuilder();
       builder.setExpandEntities(false);
       if (debugURL) {
-        System.out.println(" NetcdfDataset URL = <" + url + ">");
+        System.out.println(" NetcdfDataset path = <" + mFile.getPath() + ">");
       }
-      doc = builder.build(url);
+      doc = builder.build(mFile.getInputStream());
     } catch (JDOMException e) {
       throw new IOException(e.getMessage());
     }
@@ -540,6 +537,18 @@ public class NcmlReader {
       throw new IllegalArgumentException("NcML had fatal errors:" + errors);
     }
 
+    setEnhanceMode(builder, netcdfElem, cancelTask);
+
+    /*
+     * LOOK optionally add record structure to netcdf-3
+     * String addRecords = netcdfElem.getAttributeValue("addRecords");
+     * if ("true".equalsIgnoreCase(addRecords))
+     * targetDS.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
+     */
+  }
+
+  private static void setEnhanceMode(NetcdfDataset.Builder builder, Element netcdfElem, @Nullable CancelTask cancelTask)
+      throws IOException {
     // enhance means do scale/offset and/or add CoordSystems
     Set<NetcdfDataset.Enhance> mode = parseEnhanceMode(netcdfElem.getAttributeValue("enhance"));
     if (mode != null) {
@@ -550,19 +559,12 @@ public class NcmlReader {
         builder.setEnhanceMode(mode);
       }
     }
-
-    /*
-     * LOOK optionally add record structure to netcdf-3
-     * String addRecords = netcdfElem.getAttributeValue("addRecords");
-     * if ("true".equalsIgnoreCase(addRecords))
-     * targetDS.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
-     */
   }
 
   /**
    * Read the NcML group element, and nested elements.
    *
-   * @param parent the parent group builder, or null when its the root group.
+   * @param parent the parent group builder, or null when it's the root group.
    * @param refParent parent Group in referenced dataset, may be null
    * @param groupElem ncml group element
    */
@@ -665,13 +667,20 @@ public class NcmlReader {
     boolean newName = (nameInFile != null) && !nameInFile.equals(name);
     if (nameInFile == null) {
       nameInFile = name;
-    } else if (null == findAttribute(ref, nameInFile)) { // has to exists
+    } else if (findAttribute(ref, nameInFile) == null && findAttribute(dest, nameInFile) == null) { // has to exist
       errlog.format("NcML attribute orgName '%s' doesnt exist. att=%s in=%s%n", nameInFile, name, refName);
       return;
     }
 
-    // see if its new
-    ucar.nc2.Attribute oldatt = findAttribute(ref, nameInFile);
+    // see if it's new
+    ucar.nc2.Attribute oldatt = null;
+    if (ref != null) {
+      oldatt = findAttribute(ref, nameInFile);
+    } else {
+      // no reference container but may still need to rename the attribute in the destination container
+      oldatt = findAttribute(dest, nameInFile);
+    }
+
     if (oldatt == null) { // new
       if (debugConstruct) {
         System.out.println(" add new att = " + name);
@@ -799,10 +808,7 @@ public class NcmlReader {
       return;
     }
 
-    String nameInFile = dimElem.getAttributeValue("orgName");
-    if (nameInFile == null) {
-      nameInFile = name;
-    }
+    String nameInFile = dimElem.getAttributeValue("orgName") != null ? dimElem.getAttributeValue("orgName") : name;
 
     // LOOK this is wrong, groupBuilder may already have the dimension.
     // see if it already exists
@@ -820,21 +826,10 @@ public class NcmlReader {
 
       boolean isUnlimited = "true".equalsIgnoreCase(isUnlimitedS);
       boolean isVariableLength = "true".equalsIgnoreCase(isVariableLengthS);
-      boolean isShared = true;
-      if ("false".equalsIgnoreCase(isSharedS)) {
-        isShared = false;
-      }
+      boolean isShared = !"false".equalsIgnoreCase(isSharedS);
 
-      int len;
-      if (isVariableLength) {
-        len = Dimension.VLEN.getLength();
-      } else {
-        len = Integer.parseInt(lengthS);
-      }
+      int len = isVariableLength ? Dimension.VLEN.getLength() : Integer.parseInt(lengthS);
 
-      if (debugConstruct) {
-        System.out.println(" add new dim = " + name);
-      }
       // LOOK change to replaceDimension to get fort.54 working.
       groupBuilder.replaceDimension(Dimension.builder().setName(name).setIsShared(isShared).setIsUnlimited(isUnlimited)
           .setIsVariableLength(isVariableLength).setLength(len).build());
@@ -865,11 +860,7 @@ public class NcmlReader {
         newDim.setLength(len);
       }
 
-      if (debugConstruct) {
-        System.out.println(" modify existing dim = " + name);
-      }
-
-      groupBuilder.removeDimension(name);
+      groupBuilder.removeDimension(nameInFile);
       groupBuilder.addDimension(newDim.build());
     }
   }
@@ -994,7 +985,7 @@ public class NcmlReader {
             .orElseThrow(() -> new IllegalStateException("Cant find variable " + nameInFile));
       }
     }
-    vb.setName(name).setDataType(dtype);
+    vb.setOriginalName(nameInFile).setName(name).setDataType(dtype);
     if (typedefS != null) {
       vb.setEnumTypeName(typedefS);
     }
@@ -1106,6 +1097,12 @@ public class NcmlReader {
     java.util.List<Element> attList = varElem.getChildren("attribute", ncNS);
     for (Element attElem : attList) {
       readAtt(addedFromAgg.getAttributeContainer(), null, attElem);
+    }
+
+    // process remove command
+    java.util.List<Element> removeList = varElem.getChildren("remove", ncNS);
+    for (Element remElem : removeList) {
+      cmdRemove(addedFromAgg, remElem.getAttributeValue("type"), remElem.getAttributeValue("name"));
     }
 
     String typedefS = dtype.isEnum() ? varElem.getAttributeValue("typedef") : null;
@@ -1305,9 +1302,32 @@ public class NcmlReader {
 
       if (dtype == DataType.CHAR) {
         int nhave = values.length();
-        char[] data = new char[nhave];
-        for (int i = 0; i < nhave; i++) {
-          data[i] = values.charAt(i);
+        int[] theDims = Dimensions.makeShape(v.getDimensions());
+        int totalSize = 1;
+        for (int i = 0; i < theDims.length; i++) {
+          totalSize *= theDims[i];
+        }
+
+        char[] data = new char[totalSize];
+        if (nhave == totalSize) {
+          for (int i = 0; i < totalSize; i++) {
+            data[i] = values.charAt(i);
+          }
+        }
+        // special case when when size of the input does not equal the number of elements * max size
+        // get the values as tokens and pad '0' as needed to reach the correct size
+        else {
+          // per specification the last dimension is the largest size an element can be
+          int maxSize = theDims[theDims.length - 1];
+          List<String> valList = getTokens(values, sep);
+          int startingIndex = 0;
+          for (String value : valList) {
+            for (int i = 0; i < value.length() && i < maxSize; i++) {
+              data[startingIndex + i] = value.charAt(i);
+            }
+            // move to the next word, all unset chars are left se to '0'
+            startingIndex += maxSize;
+          }
         }
         Array dataArray = Array.factory(DataType.CHAR, Dimensions.makeShape(v.getDimensions()), data);
         v.setCachedData(dataArray, true);
@@ -1587,7 +1607,7 @@ public class NcmlReader {
   }
 
   /////////////////////////////////////////////
-  // command procesing
+  // command processing
 
   private void cmdRemove(Group.Builder g, String type, String name) {
     boolean err = false;

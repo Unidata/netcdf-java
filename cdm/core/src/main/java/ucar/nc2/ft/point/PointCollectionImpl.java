@@ -28,6 +28,11 @@ public abstract class PointCollectionImpl extends DsgCollectionImpl implements P
     super(name, timeUnit, altUnits);
   }
 
+  protected PointCollectionImpl(String name, String timeName, CalendarDateUnit timeUnit, String altName,
+      String altUnits) {
+    super(name, timeName, timeUnit, altName, altUnits);
+  }
+
   @Nonnull
   @Override
   public FeatureType getCollectionFeatureType() {
@@ -56,7 +61,7 @@ public abstract class PointCollectionImpl extends DsgCollectionImpl implements P
     protected CalendarDateRange filter_date;
 
     public PointCollectionSubset(PointCollectionImpl from, LatLonRect filter_bb, CalendarDateRange filter_date) {
-      super(from.name, from.getTimeUnit(), from.getAltUnits());
+      super(from.name, from.getTimeName(), from.getTimeUnit(), from.getAltName(), from.getAltUnits());
       this.from = from;
       this.filter_bb = filter_bb;
       this.filter_date = filter_date;

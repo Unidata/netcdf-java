@@ -139,15 +139,15 @@ public class LambertAzimuthalEqualArea extends ProjectionImpl {
   public int hashCode() {
     int result;
     long temp;
-    temp = R != +0.0d ? Double.doubleToLongBits(R) : 0L;
+    temp = R != 0.0d ? Double.doubleToLongBits(R) : 0L;
     result = (int) (temp ^ (temp >>> 32));
-    temp = lat0 != +0.0d ? Double.doubleToLongBits(lat0) : 0L;
+    temp = lat0 != 0.0d ? Double.doubleToLongBits(lat0) : 0L;
     result = 31 * result + (int) (temp ^ (temp >>> 32));
-    temp = lon0 != +0.0d ? Double.doubleToLongBits(lon0) : 0L;
+    temp = lon0 != 0.0d ? Double.doubleToLongBits(lon0) : 0L;
     result = 31 * result + (int) (temp ^ (temp >>> 32));
-    temp = falseEasting != +0.0d ? Double.doubleToLongBits(falseEasting) : 0L;
+    temp = falseEasting != 0.0d ? Double.doubleToLongBits(falseEasting) : 0L;
     result = 31 * result + (int) (temp ^ (temp >>> 32));
-    temp = falseNorthing != +0.0d ? Double.doubleToLongBits(falseNorthing) : 0L;
+    temp = falseNorthing != 0.0d ? Double.doubleToLongBits(falseNorthing) : 0L;
     result = 31 * result + (int) (temp ^ (temp >>> 32));
     return result;
   }
@@ -311,10 +311,10 @@ public class LambertAzimuthalEqualArea extends ProjectionImpl {
     double temp = 0;
     if (Math.abs(rho) > TOLERANCE) {
       toLat = Math.asin(Math.cos(c) * sinLat0 + (fromY * Math.sin(c) * cosLat0 / rho));
-      if (Math.abs(lat0 - PI_OVER_4) > TOLERANCE) { // not 90 or -90
+      if (Math.abs(lat0 - Math.PI / 4.0) > TOLERANCE) { // not 90 or -90
         temp = rho * cosLat0 * Math.cos(c) - fromY * sinLat0 * Math.sin(c);
         toLon = lon0 + Math.atan(fromX * Math.sin(c) / temp);
-      } else if (Double.compare(lat0, PI_OVER_4) == 0) {
+      } else if (Double.compare(lat0, Math.PI / 4.0) == 0) {
         toLon = lon0 + Math.atan(fromX / -fromY);
         temp = -fromY;
       } else {
@@ -408,10 +408,10 @@ public class LambertAzimuthalEqualArea extends ProjectionImpl {
       double temp = 0;
       if (Math.abs(rho) > TOLERANCE) {
         toLat = Math.asin(Math.cos(c) * sinLat0 + (fromY * Math.sin(c) * cosLat0 / rho));
-        if (Math.abs(lat0 - PI_OVER_4) > TOLERANCE) { // not 90 or -90
+        if (Math.abs(lat0 - Math.PI / 4.0) > TOLERANCE) { // not 90 or -90
           temp = rho * cosLat0 * Math.cos(c) - fromY * sinLat0 * Math.sin(c);
           toLon = lon0 + Math.atan(fromX * Math.sin(c) / temp);
-        } else if (Double.compare(lat0, PI_OVER_4) == 0) {
+        } else if (Double.compare(lat0, Math.PI / 4.0) == 0) {
           toLon = lon0 + Math.atan(fromX / -fromY);
           temp = -fromY;
         } else {
@@ -506,10 +506,10 @@ public class LambertAzimuthalEqualArea extends ProjectionImpl {
       double temp = 0;
       if (Math.abs(rho) > TOLERANCE) {
         toLat = Math.asin(Math.cos(c) * sinLat0 + (fromY * Math.sin(c) * cosLat0 / rho));
-        if (Math.abs(lat0 - PI_OVER_4) > TOLERANCE) { // not 90 or -90
+        if (Math.abs(lat0 - Math.PI / 4.0) > TOLERANCE) { // not 90 or -90
           temp = rho * cosLat0 * Math.cos(c) - fromY * sinLat0 * Math.sin(c);
           toLon = lon0 + Math.atan(fromX * Math.sin(c) / temp);
-        } else if (Double.compare(lat0, PI_OVER_4) == 0) {
+        } else if (Double.compare(lat0, Math.PI / 4.0) == 0) {
           toLon = lon0 + Math.atan(fromX / -fromY);
           temp = -fromY;
         } else {

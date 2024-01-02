@@ -98,13 +98,13 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
      * Convert unsigned values to signed values.
      * For {@link ucar.nc2.constants.CDM#UNSIGNED} variables, reinterpret the bit patterns of any
      * negative values as unsigned. The result will be positive values that must be stored in a
-     * {@link EnhanceScaleMissingUnsignedImpl#nextLarger larger data type}.
+     * {@link ucar.nc2.filter.FilterHelpers#nextLarger larger data type}.
      */
     ConvertUnsigned,
     /** Apply scale and offset to values, promoting the data type if needed. */
     ApplyScaleOffset,
     /**
-     * Replace {@link EnhanceScaleMissingUnsigned#isMissing missing} data with NaNs, for efficiency. Note that if the
+     * Replace {@link ucar.nc2.filter.ConvertMissing#isMissing missing} data with NaNs, for efficiency. Note that if the
      * enhanced data type is not {@code FLOAT} or {@code DOUBLE}, this has no effect.
      */
     ConvertMissing,
@@ -115,10 +115,21 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
      * every dimension in a variable has a corresponding coordinate variable.
      */
     IncompleteCoordSystems,
+    /**
+     * Calculate mean and standard deviation and apply to data: (z-mean)/standard_deviation.
+     * If the enhanced data type is not {@code FLOAT} or {@code DOUBLE}, this has no effect.
+     */
+    ApplyStandardizer,
+    /**
+     * Calculate minimum value and range (maximum - minimum) and apply to data: (z - min)/range.
+     * If the enhanced data type is not {@code FLOAT} or {@code DOUBLE}, this has no effect.
+     */
+    ApplyNormalizer,
   }
 
-  private static Set<Enhance> EnhanceAll = Collections.unmodifiableSet(EnumSet.of(Enhance.ConvertEnums,
-      Enhance.ConvertUnsigned, Enhance.ApplyScaleOffset, Enhance.ConvertMissing, Enhance.CoordSystems));
+  private static Set<Enhance> EnhanceAll =
+      Collections.unmodifiableSet(EnumSet.of(Enhance.ConvertEnums, Enhance.ConvertUnsigned, Enhance.ApplyScaleOffset,
+          Enhance.ConvertMissing, Enhance.CoordSystems, Enhance.ApplyStandardizer, Enhance.ApplyNormalizer));
   private static Set<Enhance> EnhanceNone = Collections.unmodifiableSet(EnumSet.noneOf(Enhance.class));
   private static Set<Enhance> defaultEnhanceMode = EnhanceAll;
 
@@ -1333,12 +1344,16 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   public CoordinateAxis addCoordinateAxis(VariableDS v) {
     if (v == null)
       return null;
+
+    final List<CoordinateAxis> coordCopy = new ArrayList<>(coordAxes);
+
     CoordinateAxis oldVar = findCoordinateAxis(v.getFullName());
     if (oldVar != null)
-      coordAxes.remove(oldVar);
+      coordCopy.remove(oldVar);
 
     CoordinateAxis ca = (v instanceof CoordinateAxis) ? (CoordinateAxis) v : CoordinateAxis.factory(this, v);
-    coordAxes.add(ca);
+    coordCopy.add(ca);
+    this.coordAxes = coordCopy;
 
     if (v.isMemberOfStructure()) {
       Structure parentOrg = v.getParentStructure(); // gotta be careful to get the wrapping parent
@@ -1626,6 +1641,10 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     return addLocalFieldsToBuilder(builder());
   }
 
+  /**
+   * @deprecated Use NetcdfDataset.builder()
+   */
+  @Deprecated
   public NetcdfDataset(NetcdfFile.Builder<?> builder) {
     super(builder);
     // LOOK this.orgFile = builder.orgFile;

@@ -357,8 +357,9 @@ class GribIospBuilder {
     boolean isScalar = (n == 1); // this is the case of runtime[1]
     String tcName = rtc.getName();
     String dims = isScalar ? null : rtc.getName(); // null means scalar
-    g.addDimension(new Dimension(tcName, n));
-
+    if (!isScalar) {
+      g.addDimension(new Dimension(tcName, n));
+    }
 
     Variable.Builder<?> v = Variable.builder().setName(tcName).setDataType(DataType.DOUBLE).setParentGroupBuilder(g)
         .setDimensionsByName(dims);
@@ -551,13 +552,12 @@ class GribIospBuilder {
     v.addAttribute(new Attribute(CDM.LONG_NAME, Grib.GRIB_VALID_TIME));
     v.addAttribute(new Attribute(CF.CALENDAR, Calendar.proleptic_gregorian.toString()));
 
-    double[] data = new double[ntimes];
-    int count = 0;
-
-    for (TimeCoordIntvValue tinv : coordTime.getTimeIntervals()) {
-      data[count++] = tinv.getCoordValue();
-    }
-    v.setCachedData(Array.factory(DataType.DOUBLE, new int[] {ntimes}, data), false);
+    double[] timeCoordValues = new double[ntimes];
+    double[] timeCoordBoundsValues = new double[ntimes * 2];
+    int count = GribTimeCoordIntervalUtils.generateTimeCoordValuesFromTimeCoordIntervals(coordTime.getTimeIntervals(),
+        timeCoordValues, timeCoordBoundsValues, 0, coordTime.getTimeUnit().getValue(), 0);
+    assert (count == ntimes);
+    v.setCachedData(Array.factory(DataType.DOUBLE, new int[] {ntimes}, timeCoordValues), false);
 
     // bounds
     String bounds_name = tcName + "_bounds";
@@ -568,13 +568,7 @@ class GribIospBuilder {
     bounds.addAttribute(new Attribute(CDM.UNITS, units));
     bounds.addAttribute(new Attribute(CDM.LONG_NAME, "bounds for " + tcName));
 
-    data = new double[ntimes * 2];
-    count = 0;
-    for (TimeCoordIntvValue tinv : coordTime.getTimeIntervals()) {
-      data[count++] = tinv.getBounds1();
-      data[count++] = tinv.getBounds2();
-    }
-    bounds.setCachedData(Array.factory(DataType.DOUBLE, new int[] {ntimes, 2}, data), false);
+    bounds.setCachedData(Array.factory(DataType.DOUBLE, new int[] {ntimes, 2}, timeCoordBoundsValues), false);
 
     makeTimeAuxReference(g, tcName, units, coordTime);
   }
@@ -675,26 +669,25 @@ class GribIospBuilder {
     v.addAttribute(new Attribute(CDM.UDUNITS, time2D.getTimeUdUnit()));
     v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.TimeOffset.toString()));
 
-    double[] midpoints = new double[n];
+    double[] data = new double[n];
     double[] bounds = null;
+    int timeUnitValue = time2D.getTimeUnit().getValue();
+
     if (time2D.isTimeInterval()) {
       bounds = new double[2 * n];
-      int count = 0;
-      int countb = 0;
-      for (Object offset : offsets) {
-        TimeCoordIntvValue tinv = (TimeCoordIntvValue) offset;
-        midpoints[count++] = (tinv.getBounds1() + tinv.getBounds2()) / 2.0;
-        bounds[countb++] = tinv.getBounds1();
-        bounds[countb++] = tinv.getBounds2();
-      }
+      List<TimeCoordIntvValue> intervals = (List<TimeCoordIntvValue>) offsets;
+      // TODO Should this be using 'timeUnitValue'? Wasn't in previous incarnation.
+      int count = GribTimeCoordIntervalUtils.generateTimeCoordValuesFromTimeCoordIntervals(intervals, data, bounds, 0,
+          timeUnitValue, 0);
+      assert (count == n);
     } else {
       int count = 0;
       for (Object val : offsets) {
         Integer off = (Integer) val;
-        midpoints[count++] = off; // int ??
+        data[count++] = timeUnitValue * off; // int ??
       }
     }
-    v.setCachedData(Array.factory(DataType.DOUBLE, new int[] {n}, midpoints), false);
+    v.setCachedData(Array.factory(DataType.DOUBLE, new int[] {n}, data), false);
 
     if (time2D.isTimeInterval()) {
       String boundsName = toName + "_bounds";

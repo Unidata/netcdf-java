@@ -195,9 +195,9 @@ public class Earth implements Serializable {
   public int hashCode() {
     int result;
     long temp;
-    temp = equatorRadius != +0.0d ? Double.doubleToLongBits(equatorRadius) : 0L;
+    temp = equatorRadius != 0.0d ? Double.doubleToLongBits(equatorRadius) : 0L;
     result = (int) (temp ^ (temp >>> 32));
-    temp = poleRadius != +0.0d ? Double.doubleToLongBits(poleRadius) : 0L;
+    temp = poleRadius != 0.0d ? Double.doubleToLongBits(poleRadius) : 0L;
     result = 31 * result + (int) (temp ^ (temp >>> 32));
     result = 31 * result + (name != null ? name.hashCode() : 0);
     return result;

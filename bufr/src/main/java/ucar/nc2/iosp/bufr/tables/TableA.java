@@ -15,7 +15,7 @@ import java.util.Map;
 /** Read standard WMO Table A (data categories). */
 public class TableA {
   private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(TableA.class);
-  private static final String TABLEA_FILENAME = "wmo/BUFR_32_0_0_TableA_en.xml";
+  private static final String TABLEA_FILENAME = "wmo/BUFR_37_0_0_TableA_en.xml";
   private static Map<Integer, String> tableA;
 
   /*

@@ -10,7 +10,11 @@ import static java.net.HttpURLConnection.HTTP_OK;
 import static java.net.HttpURLConnection.HTTP_UNAUTHORIZED;
 import com.google.common.annotations.VisibleForTesting;
 import javax.annotation.Nullable;
+
+import com.google.common.collect.Multimap;
 import thredds.client.catalog.ServiceType;
+import thredds.inventory.MFile;
+import thredds.inventory.MFiles;
 import ucar.httpservices.HTTPFactory;
 import ucar.httpservices.HTTPMethod;
 import ucar.nc2.util.EscapeStrings;
@@ -57,9 +61,11 @@ public class DatasetUrl {
     StringBuilder buf = new StringBuilder(url);
     // If there are any leading protocols, then they must stop at the first '/'.
     int slashpos = buf.indexOf("/");
-    // Check special case of file:<path> with no slashes after file:
+    // Check special cases of file:<path> or cdms3:<path> with no slashes after:
     if (url.startsWith("file:") && "/\\".indexOf(url.charAt(5)) < 0) {
       allprotocols.add("file");
+    } else if (url.startsWith("cdms3:") && "/\\".indexOf(url.charAt(6)) < 0) {
+      allprotocols.add("cdms3");
     } else if (slashpos >= 0) {
       // Remove everything after the first slash
       buf.delete(slashpos + 1, buf.length());
@@ -126,7 +132,7 @@ public class DatasetUrl {
     }
     pos = location.lastIndexOf('?');
     String query = null;
-    if (pos >= 0) {
+    if (pos >= 0 && !leadProtocol.equals("cdms3")) {
       query = trueUrl.substring(pos + 1);
       trueUrl = trueUrl.substring(0, pos);
     }
@@ -145,9 +151,10 @@ public class DatasetUrl {
       // - we have file://<path> or file:<path>; we need to see if
       // the extension can help, otherwise, start defaulting.
       // - we have a simple url: e.g. http://... ; contact the server
-      if (leadProtocol.equals("file")) {
+      if (leadProtocol.equals("file") || leadProtocol.equals("cdms3")) {
         serviceType = decodePathExtension(trueUrl); // look at the path extension
-        if (serviceType == null && checkIfNcml(new File(location))) {
+        // If it's a S3 file, it is expensive to peak inside to check if it's ncml, so we will only check extension
+        if (serviceType == null && !leadProtocol.equals("cdms3") && checkIfNcml(new File(location))) {
           serviceType = ServiceType.NCML;
         }
       } else {
@@ -161,11 +168,10 @@ public class DatasetUrl {
         }
       }
     }
-
     if (serviceType == ServiceType.NCML) { // ??
       // If lead protocol was null, then pretend it was a file
       // Note that technically, this should be 'file://'
-      trueUrl = (allProtocols.isEmpty() ? "file:" + trueUrl : location);
+      trueUrl = (allProtocols.isEmpty() ? "file:" + trueUrl : trueUrl);
     }
 
     // Add back the query and fragment (if any)
@@ -287,9 +293,10 @@ public class DatasetUrl {
     if (path.endsWith(".dds") || path.endsWith(".das") || path.endsWith(".dods"))
       return ServiceType.OPENDAP;
 
-    if (path.endsWith(".dmr") || path.endsWith(".dap") || path.endsWith(".dsr"))
+    if (path.matches("^.*[.](dmr|dap|dsr)([.](xml|html))?$"))
       return ServiceType.DAP4;
 
+    // This has to be last so that DAP4 request are not mis-identified as NCML.
     if (path.endsWith(".xml") || path.endsWith(".ncml"))
       return ServiceType.NCML;
     return null;
@@ -365,7 +372,7 @@ public class DatasetUrl {
       checkDap2 = true;
     }
 
-    if (location.contains("dap4")) {
+    if (location.contains("dap4") || location.contains("d4ts")) {
       ServiceType result = checkIfDap4(location);
       if (result != null)
         return result;
@@ -445,28 +452,26 @@ public class DatasetUrl {
 
   // check for dmr
   private static ServiceType checkIfDap4(String location) throws IOException {
-    // Strip off any trailing DAP4 prefix
-    if (location.endsWith(".dap"))
-      location = location.substring(0, location.length() - ".dap".length());
-    else if (location.endsWith(".dmr"))
-      location = location.substring(0, location.length() - ".dmr".length());
-    else if (location.endsWith(".dmr.xml"))
-      location = location.substring(0, location.length() - ".dmr.xml".length());
-    else if (location.endsWith(".dsr"))
-      location = location.substring(0, location.length() - ".dsr".length());
-    try (HTTPMethod method = HTTPFactory.Get(location + ".dmr.xml")) {
+    if (location.matches("^.*[.](dmr|dap|dsr)([.](xml|html))?$")) {
+      // Strip off any trailing DAP4 suffix(es)
+      if (location.endsWith(".xml"))
+        location = location.substring(0, location.length() - ".xml".length());
+      else if (location.endsWith(".html"))
+        location = location.substring(0, location.length() - ".html".length());
+      // location must end with dap, dmr, or dsr; strip it off
+      location = location.substring(0, location.length() - ".dxx".length());
+    }
+    location = location + ".dsr.xml"; // get known dap4 response
+    try (HTTPMethod method = HTTPFactory.Get(location)) {
       int status = method.execute();
       if (status == HTTP_OK) {
-        Optional<String> value = method.getResponseHeaderValue("Content-Type");
+        Optional<String> value = method.getResponseHeaderValue("Content-Description");
         if (value.isPresent()) {
-          if (value.get().startsWith("application/vnd.opendap.org"))
+          if (value.get().contains("application/vnd.opendap.dap4"))
             return ServiceType.DAP4;
         }
       }
-      if (status == HTTP_UNAUTHORIZED || status == HTTP_FORBIDDEN)
-        throw new IOException("Unauthorized to open dataset " + location);
-
-      // not dods
+      // not dap4
       return null;
     }
   }

@@ -123,7 +123,7 @@ public class TestReadandCount {
     doOne(dir, name, ngrids, ncoordSys, ncoordAxes, nVertCooordAxes);
   }
 
-  static public void doOne(String dir, String name, int ngrids, int ncoordSys, int ncoordAxes, int nVertCooordAxes)
+  public static void doOne(String dir, String name, int ngrids, int ncoordSys, int ncoordAxes, int nVertCooordAxes)
       throws Exception {
     System.out.printf("test read GridDataset= %s%s%n", dir, name);
     ucar.nc2.dt.grid.GridDataset gridDs = GridDataset.open(dir + name);

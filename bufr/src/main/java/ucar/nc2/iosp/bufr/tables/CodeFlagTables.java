@@ -18,7 +18,7 @@ import java.io.IOException;
 /** Read BUFR Code / Flag tables. */
 public class CodeFlagTables {
   private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CodeFlagTables.class);
-  private static final String CodeFlagFilename = "wmo/BUFRCREX_32_0_0_CodeFlag_en.xml";
+  private static final String CodeFlagFilename = "wmo/BUFRCREX_37_0_0_CodeFlag_en.xml";
   static Map<Short, CodeFlagTables> tableMap;
 
   public static CodeFlagTables getTable(short id) {

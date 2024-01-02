@@ -42,9 +42,9 @@ public class TestHang {
 
   static private HTTPSession session;
 
-  static protected final String server = "http://" + TestDir.dap2TestServer;
+  protected static final String server = "http://" + TestDir.dap2TestServer;
 
-  static protected final String url = server + "/dts/test.%02d.dds";
+  protected static final String url = server + "/dts/test.%02d.dds";
 
   static boolean isxfail(int x) {
     for (Integer i : XFAIL) {

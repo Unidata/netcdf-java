@@ -229,6 +229,15 @@ public class LatLonRect {
   }
 
   /**
+   * return does this rectangle contain all longitudes
+   *
+   * @return true if all longitudes are contained (width is >= 360) else false
+   */
+  public boolean containsAllLongitude() {
+    return allLongitude;
+  }
+
+  /**
    * return width of bounding box, always between 0 and 360 degrees.
    *
    * @return width of bounding box in degrees longitude

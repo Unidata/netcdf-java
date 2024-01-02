@@ -87,7 +87,7 @@ public abstract class HTTPAuthUtil {
   // as the scheme field of AuthScope. The HttpHost schem is
   // a protocol like http or https. The schem field of AuthScope
   // is the authorization scheme like Basic or NTLM or Digest.
-  static public HttpHost authscopeToHost(AuthScope scope) {
+  public static HttpHost authscopeToHost(AuthScope scope) {
     return new HttpHost(scope.getHost(), scope.getPort(), HttpHost.DEFAULT_SCHEME_NAME);
   }
 
@@ -95,7 +95,7 @@ public abstract class HTTPAuthUtil {
   // as the scheme field of AuthScope. The HttpHost schem is
   // a protocol like http or https. The schem field of AuthScope
   // is the authorization scheme like Basic or NTLM or Digest.
-  static public AuthScope hostToAuthScope(HttpHost host) {
+  public static AuthScope hostToAuthScope(HttpHost host) {
     return new AuthScope(host.getHostName(), host.getPort(), AuthScope.ANY_REALM, AuthScope.ANY_SCHEME);
   }
 

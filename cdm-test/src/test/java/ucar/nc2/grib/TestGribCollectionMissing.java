@@ -69,7 +69,7 @@ public class TestGribCollectionMissing {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @BeforeClass
-  static public void before() {
+  public static void before() {
     GribIosp.debugIndexOnlyCount = 0;
     GribCollectionImmutable.countGC = 0;
     PartitionCollectionImmutable.countPC = 0;
@@ -81,7 +81,7 @@ public class TestGribCollectionMissing {
   }
 
   @AfterClass
-  static public void after() {
+  public static void after() {
     Grib.setDebugFlags(new DebugFlagsImpl());
     Formatter out = new Formatter(System.out);
 
@@ -322,7 +322,7 @@ public class TestGribCollectionMissing {
     count.nread++;
   }
 
-  static public class Count {
+  public static class Count {
     int nread;
     int nmiss;
     int nerrs;

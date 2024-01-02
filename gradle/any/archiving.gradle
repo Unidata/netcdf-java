@@ -1,7 +1,4 @@
 // Safe for root project: no plugins applied.
-import java.nio.file.Paths
-
-def license = Paths.get(rootDir.absolutePath, 'LICENSE')
 
 tasks.withType(Jar).all {   // Applies to Jar, War, Ear and ShadowJar tasks.
   // Fails the build when an attempt is made to add a duplicate entry to an archive.
@@ -29,7 +26,9 @@ tasks.withType(Jar).all {   // Applies to Jar, War, Ear and ShadowJar tasks.
     manifest.attributes 'Built-On': project.buildTimestamp  // Defined in root project.
   }
 
-  from(license) {
+  from(rootDir.absolutePath) {
+    include 'LICENSE'
+    include 'third-party-licenses/'
     into 'META-INF/'
   }
 }

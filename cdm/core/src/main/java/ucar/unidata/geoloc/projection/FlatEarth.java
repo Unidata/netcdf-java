@@ -130,13 +130,13 @@ public class FlatEarth extends ProjectionImpl {
   public int hashCode() {
     int result;
     long temp;
-    temp = rotAngle != +0.0d ? Double.doubleToLongBits(rotAngle) : 0L;
+    temp = rotAngle != 0.0d ? Double.doubleToLongBits(rotAngle) : 0L;
     result = (int) (temp ^ (temp >>> 32));
-    temp = radius != +0.0d ? Double.doubleToLongBits(radius) : 0L;
+    temp = radius != 0.0d ? Double.doubleToLongBits(radius) : 0L;
     result = 31 * result + (int) (temp ^ (temp >>> 32));
-    temp = lat0 != +0.0d ? Double.doubleToLongBits(lat0) : 0L;
+    temp = lat0 != 0.0d ? Double.doubleToLongBits(lat0) : 0L;
     result = 31 * result + (int) (temp ^ (temp >>> 32));
-    temp = lon0 != +0.0d ? Double.doubleToLongBits(lon0) : 0L;
+    temp = lon0 != 0.0d ? Double.doubleToLongBits(lon0) : 0L;
     result = 31 * result + (int) (temp ^ (temp >>> 32));
     return result;
   }

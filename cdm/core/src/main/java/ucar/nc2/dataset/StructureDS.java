@@ -127,7 +127,8 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
   }
 
   // for section and slice and select
-
+  /** @deprecated Use {@link #toBuilder()} */
+  @Deprecated
   @Override
   protected StructureDS copy() {
     return new StructureDS(getParentGroupOrRoot(), this);

@@ -1,0 +1,43 @@
+netcdf ref_tst_compounds {
+  dimensions:
+    n = 3;
+  variables:
+
+    Structure {
+      short day;
+      short elev;
+      int count;
+      float relhum;
+      double time;
+    } obs(n);
+    obs:elev = -99S;
+    obs:count = -99;
+    obs:time = -99.0;
+    obs:day = -99S;
+    obs:relhum = -99.0f;
+
+
+  // global attributes:
+  string :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
+
+  data:
+    obs = 
+      {        day = 15
+        elev = 2
+        count = 1
+        relhum = 0.5
+        time = 3600.01
+      } obs(0)
+      {        day = 157
+        elev = -99
+        count = -99
+        relhum = -99.0
+        time = -99.0
+      } obs(1)
+      {        day = 20
+        elev = 6
+        count = 3
+        relhum = 0.75
+        time = 5000.01
+      } obs(2)
+}

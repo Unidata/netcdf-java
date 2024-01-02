@@ -30,10 +30,10 @@ import java.nio.ByteBuffer;
  */
 public class TestH5OddTypes {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-  static public String testDir = TestH5.testDir;
+  public static String testDir = TestH5.testDir;
 
   @AfterClass
-  static public void after() {
+  public static void after() {
     H5header.setDebugFlags(new DebugFlagsImpl("")); // make sure debug flags are off
   }
 

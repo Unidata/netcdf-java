@@ -30,7 +30,7 @@ public class TestMFileZip {
   public static class TestMFileZipParameterized {
 
     @Parameterized.Parameters(name = "{0}, {1}")
-    static public List<Integer[]> getTestParameters() {
+    public static List<Integer[]> getTestParameters() {
       List<Integer[]> result = new ArrayList<>();
       result.add(new Integer[] {0, 0});
       result.add(new Integer[] {0, 1});

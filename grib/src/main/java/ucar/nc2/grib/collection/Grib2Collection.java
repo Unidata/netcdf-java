@@ -43,8 +43,7 @@ public class Grib2Collection extends GribCollectionImmutable {
 
     if (filename == null) {
       Grib2Iosp iosp = new Grib2Iosp(group, ds.getType());
-      NetcdfFile ncfile = new NetcdfFileSubclass(iosp, null, getLocation(), null);
-      return new NetcdfDataset(ncfile);
+      return buildNetcdfDataset(iosp, getLocation());
 
     } else {
       MFile wantFile = findMFileByName(filename);
@@ -55,8 +54,7 @@ public class Grib2Collection extends GribCollectionImmutable {
           return null;
 
         Grib2Iosp iosp = new Grib2Iosp(gc);
-        NetcdfFile ncfile = new NetcdfFileSubclass(iosp, null, getLocation(), null);
-        return new NetcdfDataset(ncfile);
+        return buildNetcdfDataset(iosp, getLocation());
       }
       return null;
     }
@@ -69,8 +67,7 @@ public class Grib2Collection extends GribCollectionImmutable {
 
     if (filename == null) {
       Grib2Iosp iosp = new Grib2Iosp(group, ds.getType());
-      NetcdfFile ncfile = new NetcdfFileSubclass(iosp, null, getLocation() + "#" + group.getId(), null);
-      NetcdfDataset ncd = new NetcdfDataset(ncfile);
+      NetcdfDataset ncd = buildNetcdfDataset(iosp, getLocation() + "#" + group.getId());
       return new ucar.nc2.dt.grid.GridDataset(ncd); // LOOK - replace with custom GridDataset??
 
     } else {
@@ -82,8 +79,7 @@ public class Grib2Collection extends GribCollectionImmutable {
           return null;
 
         Grib2Iosp iosp = new Grib2Iosp(gc);
-        NetcdfFile ncfile = new NetcdfFileSubclass(iosp, null, getLocation(), null);
-        NetcdfDataset ncd = new NetcdfDataset(ncfile);
+        NetcdfDataset ncd = buildNetcdfDataset(iosp, getLocation());
         return new ucar.nc2.dt.grid.GridDataset(ncd); // LOOK - replace with custom GridDataset??
       }
       return null;

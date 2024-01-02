@@ -36,12 +36,29 @@ public interface DsgFeatureCollection {
   ucar.nc2.constants.FeatureType getCollectionFeatureType();
 
   /**
+   * The name of time unit.
+   *
+   * @return name of time unit string, may not be null
+   */
+  @Nonnull
+  String getTimeName();
+
+
+  /**
    * The time unit.
    * 
    * @return time unit, may not be null
    */
   @Nonnull
   CalendarDateUnit getTimeUnit();
+
+  /**
+   * The altitude name string if it exists.
+   *
+   * @return altitude name string, may be null
+   */
+  @Nullable
+  String getAltName();
 
   /**
    * The altitude unit string if it exists.

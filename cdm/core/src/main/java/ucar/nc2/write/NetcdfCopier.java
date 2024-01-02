@@ -352,7 +352,7 @@ public class NetcdfCopier {
             "Reading chunk " + new Section(chunkOrigin, chunkShape) + " from variable: " + oldVar.getShortName(), -1);
 
         Array data = oldVar.read(chunkOrigin, chunkShape);
-        if (!getOutputFormat().isNetdf4format() && oldVar.getDataType() == DataType.STRING) {
+        if (!getOutputFormat().isNetcdf4Format() && oldVar.getDataType() == DataType.STRING) {
           data = convertDataToChar(newVar, data);
         }
 

@@ -218,8 +218,8 @@ public class TestStandardVar {
 
     assert (vs.hasMissing());
     assert (vs.hasFillValue());
-    assert (vs.isMissing((double) ((byte) 255)));
-    assert (vs.isFillValue((double) ((byte) 255)));
+    assert (vs.isMissing((byte) 255));
+    assert (vs.isFillValue((byte) 255));
 
     Array A = vs.read();
     assert (A.getElementType() == byte.class) : A.getElementType();
@@ -256,8 +256,8 @@ public class TestStandardVar {
 
     assert (vs.hasMissing());
     assert (vs.hasMissingValue());
-    assert (vs.isMissing((double) ((short) -9999)));
-    assert (vs.isMissingValue((double) ((short) -9999)));
+    assert (vs.isMissing((short) -9999));
+    assert (vs.isMissingValue((short) -9999));
 
     Array A = vs.read();
     Index ima = A.getIndex();

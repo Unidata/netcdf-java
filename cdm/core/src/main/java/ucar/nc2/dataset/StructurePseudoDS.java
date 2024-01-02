@@ -108,6 +108,8 @@ public class StructurePseudoDS extends StructureDS {
     calcElementSize();
   }
 
+  /** @deprecated Use {@link #toBuilder()} */
+  @Deprecated
   @Override
   protected StructureDS copy() {
     throw new UnsupportedOperationException();

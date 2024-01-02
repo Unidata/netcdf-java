@@ -168,7 +168,8 @@ public class CoordinateEns implements Coordinate {
     public Object extract(Grib2Record gr) {
       Grib2Pds pds = gr.getPDS();
       Grib2Pds.PdsEnsemble pdse = (Grib2Pds.PdsEnsemble) pds;
-      return new EnsCoordValue(pdse.getPerturbationType(), pdse.getPerturbationNumber());
+      return new EnsCoordValue(pdse.getPerturbationType(), pdse.getPerturbationNumber(),
+          pdse.getNumberEnsembleForecasts());
     }
 
     @Override
@@ -193,7 +194,7 @@ public class CoordinateEns implements Coordinate {
     @Override
     public Object extract(Grib1Record gr) {
       Grib1SectionProductDefinition pds = gr.getPDSsection();
-      return new EnsCoordValue(pds.getPerturbationType(), pds.getPerturbationNumber());
+      return new EnsCoordValue(pds.getPerturbationType(), pds.getPerturbationNumber(), pds.getCenter());
     }
 
     @Override

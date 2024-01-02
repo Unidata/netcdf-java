@@ -71,7 +71,7 @@ public class TestLongitudeNormalization {
    * @param start starting point
    * @return longitude into the range [center +/- 180] deg
    */
-  static public double lonNormalFrom(double lon, double start) {
+  public static double lonNormalFrom(double lon, double start) {
     while (lon < start)
       lon += 360;
     while (lon > start + 360)

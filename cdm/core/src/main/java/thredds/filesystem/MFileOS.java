@@ -53,7 +53,7 @@ public class MFileOS implements MFile {
   }
 
   public MFileOS(String filename) {
-    this.file = new File(filename);
+    this.file = new File(filename.replaceFirst("^file:", ""));
     this.lastModified = file.lastModified();
   }
 
@@ -138,5 +138,10 @@ public class MFileOS implements MFile {
 
   public File getFile() {
     return file;
+  }
+
+  @Override
+  public MFileOS getChild(String newFilename) {
+    return new MFileOS(new File(file, newFilename));
   }
 }

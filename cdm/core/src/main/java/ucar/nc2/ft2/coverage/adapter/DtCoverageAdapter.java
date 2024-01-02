@@ -148,6 +148,7 @@ public class DtCoverageAdapter implements CoverageReader, CoordAxisReader {
     builder.startValue = 0;
     builder.endValue = dim.getLength() - 1;
     builder.resolution = 1;
+    builder.attributes = new AttributeContainerMutable(builder.name);
 
     return new CoverageCoordAxis1D(builder);
   }

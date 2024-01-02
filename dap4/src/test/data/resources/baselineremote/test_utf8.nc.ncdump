@@ -1,0 +1,14 @@
+netcdf test_utf8 {
+  dimensions:
+    d2 = 2;
+  variables:
+    string vs(d2);
+      vs:_DAP4_Checksum_CRC32 = -52179672;
+
+  // global attributes:
+  :_DAP4_Little_Endian = 1B;
+  string :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
+
+  data:
+    vs =   "Καλημέα",   "abc"
+}

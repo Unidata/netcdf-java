@@ -1,0 +1,22 @@
+netcdf test_vlen11 {
+  variables:
+
+    Sequence {
+      int v;
+        v:_DAP4_Checksum_CRC32 = 0;
+    } v(*);
+    v:_FillValue = 0;
+    v:_DAP4_Checksum_CRC32 = -1061524850;
+
+
+  // global attributes:
+  :_DAP4_Little_Endian = 1B;
+  string :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
+
+  data:
+    v = 
+      {        v = 4
+      } v
+      {        v = 754
+      } v
+}

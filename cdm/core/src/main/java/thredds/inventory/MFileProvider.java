@@ -6,7 +6,7 @@
 package thredds.inventory;
 
 import java.io.IOException;
-import javax.annotation.Nullable;
+import javax.annotation.Nonnull;
 
 /**
  * A Service Provider of {@link thredds.inventory.MFile}.
@@ -22,12 +22,11 @@ public interface MFileProvider {
   }
 
   /**
-   * Create an {@link thredds.inventory.MFile} from a given location if it exists and is readable, otherwise return
-   * null.
+   * Create an {@link thredds.inventory.MFile} from a given location, the file may or may not exist
    *
    * @param location location of a file or .
    * @return {@link thredds.inventory.MFile}
    */
-  @Nullable
+  @Nonnull
   MFile create(String location) throws IOException;
 }

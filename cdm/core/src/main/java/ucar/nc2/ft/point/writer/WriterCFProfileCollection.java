@@ -39,7 +39,6 @@ public class WriterCFProfileCollection extends CFPointWriter {
   // private Formatter coordNames = new Formatter();
   private Structure profileStruct; // used for netcdf4 extended
   private Map<String, Variable> featureVarMap = new HashMap<>();
-  private boolean headerDone;
 
   public WriterCFProfileCollection(String fileOut, List<Attribute> globalAtts, List<VariableSimpleIF> dataVars,
       CalendarDateUnit timeUnit, String altUnits, CFPointWriterConfig config) throws IOException {
@@ -50,14 +49,10 @@ public class WriterCFProfileCollection extends CFPointWriter {
   }
 
   public int writeProfile(ProfileFeature profile) throws IOException {
+    if (id_strlen == 0)
+      id_strlen = profile.getName().length() * 2;
     int count = 0;
     for (PointFeature pf : profile) {
-      if (!headerDone) {
-        if (id_strlen == 0)
-          id_strlen = profile.getName().length() * 2;
-        writeHeader(profile, pf);
-        headerDone = true;
-      }
       writeObsData(pf);
       count++;
     }
@@ -66,21 +61,28 @@ public class WriterCFProfileCollection extends CFPointWriter {
     return count;
   }
 
-  private void writeHeader(ProfileFeature profile, PointFeature obs) throws IOException {
-
-    Formatter coordNames = new Formatter().format("%s %s %s", profileTimeName, latName, lonName);
+  protected void writeHeader(List<ProfileFeature> profiles) throws IOException {
     List<VariableSimpleIF> coords = new ArrayList<>();
-    if (useAlt) {
-      coords.add(VariableSimpleBuilder.makeScalar(altitudeCoordinateName, "obs altitude", altUnits, DataType.DOUBLE)
-          .addAttribute(CF.STANDARD_NAME, "altitude")
-          .addAttribute(CF.POSITIVE, CF1Convention.getZisPositive(altitudeCoordinateName, altUnits)).build());
-      coordNames.format(" %s", altitudeCoordinateName);
+    List<StructureData> profileData = new ArrayList<>();
+
+    for (ProfileFeature profile : profiles) {
+      profileData.add(profile.getFeatureData());
+      coords.add(VariableSimpleBuilder
+          .makeScalar(profile.getTimeName(), "time of measurement", profile.getTimeUnit().getUdUnit(), DataType.DOUBLE)
+          .addAttribute(CF.CALENDAR, profile.getTimeUnit().getCalendar().toString()).build());
+
+      if (useAlt) {
+        altitudeCoordinateName = profile.getAltName();
+        coords.add(VariableSimpleBuilder.makeScalar(altitudeCoordinateName, "obs altitude", altUnits, DataType.DOUBLE)
+            .addAttribute(CF.STANDARD_NAME, "altitude")
+            .addAttribute(CF.POSITIVE, CF1Convention.getZisPositive(altitudeCoordinateName, altUnits)).build());
+      }
     }
 
-    super.writeHeader(coords, profile.getFeatureData(), obs.getFeatureData(), coordNames.toString());
+    super.writeHeader(coords, profiles, profileData, null);
   }
 
-  protected void makeFeatureVariables(StructureData featureData, boolean isExtended) {
+  protected void makeFeatureVariables(List<StructureData> featureDataStructs, boolean isExtended) {
 
     // LOOK why not unlimited here ?
     Dimension profileDim = writer.addDimension(null, profileDimName, nfeatures);
@@ -105,10 +107,12 @@ public class WriterCFProfileCollection extends CFPointWriter {
         .addAttribute(CF.CALENDAR, timeUnit.getCalendar().toString()).build());
 
 
-    for (StructureMembers.Member m : featureData.getMembers()) {
-      VariableSimpleIF dv = getDataVar(m.getName());
-      if (dv != null)
-        profileVars.add(dv);
+    for (StructureData featureData : featureDataStructs) {
+      for (StructureMembers.Member m : featureData.getMembers()) {
+        VariableSimpleIF dv = getDataVar(m.getName());
+        if (dv != null)
+          profileVars.add(dv);
+      }
     }
 
     if (isExtended) {
@@ -146,8 +150,10 @@ public class WriterCFProfileCollection extends CFPointWriter {
 
   private void writeObsData(PointFeature pf) throws IOException {
     StructureMembers.Builder smb = StructureMembers.builder().setName("Coords");
+    smb.addMemberScalar(pf.getFeatureCollection().getTimeName(), null, null, DataType.DOUBLE, pf.getObservationTime());
     if (useAlt)
-      smb.addMemberScalar(altitudeCoordinateName, null, null, DataType.DOUBLE, pf.getLocation().getAltitude());
+      smb.addMemberScalar(pf.getFeatureCollection().getAltName(), null, null, DataType.DOUBLE,
+          pf.getLocation().getAltitude());
     StructureData coords = new StructureDataFromMember(smb.build());
 
     // coords first so it takes precedence

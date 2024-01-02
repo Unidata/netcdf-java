@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Formatter;
 import javax.annotation.Nullable;
+
+import com.google.common.collect.ImmutableList;
 import ucar.ma2.DataType;
 import ucar.ma2.Array;
 import ucar.nc2.AttributeContainer;
@@ -151,7 +153,7 @@ public class CoordTransBuilder {
   /**
    * Make a CoordinateTransform object from the parameters in a Coordinate Transform Variable, using an intrinsic or
    * registered CoordTransBuilder.
-   * 
+   *
    * @param ds enclosing dataset, only used for vertical transforms
    * @param ctv the Coordinate Transform Variable - container for the transform parameters
    * @param parseInfo pass back information about the parsing.
@@ -161,6 +163,23 @@ public class CoordTransBuilder {
   @Nullable
   public static CoordinateTransform makeCoordinateTransform(NetcdfDataset ds, AttributeContainer ctv,
       Formatter parseInfo, Formatter errInfo) {
+    return makeCoordinateTransform(ds, ctv, parseInfo, errInfo, ds.getCoordinateAxes());
+  }
+
+  /**
+   * Make a CoordinateTransform object from the parameters in a Coordinate Transform Variable, using an intrinsic or
+   * registered CoordTransBuilder.
+   * 
+   * @param ds enclosing dataset, only used for vertical transforms
+   * @param ctv the Coordinate Transform Variable - container for the transform parameters
+   * @param parseInfo pass back information about the parsing.
+   * @param errInfo pass back error information.
+   * @param coordAxes any precomputed coordinate axes
+   * @return CoordinateTransform, or null if failure.
+   */
+  @Nullable
+  public static CoordinateTransform makeCoordinateTransform(NetcdfDataset ds, AttributeContainer ctv,
+      Formatter parseInfo, Formatter errInfo, ImmutableList<CoordinateAxis> coordAxes) {
     // standard name
     String transform_name = ctv.findAttributeString("transform_name", null);
     if (null == transform_name)
@@ -220,7 +239,7 @@ public class CoordTransBuilder {
     } else if (builderObject instanceof HorizTransformBuilderIF) {
       HorizTransformBuilderIF horizBuilder = (HorizTransformBuilderIF) builderObject;
       horizBuilder.setErrorBuffer(errInfo);
-      String units = AbstractTransformBuilder.getGeoCoordinateUnits(ds, ctv); // barfola
+      String units = AbstractTransformBuilder.getGeoCoordinateUnits(ds, ctv, coordAxes); // barfola
       ct = horizBuilder.makeCoordinateTransform(ctv, units);
 
     } else {

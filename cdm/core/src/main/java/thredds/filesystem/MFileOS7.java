@@ -141,6 +141,11 @@ public class MFileOS7 implements MFile {
     }
   }
 
+  @Override
+  public MFileOS7 getChild(String newFilename) {
+    throw new UnsupportedOperationException("MFileOS7::getChild not implemented. Filename: " + getName());
+  }
+
   public Path getNioPath() {
     return path;
   }

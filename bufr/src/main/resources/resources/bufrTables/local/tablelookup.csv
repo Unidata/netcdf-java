@@ -30,7 +30,9 @@ WMO.19, 0,     0,        19,    0,    -1,   resource:/resources/bufrTables/wmo/B
 WMO.22, 0,     0,        22,    0,    -1,   resource:/resources/bufrTables/wmo/BUFRCREX_22_0_1_TableB_en.xml, wmo_xml, resource:/resources/bufrTables/wmo/BUFR_22_0_1_TableD_en.xml, wmo_xml
 WMO.25, 0,     0,        25,    0,    -1,   resource:/resources/bufrTables/wmo/BUFRCREX_25_0_0_TableB_en.xml, wmo_xml, resource:/resources/bufrTables/wmo/BUFR_25_0_0_TableD_en.xml, wmo_xml
 WMO.32, 0,     0,        32,    0,    -1,   resource:/resources/bufrTables/wmo/BUFRCREX_32_0_0_TableB_en.xml, wmo_xml, resource:/resources/bufrTables/wmo/BUFR_32_0_0_TableD_en.xml, wmo_xml
-WMO.any,0,     0,        -1,    0,    -1,   resource:/resources/bufrTables/wmo/BUFRCREX_32_0_0_TableB_en.xml, wmo_xml, resource:/resources/bufrTables/wmo/BUFR_32_0_0_TableD_en.xml, wmo_xml
+WMO.33, 0,     0,        33,    0,    -1,   resource:/resources/bufrTables/wmo/BUFRCREX_33_0_0_TableB_en.xml, wmo_xml, resource:/resources/bufrTables/wmo/BUFR_33_0_0_TableD_en.xml, wmo_xml
+WMO.37, 0,     0,        37,    0,    -1,   resource:/resources/bufrTables/wmo/BUFRCREX_37_0_0_TableB_en.xml, wmo_xml, resource:/resources/bufrTables/wmo/BUFR_37_0_0_TableD_en.xml, wmo_xml
+WMO.any,0,     0,        -1,    0,    -1,   resource:/resources/bufrTables/wmo/BUFRCREX_37_0_0_TableB_en.xml, wmo_xml, resource:/resources/bufrTables/wmo/BUFR_37_0_0_TableD_en.xml, wmo_xml
 #
 # NCEP
 # see http://www.emc.ncep.noaa.gov/mmb/data_processing/bufrtab_tablea.htm#1

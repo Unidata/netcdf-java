@@ -31,14 +31,14 @@ import javax.annotation.Nullable;
  * <li>Values will be {@link DataType#widenNumber widened}, which effectively reinterprets signed data as unsigned
  * data.</li>
  * <li>To accommodate the unsigned conversion, the variable's data type will be changed to the
- * {@link EnhanceScaleMissingUnsignedImpl#nextLarger(DataType) next larger type}.</li>
+ * {@link ucar.nc2.filter.FilterHelpers#nextLarger(DataType) next larger type}.</li>
  * </ol>
  *
  * <h3>Implementation rules for scale/offset</h3>
  *
  * <ol>
  * <li>If scale_factor and/or add_offset variable attributes are present, then this is a "packed" Variable.</li>
- * <li>The data type of the variable will be set to the {@link EnhanceScaleMissingUnsignedImpl#largestOf largest of}:
+ * <li>The data type of the variable will be set to the {@link ucar.nc2.filter.FilterHelpers#largestOf largest of}:
  * <ul>
  * <li>the original data type</li>
  * <li>the unsigned conversion type, if applicable</li>
@@ -117,7 +117,9 @@ import javax.annotation.Nullable;
  *
  * @author caron
  * @author cwardgar
+ * @deprecated use implementations in Filter package
  */
+@Deprecated
 public interface EnhanceScaleMissingUnsigned extends IsMissingEvaluator {
   /** true if Variable data will be converted using scale and offset */
   boolean hasScaleOffset();

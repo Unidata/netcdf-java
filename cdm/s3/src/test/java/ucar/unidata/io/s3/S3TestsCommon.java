@@ -15,4 +15,5 @@ public class S3TestsCommon {
   public static final String TOP_LEVEL_GCS_BUCKET = "cdms3://storage.googleapis.com/gcp-public-data-goes-16";
   public static final String TOP_LEVEL_OSDC_BUCKET =
       "cdms3://griffin-objstore.opensciencedatacloud.org/noaa-goes16-hurricane-archive-2017";
+  public static final String THREDDS_TEST_BUCKET = "cdms3:thredds-test-data";
 }

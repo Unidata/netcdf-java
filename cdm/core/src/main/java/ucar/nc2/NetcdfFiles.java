@@ -70,7 +70,7 @@ public class NetcdfFiles {
       registerIOProvider("ucar.nc2.internal.iosp.hdf5.H5iospNew");
     } catch (Throwable e) {
       if (loadWarnings)
-        log.info("Cant load class H5iosp", e);
+        log.info("Cant load class H5iospNew", e);
     }
     try {
       registerIOProvider("ucar.nc2.stream.NcStreamIosp");
@@ -265,7 +265,7 @@ public class NetcdfFiles {
    * @param buffer_size RandomAccessFile buffer size, if <= 0, use default size
    * @param cancelTask allow task to be cancelled; may be null.
    * @param iospMessage special iosp tweaking (sent before open is called), may be null
-   * @return NetcdfFile object, or null if cant find IOServiceProver
+   * @return NetcdfFile object, or null if can't find IOServiceProver
    * @throws IOException if error
    */
   public static NetcdfFile open(String location, int buffer_size, ucar.nc2.util.CancelTask cancelTask,
@@ -290,7 +290,7 @@ public class NetcdfFiles {
    * @param iospMessage special iosp tweaking (sent before open is called), may be null
    * @return NetcdfFile object, or null if cant find IOServiceProver
    * @throws IOException if read error
-   * @throws ClassNotFoundException cannat find iospClassName in thye class path
+   * @throws ClassNotFoundException cannot find iospClassName in the class path
    * @throws InstantiationException if class cannot be instantiated
    * @throws IllegalAccessException if class is not accessible
    */
@@ -400,7 +400,7 @@ public class NetcdfFiles {
    * @return RandomAccessFile for the object at location
    */
   public static ucar.unidata.io.RandomAccessFile getRaf(String location, int buffer_size) throws IOException {
-    String uriString = location.trim();
+    String uriString = removeFragment(location.trim());
     if (buffer_size <= 0)
       buffer_size = default_buffersize;
 
@@ -471,6 +471,10 @@ public class NetcdfFiles {
     }
 
     return raf;
+  }
+
+  private static String removeFragment(String uriString) {
+    return uriString.split("#")[0];
   }
 
   private static boolean looksCompressed(String filename) {
@@ -801,7 +805,7 @@ public class NetcdfFiles {
     return null;
   }
 
-  private static NetcdfFile build(IOServiceProvider spi, ucar.unidata.io.RandomAccessFile raf, String location,
+  public static NetcdfFile build(IOServiceProvider spi, ucar.unidata.io.RandomAccessFile raf, String location,
       ucar.nc2.util.CancelTask cancelTask) throws IOException {
 
     NetcdfFile.Builder builder = NetcdfFile.builder().setIosp((AbstractIOServiceProvider) spi).setLocation(location);

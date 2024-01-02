@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2">
+
+  <variable name="T">
+    <attribute name="new_attribute" type="string" value="new attribute value"/>
+    <attribute name="renamed_units" orgName="units"/>
+    <remove type="attribute" name="long_name"/>
+  </variable>
+
+  <aggregation dimName="time" type="joinExisting">
+    <netcdf location="nc/jan.nc"/>
+    <netcdf location="nc/feb.nc"/>
+  </aggregation>
+
+</netcdf>

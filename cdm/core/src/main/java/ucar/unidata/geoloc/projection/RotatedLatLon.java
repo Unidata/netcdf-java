@@ -268,11 +268,11 @@ public class RotatedLatLon extends ProjectionImpl {
   public int hashCode() {
     int result;
     long temp;
-    temp = lonpole != +0.0d ? Double.doubleToLongBits(lonpole) : 0L;
+    temp = lonpole != 0.0d ? Double.doubleToLongBits(lonpole) : 0L;
     result = (int) (temp ^ (temp >>> 32));
-    temp = latpole != +0.0d ? Double.doubleToLongBits(latpole) : 0L;
+    temp = latpole != 0.0d ? Double.doubleToLongBits(latpole) : 0L;
     result = 31 * result + (int) (temp ^ (temp >>> 32));
-    temp = polerotate != +0.0d ? Double.doubleToLongBits(polerotate) : 0L;
+    temp = polerotate != 0.0d ? Double.doubleToLongBits(polerotate) : 0L;
     result = 31 * result + (int) (temp ^ (temp >>> 32));
     return result;
   }

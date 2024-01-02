@@ -31,7 +31,7 @@ import java.util.List;
 @RunWith(Parameterized.class)
 public class TestPreCFpointDatasets {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-  static public String CFpointObs_pre16 = TestDir.cdmLocalFromTestDataDir + "pointPre1.6/";
+  public static String CFpointObs_pre16 = TestDir.cdmLocalFromTestDataDir + "pointPre1.6/";
 
   @Parameterized.Parameters(name = "{0}")
   public static List<Object[]> getTestParameters() {

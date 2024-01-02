@@ -88,15 +88,18 @@ public class ArrayByte extends Array {
       storage = new byte[(int) ima.getSize()];
   }
 
+  @Override
   protected Array createView(Index index) {
     return ArrayByte.factory(index, isUnsigned(), storage);
   }
 
+  @Override
   public Object getStorage() {
     return storage;
   }
 
   // copy from javaArray to storage using the iterator: used by factory( Object);
+  @Override
   protected void copyFrom1DJavaArray(IndexIterator iter, Object javaArray) {
     byte[] ja = (byte[]) javaArray;
     for (byte aJa : ja)
@@ -104,6 +107,7 @@ public class ArrayByte extends Array {
   }
 
   // copy to javaArray from storage using the iterator: used by copyToNDJavaArray;
+  @Override
   protected void copyTo1DJavaArray(IndexIterator iter, Object javaArray) {
     byte[] ja = (byte[]) javaArray;
     for (int i = 0; i < ja.length; i++)
@@ -115,6 +119,7 @@ public class ArrayByte extends Array {
     return getDataAsByteBuffer(null);
   }
 
+  @Override
   public ByteBuffer getDataAsByteBuffer(ByteOrder order) {// order irrelevant here
     return ByteBuffer.wrap((byte[]) get1DJavaArray(getDataType()));
   }
@@ -122,6 +127,7 @@ public class ArrayByte extends Array {
   /**
    * Return the element class type
    */
+  @Override
   public Class getElementType() {
     return byte.class;
   }
@@ -146,64 +152,78 @@ public class ArrayByte extends Array {
     storage[i.currentElement()] = value;
   }
 
+  @Override
   public double getDouble(Index i) {
     byte val = storage[i.currentElement()];
     return (double) (isUnsigned() ? DataType.unsignedByteToShort(val) : val);
   }
 
+  @Override
   public void setDouble(Index i, double value) {
     storage[i.currentElement()] = (byte) value;
   }
 
+  @Override
   public float getFloat(Index i) {
     byte val = storage[i.currentElement()];
     return (float) (isUnsigned() ? DataType.unsignedByteToShort(val) : val);
   }
 
+  @Override
   public void setFloat(Index i, float value) {
     storage[i.currentElement()] = (byte) value;
   }
 
+  @Override
   public long getLong(Index i) {
     byte val = storage[i.currentElement()];
     return (long) (isUnsigned() ? DataType.unsignedByteToShort(val) : val);
   }
 
+  @Override
   public void setLong(Index i, long value) {
     storage[i.currentElement()] = (byte) value;
   }
 
+  @Override
   public int getInt(Index i) {
     byte val = storage[i.currentElement()];
     return (int) (isUnsigned() ? DataType.unsignedByteToShort(val) : val);
   }
 
+  @Override
   public void setInt(Index i, int value) {
     storage[i.currentElement()] = (byte) value;
   }
 
+  @Override
   public short getShort(Index i) {
     byte val = storage[i.currentElement()];
     return (isUnsigned() ? DataType.unsignedByteToShort(val) : val);
   }
 
+  @Override
   public void setShort(Index i, short value) {
     storage[i.currentElement()] = (byte) value;
   }
 
+  @Override
   public byte getByte(Index i) {
     return storage[i.currentElement()];
   }
 
+  @Override
   public void setByte(Index i, byte value) {
     storage[i.currentElement()] = value;
   }
 
+  @Override
   public char getChar(Index i) {
     byte val = storage[i.currentElement()];
     return (char) (isUnsigned() ? DataType.unsignedByteToShort(val) : val);
   }
 
+  @Override
   public void setChar(Index i, char value) {
     storage[i.currentElement()] = (byte) value;
   }
@@ -211,6 +231,7 @@ public class ArrayByte extends Array {
   /**
    * not legal, throw ForbiddenConversionException
    */
+  @Override
   public boolean getBoolean(Index i) {
     throw new ForbiddenConversionException();
   }
@@ -218,93 +239,114 @@ public class ArrayByte extends Array {
   /**
    * not legal, throw ForbiddenConversionException
    */
+  @Override
   public void setBoolean(Index i, boolean value) {
     throw new ForbiddenConversionException();
   }
 
+  @Override
   public Object getObject(Index i) {
     return storage[i.currentElement()];
   }
 
+  @Override
   public void setObject(Index i, Object value) {
     storage[i.currentElement()] = ((Number) value).byteValue();
   }
 
   // package private : mostly for iterators
+  @Override
   public double getDouble(int index) {
     byte val = storage[index];
     return (double) (isUnsigned() ? DataType.unsignedByteToShort(val) : val);
   }
 
+  @Override
   public void setDouble(int index, double value) {
     storage[index] = (byte) value;
   }
 
+  @Override
   public float getFloat(int index) {
     byte val = storage[index];
     return (float) (isUnsigned() ? DataType.unsignedByteToShort(val) : val);
   }
 
+  @Override
   public void setFloat(int index, float value) {
     storage[index] = (byte) value;
   }
 
+  @Override
   public long getLong(int index) {
     byte val = storage[index];
     return (long) (isUnsigned() ? DataType.unsignedByteToShort(val) : val);
   }
 
+  @Override
   public void setLong(int index, long value) {
     storage[index] = (byte) value;
   }
 
+  @Override
   public int getInt(int index) {
     byte val = storage[index];
     return (int) (isUnsigned() ? DataType.unsignedByteToShort(val) : val);
   }
 
+  @Override
   public void setInt(int index, int value) {
     storage[index] = (byte) value;
   }
 
+  @Override
   public short getShort(int index) {
     byte val = storage[index];
     return (isUnsigned() ? DataType.unsignedByteToShort(val) : val);
   }
 
+  @Override
   public void setShort(int index, short value) {
     storage[index] = (byte) value;
   }
 
+  @Override
   public byte getByte(int index) {
     return storage[index];
   }
 
+  @Override
   public void setByte(int index, byte value) {
     storage[index] = value;
   }
 
+  @Override
   public char getChar(int index) {
     byte val = storage[index];
     return (char) (isUnsigned() ? DataType.unsignedByteToShort(val) : val);
   }
 
+  @Override
   public void setChar(int index, char value) {
     storage[index] = (byte) value;
   }
 
+  @Override
   public boolean getBoolean(int index) {
     throw new ForbiddenConversionException();
   }
 
+  @Override
   public void setBoolean(int index, boolean value) {
     throw new ForbiddenConversionException();
   }
 
+  @Override
   public Object getObject(int index) {
     return getByte(index);
   }
 
+  @Override
   public void setObject(int index, Object value) {
     storage[index] = ((Number) value).byteValue();
   }

@@ -396,7 +396,8 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis { // implements Itera
 
       case Time:
         if (params.isTrue(SubsetParams.timePresent))
-          return Optional.of(helper.subsetLatest());
+          return Optional.of(helper.subsetClosest(CalendarDate.present()));
+
 
         CalendarDate date = (CalendarDate) params.get(SubsetParams.time);
         if (date != null)

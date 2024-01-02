@@ -16,7 +16,7 @@ public class TestSources extends TestFiles {
   // Remote test info
 
   /* Use this for experimenting with new URLS */
-  static public final String XURL1 = "http://" + TestDir.dap2TestServer + "/dts";
+  public static final String XURL1 = "http://" + TestDir.dap2TestServer + "/dts";
 
   // "http://testremote.unidata.ucar.edu/thredds/dodsC/fmrc/NCEP/NAM/CONUS_12km/files";
   static final String[] X1 = {"test.01;1;f64"};

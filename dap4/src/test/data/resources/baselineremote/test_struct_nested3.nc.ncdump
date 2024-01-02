@@ -1,0 +1,33 @@
+netcdf test_struct_nested3 {
+  variables:
+
+    Structure {
+
+      Structure {
+
+        Structure {
+          int field1;
+            field1:_DAP4_Checksum_CRC32 = 0;
+        } field2;
+        field2:_DAP4_Checksum_CRC32 = 0;
+
+      } field3;
+      field3:_DAP4_Checksum_CRC32 = 0;
+
+    } x;
+    x:_DAP4_Checksum_CRC32 = -907939866;
+
+
+  // global attributes:
+  :_DAP4_Little_Endian = 1B;
+  string :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
+
+  data:
+    x = 
+      {        field3 = 
+          {            field2 = 
+              {                field1 = 17
+              } field2(0)
+          } field3(0)
+      } x(0)
+}

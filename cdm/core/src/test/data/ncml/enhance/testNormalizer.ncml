@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) 1998-2023 University Corporation for Atmospheric Research/Unidata
+  ~  See LICENSE for license information.
+  -->
+
+<netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" enhance="all">
+    <variable name="doublevar" shape="5" type="double">
+        <attribute name="normalize"/>
+        <values>1.0 2.0 3.0 4.0 5.0</values>
+    </variable>
+    <variable name="samedoublevar" shape="5" type="double">
+        <attribute name="normalize"/>
+        <values>5.0 5.0 5.0 5.0 5.0</values>
+    </variable>
+    <variable name="floatvar" shape="5" type="float">
+        <attribute name="normalize"/>
+        <values>1.0 2.0 3.0 4.0 5.0</values>
+    </variable>
+    <variable name="intvar" shape="5" type="int">
+        <attribute name="normalize"/>
+        <values>1 2 3 4 5</values>
+    </variable>
+</netcdf>

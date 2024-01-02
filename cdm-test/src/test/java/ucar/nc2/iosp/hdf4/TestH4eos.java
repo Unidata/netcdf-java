@@ -32,7 +32,7 @@ import java.lang.invoke.MethodHandles;
 public class TestH4eos {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  static public String testDir = TestDir.cdmUnitTestDir + "formats/hdf4/eos/";
+  public static String testDir = TestDir.cdmUnitTestDir + "formats/hdf4/eos/";
 
   // test the coordSysBuilder - check if grid exists
   @Test

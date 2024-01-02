@@ -168,13 +168,13 @@ public class Sinusoidal extends ProjectionImpl {
   public int hashCode() {
     int result;
     long temp;
-    temp = earthRadius != +0.0d ? Double.doubleToLongBits(earthRadius) : 0L;
+    temp = earthRadius != 0.0d ? Double.doubleToLongBits(earthRadius) : 0L;
     result = (int) (temp ^ (temp >>> 32));
-    temp = centMeridian != +0.0d ? Double.doubleToLongBits(centMeridian) : 0L;
+    temp = centMeridian != 0.0d ? Double.doubleToLongBits(centMeridian) : 0L;
     result = 31 * result + (int) (temp ^ (temp >>> 32));
-    temp = falseEasting != +0.0d ? Double.doubleToLongBits(falseEasting) : 0L;
+    temp = falseEasting != 0.0d ? Double.doubleToLongBits(falseEasting) : 0L;
     result = 31 * result + (int) (temp ^ (temp >>> 32));
-    temp = falseNorthing != +0.0d ? Double.doubleToLongBits(falseNorthing) : 0L;
+    temp = falseNorthing != 0.0d ? Double.doubleToLongBits(falseNorthing) : 0L;
     result = 31 * result + (int) (temp ^ (temp >>> 32));
     return result;
   }
@@ -250,18 +250,18 @@ public class Sinusoidal extends ProjectionImpl {
     double toLat_r = fromY / earthRadius;
     double toLon_r;
 
-    if (Misc.nearlyEquals(Math.abs(toLat_r), PI_OVER_2, 1e-10)) {
-      toLat_r = toLat_r < 0 ? -PI_OVER_2 : +PI_OVER_2;
+    if (Misc.nearlyEquals(Math.abs(toLat_r), Math.PI / 2.0, 1e-10)) {
+      toLat_r = toLat_r < 0 ? -Math.PI / 2.0 : Math.PI / 2.0;
       toLon_r = Math.toRadians(centMeridian); // if lat == +- pi/2, set lon = centMeridian (Snyder 248)
-    } else if (Math.abs(toLat_r) < PI_OVER_2) {
+    } else if (Math.abs(toLat_r) < Math.PI / 2.0) {
       toLon_r = Math.toRadians(centMeridian) + fromX / (earthRadius * Math.cos(toLat_r));
     } else {
       return INVALID; // Projection point is off the map.
     }
 
-    if (Misc.nearlyEquals(Math.abs(toLon_r), PI, 1e-10)) {
-      toLon_r = toLon_r < 0 ? -PI : +PI;
-    } else if (Math.abs(toLon_r) > PI) {
+    if (Misc.nearlyEquals(Math.abs(toLon_r), Math.PI, 1e-10)) {
+      toLon_r = toLon_r < 0 ? -Math.PI : Math.PI;
+    } else if (Math.abs(toLon_r) > Math.PI) {
       return INVALID; // Projection point is off the map.
     }
 
@@ -351,7 +351,7 @@ public class Sinusoidal extends ProjectionImpl {
     }
 
     double x0natural = x0 - falseEasting;
-    double limitLon_r = (x0natural < 0) ? -PI : +PI;
+    double limitLon_r = (x0natural < 0) ? -Math.PI : Math.PI;
     double deltaLon_r = limitLon_r - Math.toRadians(centMeridian);
 
     // This formula comes from solving 30-1 for phi, and then plugging it into 30-2. See Snyder, p 247.
@@ -375,8 +375,8 @@ public class Sinusoidal extends ProjectionImpl {
       return mapEdgeIntercepts; // Empty list.
     }
 
-    double minX = getXAt(y0, -PI);
-    double maxX = getXAt(y0, +PI);
+    double minX = getXAt(y0, -Math.PI);
+    double maxX = getXAt(y0, Math.PI);
 
     mapEdgeIntercepts.add(ProjectionPoint.create(minX, y0));
     mapEdgeIntercepts.add(ProjectionPoint.create(maxX, y0));

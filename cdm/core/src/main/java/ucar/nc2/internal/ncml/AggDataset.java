@@ -30,6 +30,7 @@ class AggDataset implements Comparable<AggDataset> {
   private static final boolean debugOpenFile = false;
   private static final boolean debugRead = false;
 
+  @Nullable
   private final MFile mfile;
   private final Set<Enhance> enhance; // used by Fmrc to read enhanced datasets
   @Nullable
@@ -71,7 +72,7 @@ class AggDataset implements Comparable<AggDataset> {
   protected AggDataset(String cacheLocation, String location, @Nullable String id,
       @Nullable EnumSet<Enhance> wantEnhance, @Nullable ucar.nc2.util.cache.FileFactory reader,
       @Nullable Object spiObject, @Nullable Element ncmlElem) {
-    this.mfile = MFiles.create(location); // may be null
+    this.mfile = MFiles.createIfExists(location);
     this.cacheLocation = cacheLocation;
     this.id = id;
     this.enhance = (wantEnhance == null) ? NetcdfDataset.getEnhanceNone() : wantEnhance;
@@ -144,6 +145,10 @@ class AggDataset implements Comparable<AggDataset> {
         return null;
 
       Variable v = findVariable(ncd, mainv);
+      if (v == null) {
+        Aggregation.logger.error("AggDataset can't find " + mainv.getFullName() + " in " + ncd.getLocation());
+        throw new IllegalArgumentException("Variable '" + mainv.getFullName() + "' does not exist in aggregation.");
+      }
       if (debugRead)
         System.out.printf("Agg.read %s from %s in %s%n", mainv.getNameAndDimensions(), v.getNameAndDimensions(),
             getLocation());

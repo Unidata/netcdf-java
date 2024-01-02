@@ -1568,15 +1568,15 @@ public abstract class Grib2Gds {
     public int hashCode() {
       if (hashCode == 0) {
         int result = super.hashCode();
-        result = 31 * result + (LaP != +0.0f ? Float.floatToIntBits(LaP) : 0);
-        result = 31 * result + (LoP != +0.0f ? Float.floatToIntBits(LoP) : 0);
-        result = 31 * result + (dX != +0.0f ? Float.floatToIntBits(dX) : 0);
-        result = 31 * result + (dY != +0.0f ? Float.floatToIntBits(dY) : 0);
-        result = 31 * result + (Xp != +0.0f ? Float.floatToIntBits(Xp) : 0);
-        result = 31 * result + (Yp != +0.0f ? Float.floatToIntBits(Yp) : 0);
-        result = 31 * result + (Nr != +0.0f ? Float.floatToIntBits(Nr) : 0);
-        result = 31 * result + (Xo != +0.0f ? Float.floatToIntBits(Xo) : 0);
-        result = 31 * result + (Yo != +0.0f ? Float.floatToIntBits(Yo) : 0);
+        result = 31 * result + (LaP != 0.0f ? Float.floatToIntBits(LaP) : 0);
+        result = 31 * result + (LoP != 0.0f ? Float.floatToIntBits(LoP) : 0);
+        result = 31 * result + (dX != 0.0f ? Float.floatToIntBits(dX) : 0);
+        result = 31 * result + (dY != 0.0f ? Float.floatToIntBits(dY) : 0);
+        result = 31 * result + (Xp != 0.0f ? Float.floatToIntBits(Xp) : 0);
+        result = 31 * result + (Yp != 0.0f ? Float.floatToIntBits(Yp) : 0);
+        result = 31 * result + (Nr != 0.0f ? Float.floatToIntBits(Nr) : 0);
+        result = 31 * result + (Xo != 0.0f ? Float.floatToIntBits(Xo) : 0);
+        result = 31 * result + (Yo != 0.0f ? Float.floatToIntBits(Yo) : 0);
         result = 31 * result + flags;
         hashCode = result;
       }

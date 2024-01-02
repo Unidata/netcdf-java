@@ -1,0 +1,74 @@
+netcdf test_atomic_types {
+  types:
+    byte enum cloud_class_t { Clear = 0, Cumulonimbus = 1, Stratus = 2, Stratocumulus = 3, Cumulus = 4, Altostratus = 5, Nimbostratus = 6, Altocumulus = 7, Cirrostratus = 8, Cirrocumulus = 9, Cirrus = 10, Missing = 127};
+
+  variables:
+    byte v8;
+      v8:_DAP4_Checksum_CRC32 = 1069182125;
+
+    ubyte vu8;
+      vu8:_DAP4_Checksum_CRC32 = -16777216;
+
+    short v16;
+      v16:_DAP4_Checksum_CRC32 = -1402891809;
+
+    ushort vu16;
+      vu16:_DAP4_Checksum_CRC32 = -65536;
+
+    int v32;
+      v32:_DAP4_Checksum_CRC32 = 306674911;
+
+    uint vu32;
+      vu32:_DAP4_Checksum_CRC32 = -1;
+
+    long v64;
+      v64:_DAP4_Checksum_CRC32 = -855876548;
+
+    ulong vu64;
+      vu64:_DAP4_Checksum_CRC32 = 558161692;
+
+    float vf;
+      vf:_DAP4_Checksum_CRC32 = -1943399579;
+
+    double vd;
+      vd:_DAP4_Checksum_CRC32 = -222639246;
+
+    char vc;
+      vc:_DAP4_Checksum_CRC32 = -1528910307;
+
+    string vs;
+      vs:_DAP4_Checksum_CRC32 = 915515092;
+
+    opaque vo;
+      vo:_DAP4_Checksum_CRC32 = -766649635;
+
+    enum cloud_class_t primary_cloud;
+      string primary_cloud:_FillValue = "Missing";
+      primary_cloud:_DAP4_Checksum_CRC32 = 1007455905;
+
+    enum cloud_class_t secondary_cloud;
+      string secondary_cloud:_FillValue = "Missing";
+      secondary_cloud:_DAP4_Checksum_CRC32 = 314082080;
+
+  // global attributes:
+  :_DAP4_Little_Endian = 1B;
+  string :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
+
+  data:
+    v8 = -128
+    vu8 = 255
+    v16 = -32768
+    vu16 = 65535
+    v32 = 2147483647
+    vu32 = 4294967295
+    v64 = 9223372036854775807
+    vu64 = 18446744073709551615
+    vf = 3.1415927
+    vd = 3.141592653589793
+    vc = @
+    vs =   "hello	world"
+    vo =       0x0123456789abcdef;
+
+    primary_cloud = 2
+    secondary_cloud = 127
+}

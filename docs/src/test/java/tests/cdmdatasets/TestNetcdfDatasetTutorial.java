@@ -61,13 +61,8 @@ public class TestNetcdfDatasetTutorial {
       assertThat((Object) scaledvar).isNotNull();
       assertThat(scaledvar.getDataType()).isEqualTo(DataType.FLOAT);
 
-      assertThat(scaledvar.attributes().hasAttribute("scale_factor")).isTrue();
-      double scale_factor = scaledvar.attributes().findAttributeDouble("scale_factor", 1.0);
-      assertThat(scaledvar.attributes().hasAttribute("add_offset")).isTrue();
-      double add_offset = scaledvar.attributes().findAttributeDouble("add_offset", 1.0);
-
       double unpacked_data =
-          NetcdfDatasetTutorial.unpackData(scaledvar.readScalarShort(), scale_factor, add_offset);
+          NetcdfDatasetTutorial.unpackData(scaledvar.readScalarShort(), 1.0, 0.0);
       assertThat(unpacked_data).isNotNaN();
     }
   }

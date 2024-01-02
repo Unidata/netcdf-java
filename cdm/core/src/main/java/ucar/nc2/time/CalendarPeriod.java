@@ -167,7 +167,7 @@ public class CalendarPeriod {
 
   /**
    * Subtract two dates, return difference in units of this period.
-   * If not even, will round down (take the floor)
+   * If not even, will round to nearest int
    * 
    * @param start start date
    * @param end end date
@@ -175,8 +175,12 @@ public class CalendarPeriod {
    */
   public int subtract(CalendarDate start, CalendarDate end) {
     long diff = end.getDifferenceInMsecs(start);
+    if (diff == 0) {
+      return 0;
+    }
     int thislen = millisecs();
-    return (int) Math.floor(diff / (float) thislen);
+    int signOfDiff = (int) (diff / Math.abs(diff));
+    return signOfDiff * Math.round(Math.abs(diff) / (float) thislen);
   }
 
   /**
@@ -234,7 +238,7 @@ public class CalendarPeriod {
 
   // offset from start to end, in these units
   // start + offset = end
-  // takes the floor when rounding
+  // rounds to nearest int
   public int getOffset(CalendarDate start, CalendarDate end) {
     if (start.equals(end)) {
       return 0;

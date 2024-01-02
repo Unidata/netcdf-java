@@ -45,7 +45,7 @@ public class TimingCopy {
 
   static boolean debug = true;
 
-  static public void main(String args[]) throws IOException {
+  public static void main(String args[]) throws IOException {
     // 3/16/2015
     // copyURL2null("http://thredds-dev.unidata.ucar.edu/thredds/fileServer/grib/NCEP/GFS/CONUS_80km/GFS_CONUS_80km_20141116_0000.grib1/files/GFS_CONUS_80km_20141116_0000.grib1",
     // 20000);
@@ -195,7 +195,7 @@ public class TimingCopy {
 
   // }
 
-  static public void copyFile(String filenameIn, String filenameOut, boolean buffer) throws IOException {
+  public static void copyFile(String filenameIn, String filenameOut, boolean buffer) throws IOException {
     long lenIn = new File(filenameIn).length();
     if (debug)
       System.out.println("read " + filenameIn + " len = " + lenIn);
@@ -225,7 +225,7 @@ public class TimingCopy {
     System.out.println(" copy (" + name + ") took = " + took + " sec; rate = " + rate + "Mb/sec");
   }
 
-  static public void copyFile2null(String filenameIn, int buffer) throws IOException {
+  public static void copyFile2null(String filenameIn, int buffer) throws IOException {
     long lenIn = new File(filenameIn).length();
     if (debug)
       System.out.println("read " + filenameIn + " len = " + lenIn);
@@ -242,7 +242,7 @@ public class TimingCopy {
     System.out.println(" copy (" + filenameIn + ") took = " + took + " sec; rate = " + rate + "Mb/sec");
   }
 
-  static public void copyFileNIO(String filenameIn, String filenameOut, long kbchunks) throws IOException {
+  public static void copyFileNIO(String filenameIn, String filenameOut, long kbchunks) throws IOException {
 
     FileInputStream in = new FileInputStream(filenameIn);
     FileChannel inChannel = in.getChannel();
@@ -276,13 +276,13 @@ public class TimingCopy {
     System.out.println(" copyFileNIO(" + kbchunks + " kb chunk) took = " + took + " sec; rate = " + rate + "Mb/sec");
   }
 
-  static public void testNIO(String filenameIn, String filenameOut, long kbchunks) throws IOException {
+  public static void testNIO(String filenameIn, String filenameOut, long kbchunks) throws IOException {
 
     ByteBuffer bb = ByteBuffer.allocate(8 * 1000);
     FloatBuffer fb = bb.asFloatBuffer();
   }
 
-  static public void readFile(String filenameIn, int bufferSize) throws IOException {
+  public static void readFile(String filenameIn, int bufferSize) throws IOException {
     long lenIn = new File(filenameIn).length();
     if (debug)
       System.out.println("read " + filenameIn + " len = " + lenIn);
@@ -307,7 +307,7 @@ public class TimingCopy {
   }
 
 
-  static public void copyURL(String url, String filenameOut, int bufferSize) throws IOException {
+  public static void copyURL(String url, String filenameOut, int bufferSize) throws IOException {
 
     File outFile = new File(filenameOut);
 
@@ -322,7 +322,7 @@ public class TimingCopy {
         + Format.d(rate, 3) + "Mb/sec ok=" + ok);
   }
 
-  static public void copyURL2null(String url, int bufferSize) throws IOException {
+  public static void copyURL2null(String url, int bufferSize) throws IOException {
 
     long start = System.currentTimeMillis();
     long count = IO.copyUrlB(url, null, bufferSize);
@@ -335,7 +335,7 @@ public class TimingCopy {
   }
 
 
-  static public void readURL(String urlString, int bufferSize) throws IOException {
+  public static void readURL(String urlString, int bufferSize) throws IOException {
 
     System.out.println("start=" + new Date());
     long start = System.currentTimeMillis();

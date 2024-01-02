@@ -8,6 +8,7 @@ package ucar.nc2.grib.grib1;
 import com.google.protobuf.ByteString;
 import java.nio.charset.StandardCharsets;
 import thredds.inventory.CollectionUpdateType;
+import ucar.nc2.NetcdfFiles;
 import ucar.nc2.grib.GribIndex;
 import ucar.nc2.grib.GribIndexCache;
 import ucar.nc2.stream.NcStream;
@@ -185,7 +186,7 @@ public class Grib1Index extends GribIndex {
       rootBuilder.setFilename(filename);
 
       if (dataRaf == null) { // open if dataRaf not already open
-        raf = RandomAccessFile.acquire(filename);
+        raf = NetcdfFiles.getRaf(filename, -1);
         dataRaf = raf;
       }
 

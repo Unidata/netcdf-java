@@ -245,6 +245,10 @@ public class CoordinateTransform implements Comparable<CoordinateTransform> {
     }
 
     public CoordinateTransform build(NetcdfDataset ncd) {
+      return build(ncd, ncd.getCoordinateAxes());
+    }
+
+    public CoordinateTransform build(NetcdfDataset ncd, ImmutableList<CoordinateAxis> coordAxes) {
       if (built)
         throw new IllegalStateException("already built " + name);
       built = true;
@@ -254,8 +258,8 @@ public class CoordinateTransform implements Comparable<CoordinateTransform> {
       }
 
       // All this trouble because we need ncd before we can build.
-      CoordinateTransform ct =
-          CoordTransBuilder.makeCoordinateTransform(ncd, attributeContainer, new Formatter(), new Formatter());
+      CoordinateTransform ct = CoordTransBuilder.makeCoordinateTransform(ncd, attributeContainer, new Formatter(),
+          new Formatter(), coordAxes);
       if (ct != null) {
         // ct.name = this.name; // LOOK why is this commented out? Dont know name until this point? Not going to
         // work....

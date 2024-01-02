@@ -14,9 +14,13 @@ import thredds.inventory.MFile;
 import ucar.nc2.Attribute;
 import ucar.nc2.AttributeContainer;
 import ucar.nc2.AttributeContainerMutable;
+import ucar.nc2.NetcdfFile;
+import ucar.nc2.NetcdfFiles;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
 import ucar.nc2.constants.FeatureType;
+import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.ft2.coverage.CoverageCollection;
 import ucar.nc2.ft2.coverage.SubsetParams;
 import ucar.nc2.grib.*;
@@ -31,6 +35,7 @@ import ucar.nc2.grib.coord.VertCoordValue;
 import ucar.nc2.grib.grib1.Grib1Variable;
 import ucar.nc2.grib.grib1.tables.Grib1Customizer;
 import ucar.nc2.grib.grib2.table.Grib2Tables;
+import ucar.nc2.iosp.AbstractIOServiceProvider;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.util.cache.FileCacheIF;
@@ -1111,6 +1116,13 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
   String getDataRafFilename(int fileno) {
     MFile mfile = fileMap.get(fileno);
     return mfile.getPath();
+  }
+
+  protected static NetcdfDataset buildNetcdfDataset(AbstractIOServiceProvider iosp, String location)
+      throws IOException {
+    RandomAccessFile raf = (RandomAccessFile) iosp.sendIospMessage(NetcdfFile.IOSP_MESSAGE_RANDOM_ACCESS_FILE);
+    NetcdfFile ncfile = NetcdfFiles.build(iosp, raf, location, null);
+    return NetcdfDatasets.enhance(ncfile, NetcdfDataset.getDefaultEnhanceMode(), null);
   }
 
   ///////////////////////

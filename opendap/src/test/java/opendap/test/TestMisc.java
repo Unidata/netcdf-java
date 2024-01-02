@@ -50,7 +50,7 @@ public class TestMisc extends UnitTestCommon {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   // Collect testcases locally
-  static public class Testcase {
+  public static class Testcase {
     String title;
     String url;
     String cdl;

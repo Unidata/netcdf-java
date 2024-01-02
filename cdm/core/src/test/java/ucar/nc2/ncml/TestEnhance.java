@@ -6,10 +6,7 @@ package ucar.nc2.ncml;
 
 import static com.google.common.truth.Truth.assertThat;
 import java.io.IOException;
-import java.lang.invoke.MethodHandles;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import ucar.ma2.DataType;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
@@ -18,7 +15,6 @@ import ucar.unidata.util.test.TestDir;
 
 /** Test NcmlNew enhancement */
 public class TestEnhance {
-  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
   private static String dataDir = TestDir.cdmLocalTestDataDir + "ncml/enhance/";
 
   @Test
@@ -72,8 +68,7 @@ public class TestEnhance {
       Variable scaledvar = ncfile.findVariable("scaledvar");
       assertThat((Object) scaledvar).isNotNull();
       assertThat(scaledvar.getDataType()).isEqualTo(DataType.FLOAT);
-      assertThat(scaledvar.attributes().hasAttribute("scale_factor")).isTrue();
-      assertThat(scaledvar.attributes().findAttributeDouble("scale_factor", 1.0)).isEqualTo(2.0);
+      assertThat(scaledvar.attributes().hasAttribute("scale_factor")).isFalse();
       assertThat(scaledvar.readScalarFloat()).isEqualTo(12.0f);
     }
   }
@@ -91,8 +86,7 @@ public class TestEnhance {
       Variable scaledvar = ncfile.findVariable("scaledvar");
       assertThat((Object) scaledvar).isNotNull();
       assertThat(scaledvar.getDataType()).isEqualTo(DataType.FLOAT);
-      assertThat(scaledvar.attributes().hasAttribute("scale_factor")).isTrue();
-      assertThat(scaledvar.attributes().findAttributeDouble("scale_factor", 1.0)).isEqualTo(2.0);
+      assertThat(scaledvar.attributes().hasAttribute("scale_factor")).isFalse();
       assertThat(scaledvar.readScalarFloat()).isEqualTo(12.0f);
     }
   }
@@ -110,8 +104,7 @@ public class TestEnhance {
       Variable scaledvar = ncfile.findVariable("scaledvar");
       assertThat((Object) scaledvar).isNotNull();
       assertThat(scaledvar.getDataType()).isEqualTo(DataType.FLOAT);
-      assertThat(scaledvar.attributes().hasAttribute("scale_factor")).isTrue();
-      assertThat(scaledvar.attributes().findAttributeDouble("scale_factor", 1.0)).isEqualTo(2.0);
+      assertThat(scaledvar.attributes().hasAttribute("scale_factor")).isFalse();
       assertThat(scaledvar.readScalarFloat()).isEqualTo(12.0f);
     }
   }

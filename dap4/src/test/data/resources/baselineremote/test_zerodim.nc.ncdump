@@ -1,0 +1,34 @@
+netcdf test_zerodim {
+  dimensions:
+    lon = 4;
+    time = 0;
+    lat = 6;
+    unlim = 3;
+  variables:
+    float var(unlim);
+      var:_ChunkSizes = 1024;
+      var:_DAP4_Checksum_CRC32 = -1062079627;
+
+    float lon(lon);
+      lon:_DAP4_Checksum_CRC32 = -947018072;
+      string lon:units = "degrees_east";
+      string lon:_CoordinateAxisType = "Lon";
+
+    float lat(lat);
+      lat:_DAP4_Checksum_CRC32 = -1521140044;
+      string lat:units = "degrees_north";
+      string lat:_CoordinateAxisType = "Lat";
+
+  // global attributes:
+  :_DAP4_Little_Endian = 1B;
+  string :title = "example for workshop";
+  string :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
+
+  data:
+    var = 
+      {0.0, 1.0, 3.0}
+    lon = 
+      {9.96921E36, 9.96921E36, 9.96921E36, 9.96921E36}
+    lat = 
+      {9.96921E36, 9.96921E36, 9.96921E36, 9.96921E36, 9.96921E36, 9.96921E36}
+}

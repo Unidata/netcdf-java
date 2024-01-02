@@ -9,10 +9,16 @@ import ucar.nc2.util.Misc;
 public class EnsCoordValue implements Comparable<EnsCoordValue> {
   private final int code;
   private final int ensMember;
+  private final int ensNumber;
 
   public EnsCoordValue(int code, int ensMember) {
+    this(code, ensMember, 0);
+  }
+
+  public EnsCoordValue(int code, int ensMember, int ensNumber) {
     this.code = code;
     this.ensMember = ensMember;
+    this.ensNumber = ensNumber;
   }
 
   public int getCode() {
@@ -23,9 +29,16 @@ public class EnsCoordValue implements Comparable<EnsCoordValue> {
     return ensMember;
   }
 
+  public int getEnsNumber() {
+    return ensNumber;
+  }
+
   @Override
   public int compareTo(@Nonnull EnsCoordValue o) {
     int r = Integer.compare(code, o.code);
+    if (r != 0)
+      return r;
+    r = Integer.compare(ensNumber, o.ensNumber);
     if (r != 0)
       return r;
     return Integer.compare(ensMember, o.ensMember);
@@ -40,7 +53,7 @@ public class EnsCoordValue implements Comparable<EnsCoordValue> {
       return false;
     }
     EnsCoordValue that = (EnsCoordValue) o;
-    return code == that.code && ensMember == that.ensMember;
+    return code == that.code && ensMember == that.ensMember && ensNumber == that.ensNumber;
   }
 
   @Override
@@ -48,12 +61,13 @@ public class EnsCoordValue implements Comparable<EnsCoordValue> {
     int result = 17;
     result += 31 * ensMember;
     result += 31 * code;
+    result += 31 * ensNumber;
     return result;
   }
 
   public String toString() {
     try (Formatter out = new Formatter()) {
-      out.format("(%d %d)", code, ensMember);
+      out.format("(%d %d %d)", code, ensMember, ensNumber);
       return out.toString();
     }
   }
