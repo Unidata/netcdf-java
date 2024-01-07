@@ -1320,6 +1320,13 @@ public class BufrTables {
         continue;
 
       try {
+        // Delete everything in line that is not a space or a digit
+        // This handles cases where numbers are followed by text. Examples:
+        // 307046 5 020060 Metar/speci visibility
+        // or
+        // 307048 Trend forecast
+        line = line.replaceAll("[^\\d\\s]", "").trim();
+
         String fxys;
         // Need to do fixed-width parsing since, spaces can disappear (if
         // middle number is triple digits, it can end up right against the
