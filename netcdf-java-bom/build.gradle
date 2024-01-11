@@ -18,6 +18,7 @@ dependencies {
     api project(':cdm:cdm-misc')
     api project(':cdm:cdm-radial')
     api project(':cdm:cdm-s3')
+    api project(':cdm:cdm-zarr')
     api project(':cdm-test-utils')
     api project(':grib')
     api project(':httpservices')
