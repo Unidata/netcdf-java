@@ -124,4 +124,9 @@ public class TestDatasetUrl {
     testFind("cdms3:thredds-test-data?ncml/testStandalone.ncml", ServiceType.NCML);
     testFind("cdms3://profile_name@my.endpoint.edu/bucket-name?super/long/key.ncml#delimiter=/", ServiceType.NCML);
   }
+
+  @Test
+  public void shouldReturnNullForDirectory() throws IOException {
+    testFind(System.getProperty("user.dir"), null);
+  }
 }
