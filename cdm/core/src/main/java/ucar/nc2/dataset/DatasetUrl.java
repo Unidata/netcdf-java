@@ -516,7 +516,7 @@ public class DatasetUrl {
   }
 
   private static boolean checkIfNcml(File file) throws IOException {
-    if (!file.exists()) {
+    if (!file.exists() || file.isDirectory()) {
       return false;
     }
 
