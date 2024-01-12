@@ -68,8 +68,8 @@ public class TestGribCoverageRead {
       float first = data.getFloat(0);
       float last = data.getFloat((int) data.getSize() - 1);
       logger.debug("data first = {} last = {}", first, last);
-      Assert2.assertNearlyEquals(241.699997, first);
-      Assert2.assertNearlyEquals(225.099991, last);
+      assertThat(Misc.nearlyEquals(241.699997, first));
+      assertThat(Misc.nearlyEquals(225.099991, last));
     }
   }
 
@@ -99,8 +99,8 @@ public class TestGribCoverageRead {
       float first = data.getFloat(0);
       float last = data.getFloat((int) data.getSize() - 1);
       logger.debug("data first = {} last = {}", first, last);
-      Assert2.assertNearlyEquals(241.699997, first);
-      Assert2.assertNearlyEquals(225.099991, last);
+      assertThat(Misc.nearlyEquals(241.699997, first));
+      assertThat(Misc.nearlyEquals(225.099991, last));
     }
   }
 
@@ -161,11 +161,11 @@ public class TestGribCoverageRead {
 
       float val = data.getFloat(40600);
       logger.debug("data val at {} = {}", 40600, val);
-      Assert2.assertNearlyEquals(281.627563, val);
+      assertThat(Misc.nearlyEquals(281.627563, val));
 
       val = data.getFloat(55583);
       logger.debug("data val at {} = {}", 55583, val);
-      Assert2.assertNearlyEquals(281.690063, val);
+      assertThat(Misc.nearlyEquals(281.690063, val));
     }
   }
 

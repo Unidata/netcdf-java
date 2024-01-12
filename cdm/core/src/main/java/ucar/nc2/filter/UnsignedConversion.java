@@ -6,7 +6,7 @@ import ucar.ma2.IndexIterator;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.dataset.VariableDS;
 
-public class UnsignedConversion {
+public class UnsignedConversion implements Enhancement {
 
   private DataType outType;
   private DataType.Signedness signedness;
@@ -52,8 +52,25 @@ public class UnsignedConversion {
     return this.signedness;
   }
 
-  public Number convertUnsigned(Number value) {
-    return this.signedness == DataType.Signedness.UNSIGNED ? DataType.widenNumberIfNegative(value) : value;
+  public double convert(double value) {
+    Number val;
+    switch (outType) {
+      case UBYTE:
+        val = new Byte((byte) value);
+        break;
+      case USHORT:
+        val = new Byte((byte) value);
+        break;
+      case UINT:
+        val = new Short((short) value);
+        break;
+      case ULONG:
+        val = new Integer((int) value);
+        break;
+      default:
+        val = new Double(value);
+    }
+    return this.signedness == DataType.Signedness.UNSIGNED ? DataType.widenNumberIfNegative(val).doubleValue() : value;
   }
 
   public Array convertUnsigned(Array in) {

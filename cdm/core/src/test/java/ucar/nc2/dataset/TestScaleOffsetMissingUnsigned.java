@@ -196,7 +196,7 @@ public class TestScaleOffsetMissingUnsigned {
       // foo[0] == -1 (raw); -0.01 (scaled). It is equal to fill value and outside of valid_range.
       Assert2.assertNearlyEquals(-0.01, fooVals.getDouble(0), Misc.defaultMaxRelativeDiffFloat);
       Assert.assertTrue(fooVar.isFillValue(-0.01));
-      Assert.assertTrue(fooVar.isMissingValue(-0.01));
+      Assert.assertFalse(fooVar.isMissingValue(-0.01));
       Assert.assertTrue(fooVar.isInvalidData(-0.01));
       Assert.assertTrue(fooVar.isMissing(-0.01));
 
@@ -213,7 +213,7 @@ public class TestScaleOffsetMissingUnsigned {
 
       // foo[3] == 101 (raw); 1.01 (scaled). It is outside of valid_range.
       Assert2.assertNearlyEquals(1.01, fooVals.getDouble(3), Misc.defaultMaxRelativeDiffFloat);
-      Assert.assertTrue(fooVar.isMissingValue(1.01));
+      Assert.assertFalse(fooVar.isMissingValue(1.01));
       Assert.assertTrue(fooVar.isInvalidData(1.01));
       Assert.assertTrue(fooVar.isMissing(1.01));
     }
@@ -234,7 +234,7 @@ public class TestScaleOffsetMissingUnsigned {
 
       // Packed _FillValue and missing_value are -1. Interpreting bit pattern as unsigned, we get 255.
       Assert2.assertNearlyEquals(255, var.getFillValue());
-      Assert2.assertNearlyEquals(255, var.getMissingValues()[0]);
+      Assert.assertEquals(var.getMissingValues().length, 0);
 
       // "missingUnsigned" was originally UBYTE, but was widened to accommodate unsigned conversion.
       Assert.assertEquals(DataType.USHORT, var.getDataType());
@@ -258,7 +258,7 @@ public class TestScaleOffsetMissingUnsigned {
       Assert.assertEquals(25001, var.getValidMax(), 0);
 
       Assert.assertEquals(25501, var.getFillValue(), 0);
-      Assert.assertEquals(25501, var.getMissingValues()[0], 0);
+      Assert.assertEquals(var.getMissingValues().length, 0);
 
       // "scaleOffsetMissingUnsigned" was originally UBYTE, but scale_factor (SHORT) and add_offset (INT) caused it to
       // be UINT due to:
@@ -279,7 +279,7 @@ public class TestScaleOffsetMissingUnsigned {
 
       // These vals are the same as ones from "missingUnsigned", but with a scale_factor of 100 and offset of 1 applied.
       long[] expecteds = new long[] {14901, 15001, 25001, 25101, 25501, 8001};
-      long[] actuals = (long[]) var.read().getStorage();
+      long[] actuals = (long[]) var.read().get1DJavaArray(DataType.LONG);
       Assert.assertArrayEquals(expecteds, actuals);
     }
   }
@@ -297,7 +297,7 @@ public class TestScaleOffsetMissingUnsigned {
       Assert.assertEquals(-15001, var.getValidMax(), fpTol);
 
       Assert.assertEquals(-25501, var.getFillValue(), fpTol);
-      Assert.assertEquals(-25501, var.getMissingValues()[0], fpTol);
+      Assert.assertEquals(var.getMissingValues().length, 0);
       // Because scale and offset are now float (to preserve negative values), var is float
       Assert.assertEquals(DataType.FLOAT, var.getDataType());
 

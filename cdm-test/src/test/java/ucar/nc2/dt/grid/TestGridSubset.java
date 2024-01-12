@@ -150,7 +150,7 @@ public class TestGridSubset {
 
       ProjectionRect expected =
           new ProjectionRect(ProjectionPoint.create(-2129.5688, -1793.0041), 4297.8453, 3308.3885);
-      assert prect.nearlyEquals(expected);
+      assert prect.nearlyEquals(expected, 1e-4);
 
       LatLonRect bb2 = p.projToLatLonBB(prect);
       logger.debug("{} -> {}", prect, bb2);

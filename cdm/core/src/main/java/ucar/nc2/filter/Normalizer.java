@@ -3,13 +3,14 @@ package ucar.nc2.filter;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+
 import org.apache.commons.math.stat.descriptive.SummaryStatistics;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.ma2.IndexIterator;
 import ucar.nc2.dataset.VariableDS;
 
-public class Normalizer {
+public class Normalizer implements Enhancement {
 
   private final ScaleOffset scaleOffset;
   private final double minimum;
@@ -57,6 +58,10 @@ public class Normalizer {
 
   public Array convert(Array arr) {
     return scaleOffset.applyScaleOffset(arr);
+  }
+
+  public double convert(double val) {
+    return scaleOffset.applyScaleOffset(val);
   }
 
   public double getMinimum() {

@@ -8,10 +8,12 @@ import ucar.nc2.constants.CDM;
 import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.util.Misc;
 
-public class ConvertMissing {
+import java.util.*;
+
+public class ConvertMissing implements Enhancement {
 
   private boolean hasValidMin, hasValidMax;
-  private double validMin, validMax;
+  private double validMin, validMax, fuzzyValidMin, fuzzyValidMax;
 
   private boolean hasFillValue;
   private double fillValue; // LOOK: making it double not really correct. What about CHAR?
@@ -91,7 +93,6 @@ public class ConvertMissing {
 
     /// missing_value
     double[] missingValue = null;
-    boolean hasMissingValue = false;
     Attribute missingValueAtt = var.findAttribute(CDM.MISSING_VALUE);
     if (missingValueAtt != null) {
       if (missingValueAtt.isString()) {
@@ -111,7 +112,6 @@ public class ConvertMissing {
             // TODO add logger
           }
         }
-        hasMissingValue = true;
       } else { // not a string
         missingValue = new double[missingValueAtt.getLength()];
         DataType missingType = FilterHelpers.getAttributeDataType(missingValueAtt, signedness);
@@ -119,34 +119,54 @@ public class ConvertMissing {
           missingValue[i] = var.convertUnsigned(missingValueAtt.getNumericValue(i), missingType).doubleValue();
           missingValue[i] = var.applyScaleOffset(missingValue[i]);
         }
-
-        for (double mv : missingValue) {
-          if (!Double.isNaN(mv)) {
-            hasMissingValue = true; // dont need to do anything if it's already a NaN
-            break;
-          }
-        }
       }
     }
     return new ConvertMissing(var.fillValueIsMissing(), var.invalidDataIsMissing(), var.missingDataIsMissing(),
-        hasValidMin, hasValidMax, validMin, validMax, hasFillValue, fillValue, hasMissingValue, missingValue);
+        hasValidMin, hasValidMax, validMin, validMax, hasFillValue, fillValue, missingValue);
   }
 
 
   public ConvertMissing(boolean fillValueIsMissing, boolean invalidDataIsMissing, boolean missingDataIsMissing,
       boolean hasValidMin, boolean hasValidMax, double validMin, double validMax, boolean hasFillValue,
-      double fillValue, boolean hasMissingValue, double[] missingValue) {
+      double fillValue, double[] missingValue) {
     this.fillValueIsMissing = fillValueIsMissing;
     this.invalidDataIsMissing = invalidDataIsMissing;
     this.missingDataIsMissing = missingDataIsMissing;
     this.hasValidMin = hasValidMin;
     this.hasValidMax = hasValidMax;
     this.validMin = validMin;
+    this.fuzzyValidMin = validMin - Misc.defaultMaxRelativeDiffFloat;
     this.validMax = validMax;
+    this.fuzzyValidMax = validMax + Misc.defaultMaxRelativeDiffFloat;
     this.hasFillValue = hasFillValue;
     this.fillValue = fillValue;
-    this.hasMissingValue = hasMissingValue;
     this.missingValue = missingValue;
+    this.hasMissingValue = false;
+    // clean up missing values: remove NaNs, fill values, and values outside valid range
+    if (this.missingDataIsMissing && this.missingValue != null) {
+      List<Double> missing = new ArrayList();
+      for (double mv : this.missingValue) {
+        if (Double.isNaN(mv)) {
+          continue;
+        }
+        if (fillValueIsMissing && hasFillValue && mv == fillValue) {
+          continue;
+        }
+        if (invalidDataIsMissing && hasValidMin && mv < fuzzyValidMin) {
+          continue;
+        }
+        if (invalidDataIsMissing && hasValidMax && mv > fuzzyValidMax) {
+          continue;
+        }
+        missing.add(mv);
+      }
+      int nMissing = missing.size();
+      this.missingValue = new double[nMissing];
+      for (int i = 0; i < nMissing; i++) {
+        this.missingValue[i] = missing.get(i);
+      }
+      this.hasMissingValue = this.missingValue.length > 0;
+    }
   }
 
   public boolean hasValidData() {
@@ -162,15 +182,16 @@ public class ConvertMissing {
   }
 
   public boolean isInvalidData(double val) {
-    // valid_min and valid_max may have been multiplied by scale_factor, which could be a float, not a double.
-    // That potential loss of precision means that we cannot do the nearlyEquals() comparison with
-    // Misc.defaultMaxRelativeDiffDouble.
-    boolean greaterThanOrEqualToValidMin =
-        Misc.nearlyEquals(val, validMin, Misc.defaultMaxRelativeDiffFloat) || val > validMin;
-    boolean lessThanOrEqualToValidMax =
-        Misc.nearlyEquals(val, validMax, Misc.defaultMaxRelativeDiffFloat) || val < validMax;
-
-    return (hasValidMin && !greaterThanOrEqualToValidMin) || (hasValidMax && !lessThanOrEqualToValidMax);
+    if (Double.isNaN(val)) {
+      return true;
+    }
+    if (val > fuzzyValidMax) {
+      return true;
+    }
+    if (val < fuzzyValidMin) {
+      return true;
+    }
+    return false;
   }
 
   public boolean hasFillValue() {
@@ -186,9 +207,6 @@ public class ConvertMissing {
   }
 
   public boolean isMissingValue(double val) {
-    if (!hasMissingValue) {
-      return false;
-    }
     for (double aMissingValue : missingValue) {
       if (Misc.nearlyEquals(val, aMissingValue, Misc.defaultMaxRelativeDiffFloat)) {
         return true;
@@ -213,10 +231,10 @@ public class ConvertMissing {
   public boolean isMissing(double val) {
     if (Double.isNaN(val)) {
       return true;
-    } else {
-      return (missingDataIsMissing && isMissingValue(val)) || (fillValueIsMissing && isFillValue(val))
-          || (invalidDataIsMissing && isInvalidData(val));
     }
+    return (missingDataIsMissing && hasMissingValue && isMissingValue(val))
+        || (fillValueIsMissing && hasFillValue && isFillValue(val))
+        || (invalidDataIsMissing && hasValidData() && isInvalidData(val));
   }
 
   @Deprecated
@@ -234,13 +252,16 @@ public class ConvertMissing {
     this.missingDataIsMissing = b;
   }
 
-  public Number convertMissing(Number value) {
-    return isMissing(value.doubleValue()) ? Double.NaN : value;
+  public double convert(double value) {
+    return isMissing(value) ? Double.NaN : value;
   }
 
   public Array convertMissing(Array in) {
     DataType type = in.getDataType();
     if (!type.isNumeric()) {
+      return in;
+    }
+    if (!hasMissing()) {
       return in;
     }
 
@@ -251,7 +272,7 @@ public class ConvertMissing {
     // iterate and convert elements
     while (iterIn.hasNext()) {
       Number value = (Number) iterIn.getObjectNext();
-      value = convertMissing(value);
+      value = convert(value.doubleValue());
       iterOut.setObjectNext(value);
     }
 
