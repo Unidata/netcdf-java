@@ -19,8 +19,6 @@ import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 /**
  * A wrapper around a Variable, creating an "enhanced" Variable. The original Variable is used for the I/O.
