@@ -116,7 +116,6 @@ public class ConvertMissing implements Enhancement {
         missingValue = new double[missingValueAtt.getLength()];
         DataType missingType = FilterHelpers.getAttributeDataType(missingValueAtt, signedness);
         for (int i = 0; i < missingValue.length; i++) {
-          double val = var.convertUnsigned(missingValueAtt.getNumericValue(i), missingType).doubleValue();
           missingValue[i] = var.convertUnsigned(missingValueAtt.getNumericValue(i), missingType).doubleValue();
           missingValue[i] = var.applyScaleOffset(missingValue[i]);
         }
