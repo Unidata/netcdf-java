@@ -146,7 +146,7 @@ public class ConvertMissing implements Enhancement {
     if (this.missingDataIsMissing && this.missingValue != null) {
       List<Double> missing = new ArrayList();
       for (double mv : this.missingValue) {
-        if (mv == Double.NaN) {
+        if (Double.isNaN(mv)) {
           continue;
         }
         if (fillValueIsMissing && hasFillValue && mv == fillValue) {
