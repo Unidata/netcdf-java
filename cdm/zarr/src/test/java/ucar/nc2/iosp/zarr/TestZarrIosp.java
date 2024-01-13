@@ -296,4 +296,12 @@ public class TestZarrIosp {
     assertThat(double_ninf.getDouble(0)).isEqualTo(Double.NEGATIVE_INFINITY);
   }
 
+  @Test
+  public void testLastModified() throws IOException {
+    for (String uri : stores) {
+      try (NetcdfFile ncfile = NetcdfFiles.open(uri)) {
+        assertThat(ncfile.getLastModified()).isNotEqualTo(0);
+      }
+    }
+  }
 }
