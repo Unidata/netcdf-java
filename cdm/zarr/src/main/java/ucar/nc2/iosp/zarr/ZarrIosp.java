@@ -139,4 +139,9 @@ public class ZarrIosp extends AbstractIOServiceProvider {
     }
     return fillValue;
   }
+
+  @Override
+  public long getLastModified() {
+    return raf.getLastModified();
+  }
 }
