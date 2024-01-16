@@ -113,12 +113,12 @@ public class Misc {
 
   /** AbsoluteDifference is less than maxAbsDiff. */
   public static boolean nearlyEqualsAbs(float a, float b, float maxAbsDiff) {
-    return absoluteDifference(a, b) <= Math.abs(maxAbsDiff);
+    return DoubleMath.fuzzyEquals(a, b, maxAbsDiff);
   }
 
   /** AbsoluteDifference is less than maxAbsDiff. */
   public static boolean nearlyEqualsAbs(double a, double b, double maxAbsDiff) {
-    return absoluteDifference(a, b) <= Math.abs(maxAbsDiff);
+    return DoubleMath.fuzzyEquals(a, b, maxAbsDiff);
   }
 
   //////////////////////////////////////////////////////////////////////
