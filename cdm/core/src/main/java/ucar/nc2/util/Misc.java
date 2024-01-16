@@ -98,7 +98,9 @@ public class Misc {
 
   /** RelativeDifference is less than maxRelDiff. */
   public static boolean nearlyEquals(float a, float b, float maxRelDiff) {
-    return DoubleMath.fuzzyEquals(a, b, maxRelDiff);
+    double maxAbsValue = Math.max(Math.abs(a), Math.abs(b));
+    double maxAbsDiff = maxRelDiff * maxAbsValue;
+    return DoubleMath.fuzzyEquals(a, b, maxAbsDiff);
   }
 
   /** RelativeDifference is less than {@link #defaultMaxRelativeDiffDouble}. */
@@ -108,7 +110,9 @@ public class Misc {
 
   /** RelativeDifference is less than maxRelDiff. */
   public static boolean nearlyEquals(double a, double b, double maxRelDiff) {
-    return DoubleMath.fuzzyEquals(a, b, maxRelDiff);
+    double maxAbsValue = Math.max(Math.abs(a), Math.abs(b));
+    double maxAbsDiff = maxRelDiff * maxAbsValue;
+    return DoubleMath.fuzzyEquals(a, b, maxAbsDiff);
   }
 
   /** AbsoluteDifference is less than maxAbsDiff. */
