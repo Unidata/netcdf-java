@@ -91,24 +91,24 @@ public class Misc {
     }
   }
 
-  /** RelativeDifference is less than {@link #defaultMaxRelativeDiffFloat}. */
+  /** AbsoluteDifference is less than {@link #defaultMaxRelativeDiffFloat}. */
   public static boolean nearlyEquals(float a, float b) {
     return nearlyEquals(a, b, defaultMaxRelativeDiffFloat);
   }
 
-  /** RelativeDifference is less than maxRelDiff. */
-  public static boolean nearlyEquals(float a, float b, float maxRelDiff) {
-    return DoubleMath.fuzzyEquals(a, b, maxRelDiff);
+  /** AbsoluteDifference is less than maxAbsDiff. */
+  public static boolean nearlyEquals(float a, float b, float maxAbsDiff) {
+    return DoubleMath.fuzzyEquals(a, b, maxAbsDiff);
   }
 
-  /** RelativeDifference is less than {@link #defaultMaxRelativeDiffDouble}. */
+  /** AbsoluteDifference is less than {@link #defaultMaxRelativeDiffDouble}. */
   public static boolean nearlyEquals(double a, double b) {
     return nearlyEquals(a, b, defaultMaxRelativeDiffDouble);
   }
 
-  /** RelativeDifference is less than maxRelDiff. */
-  public static boolean nearlyEquals(double a, double b, double maxRelDiff) {
-    return DoubleMath.fuzzyEquals(a, b, maxRelDiff);
+  /** AbsoluteDifference is less than maxAbsDiff. */
+  public static boolean nearlyEquals(double a, double b, double maxAbsDiff) {
+    return DoubleMath.fuzzyEquals(a, b, maxAbsDiff);
   }
 
   /** AbsoluteDifference is less than maxAbsDiff. */
