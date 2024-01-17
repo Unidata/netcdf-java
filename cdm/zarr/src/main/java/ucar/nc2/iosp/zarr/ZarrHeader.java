@@ -227,7 +227,8 @@ public class ZarrHeader {
 
   private List<Attribute> makeAttributes(RandomAccessDirectoryItem item) {
     // get RandomAccessFile for JSON parsing
-    try (RandomAccessFile raf = item.getOrOpenRaf()) {
+    try {
+      RandomAccessFile raf = item.getOrOpenRaf();
       // read attributes from file
       raf.seek(0);
       Map<String, Object> attrMap = objectMapper.readValue(raf, HashMap.class);
