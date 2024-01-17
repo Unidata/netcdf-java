@@ -142,6 +142,13 @@ public class ZarrIosp extends AbstractIOServiceProvider {
 
   @Override
   public long getLastModified() {
+    if (raf == null) {
+      try {
+        reacquire();
+      } catch (IOException e) {
+        return 0;
+      }
+    }
     return raf.getLastModified();
   }
 }
