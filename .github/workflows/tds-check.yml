@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout netCDF-Java PR
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: Fetch latest AdoptOpenJDK 8 (hotspot) built for linux"
         run: curl -L "https://api.adoptopenjdk.net/v2/binary/releases/openjdk8?openjdk_impl=hotspot&arch=x64&release=latest&type=jdk&os=linux" -o aojdk8-hs.tar.gz
       - name: Setup Latest AdoptOpenJDK (hotspot) 8
@@ -25,7 +25,7 @@ jobs:
       - name: Build netCDF-java and publish to local maven repository
         run: ./gradlew assemble publishToMavenLocal
       - name: Checkout TDS Master
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           repository: Unidata/tds
           path: tds_build_dir
@@ -59,7 +59,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout netCDF-Java PR
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: Fetch latest AdoptOpenJDK 8 (hotspot) built for linux"
         run: curl -L "https://api.adoptopenjdk.net/v2/binary/releases/openjdk8?openjdk_impl=hotspot&arch=x64&release=latest&type=jdk&os=linux" -o aojdk8-hs.tar.gz
       - name: Setup Latest AdoptOpenJDK (hotspot) 8
@@ -75,7 +75,7 @@ jobs:
       - name: Build netCDF-java and publish to local maven repository
         run: ./gradlew assemble publishToMavenLocal
       - name: Checkout TDS Master
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           repository: Unidata/tds
           path: tds_build_dir
