@@ -87,7 +87,13 @@ public class DataDescriptorTreeConstructor {
 
           // the next one is the replication count size : does not count in field count (x)
           DataDescriptor replication = dkIter.next();
-          if (replication.y == 0)
+
+          // see https://github.com/Unidata/netcdf-java/issues/1282
+          if (replication.x == 31)
+            dk.replicationCountSize = replication.bitWidth;
+          // Not sure about the following hard codes values and if the previous condition (replication.x == 31) already
+          // captures those cases automatically. Ideally need an expert for BUFR to look over these.
+          else if (replication.y == 0)
             dk.replicationCountSize = 1; // ??
           else if (replication.y == 1)
             dk.replicationCountSize = 8;
