@@ -128,6 +128,25 @@ def publishReleaseInfoTask = tasks.register('publishReleaseInfo', PublishToRawRe
 
 publish.dependsOn publishReleaseInfoTask
 
+def publishVersionInfoTask = tasks.register('publishVersionInfo', PublishToRawRepoTask) {
+    group = 'publishing'
+    description = 'Publish version-info.json to Nexus docs.'
+    host = 'https://artifacts.unidata.ucar.edu/'
+    repoName = 'docs-netcdf-java'
+
+    publishSrc = new File(rootProject.getProjectDir(), "project-files/docs/")
+
+    onlyIf {
+        // Will be evaluated at task execution time, not during configuration.
+        // Fails the build if the specified properties haven't been provided.
+        username = getPropertyOrFailBuild NEXUS_USERNAME_KEY
+        password = getPropertyOrFailBuild NEXUS_PASSWORD_KEY
+        return true
+    }
+}
+
+publish.dependsOn publishVersionInfoTask
+
 // The "publish" tasks for all subprojects require credentials for our Nexus server, which they look for in Gradle
 // properties. If those properties (i.e. NEXUS_USERNAME_KEY and NEXUS_PASSWORD_KEY) haven't been provided, the build
 // will fail. Therefore, we only want to configure credentials when a "publish" task is part of the execution plan.
