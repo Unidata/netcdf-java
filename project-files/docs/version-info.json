@@ -1,0 +1,78 @@
+{
+  "package" : "netcdf-java",
+  "packageName" : "netCDF-Java",
+  "releases" : [
+    {
+      "version" : "5.0",
+      "include" : "1",
+      "releaseDate": "2019-07-29",
+      "status" : "",
+      "docsets": {
+        "userguide": {
+          "baseUrl": "https://docs.unidata.ucar.edu/netcdf-java/5.0/userguide/index.html",
+          "docsetName": "User's Guide"
+        }
+      }
+    },
+    {
+      "version" : "5.1",
+      "include" : "1",
+      "releaseDate": "2019-09-18",
+      "status" : "",
+      "docsets": {
+        "userguide": {
+          "baseUrl": "https://docs.unidata.ucar.edu/netcdf-java/5.1/userguide/index.html",
+          "docsetName": "User's Guide"
+        }
+      }
+    },
+    {
+      "version" : "5.2",
+      "include" : "1",
+      "releaseDate": "2019-10-23",
+      "status" : "",
+      "docsets": {
+        "userguide": {
+          "baseUrl": "https://docs.unidata.ucar.edu/netcdf-java/5.2/userguide/index.html",
+          "docsetName": "User's Guide"
+        }
+      }
+    },
+    {
+      "version" : "5.3",
+      "include" : "0",
+      "releaseDate": "2020-04-29",
+      "status" : "",
+      "docsets": {
+        "userguide": {
+          "baseUrl": "https://docs.unidata.ucar.edu/netcdf-java/5.3/userguide/index.html",
+          "docsetName": "User's Guide"
+        }
+      }
+    },
+    {
+      "version" : "5.4",
+      "include" : "1",
+      "releaseDate": "2020-12-07",
+      "status" : "",
+      "docsets": {
+        "userguide": {
+          "baseUrl": "https://docs.unidata.ucar.edu/netcdf-java/5.4/userguide/index.html",
+          "docsetName": "User's Guide"
+        }
+      }
+    },
+    {
+      "version" : "5.5",
+      "include" : "1",
+      "releaseDate": "2022-06-02",
+      "status" : "current",
+      "docsets": {
+        "userguide": {
+          "baseUrl": "https://docs.unidata.ucar.edu/netcdf-java/current/userguide/index.html",
+          "docsetName": "User's Guide"
+        }
+      }
+    }
+  ]
+}
