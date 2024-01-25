@@ -19,6 +19,7 @@ import ucar.nc2.util.IO;
  * Filter implementation of zlib compression.
  */
 public class Deflate extends Filter {
+  private static final int MAX_ARRAY_LEN = Integer.MAX_VALUE - 8;
 
   private static final String name = "zlib";
 
@@ -68,9 +69,10 @@ public class Deflate extends Filter {
 
   @Override
   public byte[] decode(byte[] dataIn) throws IOException {
+    int len = Math.min(8 * dataIn.length, MAX_ARRAY_LEN);
     try (ByteArrayInputStream in = new ByteArrayInputStream(dataIn);
     InflaterInputStream iis = new InflaterInputStream(in, new Inflater(), dataIn.length);
-    ByteArrayOutputStream os = new ByteArrayOutputStream()) {
+    ByteArrayOutputStream os = new ByteArrayOutputStream(len)) {
 
       IO.copyB(iis, os, IO.default_socket_buffersize);
 
