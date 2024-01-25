@@ -71,8 +71,8 @@ public class Deflate extends Filter {
   public byte[] decode(byte[] dataIn) throws IOException {
     int len = Math.min(8 * dataIn.length, MAX_ARRAY_LEN);
     try (ByteArrayInputStream in = new ByteArrayInputStream(dataIn);
-    InflaterInputStream iis = new InflaterInputStream(in, new Inflater(), dataIn.length);
-    ByteArrayOutputStream os = new ByteArrayOutputStream(len)) {
+        InflaterInputStream iis = new InflaterInputStream(in, new Inflater(), dataIn.length);
+        ByteArrayOutputStream os = new ByteArrayOutputStream(len)) {
 
       IO.copyB(iis, os, IO.default_socket_buffersize);
 
