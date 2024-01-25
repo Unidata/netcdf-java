@@ -68,16 +68,14 @@ public class Deflate extends Filter {
 
   @Override
   public byte[] decode(byte[] dataIn) throws IOException {
-    ByteArrayInputStream in = new ByteArrayInputStream(dataIn);
+    try (ByteArrayInputStream in = new ByteArrayInputStream(dataIn);
     InflaterInputStream iis = new InflaterInputStream(in, new Inflater(), dataIn.length);
+    ByteArrayOutputStream os = new ByteArrayOutputStream()) {
 
-    ByteArrayOutputStream os = new ByteArrayOutputStream();
-    IO.copyB(iis, os, IO.default_socket_buffersize);
-    // close everything and return
-    in.close();
-    iis.close();
-    os.close();
-    return os.toByteArray();
+      IO.copyB(iis, os, IO.default_socket_buffersize);
+
+      return os.toByteArray();
+    }
   }
 
   public static class Provider implements FilterProvider {
