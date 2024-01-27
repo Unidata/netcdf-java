@@ -27,115 +27,109 @@ public class SigmetVolumeScan {
    * if suffix is "_2" it means a two byte value instead of just one byte
    * (2 bytes are experimental at this point - didn't have a file to test)
    */
-  public static final String[] data_name = {
-          "ExtendedHeaders", // ? bytes
-          "TotalPower", "Reflectivity", "Velocity", "Width", "DifferentialReflectivity", "[6]", "CorrectedReflectivity", // 1 byte
-          "TotalPower_2", "Reflectivity_2", "Velocity_2", "Width_2", "DifferentialReflectivity_2", // 2 bytes
-          "RainfallRate_2" /* 2 bytes */, "KDPDifferentialPhase" /* 1 byte */, "KDPDifferentialPhase_2" /* 2 bytes */,
-          "PhiDPDifferentialPhase" /* 1 byte */, "CorrectedVelocity" /* 1 byte */, "SQI" /* 1 byte */,
-          "RhoHV" /* 1 byte */, "RhoHV_2" /* 2 bytes */,
-          "CorrectedReflectivity_2" /* 2 bytes */, "CorrectedVelocity_2" /* 2 bytes */, "SQI_2" /* 2 bytes */,
-          "PhiDPDifferentialPhase_2" /* 2 bytes */,
-          "LDRH" /* 1 byte */, "LDRH_2" /* 2 bytes */, "LDRV" /* 1 byte */, "LDRV_2" /* 2 bytes */,
-          "[29]", "[30]", "[31]",
-          "Height" /* 1 byte */, "LinearLiquid_2" /* 2 bytes */, "RawData" /* ? */,
-          "WindShear" /* 1 byte */, "Divergence_2" /* 2 bytes */, "FloatedLiquid_2" /* 2 bytes */,
-          "UserType" /* 1 byte */, "UnspecifiedData" /* 1 byte */, "Deformation_2" /* 2 bytes */,
-          "VerticalVelocity_2" /* 2 bytes */, "HorizontalVelocity_2" /* 2 bytes */,
-          "HorizontalWindDirection_2" /* 2 bytes */, "AxisOfDilatation_2" /* 2 bytes */, "TimeInSeconds_2" /* 2 bytes */,
-          "RHOH" /* 1 byte */, "RHOH_2" /* 2 bytes */, "RHOV" /* 1 byte */, "RHOV_2" /* 2 bytes */,
-          "PHIH" /* 1 byte */, "PHIH_2" /* 2 bytes */, "PHIV" /* 1 byte */, "PHIV_2" /* 2 bytes */,
-          "UserType_2" /* 2 bytes */, "HydrometeorClass" /* 1 byte */, "HydrometeorClass_2" /* 2 bytes */,
-          "CorrectedDifferentialReflectivity" /* 1 byte */, "CorrectedDifferentialReflectivity_2" /* 2 bytes */,
-          // 16 empty
-          "[59]", "[60]", "[61]", "[62]", "[63]", "[64]", "[65]", "[66]", "[67]", "[68]", "[69]", "[70]", "[71]", "[72]", "[73]", "[74]",
-          "PolarimetricMeteoIndex" /* 1 byte */, "PolarimetricMeteoIndex_2" /* 2 bytes */,
-          "LOG8" /* 1 byte */, "LOG16_2" /* 2 bytes */, "CSP8" /* 1 byte */, "CSP16_2" /* 2 bytes */,
-          "CCOR8" /* 1 byte */, "CCOR16_2" /* 2 bytes */, "AH8" /* 1 byte */, "AH16_2" /* 2 bytes */,
-          "AV8" /* 1 byte */, "AV16_2" /* 2 bytes */, "AZDR8" /* 1 byte */, "AZDR16_2" /* 2 bytes */,
-  };
+  public static final String[] data_name = {"ExtendedHeaders", // ? bytes
+      "TotalPower", "Reflectivity", "Velocity", "Width", "DifferentialReflectivity", "[6]", "CorrectedReflectivity", // 1
+                                                                                                                     // byte
+      "TotalPower_2", "Reflectivity_2", "Velocity_2", "Width_2", "DifferentialReflectivity_2", // 2 bytes
+      "RainfallRate_2" /* 2 bytes */, "KDPDifferentialPhase" /* 1 byte */, "KDPDifferentialPhase_2" /* 2 bytes */,
+      "PhiDPDifferentialPhase" /* 1 byte */, "CorrectedVelocity" /* 1 byte */, "SQI" /* 1 byte */, "RhoHV" /* 1 byte */,
+      "RhoHV_2" /* 2 bytes */, "CorrectedReflectivity_2" /* 2 bytes */, "CorrectedVelocity_2" /* 2 bytes */,
+      "SQI_2" /* 2 bytes */, "PhiDPDifferentialPhase_2" /* 2 bytes */, "LDRH" /* 1 byte */, "LDRH_2" /* 2 bytes */,
+      "LDRV" /* 1 byte */, "LDRV_2" /* 2 bytes */, "[29]", "[30]", "[31]", "Height" /* 1 byte */,
+      "LinearLiquid_2" /* 2 bytes */, "RawData" /* ? */, "WindShear" /* 1 byte */, "Divergence_2" /* 2 bytes */,
+      "FloatedLiquid_2" /* 2 bytes */, "UserType" /* 1 byte */, "UnspecifiedData" /* 1 byte */,
+      "Deformation_2" /* 2 bytes */, "VerticalVelocity_2" /* 2 bytes */, "HorizontalVelocity_2" /* 2 bytes */,
+      "HorizontalWindDirection_2" /* 2 bytes */, "AxisOfDilatation_2" /* 2 bytes */, "TimeInSeconds_2" /* 2 bytes */,
+      "RHOH" /* 1 byte */, "RHOH_2" /* 2 bytes */, "RHOV" /* 1 byte */, "RHOV_2" /* 2 bytes */, "PHIH" /* 1 byte */,
+      "PHIH_2" /* 2 bytes */, "PHIV" /* 1 byte */, "PHIV_2" /* 2 bytes */, "UserType_2" /* 2 bytes */,
+      "HydrometeorClass" /* 1 byte */, "HydrometeorClass_2" /* 2 bytes */,
+      "CorrectedDifferentialReflectivity" /* 1 byte */, "CorrectedDifferentialReflectivity_2" /* 2 bytes */,
+      // 16 empty
+      "[59]", "[60]", "[61]", "[62]", "[63]", "[64]", "[65]", "[66]", "[67]", "[68]", "[69]", "[70]", "[71]", "[72]",
+      "[73]", "[74]", "PolarimetricMeteoIndex" /* 1 byte */, "PolarimetricMeteoIndex_2" /* 2 bytes */,
+      "LOG8" /* 1 byte */, "LOG16_2" /* 2 bytes */, "CSP8" /* 1 byte */, "CSP16_2" /* 2 bytes */, "CCOR8" /* 1 byte */,
+      "CCOR16_2" /* 2 bytes */, "AH8" /* 1 byte */, "AH16_2" /* 2 bytes */, "AV8" /* 1 byte */, "AV16_2" /* 2 bytes */,
+      "AZDR8" /* 1 byte */, "AZDR16_2" /* 2 bytes */,};
 
   /*
-    Some units are unknown, some were correlated and assumed by ChatGPT.
-    Not all might be correct!
-    Just extending the initial list here from previous version of SigmetIOServiceProvider
-    // TODO fill and double check
+   * Some units are unknown, some were correlated and assumed by ChatGPT.
+   * Not all might be correct!
+   * Just extending the initial list here from previous version of SigmetIOServiceProvider
+   * // TODO fill and double check
    */
-  public static final String[] data_unit = {
-          "?", // DB_XHDR: Extended Headers
-          "dBm", // DB_DBT: Total Power (1 byte)
-          "dBZ", // DB_DBZ: Reflectivity (1 byte)
-          "m/s", // DB_VEL: Velocity (1 byte)
-          "m/s", // DB_WIDTH: Width (1 byte)
-          "dB", // DB_ZDR: Differential Reflectivity (1 byte)
-          "?", // empty
-          "dBZ", // DB_DBZC: Corrected Reflectivity (1 byte)
-          "dBm", // DB_DBT2: Total Power (2 byte)
-          "dBZ", // DB_DBZ2: Reflectivity (2 byte)
-          "m/s", // DB_VEL2: Velocity (2 byte)
-          "m/s", // DB_WIDTH2: Width (2 byte)
-          "dB", // DB_ZDR2: Differential Reflectivity (2 byte)
-          "mm/hr", // DB_RAINRATE2: Rainfall Rate (2 byte)
-          "°/km", // DB_KDP: KDP (Differential Phase) (1 byte)
-          "°/km", // DB_KDP2: KDP (Differential Phase) (2 byte)
-          "°", // DB_PHIDP: PhiDP (Differential Phase) (1 byte)
-          "m/s", // DB_VELC: Corrected Velocity (1 byte)
-          "?", // DB_SQI: SQI (Signal Quality Index) (1 byte)
-          "?", // DB_RHOHV: RhoHV (1 byte)
-          "?", // DB_RHOHV2: RhoHV (2 byte)
-          "dBZ", // DB_DBZC2: Corrected Reflectivity (2 byte)
-          "m/s", // DB_VELC2: Corrected Velocity (2 byte)
-          "?", // DB_SQI2: SQI (Signal Quality Index) (2 byte)
-          "°", // DB_PHIDP2: PhiDP (Differential Phase) (2 byte)
-          "?", // DB_LDRH: LDR xmt H rcv V (1 byte)
-          "?", // DB_LDRH2: LDR xmt H rcv V (2 byte)
-          "?", // DB_LDRV: LDR xmt V rcv H (1 byte)
-          "?", // DB_LDRV2: LDR xmt V rcv H (2 byte)
-          // 3 empty
-          "?",  "?",  "?",
-          "1/10 km", // DB_HEIGHT: Height (1/10 km) (1 byte)
-          ".001mm", // DB_VIL2: Linear liquid (.001mm) (2 byte)
-          "?", // DB_RAW: Unknown unit or unitless (Raw Data)
-          "m/s", // DB_SHEAR: Shear (Velocity difference)
-          "?", // DB_DIVERGE2: Divergence (2 byte)
-          "mm", // DB_FLIQUID2: Liquid equivalent (2 byte)
-          "?", // DB_USER: User-defined (unit depends on definition)
-          "?", // DB_OTHER: Other data type (unit depends on definition)
-          "1/s", // DB_DEFORM2: Deformation (2 byte)
-          "m/s", // DB_VVEL2: Vertical Velocity (2 byte)
-          "m/s", // DB_HVEL2: Horizontal Velocity (2 byte)
-          "°", // DB_HDIR2: Horizontal Direction (2 byte)
-          "1/s", // DB_AXDIL2: Axis of Dilation (2 byte)
-          "s", // DB_TIME2: Time (2 byte)
-          "?", // DB_RHOH: RhoH (1 byte)
-          "?", // DB_RHOH2: RhoH (2 byte)
-          "?", // DB_RHOV: RhoV (1 byte)
-          "?", // DB_RHOV2: RhoV (2 byte)
-          "°", // DB_PHIH: PhiH (1 byte)
-          "°", // DB_PHIH2: PhiH (2 byte)
-          "°", // DB_PHIV: PhiV (1 byte)
-          "°", // DB_PHIV2: PhiV (2 byte)
-          "?", // DB_USER2: User-defined (2 byte)
-          "?", // DB_HCLASS: Hydrometeor Classification (1 byte)
-          "?", // DB_HCLASS2: Hydrometeor Classification (2 byte)
-          "dB", // DB_ZDRC: Corrected Differential Reflectivity (1 byte)
-          "dB", // DB_ZDRC2: Corrected Differential Reflectivity (2 byte)
-          // 16 empty
-          "?", "?", "?", "?", "?", "?", "?", "?", "?", "?", "?", "?", "?", "?", "?", "?",
-          "?", // PolarimetricMeteoIndex (1 byte)
-          "?", // PolarimetricMeteoIndex2 (2 bytes)
-          "?", // LOG8 (1 byte)
-          "?", // LOG16 (2 bytes)
-          "?", // CSP8 (1 byte)
-          "?", // CSP16 (2 bytes)
-          "?", // CCOR8 (1 byte)
-          "?", // CCOR16 (2 bytes)
-          "?", // AH8 (1 byte)
-          "?", // AH16 (2 bytes)
-          "?", // AV8 (1 byte)
-          "?", // AV16 (2 bytes)
-          "?", // AZDR8 (1 byte)
-          "?", // AZDR16 (2 bytes)
+  public static final String[] data_unit = {"?", // DB_XHDR: Extended Headers
+      "dBm", // DB_DBT: Total Power (1 byte)
+      "dBZ", // DB_DBZ: Reflectivity (1 byte)
+      "m/s", // DB_VEL: Velocity (1 byte)
+      "m/s", // DB_WIDTH: Width (1 byte)
+      "dB", // DB_ZDR: Differential Reflectivity (1 byte)
+      "?", // empty
+      "dBZ", // DB_DBZC: Corrected Reflectivity (1 byte)
+      "dBm", // DB_DBT2: Total Power (2 byte)
+      "dBZ", // DB_DBZ2: Reflectivity (2 byte)
+      "m/s", // DB_VEL2: Velocity (2 byte)
+      "m/s", // DB_WIDTH2: Width (2 byte)
+      "dB", // DB_ZDR2: Differential Reflectivity (2 byte)
+      "mm/hr", // DB_RAINRATE2: Rainfall Rate (2 byte)
+      "°/km", // DB_KDP: KDP (Differential Phase) (1 byte)
+      "°/km", // DB_KDP2: KDP (Differential Phase) (2 byte)
+      "°", // DB_PHIDP: PhiDP (Differential Phase) (1 byte)
+      "m/s", // DB_VELC: Corrected Velocity (1 byte)
+      "?", // DB_SQI: SQI (Signal Quality Index) (1 byte)
+      "?", // DB_RHOHV: RhoHV (1 byte)
+      "?", // DB_RHOHV2: RhoHV (2 byte)
+      "dBZ", // DB_DBZC2: Corrected Reflectivity (2 byte)
+      "m/s", // DB_VELC2: Corrected Velocity (2 byte)
+      "?", // DB_SQI2: SQI (Signal Quality Index) (2 byte)
+      "°", // DB_PHIDP2: PhiDP (Differential Phase) (2 byte)
+      "?", // DB_LDRH: LDR xmt H rcv V (1 byte)
+      "?", // DB_LDRH2: LDR xmt H rcv V (2 byte)
+      "?", // DB_LDRV: LDR xmt V rcv H (1 byte)
+      "?", // DB_LDRV2: LDR xmt V rcv H (2 byte)
+      // 3 empty
+      "?", "?", "?", "1/10 km", // DB_HEIGHT: Height (1/10 km) (1 byte)
+      ".001mm", // DB_VIL2: Linear liquid (.001mm) (2 byte)
+      "?", // DB_RAW: Unknown unit or unitless (Raw Data)
+      "m/s", // DB_SHEAR: Shear (Velocity difference)
+      "?", // DB_DIVERGE2: Divergence (2 byte)
+      "mm", // DB_FLIQUID2: Liquid equivalent (2 byte)
+      "?", // DB_USER: User-defined (unit depends on definition)
+      "?", // DB_OTHER: Other data type (unit depends on definition)
+      "1/s", // DB_DEFORM2: Deformation (2 byte)
+      "m/s", // DB_VVEL2: Vertical Velocity (2 byte)
+      "m/s", // DB_HVEL2: Horizontal Velocity (2 byte)
+      "°", // DB_HDIR2: Horizontal Direction (2 byte)
+      "1/s", // DB_AXDIL2: Axis of Dilation (2 byte)
+      "s", // DB_TIME2: Time (2 byte)
+      "?", // DB_RHOH: RhoH (1 byte)
+      "?", // DB_RHOH2: RhoH (2 byte)
+      "?", // DB_RHOV: RhoV (1 byte)
+      "?", // DB_RHOV2: RhoV (2 byte)
+      "°", // DB_PHIH: PhiH (1 byte)
+      "°", // DB_PHIH2: PhiH (2 byte)
+      "°", // DB_PHIV: PhiV (1 byte)
+      "°", // DB_PHIV2: PhiV (2 byte)
+      "?", // DB_USER2: User-defined (2 byte)
+      "?", // DB_HCLASS: Hydrometeor Classification (1 byte)
+      "?", // DB_HCLASS2: Hydrometeor Classification (2 byte)
+      "dB", // DB_ZDRC: Corrected Differential Reflectivity (1 byte)
+      "dB", // DB_ZDRC2: Corrected Differential Reflectivity (2 byte)
+      // 16 empty
+      "?", "?", "?", "?", "?", "?", "?", "?", "?", "?", "?", "?", "?", "?", "?", "?", "?", // PolarimetricMeteoIndex (1
+                                                                                           // byte)
+      "?", // PolarimetricMeteoIndex2 (2 bytes)
+      "?", // LOG8 (1 byte)
+      "?", // LOG16 (2 bytes)
+      "?", // CSP8 (1 byte)
+      "?", // CSP16 (2 bytes)
+      "?", // CCOR8 (1 byte)
+      "?", // CCOR16 (2 bytes)
+      "?", // AH8 (1 byte)
+      "?", // AH16 (2 bytes)
+      "?", // AV8 (1 byte)
+      "?", // AV16 (2 bytes)
+      "?", // AZDR8 (1 byte)
+      "?", // AZDR16 (2 bytes)
   };
 
   private HashMap<String, List<List<Ray>>> allGroups = new HashMap<>();
@@ -248,16 +242,17 @@ public class SigmetVolumeScan {
         for (int i = 0; i < nparams; i++) {
           int idh_len = cur_len + 12 + i * 76; // + 12 == skipping over <structure_header>
 
-          /* debug structure_header
-          raf.seek(idh_len-12);
-          // Structure identifier
-          short si = raf.readShort();
-          raf.readShort(); // format version
-          int nob = raf.readInt();
-          if (si != (short)24)
-            throw new IllegalStateException("not a Ingest_header");
-          raf.readShort(); // reserved
-          raf.readShort(); // flags
+          /*
+           * debug structure_header
+           * raf.seek(idh_len-12);
+           * // Structure identifier
+           * short si = raf.readShort();
+           * raf.readShort(); // format version
+           * int nob = raf.readInt();
+           * if (si != (short)24)
+           * throw new IllegalStateException("not a Ingest_header");
+           * raf.readShort(); // reserved
+           * raf.readShort(); // flags
            */
 
           raf.seek(idh_len);
@@ -275,7 +270,7 @@ public class SigmetVolumeScan {
           num_rays_exp[i] = raf.readShort();
           beg += num_rays_exp[i]; // before num_rays_act[i] was used but it does seem not work
           num_rays_act[i] = raf.readShort();
-          //beg += num_rays_act[i]; // idh_len+20
+          // beg += num_rays_act[i]; // idh_len+20
           angl_swp[i] = raf.readShort(); // idh_len+22
           // TODO maybe use in stead of variable twoBytes?
           bin_len[i] = raf.readShort(); // idh_len+24
@@ -455,7 +450,7 @@ public class SigmetVolumeScan {
           nb++;
           if (twoBytes) {
             cur_len++;
-            //i++;?
+            // i++;?
           }
 
           if (cur_len % REC_SIZE == 0) {
@@ -526,7 +521,7 @@ public class SigmetVolumeScan {
             nb = nb + 1;
             if (twoBytes) {
               cur_len++;
-              //ii++;?
+              // ii++;?
             }
 
             if (cur_len % REC_SIZE == 0) {

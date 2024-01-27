@@ -121,8 +121,8 @@ public class SigmetIOServiceProvider extends AbstractIOServiceProvider {
   /**
    * Open existing file, and populate ncfile with it.
    */
-  public void open(RandomAccessFile raf, ucar.nc2.NetcdfFile ncfile,
-                   ucar.nc2.util.CancelTask cancelTask) throws IOException {
+  public void open(RandomAccessFile raf, ucar.nc2.NetcdfFile ncfile, ucar.nc2.util.CancelTask cancelTask)
+      throws IOException {
     super.open(raf, ncfile, cancelTask);
     // java.util.Map<String, Number> recHdr=new java.util.HashMap<String, Number>();
     Map<String, String> hdrNames = new java.util.HashMap<>();
@@ -275,8 +275,7 @@ public class SigmetIOServiceProvider extends AbstractIOServiceProvider {
    * @param hdrNames java.util.Map with values for "StationName.." Attributes
    * @return ArrayList of Variables of ncfile
    */
-  public ArrayList<Variable> init(RandomAccessFile raf, ucar.nc2.NetcdfFile ncfile,
-                                  Map<String, String> hdrNames) {
+  public ArrayList<Variable> init(RandomAccessFile raf, ucar.nc2.NetcdfFile ncfile, Map<String, String> hdrNames) {
     // prepare attribute values
     String[] data_name = SigmetVolumeScan.data_name;
     String[] unit = SigmetVolumeScan.data_unit;
@@ -782,7 +781,7 @@ public class SigmetIOServiceProvider extends AbstractIOServiceProvider {
     if (posSweep > 0)
       groupName = groupName.substring(0, posSweep);
     if (groupName.startsWith(RAW_VARIABLE_PREFIX))
-        groupName = groupName.substring(RAW_VARIABLE_PREFIX.length());
+      groupName = groupName.substring(RAW_VARIABLE_PREFIX.length());
 
     groups = volScan.getGroup(groupName);
     if (groups == null)
@@ -871,8 +870,7 @@ public class SigmetIOServiceProvider extends AbstractIOServiceProvider {
    * @param channel WritableByteChannel object - channel that can write bytes.
    * @return the number of bytes written, possibly zero.
    */
-  public long readToByteChannel11(Variable v2, Section section, WritableByteChannel channel)
-      throws IOException {
+  public long readToByteChannel11(Variable v2, Section section, WritableByteChannel channel) throws IOException {
     Array data = readData(v2, section);
     float[] ftdata = new float[(int) data.getSize()];
     byte[] bytedata = new byte[(int) data.getSize() * 4];
@@ -1036,7 +1034,7 @@ public class SigmetIOServiceProvider extends AbstractIOServiceProvider {
         // doing no rounding in this case as below for the other cases
         BigDecimal bd = new BigDecimal(temp);
         return bd.floatValue();
-        //logger.warn("calcData: unimplemented 1 byte data type = " + dty + " " + SigmetVolumeScan.data_name[dty]);
+      // logger.warn("calcData: unimplemented 1 byte data type = " + dty + " " + SigmetVolumeScan.data_name[dty]);
     }
     BigDecimal bd = new BigDecimal(temp);
     // this should be reviewed, not sure why would you want a loss of precision here?
@@ -1086,7 +1084,7 @@ public class SigmetIOServiceProvider extends AbstractIOServiceProvider {
         // TODO implement for more SigmetVolumeScan.data_name (only 2 bytes)
         // using only the raw value
         temp = data;
-        //logger.warn("calcData: unimplemented 2 byte data type = " + dty + " " + SigmetVolumeScan.data_name[dty]);
+        // logger.warn("calcData: unimplemented 2 byte data type = " + dty + " " + SigmetVolumeScan.data_name[dty]);
         break;
     }
 
