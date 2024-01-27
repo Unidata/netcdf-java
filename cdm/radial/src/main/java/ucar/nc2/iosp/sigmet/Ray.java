@@ -201,18 +201,27 @@ public class Ray {
   public void readData(RandomAccessFile raf, Range gateRange, IndexIterator ii) throws IOException {
     int REC_SIZE = 6144;
     raf.seek(offset);
-    byte[] data = new byte[bins];
-    float[] dd = new float[bins];
-    byte d;
+    Number[] dd = new Number[bins];
     int nb = 0;
     short a00;
+
+    short dty = getDataType();
+    String var_name = SigmetVolumeScan.data_name[dty];
+    // support for 2 byte data types is experimental
+    boolean twoBytes = var_name.endsWith("_2");
+
     // raf.readFully(data);
     if (dataRead > 0) {
       raf.seek(offset);
 
       for (int i = 0; i < dataRead; i++) {
-        d = raf.readByte();
-        dd[i] = SigmetIOServiceProvider.calcData(SigmetIOServiceProvider.recHdr, getDataType(), d);
+        if (!twoBytes) {
+          byte d = raf.readByte();
+          dd[i] = SigmetIOServiceProvider.calcData(SigmetIOServiceProvider.recHdr, dty, d);
+        } else {
+          short d = raf.readShort();
+          dd[i] = SigmetIOServiceProvider.calcData(SigmetIOServiceProvider.recHdr, dty, d);
+        }
         nb++;
       }
     }
@@ -240,10 +249,17 @@ public class Ray {
         }
         raf.seek(cur_len);
         for (int i = 0; i < dataRead1; i++) {
-          d = raf.readByte();
-          dd[nb] = SigmetIOServiceProvider.calcData(SigmetIOServiceProvider.recHdr, getDataType(), d);
+          if (!twoBytes) {
+            byte d = raf.readByte();
+            dd[nb] = SigmetIOServiceProvider.calcData(SigmetIOServiceProvider.recHdr, dty, d);
+            cur_len = cur_len + 1;
+          } else {
+            short d = raf.readShort();
+            dd[i] = SigmetIOServiceProvider.calcData(SigmetIOServiceProvider.recHdr, dty, d);
+            cur_len = cur_len + 2;
+          }
           nb = nb + 1;
-          cur_len = cur_len + 1;
+
           if (nb % REC_SIZE == 0) {
             pos = i + 1;
             break;
@@ -257,7 +273,10 @@ public class Ray {
         int num_zero = a00 * 2;
         int dataRead1 = num_zero;
         for (int k = 0; k < dataRead1; k++) {
-          dd[nb + k] = SigmetIOServiceProvider.calcData(SigmetIOServiceProvider.recHdr, getDataType(), (byte) 0);
+          if (!twoBytes)
+            dd[nb + k] = SigmetIOServiceProvider.calcData(SigmetIOServiceProvider.recHdr, dty, (byte) 0);
+          else
+            dd[nb + k] = SigmetIOServiceProvider.calcData(SigmetIOServiceProvider.recHdr, dty, (short) 0);
         }
         nb = nb + dataRead1;
         if (cur_len % REC_SIZE == 0) {
@@ -267,11 +286,20 @@ public class Ray {
       }
     } // ------ end of while for num_bins---------------------------------
 
-    for (int gateIdx : gateRange) {
-      if (gateIdx >= bins)
-        ii.setFloatNext(Float.NaN);
-      else
-        ii.setFloatNext(dd[gateIdx]);
+    if (!twoBytes) {
+      for (int gateIdx : gateRange) {
+        if (gateIdx >= bins)
+          ii.setFloatNext(Float.NaN);
+        else
+          ii.setFloatNext(dd[gateIdx].floatValue());
+      }
+    } else {
+      for (int gateIdx : gateRange) {
+        if (gateIdx >= bins)
+          ii.setDoubleNext(Double.NaN);
+        else
+          ii.setDoubleNext(dd[gateIdx].doubleValue());
+      }
     }
 
   } // end of readData
