@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.nc2.Variable;
 import ucar.unidata.io.RandomAccessFile;
+
 import java.util.*;
 
 /**
@@ -20,13 +21,126 @@ import java.util.*;
  */
 public class SigmetVolumeScan {
   private static Logger logger = LoggerFactory.getLogger(SigmetVolumeScan.class);
-  String[] data_name = {" ", "TotalPower", "Reflectivity", "Velocity", "Width", "DifferentialReflectivity"};
-  private List<List<Ray>> differentialReflectivityGroups;
-  private List<List<Ray>> reflectivityGroups;
-  private List<List<Ray>> totalPowerGroups;
-  private List<List<Ray>> velocityGroups;
-  private List<List<Ray>> widthGroups;
-  private List<List<Ray>> timeGroups;
+  /**
+   * See IRIS-Programming-Guide-M211318EN: 4.9 Constants
+   * empty or undefined types are set to their index number to avoid duplicates
+   * if suffix is "_2" it means a two byte value instead of just one byte
+   * (2 bytes are experimental at this point - didn't have a file to test)
+   */
+  public static final String[] data_name = {
+          "ExtendedHeaders", // ? bytes
+          "TotalPower", "Reflectivity", "Velocity", "Width", "DifferentialReflectivity", "[6]", "CorrectedReflectivity", // 1 byte
+          "TotalPower_2", "Reflectivity_2", "Velocity_2", "Width_2", "DifferentialReflectivity_2", // 2 bytes
+          "RainfallRate_2" /* 2 bytes */, "KDPDifferentialPhase" /* 1 byte */, "KDPDifferentialPhase_2" /* 2 bytes */,
+          "PhiDPDifferentialPhase" /* 1 byte */, "CorrectedVelocity" /* 1 byte */, "SQI" /* 1 byte */,
+          "RhoHV" /* 1 byte */, "RhoHV_2" /* 2 bytes */,
+          "CorrectedReflectivity_2" /* 2 bytes */, "CorrectedVelocity_2" /* 2 bytes */, "SQI_2" /* 2 bytes */,
+          "PhiDPDifferentialPhase_2" /* 2 bytes */,
+          "LDRH" /* 1 byte */, "LDRH_2" /* 2 bytes */, "LDRV" /* 1 byte */, "LDRV_2" /* 2 bytes */,
+          "[29]", "[30]", "[31]",
+          "Height" /* 1 byte */, "LinearLiquid_2" /* 2 bytes */, "RawData" /* ? */,
+          "WindShear" /* 1 byte */, "Divergence_2" /* 2 bytes */, "FloatedLiquid_2" /* 2 bytes */,
+          "UserType" /* 1 byte */, "UnspecifiedData" /* 1 byte */, "Deformation_2" /* 2 bytes */,
+          "VerticalVelocity_2" /* 2 bytes */, "HorizontalVelocity_2" /* 2 bytes */,
+          "HorizontalWindDirection_2" /* 2 bytes */, "AxisOfDilatation_2" /* 2 bytes */, "TimeInSeconds_2" /* 2 bytes */,
+          "RHOH" /* 1 byte */, "RHOH_2" /* 2 bytes */, "RHOV" /* 1 byte */, "RHOV_2" /* 2 bytes */,
+          "PHIH" /* 1 byte */, "PHIH_2" /* 2 bytes */, "PHIV" /* 1 byte */, "PHIV_2" /* 2 bytes */,
+          "UserType_2" /* 2 bytes */, "HydrometeorClass" /* 1 byte */, "HydrometeorClass_2" /* 2 bytes */,
+          "CorrectedDifferentialReflectivity" /* 1 byte */, "CorrectedDifferentialReflectivity_2" /* 2 bytes */,
+          // 16 empty
+          "[59]", "[60]", "[61]", "[62]", "[63]", "[64]", "[65]", "[66]", "[67]", "[68]", "[69]", "[70]", "[71]", "[72]", "[73]", "[74]",
+          "PolarimetricMeteoIndex" /* 1 byte */, "PolarimetricMeteoIndex_2" /* 2 bytes */,
+          "LOG8" /* 1 byte */, "LOG16_2" /* 2 bytes */, "CSP8" /* 1 byte */, "CSP16_2" /* 2 bytes */,
+          "CCOR8" /* 1 byte */, "CCOR16_2" /* 2 bytes */, "AH8" /* 1 byte */, "AH16_2" /* 2 bytes */,
+          "AV8" /* 1 byte */, "AV16_2" /* 2 bytes */, "AZDR8" /* 1 byte */, "AZDR16_2" /* 2 bytes */,
+  };
+
+  /*
+    Some units are unknown, some were correlated and assumed by ChatGPT.
+    Not all might be correct!
+    Just extending the initial list here from previous version of SigmetIOServiceProvider
+    // TODO fill and double check
+   */
+  public static final String[] data_unit = {
+          "?", // DB_XHDR: Extended Headers
+          "dBm", // DB_DBT: Total Power (1 byte)
+          "dBZ", // DB_DBZ: Reflectivity (1 byte)
+          "m/s", // DB_VEL: Velocity (1 byte)
+          "m/s", // DB_WIDTH: Width (1 byte)
+          "dB", // DB_ZDR: Differential Reflectivity (1 byte)
+          "?", // empty
+          "dBZ", // DB_DBZC: Corrected Reflectivity (1 byte)
+          "dBm", // DB_DBT2: Total Power (2 byte)
+          "dBZ", // DB_DBZ2: Reflectivity (2 byte)
+          "m/s", // DB_VEL2: Velocity (2 byte)
+          "m/s", // DB_WIDTH2: Width (2 byte)
+          "dB", // DB_ZDR2: Differential Reflectivity (2 byte)
+          "mm/hr", // DB_RAINRATE2: Rainfall Rate (2 byte)
+          "°/km", // DB_KDP: KDP (Differential Phase) (1 byte)
+          "°/km", // DB_KDP2: KDP (Differential Phase) (2 byte)
+          "°", // DB_PHIDP: PhiDP (Differential Phase) (1 byte)
+          "m/s", // DB_VELC: Corrected Velocity (1 byte)
+          "?", // DB_SQI: SQI (Signal Quality Index) (1 byte)
+          "?", // DB_RHOHV: RhoHV (1 byte)
+          "?", // DB_RHOHV2: RhoHV (2 byte)
+          "dBZ", // DB_DBZC2: Corrected Reflectivity (2 byte)
+          "m/s", // DB_VELC2: Corrected Velocity (2 byte)
+          "?", // DB_SQI2: SQI (Signal Quality Index) (2 byte)
+          "°", // DB_PHIDP2: PhiDP (Differential Phase) (2 byte)
+          "?", // DB_LDRH: LDR xmt H rcv V (1 byte)
+          "?", // DB_LDRH2: LDR xmt H rcv V (2 byte)
+          "?", // DB_LDRV: LDR xmt V rcv H (1 byte)
+          "?", // DB_LDRV2: LDR xmt V rcv H (2 byte)
+          // 3 empty
+          "?",  "?",  "?",
+          "1/10 km", // DB_HEIGHT: Height (1/10 km) (1 byte)
+          ".001mm", // DB_VIL2: Linear liquid (.001mm) (2 byte)
+          "?", // DB_RAW: Unknown unit or unitless (Raw Data)
+          "m/s", // DB_SHEAR: Shear (Velocity difference)
+          "?", // DB_DIVERGE2: Divergence (2 byte)
+          "mm", // DB_FLIQUID2: Liquid equivalent (2 byte)
+          "?", // DB_USER: User-defined (unit depends on definition)
+          "?", // DB_OTHER: Other data type (unit depends on definition)
+          "1/s", // DB_DEFORM2: Deformation (2 byte)
+          "m/s", // DB_VVEL2: Vertical Velocity (2 byte)
+          "m/s", // DB_HVEL2: Horizontal Velocity (2 byte)
+          "°", // DB_HDIR2: Horizontal Direction (2 byte)
+          "1/s", // DB_AXDIL2: Axis of Dilation (2 byte)
+          "s", // DB_TIME2: Time (2 byte)
+          "?", // DB_RHOH: RhoH (1 byte)
+          "?", // DB_RHOH2: RhoH (2 byte)
+          "?", // DB_RHOV: RhoV (1 byte)
+          "?", // DB_RHOV2: RhoV (2 byte)
+          "°", // DB_PHIH: PhiH (1 byte)
+          "°", // DB_PHIH2: PhiH (2 byte)
+          "°", // DB_PHIV: PhiV (1 byte)
+          "°", // DB_PHIV2: PhiV (2 byte)
+          "?", // DB_USER2: User-defined (2 byte)
+          "?", // DB_HCLASS: Hydrometeor Classification (1 byte)
+          "?", // DB_HCLASS2: Hydrometeor Classification (2 byte)
+          "dB", // DB_ZDRC: Corrected Differential Reflectivity (1 byte)
+          "dB", // DB_ZDRC2: Corrected Differential Reflectivity (2 byte)
+          // 16 empty
+          "?", "?", "?", "?", "?", "?", "?", "?", "?", "?", "?", "?", "?", "?", "?", "?",
+          "?", // PolarimetricMeteoIndex (1 byte)
+          "?", // PolarimetricMeteoIndex2 (2 bytes)
+          "?", // LOG8 (1 byte)
+          "?", // LOG16 (2 bytes)
+          "?", // CSP8 (1 byte)
+          "?", // CSP16 (2 bytes)
+          "?", // CCOR8 (1 byte)
+          "?", // CCOR16 (2 bytes)
+          "?", // AH8 (1 byte)
+          "?", // AH16 (2 bytes)
+          "?", // AV8 (1 byte)
+          "?", // AV16 (2 bytes)
+          "?", // AZDR8 (1 byte)
+          "?", // AZDR16 (2 bytes)
+  };
+
+  private HashMap<String, List<List<Ray>>> allGroups = new HashMap<>();
+
+  private short[] data_type;
   private int[] num_gates;
   public int[] base_time;
   public short[] year;
@@ -34,13 +148,7 @@ public class SigmetVolumeScan {
   public short[] day;
   public Ray firstRay;
   public Ray lastRay;
-  public ucar.unidata.io.RandomAccessFile raf;
-  public boolean hasReflectivity;
-  public boolean hasVelocity;
-  public boolean hasWidth;
-  public boolean hasTotalPower;
-  public boolean hasDifferentialReflectivity;
-  public boolean hasTime;
+  public RandomAccessFile raf;
 
   /**
    * Read all the values from SIGMET-IRIS file which are necessary to fill in the ncfile.
@@ -49,7 +157,7 @@ public class SigmetVolumeScan {
    * @param ncfile an empty NetcdfFile object which will be filled.
    * @param varList ArrayList of Variables of ncfile
    */
-  SigmetVolumeScan(ucar.unidata.io.RandomAccessFile raf, ucar.nc2.NetcdfFile ncfile, ArrayList<Variable> varList)
+  SigmetVolumeScan(RandomAccessFile raf, ucar.nc2.NetcdfFile ncfile, ArrayList<Variable> varList)
       throws java.io.IOException {
     int REC_SIZE = 6144;
     int len = 12288; // ---- Read from the 3d record----------- 6144*2=12288
@@ -68,7 +176,7 @@ public class SigmetVolumeScan {
     raf.order(RandomAccessFile.LITTLE_ENDIAN);
 
     int fileLength = (int) raf.length();
-    java.util.Map<String, Number> recHdr = SigmetIOServiceProvider.readRecordsHdr(raf);
+    Map<String, Number> recHdr = SigmetIOServiceProvider.readRecordsHdr(raf);
     int nparams = recHdr.get("nparams").intValue();
     short number_sweeps = recHdr.get("number_sweeps").shortValue();
 
@@ -84,10 +192,11 @@ public class SigmetVolumeScan {
     short[] num_sweep = new short[nparams];
     short[] num_rays_swp = new short[nparams];
     short[] indx_1ray = new short[nparams];
+    short[] num_rays_exp = new short[nparams];
     short[] num_rays_act = new short[nparams];
     short[] angl_swp = new short[nparams];
     short[] bin_len = new short[nparams];
-    short[] data_type = new short[nparams];
+    data_type = new short[nparams];
     // float[] dd = new float[bins];
     num_gates = new int[number_sweeps];
     base_time = new int[nparams * number_sweeps];
@@ -97,15 +206,10 @@ public class SigmetVolumeScan {
     // Array of Ray objects is 2D. Number of columns=number of rays
     // Number of raws = number of types of data if number_sweeps=1,
     // or number of raws = number_sweeps
-    List<Ray> totalPower = new ArrayList<>();
-    List<Ray> velocity = new ArrayList<>();
-    List<Ray> reflectivity = new ArrayList<>();
-    List<Ray> width = new ArrayList<>();
-    List<Ray> diffReflectivity = new ArrayList<>();
-    List<Ray> time = new ArrayList<>();
+    HashMap<String, List<Ray>> all = new HashMap<>();
+
     int irays = (int) num_rays;
     Ray ray = null;
-    int two = 0;
     // init array
     float[] val = new float[bins];
 
@@ -142,7 +246,19 @@ public class SigmetVolumeScan {
         beg = 0;
 
         for (int i = 0; i < nparams; i++) {
-          int idh_len = cur_len + 12 + i * 76;
+          int idh_len = cur_len + 12 + i * 76; // + 12 == skipping over <structure_header>
+
+          /* debug structure_header
+          raf.seek(idh_len-12);
+          // Structure identifier
+          short si = raf.readShort();
+          raf.readShort(); // format version
+          int nob = raf.readInt();
+          if (si != (short)24)
+            throw new IllegalStateException("not a Ingest_header");
+          raf.readShort(); // reserved
+          raf.readShort(); // flags
+           */
 
           raf.seek(idh_len);
 
@@ -156,10 +272,12 @@ public class SigmetVolumeScan {
           num_sweep[i] = raf.readShort(); // idh_len+12
           num_rays_swp[i] = raf.readShort(); // idh_len+14
           indx_1ray[i] = raf.readShort(); // idh_len+16
-          raf.skipBytes(2);
+          num_rays_exp[i] = raf.readShort();
+          beg += num_rays_exp[i]; // before num_rays_act[i] was used but it does seem not work
           num_rays_act[i] = raf.readShort();
-          beg += num_rays_act[i]; // idh_len+20
+          //beg += num_rays_act[i]; // idh_len+20
           angl_swp[i] = raf.readShort(); // idh_len+22
+          // TODO maybe use in stead of variable twoBytes?
           bin_len[i] = raf.readShort(); // idh_len+24
           data_type[i] = raf.readShort(); // idh_len+26
         }
@@ -220,6 +338,8 @@ public class SigmetVolumeScan {
       }
 
       String var_name = data_name[dty];
+      // support for 2 byte data types is experimental
+      boolean twoBytes = var_name.endsWith("_2");
 
       // --- read ray_header (size=12 bytes=6 words)---------------------------------------
       if (read_ray_hdr) {
@@ -333,6 +453,10 @@ public class SigmetVolumeScan {
           // dd[nb] = SigmetIOServiceProvider.calcData(recHdr, dty, data);
           cur_len++;
           nb++;
+          if (twoBytes) {
+            cur_len++;
+            //i++;?
+          }
 
           if (cur_len % REC_SIZE == 0) {
             pos = i + 1;
@@ -400,6 +524,10 @@ public class SigmetVolumeScan {
             // dd[nb] = SigmetIOServiceProvider.calcData(recHdr, dty, data);
             cur_len = cur_len + 1;
             nb = nb + 1;
+            if (twoBytes) {
+              cur_len++;
+              //ii++;?
+            }
 
             if (cur_len % REC_SIZE == 0) {
               pos = ii + 1;
@@ -422,6 +550,7 @@ public class SigmetVolumeScan {
           // }
 
           nb = nb + num_zero;
+          // TODO extra handling for twoBytes here, too?
 
           if (cur_len % REC_SIZE == 0) {
             beg_rec = true;
@@ -450,21 +579,15 @@ public class SigmetVolumeScan {
         ray = new Ray(range_first, step, az, elev, num_bins, time_start_sw, rayoffset, datalen, rayoffset1, nsweep,
             var_name, dty);
         rays_count++;
-        two++;
+
         if ((nsweep == number_sweeps) & (rays_count % beg == 0)) {
-          if (var_name.trim().equalsIgnoreCase("TotalPower")) {
-            totalPower.add(ray);
-          } else if (var_name.trim().equalsIgnoreCase("Reflectivity")) {
-            reflectivity.add(ray);
-          } else if (var_name.trim().equalsIgnoreCase("Velocity")) {
-            velocity.add(ray);
-          } else if (var_name.trim().equalsIgnoreCase("Width")) {
-            width.add(ray);
-          } else if (var_name.trim().equalsIgnoreCase("DifferentialReflectivity")) {
-            diffReflectivity.add(ray);
-          } else {
-            logger.warn(" Error: Unknown Radial Variable found1 {}", var_name);
+          // using a universal structure that works for all data types
+          List<Ray> varL = all.get(var_name.trim());
+          if (varL == null) {
+            varL = new ArrayList<>();
+            all.put(var_name.trim(), varL);
           }
+          varL.add(ray);
           break;
         }
 
@@ -476,40 +599,29 @@ public class SigmetVolumeScan {
           data_read = 0;
           nb = 0;
           len = cur_len;
-          if (var_name.trim().equalsIgnoreCase("TotalPower")) {
-            totalPower.add(ray);
-          } else if (var_name.trim().equalsIgnoreCase("Reflectivity")) {
-            reflectivity.add(ray);
-          } else if (var_name.trim().equalsIgnoreCase("Velocity")) {
-            velocity.add(ray);
-          } else if (var_name.trim().equalsIgnoreCase("Width")) {
-            width.add(ray);
-          } else if (var_name.trim().equalsIgnoreCase("DifferentialReflectivity")) {
-            diffReflectivity.add(ray);
-          } else {
-            logger.warn(" Error: Unknown Radial Variable found2 {}", var_name);
+
+          // using a universal structure that works for all data types
+          List<Ray> varL = all.get(var_name.trim());
+          if (varL == null) {
+            varL = new ArrayList<>();
+            all.put(var_name.trim(), varL);
           }
+          varL.add(ray);
+
           continue;
         }
       }
 
-      // "TotalPower", "Reflectivity", "Velocity", "Width", "DifferentialReflectivity"
       if (firstRay == null)
         firstRay = ray;
 
-      if (var_name.trim().equalsIgnoreCase("TotalPower")) {
-        totalPower.add(ray);
-      } else if (var_name.trim().equalsIgnoreCase("Reflectivity")) {
-        reflectivity.add(ray);
-      } else if (var_name.trim().equalsIgnoreCase("Velocity")) {
-        velocity.add(ray);
-      } else if (var_name.trim().equalsIgnoreCase("Width")) {
-        width.add(ray);
-      } else if (var_name.trim().equalsIgnoreCase("DifferentialReflectivity")) {
-        diffReflectivity.add(ray);
-      } else {
-        logger.warn(" Error: Unknown Radial Variable found3 {}", var_name);
+      // using a universal structure that works for all data types
+      List<Ray> additionalL = all.get(var_name.trim());
+      if (additionalL == null) {
+        additionalL = new ArrayList<>();
+        all.put(var_name.trim(), additionalL);
       }
+      additionalL.add(ray);
 
       pos = 0;
       data_read = 0;
@@ -530,30 +642,11 @@ public class SigmetVolumeScan {
     } // ------------end of outer while ---------------
     lastRay = ray;
 
-    if (!reflectivity.isEmpty()) {
-      reflectivityGroups = sortScans("reflectivity", reflectivity, 1000);
-      hasReflectivity = true;
-    }
-    if (!velocity.isEmpty()) {
-      velocityGroups = sortScans("velocity", velocity, 1000);
-      hasVelocity = true;
-    }
-    if (!totalPower.isEmpty()) {
-      totalPowerGroups = sortScans("totalPower", totalPower, 1000);
-      hasTotalPower = true;
-    }
-    if (!width.isEmpty()) {
-      widthGroups = sortScans("width", width, 1000);
-      hasWidth = true;
-    }
-    if (!diffReflectivity.isEmpty()) {
-      differentialReflectivityGroups = sortScans("diffReflectivity", diffReflectivity, 1000);
-      hasDifferentialReflectivity = true;
-    }
-
-    if (!time.isEmpty()) {
-      timeGroups = sortScans("diffReflectivity", diffReflectivity, 1000);
-      hasTime = true;
+    // using a universal structure that works for all data types
+    for (String var_name : all.keySet()) {
+      List<Ray> additionalL = all.get(var_name);
+      if (!additionalL.isEmpty())
+        allGroups.put(var_name, sortScans(var_name, additionalL, 1000));
     }
 
     // --------- fill all of values in the ncfile ------
@@ -624,24 +717,13 @@ public class SigmetVolumeScan {
     }
   }
 
-  public List<List<Ray>> getTotalPowerGroups() {
-    return totalPowerGroups;
+  // using a universal structure that works for all data types
+  public List<List<Ray>> getGroup(String name) {
+    return allGroups.get(name);
   }
 
-  public List<List<Ray>> getVelocityGroups() {
-    return velocityGroups;
-  }
-
-  public List<List<Ray>> getWidthGroups() {
-    return widthGroups;
-  }
-
-  public List<List<Ray>> getReflectivityGroups() {
-    return reflectivityGroups;
-  }
-
-  public List<List<Ray>> getDifferentialReflectivityGroups() {
-    return differentialReflectivityGroups;
+  public short[] getDataTypes() {
+    return data_type;
   }
 
   public int[] getNumberGates() {
