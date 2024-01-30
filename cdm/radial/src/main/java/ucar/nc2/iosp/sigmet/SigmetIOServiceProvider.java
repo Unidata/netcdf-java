@@ -617,11 +617,23 @@ public class SigmetIOServiceProvider extends AbstractIOServiceProvider {
         rgp = volScan.getGroup("Reflectivity");
       if (rgp == null || rgp.isEmpty())
         rgp = volScan.getGroup("Reflectivity_2");
-      List[] sgp = new ArrayList[number_sweeps];
-      for (int i = 0; i < number_sweeps; i++) {
-        sgp[i] = (List) rgp.get((short) i);
-      }
 
+      List[] sgp = new ArrayList[number_sweeps];
+      for (int sweepMinus1 = 0; sweepMinus1 < number_sweeps; sweepMinus1++) {
+        List<Ray> found = null;
+        // in case some rays are missing/empty this is a safer way to find them
+        for (int i = 0; i < rgp.size() && found == null; i++) {
+          List<Ray> rlist = (List<Ray>) rgp.get(i);
+          if (rlist.size() > 0) {
+            Ray r = rlist.get(0);
+            if (r.getNsweep() == sweepMinus1 + 1) {
+              found = rlist;
+            }
+          }
+        }
+
+        sgp[sweepMinus1] = found;
+      }
 
       Variable[] time = new Variable[number_sweeps];
       ArrayInt.D1[] timeArr = new ArrayInt.D1[number_sweeps];
@@ -641,13 +653,18 @@ public class SigmetIOServiceProvider extends AbstractIOServiceProvider {
         timeArr[i] = (ArrayInt.D1) Array.factory(DataType.INT, time[i].getShape());
         timeIndex[i] = timeArr[i].getIndex();
         List rlist = sgp[i];
-        int num_rays_actual = Math.min(num_rays, rlist.size());
-
-        for (int jj = 0; jj < num_rays_actual; jj++) {
-          rtemp[jj] = (Ray) rlist.get(jj);
-        } // ray[i][jj]; }
-        for (int jj = 0; jj < num_rays_actual; jj++) {
-          timeArr[i].setInt(timeIndex[i].set(jj), rtemp[jj].getTime());
+        if (rlist == null) {
+          for (int jj = 0; jj < num_rays; jj++) {
+            timeArr[i].setInt(timeIndex[i].set(jj), -999);
+          }
+        } else {
+          int num_rays_actual = Math.min(num_rays, rlist.size());
+          for (int jj = 0; jj < num_rays_actual; jj++) {
+            rtemp[jj] = (Ray) rlist.get(jj);
+          } // ray[i][jj]; }
+          for (int jj = 0; jj < num_rays_actual; jj++) {
+            timeArr[i].setInt(timeIndex[i].set(jj), rtemp[jj].getTime());
+          }
         }
       }
 
@@ -668,13 +685,18 @@ public class SigmetIOServiceProvider extends AbstractIOServiceProvider {
         azimArr[i] = (ArrayFloat.D1) Array.factory(DataType.FLOAT, azimuthR[i].getShape());
         azimIndex[i] = azimArr[i].getIndex();
         List rlist = sgp[i];
-        int num_rays_actual = Math.min(num_rays, rlist.size());
-
-        for (int jj = 0; jj < num_rays_actual; jj++) {
-          rtemp[jj] = (Ray) rlist.get(jj);
-        } // ray[i][jj]; }
-        for (int jj = 0; jj < num_rays_actual; jj++) {
-          azimArr[i].setFloat(azimIndex[i].set(jj), rtemp[jj].getAz());
+        if (rlist == null) {
+          for (int jj = 0; jj < num_rays; jj++) {
+            azimArr[i].setFloat(azimIndex[i].set(jj), -999.99f);
+          }
+        } else {
+          int num_rays_actual = Math.min(num_rays, rlist.size());
+          for (int jj = 0; jj < num_rays_actual; jj++) {
+            rtemp[jj] = (Ray) rlist.get(jj);
+          } // ray[i][jj]; }
+          for (int jj = 0; jj < num_rays_actual; jj++) {
+            azimArr[i].setFloat(azimIndex[i].set(jj), rtemp[jj].getAz());
+          }
         }
       }
 
@@ -695,13 +717,18 @@ public class SigmetIOServiceProvider extends AbstractIOServiceProvider {
         elevArr[i] = (ArrayFloat.D1) Array.factory(DataType.FLOAT, elevationR[i].getShape());
         elevIndex[i] = elevArr[i].getIndex();
         List rlist = sgp[i];
-        int num_rays_actual = Math.min(num_rays, rlist.size());
-
-        for (int jj = 0; jj < num_rays_actual; jj++) {
-          rtemp[jj] = (Ray) rlist.get(jj);
-        } // ray[i][jj]; }
-        for (int jj = 0; jj < num_rays_actual; jj++) {
-          elevArr[i].setFloat(elevIndex[i].set(jj), rtemp[jj].getElev());
+        if (rlist == null) {
+          for (int jj = 0; jj < num_rays; jj++) {
+            elevArr[i].setFloat(elevIndex[i].set(jj), -999.99f);
+          }
+        } else {
+          int num_rays_actual = Math.min(num_rays, rlist.size());
+          for (int jj = 0; jj < num_rays_actual; jj++) {
+            rtemp[jj] = (Ray) rlist.get(jj);
+          } // ray[i][jj]; }
+          for (int jj = 0; jj < num_rays_actual; jj++) {
+            elevArr[i].setFloat(elevIndex[i].set(jj), rtemp[jj].getElev());
+          }
         }
       }
 
@@ -719,13 +746,16 @@ public class SigmetIOServiceProvider extends AbstractIOServiceProvider {
 
       for (int i = 0; i < number_sweeps; i++) {
         List rlist = sgp[i];
-        int num_rays_actual = Math.min(num_rays, rlist.size());
-
-        for (int jj = 0; jj < num_rays_actual; jj++) {
-          rtemp[jj] = (Ray) rlist.get(jj);
-        } // ray[i][jj]; }
-        ngates = rtemp[0].getBins();
-        gatesArr.setInt(gatesIndex.set(i), ngates);
+        if (rlist == null) {
+          gatesArr.setInt(gatesIndex.set(i), -999);
+        } else {
+          int num_rays_actual = Math.min(num_rays, rlist.size());
+          for (int jj = 0; jj < num_rays_actual; jj++) {
+            rtemp[jj] = (Ray) rlist.get(jj);
+          } // ray[i][jj]; }
+          ngates = rtemp[0].getBins();
+          gatesArr.setInt(gatesIndex.set(i), ngates);
+        }
       }
 
       for (int i = 0; i < number_sweeps; i++) {
