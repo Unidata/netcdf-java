@@ -5,6 +5,7 @@
 
 package ucar.nc2;
 
+import com.google.common.collect.Lists;
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -19,6 +20,7 @@ import java.nio.channels.FileLock;
 import java.nio.channels.OverlappingFileLockException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.ServiceLoader;
 import java.util.zip.GZIPInputStream;
@@ -788,8 +790,12 @@ public class NetcdfFiles {
       return new N3iospNew();
 
     } else {
-      // look for dynamically loaded IOSPs
-      for (IOServiceProvider loadedSpi : ServiceLoader.load(IOServiceProvider.class)) {
+      // look for dynamically loaded IOSPs, and sort before using
+      final ServiceLoader<IOServiceProvider> iosps = ServiceLoader.load(IOServiceProvider.class);
+      final List<IOServiceProvider> sortedIosps = Lists.newArrayList(iosps);
+      Collections.sort(sortedIosps);
+
+      for (IOServiceProvider loadedSpi : sortedIosps) {
         if (loadedSpi.isValidFile(raf)) {
           Class c = loadedSpi.getClass();
           try {

@@ -35,7 +35,7 @@ import ucar.unidata.io.RandomAccessFile;
  *
  * @author caron
  */
-public interface IOServiceProvider {
+public interface IOServiceProvider extends Comparable<IOServiceProvider> {
 
   /**
    * Check if this is a valid file for this IOServiceProvider.
@@ -243,4 +243,28 @@ public interface IOServiceProvider {
    */
   String getFileTypeDescription();
 
+  /**
+   * Used to determine the ordering for dynamically loaded IOServiceProviders.
+   */
+  enum SortGroup {
+    GROUP_1, LAST_GROUP,
+  }
+
+  /**
+   * Get the SortGroup for this IOServiceProvider. This determines the order in which the dynamically loaded
+   * IOServiceProviders are checked to see if they can open a file with isValidFile().
+   *
+   * @return SortGroup, by default the SortGroup.LAST_GROUP will be used.
+   */
+  default SortGroup getSortGroup() {
+    return SortGroup.LAST_GROUP;
+  }
+
+  /**
+   * Use the SortGroup to determine the ordering for dynamically loaded IOServiceProviders.
+   */
+  @Override
+  default int compareTo(IOServiceProvider other) {
+    return getSortGroup().compareTo(other.getSortGroup());
+  }
 }
