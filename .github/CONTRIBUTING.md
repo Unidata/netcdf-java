@@ -70,9 +70,9 @@ Now you are all set!
 ### <a name="#gh-sync-ud"></a> Make sure you have the latest changes from Unidata netCDF-java repository
 First, make sure you have the most recent changes to the netCDF-java code by using git pull:
 
-`git pull unidata develop`
+`git pull unidata maint-5.x`
 
-All work on netcdf-java is should branch from the `develop` branch.
+At this time, all work on netcdf-java is should branch from the `maint-5.x` branch.
 Contributions will be backported to other versions as needed.
 
 ### <a name="#gh-branch"></a>Make a new branch for your work and start hacking
