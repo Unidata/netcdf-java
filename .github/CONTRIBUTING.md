@@ -73,7 +73,6 @@ First, make sure you have the most recent changes to the netCDF-java code by usi
 `git pull unidata maint-5.x`
 
 At this time, all work on netcdf-java is should branch from the `maint-5.x` branch.
-Contributions will be backported to other versions as needed.
 
 ### <a name="#gh-branch"></a>Make a new branch for your work and start hacking
 Next, make a new branch where you will actually do the hacking:
