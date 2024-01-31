@@ -1116,9 +1116,13 @@ public class HTTPSession implements Closeable {
     return getSessionURI();
   }
 
-  // Obsolete
-  // make package private as only needed for testing
+  // For testing
   static void validatestate() {
     connmgr.validate();
+  }
+
+  // For testing
+  static int getActualConnections() {
+    return connmgr.getActualConnections();
   }
 }
