@@ -8,7 +8,9 @@ package ucar.nc2.iosp.sigmet;
 import ucar.ma2.IndexIterator;
 import ucar.ma2.Range;
 import ucar.unidata.io.RandomAccessFile;
+
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.util.Formatter;
 
 /**
@@ -16,20 +18,23 @@ import java.util.Formatter;
  * @since Apr 7, 2010
  */
 public class Ray {
-  private short bins;
+
+  private short bins, bins_actual;
   int dataRead;
   int offset;
   int offset1;
   private float range, step, az, elev;
-  private short time;
+  // int because UINT2 data type (Unsigned 16-bit integer)
+  private int time;
   // private float[] val;
   String varName;
   int nsweep;
   short datatype;
+  int bytesPerBin;
 
 
-  public Ray(float range, float step, float az, float elev, short bins, short time, int offset, int dataRead,
-      int offset1, int nsweep, String name, short datatype) {
+  public Ray(float range, float step, float az, float elev, short bins, short bins_actual, int time, int offset,
+      int dataRead, int offset1, int nsweep, String name, short datatype, int bytesPerBin) {
 
     // this.val = new float[bins];
     setRange(range);
@@ -37,6 +42,7 @@ public class Ray {
     setAz(az);
     setElev(elev);
     setBins(bins);
+    setBinsActual(bins_actual);
     setTime(time);
     setOffset(offset);
     setDataRead(dataRead);
@@ -45,7 +51,7 @@ public class Ray {
     setName(name);
     setNsweep(nsweep);
     setDataType(datatype);
-
+    setBytesPerBin(bytesPerBin);
   }
 
   public short getDataType() {
@@ -54,6 +60,14 @@ public class Ray {
 
   public void setDataType(short datatype) {
     this.datatype = datatype;
+  }
+
+  public int getBytesPerBin() {
+    return bytesPerBin;
+  }
+
+  public void setBytesPerBin(int bytesPerBin) {
+    this.bytesPerBin = bytesPerBin;
   }
 
   public float getRange() {
@@ -108,11 +122,19 @@ public class Ray {
     this.bins = bins;
   }
 
-  public short getTime() {
+  public short getBinsActual() {
+    return bins_actual;
+  }
+
+  public void setBinsActual(short bins_actual) {
+    this.bins_actual = bins_actual;
+  }
+
+  public int getTime() {
     return time;
   }
 
-  public void setTime(short time) {
+  public void setTime(int time) {
     this.time = time;
   }
 
@@ -163,7 +185,8 @@ public class Ray {
     } else if (o instanceof Ray) {
       Ray oo = (Ray) o;
 
-      return (range == oo.range & step == oo.step & az == oo.az & elev == oo.elev & bins == oo.bins & time == oo.time);
+      return (range == oo.range & step == oo.step & az == oo.az & elev == oo.elev & bins == oo.bins
+          & bins_actual == oo.bins_actual & time == oo.time & bytesPerBin == oo.bytesPerBin);
     } else {
       return false;
     }
@@ -171,7 +194,8 @@ public class Ray {
 
   public int hashCode() {
     return new Float(range).hashCode() + new Float(step).hashCode() + new Float(az).hashCode()
-        + new Float(elev).hashCode() + new Short(bins).hashCode() + new Short(time).hashCode();
+        + new Float(elev).hashCode() + new Short(bins).hashCode() + new Short(bins_actual).hashCode()
+        + new Integer(time).hashCode() + new Integer(bytesPerBin).hashCode();
 
     // val.hashCode();
   }
@@ -184,7 +208,7 @@ public class Ray {
       az = 360.0f + az;
     }
 
-    sb.format(" Az=%f Elev=%f Bins=%d Time=%d", az, elev, bins, time);
+    sb.format(" Az=%f Elev=%f Bins=%d (%d) Time=%d", az, elev, bins, bins_actual, time);
     // for (int i=0; i<bins; i++) { sb.append(" "+val[i]); }
     return sb.toString();
   }
@@ -196,112 +220,163 @@ public class Ray {
    * @param raf read from this file
    * @param gateRange handles the possible subset of data to return
    * @param ii put the data here
-   * @throws java.io.IOException on read error
+   * @throws IOException on read error
    */
   public void readData(RandomAccessFile raf, Range gateRange, IndexIterator ii) throws IOException {
-    int REC_SIZE = 6144;
     raf.seek(offset);
-    Number[] dd = new Number[bins];
+    // first need to read all the data (because bytesPerBin could be > 1)
+    Byte[] dd = new Byte[bins * bytesPerBin];
     int nb = 0;
     short a00;
 
     short dty = getDataType();
-    String var_name = SigmetVolumeScan.data_name[dty];
-    // support for 2 byte data types is experimental
-    boolean twoBytes = var_name.endsWith("_2");
+
+    int posInRay_absolute = 0;
 
     // raf.readFully(data);
     if (dataRead > 0) {
       raf.seek(offset);
 
       for (int i = 0; i < dataRead; i++) {
-        if (!twoBytes) {
-          byte d = raf.readByte();
-          dd[i] = SigmetIOServiceProvider.calcData(SigmetIOServiceProvider.recHdr, dty, d);
-        } else {
-          short d = raf.readShort();
-          dd[i] = SigmetIOServiceProvider.calcData(SigmetIOServiceProvider.recHdr, dty, d);
-        }
-        nb++;
+        dd[i] = raf.readByte();
+        posInRay_absolute++;
+        if (posInRay_absolute % bytesPerBin == 0)
+          nb++;
       }
     }
     raf.seek(offset1);
     int cur_len = offset1;
 
+    // this only works for 1 additional record, not for more. Only a theoretical possibility for now.
+    // (relevant only for data types with a lot of bytes per bin)
     while (nb < (int) bins) {
       // --- Check if the code=1 ("1" means an end of a ray)
       a00 = raf.readShort();
       cur_len = cur_len + 2;
 
+      // end of ray
       if (a00 == (short) 1) {
-        for (int uk = 0; uk < (int) bins; uk++) {
-          dd[uk] = -999.99f;
-        }
+        // don't need to do anything as the rest of dd is already null
         break;
       }
 
       if (a00 < 0) { // -- This is data
         int nwords = a00 & 0x7fff;
         int dataRead1 = nwords * 2;
-        int pos = 0;
-        if (cur_len % REC_SIZE == 0) {
+        boolean breakOuterLoop = false;
+        if (cur_len % SigmetVolumeScan.REC_SIZE == 0) {
           break;
         }
         raf.seek(cur_len);
         for (int i = 0; i < dataRead1; i++) {
-          if (!twoBytes) {
-            byte d = raf.readByte();
-            dd[nb] = SigmetIOServiceProvider.calcData(SigmetIOServiceProvider.recHdr, dty, d);
-            cur_len = cur_len + 1;
-          } else {
-            short d = raf.readShort();
-            dd[i] = SigmetIOServiceProvider.calcData(SigmetIOServiceProvider.recHdr, dty, d);
-            cur_len = cur_len + 2;
-          }
-          nb = nb + 1;
+          dd[posInRay_absolute] = raf.readByte();
+          posInRay_absolute++;
+          if (posInRay_absolute % bytesPerBin == 0)
+            nb++;
 
-          if (nb % REC_SIZE == 0) {
-            pos = i + 1;
+          cur_len++;
+
+          if (cur_len % SigmetVolumeScan.REC_SIZE == 0) {
+            breakOuterLoop = true;
             break;
           }
         }
-
-        if (pos > 0) {
+        if (breakOuterLoop) {
           break;
         }
+
       } else if (a00 > 0 & a00 != 1) {
         int num_zero = a00 * 2;
         int dataRead1 = num_zero;
         for (int k = 0; k < dataRead1; k++) {
-          if (!twoBytes)
-            dd[nb + k] = SigmetIOServiceProvider.calcData(SigmetIOServiceProvider.recHdr, dty, (byte) 0);
-          else
-            dd[nb + k] = SigmetIOServiceProvider.calcData(SigmetIOServiceProvider.recHdr, dty, (short) 0);
+          dd[posInRay_absolute] = 0;
+          posInRay_absolute++;
+          if (posInRay_absolute % bytesPerBin == 0)
+            nb++;
         }
-        nb = nb + dataRead1;
-        if (cur_len % REC_SIZE == 0) {
+        if (cur_len % SigmetVolumeScan.REC_SIZE == 0) {
           break;
         }
-
       }
+
     } // ------ end of while for num_bins---------------------------------
 
-    if (!twoBytes) {
+    // only supporting float, double, byte and byte[]/Object for now
+    Class dtyClass = SigmetIOServiceProvider.calcDataClass(dty, bytesPerBin);
+
+    if (dtyClass == Float.TYPE) {
       for (int gateIdx : gateRange) {
         if (gateIdx >= bins)
           ii.setFloatNext(Float.NaN);
-        else
-          ii.setFloatNext(dd[gateIdx].floatValue());
+        else if (gateIdx >= bins_actual)
+          ii.setFloatNext(SigmetVolumeScan.MISSING_VALUE_FLOAT);
+        else {
+          int offset = gateIdx * bytesPerBin;
+          Byte ddx = dd[offset];
+          if (ddx == null)
+            ii.setFloatNext(SigmetVolumeScan.MISSING_VALUE_FLOAT);
+          else
+            ii.setFloatNext(SigmetIOServiceProvider.calcData(SigmetIOServiceProvider.recHdr, dty, ddx));
+        }
       }
-    } else {
+
+    } else if (dtyClass == Double.TYPE) {
       for (int gateIdx : gateRange) {
         if (gateIdx >= bins)
           ii.setDoubleNext(Double.NaN);
-        else
-          ii.setDoubleNext(dd[gateIdx].doubleValue());
+        else if (gateIdx >= bins_actual)
+          ii.setDoubleNext(SigmetVolumeScan.MISSING_VALUE_DOUBLE);
+        else {
+          int offset = gateIdx * bytesPerBin;
+          Byte ddx = dd[offset];
+          if (ddx == null)
+            ii.setDoubleNext(SigmetVolumeScan.MISSING_VALUE_DOUBLE);
+          else {
+            int ddx2 = dd[2];
+            int rawValue = (ddx & 0xFF) | ((ddx2 & 0xFF) << 8);
+            ii.setDoubleNext(SigmetIOServiceProvider.calcData(SigmetIOServiceProvider.recHdr, dty, rawValue));
+          }
+        }
+      }
+
+    } else if (dtyClass == Byte.TYPE) {
+      for (int gateIdx : gateRange) {
+        if (gateIdx >= bins)
+          ii.setByteNext(SigmetVolumeScan.MISSING_VALUE_BYTE);
+        else if (gateIdx >= bins_actual)
+          ii.setByteNext(SigmetVolumeScan.MISSING_VALUE_BYTE);
+        else {
+          int offset = gateIdx * bytesPerBin;
+          Byte ddx = dd[offset];
+          if (ddx == null)
+            ii.setByteNext(SigmetVolumeScan.MISSING_VALUE_BYTE);
+          else
+            ii.setByteNext(ddx);
+        }
+      }
+
+    } else { // byte[]/Object
+      for (int gateIdx : gateRange) {
+        if (gateIdx >= bins)
+          ii.setObjectNext(SigmetVolumeScan.MISSING_VALUE_BYTE_ARRAY_BB);
+        else if (gateIdx >= bins_actual)
+          ii.setObjectNext(SigmetVolumeScan.MISSING_VALUE_BYTE_ARRAY_BB);
+        else {
+          int offset = gateIdx * bytesPerBin;
+          Byte ddx = dd[offset];
+          if (ddx == null)
+            ii.setObjectNext(SigmetVolumeScan.MISSING_VALUE_BYTE_ARRAY_BB);
+          else {
+            byte[] b = new byte[bytesPerBin];
+            for (int i = 0; i < bytesPerBin; i++) {
+              ddx = dd[offset + i];
+              b[i] = ddx == null ? SigmetVolumeScan.MISSING_VALUE_BYTE : ddx;
+            }
+            ii.setObjectNext(ByteBuffer.wrap(b));
+          }
+        }
       }
     }
-
   } // end of readData
 } // class Ray end------------------------------------------
 
