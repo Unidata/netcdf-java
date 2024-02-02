@@ -352,18 +352,33 @@ public class SigmetIOServiceProvider extends AbstractIOServiceProvider {
         var_name_original = RAW_VARIABLE_PREFIX + var_name_original;
 
       var_name = var_name_original;
-      // support for 2 byte data types is experimental
-      boolean twoBytes = var_name.endsWith("_2");
+      int bytesPerBin = 1;
+      List<List<Ray>> allRays = volScan.getGroup(data_name[dty]);
+      if (allRays.size() > 0 && allRays.get(0).size() > 0)
+        bytesPerBin = allRays.get(0).get(0).getBytesPerBin();
+
+      Class dtyClass = SigmetIOServiceProvider.calcDataClass(dty, bytesPerBin);
 
       for (int jj = 0; jj < number_sweeps; jj++) {
         if (number_sweeps > 1) {
           var_name = var_name_original + "_sweep_" + (jj + 1);
         }
         v[j][jj] = new Variable(ncfile, null, null, var_name);
-        if (twoBytes)
-          v[j][jj].setDataType(DataType.DOUBLE);
-        else
+        if (dtyClass == Float.TYPE) {
           v[j][jj].setDataType(DataType.FLOAT);
+          v[j][jj].addAttribute(new Attribute(CDM.MISSING_VALUE, SigmetVolumeScan.MISSING_VALUE_FLOAT));
+        } else if (dtyClass == Double.TYPE) {
+          v[j][jj].setDataType(DataType.DOUBLE);
+          v[j][jj].addAttribute(new Attribute(CDM.MISSING_VALUE, SigmetVolumeScan.MISSING_VALUE_DOUBLE));
+        } else if (dtyClass == Byte.TYPE) {
+          v[j][jj].setDataType(DataType.BYTE);
+          v[j][jj].addAttribute(new Attribute(CDM.MISSING_VALUE, SigmetVolumeScan.MISSING_VALUE_BYTE));
+        } else { // byte[]/Object
+          v[j][jj].setDataType(DataType.OPAQUE);
+          Attribute a = new Attribute(CDM.MISSING_VALUE, DataType.OPAQUE);
+          v[j][jj].addAttribute(new Attribute(CDM.MISSING_VALUE, SigmetVolumeScan.MISSING_VALUE_BYTE_ARRAY));
+        }
+
         dims2.add(radial);
         dims2.add(gateR[jj]);
         v[j][jj].setDimensions(dims2);
@@ -371,7 +386,6 @@ public class SigmetIOServiceProvider extends AbstractIOServiceProvider {
         v[j][jj].addAttribute(new Attribute(CDM.UNITS, unit[dty]));
         String coordinates = "time elevationR azimuthR distanceR";
         v[j][jj].addAttribute(new Attribute(_Coordinate.Axes, coordinates));
-        v[j][jj].addAttribute(new Attribute(CDM.MISSING_VALUE, -999.99f));
         ncfile.addVariable(null, v[j][jj]);
         varList.add(v[j][jj]);
         dims2.clear();
@@ -536,7 +550,6 @@ public class SigmetIOServiceProvider extends AbstractIOServiceProvider {
       ArrayList<Variable> varList, Map<String, Number> recHdr) {
     // prepare attribute values
 
-    String[] unit = {" ", "dbZ", "dbZ", "m/sec", "m/sec", "dB"};
     String def_datafile = "SIGMET-IRIS";
     Short header_length = 80;
     Short ray_header_length = 6;
@@ -837,23 +850,49 @@ public class SigmetIOServiceProvider extends AbstractIOServiceProvider {
 
   private void readOneScan(List<Ray> mapScan, Range radialRange, Range gateRange, IndexIterator ii) throws IOException {
     int siz = mapScan.size();
+    short dataType = 1; // TotalPower as fallback
+    int bytesPerBin = 1;
+
     for (int radialIdx : radialRange) {
       if (radialIdx >= siz)
-        readOneRadial(null, gateRange, ii);
+        readOneRadialMissing(dataType, bytesPerBin, gateRange, ii);
       else {
         Ray r = mapScan.get(radialIdx);
+        dataType = r.datatype;
+        bytesPerBin = r.bytesPerBin;
         readOneRadial(r, gateRange, ii);
       }
     }
   }
 
   private void readOneRadial(Ray r, Range gateRange, IndexIterator ii) throws IOException {
-    if (r == null || r.offset == -999) {
-      for (int i = 0; i < gateRange.length(); i++)
-        ii.setFloatNext(Float.NaN);
-      return;
-    }
     r.readData(volScan.raf, gateRange, ii);
+  }
+
+  private void readOneRadialMissing(short datatype, int bytesPerBin, Range gateRange, IndexIterator ii)
+      throws IOException {
+    Class dtyClass = calcDataClass(datatype, bytesPerBin);
+
+    if (dtyClass == Float.TYPE) {
+      for (int i = 0; i < gateRange.length(); i++) {
+        ii.setFloatNext(Float.NaN);
+      }
+
+    } else if (dtyClass == Double.TYPE) {
+      for (int i = 0; i < gateRange.length(); i++) {
+        ii.setDoubleNext(Double.NaN);
+      }
+
+    } else if (dtyClass == Byte.TYPE) {
+      for (int i = 0; i < gateRange.length(); i++) {
+        ii.setByteNext(SigmetVolumeScan.MISSING_VALUE_BYTE);
+      }
+
+    } else { // byte[]/Object
+      for (int i = 0; i < gateRange.length(); i++) {
+        ii.setObjectNext(SigmetVolumeScan.MISSING_VALUE_BYTE_ARRAY_BB);
+      }
+    }
   }
 
   /**
@@ -1020,11 +1059,43 @@ public class SigmetIOServiceProvider extends AbstractIOServiceProvider {
   }
 
   /**
+   * Calculate Object class for data type
+   * 
+   * @see Ray
+   *
+   * @param dty type of data (@see SigmetVolumeScan.data_name)
+   * @return float value with precision of two decimal
+   */
+  static Class calcDataClass(short dty, int bytes) {
+    switch (dty) {
+      case 1:// dty=1,2 -total_power, reflectivity (dBZ)
+      case 2:
+      case 3: // dty=3 - mean velocity (m/sec)
+      case 4: // dty=4 - spectrum width (m/sec)
+      case 5: // dty=5 - differential reflectivity (dB)
+        return Float.TYPE;
+
+      case 7:// dty=7,8 -total_power 2, reflectivity 2 (dBZ)
+      case 8:
+      case 9: // dty=9 - mean velocity 2 (m/sec)
+      case 10: // dty=10 - spectrum width 2 (m/sec)
+      case 11: // dty=11 - differential reflectivity 2 (dB)
+        return Double.TYPE;
+
+      default:
+        // TODO implement for more SigmetVolumeScan.data_name (see chapter 4.4)
+        if (bytes == 1)
+          return Byte.TYPE;
+
+        return byte[].class;
+    }
+  }
+
+  /**
    * Calculate data values from raw ingest data
    *
    * @param recHdr java.util.Map object with values for calculation
-   * @param dty type of data ( "Total_Power", "Reflectivity", "Velocity",
-   *        "Width", "Differential_Reflectivity")
+   * @param dty type of data (@see SigmetVolumeScan.data_name)
    * @param data 1-byte input value
    * @return float value with precision of two decimal
    */
@@ -1032,32 +1103,38 @@ public class SigmetIOServiceProvider extends AbstractIOServiceProvider {
     short[] coef = {1, 2, 3, 4}; // MultiPRF modes
     short multiprf = recHdr.get("multiprf").shortValue();
     float vNyq = recHdr.get("vNyq").floatValue();
-    double temp = -999.99;
+    double temp = SigmetVolumeScan.MISSING_VALUE_FLOAT;
+
+    // see chapter 4.4
     switch (dty) {
       case 1:// dty=1,2 -total_power, reflectivity (dBZ)
       case 2:
-        if (data != 0) {
+        if (data != 0 && data != (byte) 255) {
           temp = (((int) data & 0xFF) - 64) * 0.5;
         }
         break;
       case 3: // dty=3 - mean velocity (m/sec)
         if (data != 0) {
+          // seems incorrect according to "4.4.44 1-byte Velocity Format (DB_VEL)"
+          // TODO needs more research
           temp = ((((int) data & 0xFF) - 128) / 127.0) * vNyq * coef[multiprf];
         }
         break;
       case 4: // dty=4 - spectrum width (m/sec)
-        if (data != 0) {
+        if (data != 0 && data != (byte) 255) {
+          // seems incorrect according to "4.4.48 1-byte Width Format (DB_WIDTH)"
+          // TODO needs more research
           double v = ((((int) data & 0xFF) - 128) / 127.0) * vNyq * coef[multiprf];
           temp = (((int) data & 0xFF) / 256.0) * v;
         }
         break;
       case 5: // dty=5 - differential reflectivity (dB)
-        if (data != 0) {
+        if (data != 0 && data != (byte) 255) {
           temp = ((((int) data & 0xFF) - 128) / 16.0);
         }
         break;
       default:
-        // TODO implement for more SigmetVolumeScan.data_name (only 1 byte)
+        // TODO implement for more SigmetVolumeScan.data_name (only 1 byte) (see chapter 4.4)
         // using only the raw value
         temp = (int) data & 0xFF;
 
@@ -1076,42 +1153,38 @@ public class SigmetIOServiceProvider extends AbstractIOServiceProvider {
    * Calculate data values from raw ingest data
    *
    * @param recHdr java.util.Map object with values for calculation
-   * @param dty type of data ( "Total_Power", "Reflectivity", "Velocity",
-   *        "Width", "Differential_Reflectivity")
-   * @param data 2-byte input value
+   * @param dty type of data (@see SigmetVolumeScan.data_name)
+   * @param data 2-byte input value (unsigned short)
    * @return double value
    */
-  static double calcData(Map<String, Number> recHdr, short dty, short data) {
-    short[] coef = {1, 2, 3, 4}; // MultiPRF modes
-    short multiprf = recHdr.get("multiprf").shortValue();
-    float vNyq = recHdr.get("vNyq").floatValue();
-    double temp = -999.99;
+  static double calcData(Map<String, Number> recHdr, short dty, int data) {
+    double temp = SigmetVolumeScan.MISSING_VALUE_DOUBLE;
 
+    // see chapter 4.4
     switch (dty) {
       case 7:// dty=7,8 -total_power 2, reflectivity 2 (dBZ)
       case 8:
-        if (data != 0) {
-          temp = (data - 64) * 0.5;
+        if (data != 0 && data != 65535) {
+          temp = (data - 32768) / 100d;
         }
         break;
       case 9: // dty=9 - mean velocity 2 (m/sec)
-        if (data != 0) {
-          temp = ((data - 128) / 127.0) * vNyq * coef[multiprf];
+        if (data != 0 && data != 65535) {
+          temp = (data - 32768) / 100d;
         }
         break;
       case 10: // dty=10 - spectrum width 2 (m/sec)
-        if (data != 0) {
-          double v = ((data - 128) / 127.0) * vNyq * coef[multiprf];
-          temp = (data / 256.0) * v;
+        if (data != 0 && data != 65535) {
+          temp = data / 100d;
         }
         break;
       case 11: // dty=11 - differential reflectivity 2 (dB)
-        if (data != 0) {
-          temp = ((data - 128) / 16.0);
+        if (data != 0 && data != 65535) {
+          temp = (data - 32768) / 100d;
         }
         break;
       default:
-        // TODO implement for more SigmetVolumeScan.data_name (only 2 bytes)
+        // TODO implement for more SigmetVolumeScan.data_name (only 2 bytes) (see chapter 4.4)
         // using only the raw value
         temp = data;
         // logger.warn("calcData: unimplemented 2 byte data type = " + dty + " " + SigmetVolumeScan.data_name[dty]);

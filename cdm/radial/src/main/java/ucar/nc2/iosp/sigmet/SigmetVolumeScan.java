@@ -10,9 +10,12 @@ package ucar.nc2.iosp.sigmet;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ucar.ma2.Array;
+import ucar.ma2.DataType;
 import ucar.nc2.Variable;
 import ucar.unidata.io.RandomAccessFile;
 
+import java.nio.ByteBuffer;
 import java.util.*;
 
 /**
@@ -132,6 +135,16 @@ public class SigmetVolumeScan {
       "?", // AZDR16 (2 bytes)
   };
 
+  public static final int REC_SIZE = 6144;
+
+  public static final float MISSING_VALUE_FLOAT = -999.99f;
+  public static final double MISSING_VALUE_DOUBLE = -999.99;
+  public static final byte MISSING_VALUE_BYTE = 0;
+
+  public static final ByteBuffer MISSING_VALUE_BYTE_ARRAY_BB = ByteBuffer.wrap(new byte[] {MISSING_VALUE_BYTE});
+  public static final Array MISSING_VALUE_BYTE_ARRAY =
+      Array.factoryConstant(DataType.OPAQUE, new int[] {1}, new ByteBuffer[] {MISSING_VALUE_BYTE_ARRAY_BB});
+
   private HashMap<String, List<List<Ray>>> allGroups = new HashMap<>();
 
   private short[] data_type;
@@ -153,12 +166,14 @@ public class SigmetVolumeScan {
    */
   SigmetVolumeScan(RandomAccessFile raf, ucar.nc2.NetcdfFile ncfile, ArrayList<Variable> varList)
       throws java.io.IOException {
-    int REC_SIZE = 6144;
     int len = 12288; // ---- Read from the 3d record----------- 6144*2=12288
     short nrec = 0, nsweep = 1, nray = 0, byteoff = 0;
-    int nwords, end_words, data_read = 0, num_zero, rays_count = 0, nb = 0, pos = 0, pos_ray_hdr = 0, t = 0;
+    int nwords, end_words, data_read = 0, num_zero, rays_count = 0, nb = 0, posInRay_relative = 0,
+        posInRay_absolute = 0, pos_ray_hdr = 0, t = 0;
     short a0, a00, dty;
-    short beg_az = 0, beg_elev = 0, end_az = 0, end_elev = 0, num_bins = 0, time_start_sw = 0;
+    short beg_az = 0, beg_elev = 0, end_az = 0, end_elev = 0, num_bins = 0;
+    // int because UINT2 data type (Unsigned 16-bit integer)
+    int time_start_sw = 0;
     float az, elev, d = 0.0f, step;
     // byte data = 0;
     boolean beg_rec = true, end_rec = true, read_ray_hdr = true, begin = true;
@@ -270,10 +285,8 @@ public class SigmetVolumeScan {
           num_rays_exp[i] = raf.readShort();
           beg += num_rays_exp[i]; // before num_rays_act[i] was used but it does seem not work
           num_rays_act[i] = raf.readShort();
-          // beg += num_rays_act[i]; // idh_len+20
           angl_swp[i] = raf.readShort(); // idh_len+22
-          // TODO maybe use in stead of variable twoBytes?
-          bin_len[i] = raf.readShort(); // idh_len+24
+          bin_len[i] = raf.readShort(); // idh_len+24 (Number of bits per bin for this data type)
           data_type[i] = raf.readShort(); // idh_len+26
         }
 
@@ -294,7 +307,8 @@ public class SigmetVolumeScan {
             end_rec = true;
             rays_count++;
             read_ray_hdr = true;
-            pos = 0;
+            posInRay_relative = 0;
+            posInRay_absolute = 0;
             data_read = 0;
             nb = 0;
             len = cur_len;
@@ -308,7 +322,7 @@ public class SigmetVolumeScan {
         }
 
         nwords = a0 & 0x7fff;
-        end_words = nwords - 6;
+        end_words = nwords - 6; // because of raw_prod_bhdr 12-byte structure
         data_read = end_words * 2;
         end_rec = false;
 
@@ -325,19 +339,27 @@ public class SigmetVolumeScan {
 
       // ---Define output data files for each data_type (= nparams)/sweep ---------
       dty = data_type[0];
+      int bitsToRead = bin_len[0];
 
       if (nparams > 1) {
         kk = rays_count % nparams;
         dty = data_type[kk];
+        bitsToRead = bin_len[kk];
+
       } else if (number_sweeps > 1) {
       }
 
+      if (bitsToRead <= 0 || bitsToRead % 8 != 0)
+        throw new IllegalStateException("Not compatible! Number of bits per bin for this data type = " + bitsToRead);
+      int bytesToRead = bitsToRead / 8;
+
       String var_name = data_name[dty];
-      // support for 2 byte data types is experimental
-      boolean twoBytes = var_name.endsWith("_2");
 
       // --- read ray_header (size=12 bytes=6 words)---------------------------------------
       if (read_ray_hdr) {
+        if (ray != null)
+          throw new IllegalStateException("ray != null");
+
         if (pos_ray_hdr < 2) {
           raf.seek(cur_len);
           beg_az = raf.readShort();
@@ -414,7 +436,7 @@ public class SigmetVolumeScan {
 
         if (pos_ray_hdr < 12) {
           raf.seek(cur_len);
-          time_start_sw = raf.readShort();
+          time_start_sw = raf.readUnsignedShort();
           cur_len = cur_len + 2;
           len = cur_len;
         }
@@ -433,9 +455,9 @@ public class SigmetVolumeScan {
         continue;
       }
 
-      if (pos > 0) {
-        data_read = data_read - pos;
-        pos = 0;
+      if (posInRay_relative > 0) {
+        data_read = data_read - posInRay_relative;
+        posInRay_relative = 0;
       }
 
       if (data_read > 0) {
@@ -447,14 +469,12 @@ public class SigmetVolumeScan {
           // data = raf.readByte();
           // dd[nb] = SigmetIOServiceProvider.calcData(recHdr, dty, data);
           cur_len++;
-          nb++;
-          if (twoBytes) {
-            cur_len++;
-            // i++;?
-          }
+          posInRay_absolute++;
+          if (posInRay_absolute % bytesToRead == 0)
+            nb++;
 
           if (cur_len % REC_SIZE == 0) {
-            pos = i + 1;
+            posInRay_relative = i + 1;
             beg_rec = true;
             read_ray_hdr = false;
             len = cur_len;
@@ -463,13 +483,13 @@ public class SigmetVolumeScan {
           }
         }
         raf.seek(cur_len);
-        if (pos > 0) {
+        if (posInRay_relative > 0) {
           continue;
         }
       }
 
       if (cur_len % REC_SIZE == 0) {
-        pos = 0;
+        posInRay_relative = 0;
         beg_rec = true;
         read_ray_hdr = false;
         data_read = 0;
@@ -487,11 +507,8 @@ public class SigmetVolumeScan {
 
         // --- Check if the code=1 ("1" means an end of a ray)
         if (a00 == (short) 1) {
-          // for (int uk = 0; uk < (int) num_bins; uk++) {
-          // dd[uk] = -999.99f;
-          // }
-          ray = new Ray(-999.99f, -999.99f, -999.99f, -999.99f, num_bins, (short) (-99), -999, 0, -999, nsweep,
-              var_name, dty);
+          ray = new Ray(range_first, step, az, elev, num_bins, (short) nb, time_start_sw, rayoffset, datalen,
+              rayoffset1, nsweep, var_name, dty, bytesToRead);
           rays_count++;
           beg_rec = false;
           end_rec = true;
@@ -504,7 +521,7 @@ public class SigmetVolumeScan {
           data_read = nwords * 2;
 
           if (cur_len % REC_SIZE == 0) {
-            pos = 0;
+            posInRay_relative = 0;
             beg_rec = true;
             end_rec = false;
             read_ray_hdr = false;
@@ -517,15 +534,13 @@ public class SigmetVolumeScan {
           for (int ii = 0; ii < data_read; ii++) {
             // data = raf.readByte();
             // dd[nb] = SigmetIOServiceProvider.calcData(recHdr, dty, data);
-            cur_len = cur_len + 1;
-            nb = nb + 1;
-            if (twoBytes) {
-              cur_len++;
-              // ii++;?
-            }
+            cur_len++;
+            posInRay_absolute++;
+            if (posInRay_absolute % bytesToRead == 0)
+              nb++;
 
             if (cur_len % REC_SIZE == 0) {
-              pos = ii + 1;
+              posInRay_relative = ii + 1;
               beg_rec = true;
               end_rec = false;
               read_ray_hdr = false;
@@ -534,7 +549,7 @@ public class SigmetVolumeScan {
             }
           }
           raf.seek(cur_len);
-          if (pos > 0) {
+          if (posInRay_relative > 0) {
             break;
           }
         } else if (a00 > 0 & a00 != 1) {
@@ -544,14 +559,19 @@ public class SigmetVolumeScan {
           // dd[nb + k] = SigmetIOServiceProvider.calcData(recHdr, dty, (byte) 0);
           // }
 
-          nb = nb + num_zero;
-          // TODO extra handling for twoBytes here, too?
+          int nb_before = posInRay_absolute / bytesToRead;
+          // sanity check
+          if (nb_before != nb)
+            throw new IllegalStateException("nb_before != nb");
+          posInRay_absolute += num_zero;
+          int nb_after = posInRay_absolute / bytesToRead;
+          nb = nb + (nb_after - nb_before);
 
           if (cur_len % REC_SIZE == 0) {
             beg_rec = true;
             end_rec = false;
             read_ray_hdr = false;
-            pos = 0;
+            posInRay_relative = 0;
             data_read = 0;
 
             break;
@@ -562,20 +582,20 @@ public class SigmetVolumeScan {
       if (cur_len % REC_SIZE == 0) {
         len = cur_len;
 
-        continue;
-      }
+        // will get lost otherwise
+        if (ray != null) {
+          beg_rec = true;
+          end_rec = true;
+          read_ray_hdr = true;
+          posInRay_relative = 0;
+          posInRay_absolute = 0;
+          data_read = 0;
+          nb = 0;
+          len = cur_len;
 
-      raf.seek(cur_len);
+          if (ray == null)
+            throw new IllegalStateException("ray == null");
 
-      if (nb == (int) num_bins) {
-        a00 = raf.readShort();
-        cur_len = cur_len + 2;
-        end_rec = true;
-        ray = new Ray(range_first, step, az, elev, num_bins, time_start_sw, rayoffset, datalen, rayoffset1, nsweep,
-            var_name, dty);
-        rays_count++;
-
-        if ((nsweep == number_sweeps) & (rays_count % beg == 0)) {
           // using a universal structure that works for all data types
           List<Ray> varL = all.get(var_name.trim());
           if (varL == null) {
@@ -583,6 +603,40 @@ public class SigmetVolumeScan {
             all.put(var_name.trim(), varL);
           }
           varL.add(ray);
+          lastRay = ray;
+          ray = null;
+        }
+
+        continue;
+      }
+
+      raf.seek(cur_len);
+
+      if (nb == (int) num_bins) {
+        a00 = raf.readShort(); // should be 1 == end of ray
+        if (a00 != 1)
+          // should not be able to get here
+          logger.warn("nb == num_bins but a00 != 1 - something seems wrong");
+        cur_len = cur_len + 2;
+        end_rec = true;
+        ray = new Ray(range_first, step, az, elev, num_bins, (short) nb, time_start_sw, rayoffset, datalen, rayoffset1,
+            nsweep, var_name, dty, bytesToRead);
+        rays_count++;
+
+        // last ray of last sweep -> end of file
+        if ((nsweep == number_sweeps) & (rays_count % beg == 0)) {
+          if (ray == null)
+            throw new IllegalStateException("ray == null");
+
+          // using a universal structure that works for all data types
+          List<Ray> varL = all.get(var_name.trim());
+          if (varL == null) {
+            varL = new ArrayList<>();
+            all.put(var_name.trim(), varL);
+          }
+          varL.add(ray);
+          lastRay = ray;
+          ray = null;
           break;
         }
 
@@ -590,10 +644,14 @@ public class SigmetVolumeScan {
           beg_rec = true;
           end_rec = true;
           read_ray_hdr = true;
-          pos = 0;
+          posInRay_relative = 0;
+          posInRay_absolute = 0;
           data_read = 0;
           nb = 0;
           len = cur_len;
+
+          if (ray == null)
+            throw new IllegalStateException("ray == null");
 
           // using a universal structure that works for all data types
           List<Ray> varL = all.get(var_name.trim());
@@ -602,6 +660,8 @@ public class SigmetVolumeScan {
             all.put(var_name.trim(), varL);
           }
           varL.add(ray);
+          lastRay = ray;
+          ray = null;
 
           continue;
         }
@@ -610,6 +670,9 @@ public class SigmetVolumeScan {
       if (firstRay == null)
         firstRay = ray;
 
+      if (ray == null)
+        throw new IllegalStateException("ray == null");
+
       // using a universal structure that works for all data types
       List<Ray> additionalL = all.get(var_name.trim());
       if (additionalL == null) {
@@ -617,8 +680,11 @@ public class SigmetVolumeScan {
         all.put(var_name.trim(), additionalL);
       }
       additionalL.add(ray);
+      lastRay = ray;
+      ray = null;
 
-      pos = 0;
+      posInRay_relative = 0;
+      posInRay_absolute = 0;
       data_read = 0;
       nb = 0;
       read_ray_hdr = true;
@@ -635,7 +701,6 @@ public class SigmetVolumeScan {
 
       len = cur_len;
     } // ------------end of outer while ---------------
-    lastRay = ray;
 
     // using a universal structure that works for all data types
     for (String var_name : all.keySet()) {
@@ -737,7 +802,7 @@ public class SigmetVolumeScan {
    */
   void checkSort(Ray[] r) {
     int j = 0, n = 0, n1, n2;
-    short time1, time2;
+    int time1, time2;
     int[] k1 = new int[300];
     int[] k2 = new int[300];
     // define the groups of rays with the same "time". For ex.:
@@ -753,7 +818,7 @@ public class SigmetVolumeScan {
         k1[j] = i + 1;
       }
     }
-    if (k2[j] < r.length - 1) {
+    if (k2[j] < r.length - 1 && j > 0) {
       k1[j] = k2[j - 1] + 1;
       k2[j] = r.length - 1;
     }
