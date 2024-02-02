@@ -7,7 +7,7 @@ import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.Credentials;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.impl.client.BasicCredentialsProvider;
-import org.junit.AfterClass;
+import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -21,6 +21,7 @@ public class TestUrlCreds {
   private String username;
   private String password;
   private String host;
+  private final int actualConnectionsBefore;
 
   // Each parameter should be placed as an argument here
   // Every time runner triggers, it will pass the arguments
@@ -30,6 +31,7 @@ public class TestUrlCreds {
     this.username = username;
     this.password = password;
     this.host = host;
+    actualConnectionsBefore = HTTPSession.getActualConnections();
   }
 
   @Parameterized.Parameters
@@ -78,8 +80,8 @@ public class TestUrlCreds {
     }
   }
 
-  @AfterClass
-  public static void checkAllConnectionsClosed() {
-    HTTPSession.validatestate();
+  @After
+  public void checkAllConnectionsClosed() {
+    assertThat(HTTPSession.getActualConnections()).isEqualTo(actualConnectionsBefore);
   }
 }

@@ -20,12 +20,15 @@ public class TestRandomAccessFileCacheCleanup {
 
   @BeforeClass
   public static void enableCache() {
+    RandomAccessFile.shutdown();
     cache = new FileCache("RandomAccessFile", 0, 1, 1, 0);
     RandomAccessFile.setGlobalFileCache(cache);
+    assertThat(cache.showCache().size()).isEqualTo(0);
   }
 
   @AfterClass
   public static void shutdownCache() {
+    RandomAccessFile.shutdown();
     RandomAccessFile.setGlobalFileCache(null);
   }
 

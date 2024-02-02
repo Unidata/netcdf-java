@@ -32,6 +32,8 @@
 
 package ucar.httpservices;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -75,6 +77,7 @@ public class TestThreading extends UnitTestCommon {
   protected String[] testurls;
 
   protected int nthreads = DFALTTHREADS;
+  private final int actualConnectionsBefore;
 
   //////////////////////////////////////////////////
 
@@ -92,6 +95,7 @@ public class TestThreading extends UnitTestCommon {
       }
     }
     definetests();
+    actualConnectionsBefore = HTTPSession.getActualConnections();
   }
 
   protected void definetests() {
@@ -152,7 +156,7 @@ public class TestThreading extends UnitTestCommon {
       }
     }
     logger.debug("All threads terminated");
-    HTTPSession.validatestate();
+    assertThat(HTTPSession.getActualConnections()).isEqualTo(actualConnectionsBefore);
   }
 
   @Test
@@ -173,7 +177,7 @@ public class TestThreading extends UnitTestCommon {
       }
     }
     logger.debug("All threads terminated");
-    HTTPSession.validatestate();
+    assertThat(HTTPSession.getActualConnections()).isEqualTo(actualConnectionsBefore);
   }
 
   static class Runner implements Runnable {
