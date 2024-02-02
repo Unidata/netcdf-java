@@ -36,6 +36,7 @@ import static com.google.common.truth.Truth.assertThat;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.httpservices.HTTPException;
@@ -45,10 +46,12 @@ import ucar.httpservices.HTTPSession;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.UnitTestCommon;
 import java.lang.invoke.MethodHandles;
+import ucar.unidata.util.test.category.NotPullRequest;
 
 /**
  * Test interaction of multi-threading with httpservices.
  */
+@Category(NotPullRequest.class)
 public class TestThreading extends UnitTestCommon {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
