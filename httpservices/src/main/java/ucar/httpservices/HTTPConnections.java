@@ -96,8 +96,14 @@ abstract class HTTPConnections {
     return this.protocolregistry;
   }
 
+  // For testing
   void validate() {
     assert actualconnections == 0;
+  }
+
+  // For testing
+  int getActualConnections() {
+    return actualconnections;
   }
 
   public abstract HttpClientConnectionManager newManager(HTTPMethod m);
