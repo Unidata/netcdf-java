@@ -332,7 +332,7 @@ public class Ray {
           if (ddx == null)
             ii.setDoubleNext(SigmetVolumeScan.MISSING_VALUE_DOUBLE);
           else {
-            int ddx2 = dd[offset+1];
+            int ddx2 = dd[offset + 1];
             int rawValue = (ddx & 0xFF) | ((ddx2 & 0xFF) << 8);
             ii.setDoubleNext(SigmetIOServiceProvider.calcData(SigmetIOServiceProvider.recHdr, dty, rawValue));
           }
