@@ -268,7 +268,7 @@ public class Ray {
           break;
         }
         raf.seek(cur_len);
-        for (int i = 0; i < dataRead1; i++) {
+        for (int i = 0; i < dataRead1 && nb < bins; i++) {
           dd[posInRay_absolute] = raf.readByte();
           posInRay_absolute++;
           if (posInRay_absolute % bytesPerBin == 0)
@@ -288,14 +288,15 @@ public class Ray {
       } else if (a00 > 0 & a00 != 1) {
         int num_zero = a00 * 2;
         int dataRead1 = num_zero;
-        for (int k = 0; k < dataRead1; k++) {
+        for (int k = 0; k < dataRead1 && nb < bins; k++) {
           dd[posInRay_absolute] = 0;
           posInRay_absolute++;
           if (posInRay_absolute % bytesPerBin == 0)
             nb++;
-        }
-        if (cur_len % SigmetVolumeScan.REC_SIZE == 0) {
-          break;
+
+          if (cur_len % SigmetVolumeScan.REC_SIZE == 0) {
+            break;
+          }
         }
       }
 
