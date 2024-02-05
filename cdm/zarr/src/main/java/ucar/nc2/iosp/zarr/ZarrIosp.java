@@ -38,6 +38,16 @@ public class ZarrIosp extends AbstractIOServiceProvider {
     return raf.isDirectory();
   }
 
+  /**
+   * Set the SortGroup to GROUP_1 so this IOSP will be checked first, since `isValidFile()` is a quick check
+   *
+   * @return SortGroup.GROUP_1
+   */
+  @Override
+  public SortGroup getSortGroup() {
+    return SortGroup.GROUP_1;
+  }
+
   @Override
   public String getFileTypeId() {
     return fileTypeId;
