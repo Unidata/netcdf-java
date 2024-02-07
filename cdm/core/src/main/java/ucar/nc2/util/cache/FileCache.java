@@ -109,6 +109,7 @@ public class FileCache implements FileCacheIF {
   protected String name;
   protected final int softLimit, minElements, hardLimit;
   protected final long period; // msecs
+  private boolean removeDeleted = false;
 
   private final AtomicBoolean disabled = new AtomicBoolean(false); // cache is disabled
   protected final AtomicBoolean hasScheduled = new AtomicBoolean(false); // a cleanup is scheduled
@@ -145,6 +146,23 @@ public class FileCache implements FileCacheIF {
    */
   public FileCache(int minElementsInMemory, int softLimit, int hardLimit, int period) {
     this("", minElementsInMemory, softLimit, hardLimit, period);
+  }
+
+  /**
+   * Constructor.
+   *
+   * @param name of file cache
+   * @param minElementsInMemory keep this number in the cache
+   * @param softLimit trigger a cleanup if it goes over this number.
+   * @param hardLimit if > 0, never allow more than this many elements. This causes a cleanup to be done in the calling
+   *        thread.
+   * @param period if > 0, do periodic cleanups every this number of seconds.
+   * @param removeDeleted if true, then remove deleted files from the cache when a cleanup is performed.
+   */
+  public FileCache(String name, int minElementsInMemory, int softLimit, int hardLimit, int period,
+      boolean removeDeleted) {
+    this(name, minElementsInMemory, softLimit, hardLimit, period);
+    this.removeDeleted = removeDeleted;
   }
 
   /**
@@ -699,9 +717,11 @@ public class FileCache implements FileCacheIF {
   synchronized void cleanup(int maxElements) {
 
     try {
-      for (CacheElement.CacheFile cacheFile : files.values()) {
-        if (!Files.exists(Paths.get(cacheFile.ncfile.getLocation()))) {
-          remove(cacheFile);
+      if (removeDeleted) {
+        for (CacheElement.CacheFile cacheFile : files.values()) {
+          if (!Files.exists(Paths.get(cacheFile.ncfile.getLocation()))) {
+            remove(cacheFile);
+          }
         }
       }
 
