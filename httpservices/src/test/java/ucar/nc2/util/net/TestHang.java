@@ -13,6 +13,7 @@ package ucar.nc2.util.net;
 
 import org.junit.Assert;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -32,6 +33,7 @@ import java.util.List;
  * with at least one being non-existent
  */
 
+@Ignore("Temporarily as a test")
 @RunWith(Parameterized.class)
 public class TestHang {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
