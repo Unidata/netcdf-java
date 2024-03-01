@@ -498,12 +498,19 @@ public class NetcdfFiles {
   private static String makeUncompressed(String filename) throws Exception {
     String suffix = findCompressedSuffix(filename);
     int pos = filename.lastIndexOf(suffix);
+    log.debug("suffix {}, pos {}", suffix, pos);
+
     String basepath = filename.substring(0, pos - 1);
     String itempath = filename.substring(pos + suffix.length());
     // rebuild filepath without suffix (same as base path if there is not item path)
     String uncompressedFilename = basepath + itempath;
     // name of parent file
     String baseFilename = basepath + "." + suffix;
+
+    log.debug("basepath '{}'", basepath);
+    log.debug("itempath '{}'", itempath);
+    log.debug("uncompressedFilename '{}'", uncompressedFilename);
+    log.debug("baseFilename '{}'", baseFilename);
 
     // coverity claims resource leak, but attempts to fix break. so beware
     // see if already decompressed, check in cache as needed
@@ -571,18 +578,25 @@ public class NetcdfFiles {
           try (InputStream in = new UncompressInputStream(new FileInputStream(baseFilename))) {
             copy(in, fout, 100000);
           }
-          if (NetcdfFile.debugCompress)
+          if (NetcdfFile.debugCompress) {
             log.info("uncompressed {} to {}", filename, uncompressedFile);
+          }
+
         } else if (suffix.equalsIgnoreCase("zip")) {
           // find specified zip entry, if it exists
           try (ZipInputStream zin = new ZipInputStream(new FileInputStream(baseFilename))) {
+            // If a desired zipentry ID was appended to method's filename parameter, then itempath
+            // is of length > 1 and ID starts at itempath char offset 1.
+            String itemName = (itempath.length() > 1) ? itempath.substring(1) : "";
+            log.debug("seeking zip itemName '{}'", itempath, itemName);
             ZipEntry ze = zin.getNextEntry();
-            String itemName = itempath.substring(1); // remove initial /
+
             while (ze != null) {
               if (itempath.isEmpty() || ze.getName().equals(itemName)) {
                 copy(zin, fout, 100000);
-                if (NetcdfFile.debugCompress)
-                  log.info("unzipped {} entry {} to {}", filename, ze.getName(), uncompressedFile);
+                if (NetcdfFile.debugCompress) {
+                  log.debug("unzipped {} entry {} to {}", filename, ze.getName(), uncompressedFile);
+                }
                 break;
               }
               zin.closeEntry();
