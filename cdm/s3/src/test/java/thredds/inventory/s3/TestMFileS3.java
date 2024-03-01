@@ -11,6 +11,7 @@ import static org.junit.Assert.assertThrows;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URISyntaxException;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -18,7 +19,10 @@ import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import software.amazon.awssdk.services.s3.model.NoSuchKeyException;
+import thredds.filesystem.MFileOS;
 import thredds.inventory.MFile;
+import thredds.inventory.s3.MFileS3.Provider;
+import ucar.unidata.io.s3.CdmS3Uri;
 import ucar.unidata.io.s3.S3TestsCommon;
 import ucar.unidata.util.test.category.NotPullRequest;
 
@@ -120,6 +124,7 @@ public class TestMFileS3 {
   public void dirCheckAws() throws IOException {
     dirCheckNoDelim(AWS_G16_S3_URI_DIR, G16_DIR);
     dirCheckDelim(AWS_G16_S3_URI_DIR + DELIMITER_FRAGMENT);
+    dirCheckDelim(AWS_G16_S3_URI_DIR + "/" + DELIMITER_FRAGMENT);
   }
 
   @Test
@@ -141,6 +146,20 @@ public class TestMFileS3 {
 
     final MFileS3 fileWithDelimiter = new MFileS3(AWS_G16_S3_URI_TOP_DIR + DELIMITER_FRAGMENT);
     assertThat(fileWithDelimiter.getName()).isEqualTo(topLevelDir);
+  }
+
+  @Test
+  public void shouldCompareSameMFile() throws IOException {
+    final MFile mFile = new MFileS3(AWS_G16_S3_OBJECT_1);
+    assertThat(mFile.equals(mFile)).isTrue();
+    assertThat(mFile.compareTo(mFile)).isEqualTo(0);
+  }
+
+  @Test
+  public void shouldCompareToDifferentClass() throws IOException {
+    final MFile mFile1 = new MFileS3(AWS_G16_S3_OBJECT_1);
+    final MFile mFile2 = new MFileOS("test");
+    assertThat(mFile1.equals(mFile2)).isFalse();
   }
 
   @Test
@@ -345,6 +364,60 @@ public class TestMFileS3 {
     }
   }
 
+
+  @Test
+  public void shouldGetLastModifiedForExistingFile() throws IOException {
+    final MFile mFile = new MFileS3(AWS_G16_S3_OBJECT_1);
+    assertThat(mFile.getLastModified()).isGreaterThan(0);
+
+    final MFile mFile2 = new MFileS3(AWS_G16_S3_OBJECT_1, 0, -1);
+    assertThat(mFile2.getLastModified()).isGreaterThan(0);
+
+    final MFile mFile3 = new MFileS3(AWS_G16_S3_OBJECT_1, 0, 1);
+    assertThat(mFile3.getLastModified()).isEqualTo(1);
+  }
+
+  @Test
+  public void shouldThrowForGetLastModifiedOnNonExistingFile() throws IOException {
+    final MFile mFile = new MFileS3(AWS_G16_S3_URI_DIR + "/NotARealKey");
+    assertThrows(NoSuchKeyException.class, mFile::getLastModified);
+  }
+
+  @Test
+  public void shouldGetLengthForExistingFile() throws IOException {
+    final MFile mFile = new MFileS3(AWS_G16_S3_OBJECT_1);
+    assertThat(mFile.getLength()).isGreaterThan(0);
+
+    final MFile mFile2 = new MFileS3(AWS_G16_S3_OBJECT_1, -1, 0);
+    assertThat(mFile2.getLength()).isGreaterThan(0);
+
+    final MFile mFile3 = new MFileS3(AWS_G16_S3_OBJECT_1, 1, 0);
+    assertThat(mFile3.getLength()).isEqualTo(1);
+  }
+
+  @Test
+  public void shouldThrowForGetLengthOnNonExistingFile() throws IOException {
+    final MFile mFile = new MFileS3(AWS_G16_S3_URI_DIR + "/NotARealKey");
+    assertThrows(NoSuchKeyException.class, mFile::getLength);
+  }
+
+  @Test
+  public void shouldGetProtocol() {
+    assertThat(new Provider().getProtocol()).isEqualTo("cdms3");
+  }
+
+  @Test
+  public void shouldCreateMFile() throws IOException {
+    final MFile mFile = new Provider().create(AWS_G16_S3_OBJECT_1);
+    assertThat(mFile.exists()).isTrue();
+  }
+
+  @Test
+  public void shouldCreateMFileUsingCdms3Uri() throws URISyntaxException {
+    final MFile mFile = new MFileS3(new CdmS3Uri(AWS_G16_S3_OBJECT_1));
+    assertThat(mFile.exists()).isTrue();
+  }
+
   private void checkWithBucket(String cdmS3Uri) throws IOException {
     logger.info("Checking {}", cdmS3Uri);
     MFile mFile = new MFileS3(cdmS3Uri);
@@ -393,7 +466,8 @@ public class TestMFileS3 {
     MFile parent = mFile.getParent();
     // Since we have a delimiter, and the object key contains the delimiter, we know this should not be null.
     assertThat(parent).isNotNull();
-    assertThat(parent.getPath()).isEqualTo(cdmS3Uri.replace("/" + dirName, "/"));
+    assertThat(parent.getPath())
+        .isEqualTo(cdmS3Uri.replace("/" + dirName, "/").replace(parentDirName + "//", parentDirName + "/"));
     assertThat(parent.getName()).isEqualTo(parentDirName);
     assertThat(parent.isDirectory()).isTrue();
   }
@@ -404,8 +478,12 @@ public class TestMFileS3 {
     MFile mFile3 = new MFileS3(uri2);
     assert mFile1.equals(mFile2);
     assertThat(mFile1).isEqualTo(mFile2);
+    assertThat(mFile1.compareTo(mFile2)).isEqualTo(0);
+    assertThat(mFile1.hashCode()).isEqualTo(mFile2.hashCode());
     assertThat(uri1).ignoringCase().isNotEqualTo(uri2);
     assertThat(mFile1).isNotEqualTo(mFile3);
+    assertThat(mFile1.compareTo(mFile3)).isNotEqualTo(0);
+    assertThat(mFile1.hashCode()).isNotEqualTo(mFile3.hashCode());
   }
 
   private void checkS3MFilesAuxInfo(String uri) throws IOException {
