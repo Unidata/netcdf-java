@@ -852,6 +852,7 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
     CoverageCoordAxisBuilder builder =
         new CoverageCoordAxisBuilder(refName, master.getUnit(), Grib.GRIB_RUNTIME, DataType.DOUBLE, AxisType.RunTime,
             atts, CoverageCoordAxis.DependenceType.dependent, time.getName(), null, length, 0, 0, 0, data, this);
+    builder.setMissingTolerance(0.0);
     builder.setSpacingFromValues(false);
 
     return new CoverageCoordAxis1D(builder);
