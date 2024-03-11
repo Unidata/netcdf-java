@@ -9,11 +9,9 @@ import com.google.common.collect.Sets;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
-import ucar.nc2.constants.DataFormatType;
 import ucar.nc2.dataset.NetcdfDataset.Enhance;
 import ucar.nc2.filter.*;
 import ucar.nc2.internal.dataset.CoordinatesHelper;
-import ucar.nc2.iosp.netcdf3.N3iosp;
 import ucar.nc2.util.CancelTask;
 import javax.annotation.Nullable;
 import java.io.IOException;
@@ -170,8 +168,6 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
     this.unsignedConversion = vds.unsignedConversion;
     this.scaleOffset = vds.scaleOffset;
     this.convertMissing = vds.convertMissing;
-    this.fillValue = vds.getFillValue();
-    this.hasFillValue = vds.hasFillValue();
 
     // Add this so that old VariableDS units agrees with new VariableDS units.
     String units = vds.getUnitsString();
@@ -268,13 +264,13 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
         toApply.add(unsignedConversion);
         convertedType = unsignedConversion.getOutType();
       }
-      if (enhancements.contains(Enhance.ApplyScaleOffset) && scaleOffset != null) {
-        toApply.add(scaleOffset);
-        convertedType = scaleOffset.getScaledOffsetType();
-      }
       if (enhancements.contains(Enhance.ConvertMissing) && convertMissing != null
           && (dataType == DataType.FLOAT || dataType == DataType.DOUBLE)) {
         toApply.add(convertMissing);
+      }
+      if (enhancements.contains(Enhance.ApplyScaleOffset) && scaleOffset != null) {
+        toApply.add(scaleOffset);
+        convertedType = scaleOffset.getScaledOffsetType();
       }
       if (enhancements.contains(Enhance.ApplyStandardizer) && standardizer != null) {
         toApply.add(standardizer);
@@ -560,8 +556,8 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
     }
 
     Array array = Array.factoryConstant(getDataType(), shape, storage);
-    if (hasFillValue) {
-      array.setObject(0, fillValue);
+    if (convertMissing.hasFillValue()) {
+      array.setObject(0, convertMissing.getFillValue());
     }
     return array;
   }
@@ -690,12 +686,12 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
 
   @Override
   public boolean hasFillValue() {
-    return hasFillValue;
+    return convertMissing != null && convertMissing.hasFillValue();
   }
 
   @Override
   public double getFillValue() {
-    return fillValue;
+    return convertMissing != null ? convertMissing.getFillValue() : Double.NaN;
   }
 
   @Override
@@ -836,9 +832,6 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
   protected String orgName; // in case Variable was renamed, and we need to keep track of the original name
   String orgFileTypeId; // the original fileTypeId.
 
-  private boolean hasFillValue = false;
-  private double fillValue = Double.MAX_VALUE;
-
   protected VariableDS(Builder<?> builder, Group parentGroup) {
     super(builder, parentGroup);
 
@@ -879,6 +872,9 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
       this.unsignedConversion = UnsignedConversion.createFromVar(this);
       this.dataType = unsignedConversion != null ? unsignedConversion.getOutType() : dataType;
     }
+    if (this.enhanceMode.contains(Enhance.ConvertMissing)) {
+      this.convertMissing = ConvertMissing.createFromVariable(this);
+    }
     if (this.enhanceMode.contains(Enhance.ApplyScaleOffset) && (dataType.isNumeric() || dataType == DataType.CHAR)) {
       if (this.scaleOffset == null) {
         this.scaleOffset = ScaleOffset.createFromVariable(this);
@@ -892,28 +888,6 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
     Attribute normalizerAtt = findAttribute(CDM.NORMALIZE);
     if (normalizerAtt != null && this.enhanceMode.contains(Enhance.ApplyNormalizer) && dataType.isFloatingPoint()) {
       this.normalizer = Normalizer.createFromVariable(this);
-    }
-
-    // need fill value info before convertMissing
-    Attribute fillValueAtt = findAttribute(CDM.FILL_VALUE);
-    if (fillValueAtt != null && !fillValueAtt.isString()) {
-      DataType fillType = FilterHelpers.getAttributeDataType(fillValueAtt, getSignedness());
-      fillValue = applyScaleOffset(convertUnsigned(fillValueAtt.getNumericValue(), fillType).doubleValue());
-      hasFillValue = true;
-    } else {
-      // No _FillValue attribute found. Instead, if file is NetCDF and variable is numeric, use the default fill value.
-      boolean isNetcdfIosp = DataFormatType.NETCDF.getDescription().equals(orgFileTypeId)
-          || DataFormatType.NETCDF4.getDescription().equals(orgFileTypeId);
-
-      if (isNetcdfIosp) {
-        if (dataType.isNumeric()) {
-          fillValue = applyScaleOffset(N3iosp.getFillValueDefault(dataType));
-          hasFillValue = true;
-        }
-      }
-    }
-    if (this.enhanceMode.contains(Enhance.ConvertMissing)) {
-      this.convertMissing = ConvertMissing.createFromVariable(this);
     }
   }
 

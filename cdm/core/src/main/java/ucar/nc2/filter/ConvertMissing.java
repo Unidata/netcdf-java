@@ -5,15 +5,16 @@ import ucar.ma2.DataType;
 import ucar.ma2.IndexIterator;
 import ucar.nc2.Attribute;
 import ucar.nc2.constants.CDM;
+import ucar.nc2.constants.DataFormatType;
 import ucar.nc2.dataset.VariableDS;
-import ucar.nc2.util.Misc;
+import ucar.nc2.iosp.netcdf3.N3iosp;
 
 import java.util.*;
 
 public class ConvertMissing implements Enhancement {
 
   private boolean hasValidMin, hasValidMax;
-  private double validMin, validMax, fuzzyValidMin, fuzzyValidMax;
+  private double validMin, validMax;
 
   private boolean hasFillValue;
   private double fillValue; // LOOK: making it double not really correct. What about CHAR?
@@ -60,36 +61,27 @@ public class ConvertMissing implements Enhancement {
       }
     }
 
-    // check if validData values are stored packed or unpacked
-    if (hasValidMin || hasValidMax) {
-      if (FilterHelpers.rank(validType) == FilterHelpers.rank(var.getScaledOffsetType())
-          && FilterHelpers.rank(validType) > FilterHelpers.rank(var.getOriginalDataType())) {
-        // If valid_range is the same type as the wider of scale_factor and add_offset, PLUS
-        // it is wider than the (packed) data, we know that the valid_range values were stored as unpacked.
-        // We already assumed that this was the case when we first read the attribute values, so there's
-        // nothing for us to do here.
-      } else {
-        // Otherwise, the valid_range values were stored as packed. So now we must unpack them.
-        if (hasValidMin) {
-          validMin = var.applyScaleOffset(validMin);
-        }
-        if (hasValidMax) {
-          validMax = var.applyScaleOffset(validMax);
-        }
-      }
-      // During the scaling process, it is possible that the valid minimum and maximum values have effectively been
-      // swapped (for example, when the scale value is negative). Go ahead and check to make sure the valid min is
-      // actually less than the valid max, and if not, fix it. See https://github.com/Unidata/netcdf-java/issues/572.
-      if (validMin > validMax) {
-        double tmp = validMin;
-        validMin = validMax;
-        validMax = tmp;
-      }
-    }
-
     /// fill_value
     boolean hasFillValue = var.hasFillValue();
     double fillValue = var.getFillValue();
+    // need fill value info before convertMissing
+    Attribute fillValueAtt = var.findAttribute(CDM.FILL_VALUE);
+    if (fillValueAtt != null && !fillValueAtt.isString()) {
+      DataType fillType = FilterHelpers.getAttributeDataType(fillValueAtt, var.getSignedness());
+      fillValue = var.convertUnsigned(fillValueAtt.getNumericValue(), fillType).doubleValue();
+      hasFillValue = true;
+    } else {
+      // No _FillValue attribute found. Instead, if file is NetCDF and variable is numeric, use the default fill value.
+      String ncfileId = var.getNetcdfFile() == null ? null : var.getNetcdfFile().getFileTypeId();
+      if (DataFormatType.NETCDF.getDescription().equals(ncfileId)
+          || DataFormatType.NETCDF4.getDescription().equals(ncfileId)) {
+        DataType fillType = var.getDataType();
+        if (fillType.isNumeric()) {
+          fillValue = var.convertUnsigned(N3iosp.getFillValueDefault(fillType), fillType).doubleValue();
+          hasFillValue = true;
+        }
+      }
+    }
 
     /// missing_value
     double[] missingValue = null;
@@ -117,7 +109,6 @@ public class ConvertMissing implements Enhancement {
         DataType missingType = FilterHelpers.getAttributeDataType(missingValueAtt, signedness);
         for (int i = 0; i < missingValue.length; i++) {
           missingValue[i] = var.convertUnsigned(missingValueAtt.getNumericValue(i), missingType).doubleValue();
-          missingValue[i] = var.applyScaleOffset(missingValue[i]);
         }
       }
     }
@@ -135,9 +126,7 @@ public class ConvertMissing implements Enhancement {
     this.hasValidMin = hasValidMin;
     this.hasValidMax = hasValidMax;
     this.validMin = validMin;
-    this.fuzzyValidMin = validMin - Misc.defaultMaxRelativeDiffFloat;
     this.validMax = validMax;
-    this.fuzzyValidMax = validMax + Misc.defaultMaxRelativeDiffFloat;
     this.hasFillValue = hasFillValue;
     this.fillValue = fillValue;
     this.missingValue = missingValue;
@@ -152,10 +141,10 @@ public class ConvertMissing implements Enhancement {
         if (fillValueIsMissing && hasFillValue && mv == fillValue) {
           continue;
         }
-        if (invalidDataIsMissing && hasValidMin && mv < fuzzyValidMin) {
+        if (invalidDataIsMissing && hasValidMin && mv < validMin) {
           continue;
         }
-        if (invalidDataIsMissing && hasValidMax && mv > fuzzyValidMax) {
+        if (invalidDataIsMissing && hasValidMax && mv > validMax) {
           continue;
         }
         missing.add(mv);
@@ -185,10 +174,10 @@ public class ConvertMissing implements Enhancement {
     if (Double.isNaN(val)) {
       return true;
     }
-    if (val > fuzzyValidMax) {
+    if (val > validMax) {
       return true;
     }
-    if (val < fuzzyValidMin) {
+    if (val < validMin) {
       return true;
     }
     return false;
@@ -199,7 +188,7 @@ public class ConvertMissing implements Enhancement {
   }
 
   public boolean isFillValue(double val) {
-    return hasFillValue && Misc.nearlyEquals(val, fillValue, Misc.defaultMaxRelativeDiffFloat);
+    return hasFillValue && val == fillValue;
   }
 
   public double getFillValue() {
@@ -208,7 +197,7 @@ public class ConvertMissing implements Enhancement {
 
   public boolean isMissingValue(double val) {
     for (double aMissingValue : missingValue) {
-      if (Misc.nearlyEquals(val, aMissingValue, Misc.defaultMaxRelativeDiffFloat)) {
+      if (val == aMissingValue) {
         return true;
       }
     }
