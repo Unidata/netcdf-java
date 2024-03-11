@@ -1657,8 +1657,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     this.coordSys.forEach(sys -> b.coords.addCoordinateSystem(sys.toBuilder()));
     this.coordTransforms.forEach(trans -> b.coords.addCoordinateTransform(trans.toBuilder()));
 
-    b.setOrgFile(this.orgFile).setConventionUsed(this.convUsed).setEnhanceMode(this.enhanceMode)
-        .setAggregation(this.agg);
+    b.setOrgFile(this).setConventionUsed(this.convUsed).setEnhanceMode(this.enhanceMode).setAggregation(this.agg);
 
     return (Builder<?>) super.addLocalFieldsToBuilder(b);
   }

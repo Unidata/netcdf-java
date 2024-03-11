@@ -133,6 +133,10 @@ public class CoverageCoordAxisBuilder {
   // for point: values are the points, values[npts]
   // for intervals: values are the edges, values[2*npts]: low0, high0, low1, high1
 
+  public void setMissingTolerance(double tolerance) {
+    missingTolerance = tolerance;
+  }
+
   public void setSpacingFromValues(boolean isInterval) {
     if (isInterval) {
       setSpacingFromIntervalValues();
@@ -227,7 +231,7 @@ public class CoverageCoordAxisBuilder {
     }
   }
 
-  private static final double missingTolerance = .05;
+  private double missingTolerance = .05;
 
   private boolean isRegular(Counters.Counter resol) {
     if (resol.getUnique() == 1) {
