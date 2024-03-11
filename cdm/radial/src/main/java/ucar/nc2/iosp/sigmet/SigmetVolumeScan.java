@@ -6,8 +6,6 @@
 
 package ucar.nc2.iosp.sigmet;
 
-// ~--- non-JDK imports --------------------------------------------------------
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.Array;
@@ -160,12 +158,8 @@ public class SigmetVolumeScan {
   /**
    * Read all the values from SIGMET-IRIS file which are necessary to fill in the ncfile.
    *
-   * @param raf ucar.unidata.io.RandomAccessFile corresponds to SIGMET datafile.
-   * @param ncfile an empty NetcdfFile object which will be filled.
-   * @param varList ArrayList of Variables of ncfile
    */
-  SigmetVolumeScan(RandomAccessFile raf, ucar.nc2.NetcdfFile ncfile, ArrayList<Variable> varList)
-      throws java.io.IOException {
+  SigmetVolumeScan(RandomAccessFile raf) throws java.io.IOException {
     int len = 12288; // ---- Read from the 3d record----------- 6144*2=12288
     short nrec = 0, nsweep = 1, nray = 0, byteoff = 0;
     int nwords, end_words, data_read = 0, num_zero, rays_count = 0, nb = 0, posInRay_relative = 0,
