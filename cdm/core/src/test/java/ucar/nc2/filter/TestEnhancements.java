@@ -79,9 +79,8 @@ public class TestEnhancements {
     // short data with small scale and offsets
     Array smallVals = Array.factory(DataType.FLOAT, new int[] {dataLen}, missingData);
 
-    builder.addVariable("smallVals", DataType.FLOAT, "dim")
-            .addAttribute(new Attribute(CDM.SCALE_FACTOR, 1e-12)).addAttribute(new Attribute(CDM.ADD_OFFSET, 1e-12))
-            .addAttribute(new Attribute(CDM.FILL_VALUE, 110));
+    builder.addVariable("smallVals", DataType.FLOAT, "dim").addAttribute(new Attribute(CDM.SCALE_FACTOR, 1e-12))
+        .addAttribute(new Attribute(CDM.ADD_OFFSET, 1e-12)).addAttribute(new Attribute(CDM.FILL_VALUE, 110));
 
 
     // write data
@@ -162,11 +161,12 @@ public class TestEnhancements {
     Array data = v.read();
     assertThat((double[]) data.copyTo1DJavaArray()).isEqualTo(expected);
   }
+
   @Test
   public void testConvertMissingWithSmallScaleAndOffset() throws IOException {
-      Variable v = ncd.findVariable("smallVals");
-      Array data = v.read();
-      assertThat(Double.isNaN(data.getDouble(2))).isTrue();
-      assertThat(Double.isNaN(data.getDouble(1))).isFalse();
+    Variable v = ncd.findVariable("smallVals");
+    Array data = v.read();
+    assertThat(Double.isNaN(data.getDouble(2))).isTrue();
+    assertThat(Double.isNaN(data.getDouble(1))).isFalse();
   }
 }
