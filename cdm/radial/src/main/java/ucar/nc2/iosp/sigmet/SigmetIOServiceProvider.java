@@ -386,7 +386,7 @@ public class SigmetIOServiceProvider extends AbstractIOServiceProvider {
         builder.setDimensions(dims2).addAttribute(new Attribute(CDM.LONG_NAME, var_name))
             .addAttribute(new Attribute(CDM.UNITS, unit[dty]))
             .addAttribute(new Attribute(_Coordinate.Axes, "time elevationR azimuthR distanceR"));
-        v[j][jj] = builder.build(null);
+        v[j][jj] = builder.build(ncfile.getRootGroup());
         ncfile.addVariable(null, v[j][jj]);
         varList.add(v[j][jj]);
         dims2.clear();
@@ -1065,7 +1065,7 @@ public class SigmetIOServiceProvider extends AbstractIOServiceProvider {
         if (bytes == 1)
           return DataType.BYTE;
 
-        return DataType.OBJECT;
+        return DataType.OPAQUE;
     }
   }
 
