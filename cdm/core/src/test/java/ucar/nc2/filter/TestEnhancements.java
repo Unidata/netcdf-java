@@ -17,6 +17,7 @@ import ucar.nc2.write.NetcdfFormatWriter;
 import static com.google.common.truth.Truth.assertThat;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 public class TestEnhancements {
 
@@ -75,6 +76,14 @@ public class TestEnhancements {
         .addAttribute(new Attribute(CDM.FILL_VALUE, SIGNED_SCALED_FILL_VALUE))
         .addAttribute(new Attribute(CDM.MISSING_VALUE, SIGNED_SCALED_MISSING_VALUE));
 
+    // short data with small scale and offsets
+    Array smallVals = Array.factory(DataType.FLOAT, new int[] {dataLen}, missingData);
+
+    builder.addVariable("smallVals", DataType.FLOAT, "dim")
+            .addAttribute(new Attribute(CDM.SCALE_FACTOR, 1e-12)).addAttribute(new Attribute(CDM.ADD_OFFSET, 1e-12))
+            .addAttribute(new Attribute(CDM.FILL_VALUE, 110));
+
+
     // write data
     NetcdfFormatWriter writer = builder.build();
     writer.write(writer.findVariable("signedVar"), new int[1], signedData);
@@ -85,6 +94,7 @@ public class TestEnhancements {
     writer.write(writer.findVariable("validMinMax"), new int[1], missingDataArray);
     writer.write(writer.findVariable("validRange"), new int[1], missingDataArray);
     writer.write(writer.findVariable("enhanceAll"), new int[1], enhanceAllArray);
+    writer.write(writer.findVariable("smallVals"), new int[1], smallVals);
     writer.close();
     ncd = NetcdfDatasets.openDataset(filePath);
   }
@@ -151,5 +161,12 @@ public class TestEnhancements {
     Variable v = ncd.findVariable("enhanceAll");
     Array data = v.read();
     assertThat((double[]) data.copyTo1DJavaArray()).isEqualTo(expected);
+  }
+  @Test
+  public void testConvertMissingWithSmallScaleAndOffset() throws IOException {
+      Variable v = ncd.findVariable("smallVals");
+      Array data = v.read();
+      assertThat(Double.isNaN(data.getDouble(2))).isTrue();
+      assertThat(Double.isNaN(data.getDouble(1))).isFalse();
   }
 }
