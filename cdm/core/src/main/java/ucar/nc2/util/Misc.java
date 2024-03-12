@@ -96,7 +96,7 @@ public class Misc {
     return nearlyEquals(a, b, defaultMaxRelativeDiffFloat);
   }
 
-  /** AbsoluteDifference is less than maxAbsDiff. */
+  /** RelativeDifference is less than maxRelDiff. */
   public static boolean nearlyEquals(float a, float b, float maxRelDiff) {
     return relativeDifference(a, b) < maxRelDiff;
   }
