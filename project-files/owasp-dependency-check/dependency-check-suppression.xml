@@ -12,14 +12,6 @@
   </suppress>
   <suppress>
     <notes><![CDATA[
-       file name: jdom2-2.0.6.jar
-       reason: mitigated by https://github.com/Unidata/netcdf-java/pull/801
-    ]]></notes>
-    <packageUrl regex="true">^pkg:maven/org\.jdom/jdom2@.*$</packageUrl>
-    <cve>CVE-2021-33813</cve>
-  </suppress>
-  <suppress>
-    <notes><![CDATA[
       file name: screenshot_sync
       reason: False positive.  We do not use the fredsmith utils.
     ]]></notes>
