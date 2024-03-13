@@ -96,7 +96,7 @@ public class S3AggScanFeatureType {
       ncml = ncmlStream.collect(Collectors.joining());
     }
     assertThat(ncml).isNotNull();
-    Optional<FeatureDatasetCoverage> fdc = CoverageDatasetFactory.openNcmlString(ncml);
+    Optional<FeatureDatasetCoverage> fdc = CoverageDatasetFactory.openNcmlString(ncml, null);
     assertThat(fdc.isPresent()).isTrue();
     List<CoverageCollection> cc = fdc.get().getCoverageCollections();
     checkCoverages(cc);

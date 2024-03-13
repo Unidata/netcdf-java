@@ -126,8 +126,21 @@ public class CoverageDatasetFactory {
 
   }
 
+  /**
+   * @deprecated Use openNcmlString(String, String)
+   */
+  @Deprecated
   public static Optional<FeatureDatasetCoverage> openNcmlString(String ncml) throws IOException {
-    NetcdfDataset ncd = NetcdfDatasets.openNcmlDataset(new StringReader(ncml), null, null);
+    return openNcmlString(ncml, null);
+  }
+
+  /**
+   * @param ncml the NcML as a String
+   * @param location the URL location string of the NcML document,
+   *        or may be just a unique name for caching purposes (if null, aggregation cache will not be used).
+   */
+  public static Optional<FeatureDatasetCoverage> openNcmlString(String ncml, String location) throws IOException {
+    NetcdfDataset ncd = NetcdfDatasets.openNcmlDataset(new StringReader(ncml), location, null);
 
     DtCoverageDataset gds = new DtCoverageDataset(ncd);
     if (!gds.getGrids().isEmpty()) {
