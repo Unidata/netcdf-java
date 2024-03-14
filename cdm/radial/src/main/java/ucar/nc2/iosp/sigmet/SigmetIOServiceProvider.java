@@ -5,25 +5,10 @@
 
 package ucar.nc2.iosp.sigmet;
 
-import java.io.IOException;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.nio.ByteBuffer;
-import java.nio.channels.WritableByteChannel;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import org.checkerframework.checker.units.qual.A;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.ma2.Range;
-import ucar.ma2.Array;
-import ucar.ma2.ArrayFloat;
-import ucar.ma2.ArrayInt;
-import ucar.ma2.DataType;
-import ucar.ma2.Index;
-import ucar.ma2.IndexIterator;
-import ucar.ma2.InvalidRangeException;
-import ucar.ma2.Section;
+import ucar.ma2.*;
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
 import ucar.nc2.Variable;
@@ -34,6 +19,15 @@ import ucar.nc2.iosp.AbstractIOServiceProvider;
 import ucar.nc2.iosp.Layout;
 import ucar.nc2.iosp.LayoutRegular;
 import ucar.unidata.io.RandomAccessFile;
+
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.nio.ByteBuffer;
+import java.nio.channels.WritableByteChannel;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Implementation of the ServerProvider pattern provides input/output
@@ -78,12 +72,16 @@ import ucar.unidata.io.RandomAccessFile;
 
 public class SigmetIOServiceProvider extends AbstractIOServiceProvider {
   private static Logger logger = LoggerFactory.getLogger(SigmetIOServiceProvider.class);
+
+  // meaning unprocessed
+  public static String RAW_VARIABLE_PREFIX = "raw_";
+
   private ArrayList<Variable> varList;
   private int[] tsu_sec;
   private int[] sweep_bins;
   private String date0;
 
-  public static java.util.Map<String, Number> recHdr = new java.util.HashMap<>();
+  public static Map<String, Number> recHdr = new java.util.HashMap<>();
   private SigmetVolumeScan volScan;
 
   public String getFileTypeDescription() {
@@ -101,7 +99,7 @@ public class SigmetIOServiceProvider extends AbstractIOServiceProvider {
   /**
    * Check if this is a valid SIGMET-IRIS file for this IOServiceProvider.
    */
-  public boolean isValidFile(ucar.unidata.io.RandomAccessFile raf) {
+  public boolean isValidFile(RandomAccessFile raf) {
     try {
       raf.order(RandomAccessFile.LITTLE_ENDIAN);
       // The first struct in the file is the product_hdr, which will have the
@@ -124,25 +122,21 @@ public class SigmetIOServiceProvider extends AbstractIOServiceProvider {
   /**
    * Open existing file, and populate ncfile with it.
    */
-  public void open(ucar.unidata.io.RandomAccessFile raf, ucar.nc2.NetcdfFile ncfile,
-      ucar.nc2.util.CancelTask cancelTask) throws java.io.IOException {
+  public void open(RandomAccessFile raf, ucar.nc2.NetcdfFile ncfile, ucar.nc2.util.CancelTask cancelTask)
+      throws IOException {
     super.open(raf, ncfile, cancelTask);
     // java.util.Map<String, Number> recHdr=new java.util.HashMap<String, Number>();
-    java.util.Map<String, String> hdrNames = new java.util.HashMap<>();
-    volScan = new SigmetVolumeScan(raf, ncfile, varList);
+    Map<String, String> hdrNames = new java.util.HashMap<>();
+    volScan = new SigmetVolumeScan(raf);
     this.varList = init(raf, ncfile, hdrNames);
-
-    // doData(raf, ncfile, varList);
-    // raf.close();
-    // this.ncfile.close();
   }
 
   /**
    * Read some global data from SIGMET file. The SIGMET file consists of records with
    * fixed length=6144 bytes.
    */
-  public static java.util.Map<String, Number> readRecordsHdr(ucar.unidata.io.RandomAccessFile raf) {
-    java.util.Map<String, Number> recHdr1 = new java.util.HashMap<>();
+  public static Map<String, Number> readRecordsHdr(RandomAccessFile raf) {
+    Map<String, Number> recHdr1 = new java.util.HashMap<>();
     try {
       int nparams = 0;
       // -- Read from <product_end> of the 1st record -- 12+320+120
@@ -164,17 +158,51 @@ public class SigmetIOServiceProvider extends AbstractIOServiceProvider {
       short num_rays = raf.readShort(); // 6340
       raf.skipBytes(2);
       int radar_alt = raf.readInt(); // 6344
-      raf.seek(6648);
-      int time_beg = raf.readInt();
+      // end of ingest_config would be 6636
+
+      // next is <task_configuration> 2612 Bytes
+      raf.seek(6648); // + task_configuration 12
+      // inner <task_sched_info> 120 Bytes
+      int time_beg = raf.readInt(); // Start time (seconds within a day)
       raf.seek(6652);
-      int time_end = raf.readInt();
-      raf.seek(6772);
+      int time_end = raf.readInt(); // Stop time (seconds within a day)
+      // end inner <task_sched_info> would be 6768
+
+      // next inner is <task_dsp_info> 320 Bytes.
+      raf.seek(6772); // + 2 Major mode + 2 DSP type
+
+      // 4 - 24 - <dsp_data_mask> Current Data type mask
+      // Mask word 0
       int data_mask = raf.readInt();
       for (int j = 0; j < 32; j++) {
         nparams += ((data_mask >> j) & (0x1));
       }
+      raf.readInt(); // Extended header type
+      // Mask word 1
+      data_mask = raf.readInt();
+      for (int j = 0; j < 32; j++) {
+        nparams += ((data_mask >> j) & (0x1));
+      }
+      // Mask word 2
+      data_mask = raf.readInt();
+      for (int j = 0; j < 32; j++) {
+        nparams += ((data_mask >> j) & (0x1));
+      }
+      // Mask word 3
+      data_mask = raf.readInt();
+      for (int j = 0; j < 32; j++) {
+        nparams += ((data_mask >> j) & (0x1));
+      }
+      // Mask word 4
+      data_mask = raf.readInt();
+      for (int j = 0; j < 32; j++) {
+        nparams += ((data_mask >> j) & (0x1));
+      }
+
       raf.seek(6912);
       short multiprf = raf.readShort();
+      // end inner <task_dsp_info> would be 7088
+
       raf.seek(7408);
       int range_first = raf.readInt(); // cm 7408
       int range_last = raf.readInt(); // cm 7412
@@ -186,6 +214,9 @@ public class SigmetIOServiceProvider extends AbstractIOServiceProvider {
       int step = raf.readInt(); // cm 7424
       raf.seek(7574);
       short number_sweeps = raf.readShort(); // 7574
+      // end of task_configuration would be 9248
+
+
       raf.seek(12312);
       int base_time = raf.readInt(); // <ingest_data_header> 3d rec
       raf.skipBytes(2);
@@ -218,8 +249,8 @@ public class SigmetIOServiceProvider extends AbstractIOServiceProvider {
   /**
    * Read StationName strings
    */
-  public java.util.Map<String, String> readStnNames(ucar.unidata.io.RandomAccessFile raf) {
-    java.util.Map<String, String> hdrNames = new java.util.HashMap<>();
+  public Map<String, String> readStnNames(RandomAccessFile raf) {
+    Map<String, String> hdrNames = new java.util.HashMap<>();
     try {
       raf.seek(6288);
       String stnName = raf.readString(16);
@@ -241,12 +272,11 @@ public class SigmetIOServiceProvider extends AbstractIOServiceProvider {
    * @param hdrNames java.util.Map with values for "StationName.." Attributes
    * @return ArrayList of Variables of ncfile
    */
-  public ArrayList<Variable> init(ucar.unidata.io.RandomAccessFile raf, ucar.nc2.NetcdfFile ncfile,
-      java.util.Map<String, String> hdrNames) {
+  public ArrayList<Variable> init(RandomAccessFile raf, ucar.nc2.NetcdfFile ncfile, Map<String, String> hdrNames) {
     // prepare attribute values
-    String[] data_name = {" ", "TotalPower", "Reflectivity", "Velocity", "Width", "Differential_Reflectivity"};
-    String[] unit = {" ", "dbZ", "dbZ", "m/sec", "m/sec", "dB"};
-    int[] type = {1, 2, 3, 4, 5};
+    String[] data_name = SigmetVolumeScan.data_name;
+    String[] unit = SigmetVolumeScan.data_unit;
+
     String def_datafile = "SIGMET-IRIS";
     String tim = "";
     int ngates = 0;
@@ -305,25 +335,58 @@ public class SigmetIOServiceProvider extends AbstractIOServiceProvider {
 
     ArrayList<Variable> varList = new ArrayList<>();
 
+    short[] dataTypes = volScan.getDataTypes();
+
     Variable[][] v = new Variable[nparams][number_sweeps];
     String var_name;
     for (int j = 0; j < nparams; j++) {
-      int tp = type[j];
-      var_name = data_name[tp];
+      short dty = dataTypes[j];
+      String var_name_original = data_name[dty];
+
+      // see also calcData - a lot of data types are raw values
+      if (dty == 6 || dty > 11)
+        // this is make it obvious to the user
+        var_name_original = RAW_VARIABLE_PREFIX + var_name_original;
+
+      var_name = var_name_original;
+      int bytesPerBin = 1;
+      List<List<Ray>> allRays = volScan.getGroup(data_name[dty]);
+      if (allRays.size() > 0 && allRays.get(0).size() > 0)
+        bytesPerBin = allRays.get(0).get(0).getBytesPerBin();
+
+      DataType dType = calcDataType(dty, bytesPerBin);
+      Number missingVal = null;
+      switch (dType) {
+        case FLOAT:
+          missingVal = SigmetVolumeScan.MISSING_VALUE_FLOAT;
+          break;
+        case DOUBLE:
+          missingVal = SigmetVolumeScan.MISSING_VALUE_DOUBLE;
+          break;
+        case BYTE:
+          missingVal = SigmetVolumeScan.MISSING_VALUE_BYTE;
+
+      }
+
       for (int jj = 0; jj < number_sweeps; jj++) {
         if (number_sweeps > 1) {
-          var_name = data_name[tp] + "_sweep_" + (jj + 1);
+          var_name = var_name_original + "_sweep_" + (jj + 1);
         }
-        v[j][jj] = new Variable(ncfile, null, null, var_name);
-        v[j][jj].setDataType(DataType.FLOAT);
+        Variable.Builder builder = Variable.builder().setNcfile(ncfile).setName(var_name).setDataType(dType);
+        Attribute.Builder attr = Attribute.builder().setName(CDM.MISSING_VALUE);
+        if (missingVal != null) {
+          attr.setNumericValue(missingVal, false);
+        } else {
+          attr.setValues(SigmetVolumeScan.MISSING_VALUE_BYTE_ARRAY);
+        }
+        builder.addAttribute(attr.build());
+
         dims2.add(radial);
         dims2.add(gateR[jj]);
-        v[j][jj].setDimensions(dims2);
-        v[j][jj].addAttribute(new Attribute(CDM.LONG_NAME, var_name));
-        v[j][jj].addAttribute(new Attribute(CDM.UNITS, unit[tp]));
-        String coordinates = "time elevationR azimuthR distanceR";
-        v[j][jj].addAttribute(new Attribute(_Coordinate.Axes, coordinates));
-        v[j][jj].addAttribute(new Attribute(CDM.MISSING_VALUE, -999.99f));
+        builder.setDimensions(dims2).addAttribute(new Attribute(CDM.LONG_NAME, var_name))
+            .addAttribute(new Attribute(CDM.UNITS, unit[dty]))
+            .addAttribute(new Attribute(_Coordinate.Axes, "time elevationR azimuthR distanceR"));
+        v[j][jj] = builder.build(ncfile.getRootGroup());
         ncfile.addVariable(null, v[j][jj]);
         varList.add(v[j][jj]);
         dims2.clear();
@@ -485,27 +548,17 @@ public class SigmetIOServiceProvider extends AbstractIOServiceProvider {
    * @param recHdr java.util.Map with values for Attributes
    */
   public void doNetcdfFileCoordinate(ucar.nc2.NetcdfFile ncfile, int[] bst, short[] yr, short[] m, short[] dda,
-      ArrayList<Variable> varList, java.util.Map<String, Number> recHdr) {
+      ArrayList<Variable> varList, Map<String, Number> recHdr) {
     // prepare attribute values
 
-    String[] unit = {" ", "dbZ", "dbZ", "m/sec", "m/sec", "dB"};
-    String def_datafile = "SIGMET-IRIS";
-    Short header_length = 80;
-    Short ray_header_length = 6;
     int ngates;
 
-    float radar_lat = recHdr.get("radar_lat").floatValue();
-    float radar_lon = recHdr.get("radar_lon").floatValue();
-    short ground_height = recHdr.get("ground_height").shortValue();
-    short radar_height = recHdr.get("radar_height").shortValue();
-    int radar_alt = (recHdr.get("radar_alt").intValue()) / 100;
     short num_rays = recHdr.get("num_rays").shortValue();
     float range_first = (recHdr.get("range_first").intValue()) * 0.01f;
     float range_last = (recHdr.get("range_last").intValue()) * 0.01f;
     short number_sweeps = recHdr.get("number_sweeps").shortValue();
     int nparams = (recHdr.get("nparams").intValue());
-    // define date/time
-    // int last_t=(int)(ray[nparams*number_sweeps-1][num_rays-1].getTime());
+
     int last_t = volScan.lastRay.getTime();
     String sss1 = Short.toString(m[0]);
     if (sss1.length() < 2)
@@ -528,11 +581,6 @@ public class SigmetIOServiceProvider extends AbstractIOServiceProvider {
 
     // set all of Variables
     try {
-      int sz = varList.size();
-
-      ArrayFloat.D2[] dataArr = new ArrayFloat.D2[nparams * number_sweeps];
-      Index[] dataIndex = new Index[nparams * number_sweeps];
-
       Ray[] rtemp = new Ray[(int) num_rays];
 
       Variable[] distanceR = new Variable[number_sweeps];
@@ -559,14 +607,33 @@ public class SigmetIOServiceProvider extends AbstractIOServiceProvider {
           distArr[i].setFloat(distIndex[i].set(ii), (range_first + ii * stp));
         }
       }
-      List rgp = volScan.getTotalPowerGroups();
-      if (rgp.isEmpty())
-        rgp = volScan.getReflectivityGroups();
-      List[] sgp = new ArrayList[number_sweeps];
-      for (int i = 0; i < number_sweeps; i++) {
-        sgp[i] = (List) rgp.get((short) i);
-      }
 
+      // used for lists of distance, time, azimuth, elevation
+      // probably there is a better way to do this, but I'm keeping the old logic
+      List rgp = volScan.getGroup("TotalPower");
+      if (rgp == null || rgp.isEmpty())
+        rgp = volScan.getGroup("TotalPower_2");
+      if (rgp == null || rgp.isEmpty())
+        rgp = volScan.getGroup("Reflectivity");
+      if (rgp == null || rgp.isEmpty())
+        rgp = volScan.getGroup("Reflectivity_2");
+
+      List[] sgp = new ArrayList[number_sweeps];
+      for (int sweepMinus1 = 0; sweepMinus1 < number_sweeps; sweepMinus1++) {
+        List<Ray> found = null;
+        // in case some rays are missing/empty this is a safer way to find them
+        for (int i = 0; i < rgp.size() && found == null; i++) {
+          List<Ray> rlist = (List<Ray>) rgp.get(i);
+          if (rlist.size() > 0) {
+            Ray r = rlist.get(0);
+            if (r.getNsweep() == sweepMinus1 + 1) {
+              found = rlist;
+            }
+          }
+        }
+
+        sgp[sweepMinus1] = found;
+      }
 
       Variable[] time = new Variable[number_sweeps];
       ArrayInt.D1[] timeArr = new ArrayInt.D1[number_sweeps];
@@ -586,12 +653,18 @@ public class SigmetIOServiceProvider extends AbstractIOServiceProvider {
         timeArr[i] = (ArrayInt.D1) Array.factory(DataType.INT, time[i].getShape());
         timeIndex[i] = timeArr[i].getIndex();
         List rlist = sgp[i];
-
-        for (int jj = 0; jj < num_rays; jj++) {
-          rtemp[jj] = (Ray) rlist.get(jj);
-        } // ray[i][jj]; }
-        for (int jj = 0; jj < num_rays; jj++) {
-          timeArr[i].setInt(timeIndex[i].set(jj), rtemp[jj].getTime());
+        if (rlist == null) {
+          for (int jj = 0; jj < num_rays; jj++) {
+            timeArr[i].setInt(timeIndex[i].set(jj), -999);
+          }
+        } else {
+          int num_rays_actual = Math.min(num_rays, rlist.size());
+          for (int jj = 0; jj < num_rays_actual; jj++) {
+            rtemp[jj] = (Ray) rlist.get(jj);
+          } // ray[i][jj]; }
+          for (int jj = 0; jj < num_rays_actual; jj++) {
+            timeArr[i].setInt(timeIndex[i].set(jj), rtemp[jj].getTime());
+          }
         }
       }
 
@@ -612,12 +685,18 @@ public class SigmetIOServiceProvider extends AbstractIOServiceProvider {
         azimArr[i] = (ArrayFloat.D1) Array.factory(DataType.FLOAT, azimuthR[i].getShape());
         azimIndex[i] = azimArr[i].getIndex();
         List rlist = sgp[i];
-
-        for (int jj = 0; jj < num_rays; jj++) {
-          rtemp[jj] = (Ray) rlist.get(jj);
-        } // ray[i][jj]; }
-        for (int jj = 0; jj < num_rays; jj++) {
-          azimArr[i].setFloat(azimIndex[i].set(jj), rtemp[jj].getAz());
+        if (rlist == null) {
+          for (int jj = 0; jj < num_rays; jj++) {
+            azimArr[i].setFloat(azimIndex[i].set(jj), -999.99f);
+          }
+        } else {
+          int num_rays_actual = Math.min(num_rays, rlist.size());
+          for (int jj = 0; jj < num_rays_actual; jj++) {
+            rtemp[jj] = (Ray) rlist.get(jj);
+          } // ray[i][jj]; }
+          for (int jj = 0; jj < num_rays_actual; jj++) {
+            azimArr[i].setFloat(azimIndex[i].set(jj), rtemp[jj].getAz());
+          }
         }
       }
 
@@ -638,12 +717,18 @@ public class SigmetIOServiceProvider extends AbstractIOServiceProvider {
         elevArr[i] = (ArrayFloat.D1) Array.factory(DataType.FLOAT, elevationR[i].getShape());
         elevIndex[i] = elevArr[i].getIndex();
         List rlist = sgp[i];
-
-        for (int jj = 0; jj < num_rays; jj++) {
-          rtemp[jj] = (Ray) rlist.get(jj);
-        } // ray[i][jj]; }
-        for (int jj = 0; jj < num_rays; jj++) {
-          elevArr[i].setFloat(elevIndex[i].set(jj), rtemp[jj].getElev());
+        if (rlist == null) {
+          for (int jj = 0; jj < num_rays; jj++) {
+            elevArr[i].setFloat(elevIndex[i].set(jj), -999.99f);
+          }
+        } else {
+          int num_rays_actual = Math.min(num_rays, rlist.size());
+          for (int jj = 0; jj < num_rays_actual; jj++) {
+            rtemp[jj] = (Ray) rlist.get(jj);
+          } // ray[i][jj]; }
+          for (int jj = 0; jj < num_rays_actual; jj++) {
+            elevArr[i].setFloat(elevIndex[i].set(jj), rtemp[jj].getElev());
+          }
         }
       }
 
@@ -661,11 +746,16 @@ public class SigmetIOServiceProvider extends AbstractIOServiceProvider {
 
       for (int i = 0; i < number_sweeps; i++) {
         List rlist = sgp[i];
-        for (int jj = 0; jj < num_rays; jj++) {
-          rtemp[jj] = (Ray) rlist.get(jj);
-        } // ray[i][jj]; }
-        ngates = rtemp[0].getBins();
-        gatesArr.setInt(gatesIndex.set(i), ngates);
+        if (rlist == null) {
+          gatesArr.setInt(gatesIndex.set(i), -999);
+        } else {
+          int num_rays_actual = Math.min(num_rays, rlist.size());
+          for (int jj = 0; jj < num_rays_actual; jj++) {
+            rtemp[jj] = (Ray) rlist.get(jj);
+          } // ray[i][jj]; }
+          ngates = rtemp[0].getBins();
+          gatesArr.setInt(gatesIndex.set(i), ngates);
+        }
       }
 
       for (int i = 0; i < number_sweeps; i++) {
@@ -689,7 +779,7 @@ public class SigmetIOServiceProvider extends AbstractIOServiceProvider {
    *        of ucar.ma2.Range which define the requested data subset.
    * @return Array of data which will be read from Variable through this call.
    */
-  public Array readData1(ucar.nc2.Variable v2, Section section) throws IOException, InvalidRangeException {
+  public Array readData1(Variable v2, Section section) throws IOException, InvalidRangeException {
     // doData(raf, ncfile, varList);
     int[] sh = section.getShape();
     Array temp = Array.factory(v2.getDataType(), sh);
@@ -715,17 +805,16 @@ public class SigmetIOServiceProvider extends AbstractIOServiceProvider {
 
     List<List<Ray>> groups;
     String shortName = v2.getShortName();
-    if (shortName.startsWith("Reflectivity"))
-      groups = volScan.getReflectivityGroups();
-    else if (shortName.startsWith("Velocity"))
-      groups = volScan.getVelocityGroups();
-    else if (shortName.startsWith("TotalPower"))
-      groups = volScan.getTotalPowerGroups();
-    else if (shortName.startsWith("Width"))
-      groups = volScan.getWidthGroups();
-    else if (shortName.startsWith("DiffReflectivity"))
-      groups = volScan.getDifferentialReflectivityGroups();
-    else
+    String groupName = shortName;
+
+    int posSweep = groupName.indexOf("_sweep_");
+    if (posSweep > 0)
+      groupName = groupName.substring(0, posSweep);
+    if (groupName.startsWith(RAW_VARIABLE_PREFIX))
+      groupName = groupName.substring(RAW_VARIABLE_PREFIX.length());
+
+    groups = volScan.getGroup(groupName);
+    if (groups == null)
       throw new IllegalStateException("Illegal variable name = " + shortName);
 
     if (section.getRank() == 2) {
@@ -748,23 +837,48 @@ public class SigmetIOServiceProvider extends AbstractIOServiceProvider {
 
   private void readOneScan(List<Ray> mapScan, Range radialRange, Range gateRange, IndexIterator ii) throws IOException {
     int siz = mapScan.size();
+    short dataType = 1; // TotalPower as fallback
+    int bytesPerBin = 1;
+
     for (int radialIdx : radialRange) {
       if (radialIdx >= siz)
-        readOneRadial(null, gateRange, ii);
+        readOneRadialMissing(dataType, bytesPerBin, gateRange, ii);
       else {
         Ray r = mapScan.get(radialIdx);
+        dataType = r.datatype;
+        bytesPerBin = r.bytesPerBin;
         readOneRadial(r, gateRange, ii);
       }
     }
   }
 
   private void readOneRadial(Ray r, Range gateRange, IndexIterator ii) throws IOException {
-    if (r == null) {
-      for (int i = 0; i < gateRange.length(); i++)
-        ii.setFloatNext(Float.NaN);
-      return;
-    }
     r.readData(volScan.raf, gateRange, ii);
+  }
+
+  private void readOneRadialMissing(short datatype, int bytesPerBin, Range gateRange, IndexIterator ii) {
+    DataType dType = calcDataType(datatype, bytesPerBin);
+    switch (dType) {
+      case FLOAT:
+        for (int i = 0; i < gateRange.length(); i++) {
+          ii.setFloatNext(Float.NaN);
+        }
+        break;
+      case DOUBLE:
+        for (int i = 0; i < gateRange.length(); i++) {
+          ii.setDoubleNext(Double.NaN);
+        }
+        break;
+      case BYTE:
+        for (int i = 0; i < gateRange.length(); i++) {
+          ii.setByteNext(SigmetVolumeScan.MISSING_VALUE_BYTE);
+        }
+        break;
+      default: // byte[]/Object
+        for (int i = 0; i < gateRange.length(); i++) {
+          ii.setObjectNext(SigmetVolumeScan.MISSING_VALUE_BYTE_ARRAY_BB);
+        }
+    }
   }
 
   /**
@@ -811,8 +925,7 @@ public class SigmetIOServiceProvider extends AbstractIOServiceProvider {
    * @param channel WritableByteChannel object - channel that can write bytes.
    * @return the number of bytes written, possibly zero.
    */
-  public long readToByteChannel11(ucar.nc2.Variable v2, Section section, WritableByteChannel channel)
-      throws java.io.IOException {
+  public long readToByteChannel11(Variable v2, Section section, WritableByteChannel channel) throws IOException {
     Array data = readData(v2, section);
     float[] ftdata = new float[(int) data.getSize()];
     byte[] bytedata = new byte[(int) data.getSize() * 4];
@@ -931,12 +1044,36 @@ public class SigmetIOServiceProvider extends AbstractIOServiceProvider {
     return result.floatValue();
   }
 
+  static DataType calcDataType(short dty, int bytes) {
+    switch (dty) {
+      case 1:// dty=1,2 -total_power, reflectivity (dBZ)
+      case 2:
+      case 3: // dty=3 - mean velocity (m/sec)
+      case 4: // dty=4 - spectrum width (m/sec)
+      case 5: // dty=5 - differential reflectivity (dB)
+        return DataType.FLOAT;
+
+      case 7:// dty=7,8 -total_power 2, reflectivity 2 (dBZ)
+      case 8:
+      case 9: // dty=9 - mean velocity 2 (m/sec)
+      case 10: // dty=10 - spectrum width 2 (m/sec)
+      case 11: // dty=11 - differential reflectivity 2 (dB)
+        return DataType.DOUBLE;
+
+      default:
+        // TODO implement for more SigmetVolumeScan.data_name (see chapter 4.4)
+        if (bytes == 1)
+          return DataType.BYTE;
+
+        return DataType.OPAQUE;
+    }
+  }
+
   /**
    * Calculate data values from raw ingest data
    *
    * @param recHdr java.util.Map object with values for calculation
-   * @param dty type of data ( "Total_Power", "Reflectivity", "Velocity",
-   *        "Width", "Differential_Reflectivity")
+   * @param dty type of data (@see SigmetVolumeScan.data_name)
    * @param data 1-byte input value
    * @return float value with precision of two decimal
    */
@@ -944,33 +1081,97 @@ public class SigmetIOServiceProvider extends AbstractIOServiceProvider {
     short[] coef = {1, 2, 3, 4}; // MultiPRF modes
     short multiprf = recHdr.get("multiprf").shortValue();
     float vNyq = recHdr.get("vNyq").floatValue();
-    double temp = -999.99;
+    double temp = SigmetVolumeScan.MISSING_VALUE_FLOAT;
+
+    // see chapter 4.4
     switch (dty) {
-      default: // dty=1,2 -total_power, reflectivity (dBZ)
-        if (data != 0) {
+      case 1:// dty=1,2 -total_power, reflectivity (dBZ)
+      case 2:
+        if (data != 0 && data != (byte) 255) {
           temp = (((int) data & 0xFF) - 64) * 0.5;
         }
         break;
       case 3: // dty=3 - mean velocity (m/sec)
         if (data != 0) {
+          // seems incorrect according to "4.4.44 1-byte Velocity Format (DB_VEL)"
+          // TODO needs more research
           temp = ((((int) data & 0xFF) - 128) / 127.0) * vNyq * coef[multiprf];
         }
         break;
       case 4: // dty=4 - spectrum width (m/sec)
-        if (data != 0) {
+        if (data != 0 && data != (byte) 255) {
+          // seems incorrect according to "4.4.48 1-byte Width Format (DB_WIDTH)"
+          // TODO needs more research
           double v = ((((int) data & 0xFF) - 128) / 127.0) * vNyq * coef[multiprf];
           temp = (((int) data & 0xFF) / 256.0) * v;
         }
         break;
       case 5: // dty=5 - differential reflectivity (dB)
-        if (data != 0) {
+        if (data != 0 && data != (byte) 255) {
           temp = ((((int) data & 0xFF) - 128) / 16.0);
         }
         break;
+      default:
+        // TODO implement for more SigmetVolumeScan.data_name (only 1 byte) (see chapter 4.4)
+        // using only the raw value
+        temp = (int) data & 0xFF;
+
+        // doing no rounding in this case as below for the other cases
+        BigDecimal bd = new BigDecimal(temp);
+        return bd.floatValue();
+      // logger.warn("calcData: unimplemented 1 byte data type = " + dty + " " + SigmetVolumeScan.data_name[dty]);
     }
     BigDecimal bd = new BigDecimal(temp);
+    // this should be reviewed, not sure why would you want a loss of precision here?
     BigDecimal result = bd.setScale(2, RoundingMode.HALF_DOWN);
     return result.floatValue();
+  }
+
+  /**
+   * Calculate data values from raw ingest data
+   *
+   * @param recHdr java.util.Map object with values for calculation
+   * @param dty type of data (@see SigmetVolumeScan.data_name)
+   * @param data 2-byte input value (unsigned short)
+   * @return double value
+   */
+  static double calcData(Map<String, Number> recHdr, short dty, int data) {
+    double temp = SigmetVolumeScan.MISSING_VALUE_DOUBLE;
+
+    // see chapter 4.4
+    switch (dty) {
+      case 7:// dty=7,8 -total_power 2, reflectivity 2 (dBZ)
+      case 8:
+        if (data != 0 && data != 65535) {
+          temp = (data - 32768) / 100d;
+        }
+        break;
+      case 9: // dty=9 - mean velocity 2 (m/sec)
+        if (data != 0 && data != 65535) {
+          temp = (data - 32768) / 100d;
+        }
+        break;
+      case 10: // dty=10 - spectrum width 2 (m/sec)
+        if (data != 0 && data != 65535) {
+          temp = data / 100d;
+        }
+        break;
+      case 11: // dty=11 - differential reflectivity 2 (dB)
+        if (data != 0 && data != 65535) {
+          temp = (data - 32768) / 100d;
+        }
+        break;
+      default:
+        // TODO implement for more SigmetVolumeScan.data_name (only 2 bytes) (see chapter 4.4)
+        // using only the raw value
+        temp = data;
+        // logger.warn("calcData: unimplemented 2 byte data type = " + dty + " " + SigmetVolumeScan.data_name[dty]);
+        break;
+    }
+
+    BigDecimal bd = new BigDecimal(temp);
+    // full precision
+    return bd.doubleValue();
   }
 
   /**
