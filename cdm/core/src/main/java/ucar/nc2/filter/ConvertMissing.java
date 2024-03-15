@@ -61,27 +61,15 @@ public class ConvertMissing implements Enhancement {
       }
     }
 
-    /// fill_value
-    boolean hasFillValue = var.hasFillValue();
-    double fillValue = var.getFillValue();
-    // need fill value info before convertMissing
-    Attribute fillValueAtt = var.findAttribute(CDM.FILL_VALUE);
-    if (fillValueAtt != null && !fillValueAtt.isString()) {
-      DataType fillType = FilterHelpers.getAttributeDataType(fillValueAtt, var.getSignedness());
-      fillValue = var.convertUnsigned(fillValueAtt.getNumericValue(), fillType).doubleValue();
-      hasFillValue = true;
-    } else {
-      // No _FillValue attribute found. Instead, if file is NetCDF and variable is numeric, use the default fill value.
-      String ncfileId = var.getNetcdfFile() == null ? null : var.getNetcdfFile().getFileTypeId();
-      if (DataFormatType.NETCDF.getDescription().equals(ncfileId)
-          || DataFormatType.NETCDF4.getDescription().equals(ncfileId)) {
-        DataType fillType = var.getDataType();
-        if (fillType.isNumeric()) {
-          fillValue = var.convertUnsigned(N3iosp.getFillValueDefault(fillType), fillType).doubleValue();
-          hasFillValue = true;
-        }
-      }
+    if (validMin > validMax) {
+      double temp = validMin;
+      validMin = validMax;
+      validMax = temp;
     }
+
+    /// fill_value
+    double fillValue = getFillValueOrDefault(var);
+    boolean hasFillValue = !Double.isNaN(fillValue);
 
     /// missing_value
     double[] missingValue = null;
@@ -266,5 +254,24 @@ public class ConvertMissing implements Enhancement {
     }
 
     return out;
+  }
+
+  public static double getFillValueOrDefault(VariableDS var) {
+    // need fill value info before convertMissing
+    Attribute fillValueAtt = var.findAttribute(CDM.FILL_VALUE);
+    if (fillValueAtt != null && !fillValueAtt.isString()) {
+      DataType fillType = FilterHelpers.getAttributeDataType(fillValueAtt, var.getSignedness());
+      return var.convertUnsigned(fillValueAtt.getNumericValue(), fillType).doubleValue();
+    }
+    // No _FillValue attribute found. Instead, if file is NetCDF and variable is numeric, use the default fill value.
+    String ncfileId = var.getOriginalVariable() == null ? null : var.getOriginalVariable().getFileTypeId();
+    if (DataFormatType.NETCDF.getDescription().equals(ncfileId)
+        || DataFormatType.NETCDF4.getDescription().equals(ncfileId)) {
+      DataType fillType = var.getDataType();
+      if (fillType.isNumeric()) {
+        return var.convertUnsigned(N3iosp.getFillValueDefault(fillType), fillType).doubleValue();
+      }
+    }
+    return Double.NaN;
   }
 }

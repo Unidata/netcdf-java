@@ -330,7 +330,7 @@ public class TestStandardVar {
     Array A = v.read();
     Index ima = A.getIndex();
 
-    double val = A.getFloat(ima.set(1, 1));
+    double val = A.getDouble(ima.set(1, 1));
     assert Double.isNaN(val);
     assert v.isMissing(val);
 
@@ -340,7 +340,7 @@ public class TestStandardVar {
     A = v.read();
     ima = A.getIndex();
 
-    val = A.getFloat(ima.set(1, 1));
+    val = A.getDouble(ima.set(1, 1));
     Assert2.assertNearlyEquals(val, -999.99, 0.001);
     assert v.isMissing(val);
   }

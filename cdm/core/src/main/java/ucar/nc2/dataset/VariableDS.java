@@ -168,6 +168,8 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
     this.unsignedConversion = vds.unsignedConversion;
     this.scaleOffset = vds.scaleOffset;
     this.convertMissing = vds.convertMissing;
+    this.fillValue = vds.getFillValue();
+    this.hasFillValue = vds.hasFillValue();
 
     // Add this so that old VariableDS units agrees with new VariableDS units.
     String units = vds.getUnitsString();
@@ -230,6 +232,13 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
     }
 
     createEnhancements();
+    if (convertMissing != null) {
+      fillValue = unpackVal(convertMissing.getFillValue());
+      hasFillValue = true;
+    } else {
+      fillValue = ConvertMissing.getFillValueOrDefault(this);
+      hasFillValue = !Double.isNaN(fillValue);
+    }
   }
 
   boolean needConvert() {
@@ -556,8 +565,8 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
     }
 
     Array array = Array.factoryConstant(getDataType(), shape, storage);
-    if (convertMissing.hasFillValue()) {
-      array.setObject(0, convertMissing.getFillValue());
+    if (hasFillValue) {
+      array.setObject(0, fillValue);
     }
     return array;
   }
@@ -661,7 +670,7 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
     if (Double.isNaN(val)) {
       return true;
     }
-    return convertMissing != null && convertMissing.isMissing(val);
+    return convertMissing != null && convertMissing.isMissing(packVal(val));
   }
 
   @Override
@@ -671,32 +680,46 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
 
   @Override
   public double getValidMin() {
-    return convertMissing != null ? convertMissing.getValidMin() : -Double.MAX_VALUE;
+    if (convertMissing == null) {
+      return -Double.MAX_VALUE;
+    }
+    if (scaleOffset == null) {
+      return convertMissing.getValidMin();
+    }
+    return scaleOffset.getScaleFactor() < 0 ? unpackVal(convertMissing.getValidMax())
+        : unpackVal(convertMissing.getValidMin());
   }
 
   @Override
   public double getValidMax() {
-    return convertMissing != null ? convertMissing.getValidMax() : Double.MAX_VALUE;
+    if (convertMissing == null) {
+      return Double.MAX_VALUE;
+    }
+    if (scaleOffset == null) {
+      return convertMissing.getValidMax();
+    }
+    return scaleOffset.getScaleFactor() < 0 ? unpackVal(convertMissing.getValidMin())
+        : unpackVal(convertMissing.getValidMax());
   }
 
   @Override
   public boolean isInvalidData(double val) {
-    return convertMissing != null && convertMissing.isInvalidData(val);
+    return convertMissing != null && convertMissing.isInvalidData(packVal(val));
   }
 
   @Override
   public boolean hasFillValue() {
-    return convertMissing != null && convertMissing.hasFillValue();
+    return hasFillValue;
   }
 
   @Override
   public double getFillValue() {
-    return convertMissing != null ? convertMissing.getFillValue() : Double.NaN;
+    return fillValue;
   }
 
   @Override
   public boolean isFillValue(double val) {
-    return convertMissing != null && convertMissing.isFillValue(val);
+    return hasFillValue && fillValue == val;
   }
 
   @Override
@@ -706,12 +729,28 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
 
   @Override
   public double[] getMissingValues() {
-    return convertMissing != null ? convertMissing.getMissingValues() : new double[] {0};
+    if (convertMissing == null) {
+      return new double[] {0};
+    }
+    double[] missingVals = convertMissing.getMissingValues();
+    double[] vals = new double[missingVals.length];
+    for (int i = 0; i < missingVals.length; i++) {
+      vals[i] = unpackVal(missingVals[i]);
+    }
+    return vals;
   }
 
   @Override
   public boolean isMissingValue(double val) {
-    return convertMissing != null && convertMissing.isMissingValue(val);
+    return convertMissing != null && convertMissing.isMissingValue(packVal(val));
+  }
+
+  private double unpackVal(double val) {
+    return scaleOffset != null && !Double.isNaN(val) ? scaleOffset.convert(val) : val;
+  }
+
+  private double packVal(double val) {
+    return scaleOffset != null && !Double.isNaN(val) ? scaleOffset.applyScaleOffset(val) : val;
   }
 
   /** @deprecated Use NetcdfDataset.builder() */
@@ -831,6 +870,8 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
   protected DataType orgDataType; // keep separate for the case where there is no orgVar.
   protected String orgName; // in case Variable was renamed, and we need to keep track of the original name
   String orgFileTypeId; // the original fileTypeId.
+  private boolean hasFillValue = false;
+  private double fillValue = Double.MAX_VALUE;
 
   protected VariableDS(Builder<?> builder, Group parentGroup) {
     super(builder, parentGroup);
@@ -857,6 +898,13 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
     this.scaleOffset = builder.scaleOffset;
 
     createEnhancements();
+    if (convertMissing != null) {
+      fillValue = unpackVal(convertMissing.getFillValue());
+      hasFillValue = true;
+    } else {
+      fillValue = ConvertMissing.getFillValueOrDefault(this);
+      hasFillValue = !Double.isNaN(fillValue);
+    }
 
     // We have to complete this after the NetcdfDataset is built.
     this.coordSysNames = builder.coordSysNames;
