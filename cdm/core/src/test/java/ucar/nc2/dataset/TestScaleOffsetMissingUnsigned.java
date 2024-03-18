@@ -286,8 +286,7 @@ public class TestScaleOffsetMissingUnsigned {
 
   // This test demonstrated the bug in https://github.com/Unidata/netcdf-java/issues/572, but for unsigned variables.
   @Test
-  public void testNegativeScaleOffsetValidRangeUnsigned()
-      throws URISyntaxException, IOException, InvalidRangeException {
+  public void testNegativeScaleOffsetValidRangeUnsigned() throws URISyntaxException, IOException {
     File testResource = new File(getClass().getResource("testScaleOffsetMissingUnsigned.ncml").toURI());
     float fpTol = 1e-6f;
 
