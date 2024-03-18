@@ -78,10 +78,8 @@ public class TestEnhancements {
 
     // short data with small scale and offsets
     Array smallVals = Array.factory(DataType.FLOAT, new int[] {dataLen}, missingData);
-
     builder.addVariable("smallVals", DataType.FLOAT, "dim").addAttribute(new Attribute(CDM.SCALE_FACTOR, 1e-12))
-        .addAttribute(new Attribute(CDM.ADD_OFFSET, 1e-12)).addAttribute(new Attribute(CDM.FILL_VALUE, 110));
-
+        .addAttribute(new Attribute(CDM.ADD_OFFSET, 1e-12)).addAttribute(new Attribute(CDM.FILL_VALUE, FILL_VALUE));
 
     // write data
     NetcdfFormatWriter writer = builder.build();
@@ -166,7 +164,7 @@ public class TestEnhancements {
   public void testConvertMissingWithSmallScaleAndOffset() throws IOException {
     Variable v = ncd.findVariable("smallVals");
     Array data = v.read();
-    assertThat(Double.isNaN(data.getDouble(2))).isTrue();
+    assertThat(Double.isNaN(data.getDouble(6))).isTrue();
     assertThat(Double.isNaN(data.getDouble(1))).isFalse();
   }
 }

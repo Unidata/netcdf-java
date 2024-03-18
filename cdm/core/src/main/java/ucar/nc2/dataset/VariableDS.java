@@ -9,12 +9,12 @@ import com.google.common.collect.Sets;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
-import ucar.nc2.constants.DataFormatType;
 import ucar.nc2.dataset.NetcdfDataset.Enhance;
 import ucar.nc2.filter.*;
 import ucar.nc2.internal.dataset.CoordinatesHelper;
-import ucar.nc2.iosp.netcdf3.N3iosp;
 import ucar.nc2.util.CancelTask;
+import ucar.nc2.util.Misc;
+
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -234,6 +234,13 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
     }
 
     createEnhancements();
+    if (convertMissing != null) {
+      fillValue = unpackVal(convertMissing.getFillValue());
+      hasFillValue = true;
+    } else {
+      fillValue = ConvertMissing.getFillValueOrDefault(this);
+      hasFillValue = !Double.isNaN(fillValue);
+    }
   }
 
   boolean needConvert() {
@@ -268,13 +275,13 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
         toApply.add(unsignedConversion);
         convertedType = unsignedConversion.getOutType();
       }
-      if (enhancements.contains(Enhance.ApplyScaleOffset) && scaleOffset != null) {
-        toApply.add(scaleOffset);
-        convertedType = scaleOffset.getScaledOffsetType();
-      }
       if (enhancements.contains(Enhance.ConvertMissing) && convertMissing != null
           && (dataType == DataType.FLOAT || dataType == DataType.DOUBLE)) {
         toApply.add(convertMissing);
+      }
+      if (enhancements.contains(Enhance.ApplyScaleOffset) && scaleOffset != null) {
+        toApply.add(scaleOffset);
+        convertedType = scaleOffset.getScaledOffsetType();
       }
       if (enhancements.contains(Enhance.ApplyStandardizer) && standardizer != null) {
         toApply.add(standardizer);
@@ -665,7 +672,7 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
     if (Double.isNaN(val)) {
       return true;
     }
-    return convertMissing != null && convertMissing.isMissing(val);
+    return convertMissing != null && convertMissing.isMissing(packVal(val));
   }
 
   @Override
@@ -675,17 +682,31 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
 
   @Override
   public double getValidMin() {
-    return convertMissing != null ? convertMissing.getValidMin() : -Double.MAX_VALUE;
+    if (convertMissing == null) {
+      return -Double.MAX_VALUE;
+    }
+    if (scaleOffset == null) {
+      return convertMissing.getValidMin();
+    }
+    return scaleOffset.getScaleFactor() < 0 ? unpackVal(convertMissing.getValidMax())
+        : unpackVal(convertMissing.getValidMin());
   }
 
   @Override
   public double getValidMax() {
-    return convertMissing != null ? convertMissing.getValidMax() : Double.MAX_VALUE;
+    if (convertMissing == null) {
+      return Double.MAX_VALUE;
+    }
+    if (scaleOffset == null) {
+      return convertMissing.getValidMax();
+    }
+    return scaleOffset.getScaleFactor() < 0 ? unpackVal(convertMissing.getValidMin())
+        : unpackVal(convertMissing.getValidMax());
   }
 
   @Override
   public boolean isInvalidData(double val) {
-    return convertMissing != null && convertMissing.isInvalidData(val);
+    return convertMissing != null && convertMissing.isInvalidData(packVal(val));
   }
 
   @Override
@@ -700,7 +721,7 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
 
   @Override
   public boolean isFillValue(double val) {
-    return convertMissing != null && convertMissing.isFillValue(val);
+    return hasFillValue && Misc.nearlyEquals(val, fillValue, Misc.defaultMaxRelativeDiffFloat);
   }
 
   @Override
@@ -710,12 +731,28 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
 
   @Override
   public double[] getMissingValues() {
-    return convertMissing != null ? convertMissing.getMissingValues() : new double[] {0};
+    if (convertMissing == null) {
+      return new double[] {0};
+    }
+    double[] missingVals = convertMissing.getMissingValues();
+    double[] vals = new double[missingVals.length];
+    for (int i = 0; i < missingVals.length; i++) {
+      vals[i] = unpackVal(missingVals[i]);
+    }
+    return vals;
   }
 
   @Override
   public boolean isMissingValue(double val) {
-    return convertMissing != null && convertMissing.isMissingValue(val);
+    return convertMissing != null && convertMissing.isMissingValue(packVal(val));
+  }
+
+  private double unpackVal(double val) {
+    return scaleOffset != null && !Double.isNaN(val) ? scaleOffset.convert(val) : val;
+  }
+
+  private double packVal(double val) {
+    return scaleOffset != null && !Double.isNaN(val) ? scaleOffset.applyScaleOffset(val) : val;
   }
 
   /** @deprecated Use NetcdfDataset.builder() */
@@ -835,7 +872,6 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
   protected DataType orgDataType; // keep separate for the case where there is no orgVar.
   protected String orgName; // in case Variable was renamed, and we need to keep track of the original name
   String orgFileTypeId; // the original fileTypeId.
-
   private boolean hasFillValue = false;
   private double fillValue = Double.MAX_VALUE;
 
@@ -864,6 +900,13 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
     this.scaleOffset = builder.scaleOffset;
 
     createEnhancements();
+    if (convertMissing != null) {
+      fillValue = unpackVal(convertMissing.getFillValue());
+      hasFillValue = true;
+    } else {
+      fillValue = ConvertMissing.getFillValueOrDefault(this);
+      hasFillValue = !Double.isNaN(fillValue);
+    }
 
     // We have to complete this after the NetcdfDataset is built.
     this.coordSysNames = builder.coordSysNames;
@@ -879,6 +922,9 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
       this.unsignedConversion = UnsignedConversion.createFromVar(this);
       this.dataType = unsignedConversion != null ? unsignedConversion.getOutType() : dataType;
     }
+    if (this.enhanceMode.contains(Enhance.ConvertMissing)) {
+      this.convertMissing = ConvertMissing.createFromVariable(this);
+    }
     if (this.enhanceMode.contains(Enhance.ApplyScaleOffset) && (dataType.isNumeric() || dataType == DataType.CHAR)) {
       if (this.scaleOffset == null) {
         this.scaleOffset = ScaleOffset.createFromVariable(this);
@@ -892,28 +938,6 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
     Attribute normalizerAtt = findAttribute(CDM.NORMALIZE);
     if (normalizerAtt != null && this.enhanceMode.contains(Enhance.ApplyNormalizer) && dataType.isFloatingPoint()) {
       this.normalizer = Normalizer.createFromVariable(this);
-    }
-
-    // need fill value info before convertMissing
-    Attribute fillValueAtt = findAttribute(CDM.FILL_VALUE);
-    if (fillValueAtt != null && !fillValueAtt.isString()) {
-      DataType fillType = FilterHelpers.getAttributeDataType(fillValueAtt, getSignedness());
-      fillValue = applyScaleOffset(convertUnsigned(fillValueAtt.getNumericValue(), fillType).doubleValue());
-      hasFillValue = true;
-    } else {
-      // No _FillValue attribute found. Instead, if file is NetCDF and variable is numeric, use the default fill value.
-      boolean isNetcdfIosp = DataFormatType.NETCDF.getDescription().equals(orgFileTypeId)
-          || DataFormatType.NETCDF4.getDescription().equals(orgFileTypeId);
-
-      if (isNetcdfIosp) {
-        if (dataType.isNumeric()) {
-          fillValue = applyScaleOffset(N3iosp.getFillValueDefault(dataType));
-          hasFillValue = true;
-        }
-      }
-    }
-    if (this.enhanceMode.contains(Enhance.ConvertMissing)) {
-      this.convertMissing = ConvertMissing.createFromVariable(this);
     }
   }
 

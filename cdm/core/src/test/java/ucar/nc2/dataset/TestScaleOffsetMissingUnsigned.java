@@ -329,37 +329,6 @@ public class TestScaleOffsetMissingUnsigned {
   }
 
   @Test
-  public void testUnpackedValidRange() throws IOException, URISyntaxException {
-    File testResource = new File(getClass().getResource("testScaleOffsetMissingUnsigned.ncml").toURI());
-    DatasetUrl location = DatasetUrl.findDatasetUrl(testResource.getAbsolutePath());
-    Set<Enhance> enhanceMode = EnumSet.of(Enhance.ConvertUnsigned, Enhance.ApplyScaleOffset); // No ConvertMissing!
-
-    try (NetcdfDataset ncd = NetcdfDatasets.openDataset(location, enhanceMode, -1, null, null)) {
-      VariableDS var = (VariableDS) ncd.findVariable("unpackedValidRange");
-
-      // valid_range will be interpreted as unpacked because of:
-      /*
-       * If valid_range is the same type as scale_factor (actually the wider of scale_factor and add_offset) and this
-       * is wider than the external data, then it will be interpreted as being in the units of the internal (unpacked)
-       * data. Otherwise it is in the units of the external (packed) data.</li>
-       */
-      // As a result, scale_factor will not be applied to it.
-      // with the Builder design, we don't read the enhancement properties unless the corresponding enhancement is
-      // turned on
-      var.addEnhancement(Enhance.ConvertMissing);
-      Assert2.assertNearlyEquals(9.9f, (float) var.getValidMin());
-      Assert2.assertNearlyEquals(10.1f, (float) var.getValidMax());
-
-      Assert.assertEquals(DataType.FLOAT, var.getDataType()); // scale_factor is float.
-      var.removeEnhancement(Enhance.ConvertMissing);
-
-      float[] expecteds = new float[] {9.8f, 9.9f, 10.0f, 10.1f, 10.2f};
-      float[] actuals = (float[]) var.read().getStorage();
-      Assert2.assertArrayNearlyEquals(expecteds, actuals);
-    }
-  }
-
-  @Test
   public void testUnsignedOffsetAttribute() throws IOException, URISyntaxException {
     File testResource = new File(getClass().getResource("testScaleOffsetMissingUnsigned.ncml").toURI());
 

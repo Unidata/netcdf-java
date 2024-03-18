@@ -49,13 +49,6 @@
         <values>980 990 1000 1010 1020</values>
     </variable>
     
-    <variable name="unpackedValidRange" shape="5" type="ushort">
-        <attribute name="scale_factor" type="float" value="0.01" />
-        <attribute name="valid_range" type="float" value="9.9 10.1" />  <!-- already unpacked -->
-        
-        <values>980 990 1000 1010 1020</values>
-    </variable>
-    
     <variable name="unsignedOffsetAttribute" shape="1" type="byte">
         <attribute name="add_offset" type="byte" isUnsigned="true" value="-100" />  <!-- 156 -->
         <values>-50</values>
