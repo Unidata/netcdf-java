@@ -32,6 +32,7 @@ public class TestZarrIosp {
   private static final String ZARR_FILENAME = "zarr_test_data.zarr/";
   private static final String ZARR_ZIP_NAME = "zarr_test_data.zip";
   private static final String INVALID_ZARR_FILENAME = "zarr_invalid_data.zarr";
+  private static final String NON_ZARR_FILENAME = "nonZarrTestData.nc.zip";
   private static final String FILL_VALUES_FILENAME = "fill_values.zarr";
 
   // test store paths
@@ -42,6 +43,9 @@ public class TestZarrIosp {
 
   // invalid zarr file
   private static final String INVALID_ZARR_DATA = ZarrTestsCommon.LOCAL_TEST_DATA_PATH + INVALID_ZARR_FILENAME;
+
+  // Non zarr zipped file
+  private static final String NON_ZARR_DATA = ZarrTestsCommon.LOCAL_TEST_DATA_PATH + NON_ZARR_FILENAME;
 
   // fill values file
   private static final String FILL_VALUES_DATA = ZarrTestsCommon.LOCAL_TEST_DATA_PATH + FILL_VALUES_FILENAME;
@@ -63,6 +67,12 @@ public class TestZarrIosp {
       assertThat(iosp.isValidFile(NetcdfFiles.getRaf(uri, -1))).isTrue();
     }
     assertThat(iosp.isValidFile(NetcdfFiles.getRaf(DIRECTORY_STORE_URI + "/.zgroup", -1))).isFalse();
+  }
+
+  @Test
+  public void testNonZarrZipIsNotValid() throws IOException {
+    ZarrIosp iosp = new ZarrIosp();
+    assertThat(iosp.isValidFile(NetcdfFiles.getRaf(NON_ZARR_DATA, -1))).isFalse();
   }
 
   //////////////////////////////////////////////////////
@@ -240,6 +250,14 @@ public class TestZarrIosp {
     expected = new int[150];
     Arrays.fill(expected, fill_value);
     assertThat(data.section(new int[] {0, 0}, new int[] {15, 10}).get1DJavaArray(DataType.INT)).isEqualTo(expected);
+  }
+
+  @Test
+  public void testReadNonZarrZipFile() throws IOException {
+    try (NetcdfFile ncfile = NetcdfFiles.open(NON_ZARR_DATA)) {
+      assertThat(ncfile).isNotNull();
+      assertThat(ncfile.findDimension("x")).isNotNull();
+    }
   }
 
   @Test
