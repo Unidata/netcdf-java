@@ -111,7 +111,7 @@ public class MFileZip implements MFile {
 
   @Override
   public boolean isDirectory() {
-    return leafEntries.size() > 0;
+    return leafEntries.size() > 1;
   }
 
   @Override
