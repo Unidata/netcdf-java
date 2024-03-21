@@ -1247,146 +1247,154 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
   }
 
   private Variable.Builder makeVariable(Group.Builder parentGroup, DataObjectFacade facade) throws IOException {
+    try {
+      Vinfo vinfo = new Vinfo(facade);
+      if (vinfo.getNCDataType() == null) {
+        log.debug("SKIPPING DataType= " + vinfo.typeInfo.hdfType + " for variable " + facade.name);
+        return null;
+      }
 
-    Vinfo vinfo = new Vinfo(facade);
-    if (vinfo.getNCDataType() == null) {
-      log.debug("SKIPPING DataType= " + vinfo.typeInfo.hdfType + " for variable " + facade.name);
+      Attribute fillAttribute = null;
+      for (HeaderMessage mess : facade.dobj.messages) {
+        if (mess.mtype == MessageType.FillValue) {
+          MessageFillValue fvm = (MessageFillValue) mess.messData;
+          if (fvm.hasFillValue)
+            vinfo.fillValue = fvm.value;
+        } else if (mess.mtype == MessageType.FillValueOld) {
+          MessageFillValueOld fvm = (MessageFillValueOld) mess.messData;
+          if (fvm.size > 0)
+            vinfo.fillValue = fvm.value;
+        }
+
+        Object fillValue = vinfo.getFillValueNonDefault();
+        if (fillValue != null) {
+          Object defFillValue = N3iosp.getFillValueDefault(vinfo.typeInfo.dataType);
+          if (!fillValue.equals(defFillValue))
+            fillAttribute = new Attribute(CDM.FILL_VALUE, (Number) fillValue, vinfo.typeInfo.unsigned);
+        }
+      }
+
+      long dataAddress = facade.dobj.msl.dataAddress;
+
+      // deal with unallocated data
+      if (dataAddress == -1) {
+        vinfo.useFillValue = true;
+
+        // if didnt find, use zeroes !!
+        if (vinfo.fillValue == null) {
+          vinfo.fillValue = new byte[vinfo.typeInfo.dataType.getSize()];
+        }
+      }
+
+      Variable.Builder vb;
+      Structure.Builder sb = null;
+      if (facade.dobj.mdt.type == 6) { // Compound
+        String vname = facade.name;
+        vb = sb = Structure.builder().setName(vname);
+        vb.setParentGroupBuilder(parentGroup);
+        if (!makeVariableShapeAndType(parentGroup, sb, facade.dobj.mdt, facade.dobj.mds, vinfo, facade.dimList))
+          return null;
+        addMembersToStructure(parentGroup, sb, facade.dobj.mdt);
+        sb.setElementSize(facade.dobj.mdt.byteSize);
+
+      } else {
+        String vname = facade.name;
+        if (vname.startsWith(Nc4.NETCDF4_NON_COORD))
+          vname = vname.substring(Nc4.NETCDF4_NON_COORD.length()); // skip prefix
+        vb = Variable.builder().setName(vname);
+        vb.setParentGroupBuilder(parentGroup);
+        if (!makeVariableShapeAndType(parentGroup, vb, facade.dobj.mdt, facade.dobj.mds, vinfo, facade.dimList))
+          return null;
+
+        // special case of variable length strings
+        if (vb.dataType == DataType.STRING)
+          vb.setElementSize(16); // because the array has elements that are HeapIdentifier
+        else if (vb.dataType == DataType.OPAQUE) // special case of opaque
+          vb.setElementSize(facade.dobj.mdt.getBaseSize());
+      }
+
+      vb.setSPobject(vinfo);
+
+      // look for attributes
+      List<MessageAttribute> fatts = filterAttributes(facade.dobj.attributes);
+      for (MessageAttribute matt : fatts) {
+        try {
+          makeAttributes(sb, matt, vb.getAttributeContainer());
+        } catch (InvalidRangeException e) {
+          throw new IOException(e.getMessage());
+        }
+      }
+
+      AttributeContainerMutable atts = vb.getAttributeContainer();
+      processSystemAttributes(facade.dobj.messages, atts);
+      if (fillAttribute != null && atts.findAttribute(CDM.FILL_VALUE) == null)
+        vb.addAttribute(fillAttribute);
+      // if (vinfo.typeInfo.unsigned)
+      // v.addAttribute(new Attribute(CDM.UNSIGNED, "true"));
+      if (facade.dobj.mdt.type == 5) {
+        String desc = facade.dobj.mdt.opaque_desc;
+        if ((desc != null) && (!desc.isEmpty()))
+          vb.addAttribute(new Attribute("_opaqueDesc", desc));
+      }
+
+      int[] shape = makeVariableShape(facade.dobj.mdt, facade.dobj.mds, facade.dimList);
+      if (vinfo.isChunked) { // make the data btree, but entries are not read in
+        vinfo.btree = new DataBTree(this, dataAddress, shape, vinfo.storageSize, memTracker);
+
+        if (vinfo.isChunked) { // add an attribute describing the chunk size
+          List<Integer> chunksize = new ArrayList<>();
+          for (int i = 0; i < vinfo.storageSize.length - 1; i++) // skip last one - its the element size
+            chunksize.add(vinfo.storageSize[i]);
+          vb.addAttribute(Attribute.builder(CDM.CHUNK_SIZES).setValues((List) chunksize, true).build());
+        }
+      }
+
+      if (transformReference && (facade.dobj.mdt.type == 7) && (facade.dobj.mdt.referenceType == 0)) { // object
+                                                                                                       // reference
+        // System.out.printf("new transform object Reference: facade= %s variable name=%s%n", facade.name,
+        // vb.shortName);
+        vb.setDataType(DataType.STRING);
+        Array rawData = vinfo.readArray();
+        Array refData = findReferenceObjectNames(rawData);
+        vb.setCachedData(refData, true); // so H5iosp.read() is never called
+        vb.addAttribute(new Attribute("_HDF5ReferenceType", "values are names of referenced Variables"));
+      }
+
+      if (transformReference && (facade.dobj.mdt.type == 7) && (facade.dobj.mdt.referenceType == 1)) { // region
+                                                                                                       // reference
+        if (warnings)
+          log.warn("transform region Reference: facade=" + facade.name + " variable name=" + vb.shortName);
+
+        /*
+         * TODO doesnt work yet
+         * int nelems = (int) vb.getSize();
+         * int heapIdSize = 12;
+         * for (int i = 0; i < nelems; i++) {
+         * H5header.RegionReference heapId = new RegionReference(vinfo.dataPos + heapIdSize * i);
+         * }
+         */
+
+        // fake data for now
+        vb.setDataType(DataType.LONG);
+        Array newData = Array.factory(DataType.LONG, shape);
+        vb.setCachedData(newData, true); // so H5iosp.read() is never called
+        vb.addAttribute(new Attribute("_HDF5ReferenceType", "values are regions of referenced Variables"));
+      }
+
+      // debugging
+      vinfo.setOwner(vb);
+      // TODO: handle logging warnings and unknown filters at the Filter level
+
+      if (debug1) {
+        log.debug("makeVariable " + vb.shortName + "; vinfo= " + vinfo);
+      }
+
+      return vb;
+
+    } catch (InvalidRangeException e) {
+      log.error(e.getMessage());
       return null;
     }
-
-    Attribute fillAttribute = null;
-    for (HeaderMessage mess : facade.dobj.messages) {
-      if (mess.mtype == MessageType.FillValue) {
-        MessageFillValue fvm = (MessageFillValue) mess.messData;
-        if (fvm.hasFillValue)
-          vinfo.fillValue = fvm.value;
-      } else if (mess.mtype == MessageType.FillValueOld) {
-        MessageFillValueOld fvm = (MessageFillValueOld) mess.messData;
-        if (fvm.size > 0)
-          vinfo.fillValue = fvm.value;
-      }
-
-      Object fillValue = vinfo.getFillValueNonDefault();
-      if (fillValue != null) {
-        Object defFillValue = N3iosp.getFillValueDefault(vinfo.typeInfo.dataType);
-        if (!fillValue.equals(defFillValue))
-          fillAttribute = new Attribute(CDM.FILL_VALUE, (Number) fillValue, vinfo.typeInfo.unsigned);
-      }
-    }
-
-    long dataAddress = facade.dobj.msl.dataAddress;
-
-    // deal with unallocated data
-    if (dataAddress == -1) {
-      vinfo.useFillValue = true;
-
-      // if didnt find, use zeroes !!
-      if (vinfo.fillValue == null) {
-        vinfo.fillValue = new byte[vinfo.typeInfo.dataType.getSize()];
-      }
-    }
-
-    Variable.Builder vb;
-    Structure.Builder sb = null;
-    if (facade.dobj.mdt.type == 6) { // Compound
-      String vname = facade.name;
-      vb = sb = Structure.builder().setName(vname);
-      vb.setParentGroupBuilder(parentGroup);
-      if (!makeVariableShapeAndType(parentGroup, sb, facade.dobj.mdt, facade.dobj.mds, vinfo, facade.dimList))
-        return null;
-      addMembersToStructure(parentGroup, sb, facade.dobj.mdt);
-      sb.setElementSize(facade.dobj.mdt.byteSize);
-
-    } else {
-      String vname = facade.name;
-      if (vname.startsWith(Nc4.NETCDF4_NON_COORD))
-        vname = vname.substring(Nc4.NETCDF4_NON_COORD.length()); // skip prefix
-      vb = Variable.builder().setName(vname);
-      vb.setParentGroupBuilder(parentGroup);
-      if (!makeVariableShapeAndType(parentGroup, vb, facade.dobj.mdt, facade.dobj.mds, vinfo, facade.dimList))
-        return null;
-
-      // special case of variable length strings
-      if (vb.dataType == DataType.STRING)
-        vb.setElementSize(16); // because the array has elements that are HeapIdentifier
-      else if (vb.dataType == DataType.OPAQUE) // special case of opaque
-        vb.setElementSize(facade.dobj.mdt.getBaseSize());
-    }
-
-    vb.setSPobject(vinfo);
-
-    // look for attributes
-    List<MessageAttribute> fatts = filterAttributes(facade.dobj.attributes);
-    for (MessageAttribute matt : fatts) {
-      try {
-        makeAttributes(sb, matt, vb.getAttributeContainer());
-      } catch (InvalidRangeException e) {
-        throw new IOException(e.getMessage());
-      }
-    }
-
-    AttributeContainerMutable atts = vb.getAttributeContainer();
-    processSystemAttributes(facade.dobj.messages, atts);
-    if (fillAttribute != null && atts.findAttribute(CDM.FILL_VALUE) == null)
-      vb.addAttribute(fillAttribute);
-    // if (vinfo.typeInfo.unsigned)
-    // v.addAttribute(new Attribute(CDM.UNSIGNED, "true"));
-    if (facade.dobj.mdt.type == 5) {
-      String desc = facade.dobj.mdt.opaque_desc;
-      if ((desc != null) && (!desc.isEmpty()))
-        vb.addAttribute(new Attribute("_opaqueDesc", desc));
-    }
-
-    int[] shape = makeVariableShape(facade.dobj.mdt, facade.dobj.mds, facade.dimList);
-    if (vinfo.isChunked) { // make the data btree, but entries are not read in
-      vinfo.btree = new DataBTree(this, dataAddress, shape, vinfo.storageSize, memTracker);
-
-      if (vinfo.isChunked) { // add an attribute describing the chunk size
-        List<Integer> chunksize = new ArrayList<>();
-        for (int i = 0; i < vinfo.storageSize.length - 1; i++) // skip last one - its the element size
-          chunksize.add(vinfo.storageSize[i]);
-        vb.addAttribute(Attribute.builder(CDM.CHUNK_SIZES).setValues((List) chunksize, true).build());
-      }
-    }
-
-    if (transformReference && (facade.dobj.mdt.type == 7) && (facade.dobj.mdt.referenceType == 0)) { // object reference
-      // System.out.printf("new transform object Reference: facade= %s variable name=%s%n", facade.name, vb.shortName);
-      vb.setDataType(DataType.STRING);
-      Array rawData = vinfo.readArray();
-      Array refData = findReferenceObjectNames(rawData);
-      vb.setCachedData(refData, true); // so H5iosp.read() is never called
-      vb.addAttribute(new Attribute("_HDF5ReferenceType", "values are names of referenced Variables"));
-    }
-
-    if (transformReference && (facade.dobj.mdt.type == 7) && (facade.dobj.mdt.referenceType == 1)) { // region reference
-      if (warnings)
-        log.warn("transform region Reference: facade=" + facade.name + " variable name=" + vb.shortName);
-
-      /*
-       * TODO doesnt work yet
-       * int nelems = (int) vb.getSize();
-       * int heapIdSize = 12;
-       * for (int i = 0; i < nelems; i++) {
-       * H5header.RegionReference heapId = new RegionReference(vinfo.dataPos + heapIdSize * i);
-       * }
-       */
-
-      // fake data for now
-      vb.setDataType(DataType.LONG);
-      Array newData = Array.factory(DataType.LONG, shape);
-      vb.setCachedData(newData, true); // so H5iosp.read() is never called
-      vb.addAttribute(new Attribute("_HDF5ReferenceType", "values are regions of referenced Variables"));
-    }
-
-    // debugging
-    vinfo.setOwner(vb);
-    // TODO: handle logging warnings and unknown filters at the Filter level
-
-    if (debug1) {
-      log.debug("makeVariable " + vb.shortName + "; vinfo= " + vinfo);
-    }
-
-    return vb;
   }
 
   // convert an array of lons which are data object references to an array of strings,
@@ -1434,29 +1442,34 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
       return null;
     }
 
-    if (mdt.type == 6) {
-      Structure.Builder sb = Structure.builder().setName(name).setParentGroupBuilder(parentGroup);
-      makeVariableShapeAndType(parentGroup, sb, mdt, null, vinfo, null);
-      addMembersToStructure(parentGroup, sb, mdt);
-      sb.setElementSize(mdt.byteSize);
+    try {
+      if (mdt.type == 6) {
+        Structure.Builder sb = Structure.builder().setName(name).setParentGroupBuilder(parentGroup);
+        makeVariableShapeAndType(parentGroup, sb, mdt, null, vinfo, null);
+        addMembersToStructure(parentGroup, sb, mdt);
+        sb.setElementSize(mdt.byteSize);
 
-      sb.setSPobject(vinfo);
-      vinfo.setOwner(sb);
-      return sb;
+        sb.setSPobject(vinfo);
+        vinfo.setOwner(sb);
+        return sb;
 
-    } else {
-      Variable.Builder vb = Variable.builder().setName(name).setParentGroupBuilder(parentGroup);
-      makeVariableShapeAndType(parentGroup, vb, mdt, null, vinfo, null);
+      } else {
+        Variable.Builder vb = Variable.builder().setName(name).setParentGroupBuilder(parentGroup);
+        makeVariableShapeAndType(parentGroup, vb, mdt, null, vinfo, null);
 
-      // special case of variable length strings
-      if (vb.dataType == DataType.STRING)
-        vb.setElementSize(16); // because the array has elements that are HeapIdentifier
-      else if (vb.dataType == DataType.OPAQUE) // special case of opaque
-        vb.setElementSize(mdt.getBaseSize());
+        // special case of variable length strings
+        if (vb.dataType == DataType.STRING)
+          vb.setElementSize(16); // because the array has elements that are HeapIdentifier
+        else if (vb.dataType == DataType.OPAQUE) // special case of opaque
+          vb.setElementSize(mdt.getBaseSize());
 
-      vb.setSPobject(vinfo);
-      vinfo.setOwner(vb);
-      return vb;
+        vb.setSPobject(vinfo);
+        vinfo.setOwner(vb);
+        return vb;
+      }
+    } catch (InvalidRangeException e) {
+      log.error(e.getMessage());
+      return null;
     }
   }
 
@@ -1525,7 +1538,7 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
 
   // set the type and shape of the Variable
   private boolean makeVariableShapeAndType(Group.Builder parent, Variable.Builder v, MessageDatatype mdt,
-      MessageDataspace msd, Vinfo vinfo, String dimNames) {
+      MessageDataspace msd, Vinfo vinfo, String dimNames) throws InvalidRangeException {
 
     int[] shape = makeVariableShape(mdt, msd, dimNames);
 
@@ -1536,6 +1549,10 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
       else
         v.setDimensionsByName(dimNames);
     } else {
+      for (int i = 0; i < shape.length; i++) {
+        if ((shape[i] < 1) && (shape[i] != -1))
+          throw new InvalidRangeException("shape[" + i + "]=" + shape[i] + " must be > 0");
+      }
       v.setDimensionsAnonymous(shape);
     }
 
