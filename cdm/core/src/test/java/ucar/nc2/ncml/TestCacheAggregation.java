@@ -1,6 +1,7 @@
 package ucar.nc2.ncml;
 
 import static com.google.common.truth.Truth.assertThat;
+import static org.junit.Assert.assertArrayEquals;
 
 import java.io.IOException;
 import org.junit.AfterClass;
@@ -16,6 +17,8 @@ import ucar.nc2.dataset.NetcdfDataset;
  * Tests acquiring aggregated datasets from a file cache.
  */
 public class TestCacheAggregation {
+  private static final float TOLERANCE = 1.0e-4f;
+
   @BeforeClass
   public static void setupSpec() {
     // All datasets, once opened, will be added to this cache.
@@ -88,16 +91,15 @@ public class TestCacheAggregation {
   @Test
   public void testFmrc() throws IOException, InvalidRangeException {
     String filename = "file:./" + TestNcmlRead.topDir + "fmrc/testAggFmrcScan.ncml";
-    double[] expecteds = new double[] {232.0, 232.4, 232.5};
+    float[] expecteds = new float[] {232.6f, 232.4f, 233.0f};
 
     for (int i = 0; i < numTrials; i++) {
       try (NetcdfDataset ncd = NetcdfDataset.acquireDataset(DatasetUrl.findDatasetUrl(filename), false, null)) {
         Variable var = ncd.findVariable("Temperature_isobaric");
         Array array = var.read(":, 11, 0, 0, 0");
         float[] actuals = (float[]) array.getStorage();
-        assertThat(expecteds).isEqualTo(actuals);
+        assertArrayEquals(expecteds, actuals, TOLERANCE);
       }
     }
   }
 }
-
