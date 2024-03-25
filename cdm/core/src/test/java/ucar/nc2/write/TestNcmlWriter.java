@@ -36,40 +36,41 @@ public class TestNcmlWriter {
   @ClassRule
   public static final TemporaryFolder tempFolder = new TemporaryFolder();
 
-  /* Programmatically creates a NetcdfFile with the following (pseudo) CDL:
-netcdf {
-types:
-  short enum dessertType { 'pie' = 18, 'donut' = 268, 'cake' = 3284};
-dimensions:
-  time = UNLIMITED;   // (3 currently)
-variables:
-  enum dessertType dessert(time=3);
-    :zero = ; // long
-  short time(time=3);
-  char charVar(5);
-  String stringVar(4);
-group: recordsGroup {
-  variables:
-    Structure {
-      int recordsVar(3);
-    } recordsStruct(*);
-  // group attributes:
-  :stooges = "Moe Howard", "Larry Fine", "Curly Howard";
-}
-// global attributes:
-:primes = 2U, 3U, 5U, 7U, 11U; // int
-}
-data:
-dessert =
-{18, 268, 3284}
-time =
-{4, 5, 6}
-charVar = "abcde"
-stringVar = "Frodo Baggins", "Samwise Gamgee", "Meriadoc Brandybuck", "Peregrin Took"
-recordsGroup/recordsStruct = UNREADABLE
+  /*
+   * Programmatically creates a NetcdfFile with the following (pseudo) CDL:
+   * netcdf {
+   * types:
+   * short enum dessertType { 'pie' = 18, 'donut' = 268, 'cake' = 3284};
+   * dimensions:
+   * time = UNLIMITED; // (3 currently)
+   * variables:
+   * enum dessertType dessert(time=3);
+   * :zero = ; // long
+   * short time(time=3);
+   * char charVar(5);
+   * String stringVar(4);
+   * group: recordsGroup {
+   * variables:
+   * Structure {
+   * int recordsVar(3);
+   * } recordsStruct(*);
+   * // group attributes:
+   * :stooges = "Moe Howard", "Larry Fine", "Curly Howard";
+   * }
+   * // global attributes:
+   * :primes = 2U, 3U, 5U, 7U, 11U; // int
+   * }
+   * data:
+   * dessert =
+   * {18, 268, 3284}
+   * time =
+   * {4, 5, 6}
+   * charVar = "abcde"
+   * stringVar = "Frodo Baggins", "Samwise Gamgee", "Meriadoc Brandybuck", "Peregrin Took"
+   * recordsGroup/recordsStruct = UNREADABLE
    */
   @BeforeClass
-  public static void setupSpec() {
+  public static void setup() {
     // NetcdfFile's 0-arg constructor is protected, so must use NetcdfFileSubclass
     ncFile = new NetcdfFileSubclass();
 
@@ -88,9 +89,10 @@ recordsGroup/recordsStruct = UNREADABLE
     // create Variable of type dessertType and add it
     Variable dessert = new Variable(ncFile, null, null, "dessert", DataType.ENUM2, "time");
     dessert.setEnumTypedef(dessertType);
-    dessert.addAttribute(new Attribute("zero", DataType.ULONG));  // unsigned, zero-length, LONG attribute
+    dessert.addAttribute(new Attribute("zero", DataType.ULONG)); // unsigned, zero-length, LONG attribute
     short[] dessertStorage = new short[] {18, 268, 3284};
-    dessert.setCachedData(Array.factory(DataType.SHORT, new int[] {3}, dessertStorage), true); // Irregularly-spaced values
+    // Irregularly-spaced values
+    dessert.setCachedData(Array.factory(DataType.SHORT, new int[] {3}, dessertStorage), true);
     ncFile.addVariable(null, dessert);
 
     // create 'time' coordinate Variable
@@ -140,46 +142,25 @@ recordsGroup/recordsStruct = UNREADABLE
     ncFile.finish();
   }
 
-  // spotless:off
-  private static String expectedNcmlResult =
-      "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-    + "<netcdf xmlns=\"http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2\">\n"
-    + "  <explicit />\n"
-    + "  <enumTypedef name=\"dessertType\" type=\"enum2\">\n"
-    + "    <enum key=\"18\">pie</enum>\n"
-    + "    <enum key=\"268\">donut</enum>\n"
-    + "    <enum key=\"3284\">cake</enum>\n"
-    + "  </enumTypedef>\n"
-    + "  <dimension name=\"time\" length=\"3\" isUnlimited=\"true\" />\n"
-    + "  <variable name=\"dessert\" shape=\"time\" type=\"enum2\" typedef=\"dessertType\">\n"
-    + "    <attribute name=\"zero\" type=\"ulong\" />\n"
-    + "    <values>18 268 3284</values>\n"
-    + "  </variable>\n"
-    + "  <variable name=\"time\" shape=\"time\" type=\"short\">\n"
-    + "    <values start=\"4.0\" increment=\"1.0\" npts=\"3\" />\n"
-    + "  </variable>\n"
-    + "  <variable name=\"charVar\" shape=\"5\" type=\"char\">\n"
-    + "    <values>abcde</values>\n"
-    + "  </variable>\n"
-    + "  <variable name=\"stringVar\" shape=\"4\" type=\"String\">\n"
-    + "    <values separator=\"|\">Frodo Baggins|Samwise Gamgee|Meriadoc Brandybuck|Peregrin Took</values>\n"
-    + "  </variable>\n"
-    + "  <group name=\"recordsGroup\">\n"
-    + "    <variable name=\"recordsStruct\" shape=\"*\" type=\"Structure\">\n"
-    + "      <variable name=\"recordsVar\" shape=\"3\" type=\"int\" />\n"
-    + "    </variable>\n"
-    + "    <attribute name=\"stooges\" value=\"Moe Howard|Larry Fine|Curly Howard\" separator=\"|\" />\n"
-    + "  </group>\n"
-    + "  <attribute name=\"primes\" type=\"uint\" value=\"2 3 5 7 11\" />\n"
-    + "</netcdf>\n";
-  // spotless:on
+  private static String expectedNcmlResult = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+      + "<netcdf xmlns=\"http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2\">\n" + "  <explicit />\n"
+      + "  <enumTypedef name=\"dessertType\" type=\"enum2\">\n" + "    <enum key=\"18\">pie</enum>\n"
+      + "    <enum key=\"268\">donut</enum>\n" + "    <enum key=\"3284\">cake</enum>\n" + "  </enumTypedef>\n"
+      + "  <dimension name=\"time\" length=\"3\" isUnlimited=\"true\" />\n"
+      + "  <variable name=\"dessert\" shape=\"time\" type=\"enum2\" typedef=\"dessertType\">\n"
+      + "    <attribute name=\"zero\" type=\"ulong\" />\n" + "    <values>18 268 3284</values>\n" + "  </variable>\n"
+      + "  <variable name=\"time\" shape=\"time\" type=\"short\">\n"
+      + "    <values start=\"4.0\" increment=\"1.0\" npts=\"3\" />\n" + "  </variable>\n"
+      + "  <variable name=\"charVar\" shape=\"5\" type=\"char\">\n" + "    <values>abcde</values>\n" + "  </variable>\n"
+      + "  <variable name=\"stringVar\" shape=\"4\" type=\"String\">\n"
+      + "    <values separator=\"|\">Frodo Baggins|Samwise Gamgee|Meriadoc Brandybuck|Peregrin Took</values>\n"
+      + "  </variable>\n" + "  <group name=\"recordsGroup\">\n"
+      + "    <variable name=\"recordsStruct\" shape=\"*\" type=\"Structure\">\n"
+      + "      <variable name=\"recordsVar\" shape=\"3\" type=\"int\" />\n" + "    </variable>\n"
+      + "    <attribute name=\"stooges\" value=\"Moe Howard|Larry Fine|Curly Howard\" separator=\"|\" />\n"
+      + "  </group>\n" + "  <attribute name=\"primes\" type=\"uint\" value=\"2 3 5 7 11\" />\n" + "</netcdf>\n";
 
-  private static NcmlWriter ncmlWriter;
-
-  @BeforeClass
-  public static void setup() {
-    ncmlWriter = new NcmlWriter();
-  }
+  private static final NcmlWriter ncmlWriter = new NcmlWriter();
 
   @Test
   public void testGettersAndSetters() {
@@ -240,7 +221,8 @@ recordsGroup/recordsStruct = UNREADABLE
     Predicate<Variable> predicate1 = (Predicate<Variable>) NcmlWriter.writeCoordinateVariablesPredicate;
     // "charVar", "stringVar", "dessert"
     Predicate<Variable> predicate2 = (Predicate<Variable>) NcmlWriter.writeMetadataVariablesPredicate;
-    Predicate<Variable> predicate3 = new NcmlWriter.WriteVariablesWithNamesPredicate(Arrays.asList("recordsGroup/recordsStruct"));
+    Predicate<Variable> predicate3 =
+        new NcmlWriter.WriteVariablesWithNamesPredicate(Arrays.asList("recordsGroup/recordsStruct"));
     Predicate<Variable> compoundPred = predicate1.or(predicate2).or(predicate3);
 
     NcmlWriter ncmlWriterO = new NcmlWriter(null, null, compoundPred);

@@ -34,7 +34,7 @@ public class TestLogicalViews {
     Variable sectionVar = ncDataset.findVariable("section");
 
     // new shape is the same as the section's shape (':,0:2:2,1:2')
-    assertThat(sectionVar.getShape()).isEqualTo(new int[] {2, 2, 2});  // Shape was originally [ 2, 3, 4 ].
+    assertThat(sectionVar.getShape()).isEqualTo(new int[] {2, 2, 2}); // Shape was originally [ 2, 3, 4 ].
 
     // data only includes values that are part of the section
     assertThat(sectionVar.read().getStorage()).isEqualTo(new int[] {2, 3, 10, 11, 14, 15, 22, 23});
@@ -46,7 +46,7 @@ public class TestLogicalViews {
     Variable sliceVar = ncDataset.findVariable("slice");
 
     // new shape excludes the dimension we sliced out
-    assertThat(sliceVar.getShape()).isEqualTo(new int[] {3, 4});  // Shape was originally [ 2, 3, 4 ].
+    assertThat(sliceVar.getShape()).isEqualTo(new int[] {3, 4}); // Shape was originally [ 2, 3, 4 ].
 
     // data only includes values that are part of the slice
     assertThat(sliceVar.read().getStorage()).isEqualTo(new int[] {13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24});
@@ -58,7 +58,7 @@ public class TestLogicalViews {
     Variable reduceVar = ncDataset.findVariable("reduce");
 
     // new shape excludes the dimensions of length==1
-    assertThat(reduceVar.getShape()).isEqualTo(new int[] {2, 3});  // Shape was originally [ 2, 1, 3, 1 ].
+    assertThat(reduceVar.getShape()).isEqualTo(new int[] {2, 3}); // Shape was originally [ 2, 1, 3, 1 ].
 
     // data includes all of the values from the original variable
     assertThat(reduceVar.read().getStorage()).isEqualTo(new int[] {1, 2, 3, 4, 5, 6});
