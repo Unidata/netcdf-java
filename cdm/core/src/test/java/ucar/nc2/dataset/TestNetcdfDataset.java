@@ -73,12 +73,4 @@ public class TestNetcdfDataset {
       assertThat((Object) datasetVariable).isInstanceOf(VariableDS.class);
     }
   }
-
-  @Test
-  public void testUserIssue() throws IOException {
-    String filePath = TestDir.cdmLocalTestDataDir + "era5.nc";
-    NetcdfDataset ncDataset = NetcdfDataset.openDataset(filePath);
-    System.out.println(ncDataset);
-    ncDataset.close();
-  }
 }
