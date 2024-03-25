@@ -76,7 +76,7 @@ public abstract class ProjectionImpl implements Projection, java.io.Serializable
   /**
    * name of the default units for this projection
    */
-  protected String defaultUnits;
+  protected String defaultUnits = "kilometers";
 
   /**
    * flag for latlon
