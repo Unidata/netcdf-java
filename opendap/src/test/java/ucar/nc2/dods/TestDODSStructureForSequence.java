@@ -5,9 +5,12 @@
 // $Id: TestDODSStructureForSequence.java 51 2006-07-12 17:13:13Z caron $
 package ucar.nc2.dods;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertTrue;
+
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
+import org.junit.Ignore;
+import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.nc2.Structure;
@@ -17,18 +20,11 @@ import ucar.ma2.StructureDataIterator;
 /**
  * Test DODS Sequence access using DODSStructure.
  */
-public class TestDODSStructureForSequence extends TestCase {
+public class TestDODSStructureForSequence {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  public TestDODSStructureForSequence(String name) {
-    super(name);
-  }
-
-  // suppress "no test failure warning message */
-  public void testFake() throws Exception {
-    assert true;
-  }
-
+  @Ignore("Server dods.jpl.nasa.gov not found")
+  @Test
   public void utestConstrainedAccess() {
     // URL for the JPL QuikSCAT DODS File Server (DFS).
     String dfsURL = "http://dods.jpl.nasa.gov/dods-bin/nph-dods/catalogs/quikscat/L2B/quikscat_L2.dat";

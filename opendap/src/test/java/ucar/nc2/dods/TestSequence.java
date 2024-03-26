@@ -1,6 +1,6 @@
 package ucar.nc2.dods;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.Array;
@@ -10,21 +10,10 @@ import ucar.nc2.dataset.NetcdfDataset;
 import java.lang.invoke.MethodHandles;
 import ucar.nc2.dataset.NetcdfDatasets;
 
-public class TestSequence extends TestCase {
+public class TestSequence {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  final String TITLE = "OpenDAP Sequence Test";
-
-  public TestSequence(String name, String testdir) {
-    super(name);
-  }
-
-  public TestSequence(String name) {
-    super(name);
-  }
-
-  static String baseline = "";
-
+  @Test
   public void testSequence() {
     // The old url: "http://tsds.net/tsds/test/Scalar" is no longer valid.
     // So replaced with an equivalent.
