@@ -6,14 +6,22 @@
 package ucar.nc2.iosp.zarr;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import ucar.ma2.Array;
+import ucar.ma2.ArrayObject;
+import ucar.ma2.ArrayString;
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
 import ucar.nc2.Group;
+import ucar.ma2.Index;
 import ucar.nc2.Variable;
 import ucar.nc2.filter.Filter;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.io.zarr.RandomAccessDirectory;
 import ucar.unidata.io.zarr.RandomAccessDirectoryItem;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.ByteOrder;
@@ -24,11 +32,16 @@ import java.util.*;
  */
 public class ZarrHeader {
 
+  private static final Logger logger = LoggerFactory.getLogger(ZarrHeader.class);
+
   private final RandomAccessDirectory rootRaf;
   private final Group.Builder rootGroup;
   private final String rootLocation;
   private static ObjectMapper objectMapper = new ObjectMapper();
 
+  /*
+   *
+   */
   public ZarrHeader(RandomAccessDirectory raf, Group.Builder rootGroup) {
     this.rootRaf = raf;
     this.rootGroup = rootGroup;
@@ -47,10 +60,16 @@ public class ZarrHeader {
     private List<Attribute> attrs; // list of variable attributes
     private long dataOffset; // byte position where data starts
 
+    /*
+     *
+     */
     void setAttrs(List<Attribute> attrs) {
       this.attrs = attrs;
     }
 
+    /*
+     *
+     */
     void setVar(RandomAccessDirectoryItem var) {
       this.var = var;
       this.attrs = null;
@@ -63,14 +82,16 @@ public class ZarrHeader {
           raf.seek(0); // reset in case file has previously been opened by another iosp
           this.zarray = objectMapper.readValue(raf, ZArray.class);
         } catch (IOException | ClassCastException ex) {
-          ZarrIosp.logger.error(new ZarrFormatException(ex.getMessage()).getMessage());
+          logger.error(new ZarrFormatException(ex.getMessage()).getMessage());
           // skip var if metadata invalid
           this.var = null;
         }
       }
     }
 
-    // check if attribute file belongs to current variable
+    /*
+     * check if attribute file belongs to current variable
+     */
     boolean myAttrs(RandomAccessDirectoryItem attrs) {
       if (var == null || attrs == null) {
         return false;
@@ -81,6 +102,9 @@ public class ZarrHeader {
       return ZarrUtils.getObjectNameFromPath(attrPath).equals(ZarrUtils.getObjectNameFromPath(varPath));
     }
 
+    /*
+     *
+     */
     void processItem(RandomAccessDirectoryItem item) {
       if (var == null) {
         return;
@@ -88,7 +112,7 @@ public class ZarrHeader {
       // get index of chunks
       int index = getChunkIndex(item, this.zarray);
       if (index < 0) { // not data files, skip rest of var
-        ZarrIosp.logger.error(new ZarrFormatException().getMessage());
+        logger.error(new ZarrFormatException().getMessage());
         this.var = null; // skip rest of var is unrecognized files found
       }
       this.initializedChunks.put(index, item.length());
@@ -98,6 +122,9 @@ public class ZarrHeader {
       }
     }
 
+    /*
+     *
+     */
     void makeVar() {
       if (var == null) {
         return; // do nothing if no variable is in progress
@@ -105,7 +132,7 @@ public class ZarrHeader {
       try {
         makeVariable(var, dataOffset, zarray, initializedChunks, attrs);
       } catch (ZarrFormatException ex) {
-        ZarrIosp.logger.error(ex.getMessage());
+        logger.error(ex.getMessage());
       }
       var = null; // reset var
     }
@@ -113,7 +140,7 @@ public class ZarrHeader {
 
   /**
    * Create CDM object on 'rootGroup' from RandomAccessFile
-   * 
+   *
    * @throws IOException
    */
   public void read() throws IOException {
@@ -124,8 +151,10 @@ public class ZarrHeader {
 
     for (RandomAccessDirectoryItem item : items) {
       String filepath = ZarrUtils.trimLocation(item.getLocation());
+
       if (filepath.endsWith(ZarrKeys.ZATTRS)) { // attributes
         List<Attribute> attrs = makeAttributes(item);
+
         // assign attrs to either variable or group
         if (delayedVarMaker.myAttrs(item)) {
           delayedVarMaker.setAttrs(attrs);
@@ -134,16 +163,22 @@ public class ZarrHeader {
           delayedVarMaker.makeVar();
           grp_attrs = attrs;
         }
+
+      } else if (filepath.endsWith(ZarrKeys.ZMETADATA)) { // possible consolidated metadata in root group
+        logger.trace("encountered .zmetadata; not yet coded for");
+
       } else if (filepath.endsWith(ZarrKeys.ZGROUP)) { // groups
         // build any vars in progress
         delayedVarMaker.makeVar();
         makeGroup(item, grp_attrs); // .zattrs will always be processed before .zgroup, so we can make group immediately
         grp_attrs = null; // reset
+
       } else if (filepath.endsWith(ZarrKeys.ZARRAY)) { // variables
         // build any vars in progress
         delayedVarMaker.makeVar();
         // set up variable to be created after processing the rest of the files in the folder
         delayedVarMaker.setVar(item);
+
       } else {
         delayedVarMaker.processItem(item);
       }
@@ -152,6 +187,9 @@ public class ZarrHeader {
     delayedVarMaker.makeVar();
   }
 
+  /*
+   *
+   */
   private void makeGroup(RandomAccessDirectoryItem item, List<Attribute> attrs) {
     // make new Group
     Group.Builder group = Group.builder();
@@ -174,11 +212,14 @@ public class ZarrHeader {
         group.setParentGroup(parentGroup);
         parentGroup.addGroup(group);
       } catch (ZarrFormatException ex) {
-        ZarrIosp.logger.error(ex.getMessage());
+        logger.error(ex.getMessage());
       }
     }
   }
 
+  /*
+   *
+   */
   private void makeVariable(RandomAccessDirectoryItem item, long dataOffset, ZArray zarray,
       Map<Integer, Long> initializedChunks, List<Attribute> attrs) throws ZarrFormatException {
     // make new Variable
@@ -186,21 +227,93 @@ public class ZarrHeader {
     String location = ZarrUtils.trimLocation(item.getLocation());
 
     // set var name
-    var.setName(ZarrUtils.getObjectNameFromPath(location));
+    String vname = ZarrUtils.getObjectNameFromPath(location);
+    var.setName(vname);
+    logger.trace("evaluating {}", vname);
+
+    // Check if var has named dimensions by looking for _ARRAY_DIMENSIONS attribute.
+    // This is the convention followed by xarray and geozarr.
+    // NOTE: The Nczarr spec allows for honoring or ignoring this attribute by specifying a mode.
+    // See under "Client Parameters" on https://docs.unidata.ucar.edu/nug/current/nczarr_head.html
+    // We do nothing to check how that's set.
+    String[] dimNames = null;
+    boolean hasNamedDimensions = false;
+
+    for (Attribute attr : attrs) {
+      final String attrName = attr.getName();
+      if ("_ARRAY_DIMENSIONS".equals(attrName)) {
+        try {
+          final ArrayObject.D1 aod1 = (ArrayObject.D1) attr.getValues();
+
+          // getSize returns a long
+          final int aodSize = (int) aod1.getSize();
+          dimNames = new String[aodSize];
+
+          for (int i = 0; i < aodSize; ++i) {
+            dimNames[i] = (String) aod1.get(i);
+          }
+          hasNamedDimensions = true;
+          // logger.trace(" found _ARRAY_DIMENSIONS array {}", aod1);
+        } catch (final Exception exc) {
+          logger.debug("  Could not extract _ARRAY_DIMENSIONS for {}, {}", vname, exc.getMessage());
+        }
+
+        //// Informational logging
+        // } else if ("coordinates".equals(attrName) || "standard_name".equals(attrName) || "units".equals(attrName)) {
+        // try {
+        // ArrayObject.D1 aod1 = (ArrayObject.D1) attr.getValues();
+        // String coordsStr = (String) aod1.get(0);
+        // logger.trace(" var {} has {} attr '{}'", vname, attrName, coordsStr);
+        // } catch (final Exception exc) {
+        // logger.debug(" Exception extracting {} attr value, {}", attrName, exc.getMessage());
+        // }
+
+      }
+    }
 
     // set variable datatype
     var.setDataType(zarray.getDataType());
 
+    // find variable's group or throw if non-existent.
+    final Group.Builder parentGroup = findGroup(location);
+
     // create and set dimensions
+    // If hasNamedDimensions set above, we will want to share var's dimensions with the group.
     int[] shape = zarray.getShape();
-    List<Dimension> dims = new ArrayList<>();
-    for (int d = 0; d < shape.length; d++) {
-      // TODO: revisit dimension props and names (especially for nczarr)
-      Dimension.Builder dim = Dimension.builder(String.format("dim%d", d), shape[d]);
+
+    if (hasNamedDimensions && shape.length != dimNames.length) {
+      throw new IllegalArgumentException(
+          "Var " + vname + " has dimensions attribute count that does not match its rank.");
+    }
+
+    final List<Dimension> dims = new ArrayList<>();
+    for (int i = 0; i < shape.length; i++) {
+
+      final String dname = (hasNamedDimensions) ? dimNames[i] : String.format("dim%d", i);
+
+      final Dimension.Builder dim = Dimension.builder(dname, shape[i]);
       dim.setIsVariableLength(false);
       dim.setIsUnlimited(false);
       dim.setIsShared(false);
-      dims.add(dim.build());
+
+      final Dimension dd = dim.build();
+
+      dims.add(dd);
+
+      if (hasNamedDimensions) {
+        Optional<Dimension> optd = parentGroup.findDimensionLocal(dname);
+
+        if (optd.isPresent()) {
+          final Dimension prevd = optd.get();
+
+          if (dd.getLength() != prevd.getLength()) {
+            throw new IllegalArgumentException("Named dimension " + dname + " seen with inconsistent lengths.");
+          }
+        } else {
+          logger.trace("adding {} to group as a shared dimension", dname);
+          parentGroup.addDimension(dd);
+        }
+      }
     }
     var.addDimensions(dims);
 
@@ -220,11 +333,13 @@ public class ZarrHeader {
       var.addAttributes(attrs);
     }
 
-    // find variable's group or throw if non-existent
-    Group.Builder parentGroup = findGroup(location);
+    // Add var to parent.
     parentGroup.addVariable(var);
   }
 
+  /*
+   *
+   */
   private List<Attribute> makeAttributes(RandomAccessDirectoryItem item) {
     // get RandomAccessFile for JSON parsing
     try {
@@ -287,7 +402,7 @@ public class ZarrHeader {
 
   /**
    * Find Group builder matching provided name
-   * 
+   *
    * @throws ZarrFormatException if group is not found
    */
   private Group.Builder findGroup(String location) throws ZarrFormatException {
