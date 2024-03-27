@@ -239,35 +239,39 @@ public class ZarrHeader {
     String[] dimNames = null;
     boolean hasNamedDimensions = false;
 
-    for (Attribute attr : attrs) {
-      final String attrName = attr.getName();
-      if ("_ARRAY_DIMENSIONS".equals(attrName)) {
-        try {
-          final ArrayObject.D1 aod1 = (ArrayObject.D1) attr.getValues();
+    if (attrs != null) {
 
-          // getSize returns a long
-          final int aodSize = (int) aod1.getSize();
-          dimNames = new String[aodSize];
+      for (Attribute attr : attrs) {
+        final String attrName = attr.getName();
+        if ("_ARRAY_DIMENSIONS".equals(attrName)) {
+          try {
+            final ArrayObject.D1 aod1 = (ArrayObject.D1) attr.getValues();
 
-          for (int i = 0; i < aodSize; ++i) {
-            dimNames[i] = (String) aod1.get(i);
+            // getSize returns a long
+            final int aodSize = (int) aod1.getSize();
+            dimNames = new String[aodSize];
+
+            for (int i = 0; i < aodSize; ++i) {
+              dimNames[i] = (String) aod1.get(i);
+            }
+            hasNamedDimensions = true;
+            // logger.trace(" found _ARRAY_DIMENSIONS array {}", aod1);
+          } catch (final Exception exc) {
+            logger.debug("  Could not extract _ARRAY_DIMENSIONS for {}, {}", vname, exc.getMessage());
           }
-          hasNamedDimensions = true;
-          // logger.trace(" found _ARRAY_DIMENSIONS array {}", aod1);
-        } catch (final Exception exc) {
-          logger.debug("  Could not extract _ARRAY_DIMENSIONS for {}, {}", vname, exc.getMessage());
+
+          //// Informational logging
+          // } else if ("coordinates".equals(attrName) || "standard_name".equals(attrName) || "units".equals(attrName))
+          //// {
+          // try {
+          // ArrayObject.D1 aod1 = (ArrayObject.D1) attr.getValues();
+          // String coordsStr = (String) aod1.get(0);
+          // logger.trace(" var {} has {} attr '{}'", vname, attrName, coordsStr);
+          // } catch (final Exception exc) {
+          // logger.debug(" Exception extracting {} attr value, {}", attrName, exc.getMessage());
+          // }
+
         }
-
-        //// Informational logging
-        // } else if ("coordinates".equals(attrName) || "standard_name".equals(attrName) || "units".equals(attrName)) {
-        // try {
-        // ArrayObject.D1 aod1 = (ArrayObject.D1) attr.getValues();
-        // String coordsStr = (String) aod1.get(0);
-        // logger.trace(" var {} has {} attr '{}'", vname, attrName, coordsStr);
-        // } catch (final Exception exc) {
-        // logger.debug(" Exception extracting {} attr value, {}", attrName, exc.getMessage());
-        // }
-
       }
     }
 

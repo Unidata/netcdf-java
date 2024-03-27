@@ -52,6 +52,8 @@ dependencies {
   netcdfAll project(':cdm:cdm-image')
   netcdfAll project(':cdm:cdm-radial')
   netcdfAll project(':cdm:cdm-misc')
+  netcdfAll project(':cdm:cdm-s3')
+  netcdfAll project(':cdm:cdm-zarr')
   netcdfAll project(':bufr')
   netcdfAll project(':grib')
   netcdfAll project(':netcdf4')
