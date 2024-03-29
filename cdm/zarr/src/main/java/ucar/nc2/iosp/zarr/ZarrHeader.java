@@ -286,8 +286,7 @@ public class ZarrHeader {
     int[] shape = zarray.getShape();
 
     if (hasNamedDimensions && shape.length != dimNames.length) {
-      throw new IllegalArgumentException(
-          "Var " + vname + " has dimensions attribute count that does not match its rank.");
+      throw new ZarrFormatException("Array " + vname + " has dimensions attribute count that does not match its rank.");
     }
 
     final List<Dimension> dims = new ArrayList<>();
@@ -311,7 +310,7 @@ public class ZarrHeader {
           final Dimension prevd = optd.get();
 
           if (dd.getLength() != prevd.getLength()) {
-            throw new IllegalArgumentException("Named dimension " + dname + " seen with inconsistent lengths.");
+            throw new ZarrFormatException("Named dimension " + dname + " seen with inconsistent lengths.");
           }
         } else {
           logger.trace("adding {} to group as a shared dimension", dname);
@@ -331,6 +330,18 @@ public class ZarrHeader {
     VInfo vinfo = new VInfo(chunks, zarray.getFillValue(), zarray.getCompressor(), zarray.getByteOrder(),
         zarray.getOrder(), zarray.getSeparator(), zarray.getFilters(), dataOffset, initializedChunks);
     var.setSPobject(vinfo);
+
+    // Include some info from .zarray file in attributes for display when showing variable detail.
+    // Possibly add to this fill_value if in .zarray but not .zattrs?
+    if (attrs == null) {
+      attrs = new ArrayList<Attribute>();
+    }
+    final Filter compressor = zarray.getCompressor();
+    if (compressor == null) {
+      attrs.add(new Attribute("_Compressor", "none"));
+    } else {
+      attrs.add(new Attribute("_Compressor", zarray.getCompressor().getName()));
+    }
 
     // add current attributes, if any exist
     if (attrs != null) {
