@@ -76,9 +76,9 @@ public class TestGroups extends UnitTestCommon {
 
   void definetestcases() {
     testcases = new ArrayList<>();
-    testcases.add(new Testcase("Simple multiple groups", "dods://" + testserver + "/dts/group.test1", "netcdf dods://"
-        + testserver
-        + "/dts/group.test1 {\ngroup: g1 {\nvariables:\nint i32;\n}\ngroup: g2 {\nvariables:\nfloat f32;\n}\n}\n"));
+    testcases.add(new Testcase("Simple multiple groups", "dods://" + testserver + "/dts/group.test1",
+        "netcdf dods://" + testserver
+            + "/dts/group.test1 {\ngroup: g1 {\nvariables:\nint i32;\n}\ngroup: g2 {\nvariables:\nfloat f32;\n}\n}\n"));
     testcases.add(new Testcase("Duplicate variable names in different groups",
         "dods://" + testserver + "/dts/group.test2", "netcdf dods://" + testserver
             + "/dts/group.test2 {\ngroup: g1 {\nvariables:\nint i32;\n}\ngroup: g2 {\nvariables:\nint i32;\n}\n}\n"));

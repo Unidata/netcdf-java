@@ -38,8 +38,7 @@ public class TestDap4Url extends DapTestCommon implements Dap4ManifestIF {
   // Legal url formats
   protected static String[] urls = {"https://remotetest.unidata.ucar.edu/d4ts/testfiles/test_one_var.nc#dap4",
       "dap4://remotetest.unidata.ucar.edu/d4ts/testfiles/test_one_var.nc",
-      "https://remotetest.unidata.ucar.edu/d4ts/testfiles/test_one_var.nc",
-  };
+      "https://remotetest.unidata.ucar.edu/d4ts/testfiles/test_one_var.nc",};
 
   //////////////////////////////////////////////////
   // Static Fields
