@@ -75,15 +75,11 @@ public class TestDuplicates extends UnitTestCommon {
     String testserver = TestDir.dap2TestServer;
 
     List<Result> results = new ArrayList<Result>();
-    if (true) {
-      results.add(new Result("Top and field vars have same names", "http://" + testserver + "/dts/structdupname",
-          "netcdf dods://" + testserver + "/dts/structdupname {\n" + " variables:\n" + "   int time;\n"
-              + "Structure {\n" + "   float time;\n" + "} record;\n" + "}"));
-    }
-    if (true) {
-      results.add(new Result("TestFailure", "http://" + testserver + "/dts/simplestruct", "netcdf dods://" + testserver
-          + "/dts/simplestruct {\n" + " variables:\n" + "Structure {\n" + "   int i32;\n" + "} types;\n" + "}"));
-    }
+    results.add(new Result("Top and field vars have same names", "http://" + testserver + "/dts/structdupname",
+        "netcdf dods://" + testserver + "/dts/structdupname {\n" + " variables:\n" + "   int time;\n"
+            + "Structure {\n" + "   float time;\n" + "} record;\n" + "}"));
+    results.add(new Result("TestFailure", "http://" + testserver + "/dts/simplestruct", "netcdf dods://" + testserver
+        + "/dts/simplestruct {\n" + " variables:\n" + "Structure {\n" + "   int i32;\n" + "} types;\n" + "}"));
     boolean pass = true;
     for (Result result : results) {
       System.out.println("TestDuplicates: " + result.url);
