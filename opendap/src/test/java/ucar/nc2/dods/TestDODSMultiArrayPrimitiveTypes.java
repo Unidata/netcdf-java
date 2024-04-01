@@ -17,7 +17,7 @@ import static org.junit.Assert.assertEquals;
 public class TestDODSMultiArrayPrimitiveTypes {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  @org.junit.Test
+  @Test
   public void testArrays() throws IOException {
     DODSNetcdfFile dodsfile = TestDODSRead.open("test.03");
 

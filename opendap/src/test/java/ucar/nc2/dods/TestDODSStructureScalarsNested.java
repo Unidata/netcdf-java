@@ -41,7 +41,7 @@ public class TestDODSStructureScalarsNested {
 
   private DODSNetcdfFile dodsfile;
 
-  @org.junit.Test
+  @Test
   public void testScalarRead() throws IOException {
     dodsfile = TestDODSRead.open("test.05");
 
