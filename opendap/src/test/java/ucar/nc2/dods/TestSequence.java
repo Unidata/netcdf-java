@@ -1,5 +1,8 @@
 package ucar.nc2.dods;
 
+import static com.google.common.truth.Truth.assertThat;
+
+import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,20 +24,20 @@ public class TestSequence {
     String url = "https://remotetest.unidata.ucar.edu/dts/whoi";
     try {
       NetcdfDataset ds = NetcdfDatasets.openDataset(url);
+      assertThat(ds).isNotNull();
       System.out.println(ds);
       Structure struct = (Structure) ds.findVariable("emolt_sensor");
       Variable var = struct.findVariable("TEMP");
+      assertThat((Object) var).isNotNull();
       Array arr = var.read();
       int n = (int) arr.getSize();
       int i;
-      for (i = 0; arr.hasNext() && i < n; i++)
-        System.out.println(arr.nextDouble());
-      if (i != n) {
-        System.err.println("short sequence");
-        System.exit(1);
+      for (i = 0; arr.hasNext() && i < n; i++) {
+        assertThat(arr.nextDouble()).isNotNull();
       }
+      assertThat(i).isEqualTo(n);
     } catch (Exception e) {
-      e.printStackTrace();
+      Assert.fail("Exception thrown in testSequence: " + e.getMessage());
     }
   }
 }
