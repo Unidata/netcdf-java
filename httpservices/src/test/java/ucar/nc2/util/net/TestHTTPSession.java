@@ -135,7 +135,6 @@ public class TestHTTPSession extends UnitTestCommon {
       BasicCredentialsProvider bcp = new BasicCredentialsProvider();
       bcp.setCredentials(AuthScope.ANY, bp);
       session.setCredentialsProvider(bcp);
-      // session.setAuthorizationPreemptive(true); not implemented
 
       HTTPMethod method = HTTPFactory.Get(session, TESTURL1);
       method.execute();

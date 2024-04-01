@@ -63,13 +63,6 @@ public class TestState extends UnitTestCommon {
   // Constants
   protected final String SESSIONURL = "http://" + TestDir.dap2TestServer + "/dts";
   protected final String TESTSOURCE1 = SESSIONURL + "/test.01.dds";
-  protected final String TESTSOURCE2 = SESSIONURL + "/test.02.dds";
-
-  static final public Charset UTF8 = Charset.forName("UTF-8");
-
-  //////////////////////////////////////////////////
-  boolean verbose = false;
-  boolean pass = false;
 
   public TestState() {
     setTitle("HTTP Session and Method State tests");

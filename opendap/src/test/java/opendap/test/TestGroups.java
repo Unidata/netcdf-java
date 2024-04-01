@@ -92,21 +92,6 @@ public class TestGroups extends UnitTestCommon {
       testcases.add(new Testcase("Duplicate coordinate variable names in Grid",
           "dods://" + testserver + "/dts/docExample", "netcdf dods://" + testserver
               + "/dts/docExample {\n dimensions:\n lat = 180;\n lon = 360;\n time = 404;\n variables:\n double lat(lat=180);\n :fullName = \"latitude\";\n :units = \"degrees North\";\n double lon(lon=360);\n :fullName = \"longitude\";\n :units = \"degrees East\";\n double time(time=404);\n :units = \"seconds\";\n int sst(time=404, lat=180, lon=360);\n :_CoordinateAxes = \"time lat lon \";\n :fullName = \"Sea Surface Temperature\";\n :units = \"degrees centigrade\";\n}\n"));
-      /*
-       * Not currently available
-       * testcases.add(new Testcase("External user provided group example",
-       * "http://" + testserver + "/thredds/dodsC/testdods/K1VHR.nc",
-       * "file://" + threddsRoot + "/opendap/src/test/data/baselinemisc/K1VHR.cdl")
-       * );
-       * 
-       * /* Not currently available
-       * testcases.add(new Testcase("TestTDSLocal Failure",
-       * "http://" + testserver + "/thredds/dodsC/ExampleNcML/Agg.nc",
-       * ""));
-       * testcases.add(new Testcase("TestTDSLocal Failure",
-       * "http://localhost:8080/dts/structdupname",
-       * ""));
-       */
 
     }
   }
@@ -159,31 +144,4 @@ public class TestGroups extends UnitTestCommon {
     resultrdr.close();
     return pass;
   }
-
-  /**
-   * Remove any _lastModified attributes
-   *
-   * @param s The string to be modified
-   * @return The modified string
-   */
-  String nolastmodified(String s) {
-    StringReader sr = new StringReader(s);
-    StringWriter sw = new StringWriter();
-    BufferedReader br = new BufferedReader(sr);
-    String line;
-    try {
-      while ((line = br.readLine()) != null) {
-        if (line.contains("odified"))
-          continue;
-        sw.write(line + "\n");
-      }
-      br.close();
-      sr.close();
-      sw.close();
-      return sw.toString();
-    } catch (IOException ioe) {
-      return null;
-    }
-  }
-
 }

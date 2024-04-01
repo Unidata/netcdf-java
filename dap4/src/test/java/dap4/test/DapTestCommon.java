@@ -5,9 +5,6 @@
 
 package dap4.test;
 
-import dap4.core.util.DapConstants;
-import dap4.core.util.DapException;
-import dap4.core.util.DapUtil;
 import dap4.dap4lib.HttpDSP;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.write.Ncdump;
@@ -15,7 +12,6 @@ import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.UnitTestCommon;
 
 import java.io.File;
-import java.io.FileFilter;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -30,63 +26,12 @@ abstract public class DapTestCommon extends UnitTestCommon {
 
   static final String DEFAULTTREEROOT = "dap4";
 
-  public static final String FILESERVER = "file://localhost:8080";
-
-  public static final String ORDERTAG = "ucar.littleendian";
-  public static final String TRANSLATETAG = "ucar.translate";
-  public static final String TESTTAG = "ucar.testing";
-
   static final String D4TESTDIRNAME = "";
 
   // Equivalent to the path to the webapp/d4ts for testing purposes
   protected static final String DFALTRESOURCEPATH = "/src/test/data/resources";
 
-  protected static final String[] LEGALEXTENSIONS = {".dap", ".dmr", ".nc", "dmp", ".ncdump", ".dds", ".das", ".dods"};
-
   //////////////////////////////////////////////////
-
-  static class TestFilter implements FileFilter {
-    boolean debug;
-    boolean strip;
-    String[] extensions;
-
-    public TestFilter(boolean debug, String[] extensions) {
-      this.debug = debug;
-      this.strip = strip;
-      this.extensions = extensions;
-    }
-
-    public boolean accept(File file) {
-      boolean ok = false;
-      if (file.isFile() && file.canRead()) {
-        // Check for proper extension
-        String name = file.getName();
-        if (name != null) {
-          for (String ext : extensions) {
-            if (name.endsWith(ext))
-              ok = true;
-          }
-        }
-        if (!ok && debug)
-          System.err.println("Ignoring: " + file.toString());
-      }
-      return ok;
-    }
-
-    static void filterfiles(String path, List<String> matches, String... extensions) {
-      File testdirf = new File(path);
-      assert (testdirf.canRead());
-      TestFilter tf = new TestFilter(DEBUG, extensions);
-      File[] filelist = testdirf.listFiles(tf);
-      for (int i = 0; i < filelist.length; i++) {
-        File file = filelist[i];
-        if (file.isDirectory())
-          continue;
-        String fname = DapUtil.canonicalpath(file.getAbsolutePath());
-        matches.add(fname);
-      }
-    }
-  }
 
   // Test properties
   static class TestProperties {
@@ -137,10 +82,6 @@ abstract public class DapTestCommon extends UnitTestCommon {
 
   //////////////////////////////////////////////////
   // Static methods
-
-  protected static String getD4TestsRoot() {
-    return dap4testroot;
-  }
 
   protected static String getResourceRoot() {
     return dap4resourcedir;
@@ -221,38 +162,11 @@ abstract public class DapTestCommon extends UnitTestCommon {
     System.err.flush();
   }
 
-  protected void findServer(String path) throws DapException {
-    String svc = DapConstants.HTTPSCHEME + "//" + this.d4tsserver + "/d4ts";
-    if (!checkServer(svc))
-      System.err.println("D4TS Server not reachable: " + svc);
-    // Since we will be accessing it thru NetcdfDataset, we need to change the schema.
-    d4tsserver = "dap4://" + d4tsserver + "/d4ts";
-  }
-
   //////////////////////////////////////////////////
-
-  public String getDAP4Root() {
-    return this.dap4root;
-  }
 
   @Override
   public String getResourceDir() {
     return this.dap4resourcedir;
-  }
-
-  static void printDir(String path) {
-    File testdirf = new File(path);
-    assert (testdirf.canRead());
-    File[] filelist = testdirf.listFiles();
-    System.err.println("\n*******************");
-    System.err.printf("Contents of %s:%n", path);
-    for (int i = 0; i < filelist.length; i++) {
-      File file = filelist[i];
-      String fname = file.getName();
-      System.err.printf("\t%s%s%n", fname, (file.isDirectory() ? "/" : ""));
-    }
-    System.err.println("*******************");
-    System.err.flush();
   }
 
   //////////////////////////////////////////////////
@@ -328,56 +242,6 @@ abstract public class DapTestCommon extends UnitTestCommon {
       }
     }
     return changed;
-  }
-
-
-  /**
-   * Choose a test case based on its name and return its index
-   *
-   * @param name to search for
-   * @param testcases set of testcases to search
-   */
-  static void singleTest(String name, List<TestCaseCommon> testcases) {
-    for (int i = 0; i < testcases.size(); i++) {
-      TestCaseCommon tc = testcases.get(i);
-      if (tc.name.equalsIgnoreCase(name)) {
-        testcases.clear();
-        testcases.add(tc);
-      }
-    }
-    return;
-  }
-
-  /**
-   * Choose a test case based on its name and return its index
-   *
-   * @param index to search for
-   * @param testcases set of testcases to search
-   */
-  static void singleTest(int index, List<TestCaseCommon> testcases) {
-    TestCaseCommon tc = testcases.get(index);
-    testcases.clear();
-    testcases.add(tc);
-    return;
-  }
-
-  protected String dumpmetadata(NetcdfDataset ncfile, String datasetname) throws Exception {
-    StringWriter sw = new StringWriter();
-    StringBuilder args = new StringBuilder("-strict");
-    if (datasetname != null) {
-      args.append(" -datasetname ");
-      args.append(datasetname);
-    }
-    // Print the meta-databuffer using these args to NcdumpW
-    try {
-      Ncdump.ncdump(ncfile, args.toString(), sw, null);
-      // if (!ucar.nc2.NCdumpW.print(ncfile, args.toString(), sw, null))
-      // throw new Exception("NcdumpW failed");
-    } catch (IOException ioe) {
-      throw new Exception("Ncdump failed", ioe);
-    }
-    sw.close();
-    return sw.toString();
   }
 
   protected String dumpdata(NetcdfDataset ncfile, String datasetname) throws Exception {

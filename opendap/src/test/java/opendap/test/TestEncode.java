@@ -9,7 +9,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.httpservices.HTTPUtil;
 import ucar.nc2.util.EscapeStrings;
 import java.lang.invoke.MethodHandles;
 import java.net.URI;

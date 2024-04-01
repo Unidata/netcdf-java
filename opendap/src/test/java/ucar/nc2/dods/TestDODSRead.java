@@ -51,9 +51,6 @@ public class TestDODSRead {
     // nested
     open("test.21");
     open("test.22");
-    // open( "test.23");
-    // open( "test.31");
-    // open( "test.32");
 
     open("test.50"); // structure array
     open("test.53"); // nested structure in structure array

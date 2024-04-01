@@ -39,7 +39,6 @@ public class TestDConnect2 extends TestSources {
   TestSet currentTestSet = null;
 
   TestSetEnum[] whichtests = {TestSetEnum.Standard1, TestSetEnum.Constrained1, TestSetEnum.Remote2
-      // TestSetEnum.Experimental
   };
 
   final String[] XFAIL = {"test.01.das", "test.07.das"};
@@ -181,7 +180,6 @@ public class TestDConnect2 extends TestSources {
     } catch (Exception hwe) {
       hwe.printStackTrace();
       pass = false;
-      return;
     }
   }
 

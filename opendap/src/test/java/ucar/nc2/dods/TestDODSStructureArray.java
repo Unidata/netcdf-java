@@ -12,7 +12,6 @@ import ucar.ma2.*;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
-import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.unidata.util.test.UtilsTestStructureArray;
 import java.io.IOException;
@@ -154,9 +153,6 @@ public class TestDODSStructureArray {
 
     StructureMembers.Member m = data.findMember("f");
     assert m != null;
-    // assert m.getV() instanceof DODSVariable;
-    // DODSVariable dv = (DODSVariable) m.getV();
-    // assert dv.hasCachedData();
 
     Array a = data.getArray(m);
     Index ima = a.getIndex();

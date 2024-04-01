@@ -25,14 +25,7 @@ public class TestClone extends TestFiles {
   static final int ISDDS = 2;
   static final int ISERR = 3;
 
-  int kind = ISUNKNOWN;
-
-  String[] testfilenames = null;
-
-  boolean debug = false;
   static final String TITLE = "DAP DDS  and DAS Clone Tests";
-
-  String extension = null;
 
   String[] xfailtests = null;
 

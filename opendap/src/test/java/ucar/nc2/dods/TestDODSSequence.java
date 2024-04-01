@@ -78,7 +78,6 @@ public class TestDODSSequence {
     Array a = v.read();
     assert a.getRank() == 1;
     assert a.getSize() == 5 : a.getSize();
-    // NCdump.printArray(a, "person",System.out,null);
 
     int count = 0;
     int fib = 1, prev = 1;

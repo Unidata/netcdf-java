@@ -42,7 +42,6 @@ public class TestHyrax extends DapTestCommon implements Dap4ManifestIF {
   // Constants
 
   // Define the server to use
-  protected static final String SERVERNAME = "hyrax";
   protected static final String SERVER = "test.opendap.org";
   protected static final int SERVERPORT = -1;
   protected static final String SERVERPATH = "opendap";
@@ -122,8 +121,6 @@ public class TestHyrax extends DapTestCommon implements Dap4ManifestIF {
       TestCase tc = new TestCase(file, url, baseline, query);
       testcases.add(tc);
     }
-    // singleTest("AIRS.2002.12.01.L3.RetStd_H031.v4.0.21.0.G06101132853.hdf", testcases); // choose single test for
-    // debugging
     return testcases;
   }
   //////////////////////////////////////////////////
@@ -144,9 +141,6 @@ public class TestHyrax extends DapTestCommon implements Dap4ManifestIF {
 
   @Before
   public void setup() {
-    // Set any properties
-    // props.prop_baseline = true;
-    // props.prop_visual = true;
     super.setup();
   }
 

@@ -14,17 +14,10 @@ import org.junit.runners.Parameterized;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.nc2.dataset.NetcdfDataset;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.StringWriter;
 import java.lang.invoke.MethodHandles;
 import java.nio.file.NoSuchFileException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * This Test uses the JUNIT Version 4 parameterized test mechanism.
@@ -40,7 +33,6 @@ public class TestConstraints extends DapTestCommon implements Dap4ManifestIF {
   // Constants
 
   // Define the server to use
-  protected static final String SERVERNAME = "d4ts";
   protected static final String SERVER = "remotetest.unidata.ucar.edu";
   protected static final int SERVERPORT = -1;
   protected static final String SERVERPATH = "d4ts/testfiles";
@@ -114,7 +106,6 @@ public class TestConstraints extends DapTestCommon implements Dap4ManifestIF {
       TestCase tc = new TestCase(file + "." + index, url, baseline, query);
       testcases.add(tc);
     }
-    // singleTest(0,testcases); // choose single test for debugging
     return testcases;
   }
 
@@ -136,17 +127,11 @@ public class TestConstraints extends DapTestCommon implements Dap4ManifestIF {
 
   @Before
   public void setup() {
-    // Set any properties
-    // props.prop_visual = true;
-    // props.prop_baseline = true;
     super.setup();
   }
 
   @Test
   public void test() throws Exception {
-    int i, c;
-    StringBuilder sb = new StringBuilder();
-
     NetcdfDataset ncfile;
     try {
       ncfile = openDataset(tc.url);
