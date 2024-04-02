@@ -2,7 +2,6 @@ ext.title = 'HttpClient Wrappers'
 
 apply from: "$rootDir/gradle/any/dependencies.gradle"
 apply from: "$rootDir/gradle/any/java-library.gradle"
-apply from: "$rootDir/gradle/any/gretty.gradle"
 
 dependencies {
   api enforcedPlatform(project(':netcdf-java-platform'))
@@ -21,9 +20,4 @@ dependencies {
   testImplementation 'com.google.truth:truth'
 
   testRuntimeOnly 'ch.qos.logback:logback-classic'
-}
-
-test {
-  dependsOn('farmBeforeIntegrationTest')
-  finalizedBy('farmAfterIntegrationTest')
 }

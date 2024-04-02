@@ -2,7 +2,6 @@ ext.title = 'Data Access Protocol (DAP) version 4.0'  // Will be inherited by su
 
 apply from: "$rootDir/gradle/any/dependencies.gradle"
 apply from: "$rootDir/gradle/any/java-library.gradle"
-apply from: "$rootDir/gradle/any/gretty.gradle"
 
 dependencies {
   api enforcedPlatform(project(':netcdf-java-platform'))
@@ -35,7 +34,4 @@ test {
   include 'dap4/test/TestRemote.class'
   include 'dap4/test/TestConstraints.class'
   include 'dap4/test/TestHyrax.class'
-
-  dependsOn('farmBeforeIntegrationTest')
-  finalizedBy('farmAfterIntegrationTest')
 }

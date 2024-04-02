@@ -21,8 +21,6 @@ Most of what we need in the `any/` directory can be found in these two script pl
 
      Currently, two gradle subprojects use this - `dap4:d4tests` and `cdm-test`.
 
-`gretty/`: Contains configuration files related to the `gretty` plugin (logging, cert for testing, etc.)
-
 **TODO:** There are still a few Gradle things left to do, but at least we're fully functional at this point.
 
 1. Address any issues in our plugin scripts identified by gradle in terms of Gradle 7 compatibility.

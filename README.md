@@ -73,7 +73,6 @@ THREDDS Catalog documentation (including the specification) is available at
 netCDF-Java is released under the BSD-3 licence, which can be found [here](https://github.com/Unidata/netcdf-java/blob/maint-5.x/LICENSE).
 
 Furthermore, this project includes code from third-party open-source software components:
-* [Gretty](https://github.com/akhikhl/gretty)
 * [ERDDAP](https://coastwatch.pfeg.noaa.gov/erddap/index.html): for details, see `waterml/README.md`
 * [JUnit](https://github.com/junit-team/junit4): for details, see `cdm-test-utils/README.md`
 * Edal (The University of Reading): The CDM calendars are implemented using classes from Jon Blower's `uk.ac.rdg.resc.edal.time` package.
