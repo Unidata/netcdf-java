@@ -4,6 +4,7 @@
  */
 package ucar.nc2.dods;
 
+import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.Array;
@@ -64,7 +65,7 @@ import java.lang.invoke.MethodHandles;
 public class TestDODSSequence {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  @org.junit.Test
+  @Test
   public void testReadSequence() throws IOException {
     DODSNetcdfFile dodsfile = TestDODSRead.open("test.07");
 
@@ -77,7 +78,6 @@ public class TestDODSSequence {
     Array a = v.read();
     assert a.getRank() == 1;
     assert a.getSize() == 5 : a.getSize();
-    // NCdump.printArray(a, "person",System.out,null);
 
     int count = 0;
     int fib = 1, prev = 1;

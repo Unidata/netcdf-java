@@ -53,29 +53,6 @@ abstract public class TestFiles extends UnitTestCommon {
     return ".dds";
   }
 
-  static String accessTestData(String testprefix, String basename, TestPart part) throws Exception {
-    String fname = testprefix + "/" + basename + partext(part);
-
-    String result = null;
-    try {
-      File f = new File(fname);
-      if (!f.canRead())
-        return null;
-      FileReader fr = new FileReader(fname);
-      StringBuffer cbuf = new StringBuffer();
-      int c;
-      while ((c = fr.read()) != -1) {
-        cbuf.append((char) c);
-      }
-      return cbuf.toString();
-    } catch (Exception e) {
-      System.err.println("File io failure: " + e.toString());
-      e.printStackTrace();
-      throw e;
-    }
-
-  }
-
   protected String testdir = null;
   protected String baselinedir = null;
   protected String resultsdir = null;

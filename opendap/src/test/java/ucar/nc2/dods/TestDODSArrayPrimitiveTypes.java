@@ -219,8 +219,6 @@ public class TestDODSArrayPrimitiveTypes {
       byte valb = ab.get(i);
       assert (valb == 3 * i);
     }
-
-    // System.out.println("TestDODSArrayPrimitiveTypes TestStride ok");
   }
 
 

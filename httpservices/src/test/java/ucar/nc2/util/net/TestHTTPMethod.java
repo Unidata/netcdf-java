@@ -51,7 +51,6 @@ public class TestHTTPMethod extends UnitTestCommon {
   // Constants
 
   protected final String baseurl = "http://" + TestDir.dap2TestServer + "/dts";
-  static String relativebaseline = "/cdm/src/test/data/ucar/nc2/util/net";
 
   static final String testcase = "test.01.dds";
 
@@ -63,17 +62,6 @@ public class TestHTTPMethod extends UnitTestCommon {
 
   //////////////////////////////////////////////////
 
-  // Define the test sets
-
-  int passcount = 0;
-  int xfailcount = 0;
-  int failcount = 0;
-  boolean verbose = true;
-  boolean pass = false;
-
-  String datadir = null;
-  String threddsroot = null;
-
   public TestHTTPMethod() {
     super();
     setTitle("HTTP Method tests");
@@ -83,7 +71,6 @@ public class TestHTTPMethod extends UnitTestCommon {
   @Test
   public void testGetStream() throws Exception {
     String url = baseurl + "/" + testcase;
-    String baseline = getThreddsroot() + relativebaseline + "/" + testcase;
 
     logger.debug("*** Testing: HTTPMethod");
     logger.debug("*** URL: {}", url);
@@ -103,7 +90,6 @@ public class TestHTTPMethod extends UnitTestCommon {
   @Test
   public void testGetStreamPartial() throws Exception {
     String url = baseurl + "/" + testcase;
-    String baseline = getThreddsroot() + relativebaseline + "/" + testcase;
 
     logger.debug("*** Testing: HTTPMethod");
     logger.debug("*** URL: {}", url);

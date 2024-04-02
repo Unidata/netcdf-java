@@ -5,6 +5,7 @@
 package ucar.nc2.dods;
 
 import opendap.test.TestSources;
+import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.io.IOException;
@@ -34,7 +35,7 @@ public class TestDODSRead {
     return dodsfile;
   }
 
-  @org.junit.Test
+  @Test
   public void testRead() throws IOException {
     // simple
     open("test.01");
@@ -50,9 +51,6 @@ public class TestDODSRead {
     // nested
     open("test.21");
     open("test.22");
-    // open( "test.23");
-    // open( "test.31");
-    // open( "test.32");
 
     open("test.50"); // structure array
     open("test.53"); // nested structure in structure array

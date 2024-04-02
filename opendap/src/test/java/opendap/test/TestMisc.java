@@ -75,22 +75,12 @@ public class TestMisc extends UnitTestCommon {
   void definetestcases() {
     String threddsRoot = getThreddsroot();
     testcases = new ArrayList<Testcase>();
-    if (false) { // use this arm for debugging individual cases
-      testcases.add(new Testcase("TestDODSArrayPrimitiveExample", "dods://" + testserver + "/dts/test.02",
-          "file://" + threddsRoot + "/opendap/src/test/data/baselinemisc/test.02.cdl"));
-    } else {
-      // This test changes too often and I no longer remember why it is here.
-      // testcases.add(new Testcase("TestBennoGrid Example",
-      // "dods://iridl.ldeo.columbia.edu/SOURCES/.NOAA/.NCEP/.CPC/.GLOBAL/.daily/dods",
-      // "file://"+threddsRoot + "/opendap/src/test/data/baselinemisc/dods.cdl")
-      // );
-      testcases
-          .add(new Testcase("Constrained access", "dods://" + testserver + "/dts/test.22?exp.ThreeD[5:1:7][5:8][1:3]",
-              "file://" + threddsRoot + "/opendap/src/test/data/baselinemisc/test.22ce.cdl"));
-      testcases.add(new Testcase("TestDODSArrayPrimitiveExample", "dods://" + testserver + "/dts/test.02",
-          "file://" + threddsRoot + "/opendap/src/test/data/baselinemisc/test.02.cdl"));
+    testcases
+        .add(new Testcase("Constrained access", "dods://" + testserver + "/dts/test.22?exp.ThreeD[5:1:7][5:8][1:3]",
+            "file://" + threddsRoot + "/opendap/src/test/data/baselinemisc/test.22ce.cdl"));
+    testcases.add(new Testcase("TestDODSArrayPrimitiveExample", "dods://" + testserver + "/dts/test.02",
+        "file://" + threddsRoot + "/opendap/src/test/data/baselinemisc/test.02.cdl"));
 
-    }
   }
 
 

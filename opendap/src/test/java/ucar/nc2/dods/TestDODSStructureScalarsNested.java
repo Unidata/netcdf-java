@@ -41,7 +41,7 @@ public class TestDODSStructureScalarsNested {
 
   private DODSNetcdfFile dodsfile;
 
-  @org.junit.Test
+  @Test
   public void testScalarRead() throws IOException {
     dodsfile = TestDODSRead.open("test.05");
 
@@ -291,9 +291,6 @@ public class TestDODSStructureScalarsNested {
   }
 
   void CheckInt16(Variable v) throws IOException {
-    // int16
-    // assert(null != (v = dodsfile.findVariable("types.integers.i16")));
-    // assert v.getName().equals("types.integers.i16");
     assert v.getRank() == 0;
     assert v.getSize() == 1;
     assert v.getDataType() == DataType.SHORT;
@@ -310,10 +307,6 @@ public class TestDODSStructureScalarsNested {
   }
 
   void CheckInt32(Variable v) throws IOException {
-
-    // int32
-    // assert(null != (v = dodsfile.findVariable("types.integers.i32")));
-    // assert v.getName().equals("types.integers.i32");
     assert v.getRank() == 0;
     assert v.getSize() == 1;
     assert v.getDataType() == DataType.INT;
@@ -330,10 +323,6 @@ public class TestDODSStructureScalarsNested {
   }
 
   void CheckUInt32(Variable v) throws IOException {
-
-    // uint32
-    // assert(null != (v = dodsfile.findVariable("types.integers.ui32")));
-    // assert v.getName().equals("types.integers.ui32");
     assert v.getRank() == 0;
     assert v.getSize() == 1;
     assert v.getDataType() == DataType.UINT : v.getDataType();
@@ -350,10 +339,6 @@ public class TestDODSStructureScalarsNested {
   }
 
   void CheckUint16(Variable v) throws IOException {
-
-    // uint16
-    // assert(null != (v = dodsfile.findVariable("types.integers.ui16")));
-    // assert v.getName().equals("types.integers.ui16");
     assert v.getRank() == 0;
     assert v.getSize() == 1;
     assert v.getDataType() == DataType.USHORT : v.getDataType();
@@ -369,17 +354,6 @@ public class TestDODSStructureScalarsNested {
     assert (vali == 0);
   }
 
-  void CheckLong32(Variable v) throws IOException {
-
-    // uint32
-    // assert(null != (v = dodsfile.findVariable("types.integers.ui32")));
-    // assert v.getName().equals("types.integers.ui32");
-    assert v.getRank() == 0;
-    assert v.getSize() == 1;
-    assert v.getDataType() == DataType.LONG : v.getDataType();
-    CheckLongValue(v.read());
-  }
-
   void CheckLongValue(Array a) {
     assert a.getRank() == 0;
     assert a.getSize() == 1;
@@ -390,10 +364,6 @@ public class TestDODSStructureScalarsNested {
   }
 
   void CheckF(Variable v) throws IOException {
-
-    // float
-    // assert(null != (v = dodsfile.findVariable("types.floats.f32")));
-    // assert v.getName().equals("types.floats.f32");
     assert v.getRank() == 0;
     assert v.getSize() == 1;
     assert v.getDataType() == DataType.FLOAT : v.getDataType();
@@ -410,10 +380,6 @@ public class TestDODSStructureScalarsNested {
   }
 
   void CheckD(Variable v) throws IOException {
-
-    // double
-    // assert(null != (v = dodsfile.findVariable("types.floats.f64")));
-    // assert v.getName().equals("types.floats.f64");
     assert v.getRank() == 0;
     assert v.getSize() == 1;
     assert v.getDataType() == DataType.DOUBLE : v.getDataType();
@@ -430,10 +396,6 @@ public class TestDODSStructureScalarsNested {
   }
 
   void CheckS(Variable v) throws IOException {
-
-    // string
-    // assert(null != (v = dodsfile.findVariable("types.strings.s")));
-    // assert v.getName().equals("types.strings.s");
     assert v.getRank() == 0;
     assert v.getDataType() == DataType.STRING : v.getDataType();
     CheckSValue(v.read());
@@ -447,10 +409,6 @@ public class TestDODSStructureScalarsNested {
   }
 
   void CheckUrl(Variable v) throws IOException {
-
-    // url
-    // assert(null != (v = dodsfile.findVariable("types.strings.u")));
-    // assert v.getName().equals("types.strings.u");
     assert v.getRank() == 0;
     assert v.getDataType() == DataType.STRING : v.getDataType();
     String str = v.readScalarString();

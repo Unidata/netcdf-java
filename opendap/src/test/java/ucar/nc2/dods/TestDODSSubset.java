@@ -127,9 +127,6 @@ public class TestDODSSubset {
   }
 
   void CheckInt16(Variable v) throws IOException {
-    // int16
-    // assert(null != (v = dodsfile.findVariable("types.integers.i16")));
-    // assert v.getName().equals("types.integers.i16");
     assert v.getRank() == 0;
     assert v.getSize() == 1;
     assert v.getDataType() == DataType.SHORT;
@@ -146,10 +143,6 @@ public class TestDODSSubset {
   }
 
   void CheckInt32(Variable v) throws IOException {
-
-    // int32
-    // assert(null != (v = dodsfile.findVariable("types.integers.i32")));
-    // assert v.getName().equals("types.integers.i32");
     assert v.getRank() == 0;
     assert v.getSize() == 1;
     assert v.getDataType() == DataType.INT;
@@ -166,10 +159,6 @@ public class TestDODSSubset {
   }
 
   void CheckUint32(Variable v) throws IOException {
-
-    // uint32
-    // assert(null != (v = dodsfile.findVariable("types.integers.ui32")));
-    // assert v.getName().equals("types.integers.ui32");
     assert v.getRank() == 0;
     assert v.getSize() == 1;
     assert v.getDataType() == DataType.UINT : v.getDataType();
@@ -186,10 +175,6 @@ public class TestDODSSubset {
   }
 
   void CheckUint16(Variable v) throws IOException {
-
-    // uint16
-    // assert(null != (v = dodsfile.findVariable("types.integers.ui16")));
-    // assert v.getName().equals("types.integers.ui16");
     assert v.getRank() == 0;
     assert v.getSize() == 1;
     assert v.getDataType() == DataType.USHORT : v.getDataType();
@@ -204,94 +189,4 @@ public class TestDODSSubset {
     int vali = ((ArrayShort.D0) a).get();
     assert (vali == 0);
   }
-
-  void CheckLong32(Variable v) throws IOException {
-
-    // uint32
-    // assert(null != (v = dodsfile.findVariable("types.integers.ui32")));
-    // assert v.getName().equals("types.integers.ui32");
-    assert v.getRank() == 0;
-    assert v.getSize() == 1;
-    assert v.getDataType() == DataType.LONG : v.getDataType();
-    CheckLongValue(v.read());
-  }
-
-  void CheckLongValue(Array a) {
-    assert a.getRank() == 0;
-    assert a.getSize() == 1;
-    assert a.getElementType() == long.class;
-    assert a instanceof ArrayLong.D0;
-    long vall = ((ArrayLong.D0) a).get();
-    assert (vall == 0);
-  }
-
-  void CheckF(Variable v) throws IOException {
-
-    // float
-    // assert(null != (v = dodsfile.findVariable("types.floats.f32")));
-    // assert v.getName().equals("types.floats.f32");
-    assert v.getRank() == 0;
-    assert v.getSize() == 1;
-    assert v.getDataType() == DataType.FLOAT : v.getDataType();
-    CheckFValue(v.read());
-  }
-
-  void CheckFValue(Array a) {
-    assert a.getRank() == 0;
-    assert a.getSize() == 1;
-    assert a.getElementType() == float.class;
-    assert a instanceof ArrayFloat.D0;
-    float valf = ((ArrayFloat.D0) a).get();
-    assert (valf == 0.0);
-  }
-
-  void CheckD(Variable v) throws IOException {
-
-    // double
-    // assert(null != (v = dodsfile.findVariable("types.floats.f64")));
-    // assert v.getName().equals("types.floats.f64");
-    assert v.getRank() == 0;
-    assert v.getSize() == 1;
-    assert v.getDataType() == DataType.DOUBLE : v.getDataType();
-    CheckDValue(v.read());
-  }
-
-  void CheckDValue(Array a) {
-    assert a.getRank() == 0;
-    assert a.getSize() == 1;
-    assert a.getElementType() == double.class;
-    assert a instanceof ArrayDouble.D0;
-    double vald = ((ArrayDouble.D0) a).get();
-    assert (vald == 1000.0);
-  }
-
-  void CheckS(Variable v) throws IOException {
-
-    // string
-    // assert(null != (v = dodsfile.findVariable("types.strings.s")));
-    // assert v.getName().equals("types.strings.s");
-    assert v.getRank() == 0;
-    assert v.getDataType() == DataType.STRING : v.getDataType();
-    CheckSValue(v.read());
-  }
-
-  void CheckSValue(Array a) {
-    assert a.getRank() == 0;
-    assert a.getElementType() == String.class;
-    String str = (String) a.getObject(a.getIndex());
-    assert str.equals("This is a data test string (pass 0).");
-  }
-
-  void CheckUrl(Variable v) throws IOException {
-
-    // url
-    // assert(null != (v = dodsfile.findVariable("types.strings.u")));
-    // assert v.getName().equals("types.strings.u");
-    assert v.getRank() == 0;
-    assert v.getDataType() == DataType.STRING : v.getDataType();
-    String str = v.readScalarString();
-    assert str.equals("http://www.opendap.org") || str.equals("http://www.dods.org") : str;
-  }
-
-
 }

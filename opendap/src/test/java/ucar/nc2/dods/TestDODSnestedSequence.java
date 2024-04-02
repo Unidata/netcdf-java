@@ -4,6 +4,8 @@
  */
 package ucar.nc2.dods;
 
+import org.junit.Ignore;
+import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.*;
@@ -64,7 +66,7 @@ import ucar.nc2.write.Ncdump;
 public class TestDODSnestedSequence {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  @org.junit.Test
+  @Test
   public void testNestedSequenceParent() throws IOException {
     DODSNetcdfFile dodsfile = TestDODSRead.open("NestedSeq");
 
@@ -78,7 +80,6 @@ public class TestDODSnestedSequence {
     Array a = v.read(); // DODSNetcdfFile.readFromServer = <person1>
     assert a.getRank() == 1;
     assert a.getSize() == 5 : a.getSize();
-    // NCdump.printArray(a, "person",System.out,null);
 
     int count = 0;
     int fib = 1, prev = 1;
@@ -101,6 +102,8 @@ public class TestDODSnestedSequence {
 
   }
 
+  @Ignore
+  @Test
   public void utestNestedSequence() throws IOException, InvalidRangeException {
     DODSNetcdfFile dodsfile = TestDODSRead.open("NestedSeq");
 
@@ -113,24 +116,6 @@ public class TestDODSnestedSequence {
     assert v instanceof DODSStructure;
     assert v.getRank() == 1;
     assert v.isVariableLength();
-
-    /*
-     * Array sa = v.readAllStructures(null, true); // DODSNetcdfFile.readFromServer = <person1.stuff>
-     * assert sa.getRank() == 1;
-     * assert sa.getSize() == 25 : sa.getSize();
-     * 
-     * int count = 0;
-     * IndexIterator iter = sa.getIndexIterator();
-     * while (iter.hasNext()) {
-     * StructureData data = (StructureData) iter.next();
-     * 
-     * assert data.findMember("foo") != null;
-     * 
-     * int foo = data.getScalarInt("foo");
-     * assert foo == count*16 : foo;
-     * count++;
-     * }
-     */
 
     Array a = v.read(); // // DODSNetcdfFile.readFromServer = <person1.stuff>
     assert a.getRank() == 1;
@@ -153,6 +138,8 @@ public class TestDODSnestedSequence {
 
   }
 
+  @Ignore
+  @Test
   public void utestCE() throws IOException, InvalidRangeException {
     DODSNetcdfFile dodsFile = TestDODSRead.open("NestedSeq2");
     Variable outerSequence = dodsFile.findVariable("person1");
@@ -178,51 +165,5 @@ public class TestDODSnestedSequence {
     StructureMembers firstMembers = firstInner.getStructureMembers();
     assert firstMembers.findMember("foo") != null;
     assert firstMembers.findMember("bar") != null;
-
-    // StructureMembers.Member timeMember = innerMembers.findMember(timeVar.getShortName());
-
   }
-
-
-  // server+"NestedSeq2", "person1.age,person1.stuff&person1.age=3"
-
-  /*
-   * boolean show = false;
-   * public void testReadNestedSequence() throws IOException {
-   * 
-   * DODSNetcdfFile dodsfile = TestDODSRead.open("test.23");
-   * 
-   * DODSStructure struct = dodsfile.findStructure("exp");
-   * assert null != struct;
-   * 
-   * DODSStructure datas = struct.read();
-   * 
-   * DODSSequence seq = (DODSSequence) datas.findStructureByShortName("ComplexSequence");
-   * assert null != seq;
-   * 
-   * int count = 0;
-   * Iterator iter = seq.getSequenceIterator(null);
-   * while (iter.hasNext()) {
-   * if (debug) System.out.println(" testReadStructure row = "+ count);
-   * count++;
-   * DODSStructure data = (DODSStructure) iter.next();
-   * 
-   * DODSGrid profile = (DODSGrid) data.findStructureByShortName("profile");
-   * assert profile != null;
-   * DODSVariable v = profile.findVariableByShortName("depth");
-   * assert v != null;
-   * assert v.hasCachedData();
-   * Array a = v.read();
-   * assert a.getRank() == 1;
-   * 
-   * Dimension d = dodsfile.findDimension("exp.ComplexSequence.profile.depth");
-   * assert d != null;
-   * assert d.getLength() == a.getSize();
-   * 
-   * if (debug) System.out.println(profile.getName()+" == \n"+profile);
-   * break;
-   * }
-   * }
-   */
-
 }

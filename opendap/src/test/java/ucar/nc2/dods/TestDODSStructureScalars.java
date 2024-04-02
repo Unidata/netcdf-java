@@ -33,7 +33,7 @@ import java.lang.invoke.MethodHandles;
 public class TestDODSStructureScalars {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  @org.junit.Test
+  @Test
   public void testStructureRead() throws IOException {
     DODSNetcdfFile dodsfile = TestDODSRead.open("test.04");
 

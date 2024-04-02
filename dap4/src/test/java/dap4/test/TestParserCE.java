@@ -10,11 +10,8 @@ import dap4.core.ce.CEConstraint;
 import dap4.core.ce.parser.CEParserImpl;
 import dap4.core.dmr.DMRFactory;
 import dap4.core.dmr.DapDataset;
-import dap4.core.dmr.ErrorResponse;
 import dap4.core.dmr.parser.DOM4Parser;
 import dap4.core.dmr.parser.Dap4Parser;
-import dap4.core.dmr.parser.ParseUtil;
-import dap4.core.dmr.DMRPrinter;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -22,14 +19,9 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import java.io.File;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.regex.Pattern;
 
 /**
  * This Test uses the JUNIT Version 4 parameterized test mechanism.

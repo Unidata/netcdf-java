@@ -14,17 +14,10 @@ import org.junit.runners.Parameterized;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.nc2.dataset.NetcdfDataset;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.StringWriter;
 import java.lang.invoke.MethodHandles;
 import java.nio.file.NoSuchFileException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-
-import static dap4.core.util.DapConstants.CHECKSUMATTRNAME;
 
 /**
  * This Test uses the JUNIT Version 4 parameterized test mechanism.
@@ -54,7 +47,6 @@ public class TestRaw extends DapTestCommon implements Dap4ManifestIF {
       {"test_vlen2", "test_vlen3", "test_vlen4", "test_vlen5", "test_vlen6", "test_vlen7", "test_vlen8"};
 
   // Attribute suppression
-  static String RE_ENDIAN = "\n[ \t]*<Attribute[ \t]+name=[\"]_DAP4_Little_Endian[\"].*?</Attribute>[ \t]*";
   static String RE_CHECKSUM = ":" + DapConstants.CHECKSUMATTRNAME;
   static String RE_DAP4_ENDIAN = ":" + DapConstants.LITTLEENDIANATTRNAME;
   static String RE_DAP4_CE = ":" + DapConstants.CEATTRNAME;
@@ -104,7 +96,6 @@ public class TestRaw extends DapTestCommon implements Dap4ManifestIF {
       TestCase tc = new TestCase(name, url, baseline);
       testcases.add(tc);
     }
-    // singleTest("test_vlen3", testcases); // choose single test for debugging
     return testcases;
   }
 
@@ -126,17 +117,12 @@ public class TestRaw extends DapTestCommon implements Dap4ManifestIF {
 
   @Before
   public void setup() {
-    // Set any properties
-    // props.prop_visual = true;
-    // props.prop_baseline = true;
     super.setup();
   }
 
   @Test
   public void test() throws Exception {
-    int i, c;
     StringBuilder sb = new StringBuilder();
-    // String url = buildURL(resourceroot + INPUTDIR, tc.name + INPUTEXT);
     String url = tc.url;
     NetcdfDataset ncfile;
     try {

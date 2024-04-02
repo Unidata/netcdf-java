@@ -6,9 +6,6 @@
 package dap4.test;
 
 import dap4.core.util.DapConstants;
-import dap4.core.util.DapException;
-import ucar.httpservices.HTTPFactory;
-import ucar.httpservices.HTTPMethod;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,14 +35,6 @@ public class Dap4Server {
       registry.add(0, svc);
     else
       registry.add(svc);
-  }
-
-  static Dap4Server getServer(String id) {
-    for (Dap4Server ds : registry) {
-      if (ds.id.equals(id))
-        return ds;
-    }
-    return null;
   }
 
   //////////////////////////////////////////////////
@@ -80,30 +69,6 @@ public class Dap4Server {
     buf.append("/");
     buf.append(this.servletpath);
     return buf.toString();
-  }
-
-  public boolean ping() {
-    boolean ok = false;
-    String url = getURL();
-    try {
-      try (HTTPMethod method = HTTPFactory.Get(url)) {
-        int code = method.execute();
-        if (code == 200)
-          ok = true;
-      }
-    } catch (Exception e) {
-      ok = false;
-    }
-    return ok;
-  }
-
-  public static Dap4Server findServer() throws DapException {
-    // Find the server to use
-    for (Dap4Server svc : registry) {
-      if (svc.ping())
-        return svc;
-    }
-    return null;
   }
 }
 

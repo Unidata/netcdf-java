@@ -33,12 +33,9 @@
 package ucar.nc2.util.net;
 
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.httpservices.HTTPFactory;
-import ucar.httpservices.HTTPMethod;
 import ucar.httpservices.HTTPUtil;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.UnitTestCommon;
@@ -58,22 +55,12 @@ public class TestURIParse extends UnitTestCommon {
   static final String CARON = "http://" + TestDir.remoteTestServer
       + "/thredds/cdmremote/scanCdmUnitTests/formats/hdf5/grid_1_3d_xyz_aug.h5?req=data&var=HDFEOS_INFORMATION/StructMetadata\\.0";
 
-  static final String[] filetests = {};
-
   static final String[] httptests = {"http://ucar.edu:8081/dts/test\\/fake\\.01", CARON,};
 
   //////////////////////////////////////////////////
 
   // Define the test sets
-
-  int passcount = 0;
-  int xfailcount = 0;
-  int failcount = 0;
-  boolean verbose = true;
   boolean pass = false;
-
-  String datadir = null;
-  String threddsroot = null;
 
   public TestURIParse() {
     setTitle("HTTPUtil.parseToURI tests");
@@ -118,36 +105,6 @@ public class TestURIParse extends UnitTestCommon {
         pass = false;
     }
     Assert.assertTrue("TestMisc.testURX", pass);
-  }
-
-  protected static boolean uriCompare(URI uri1, URI uri2) {
-    boolean ok = true;
-    ok = ok && uriPartCompare(uri1.getScheme(), uri2.getScheme());
-    ok = ok && uriPartCompare(uri1.getHost(), uri2.getHost());
-    ok = ok && (uri1.getPort() == uri2.getPort());
-    ok = ok && uriPartCompare(uri1.getPath(), uri2.getPath());
-    ok = ok && uriPartCompare(uri1.getQuery(), uri2.getQuery());
-    ok = ok && uriPartCompare(uri1.getFragment(), uri2.getFragment());
-    return ok;
-  }
-
-  protected static boolean uriCompareRaw(URI uri1, URI uri2) {
-    boolean ok = true;
-    ok = ok && uriPartCompare(uri1.getScheme(), uri2.getScheme());
-    ok = ok && uriPartCompare(uri1.getHost(), uri2.getHost());
-    ok = ok && (uri1.getPort() == uri2.getPort());
-    ok = ok && uriPartCompare(uri1.getRawPath(), uri2.getRawPath());
-    ok = ok && uriPartCompare(uri1.getRawQuery(), uri2.getRawQuery());
-    ok = ok && uriPartCompare(uri1.getRawFragment(), uri2.getRawFragment());
-    return ok;
-  }
-
-  protected static boolean uriPartCompare(String s1, String s2) {
-    if (s1 == s2)
-      return true;
-    if (s1 == null || s2 == null)
-      return false;
-    return (s1.equals(s2));
   }
 
   protected static String dump(URI uri) {

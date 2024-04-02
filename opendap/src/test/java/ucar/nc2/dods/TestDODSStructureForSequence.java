@@ -13,7 +13,6 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.nc2.Structure;
 import ucar.ma2.StructureData;
 import ucar.ma2.StructureDataIterator;
 
@@ -29,9 +28,6 @@ public class TestDODSStructureForSequence {
     // URL for the JPL QuikSCAT DODS File Server (DFS).
     String dfsURL = "http://dods.jpl.nasa.gov/dods-bin/nph-dods/catalogs/quikscat/L2B/quikscat_L2.dat";
     String seqName = "QuikSCAT_L2B";
-    String catTitleAttName = "DODS_Global.DODS_Title";
-    String catAllowedDateRangeStartAttName = "DODS_Global.DODS_StartDate";
-    String catAllowedDateRangeEndAttName = "DODS_Global.DODS_EndDate";
 
     // Connect to the DFS.
     DODSNetcdfFile dfs = null;
@@ -89,12 +85,6 @@ public class TestDODSStructureForSequence {
     int rev_num = curData.getScalarInt("rev_num");
     int wvc_rows = curData.getScalarInt("wvc_rows");
     String dodsUrl = curData.getScalarString("DODS_URL");
-    // System.out.println( "year = " + year );
-    // System.out.println( "day = " + day );
-    // System.out.println( "hours = " + hours );
-    // System.out.println( "minutes = " + minutes );
-    // System.out.println( "longitude = " + longitude );
-    // System.out.println( "dodsUrl = " + dodsUrl );
     if ((year != expectedEntry.getYear()) || (day != expectedEntry.getDay()) || (hours != expectedEntry.getHours())
         || (minutes != expectedEntry.getMinutes()) || (seconds != expectedEntry.getSeconds())
         || (m_seconds != expectedEntry.getM_seconds()) || (longitude > expectedEntry.getLongitude() + longDelta)
@@ -149,104 +139,40 @@ public class TestDODSStructureForSequence {
       return year;
     }
 
-    public void setYear(int year) {
-      this.year = year;
-    }
-
     public int getDay() {
       return day;
-    }
-
-    public void setDay(int day) {
-      this.day = day;
     }
 
     public int getHours() {
       return hours;
     }
 
-    public void setHours(int hours) {
-      this.hours = hours;
-    }
-
     public int getMinutes() {
       return minutes;
-    }
-
-    public void setMinutes(int minutes) {
-      this.minutes = minutes;
     }
 
     public int getSeconds() {
       return seconds;
     }
 
-    public void setSeconds(int seconds) {
-      this.seconds = seconds;
-    }
-
     public int getM_seconds() {
       return m_seconds;
-    }
-
-    public void setM_seconds(int m_seconds) {
-      this.m_seconds = m_seconds;
     }
 
     public float getLongitude() {
       return longitude;
     }
 
-    public void setLongitude(float longitude) {
-      this.longitude = longitude;
-    }
-
     public int getRev_num() {
       return rev_num;
-    }
-
-    public void setRev_num(int rev_num) {
-      this.rev_num = rev_num;
     }
 
     public int getWvc_rows() {
       return wvc_rows;
     }
 
-    public void setWvc_rows(int wvc_rows) {
-      this.wvc_rows = wvc_rows;
-    }
-
     public String getDodsUrl() {
       return dodsUrl;
     }
-
-    public void setDodsUrl(String dodsUrl) {
-      this.dodsUrl = dodsUrl;
-    }
-
-
   }
 }
-
-/*
- * $Log: TestDODSStructureForSequence.java,v $
- * Revision 1.5 2006/02/16 23:02:44 caron
- * *** empty log message ***
- *
- * Revision 1.4 2006/02/06 21:17:06 caron
- * more fixes to dods parsing.
- * ArraySequence.flatten()
- * ncml.xml use default namespace. Only way I can get ncml in catalog to validate.
- * ThreddsDataFactory refactor
- *
- * Revision 1.3 2005/07/25 00:07:12 caron
- * cache debugging
- *
- * Revision 1.2 2005/05/11 00:10:10 caron
- * refactor StuctureData, dt.point
- *
- * Revision 1.1 2004/11/19 21:42:28 edavis
- * Test how DODSStructure handles reading DODS sequence (uses JPL QuikSCAT DODS File Server for test server).
- *
- */
