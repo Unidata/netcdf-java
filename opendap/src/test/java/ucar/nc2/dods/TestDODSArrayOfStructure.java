@@ -7,6 +7,7 @@ package ucar.nc2.dods;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.*;
@@ -16,6 +17,7 @@ import ucar.nc2.iosp.hdf5.H5header;
 import ucar.nc2.util.DebugFlagsImpl;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
+import ucar.unidata.util.test.category.NeedsDocker;
 
 /**
  * Test nc2 dods in the JUnit framework.
@@ -33,6 +35,7 @@ import java.lang.invoke.MethodHandles;
  * } types[10];
  * } ArrayOfStructures;
  */
+@Category(NeedsDocker.class)
 public class TestDODSArrayOfStructure {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 

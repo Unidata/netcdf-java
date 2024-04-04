@@ -8,6 +8,7 @@ package dap4.test;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.slf4j.Logger;
@@ -16,6 +17,8 @@ import ucar.nc2.dataset.DatasetUrl;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.List;
+import ucar.unidata.util.test.DapTestContainer;
+import ucar.unidata.util.test.category.NeedsDocker;
 
 /**
  * This Test uses the JUNIT Version 4 parameterized test mechanism.
@@ -29,6 +32,7 @@ import java.util.List;
  * a DAP4 server.
  */
 
+@Category(NeedsDocker.class)
 @RunWith(Parameterized.class)
 public class TestDap4Url extends DapTestCommon implements Dap4ManifestIF {
 
@@ -36,9 +40,9 @@ public class TestDap4Url extends DapTestCommon implements Dap4ManifestIF {
   // Constants
 
   // Legal url formats
-  protected static String[] urls = {"https://remotetest.unidata.ucar.edu/d4ts/testfiles/test_one_var.nc#dap4",
-      "dap4://remotetest.unidata.ucar.edu/d4ts/testfiles/test_one_var.nc",
-      "https://remotetest.unidata.ucar.edu/d4ts/testfiles/test_one_var.nc",};
+  protected static String[] urls = {"http://" + DapTestContainer.D4TS_PATH + "test_one_var.nc#dap4",
+      "dap4://" + DapTestContainer.D4TS_PATH + "test_one_var.nc",
+      "http://" + DapTestContainer.D4TS_PATH + "test_one_var.nc",};
 
   //////////////////////////////////////////////////
   // Static Fields

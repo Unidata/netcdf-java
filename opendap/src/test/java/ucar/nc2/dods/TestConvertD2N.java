@@ -7,6 +7,7 @@ package ucar.nc2.dods;
 import opendap.dap.*;
 import opendap.test.TestSources;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.Array;
@@ -24,8 +25,10 @@ import java.lang.invoke.MethodHandles;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Vector;
+import ucar.unidata.util.test.category.NeedsDocker;
 
 /** Test ConvertD2N */
+@Category(NeedsDocker.class)
 public class TestConvertD2N {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 

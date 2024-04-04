@@ -34,18 +34,21 @@ package opendap.test;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.nc2.dods.DODSNetcdfFile;
 import ucar.nc2.write.CDLWriter;
 import ucar.unidata.util.test.Diff;
-import ucar.unidata.util.test.TestDir;
+import ucar.unidata.util.test.DapTestContainer;
 import ucar.unidata.util.test.UnitTestCommon;
 import java.io.*;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.List;
+import ucar.unidata.util.test.category.NeedsDocker;
 
+@Category(NeedsDocker.class)
 public class TestMisc extends UnitTestCommon {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
@@ -68,7 +71,7 @@ public class TestMisc extends UnitTestCommon {
   public TestMisc() {
     setTitle("DAP Misc tests");
     // Check if we are running against remote or localhost, or what.
-    testserver = TestDir.dap2TestServer;
+    testserver = DapTestContainer.SERVER;
     definetestcases();
   }
 

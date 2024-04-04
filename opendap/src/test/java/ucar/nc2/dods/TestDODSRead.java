@@ -6,15 +6,18 @@ package ucar.nc2.dods;
 
 import opendap.test.TestSources;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
+import ucar.unidata.util.test.category.NeedsDocker;
 
 /**
  * Test nc2 dods in the JUnit framework.
  * Open and read various test datasets from the dts server.
  */
+@Category(NeedsDocker.class)
 public class TestDODSRead {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 

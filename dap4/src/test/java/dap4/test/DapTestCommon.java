@@ -101,8 +101,6 @@ abstract public class DapTestCommon extends UnitTestCommon {
   //////////////////////////////////////////////////
   // Instance variables
 
-  protected String d4tsserver = null;
-
   protected String title = "Dap4 Testing";
 
   public DapTestCommon() {
@@ -112,9 +110,6 @@ abstract public class DapTestCommon extends UnitTestCommon {
   public DapTestCommon(String name) {
     super(name);
     setSystemProperties();
-    this.d4tsserver = TestDir.dap4TestServer;
-    if (DEBUG)
-      System.err.println("DapTestCommon: d4tsServer=" + d4tsserver);
   }
 
   /**

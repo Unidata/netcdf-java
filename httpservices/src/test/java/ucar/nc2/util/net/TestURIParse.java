@@ -37,7 +37,6 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.httpservices.HTTPUtil;
-import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.UnitTestCommon;
 import java.lang.invoke.MethodHandles;
 import java.net.URI;
@@ -52,8 +51,8 @@ public class TestURIParse extends UnitTestCommon {
 
   public static boolean DEBUG = false;
 
-  static final String CARON = "http://" + TestDir.remoteTestServer
-      + "/thredds/cdmremote/scanCdmUnitTests/formats/hdf5/grid_1_3d_xyz_aug.h5?req=data&var=HDFEOS_INFORMATION/StructMetadata\\.0";
+  static final String CARON =
+      "http://localhost:8081/thredds/cdmremote/scanCdmUnitTests/formats/hdf5/grid_1_3d_xyz_aug.h5?req=data&var=HDFEOS_INFORMATION/StructMetadata\\.0";
 
   static final String[] httptests = {"http://ucar.edu:8081/dts/test\\/fake\\.01", CARON,};
 

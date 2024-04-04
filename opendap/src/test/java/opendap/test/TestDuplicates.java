@@ -34,12 +34,13 @@ package opendap.test;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.nc2.dods.DODSNetcdfFile;
 import ucar.nc2.write.CDLWriter;
 import ucar.unidata.util.test.Diff;
-import ucar.unidata.util.test.TestDir;
+import ucar.unidata.util.test.DapTestContainer;
 import ucar.unidata.util.test.UnitTestCommon;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -48,7 +49,9 @@ import java.io.StringWriter;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.List;
+import ucar.unidata.util.test.category.NeedsDocker;
 
+@Category(NeedsDocker.class)
 public class TestDuplicates extends UnitTestCommon {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
@@ -72,7 +75,7 @@ public class TestDuplicates extends UnitTestCommon {
   @Test
   public void testDuplicates() throws Exception {
     // Check if we are running against remote or localhost, or what.
-    String testserver = TestDir.dap2TestServer;
+    String testserver = DapTestContainer.SERVER;
 
     List<Result> results = new ArrayList<Result>();
     results.add(new Result("Top and field vars have same names", "http://" + testserver + "/dts/structdupname",

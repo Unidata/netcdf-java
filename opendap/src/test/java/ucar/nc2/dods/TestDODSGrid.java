@@ -4,6 +4,7 @@
  */
 package ucar.nc2.dods;
 
+import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.Array;
@@ -13,6 +14,8 @@ import ucar.ma2.IndexIterator;
 import ucar.nc2.Variable;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
+import ucar.unidata.util.test.category.NeedsDocker;
+
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -26,6 +29,7 @@ import static org.junit.Assert.assertEquals;
  * } OneD;
  * } Simple;
  */
+@Category(NeedsDocker.class)
 public class TestDODSGrid {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
