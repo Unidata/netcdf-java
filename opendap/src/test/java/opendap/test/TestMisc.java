@@ -119,6 +119,9 @@ public class TestMisc extends UnitTestCommon {
   }
 
   boolean diff(Testcase testcase, String captured) throws Exception {
+    // don't match on port
+    captured = captured.replaceAll("localhost:\\d+", "localhost:8080");
+
     // See if the cdl is in a file or a string.
     if (System.getProperty("nodiff") != null)
       return true;
