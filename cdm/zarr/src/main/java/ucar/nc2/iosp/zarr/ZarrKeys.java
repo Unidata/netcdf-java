@@ -14,6 +14,7 @@ public final class ZarrKeys {
   public static final String ZARRAY = ".zarray";
   public static final String ZATTRS = ".zattrs";
   public static final String ZGROUP = ".zgroup";
+  public static final String ZMETADATA = ".zmetadata";
 
   // key names
   public static final String SHAPE = "shape";
