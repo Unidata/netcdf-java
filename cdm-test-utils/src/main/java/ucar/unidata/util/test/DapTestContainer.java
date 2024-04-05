@@ -25,8 +25,9 @@ public abstract class DapTestContainer {
   public static final String DTS_PATH;
 
   static {
-    CONTAINER = new GenericContainer<>(new ImageFromDockerfile().withFileFromClasspath("Dockerfile", "/Dockerfile"))
-        .withExposedPorts(8080);
+    CONTAINER = new GenericContainer<>(
+        new ImageFromDockerfile().withFileFromClasspath("Dockerfile", "/ucar/unidata/util/test/Dockerfile"))
+            .withExposedPorts(8080);
     CONTAINER.start();
 
     HOST = CONTAINER.getHost();
