@@ -1,6 +1,6 @@
 package ucar.unidata.util.test.category;
 
-// For test container tests
+// For test using TestContainers, like the DapTestContainer
 public interface NeedsDocker {
 
 }
