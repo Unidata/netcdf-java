@@ -33,10 +33,6 @@ import java.util.*;
  *        <td>unidata.testdata.path
  *        <td>Property name for the path to the Unidata test data directory,
  *        e.g unidata.testdata.path=/share/testdata
- *        <tr>
- *        <td>remoteTestServerPropName
- *        <td>remotetest
- *        <td>Property name for the hostname of the C-library remote test server.
  *        </table>
  *        <p>
  *        <table>
@@ -58,11 +54,6 @@ import java.util.*;
  *        <td>NA
  *        <td>../cdm/src/test/data
  *        <td>Level 1 test data directory (distributed with code and MAY be used in Unidata nightly testing).
- *        <tr>
- *        <td>remoteTestServer
- *        <td>remotetestserver
- *        <td>remotetest.unidata.ucar.edu
- *        <td>The hostname of the test server for doing C library remote tests.
  *        </table>
  *
  */
