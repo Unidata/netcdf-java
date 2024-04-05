@@ -23,9 +23,8 @@ public class TestSources extends TestFiles {
           "test.31", "test.50", "test.53", "test.55", "test.56", "test.57", "test.66", "test.67", "test.68", "test.69"};
 
   // Following tests are to check constraint handling
-  static final String[] TESTS_C1 =
-      {"test.02;1;b[1:2:10]", "test.03;1;i32[0:1][1:2][0:2]", "test.04;1;types.i32",
-          "test.05;1;types.floats.f32", "test.06;1;ThreeD", "test.07;1;person.age", "test.07;2;person"};
+  static final String[] TESTS_C1 = {"test.02;1;b[1:2:10]", "test.03;1;i32[0:1][1:2][0:2]", "test.04;1;types.i32",
+      "test.05;1;types.floats.f32", "test.06;1;ThreeD", "test.07;1;person.age", "test.07;2;person"};
 
   static enum TestSetEnum {
     Standard1, Constrained1

@@ -39,7 +39,7 @@ public class TestDConnect2 extends TestSources {
   TestSet currentTestSet = null;
 
   // TODO TestSetEnum.Constrained1 not working
-  TestSetEnum[] whichtests = {TestSetEnum.Standard1, /*TestSetEnum.Constrained1*/};
+  TestSetEnum[] whichtests = {TestSetEnum.Standard1, /* TestSetEnum.Constrained1 */};
 
   final String[] XFAIL = {"test.01.das", "test.07.das"};
 
