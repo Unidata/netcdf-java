@@ -21,7 +21,7 @@ public class TestDODSRead {
   public static boolean showFile = false, showFileDebug = false;
 
   static DODSNetcdfFile open(String name) throws IOException {
-    String filename = TestSources.XURL1 + "/" + name;
+    String filename = TestSources.URL + "/" + name;
     return openAbs(filename);
   }
 
