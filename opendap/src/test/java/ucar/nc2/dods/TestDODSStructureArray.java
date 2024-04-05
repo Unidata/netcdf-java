@@ -161,7 +161,7 @@ public class TestDODSStructureArray {
 
   @Test
   public void testDODS() throws IOException, InvalidRangeException {
-    testW(TestSources.XURL1 + "/test.53", "types", false);
+    testW(TestSources.URL + "/test.53", "types", false);
   }
 
   public void testW(String url, String sname, boolean isScalar) throws IOException, InvalidRangeException {

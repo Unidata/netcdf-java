@@ -233,6 +233,6 @@ public class TestConvertD2N {
 
   @Test
   public void testStuff() throws IOException, DAP2Exception, InvalidRangeException {
-    testDataDDSfromServer(TestSources.XURL1 + "/NestedSeq2", "person1.age,person1.stuff&person1.age=3"); // nested Seq
+    testDataDDSfromServer(TestSources.URL + "/NestedSeq2", "person1.age,person1.stuff&person1.age=3"); // nested Seq
   }
 }
