@@ -13,14 +13,15 @@ import org.testcontainers.images.builder.ImageFromDockerfile;
 public abstract class DapTestContainer {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  public static final String NAME = "D4TS and DTS TestContainer";
+  private static final GenericContainer<?> CONTAINER;
 
-  public static final GenericContainer<?> CONTAINER;
+  public static final String NAME = "D4TS and DTS TestContainer";
+  public static final String D4TS_TEST_PATH = "d4ts/testfiles";
+  public static final String DTS_TEST_PATH = "dts";
+
   public static final String HOST;
   public static final Integer PORT;
   public static final String SERVER;
-  public static final String D4TS_TEST_PATH = "d4ts/testfiles";
-  public static final String DTS_TEST_PATH = "dts";
   public static final String D4TS_PATH;
   public static final String DTS_PATH;
 
