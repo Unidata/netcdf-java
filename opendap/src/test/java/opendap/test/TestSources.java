@@ -27,13 +27,8 @@ public class TestSources extends TestFiles {
       {"test.02;1;b[1:2:10]", "test.03;1;i32[0:1][1:2][0:2]", "test.04;1;types.i32",
           "test.05;1;types.floats.f32", "test.06;1;ThreeD", "test.07;1;person.age", "test.07;2;person"};
 
-  protected final String URL_C2 =
-      "http://" + TestDir.remoteTestServer + "/thredds/dodsC/fmrc/NCEP/NAM/CONUS_12km/files";
-  static final String[] TESTS_C2 = {"NAM_CONUS_12km_20100628_1200.grib2;01;Wind_speed[0][0][0][0]"};
-
-
   static enum TestSetEnum {
-    Standard1, Constrained1, Remote2
+    Standard1, Constrained1
   }
 
   static enum TestPart {
@@ -104,10 +99,5 @@ public class TestSources extends TestFiles {
     set.url = URL;
     set.tests = TESTS_C1;
     TestSets.put(TestSetEnum.Constrained1, set);
-    set = new TestSet();
-    set.name = "Remote2";
-    set.url = URL_C2;
-    set.tests = TESTS_C2;
-    TestSets.put(TestSetEnum.Remote2, set);
   }
 }

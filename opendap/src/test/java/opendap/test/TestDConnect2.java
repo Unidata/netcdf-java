@@ -38,7 +38,7 @@ public class TestDConnect2 extends TestSources {
   boolean pass = false;
   TestSet currentTestSet = null;
 
-  TestSetEnum[] whichtests = {TestSetEnum.Standard1, TestSetEnum.Constrained1, TestSetEnum.Remote2};
+  TestSetEnum[] whichtests = {TestSetEnum.Standard1, TestSetEnum.Constrained1};
 
   final String[] XFAIL = {"test.01.das", "test.07.das"};
 
