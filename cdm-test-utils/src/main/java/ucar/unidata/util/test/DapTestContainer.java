@@ -7,7 +7,7 @@ import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.images.builder.ImageFromDockerfile;
 
 /**
- * Set up minimal d4ts and dts servers using TestContainers to use for testing opendap, dap4, and httpservices.
+ * Set up d4ts and dts servers using TestContainers to use for testing opendap, dap4, and httpservices.
  * Annotate tests that use this with @Category(NeedsDocker.class)
  **/
 public abstract class DapTestContainer {
@@ -37,6 +37,6 @@ public abstract class DapTestContainer {
     D4TS_PATH = SERVER + "/" + D4TS_TEST_PATH;
     DTS_PATH = SERVER + "/" + DTS_TEST_PATH;
 
-    logger.info("Starting d4ts and dts using test container at {}", SERVER);
+    logger.info("Starting d4ts and dts using docker TestContainer at {}", SERVER);
   }
 }
