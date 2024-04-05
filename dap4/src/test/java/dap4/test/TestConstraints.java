@@ -36,11 +36,6 @@ public class TestConstraints extends DapTestCommon implements Dap4ManifestIF {
   //////////////////////////////////////////////////
   // Constants
 
-  // Define the server to use
-  protected static final String SERVER = "remotetest.unidata.ucar.edu";
-  protected static final int SERVERPORT = -1;
-  protected static final String SERVERPATH = "d4ts/testfiles";
-
   // Define the input set location(s)
   protected static final String INPUTEXT = ".nc"; // note that the .dap is deliberately left off
   protected static final String INPUTQUERY = "?" + DapConstants.CHECKSUMTAG + "=false&";
