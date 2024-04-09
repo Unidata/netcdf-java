@@ -8,7 +8,6 @@ package dap4.test;
 import dap4.dap4lib.HttpDSP;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.write.Ncdump;
-import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.UnitTestCommon;
 
 import java.io.File;
