@@ -4,7 +4,6 @@ import static com.google.common.truth.Truth.assertThat;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.Array;
@@ -14,9 +13,7 @@ import ucar.nc2.dataset.NetcdfDataset;
 import java.lang.invoke.MethodHandles;
 import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.unidata.util.test.DapTestContainer;
-import ucar.unidata.util.test.category.NeedsDocker;
 
-@Category(NeedsDocker.class)
 public class TestSequence {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 

@@ -9,7 +9,6 @@ import dap4.core.util.DapConstants;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.slf4j.Logger;
@@ -20,7 +19,6 @@ import java.nio.file.NoSuchFileException;
 import java.util.ArrayList;
 import java.util.List;
 import ucar.unidata.util.test.DapTestContainer;
-import ucar.unidata.util.test.category.NeedsDocker;
 
 /**
  * This Test uses the JUNIT Version 4 parameterized test mechanism.
@@ -29,7 +27,6 @@ import ucar.unidata.util.test.category.NeedsDocker;
  * tests by adding fields to the TestCase object.
  */
 
-@Category(NeedsDocker.class)
 @RunWith(Parameterized.class)
 public class TestConstraints extends DapTestCommon implements Dap4ManifestIF {
 

@@ -7,7 +7,6 @@ import opendap.dap.DataDDS;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.unidata.util.test.Diff;
@@ -15,9 +14,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileWriter;
 import java.io.PrintStream;
 import java.lang.invoke.MethodHandles;
-import ucar.unidata.util.test.category.NeedsDocker;
 
-@Category(NeedsDocker.class)
 public class TestDConnect2 extends TestSources {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 

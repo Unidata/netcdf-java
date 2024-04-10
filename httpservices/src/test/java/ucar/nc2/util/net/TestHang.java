@@ -14,7 +14,6 @@ package ucar.nc2.util.net;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.slf4j.Logger;
@@ -27,14 +26,12 @@ import ucar.unidata.util.test.DapTestContainer;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.List;
-import ucar.unidata.util.test.category.NeedsDocker;
 
 /**
  * Test accessing a number of urls
  * with at least one being non-existent
  */
 
-@Category(NeedsDocker.class)
 @RunWith(Parameterized.class)
 public class TestHang {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());

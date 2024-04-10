@@ -42,13 +42,12 @@ import org.slf4j.LoggerFactory;
 import ucar.unidata.util.test.DapTestContainer;
 import ucar.unidata.util.test.UnitTestCommon;
 import java.lang.invoke.MethodHandles;
-import ucar.unidata.util.test.category.NeedsDocker;
 import ucar.unidata.util.test.category.NotPullRequest;
 
 /**
  * Test interaction of multi-threading with httpservices.
  */
-@Category({NotPullRequest.class, NeedsDocker.class})
+@Category(NotPullRequest.class)
 public class TestThreading extends UnitTestCommon {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 

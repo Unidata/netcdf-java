@@ -8,7 +8,6 @@ import org.testcontainers.images.builder.ImageFromDockerfile;
 
 /**
  * Set up d4ts and dts servers using TestContainers to use for testing opendap, dap4, and httpservices.
- * Annotate tests that use this with @Category(NeedsDocker.class)
  **/
 public abstract class DapTestContainer {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
