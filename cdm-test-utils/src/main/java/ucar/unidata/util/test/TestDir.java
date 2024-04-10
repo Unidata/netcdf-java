@@ -33,10 +33,6 @@ import java.util.*;
  *        <td>unidata.testdata.path
  *        <td>Property name for the path to the Unidata test data directory,
  *        e.g unidata.testdata.path=/share/testdata
- *        <tr>
- *        <td>remoteTestServerPropName
- *        <td>remotetest
- *        <td>Property name for the hostname of the C-library remote test server.
  *        </table>
  *        <p>
  *        <table>
@@ -58,11 +54,6 @@ import java.util.*;
  *        <td>NA
  *        <td>../cdm/src/test/data
  *        <td>Level 1 test data directory (distributed with code and MAY be used in Unidata nightly testing).
- *        <tr>
- *        <td>remoteTestServer
- *        <td>remotetestserver
- *        <td>remotetest.unidata.ucar.edu
- *        <td>The hostname of the test server for doing C library remote tests.
  *        </table>
  *
  */
@@ -93,22 +84,6 @@ public class TestDir {
   /** cdm-test data directory (distributed with code but depends on data not in github) */
   public static String cdmTestDataDir = "../cdm-test/src/test/data/";
 
-  //////////////////////////////////////////////////////////////////////
-  // Various Test Server machines
-  //////////////////////////////////////////////////////////////////////
-
-  // Remote Test server(s)
-  private static String remoteTestServerPropName = "remotetestserver";
-  public static String remoteTestServer = "localhost:8081";
-
-  // DAP 2 Test server (for testing)
-  public static String dap2TestServerPropName = "dts";
-  public static String dap2TestServer = "localhost:8080";
-
-  // DAP4 Test server (for testing)
-  public static String dap4TestServerPropName = "d4ts";
-  public static String dap4TestServer = "localhost:8080";
-
   static {
     testdataDir = System.getProperty(testdataDirPropName); // Check the system property.
 
@@ -129,20 +104,6 @@ public class TestDir {
     if (!file.exists() || !file.isDirectory()) {
       logger.warn("cdmUnitTest directory does not exist: {}", file.getAbsolutePath());
     }
-
-    // Initialize various server values
-
-    String rts = System.getProperty(remoteTestServerPropName);
-    if (rts != null && rts.length() > 0)
-      remoteTestServer = rts;
-
-    String dts = System.getProperty(dap2TestServerPropName);
-    if (dts != null && dts.length() > 0)
-      dap2TestServer = dts;
-
-    String d4ts = System.getProperty(dap4TestServerPropName);
-    if (d4ts != null && d4ts.length() > 0)
-      dap4TestServer = d4ts;
 
     AliasTranslator.addAlias("${cdmUnitTest}", cdmUnitTestDir);
   }

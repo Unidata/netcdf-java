@@ -39,7 +39,7 @@ import org.slf4j.LoggerFactory;
 import ucar.nc2.dods.DODSNetcdfFile;
 import ucar.nc2.write.CDLWriter;
 import ucar.unidata.util.test.Diff;
-import ucar.unidata.util.test.TestDir;
+import ucar.unidata.util.test.DapTestContainer;
 import ucar.unidata.util.test.UnitTestCommon;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -72,7 +72,7 @@ public class TestDuplicates extends UnitTestCommon {
   @Test
   public void testDuplicates() throws Exception {
     // Check if we are running against remote or localhost, or what.
-    String testserver = TestDir.dap2TestServer;
+    String testserver = DapTestContainer.SERVER;
 
     List<Result> results = new ArrayList<Result>();
     results.add(new Result("Top and field vars have same names", "http://" + testserver + "/dts/structdupname",

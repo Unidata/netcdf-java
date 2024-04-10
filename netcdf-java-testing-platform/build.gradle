@@ -31,6 +31,9 @@ dependencies {
     // cdm-test (GRIB related testing)
     api 'org.apache.commons:commons-compress:1.12'
 
+    // opendap, dap4, and httpservices
+    api 'org.testcontainers:testcontainers:1.19.7'
+
     // In Spock, allows mocking of classes (in addition to interfaces).
     // todo: remove with legacy in 6
     runtime 'cglib:cglib-nodep:3.2.4'

@@ -8,7 +8,6 @@ package dap4.test;
 import dap4.dap4lib.HttpDSP;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.write.Ncdump;
-import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.UnitTestCommon;
 
 import java.io.File;
@@ -101,8 +100,6 @@ abstract public class DapTestCommon extends UnitTestCommon {
   //////////////////////////////////////////////////
   // Instance variables
 
-  protected String d4tsserver = null;
-
   protected String title = "Dap4 Testing";
 
   public DapTestCommon() {
@@ -112,9 +109,6 @@ abstract public class DapTestCommon extends UnitTestCommon {
   public DapTestCommon(String name) {
     super(name);
     setSystemProperties();
-    this.d4tsserver = TestDir.dap4TestServer;
-    if (DEBUG)
-      System.err.println("DapTestCommon: d4tsServer=" + d4tsserver);
   }
 
   /**

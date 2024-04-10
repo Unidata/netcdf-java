@@ -40,7 +40,7 @@ import ucar.httpservices.HTTPFactory;
 import ucar.httpservices.HTTPMethod;
 import ucar.httpservices.HTTPMethodStream;
 import ucar.httpservices.HTTPSession;
-import ucar.unidata.util.test.TestDir;
+import ucar.unidata.util.test.DapTestContainer;
 import ucar.unidata.util.test.UnitTestCommon;
 import java.lang.invoke.MethodHandles;
 import java.nio.charset.Charset;
@@ -61,7 +61,7 @@ public class TestState extends UnitTestCommon {
 
   //////////////////////////////////////////////////
   // Constants
-  protected final String SESSIONURL = "http://" + TestDir.dap2TestServer + "/dts";
+  protected final String SESSIONURL = "http://" + DapTestContainer.DTS_PATH;
   protected final String TESTSOURCE1 = SESSIONURL + "/test.01.dds";
 
   public TestState() {

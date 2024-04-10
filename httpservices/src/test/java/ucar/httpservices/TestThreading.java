@@ -39,7 +39,7 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.unidata.util.test.TestDir;
+import ucar.unidata.util.test.DapTestContainer;
 import ucar.unidata.util.test.UnitTestCommon;
 import java.lang.invoke.MethodHandles;
 import ucar.unidata.util.test.category.NotPullRequest;
@@ -62,9 +62,9 @@ public class TestThreading extends UnitTestCommon {
   protected static final int DFALTTHREADS = 100;
   protected static final int DFALTMAXCONNS = (DFALTTHREADS / 2);
 
-  protected static final String DFALTSERVER = "http://" + TestDir.dap2TestServer;
+  protected static final String DFALTSERVER = "http://" + DapTestContainer.DTS_PATH;
 
-  protected static final String DFALTURLFMT = DFALTSERVER + "/dts/test.%02d";
+  protected static final String DFALTURLFMT = DFALTSERVER + "/test.%02d";
 
   static {
     HTTPSession.TESTING = true;

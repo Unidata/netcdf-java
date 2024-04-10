@@ -39,7 +39,7 @@ import org.slf4j.LoggerFactory;
 import ucar.httpservices.HTTPFactory;
 import ucar.httpservices.HTTPMethod;
 import ucar.httpservices.HTTPSession;
-import ucar.unidata.util.test.TestDir;
+import ucar.unidata.util.test.DapTestContainer;
 import ucar.unidata.util.test.UnitTestCommon;
 import java.io.InputStream;
 import java.lang.invoke.MethodHandles;
@@ -50,7 +50,7 @@ public class TestHTTPMethod extends UnitTestCommon {
   //////////////////////////////////////////////////
   // Constants
 
-  protected final String baseurl = "http://" + TestDir.dap2TestServer + "/dts";
+  protected final String baseurl = "http://" + DapTestContainer.DTS_PATH;
 
   static final String testcase = "test.01.dds";
 

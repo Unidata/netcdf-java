@@ -187,7 +187,6 @@ public class TestDConnect2 extends TestSources {
   public void testDConnect2() throws Exception {
 
     System.out.printf("*** Testing %s\n", TITLE);
-    System.out.println("    Note: The remote tests may be slow or even fail if the server is overloaded");
 
     for (TestSetEnum e : whichtests) {
       currentTestSet = TestSets.get(e);

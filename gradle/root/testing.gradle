@@ -28,6 +28,7 @@ ext {
   runSlowTests = System.properties['runSlowTests'] as boolean
   isRdaDataAvailable = System.properties['rdaDataAvailable'] as boolean
   isUcarNetworkAvailable = System.properties['ucarNetworkAvailable'] as boolean
+  skipDockerTests = System.properties['skipDockerTests'] as boolean
 
   // Option to run all tests regardless of environment or resource availability
   runAllTests = System.properties['runAllTestExceptIgnored'] as boolean
@@ -64,6 +65,10 @@ ext {
 
     if (!isUcarNetworkAvailable) {
       logger.warn 'Skipping all tests that require access to the UCAR Network.'
+    }
+
+    if (skipDockerTests) {
+      logger.warn 'Skipping all tests that require docker.'
     }
   }
 }

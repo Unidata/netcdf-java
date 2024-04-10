@@ -46,6 +46,17 @@ tasks.withType(Test).all {
       if (!isUcarNetworkAvailable) {
         excludeCategories 'ucar.unidata.util.test.category.NeedsUcarNetwork'
       }
+
+      if (skipDockerTests) {
+        // dap4
+        exclude 'dap4/test/**'
+        // httpservices
+        exclude 'ucar/httpservices/**'
+        exclude 'ucar/nc2/util/net/**'
+        // opendap
+        exclude 'opendap/test/**'
+        exclude 'ucar/nc2/dods/**'
+      }
     }
   }
 }

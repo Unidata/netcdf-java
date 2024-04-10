@@ -22,7 +22,7 @@ import ucar.httpservices.HTTPException;
 import ucar.httpservices.HTTPFactory;
 import ucar.httpservices.HTTPMethod;
 import ucar.httpservices.HTTPSession;
-import ucar.unidata.util.test.TestDir;
+import ucar.unidata.util.test.DapTestContainer;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.List;
@@ -42,9 +42,9 @@ public class TestHang {
 
   static private HTTPSession session;
 
-  protected static final String server = "http://" + TestDir.dap2TestServer;
+  protected static final String server = "http://" + DapTestContainer.DTS_PATH;
 
-  protected static final String url = server + "/dts/test.%02d.dds";
+  protected static final String url = server + "/test.%02d.dds";
 
   static boolean isxfail(int x) {
     for (Integer i : XFAIL) {

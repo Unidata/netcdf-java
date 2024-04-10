@@ -40,7 +40,7 @@ import ucar.nc2.dods.DODSNetcdfFile;
 import ucar.nc2.util.rc.RC;
 import ucar.nc2.write.CDLWriter;
 import ucar.unidata.util.test.Diff;
-import ucar.unidata.util.test.TestDir;
+import ucar.unidata.util.test.DapTestContainer;
 import ucar.unidata.util.test.UnitTestCommon;
 import java.io.*;
 import java.lang.invoke.MethodHandles;
@@ -70,7 +70,7 @@ public class TestGroups extends UnitTestCommon {
   public TestGroups() throws Exception {
     super("DAP Group tests");
     // Check if user specified server.
-    testserver = TestDir.dap2TestServer;
+    testserver = DapTestContainer.SERVER;
     definetestcases();
   }
 

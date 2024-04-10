@@ -9,7 +9,6 @@ import java.net.URL;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.unidata.util.test.TestDir;
 
 /** Examine how java.net.URI brakes up a uri string */
 public class TestUriCreate {
@@ -47,7 +46,7 @@ public class TestUriCreate {
 
   @Test
   public void testDods() throws URISyntaxException {
-    String uriString = "http://" + TestDir.dap2TestServer + "/dts/test.53.dods?types[0:1:9]";
+    String uriString = "http://localhost:8080/dts/test.53.dods?types[0:1:9]";
     showUri(uriString);
   }
 

@@ -15,6 +15,7 @@ dependencies {
   implementation 'junit:junit'
   implementation 'org.slf4j:slf4j-api'
   implementation 'com.google.re2j:re2j'
+  implementation 'org.testcontainers:testcontainers'
 
   testRuntimeOnly 'ch.qos.logback:logback-classic'
 }

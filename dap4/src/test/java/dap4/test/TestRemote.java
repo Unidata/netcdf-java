@@ -8,7 +8,6 @@ package dap4.test;
 import dap4.core.util.DapConstants;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -19,6 +18,7 @@ import java.lang.invoke.MethodHandles;
 import java.nio.file.NoSuchFileException;
 import java.util.ArrayList;
 import java.util.List;
+import ucar.unidata.util.test.DapTestContainer;
 
 /**
  * This Test uses the JUNIT Version 4 parameterized test mechanism.
@@ -27,17 +27,11 @@ import java.util.List;
  * tests by adding fields to the TestCase object.
  */
 
-@Ignore("Disable while RemoteTest server is not working")
 @RunWith(Parameterized.class)
 public class TestRemote extends DapTestCommon implements Dap4ManifestIF {
 
   //////////////////////////////////////////////////
   // Constants
-
-  // Define the server to use
-  protected static final String SERVER = "remotetest.unidata.ucar.edu";
-  protected static final int SERVERPORT = -1;
-  protected static final String SERVERPATH = "d4ts/testfiles";
 
   // Define the input set location(s)
   protected static final String INPUTEXT = ".nc"; // note that the .dap is deliberately left off
@@ -61,7 +55,8 @@ public class TestRemote extends DapTestCommon implements Dap4ManifestIF {
   public static Dap4Server server;
 
   static {
-    server = new Dap4Server("remotetest", SERVER, SERVERPORT, SERVERPATH);
+    server = new Dap4Server(DapTestContainer.NAME, DapTestContainer.HOST, DapTestContainer.PORT,
+        DapTestContainer.D4TS_TEST_PATH);
     Dap4Server.register(true, server);
     resourceroot = getResourceRoot();
   }

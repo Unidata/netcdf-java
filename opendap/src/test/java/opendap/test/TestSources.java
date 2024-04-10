@@ -2,7 +2,7 @@ package opendap.test;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.unidata.util.test.TestDir;
+import ucar.unidata.util.test.DapTestContainer;
 import java.io.File;
 import java.io.FileReader;
 import java.lang.invoke.MethodHandles;
@@ -15,7 +15,7 @@ public class TestSources extends TestFiles {
   //////////////////////////////////////////////////
   // Remote test info
 
-  public static final String URL = "http://" + TestDir.dap2TestServer + "/dts";
+  public static final String URL = "http://" + DapTestContainer.DTS_PATH;
 
   // These shorter tests are always run
   static final String[] TESTS_S1 =

@@ -39,7 +39,7 @@ import org.slf4j.LoggerFactory;
 import ucar.nc2.dods.DODSNetcdfFile;
 import ucar.nc2.write.CDLWriter;
 import ucar.unidata.util.test.Diff;
-import ucar.unidata.util.test.TestDir;
+import ucar.unidata.util.test.DapTestContainer;
 import ucar.unidata.util.test.UnitTestCommon;
 import java.io.*;
 import java.lang.invoke.MethodHandles;
@@ -68,7 +68,7 @@ public class TestMisc extends UnitTestCommon {
   public TestMisc() {
     setTitle("DAP Misc tests");
     // Check if we are running against remote or localhost, or what.
-    testserver = TestDir.dap2TestServer;
+    testserver = DapTestContainer.SERVER;
     definetestcases();
   }
 
@@ -116,6 +116,9 @@ public class TestMisc extends UnitTestCommon {
   }
 
   boolean diff(Testcase testcase, String captured) throws Exception {
+    // don't match on host and port
+    captured = captured.replaceAll("dods://.*:\\d+/", "dods://localhost:8080/");
+
     // See if the cdl is in a file or a string.
     if (System.getProperty("nodiff") != null)
       return true;

@@ -16,6 +16,7 @@ import ucar.nc2.dataset.DatasetUrl;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.List;
+import ucar.unidata.util.test.DapTestContainer;
 
 /**
  * This Test uses the JUNIT Version 4 parameterized test mechanism.
@@ -36,9 +37,9 @@ public class TestDap4Url extends DapTestCommon implements Dap4ManifestIF {
   // Constants
 
   // Legal url formats
-  protected static String[] urls = {"https://remotetest.unidata.ucar.edu/d4ts/testfiles/test_one_var.nc#dap4",
-      "dap4://remotetest.unidata.ucar.edu/d4ts/testfiles/test_one_var.nc",
-      "https://remotetest.unidata.ucar.edu/d4ts/testfiles/test_one_var.nc",};
+  protected static String[] urls = {"http://" + DapTestContainer.D4TS_PATH + "test_one_var.nc#dap4",
+      "dap4://" + DapTestContainer.D4TS_PATH + "test_one_var.nc",
+      "http://" + DapTestContainer.D4TS_PATH + "test_one_var.nc",};
 
   //////////////////////////////////////////////////
   // Static Fields

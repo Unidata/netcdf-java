@@ -30,7 +30,6 @@ buildscript {
     classpath buildPlugins.shadow
     classpath buildPlugins.sonarqube
     classpath buildPlugins.spotless
-    classpath buildPlugins.gretty
     classpath buildPlugins.protobuf
     classpath buildPlugins.depcheck
     classpath buildPlugins.nexus
@@ -91,13 +90,6 @@ ext {
   // Will hold the list of projects that apply the java plugin
   // Used by :docs (javadocAll), project wide coverage reports, and sonarqube
   javaProjects = []
-
-  // Will hold the list of projects that apply the maven-publish plugin
-  // A project is registered when the gradle/any/publishing.gradle script plugin
-  // is applied. We track these so that we can be sure to remove any dependencies added
-  // by the gretty plugin (for example, httpservices certainly does not depend on javax.servlet-api,
-  // spring-boot-starter-tomcat, or spring-boot-starter-jetty :-/
-  publishedProjects = []
 }
 
 gradle.projectsEvaluated {
