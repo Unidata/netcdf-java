@@ -810,9 +810,11 @@ public class NcmlReader {
 
     String nameInFile = dimElem.getAttributeValue("orgName") != null ? dimElem.getAttributeValue("orgName") : name;
 
-    // LOOK this is wrong, groupBuilder may already have the dimension.
     // see if it already exists
-    Dimension dim = (refGroup == null) ? null : refGroup.findDimension(nameInFile);
+    Optional<Dimension> dimFromAgg = groupBuilder.findDimension(nameInFile);
+    Dimension dim =
+        (refGroup == null || dimFromAgg.isPresent()) ? dimFromAgg.orElse(null) : refGroup.findDimension(nameInFile);
+
     if (dim == null) { // nope - create it
       String lengthS = dimElem.getAttributeValue("length");
       if (lengthS == null) {
