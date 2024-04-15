@@ -43,4 +43,34 @@ public class TestNcmlModifyDim {
       assertThat(dataIter.getIntNext()).isEqualTo(18);
     }
   }
+
+  @Test
+  public void shouldRenameDimInAggregation() throws IOException {
+    final String filename = "file:./" + TestNcmlRead.topDir + "aggregationRenameDim.xml";
+    checkDimIsRenamed(filename);
+  }
+
+  @Test
+  public void shouldRenameDimInAggregationScan() throws IOException {
+    final String filename = "file:./" + TestNcmlRead.topDir + "aggregationScanRenameDim.xml";
+    checkDimIsRenamed(filename);
+  }
+
+  private void checkDimIsRenamed(String filename) throws IOException {
+    try (NetcdfFile ncfile = NcmlReader.readNcml(filename, null, null).build()) {
+      Dimension newDim = ncfile.findDimension("newTime");
+      assertThat(newDim).isNotNull();
+
+      Dimension oldDim = ncfile.findDimension("time");
+      assertThat(oldDim).isNull();
+
+      Variable newTime = ncfile.findVariable("newTime");
+      assertThat((Object) newTime).isNotNull();
+      Array data = newTime.read();
+      assertThat(data.getSize()).isEqualTo(59);
+
+      Variable time = ncfile.findVariable("time");
+      assertThat((Object) time).isNull();
+    }
+  }
 }

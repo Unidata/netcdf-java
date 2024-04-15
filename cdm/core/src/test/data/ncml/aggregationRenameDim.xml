@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2">
+
+  <dimension name="newTime" orgName="time"/>
+  <variable name="newTime" orgName="time" />
+  <variable name="newTime" shape="newTime" />
+  <variable name="P" shape="newTime lat lon" />
+  <variable name="T" shape="newTime lat lon" />
+
+  <aggregation dimName="time" type="joinExisting">
+    <netcdf location="nc/jan.nc"/>
+    <netcdf location="nc/feb.nc"/>
+  </aggregation>
+</netcdf>
