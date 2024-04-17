@@ -1131,7 +1131,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
   }
   //////////////////////////////////////////////////////////////////////////
 
-  private static class Vinfo {
+  static class Vinfo {
     final Group4 g4;
     int varid, typeid;
     UserType utype; // may be null
@@ -1143,7 +1143,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     }
   }
 
-  private static class Group4 {
+  static class Group4 {
     final int grpid;
     final Group g;
     final Group4 parent;
