@@ -6,8 +6,6 @@ apply from: "$rootDir/gradle/any/dependencies.gradle"
 apply from: "$rootDir/gradle/any/java-library.gradle"
 apply from: "$rootDir/gradle/any/protobuf.gradle"
 
-apply plugin: 'groovy'  // For Spock tests.
-
 dependencies {
   api enforcedPlatform(project(':netcdf-java-platform'))
   implementation 'commons-math:commons-math'
@@ -32,9 +30,7 @@ dependencies {
   testImplementation 'com.google.truth:truth'
   testImplementation 'commons-io:commons-io'
   testImplementation 'junit:junit'
-  testImplementation 'org.codehaus.groovy:groovy-all' // for Spock.
   testImplementation 'org.mockito:mockito-core'
-  testImplementation 'org.spockframework:spock-core'
 
   testRuntimeOnly 'ch.qos.logback:logback-classic'
 }

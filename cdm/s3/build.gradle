@@ -4,8 +4,6 @@ ext.title = 'CDM S3 support library'
 apply from: "$rootDir/gradle/any/dependencies.gradle"
 apply from: "$rootDir/gradle/any/java-library.gradle"
 
-apply plugin: 'groovy'  // For Spock tests.
-
 dependencies {
   api enforcedPlatform(project(':netcdf-java-platform'))
   testImplementation enforcedPlatform(project(':netcdf-java-testing-platform'))

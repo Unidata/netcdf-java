@@ -3,7 +3,6 @@ ext.title = 'UI base library'
 
 apply from: "$rootDir/gradle/any/dependencies.gradle"
 apply from: "$rootDir/gradle/any/java-library.gradle"
-apply plugin: 'groovy'  // For Spock tests.
 
 dependencies {
   compile enforcedPlatform(project(':netcdf-java-platform'))
@@ -32,8 +31,6 @@ dependencies {
   testImplementation project(':cdm:cdm-core')
   testImplementation project(':cdm-test-utils')
 
-  testImplementation 'org.codehaus.groovy:groovy-all' // for spock
-  testImplementation 'org.spockframework:spock-core'
   testImplementation 'commons-io:commons-io'
   testImplementation 'org.mockito:mockito-core'
   testImplementation 'com.google.truth:truth'
