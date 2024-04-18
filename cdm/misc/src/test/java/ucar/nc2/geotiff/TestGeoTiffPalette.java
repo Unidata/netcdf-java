@@ -68,10 +68,10 @@ public class TestGeoTiffPalette {
 
     // Explicitly spelling out the RGB channel values [0, 255]
     // because there were some off-by-one errors in initial development.
-    int[] expectedRGBs = new int[] {0, 170, 255,  // #00AAff
-                                    21, 20, 18,   // #151412
-                                    222, 1, 171,  // #DE01aB
-                                    16, 10, 187}; // #100ABB
+    int[] expectedRGBs = new int[] {0, 170, 255, // #00AAff
+        21, 20, 18, // #151412
+        222, 1, 171, // #DE01aB
+        16, 10, 187}; // #100ABB
 
     int[] expectedTable = new int[3 * 256];
     // The colortable uses black for the default color as per above,
