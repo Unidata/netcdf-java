@@ -4,7 +4,6 @@ ext.url = 'https://www.unidata.ucar.edu/software/netcdf/'
 
 apply from: "$rootDir/gradle/any/dependencies.gradle"
 apply from: "$rootDir/gradle/any/java-library.gradle"
-apply plugin: 'groovy'  // For Spock tests.
 apply plugin: 'jacoco'
 
 dependencies {
@@ -18,8 +17,6 @@ dependencies {
   testImplementation project(':cdm-test-utils')
 
   testImplementation 'com.google.truth:truth'
-  testImplementation 'org.codehaus.groovy:groovy-all' // for spock
-  testImplementation 'org.spockframework:spock-core'
 
   testRuntimeOnly 'ch.qos.logback:logback-classic'
 }
@@ -31,7 +28,6 @@ dependencies {
 
 sourceSets {
   unloadedTest {
-    groovy.srcDir file('src/unloadedTest/groovy')
     resources.srcDir file('src/unloadedTest/resources')
     compileClasspath += sourceSets.main.output + configurations.testCompileClasspath
     runtimeClasspath += output + sourceSets.main.output + configurations.testRuntimeClasspath

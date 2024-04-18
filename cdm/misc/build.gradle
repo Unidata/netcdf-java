@@ -5,8 +5,6 @@ apply from: "$rootDir/gradle/any/dependencies.gradle"
 apply from: "$rootDir/gradle/any/java-library.gradle"
 apply from: "$rootDir/gradle/any/protobuf.gradle"
 
-apply plugin: 'groovy'  // For Spock tests.
-
 dependencies {
   api enforcedPlatform(project(':netcdf-java-platform'))
   testImplementation enforcedPlatform(project(':netcdf-java-testing-platform'))
@@ -22,9 +20,6 @@ dependencies {
   testCompile project(':grib')
 
   testImplementation project(':cdm-test-utils')
-
-  testImplementation 'org.codehaus.groovy:groovy-all' // for spock
-  testImplementation 'org.spockframework:spock-core'
 
   testImplementation 'commons-io:commons-io'
   testImplementation 'org.mockito:mockito-core'

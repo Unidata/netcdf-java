@@ -5,8 +5,6 @@ ext.url = 'https://www.unidata.ucar.edu/software/tds/v4.6/TDS.html'
 apply from: "$rootDir/gradle/any/dependencies.gradle"
 apply from: "$rootDir/gradle/any/java-library.gradle"
 
-apply plugin: 'groovy'  // For Spock tests.
-
 dependencies {
   api enforcedPlatform(project(':netcdf-java-platform'))
   testImplementation enforcedPlatform(project(':netcdf-java-testing-platform'))
@@ -24,10 +22,5 @@ dependencies {
   compile 'com.amazonaws:aws-java-sdk-s3'  // For CrawlableDatasetAmazonS3.
 
   testImplementation project(':cdm-test-utils')
-  // These are all for Spock.
-  testImplementation 'org.spockframework:spock-core'
-  testImplementation 'org.codehaus.groovy:groovy-all'
   testRuntimeOnly 'ch.qos.logback:logback-classic'
-  testRuntimeOnly 'cglib:cglib-nodep'
-  testRuntimeOnly 'org.objenesis:objenesis'
 }

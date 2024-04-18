@@ -58,7 +58,7 @@ gradle.projectsEvaluated {
   allprojects {
     sonarqube {
       properties {
-        properties['sonar.inclusions'] = '**/*.java, **/*.groovy'  // Only scan Java and Groovy files.
+        properties['sonar.inclusions'] = '**/*.java'  // Only scan Java files.
         properties['sonar.exclusions'] = '**/*Proto.java'          // Don't analyze protobuf-generated code.
 
         // We're already reporting test failures and code coverage in Jenkins; we don't need to do it in Sonar
