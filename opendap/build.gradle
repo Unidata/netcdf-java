@@ -19,9 +19,9 @@ dependencies {
 
   implementation 'com.google.guava:guava'
 
-  compile 'org.jdom:jdom2'
-  compile 'com.google.code.findbugs:jsr305'
-  compile 'org.slf4j:slf4j-api'
+  implementation 'org.jdom:jdom2'
+  implementation 'com.google.code.findbugs:jsr305'
+  implementation 'org.slf4j:slf4j-api'
 
   testImplementation project(':cdm-test-utils')
   testImplementation 'com.google.truth:truth'

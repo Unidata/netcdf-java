@@ -9,29 +9,29 @@ apply from: "$rootDir/gradle/any/dependencies.gradle"
 apply from: "$rootDir/gradle/any/java-library.gradle"
 
 dependencies {
-  compile enforcedPlatform(project(':netcdf-java-platform'))
+  implementation enforcedPlatform(project(':netcdf-java-platform'))
   testImplementation enforcedPlatform(project(':netcdf-java-testing-platform'))
 
   // todo: a lot of these could probably be runtimeOnly
-  compile project(':cdm:cdm-core')
-  compile project(':cdm:cdm-image')    // things that depend on java.awt
-  compile project(':cdm:cdm-misc')     // misc iosps
-  compile project(':cdm:cdm-radial')   // radial data
-  compile project(':bufr')
-  compile project(':grib')
-  compile project(':httpservices')
-  compile project(':netcdf4')
-  compile project(':opendap')
-  compile project(':dap4')
-  compile project(':uibase')
-  compile project(':visad:cdm-mcidas') // For Gempak IOSPs.
-  compile project(':waterml')
+  implementation project(':cdm:cdm-core')
+  implementation project(':cdm:cdm-image')    // things that depend on java.awt
+  implementation project(':cdm:cdm-misc')     // misc iosps
+  implementation project(':cdm:cdm-radial')   // radial data
+  implementation project(':bufr')
+  implementation project(':grib')
+  implementation project(':httpservices')
+  implementation project(':netcdf4')
+  implementation project(':opendap')
+  implementation project(':dap4')
+  implementation project(':uibase')
+  implementation project(':visad:cdm-mcidas') // For Gempak IOSPs.
+  implementation project(':waterml')
 
   // constrained by netcdf-java-platform
-  compile 'org.jdom:jdom2'
-  compile 'org.apache.httpcomponents:httpclient'
-  compile 'com.google.re2j:re2j'
-  compile 'org.slf4j:slf4j-api'
+  implementation 'org.jdom:jdom2'
+  implementation 'org.apache.httpcomponents:httpclient'
+  implementation 'com.google.re2j:re2j'
+  implementation 'org.slf4j:slf4j-api'
 
   testImplementation project(':cdm-test-utils')
   testImplementation 'junit:junit'

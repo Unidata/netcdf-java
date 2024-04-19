@@ -10,16 +10,16 @@ apply from: "$rootDir/gradle/any/testing.gradle"
 dependencies {
   testImplementation enforcedPlatform(project(':netcdf-java-testing-platform'))
 
-  testCompile project(':cdm:cdm-core')
-  testCompile project(':cdm:cdm-s3')
-  testCompile project(':netcdf4')
-  testCompile project(':opendap')
-  testCompile project(':cdm-test-utils')
-  testCompile project(':bufr')
-  testCompile project(':grib')
-  testCompile 'org.slf4j:slf4j-api'
-  testCompile 'junit:junit'
-  testCompile 'com.google.truth:truth'
+  testImplementation project(':cdm:cdm-core')
+  testImplementation project(':cdm:cdm-s3')
+  testImplementation project(':netcdf4')
+  testImplementation project(':opendap')
+  testImplementation project(':cdm-test-utils')
+  testImplementation project(':bufr')
+  testImplementation project(':grib')
+  testImplementation 'org.slf4j:slf4j-api'
+  testImplementation 'junit:junit'
+  testImplementation 'com.google.truth:truth'
 
   testRuntimeOnly 'ch.qos.logback:logback-classic'
 }

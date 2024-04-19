@@ -11,15 +11,15 @@ dependencies {
 
   api project(':cdm:cdm-core')
 
-  compile project(':grib')
-  compile project(':opendap')
+  implementation project(':grib')
+  implementation project(':opendap')
 
-  compile 'com.google.guava:guava'
-  compile 'org.jdom:jdom2'
-  compile 'com.google.code.findbugs:jsr305'
-  compile 'org.slf4j:slf4j-api'
+  implementation 'com.google.guava:guava'
+  implementation 'org.jdom:jdom2'
+  implementation 'com.google.code.findbugs:jsr305'
+  implementation 'org.slf4j:slf4j-api'
 
-  compile 'com.amazonaws:aws-java-sdk-s3'  // For CrawlableDatasetAmazonS3.
+  implementation 'com.amazonaws:aws-java-sdk-s3'  // For CrawlableDatasetAmazonS3.
 
   testImplementation project(':cdm-test-utils')
   testRuntimeOnly 'ch.qos.logback:logback-classic'
