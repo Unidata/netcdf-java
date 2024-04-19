@@ -223,7 +223,7 @@ public class GeotiffWriter implements Closeable {
       float max = (float) (dataMinMax.max);
       geotiff.addTag(new IFDEntry(Tag.SMinSampleValue, FieldType.FLOAT).setValue(min));
       geotiff.addTag(new IFDEntry(Tag.SMaxSampleValue, FieldType.FLOAT).setValue(max));
-      geotiff.addTag(new IFDEntry(Tag.GDALNoData, FieldType.FLOAT).setValue(min - 1.f));
+      geotiff.addTag(new IFDEntry(Tag.GDALNoData, FieldType.ASCII).setValue(String.valueOf(min - 1.f)));
     }
 
     /*
