@@ -13,6 +13,7 @@ dependencies {
   implementation project(':cdm:cdm-core')
   implementation 'net.java.dev.jna:jna'
   implementation 'org.slf4j:slf4j-api'
+  implementation 'com.google.guava:guava'
 
   testImplementation project(':cdm-test-utils')
 

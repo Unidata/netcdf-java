@@ -13,6 +13,7 @@ dependencies {
 
   implementation project(':grib')
   implementation project(':opendap')
+  implementation project(':udunits')
 
   implementation 'com.google.guava:guava'
   implementation 'org.jdom:jdom2'

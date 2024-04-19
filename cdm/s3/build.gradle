@@ -23,6 +23,8 @@ dependencies {
 
   implementation 'software.amazon.awssdk:apache-client'
   implementation 'com.google.code.findbugs:jsr305'
+  implementation 'com.google.guava:guava'
+  implementation 'com.google.re2j:re2j'
 
   runtimeOnly('software.amazon.awssdk:sts') {
     // see above comment about awssdk and netty-nio-client

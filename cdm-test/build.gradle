@@ -18,12 +18,14 @@ dependencies {
   testImplementation project(':grib')
   testImplementation project(':netcdf4')
   testImplementation project(':cdm-test-utils')
+  testImplementation project(':udunits')
 
   testImplementation 'commons-io:commons-io'
   testImplementation 'org.apache.commons:commons-compress'
   testImplementation 'edu.ucar:jj2000'
   testImplementation 'org.jdom:jdom2'
   testImplementation 'com.google.guava:guava'
+  testImplementation 'com.google.re2j:re2j'
   testImplementation 'software.amazon.awssdk:s3'
   testImplementation 'com.google.truth:truth'
   testImplementation 'org.slf4j:slf4j-api'

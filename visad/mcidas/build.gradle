@@ -11,6 +11,7 @@ dependencies {
   api project(':cdm:cdm-core')
 
   implementation project(':grib')
+  implementation project(':udunits')
 
   implementation 'edu.wisc.ssec:visad-mcidas-slim-ucar-ns'
   implementation 'com.google.guava:guava'

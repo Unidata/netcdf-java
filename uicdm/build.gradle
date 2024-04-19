@@ -23,13 +23,16 @@ dependencies {
   implementation project(':netcdf4')
   implementation project(':opendap')
   implementation project(':dap4')
+  implementation project(':udunits')
   implementation project(':uibase')
   implementation project(':visad:cdm-mcidas') // For Gempak IOSPs.
   implementation project(':waterml')
 
   // constrained by netcdf-java-platform
+  implementation 'org.apache.xmlbeans:xmlbeans'
   implementation 'org.jdom:jdom2'
   implementation 'org.apache.httpcomponents:httpclient'
+  implementation 'com.google.protobuf:protobuf-java'
   implementation 'com.google.re2j:re2j'
   implementation 'org.slf4j:slf4j-api'
 

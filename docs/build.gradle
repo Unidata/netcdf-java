@@ -17,6 +17,9 @@ dependencies {
   testImplementation project(':cdm-test-utils')
   testImplementation project(':bufr')
   testImplementation project(':grib')
+  testImplementation project(':udunits')
+
+  testImplementation 'org.jdom:jdom2'
   testImplementation 'org.slf4j:slf4j-api'
   testImplementation 'junit:junit'
   testImplementation 'com.google.truth:truth'

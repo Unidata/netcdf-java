@@ -21,6 +21,7 @@ dependencies {
   implementation 'org.slf4j:slf4j-api'
 
   testImplementation project(':cdm-test-utils')
+  testImplementation project(':udunits')
 
   testImplementation 'com.google.truth:truth'
   testImplementation 'org.jsoup:jsoup'
