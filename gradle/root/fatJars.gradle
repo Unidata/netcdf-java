@@ -68,11 +68,6 @@ dependencies {
 def fatJarTasks = []
 
 fatJarTasks << tasks.create(name: 'buildNcIdv', type: ShadowJar) {
-  // it looks like ShadowJar needs us to set both
-  // baseName and setArchivesBaseName even though
-  // baseName is deprecated.
-  // todo: keep an eye on ShadowJar to see when we can stop setting baseName in these tasks
-  baseName = 'ncIdv'
   setArchiveBaseName('ncIdv')
 
   configurations = [project.configurations.ncIdv]
@@ -86,7 +81,6 @@ fatJarTasks << tasks.create(name: 'buildNcIdv', type: ShadowJar) {
 }
 
 fatJarTasks << tasks.create(name: 'buildNetcdfAll', type: ShadowJar) {
-  baseName = 'netcdfAll'
   setArchiveBaseName('netcdfAll')
 
   configurations = [project.configurations.netcdfAll]
@@ -97,7 +91,6 @@ fatJarTasks << tasks.create(name: 'buildNetcdfAll', type: ShadowJar) {
 }
 
 fatJarTasks << tasks.create(name: 'buildToolsUI', type: ShadowJar) {
-  baseName = 'toolsUI'
   setArchiveBaseName('toolsUI')
   configurations = [project.configurations.toolsUI]
 
