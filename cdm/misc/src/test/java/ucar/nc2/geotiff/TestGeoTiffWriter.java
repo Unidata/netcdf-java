@@ -52,18 +52,18 @@ public class TestGeoTiffWriter {
     List<Object[]> result = new ArrayList<>();
 
     for (int greyscale = 0; greyscale < 2; greyscale++) {
-      result
-        .add(new Object[] {TestDir.cdmUnitTestDir + "gribCollections/tp/GFS_Global_onedeg_ana_20150326_0600.grib2.ncx4",
-            FeatureType.GRID, "Temperature_sigma", greyscale == 1}); // SRC // TP
+      result.add(
+          new Object[] {TestDir.cdmUnitTestDir + "gribCollections/tp/GFS_Global_onedeg_ana_20150326_0600.grib2.ncx4",
+              FeatureType.GRID, "Temperature_sigma", greyscale == 1}); // SRC // TP
       result.add(new Object[] {TestDir.cdmUnitTestDir + "gribCollections/tp/GFSonedega.ncx4", FeatureType.GRID,
-        "Pressure_surface", greyscale == 1}); // TP
+          "Pressure_surface", greyscale == 1}); // TP
       result.add(new Object[] {TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx4", FeatureType.GRID,
-        "Best/Soil_temperature_depth_below_surface_layer", greyscale == 1}); // TwoD Best
+          "Best/Soil_temperature_depth_below_surface_layer", greyscale == 1}); // TwoD Best
       result.add(new Object[] {TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx4", FeatureType.FMRC,
-        "TwoD/Soil_temperature_depth_below_surface_layer", greyscale == 1}); // TwoD
+          "TwoD/Soil_temperature_depth_below_surface_layer", greyscale == 1}); // TwoD
 
       result.add(new Object[] {TestDir.cdmUnitTestDir + "ft/coverage/testCFwriter.nc", FeatureType.GRID, "Temperature",
-        greyscale == 1});
+          greyscale == 1});
     }
 
     return result;
