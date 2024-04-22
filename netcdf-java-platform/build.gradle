@@ -23,7 +23,7 @@ dependencies {
     api 'com.google.guava:guava:32.0.1-jre'
     api 'com.google.re2j:re2j:1.3'
     api 'org.jdom:jdom2:2.0.6.1'
-    api 'joda-time:joda-time:2.10.3' // replace by javax.time
+    api 'joda-time:joda-time:2.12.7'
 
     // netcdf4, dap4
     // Tricky dependency here. We need to make sure that we keep in-line with the version
