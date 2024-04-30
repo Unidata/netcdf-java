@@ -11,6 +11,7 @@ import java.net.URISyntaxException;
 import java.util.Iterator;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
@@ -94,6 +95,7 @@ public class TestControllerS3 {
     checkInventoryTopCountExact(uri, LIMIT_COUNT_MAX);
   }
 
+  @Ignore("Failing due to expired certificate on OSDC")
   @Test
   public void testGetInventoryTopBucketGcsNoDelimiterOsdc() throws URISyntaxException {
     CdmS3Uri uri = new CdmS3Uri(S3TestsCommon.TOP_LEVEL_OSDC_BUCKET);
@@ -114,6 +116,7 @@ public class TestControllerS3 {
     checkInventoryTopCountExact(uri, 0);
   }
 
+  @Ignore("Failing due to expired certificate on OSDC")
   @Test
   public void testGetInventoryTopBucketDelimiterOsdc() throws URISyntaxException {
     CdmS3Uri uri = new CdmS3Uri(S3TestsCommon.TOP_LEVEL_OSDC_BUCKET + DELIMITER_FRAGMENT);
@@ -137,6 +140,7 @@ public class TestControllerS3 {
     }
   }
 
+  @Ignore("Failing due to expired certificate on OSDC")
   @Test
   public void testGetInventoryTopBucketAndPrefixSingleMatchOsdc() throws URISyntaxException {
     for (String delimiter : DELIMITER_FRAGMENTS) {
@@ -164,6 +168,7 @@ public class TestControllerS3 {
     }
   }
 
+  @Ignore("Failing due to expired certificate on OSDC")
   @Test
   public void testGetInventoryTopBucketAndPrefixMultiMatchOsdc() throws URISyntaxException {
     for (String delimiter : DELIMITER_FRAGMENTS) {
@@ -192,6 +197,7 @@ public class TestControllerS3 {
     }
   }
 
+  @Ignore("Failing due to expired certificate on OSDC")
   @Test
   public void testGetInventoryAllBucketOsdc() throws URISyntaxException {
     for (String delimiter : DELIMITER_FRAGMENTS) {
@@ -216,6 +222,7 @@ public class TestControllerS3 {
     }
   }
 
+  @Ignore("Failing due to expired certificate on OSDC")
   @Test
   public void testGetInventoryAllBucketAndPrefixSingleMatchOsdc() throws URISyntaxException {
     for (String delimiter : DELIMITER_FRAGMENTS) {
@@ -243,6 +250,7 @@ public class TestControllerS3 {
     }
   }
 
+  @Ignore("Failing due to expired certificate on OSDC")
   @Test
   public void testGetInventoryAllBucketAndPrefixMultiMatchOsdc() throws URISyntaxException {
     for (String delimiter : DELIMITER_FRAGMENTS) {
@@ -267,6 +275,7 @@ public class TestControllerS3 {
     checkSubdirsCount(uri, 24);
   }
 
+  @Ignore("Failing due to expired certificate on OSDC")
   @Test
   public void testGetSubdirsWithDelimiterOsdc() throws URISyntaxException {
     CdmS3Uri uri =
@@ -286,6 +295,7 @@ public class TestControllerS3 {
     checkSubdirsCount(uri, 0);
   }
 
+  @Ignore("Failing due to expired certificate on OSDC")
   @Test
   public void testGetSubdirsWithoutDelimiterOsdc() throws URISyntaxException {
     CdmS3Uri uri = new CdmS3Uri(S3TestsCommon.TOP_LEVEL_OSDC_BUCKET + "?" + getOsdcKey(G16_KEY_SINGLE_DAY));
