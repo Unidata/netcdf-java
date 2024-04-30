@@ -16,6 +16,7 @@ import java.util.Formatter;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
@@ -325,6 +326,7 @@ public class TestS3Read {
    *
    * @throws IOException Error accessing object store
    */
+  @Ignore("Failing due to expired certificate on OSDC")
   @Test
   public void osdcFullReadFile() throws IOException {
     try (NetcdfFile ncfile = NetcdfFiles.open(OSDC_G16_S3_URI)) {
@@ -332,6 +334,7 @@ public class TestS3Read {
     }
   }
 
+  @Ignore("Failing due to expired certificate on OSDC")
   @Test
   public void osdcFullReadDataset() throws IOException {
     try (NetcdfDataset ncd = NetcdfDatasets.openDataset(OSDC_G16_S3_URI)) {
@@ -339,6 +342,7 @@ public class TestS3Read {
     }
   }
 
+  @Ignore("Failing due to expired certificate on OSDC")
   @Test
   public void osdcPartialReadFile() throws IOException, InvalidRangeException {
     try (NetcdfFile ncfile = NetcdfFiles.open(OSDC_G16_S3_URI)) {
@@ -346,6 +350,7 @@ public class TestS3Read {
     }
   }
 
+  @Ignore("Failing due to expired certificate on OSDC")
   @Test
   public void osdcPartialReadDataset() throws IOException, InvalidRangeException {
     try (NetcdfDataset ncd = NetcdfDatasets.openDataset(OSDC_G16_S3_URI)) {
@@ -353,6 +358,7 @@ public class TestS3Read {
     }
   }
 
+  @Ignore("Failing due to expired certificate on OSDC")
   @Test
   public void osdcPartialReadAquireFile() throws IOException, InvalidRangeException {
     DatasetUrl durl = DatasetUrl.findDatasetUrl(OSDC_G16_S3_URI);
@@ -361,6 +367,7 @@ public class TestS3Read {
     }
   }
 
+  @Ignore("Failing due to expired certificate on OSDC")
   @Test
   public void osdcPartialReadAquireDataset() throws IOException, InvalidRangeException {
     DatasetUrl durl = DatasetUrl.findDatasetUrl(OSDC_G16_S3_URI);
@@ -369,6 +376,7 @@ public class TestS3Read {
     }
   }
 
+  @Ignore("Failing due to expired certificate on OSDC")
   @Test
   public void compareStores() throws IOException {
     System.setProperty(S3TestsCommon.AWS_REGION_PROP_NAME, S3TestsCommon.AWS_G16_REGION);
@@ -385,6 +393,7 @@ public class TestS3Read {
     }
   }
 
+  @Ignore("Failing due to expired certificate on OSDC")
   @Test
   public void compareAgainstLocal() throws IOException {
     System.setProperty(S3TestsCommon.AWS_REGION_PROP_NAME, S3TestsCommon.AWS_G16_REGION);
