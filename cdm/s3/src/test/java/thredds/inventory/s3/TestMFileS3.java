@@ -14,6 +14,7 @@ import java.io.InputStream;
 import java.net.URISyntaxException;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
@@ -113,6 +114,7 @@ public class TestMFileS3 {
     checkWithBucketAndKey(GCS_G16_S3_OBJECT_1 + DELIMITER_FRAGMENT, G16_NAME_1, "/");
   }
 
+  @Ignore("Failing due to expired certificate on OSDC")
   @Test
   @Category(NotPullRequest.class)
   public void bucketAndKeyOsdc() throws IOException {
@@ -204,6 +206,7 @@ public class TestMFileS3 {
     }
   }
 
+  @Ignore("Failing due to expired certificate on OSDC")
   @Test
   public void shouldWriteObjectsToStream() throws IOException {
     final String[] objects = {AWS_G16_S3_OBJECT_1, GCS_G16_S3_OBJECT_1, OSDC_G16_S3_OBJECT_1};

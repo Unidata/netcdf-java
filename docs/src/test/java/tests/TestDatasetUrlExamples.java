@@ -8,6 +8,7 @@ import java.nio.file.Path;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import ucar.httpservices.Escape;
@@ -54,6 +55,7 @@ public class TestDatasetUrlExamples {
     DatasetUrlExamples.gcsGoes16Example();
   }
 
+  @Ignore("Failing due to expired certificate on OSDC")
   @Test
   public void testOsdcS3Goes16Example() throws IOException {
     // osdcGoes16Example method uses Google Truth
