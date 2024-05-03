@@ -16,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.Array;
 import ucar.ma2.InvalidRangeException;
+import ucar.ma2.MAMath;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.CoordinateAxis2D;
@@ -46,40 +47,47 @@ public class TestGeoTiffWriter {
   @Rule
   public final TemporaryFolder tempFolder = new TemporaryFolder();
 
-  @Parameterized.Parameters(name = "{0}")
+  @Parameterized.Parameters(name = "{0}-{3}")
   public static List<Object[]> getTestParameters() {
     List<Object[]> result = new ArrayList<>();
 
-    result
-        .add(new Object[] {TestDir.cdmUnitTestDir + "gribCollections/tp/GFS_Global_onedeg_ana_20150326_0600.grib2.ncx4",
-            FeatureType.GRID, "Temperature_sigma"}); // SRC // TP
-    result.add(new Object[] {TestDir.cdmUnitTestDir + "gribCollections/tp/GFSonedega.ncx4", FeatureType.GRID,
-        "Pressure_surface"}); // TP
-    result.add(new Object[] {TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx4", FeatureType.GRID,
-        "Best/Soil_temperature_depth_below_surface_layer"}); // TwoD Best
-    result.add(new Object[] {TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx4", FeatureType.FMRC,
-        "TwoD/Soil_temperature_depth_below_surface_layer"}); // TwoD
+    for (int greyscale = 0; greyscale < 2; greyscale++) {
+      result.add(
+          new Object[] {TestDir.cdmUnitTestDir + "gribCollections/tp/GFS_Global_onedeg_ana_20150326_0600.grib2.ncx4",
+              FeatureType.GRID, "Temperature_sigma", greyscale == 1}); // SRC // TP
+      result.add(new Object[] {TestDir.cdmUnitTestDir + "gribCollections/tp/GFSonedega.ncx4", FeatureType.GRID,
+          "Pressure_surface", greyscale == 1}); // TP
+      result.add(new Object[] {TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx4", FeatureType.GRID,
+          "Best/Soil_temperature_depth_below_surface_layer", greyscale == 1}); // TwoD Best
+      result.add(new Object[] {TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx4", FeatureType.FMRC,
+          "TwoD/Soil_temperature_depth_below_surface_layer", greyscale == 1}); // TwoD
 
-    result.add(new Object[] {TestDir.cdmUnitTestDir + "ft/coverage/testCFwriter.nc", FeatureType.GRID, "Temperature"});
+      result.add(new Object[] {TestDir.cdmUnitTestDir + "ft/coverage/testCFwriter.nc", FeatureType.GRID, "Temperature",
+          greyscale == 1});
+    }
 
     return result;
   }
 
   private String filename, field;
   private FeatureType type;
+  private boolean greyscale;
 
-  public TestGeoTiffWriter(String filename, FeatureType type, String field) {
+  public TestGeoTiffWriter(String filename, FeatureType type, String field, boolean greyscale) {
     this.filename = filename;
     this.type = type;
     this.field = field;
+    this.greyscale = greyscale;
   }
 
   @Test
   public void testWriteCoverage() throws IOException, InvalidRangeException {
     String gridOut = tempFolder.newFile().getAbsolutePath();
-    logger.debug("geotiff read grid {} ({}) from {} write {}", field, type, filename, gridOut);
+    logger.debug("geotiff read grid {} ({}) from {} write {} greyscale {}", field, type, filename, gridOut, greyscale);
 
     Array dtArray;
+    float missingVal;
+    MAMath.MinMax minmax;
     try (GridDataset gds = GridDataset.open(filename)) {
       GridDatatype grid = gds.findGridByName(field);
       assert grid != null;
@@ -99,9 +107,11 @@ public class TestGeoTiffWriter {
           tindex = (int) timeAxis.getSize() - 1; // last one
       }
       dtArray = grid.readDataSlice(rtindex, -1, tindex, 0, -1, -1);
+      minmax = grid.getMinMaxSkipMissingData(dtArray);
+      missingVal = (float) minmax.min - 1.f;
 
       try (GeotiffWriter writer = new GeotiffWriter(gridOut)) {
-        writer.writeGrid(gds, grid, dtArray, true);
+        writer.writeGrid(gds, grid, dtArray, greyscale);
       }
     }
 
@@ -110,8 +120,39 @@ public class TestGeoTiffWriter {
       geotiff.read();
       logger.debug("{}", geotiff.showInfo());
 
+      IFDEntry photoTag = geotiff.findTag(Tag.PhotometricInterpretation);
+      Assert.assertNotNull(photoTag);
+      Assert.assertEquals(1, photoTag.count);
+      Assert.assertEquals(1, photoTag.value[0]);
+
+      if (!greyscale) {
+        IFDEntry sMinTag = geotiff.findTag(Tag.SMinSampleValue);
+        Assert.assertNotNull(sMinTag);
+        Assert.assertEquals(1, sMinTag.count);
+        // In the Writer, the min/max values are cast to floats before encoding
+        Assert.assertEquals(minmax.min, (float) sMinTag.valueD[0], 0.0);
+
+        IFDEntry sMaxTag = geotiff.findTag(Tag.SMaxSampleValue);
+        Assert.assertNotNull(sMaxTag);
+        Assert.assertEquals(1, sMaxTag.count);
+        Assert.assertEquals(minmax.max, (float) sMaxTag.valueD[0], 0.0);
+
+        IFDEntry noDataTag = geotiff.findTag(Tag.GDALNoData);
+        Assert.assertNotNull(noDataTag);
+        Assert.assertEquals(String.valueOf(missingVal), noDataTag.valueS);
+      } else {
+        IFDEntry sMinTag = geotiff.findTag(Tag.SMinSampleValue);
+        Assert.assertNull(sMinTag);
+
+        IFDEntry sMaxTag = geotiff.findTag(Tag.SMaxSampleValue);
+        Assert.assertNull(sMaxTag);
+
+        IFDEntry noDataTag = geotiff.findTag(Tag.GDALNoData);
+        Assert.assertNull(noDataTag);
+      }
+
       String gridOut2 = tempFolder.newFile().getAbsolutePath();
-      logger.debug("geotiff2 read coverage {} write {}", filename, gridOut2);
+      logger.debug("geotiff2 read coverage {} write {} greyscale {}", filename, gridOut2, greyscale);
 
       GeoReferencedArray covArray;
       try (FeatureDatasetCoverage cc = CoverageDatasetFactory.open(filename)) {
@@ -131,7 +172,7 @@ public class TestGeoTiffWriter {
         covArray = coverage.readData(params);
 
         try (GeotiffWriter writer = new GeotiffWriter(gridOut2)) {
-          writer.writeGrid(covArray, true);
+          writer.writeGrid(covArray, greyscale);
         }
       }
 
