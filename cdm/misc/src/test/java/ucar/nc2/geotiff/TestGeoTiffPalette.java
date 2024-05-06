@@ -28,7 +28,7 @@ import java.awt.Color;
  * Testing the color palette features of GeotiffWriter
  *
  * @author WeatherGod
- * @since 8/12/20224
+ * @since 8/12/2022
  */
 public class TestGeoTiffPalette {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
@@ -150,9 +150,26 @@ public class TestGeoTiffPalette {
         Assert.assertNotNull(colorTableTag);
         Assert.assertEquals(3 * 256, colorTableTag.count);
         Assert.assertArrayEquals(colorTable, colorTableTag.value);
+
+        IFDEntry sMinTag = geotiff.findTag(Tag.SMinSampleValue);
+        Assert.assertNotNull(sMinTag);
+        Assert.assertEquals(FieldType.BYTE, sMinTag.type);
+        Assert.assertEquals(1, sMinTag.count);
+        Assert.assertEquals(1, sMinTag.value[0]);
+
+        IFDEntry sMaxTag = geotiff.findTag(Tag.SMaxSampleValue);
+        Assert.assertNotNull(sMaxTag);
+        Assert.assertEquals(FieldType.BYTE, sMaxTag.type);
+        Assert.assertEquals(1, sMaxTag.count);
+        Assert.assertEquals(255, sMaxTag.value[0]);
+
+        // When doing a color paletted geotiff, no assumption is made
+        // about the NoData value and is therefore not encoded.
+        IFDEntry noDataTag = geotiff.findTag(Tag.GDALNoData);
+        Assert.assertNull(noDataTag);
       }
 
-      // compare file s are equal
+      // compare files are equal
       File file1 = new File(gridOut);
       File file2 = new File(baseline);
 

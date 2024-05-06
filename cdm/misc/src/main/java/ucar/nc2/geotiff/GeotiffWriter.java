@@ -335,14 +335,14 @@ public class GeotiffWriter implements Closeable {
         FieldType ftype;
         DataType sdtype = dtype.withSignedness(DataType.Signedness.SIGNED);
         if (sdtype == DataType.BYTE) {
-          ftype = FieldType.BYTE;
+          ftype = dtype.isUnsigned() ? FieldType.BYTE : FieldType.SBYTE;
         } else if (sdtype == DataType.SHORT) {
-          ftype = FieldType.SHORT;
+          ftype = dtype.isUnsigned() ? FieldType.SHORT : FieldType.SSHORT;
         } else if (sdtype == DataType.INT) {
-          // A geotiff LONG is really a 4-byte regular integer
-          ftype = FieldType.LONG;
+          // A geotiff LONG/SLONG is really a 4-byte regular integer
+          ftype = dtype.isUnsigned() ? FieldType.LONG : FieldType.SLONG;
         } else {
-          throw new IllegalArgumentException("Unsupported dtype: " + dtype + " sdtype: " + sdtype);
+          throw new IllegalArgumentException("Unsupported dtype: " + dtype);
         }
         geotiff.addTag(new IFDEntry(Tag.SMinSampleValue, ftype).setValue(min));
         geotiff.addTag(new IFDEntry(Tag.SMaxSampleValue, ftype).setValue(max));
