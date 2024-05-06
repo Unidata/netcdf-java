@@ -357,13 +357,23 @@ public class GeoTiff implements Closeable {
   private int writeIntValue(ByteBuffer buffer, IFDEntry ifd, int v) {
     switch (ifd.type.code) {
       case 1:
+      case 2:
+      case 6:
+      case 7:
+	// unsigned byte and ascii
+	// signed byte and undefined (usually treated as raw binary)
         buffer.put((byte) v);
         return 1;
       case 3:
+      case 8:
+	// unsigned and signed short
         buffer.putShort((short) v);
         return 2;
       case 4:
       case 5:
+      case 9:
+      case 10:
+	// unsigned and signed rational and 32-bit integer
         buffer.putInt(v);
         return 4;
     }
@@ -548,13 +558,32 @@ public class GeoTiff implements Closeable {
   private int readIntValue(ByteBuffer buffer, IFDEntry ifd) {
     switch (ifd.type.code) {
       case 1:
+	// unsigned byte
+        //return (int) buffer.get() & 0xff;
       case 2:
-        return (int) buffer.get();
+	// unsigned ascii
+        return (int) buffer.get() & 0xff;
       case 3:
+	// unsigned short
         return readUShortValue(buffer);
       case 4:
       case 5:
-        return buffer.getInt();
+	// unsigned rational and 32-bit integer
+        // Yes, this can lead to truncation. This is a bug
+        // in the design of the IFDEntry API
+        return (int) (buffer.getInt() & 0xffffffffL);
+        //return buffer.getInt();
+      case 6:
+      case 7:
+	// signed byte & "undefined" (usually treated as binary data
+        return (int) buffer.get();
+      case 8:
+	// signed short
+	return (int) buffer.getShort();
+      case 9:
+      case 10:
+	// signed rational and 32-bit integer
+	return buffer.getInt();
     }
     return 0;
   }
