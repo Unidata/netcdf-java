@@ -55,7 +55,7 @@ public class TestIFDEntry {
     // for all possible values because Java's integer is signed.
     result.add(new Object[] {new IFDEntry(null, FieldType.LONG, 1), Integer.MAX_VALUE});
 
-    //Signed
+    // Signed
     result.add(new Object[] {new IFDEntry(null, FieldType.SBYTE, 1), 0});
     result.add(new Object[] {new IFDEntry(null, FieldType.SBYTE, 1), Byte.MIN_VALUE});
     result.add(new Object[] {new IFDEntry(null, FieldType.SBYTE, 1), Byte.MAX_VALUE});
@@ -89,8 +89,8 @@ public class TestIFDEntry {
     ByteOrder byteOrder = ByteOrder.BIG_ENDIAN;
     buffer.order(byteOrder);
 
-    logger.info("geotiff methods: {}", geotiff.getClass().getDeclaredMethods());
-    Method writeMethod = geotiff.getClass().getDeclaredMethod("writeIntValue", ByteBuffer.class, ifd.getClass(), int.class);
+    Method writeMethod =
+        geotiff.getClass().getDeclaredMethod("writeIntValue", ByteBuffer.class, ifd.getClass(), int.class);
     Method readMethod = geotiff.getClass().getDeclaredMethod("readIntValue", ByteBuffer.class, ifd.getClass());
     readMethod.setAccessible(true);
     writeMethod.setAccessible(true);
