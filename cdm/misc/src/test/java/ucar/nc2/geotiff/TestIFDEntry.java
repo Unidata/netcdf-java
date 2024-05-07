@@ -11,14 +11,12 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import java.io.*;
 import java.lang.ReflectiveOperationException;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -30,9 +28,8 @@ import java.util.List;
 @RunWith(Parameterized.class)
 public class TestIFDEntry {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-  public IFDEntry ifd;
-  // Because we are dealing with reflection
-  public int testValue;
+  private final IFDEntry ifd;
+  private final int testValue;
 
   @Parameterized.Parameters(name = "{0}_{1}")
   public static List<Object[]> getTestParameters() {
