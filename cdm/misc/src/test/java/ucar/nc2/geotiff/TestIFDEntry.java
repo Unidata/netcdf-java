@@ -11,9 +11,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import java.lang.ReflectiveOperationException;
 import java.lang.invoke.MethodHandles;
-import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
@@ -79,22 +77,17 @@ public class TestIFDEntry {
   }
 
   @Test
-  public void testRoundtrip() throws ReflectiveOperationException {
-    GeoTiff geotiff = new GeoTiff("foobar");
+  public void testRoundtrip() {
     // 16 bytes should be more than enough
     ByteBuffer buffer = ByteBuffer.allocate(16);
     ByteOrder byteOrder = ByteOrder.BIG_ENDIAN;
     buffer.order(byteOrder);
 
-    Method writeMethod =
-        geotiff.getClass().getDeclaredMethod("writeIntValue", ByteBuffer.class, ifd.getClass(), int.class);
-    Method readMethod = geotiff.getClass().getDeclaredMethod("readIntValue", ByteBuffer.class, ifd.getClass());
-    readMethod.setAccessible(true);
-    writeMethod.setAccessible(true);
-    int writeSize = (int) writeMethod.invoke(geotiff, buffer, ifd, testValue);
+    int writeSize = GeoTiff.writeIntValue(buffer, ifd, testValue);
+    Assert.assertEquals(ifd.type.size, writeSize);
     buffer.position(0);
 
-    int readValue = (int) readMethod.invoke(geotiff, buffer, ifd);
+    int readValue = GeoTiff.readIntValue(buffer, ifd);
 
     Assert.assertEquals(testValue, readValue);
   }

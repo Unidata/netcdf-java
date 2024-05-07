@@ -326,7 +326,7 @@ public class GeoTiff implements Closeable {
     }
   }
 
-  private int writeValues(ByteBuffer buffer, IFDEntry ifd) {
+  static int writeValues(ByteBuffer buffer, IFDEntry ifd) {
     int done = 0;
 
     if (ifd.type == FieldType.ASCII) {
@@ -354,7 +354,7 @@ public class GeoTiff implements Closeable {
     return done;
   }
 
-  private int writeIntValue(ByteBuffer buffer, IFDEntry ifd, int v) {
+  static int writeIntValue(ByteBuffer buffer, IFDEntry ifd, int v) {
     switch (ifd.type.code) {
       case 1:
       case 2:
@@ -380,7 +380,7 @@ public class GeoTiff implements Closeable {
     return 0;
   }
 
-  private int writeSValue(ByteBuffer buffer, IFDEntry ifd) {
+  static int writeSValue(ByteBuffer buffer, IFDEntry ifd) {
     buffer.put(ifd.valueS.getBytes(StandardCharsets.UTF_8));
     int size = ifd.valueS.length();
     if ((size & 1) != 0)
@@ -527,7 +527,7 @@ public class GeoTiff implements Closeable {
     return ifd;
   }
 
-  private void readValues(ByteBuffer buffer, IFDEntry ifd) {
+  static void readValues(ByteBuffer buffer, IFDEntry ifd) {
 
     if (ifd.type == FieldType.ASCII) {
       ifd.valueS = readSValue(buffer, ifd);
@@ -555,7 +555,7 @@ public class GeoTiff implements Closeable {
 
   }
 
-  private int readIntValue(ByteBuffer buffer, IFDEntry ifd) {
+  static int readIntValue(ByteBuffer buffer, IFDEntry ifd) {
     switch (ifd.type.code) {
       case 1:
       case 2:
@@ -585,11 +585,11 @@ public class GeoTiff implements Closeable {
     return 0;
   }
 
-  private int readUShortValue(ByteBuffer buffer) {
+  static int readUShortValue(ByteBuffer buffer) {
     return buffer.getShort() & 0xffff;
   }
 
-  private String readSValue(ByteBuffer buffer, IFDEntry ifd) {
+  static String readSValue(ByteBuffer buffer, IFDEntry ifd) {
     byte[] dst = new byte[ifd.count];
     buffer.get(dst);
     return new String(dst, StandardCharsets.UTF_8);
