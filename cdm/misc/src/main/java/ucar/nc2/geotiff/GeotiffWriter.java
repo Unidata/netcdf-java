@@ -14,6 +14,7 @@ import ucar.ma2.Array;
 import ucar.ma2.ArrayByte;
 import ucar.ma2.ArrayInt;
 import ucar.ma2.ArrayFloat;
+import ucar.ma2.ArrayShort;
 import ucar.ma2.DataType;
 import ucar.ma2.Index;
 import ucar.ma2.IndexIterator;
@@ -211,19 +212,15 @@ public class GeotiffWriter implements Closeable {
     // write the data first
     MAMath.MinMax dataMinMax = grid.getMinMaxSkipMissingData(data);
     if (greyScale) {
-      ArrayByte result = replaceMissingValuesAndScale(grid, data, dataMinMax);
-      nextStart = geotiff.writeData((byte[]) result.getStorage(), imageNumber);
+      data = replaceMissingValuesAndScale(grid, data, dataMinMax);
+      nextStart = writeData(data, DataType.UBYTE);
+    } else if (dtype == DataType.FLOAT) {
+      // Backwards compatibility shim
+      data = replaceMissingValues(grid, data, dataMinMax);
+      nextStart = writeData(data, dtype);
     } else {
-      if (dtype == DataType.BYTE || dtype == DataType.UBYTE) {
-        ArrayByte result = coerceByte(data);
-        nextStart = geotiff.writeData((byte[]) result.getStorage(), imageNumber);
-      } else if (dtype.isIntegral()) {
-        ArrayInt result = coerceInt(data);
-        nextStart = geotiff.writeData((int[]) result.getStorage(), imageNumber);
-      } else {
-        ArrayFloat result = replaceMissingValues(grid, data, dataMinMax);
-        nextStart = geotiff.writeData((float[]) result.getStorage(), imageNumber);
-      }
+      data = coerceData(data, dtype);
+      nextStart = writeData(data, dtype);
     }
 
     // set the width and the height
@@ -472,8 +469,16 @@ public class GeotiffWriter implements Closeable {
     return colorMap;
   }
 
-  private ArrayByte coerceByte(Array data) {
-    ArrayByte array = (ArrayByte) Array.factory(DataType.BYTE, data.getShape());
+  /**
+   * Coerce a given data array into an array of bytes.
+   * Always returns a copy. No data safety check is performed.
+   *
+   * @param data input data array (of any data type)
+   * @param isUnsigned coerce to unsigned bytes
+   * @return integer data array
+   */
+  static ArrayByte coerceByte(Array data, boolean isUnsigned) {
+    ArrayByte array = (ArrayByte) Array.factory(isUnsigned ? DataType.UBYTE : DataType.BYTE, data.getShape());
     IndexIterator dataIter = data.getIndexIterator();
     IndexIterator resultIter = array.getIndexIterator();
 
@@ -484,8 +489,56 @@ public class GeotiffWriter implements Closeable {
     return array;
   }
 
-  private ArrayInt coerceInt(Array data) {
-    ArrayInt array = (ArrayInt) Array.factory(DataType.INT, data.getShape());
+  /**
+   * Coerce a given data array into an array of 16-bit integers.
+   * Always returns a copy. No data safety check is performed.
+   *
+   * @param data input data array (of any data type)
+   * @param isUnsigned coerce to unsigned integers
+   * @return integer data array
+   */
+  static ArrayShort coerceShort(Array data, boolean isUnsigned) {
+    ArrayShort array = (ArrayShort) Array.factory(isUnsigned ? DataType.USHORT : DataType.SHORT, data.getShape());
+    IndexIterator dataIter = data.getIndexIterator();
+    IndexIterator resultIter = array.getIndexIterator();
+
+    while (dataIter.hasNext()) {
+      resultIter.setIntNext(dataIter.getIntNext());
+    }
+
+    return array;
+  }
+
+
+  /**
+   * Coerce a given data array into an array of 32-bit integers.
+   * Always returns a copy. No data safety check is performed.
+   *
+   * @param data input data array (of any data type)
+   * @param isUnsigned coerce to unsigned integers
+   * @return integer data array
+   */
+  static ArrayInt coerceInt(Array data, boolean isUnsigned) {
+    ArrayInt array = (ArrayInt) Array.factory(isUnsigned ? DataType.UINT : DataType.INT, data.getShape());
+    IndexIterator dataIter = data.getIndexIterator();
+    IndexIterator resultIter = array.getIndexIterator();
+
+    while (dataIter.hasNext()) {
+      resultIter.setIntNext(dataIter.getIntNext());
+    }
+
+    return array;
+  }
+
+  /**
+   * Coerce a given data array into an array of 32-bit floats.
+   * Always returns a copy. No data safety check is performed.
+   *
+   * @param data input data array (of any data type)
+   * @return float data array
+   */
+  static ArrayFloat coerceFloat(Array data) {
+    ArrayFloat array = (ArrayFloat) Array.factory(DataType.FLOAT, data.getShape());
     IndexIterator dataIter = data.getIndexIterator();
     IndexIterator resultIter = array.getIndexIterator();
 
@@ -845,19 +898,15 @@ public class GeotiffWriter implements Closeable {
     int nextStart;
     MAMath.MinMax dataMinMax = MAMath.getMinMaxSkipMissingData(data, array);
     if (greyScale) {
-      ArrayByte result = replaceMissingValuesAndScale(array, data, dataMinMax);
-      nextStart = geotiff.writeData((byte[]) result.getStorage(), pageNumber);
+      data = replaceMissingValuesAndScale(array, data, dataMinMax);
+      nextStart = writeData(data, DataType.UBYTE);
+    } else if (dtype == DataType.FLOAT) {
+      // Backwards compatibility shim
+      data = replaceMissingValues(array, data, dataMinMax);
+      nextStart = writeData(data, dtype);
     } else {
-      if (dtype == DataType.BYTE || dtype == DataType.UBYTE) {
-        ArrayByte result = coerceByte(data);
-        nextStart = geotiff.writeData((byte[]) result.getStorage(), pageNumber);
-      } else if (dtype.isIntegral()) {
-        ArrayInt result = coerceInt(data);
-        nextStart = geotiff.writeData((int[]) result.getStorage(), pageNumber);
-      } else {
-        ArrayFloat result = replaceMissingValues(array, data, dataMinMax);
-        nextStart = geotiff.writeData((float[]) result.getStorage(), pageNumber);
-      }
+      data = coerceData(data, dtype);
+      nextStart = writeData(data, dtype);
     }
 
     // set the width and the height
@@ -866,6 +915,33 @@ public class GeotiffWriter implements Closeable {
 
     writeMetadata(greyScale, xStart, yStart, xInc, yInc, height, width, pageNumber, nextStart, dataMinMax, proj, dtype);
     pageNumber++;
+  }
+
+  static Array coerceData(Array data, DataType dtype) {
+    if (dtype == DataType.BYTE || dtype == DataType.UBYTE) {
+      data = coerceByte(data, dtype.isUnsigned());
+    } else if (dtype == DataType.SHORT || dtype == DataType.USHORT) {
+      data = coerceShort(data, dtype.isUnsigned());
+    } else if (dtype == DataType.INT || dtype == DataType.UINT) {
+      data = coerceInt(data, dtype.isUnsigned());
+    } else if (dtype.isFloatingPoint()) {
+      data = coerceFloat(data);
+    }
+    return data;
+  }
+
+  private int writeData(Array data, DataType dtype) throws IOException {
+    int nextStart;
+    if (dtype == DataType.BYTE || dtype == DataType.UBYTE) {
+      nextStart = geotiff.writeData((byte[]) data.getStorage(), pageNumber);
+    } else if (dtype == DataType.SHORT || dtype == DataType.USHORT) {
+      nextStart = geotiff.writeData((short[]) data.getStorage(), pageNumber);
+    } else if (dtype == DataType.INT || dtype == DataType.UINT) {
+      nextStart = geotiff.writeData((int[]) data.getStorage(), pageNumber);
+    } else {
+      nextStart = geotiff.writeData((float[]) data.getStorage(), pageNumber);
+    }
+    return nextStart;
   }
 }
 

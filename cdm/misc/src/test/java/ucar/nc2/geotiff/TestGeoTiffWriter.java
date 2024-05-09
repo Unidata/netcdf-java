@@ -34,7 +34,7 @@ import java.util.Formatter;
 import java.util.List;
 
 /**
- * GeoTiffWriter2 writing geotiffs
+ * GeotiffWriter writing geotiffs
  *
  * @author caron
  * @since 7/31/2014
@@ -65,10 +65,12 @@ public class TestGeoTiffWriter {
       result.add(new Object[] {TestDir.cdmUnitTestDir + "ft/coverage/testCFwriter.nc", FeatureType.GRID, "Temperature",
           greyscale == 1});
 
-      // This file is unique in that it is lambert conformal with yaxis flipped.
+      // This file is unique in that it is lambert conformal with yaxis flipped (South to North).
+      // Also, this drought data is stored as integers (the other test data above are floats).
+      // This will check that the compatibility shim is still forcing the data
+      // to floats when greyscale is false and not specifying the dtype.
       result.add(
           new Object[] {"src/test/data/ucar/nc2/geotiff/categorical.nc", FeatureType.GRID, "drought", greyscale == 1});
-
     }
 
     return result;
@@ -93,6 +95,15 @@ public class TestGeoTiffWriter {
     Array dtArray;
     float missingVal;
     MAMath.MinMax minmax;
+
+    // When not explicitly specifying the dtype in the writeGrid() call,
+    // the code will fall back to old behavior and cast the data as floats
+    // when greyscale is false. greyscale==true always produces unsigned bytes.
+    FieldType expectedFieldType = greyscale ? FieldType.BYTE : FieldType.FLOAT;
+
+    // Float, signed, unsigned (future-proofing for when we expand expected field types)
+    int expectedSampleFormat = expectedFieldType.code >= 6 ? expectedFieldType.code == 11 ? 3 : 2 : 1;
+
     try (GridDataset gds = GridDataset.open(filename)) {
       GridDatatype grid = gds.findGridByName(field);
       assert grid != null;
@@ -143,8 +154,16 @@ public class TestGeoTiffWriter {
         Assert.assertEquals(minmax.max, (float) sMaxTag.valueD[0], 0.0);
 
         IFDEntry noDataTag = geotiff.findTag(Tag.GDALNoData);
+        // Technically, it would be ambiguous what was intended due to the
+        // backwards compatibility shim, so FLOATS still get NoData tags.
         Assert.assertNotNull(noDataTag);
         Assert.assertEquals(String.valueOf(missingVal), noDataTag.valueS);
+
+        // Right now, this is the only case where the SampleFormat tag is written.
+        // There is no reason why this has to be the case.
+        IFDEntry sTypeTag = geotiff.findTag(Tag.SampleFormat);
+        Assert.assertNotNull(sTypeTag);
+        Assert.assertEquals(expectedSampleFormat, sTypeTag.value[0]);
       } else {
         IFDEntry sMinTag = geotiff.findTag(Tag.SMinSampleValue);
         Assert.assertNull(sMinTag);
@@ -155,6 +174,10 @@ public class TestGeoTiffWriter {
         IFDEntry noDataTag = geotiff.findTag(Tag.GDALNoData);
         Assert.assertNull(noDataTag);
       }
+
+      IFDEntry sSizeTag = geotiff.findTag(Tag.BitsPerSample);
+      Assert.assertNotNull(sSizeTag);
+      Assert.assertEquals(expectedFieldType.size * 8, sSizeTag.value[0]);
 
       String gridOut2 = tempFolder.newFile().getAbsolutePath();
       logger.debug("geotiff2 read coverage {} write {} greyscale {}", filename, gridOut2, greyscale);
@@ -169,11 +192,11 @@ public class TestGeoTiffWriter {
         String covName = (pos > 0) ? field.substring(pos + 1) : field;
 
         Coverage coverage = gcd.findCoverage(covName);
+        Assert.assertNotNull(covName, coverage);
         CoverageCoordAxis1D z = (CoverageCoordAxis1D) coverage.getCoordSys().getZAxis();
         SubsetParams params = new SubsetParams().set(SubsetParams.timePresent, true);
         if (z != null)
           params.set(SubsetParams.vertCoord, z.getCoordMidpoint(0));
-        Assert.assertNotNull(covName, coverage);
         covArray = coverage.readData(params);
 
         try (GeotiffWriter writer = new GeotiffWriter(gridOut2)) {
