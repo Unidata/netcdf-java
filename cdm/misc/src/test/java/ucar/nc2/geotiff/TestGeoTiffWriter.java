@@ -64,6 +64,11 @@ public class TestGeoTiffWriter {
 
       result.add(new Object[] {TestDir.cdmUnitTestDir + "ft/coverage/testCFwriter.nc", FeatureType.GRID, "Temperature",
           greyscale == 1});
+
+      // This file is unique in that it is lambert conformal with yaxis flipped.
+      result.add(
+          new Object[] {"src/test/data/ucar/nc2/geotiff/categorical.nc", FeatureType.GRID, "drought", greyscale == 1});
+
     }
 
     return result;
