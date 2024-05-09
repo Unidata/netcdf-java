@@ -558,7 +558,7 @@ public class GeotiffWriter implements Closeable {
     Array data = array.getData().reduce();
     if (yaxis.getCoordMidpoint(0) < yaxis.getCoordMidpoint(1)) {
       data = data.flip(0);
-      yStart = yaxis.getCoordEdgeLast();
+      yStart = yaxis.getCoordEdgeLast() * scaler;
     }
 
     /*
