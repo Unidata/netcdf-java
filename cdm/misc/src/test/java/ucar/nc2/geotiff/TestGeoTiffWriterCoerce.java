@@ -62,7 +62,7 @@ public class TestGeoTiffWriterCoerce {
     result.add(new Object[] {DataType.UBYTE, FieldType.BYTE});
     result.add(new Object[] {DataType.USHORT, FieldType.SHORT});
     result.add(new Object[] {DataType.UINT, FieldType.LONG});
-    // The source data is signed integer, so when dtype is null, it should infer that. 
+    // The source data is signed integer, so when dtype is null, it should infer that.
     result.add(new Object[] {null, FieldType.SLONG});
     return result;
   }
