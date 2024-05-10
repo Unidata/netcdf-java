@@ -65,8 +65,9 @@ public class GeotiffWriter implements Closeable {
   /**
    * Write GridDatatype data to the geotiff file.
    *
-   * This is for backwards-compatibility. Assumes dtype is FLOAT if greyScale is false, and assumes
-   * dtype is BYTE if greyScale is true.
+   * Greyscale mode will auto-normalize the data from 1 to 255 and save as unsigned bytes, with 0's used
+   * for missing data. A color table can be applied if specified via `setColorTable()`.
+   * Non-greyscale mode will save the data as floats, encoding missing data as the data minimum minus one.
    *
    * @param dataset grid in contained in this dataset
    * @param grid data is in this grid
@@ -75,21 +76,39 @@ public class GeotiffWriter implements Closeable {
    * @throws IOException on i/o error
    */
   public void writeGrid(GridDataset dataset, GridDatatype grid, Array data, boolean greyScale) throws IOException {
-    writeGrid(dataset, grid, data, greyScale, greyScale ? DataType.BYTE : DataType.FLOAT);
+    writeGrid(dataset, grid, data, greyScale, greyScale ? DataType.UBYTE : DataType.FLOAT);
   }
 
   /**
    * Write GridDatatype data to the geotiff file.
    *
+   * Greyscale mode will auto-normalize the data from 1 to 255 and save as unsigned bytes, with 0's used
+   * for missing data.
+   * Non-greyscale mode with a floating point dtype will save the data as floats, encoding missing data
+   * as the data's minimum minus one. Any other dtype will save the data coerced to the specified dtype.
+   *
+   * A color table can be applied if specified via `setColorTable()` and the dtype is UBYTE.
+   *
    * @param dataset grid in contained in this dataset
    * @param grid data is in this grid
    * @param data 2D array in YX order
    * @param greyScale if true, write greyScale image, else dataSample.
-   * @param dtype DataType for the output.
+   * @param dtype DataType for the output. See other writeGrid() documentation for more details.
    * @throws IOException on i/o error
+   * @throws IllegalArgumentException if above assumptions not valid
    */
   public void writeGrid(GridDataset dataset, GridDatatype grid, Array data, boolean greyScale, DataType dtype)
-      throws IOException {
+      throws IOException, IllegalArgumentException {
+    // This check has to be *before* resolving the dtype so that we are only
+    // checking explicitly specified data types.
+    if (greyScale && dtype != DataType.UBYTE) {
+      throw new IllegalArgumentException("When greyScale is true, dtype must be UBYTE");
+    }
+
+    if (colorTable != null && colorTable.length > 0 && dtype != DataType.UBYTE) {
+      throw new IllegalArgumentException("When using the color table, dtype must be UBYTE");
+    }
+
     GridCoordSystem gcs = grid.getCoordinateSystem();
 
     if (!gcs.isRegularSpatial()) {
@@ -136,8 +155,9 @@ public class GeotiffWriter implements Closeable {
    * <li>be equally spaced
    * </ol>
    *
-   * This is for backwards-compatibility. Assumes dtype is FLOAT if greyScale is false, and assumes
-   * dtype is BYTE if greyScale is true.
+   * Greyscale mode will auto-normalize the data from 1 to 255 and save as unsigned bytes, with 0's used
+   * for missing data. A color table can be applied if specified via `setColorTable()`.
+   * Non-greyscale mode will save the data as floats, encoding missing data as the data minimum minus one.
    *
    * @param grid original grid
    * @param data 2D array in YX order
@@ -148,12 +168,12 @@ public class GeotiffWriter implements Closeable {
    * @param yInc increment y coord
    * @param imageNumber used to write multiple images
    * @throws IOException on i/o error
-   * @throws IllegalArgumentException if above assumptions not valid *
+   * @throws IllegalArgumentException if above assumptions not valid
    */
   void writeGrid(GridDatatype grid, Array data, boolean greyScale, double xStart, double yStart, double xInc,
       double yInc, int imageNumber) throws IOException {
     writeGrid(grid, data, greyScale, xStart, yStart, xInc, yInc, imageNumber,
-        greyScale ? DataType.BYTE : DataType.FLOAT);
+        greyScale ? DataType.UBYTE : DataType.FLOAT);
   }
 
   /**
@@ -165,6 +185,13 @@ public class GeotiffWriter implements Closeable {
    * <li>be equally spaced
    * </ol>
    *
+   * Greyscale mode will auto-normalize the data from 1 to 255 and save as unsigned bytes, with 0's used
+   * for missing data.
+   * Non-greyscale mode with a floating point dtype will save the data as floats, encoding missing data
+   * as the data's minimum minus one. Any other dtype will save the data coerced to the specified dtype.
+   *
+   * A color table can be applied if specified via `setColorTable()` and the dtype is UBYTE.
+   *
    * @param grid original grid
    * @param data 2D array in YX order
    * @param greyScale if true, normalize the data before writing, otherwise, only handle missing data.
@@ -175,30 +202,27 @@ public class GeotiffWriter implements Closeable {
    * @param imageNumber used to write multiple images
    * @param dtype if greyScale is false, then save the data in the given data type.
    *        Currently, this is a bit hobbled in order to avoid back-compatibility breaks.
-   *        If greyScale is true and this is not BYTE, then an exception is thrown.
+   *        If dtype is DOUBLE, is is currenly downcasted to FLOAT.
+   *        When dtype is floating point, missing data is encoded as the data's minimum minus one.
    *        If null, then use the datatype of the given array.
    * @throws IOException on i/o error
-   * @throws IllegalArgumentException if above assumptions not valid *
+   * @throws IllegalArgumentException if above assumptions not valid
    */
   void writeGrid(GridDatatype grid, Array data, boolean greyScale, double xStart, double yStart, double xInc,
-      double yInc, int imageNumber, DataType dtype) throws IOException {
-
-    int nextStart;
-    GridCoordSystem gcs = grid.getCoordinateSystem();
+      double yInc, int imageNumber, DataType dtype) throws IOException, IllegalArgumentException {
 
     // This check has to be *before* resolving the dtype so that we are only
     // checking explicitly specified data types.
-    if (greyScale && dtype != DataType.BYTE) {
-      throw new IllegalArgumentException("When greyScale is true, dtype must be BYTE or null");
+    if (greyScale && dtype != DataType.UBYTE) {
+      throw new IllegalArgumentException("When greyScale is true, dtype must be UBYTE");
     }
 
-    if (dtype == null) {
-      dtype = data.getDataType();
-      // Need to cap at single precision floats because that's what gets written for floating points
-      if (dtype == DataType.DOUBLE) {
-        dtype = DataType.FLOAT;
-      }
+    if (colorTable != null && colorTable.length > 0 && dtype != DataType.UBYTE) {
+      throw new IllegalArgumentException("When using the color table, dtype must be UBYTE");
     }
+
+    int nextStart;
+    GridCoordSystem gcs = grid.getCoordinateSystem();
 
     // get rid of this when all projections are implemented
     if (!gcs.isLatLon() && !(gcs.getProjection() instanceof LambertConformal)
@@ -207,6 +231,14 @@ public class GeotiffWriter implements Closeable {
         && !(gcs.getProjection() instanceof AlbersEqualAreaEllipse)
         && !(gcs.getProjection() instanceof AlbersEqualArea)) {
       throw new IllegalArgumentException("Unsupported projection = " + gcs.getProjection().getClass().getName());
+    }
+
+    if (dtype == null) {
+      dtype = data.getDataType();
+      // Need to cap at single precision floats because that's what gets written for floating points
+      if (dtype == DataType.DOUBLE) {
+        dtype = DataType.FLOAT;
+      }
     }
 
     // write the data first
@@ -235,6 +267,20 @@ public class GeotiffWriter implements Closeable {
       int width, int imageNumber, int nextStart, MAMath.MinMax dataMinMax, Projection proj, DataType dtype)
       throws IOException {
 
+    if (dtype == null) {
+      throw new IllegalArgumentException("dtype can't be null in writeMetadata()");
+    }
+
+    if (greyScale && dtype != DataType.UBYTE) {
+      throw new IllegalArgumentException("When greyScale is true, dtype must be UBYTE");
+    }
+
+    if (colorTable != null && colorTable.length > 0 && dtype != DataType.UBYTE) {
+      throw new IllegalArgumentException("When using the color table, the dtype must be UBYTE");
+    }
+
+    int elemSize = dtype.getSize();
+
     geotiff.addTag(new IFDEntry(Tag.ImageWidth, FieldType.SHORT).setValue(width));
     geotiff.addTag(new IFDEntry(Tag.ImageLength, FieldType.SHORT).setValue(height));
 
@@ -256,18 +302,6 @@ public class GeotiffWriter implements Closeable {
      * else
      * geotiff.addTag( new IFDEntry(Tag.StripOffsets, FieldType.LONG).setValue(nextStart));
      */
-
-    if (dtype == null) {
-      throw new IllegalArgumentException("dtype can't be null in writeMetadata()");
-    }
-
-    // This check has to be *before* resolving the dtype so that we are only
-    // checking explicitly specified data types.
-    if (greyScale && dtype != DataType.BYTE) {
-      throw new IllegalArgumentException("When greyScale is true, dtype must be BYTE");
-    }
-
-    int elemSize = dtype.getSize();
 
     int[] soffset = new int[height];
     int[] sbytecount = new int[height];
@@ -301,15 +335,16 @@ public class GeotiffWriter implements Closeable {
       geotiff.addTag(new IFDEntry(Tag.PhotometricInterpretation, FieldType.SHORT).setValue(1));
     } else {
       if (colorTable != null && colorTable.length > 0) {
+        // standard tags for Palette-color images ( see TIFF spec, section 5)
         geotiff.addTag(new IFDEntry(Tag.PhotometricInterpretation, FieldType.SHORT).setValue(3));
         geotiff.addTag(new IFDEntry(Tag.ColorMap, FieldType.SHORT, colorTable.length).setValue(colorTable));
       } else {
-        geotiff.addTag(new IFDEntry(Tag.PhotometricInterpretation, FieldType.SHORT).setValue(1)); // black is zero :
-                                                                                                  // not used?
+        geotiff.addTag(new IFDEntry(Tag.PhotometricInterpretation, FieldType.SHORT).setValue(1)); // black is zero
       }
-      // standard tags for SampleFormat ( see TIFF spec, section 19)
+
       geotiff.addTag(new IFDEntry(Tag.BitsPerSample, FieldType.SHORT).setValue(elemSize * 8));
 
+      // standard tags for SampleFormat ( see TIFF spec, section 19)
       if (dtype.isIntegral()) {
         geotiff.addTag(new IFDEntry(Tag.SampleFormat, FieldType.SHORT).setValue(dtype.isUnsigned() ? 1 : 2)); // UINT or
                                                                                                               // INT
@@ -408,8 +443,8 @@ public class GeotiffWriter implements Closeable {
    * be floored/ceilinged to the [0, 255] range. The color table is also assumed to be for pixel values
    * between 0 and 255.
    *
-   * In order for the color table to be properly included in the geotiff, the "greyScale" mode must be false,
-   * and the output data type must be byte or integer.
+   * In order for the color table to be properly included in the geotiff, the output data type must be unsigned bytes.
+   * This works even for greyscale mode.
    */
   public void setColorTable(Map<Integer, Color> colorMap) {
     setColorTable(colorMap, new Color(0, 0, 0));
@@ -424,8 +459,8 @@ public class GeotiffWriter implements Closeable {
    * For these RGB triplets, 0 is minimum intensity, 255 is maximum intensity. Values outside that range will
    * be floored/ceilinged to the [0, 255] range. The color table is also assumed to be for pixel values
    * between 0 and 255.
-   * In order for the color table to be properly included in the geotiff, the "greyScale" mode must be false,
-   * and the output data type must be byte or integer.
+   * In order for the color table to be properly included in the geotiff, the output data type must be unsigned bytes.
+   * This works even for greyscale mode.
    */
   public void setColorTable(Map<Integer, Color> colorMap, Color defaultRGB) {
     if (colorMap == null) {
@@ -433,9 +468,8 @@ public class GeotiffWriter implements Closeable {
       return;
     }
 
-    // FIXME: This isn't quite right because this assumes that the data being written is
-    // unsigned bytes, but the tiff spec says that it should be sized to the width of
-    // the data type, but I would need to know the data type, which this writer doesn't know.
+    // TIFF spec allows for 4 or 8 bits per sample (making for 16 or 256 entries).
+    // Since we don't support saving data as 4 bits per sample, we'll force it to 256.
     colorTable = new int[3 * 256];
     for (int i = 0; i < 256; i++) {
       // Scale it up to [0, 65535], which is needed by the ColorMap tag.
@@ -475,7 +509,7 @@ public class GeotiffWriter implements Closeable {
    *
    * @param data input data array (of any data type)
    * @param isUnsigned coerce to unsigned bytes
-   * @return integer data array
+   * @return byte data array
    */
   static ArrayByte coerceByte(Array data, boolean isUnsigned) {
     ArrayByte array = (ArrayByte) Array.factory(isUnsigned ? DataType.UBYTE : DataType.BYTE, data.getShape());
@@ -495,7 +529,7 @@ public class GeotiffWriter implements Closeable {
    *
    * @param data input data array (of any data type)
    * @param isUnsigned coerce to unsigned integers
-   * @return integer data array
+   * @return short integer data array
    */
   static ArrayShort coerceShort(Array data, boolean isUnsigned) {
     ArrayShort array = (ArrayShort) Array.factory(isUnsigned ? DataType.USHORT : DataType.SHORT, data.getShape());
@@ -503,7 +537,7 @@ public class GeotiffWriter implements Closeable {
     IndexIterator resultIter = array.getIndexIterator();
 
     while (dataIter.hasNext()) {
-      resultIter.setIntNext(dataIter.getIntNext());
+      resultIter.setShortNext(dataIter.getShortNext());
     }
 
     return array;
@@ -516,7 +550,7 @@ public class GeotiffWriter implements Closeable {
    *
    * @param data input data array (of any data type)
    * @param isUnsigned coerce to unsigned integers
-   * @return integer data array
+   * @return 32-bit integer data array
    */
   static ArrayInt coerceInt(Array data, boolean isUnsigned) {
     ArrayInt array = (ArrayInt) Array.factory(isUnsigned ? DataType.UINT : DataType.INT, data.getShape());
@@ -543,7 +577,7 @@ public class GeotiffWriter implements Closeable {
     IndexIterator resultIter = array.getIndexIterator();
 
     while (dataIter.hasNext()) {
-      resultIter.setIntNext(dataIter.getIntNext());
+      resultIter.setFloatNext(dataIter.getFloatNext());
     }
 
     return array;
@@ -574,7 +608,7 @@ public class GeotiffWriter implements Closeable {
   }
 
   /**
-   * Replace missing values with 0; scale other values between 1 and 255, return a byte data array.
+   * Replace missing values with 0; scale other values between 1 and 255, return a ubyte data array.
    *
    * @param grid GridDatatype
    * @param data input data array
@@ -820,28 +854,51 @@ public class GeotiffWriter implements Closeable {
   /**
    * Write GridCoverage data to the geotiff file.
    *
+   * Greyscale mode will auto-normalize the data from 1 to 255 and save as unsigned bytes, with 0's used
+   * for missing data. A color table can be applied if specified via `setColorTable()`.
+   * Non-greyscale mode will save the data as floats, encoding missing data as the data minimum minus one.
+   *
    * @param array GeoReferencedArray array in YX order
    * @param greyScale if true, write greyScale image, else dataSample.
    * @throws IOException on i/o error
    */
   public void writeGrid(GeoReferencedArray array, boolean greyScale) throws IOException {
-    writeGrid(array, greyScale, greyScale ? DataType.BYTE : DataType.FLOAT);
+    writeGrid(array, greyScale, greyScale ? DataType.UBYTE : DataType.FLOAT);
   }
 
   /**
    * Write GridCoverage data to the geotiff file.
    *
+   * Greyscale mode will auto-normalize the data from 1 to 255 and save as unsigned bytes, with 0's used
+   * for missing data.
+   * Non-greyscale mode with a floating point dtype will save the data as floats, encoding missing data
+   * as the data's minimum minus one. Any other dtype will save the data coerced to the specified dtype.
+   *
+   * A color table can be applied if specified via `setColorTable()` and the dtype is UBYTE.
+   *
    * @param array GeoReferencedArray array in YX order
    * @param greyScale if true, write greyScale image, else dataSample.
    * @param dtype if greyScale is false, then save the data in the given data type.
    *        Currently, this is a bit hobbled in order to avoid back-compatibility breaks.
-   *        If greyScale is true and this is not BYTE, then an exception is thrown.
+   *        If greyScale is true and this is not UBYTE, then an exception is thrown.
+   *        If dtype is DOUBLE, it downcasted to FLOAT instead.
+   *        If using the colorTable and this is not UBYTE, then an exception is thrown.
    *        If null, then use the datatype of the given array.
    * @throws IOException on i/o error
    * @throws IllegalArgumentException if data isn't regular or if contradicting the greyScale argument.
    */
   public void writeGrid(GeoReferencedArray array, boolean greyScale, DataType dtype)
       throws IOException, IllegalArgumentException {
+
+    // This check has to be *before* resolving the dtype so that we are only
+    // checking explicitly specified data types.
+    if (greyScale && dtype != DataType.UBYTE) {
+      throw new IllegalArgumentException("When greyScale is true, dtype must be UBYTE");
+    }
+
+    if (colorTable != null && colorTable.length > 0 && dtype != DataType.UBYTE) {
+      throw new IllegalArgumentException("When using the colorTable, the dtype must be UBYTE");
+    }
 
     CoverageCoordSys gcs = array.getCoordSysForData();
     if (!gcs.isRegularSpatial())
@@ -864,12 +921,6 @@ public class GeotiffWriter implements Closeable {
     if (yaxis.getCoordMidpoint(0) < yaxis.getCoordMidpoint(1)) {
       data = data.flip(0);
       yStart = yaxis.getCoordEdgeLast() * scaler;
-    }
-
-    // This check has to be *before* resolving the dtype so that we are only
-    // checking explicitly specified data types.
-    if (greyScale && dtype != DataType.BYTE) {
-      throw new IllegalArgumentException("When greyScale is true, dtype must be BYTE or null");
     }
 
     if (dtype == null) {

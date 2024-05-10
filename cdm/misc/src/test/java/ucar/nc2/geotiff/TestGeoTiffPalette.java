@@ -106,6 +106,30 @@ public class TestGeoTiffPalette {
     Assert.assertNull(resultTable);
   }
 
+  @Test
+  public void testInputChecks() {
+    // Check that exceptions are raised if attempting to write out a grid with a color table, but not for
+    // an appropriate dtype.
+
+    GeotiffWriter writer = new GeotiffWriter("should_not_be_made.tif");
+    HashMap<Integer, Color> colorMap =
+        GeotiffWriter.createColorMap(new int[] {1, 2, 3, 4}, new String[] {"#00AAff", "#151412", "#DE01aB", "#100ABB"});
+    int[] colorTable;
+    writer.setColorTable(colorMap, Color.black);
+    Exception badargs;
+    badargs = Assert.assertThrows(IllegalArgumentException.class, () -> {
+      writer.writeGrid(null, false, DataType.BYTE);
+    });
+    badargs = Assert.assertThrows(IllegalArgumentException.class, () -> {
+      writer.writeGrid(null, null, null, false, DataType.UINT);
+    });
+    badargs = Assert.assertThrows(IllegalArgumentException.class, () -> {
+      writer.writeGrid(null, null, false, 0, 0, 0, 0, 0, DataType.SHORT);
+    });
+    badargs = Assert.assertThrows(IllegalArgumentException.class, () -> {
+      writer.writeGrid(null, null, false, 0, 0, 0, 0, 0, DataType.FLOAT);
+    });
+  }
 
   @Test
   public void testWritePalette() throws IOException {
