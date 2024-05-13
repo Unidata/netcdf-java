@@ -200,4 +200,69 @@ public class TestGeoTiffPalette {
       Assert.assertTrue(FileUtils.contentEquals(file1, file2));
     }
   }
+
+  @Test
+  public void testWritePaletteGreyscale() throws IOException {
+    // The "greyscale" mode is a misnomer. It really just means that it performs an
+    // certain normalization on the data that can be represented as 1-255, which is
+    // typically take as a greyscale, but there is no reason why a color table can't
+    // be applied to it as well. This test exercises this.
+    // Note that this test does not check the data, only the tags.
+    String gridOut = tempFolder.newFile().getAbsolutePath();
+    String baseline = "src/test/data/ucar/nc2/geotiff/baseline_palette.tif";
+    logger.info("****geotiff palette write {}", gridOut);
+
+    HashMap<Integer, Color> colorMap =
+        GeotiffWriter.createColorMap(new int[] {1, 2, 3, 4}, new String[] {"#00AAff", "#151412", "#DE01aB", "#100ABB"});
+    int[] colorTable;
+
+    Array dtArray;
+    try (GridDataset dataset = GridDataset.open("src/test/data/ucar/nc2/geotiff/categorical.nc")) {
+      final GeoGrid grid = dataset.findGridByName("drought");
+      assert grid != null;
+      final GridCoordSystem gcs = grid.getCoordinateSystem();
+      assert gcs != null;
+      int rtindex = -1;
+      int tindex = -1;
+      CoordinateAxis1D timeAxis = gcs.getTimeAxis1D();
+      assert timeAxis != null;
+      tindex = (int) timeAxis.getSize() - 1; // last one
+      dtArray = grid.readDataSlice(rtindex, -1, tindex, 0, -1, -1);
+
+      try (GeotiffWriter writer = new GeotiffWriter(gridOut)) {
+        writer.setColorTable(colorMap, Color.black);
+        writer.writeGrid(dataset, grid, dtArray, true, DataType.UBYTE);
+        colorTable = writer.getColorTable();
+      }
+
+      // read it back in to check the tags
+      try (GeoTiff geotiff = new GeoTiff(gridOut)) {
+        geotiff.read();
+        logger.debug("{}", geotiff.showInfo());
+
+        IFDEntry photoTag = geotiff.findTag(Tag.PhotometricInterpretation);
+        Assert.assertNotNull(photoTag);
+        Assert.assertEquals(1, photoTag.count);
+        Assert.assertEquals(3, photoTag.value[0]);
+
+        IFDEntry colorTableTag = geotiff.findTag(Tag.ColorMap);
+        Assert.assertNotNull(colorTableTag);
+        Assert.assertEquals(3 * 256, colorTableTag.count);
+        Assert.assertArrayEquals(colorTable, colorTableTag.value);
+
+        // For backwards-compatibility, the min/max/nodata tags are not recorded.
+        // There is no reason why this has to be the case.
+        IFDEntry sMinTag = geotiff.findTag(Tag.SMinSampleValue);
+        Assert.assertNull(sMinTag);
+        IFDEntry sMaxTag = geotiff.findTag(Tag.SMaxSampleValue);
+        Assert.assertNull(sMaxTag);
+
+        // When doing a color paletted geotiff, no assumption is made
+        // about the NoData value and is therefore not encoded.
+        IFDEntry noDataTag = geotiff.findTag(Tag.GDALNoData);
+        Assert.assertNull(noDataTag);
+      }
+    }
+  }
+
 }

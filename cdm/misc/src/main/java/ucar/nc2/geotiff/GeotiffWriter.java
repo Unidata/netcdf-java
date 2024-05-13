@@ -323,63 +323,50 @@ public class GeotiffWriter implements Closeable {
     geotiff.addTag(new IFDEntry(Tag.Software, FieldType.ASCII).setValue("nc2geotiff"));
     geotiff.addTag(new IFDEntry(Tag.PlanarConfiguration, FieldType.SHORT).setValue(1));
 
-    if (greyScale) {
-      // standard tags for Greyscale images ( see TIFF spec, section 4)
-      geotiff.addTag(new IFDEntry(Tag.BitsPerSample, FieldType.SHORT).setValue(8)); // 8 bits per sample
-      geotiff.addTag(new IFDEntry(Tag.SamplesPerPixel, FieldType.SHORT).setValue(1));
+    // standard tags for Greyscale images ( see TIFF spec, section 4)
+    geotiff.addTag(new IFDEntry(Tag.BitsPerSample, FieldType.SHORT).setValue(elemSize * 8));
+    geotiff.addTag(new IFDEntry(Tag.SamplesPerPixel, FieldType.SHORT).setValue(1));
 
-      geotiff.addTag(new IFDEntry(Tag.XResolution, FieldType.RATIONAL).setValue(1, 1));
-      geotiff.addTag(new IFDEntry(Tag.YResolution, FieldType.RATIONAL).setValue(1, 1));
-      geotiff.addTag(new IFDEntry(Tag.ResolutionUnit, FieldType.SHORT).setValue(1));
-      // black is zero (value used in GeotiffWriter)
-      geotiff.addTag(new IFDEntry(Tag.PhotometricInterpretation, FieldType.SHORT).setValue(1));
+    geotiff.addTag(new IFDEntry(Tag.XResolution, FieldType.RATIONAL).setValue(1, 1));
+    geotiff.addTag(new IFDEntry(Tag.YResolution, FieldType.RATIONAL).setValue(1, 1));
+    geotiff.addTag(new IFDEntry(Tag.ResolutionUnit, FieldType.SHORT).setValue(1));
+
+    if (colorTable != null && colorTable.length > 0) {
+      // standard tags for Palette-color images ( see TIFF spec, section 5)
+      geotiff.addTag(new IFDEntry(Tag.PhotometricInterpretation, FieldType.SHORT).setValue(3));
+      geotiff.addTag(new IFDEntry(Tag.ColorMap, FieldType.SHORT, colorTable.length).setValue(colorTable));
     } else {
-      if (colorTable != null && colorTable.length > 0) {
-        // standard tags for Palette-color images ( see TIFF spec, section 5)
-        geotiff.addTag(new IFDEntry(Tag.PhotometricInterpretation, FieldType.SHORT).setValue(3));
-        geotiff.addTag(new IFDEntry(Tag.ColorMap, FieldType.SHORT, colorTable.length).setValue(colorTable));
+      geotiff.addTag(new IFDEntry(Tag.PhotometricInterpretation, FieldType.SHORT).setValue(1)); // black is zero
+    }
+
+    // standard tags for SampleFormat ( see TIFF spec, section 19)
+    if (dtype.isIntegral() && !greyScale) {
+      geotiff.addTag(new IFDEntry(Tag.SampleFormat, FieldType.SHORT).setValue(dtype.isUnsigned() ? 1 : 2)); // UINT or
+                                                                                                            // INT
+      int min = (int) (dataMinMax.min);
+      int max = (int) (dataMinMax.max);
+      FieldType ftype;
+      DataType sdtype = dtype.withSignedness(DataType.Signedness.SIGNED);
+      if (sdtype == DataType.BYTE) {
+        ftype = dtype.isUnsigned() ? FieldType.BYTE : FieldType.SBYTE;
+      } else if (sdtype == DataType.SHORT) {
+        ftype = dtype.isUnsigned() ? FieldType.SHORT : FieldType.SSHORT;
+      } else if (sdtype == DataType.INT) {
+        // A geotiff LONG/SLONG is really a 4-byte regular integer
+        ftype = dtype.isUnsigned() ? FieldType.LONG : FieldType.SLONG;
       } else {
-        geotiff.addTag(new IFDEntry(Tag.PhotometricInterpretation, FieldType.SHORT).setValue(1)); // black is zero
+        throw new IllegalArgumentException("Unsupported dtype: " + dtype);
       }
-
-      geotiff.addTag(new IFDEntry(Tag.BitsPerSample, FieldType.SHORT).setValue(elemSize * 8));
-
-      // standard tags for SampleFormat ( see TIFF spec, section 19)
-      if (dtype.isIntegral()) {
-        geotiff.addTag(new IFDEntry(Tag.SampleFormat, FieldType.SHORT).setValue(dtype.isUnsigned() ? 1 : 2)); // UINT or
-                                                                                                              // INT
-      } else if (dtype.isFloatingPoint()) {
-        geotiff.addTag(new IFDEntry(Tag.SampleFormat, FieldType.SHORT).setValue(3)); // IEEE Floating Point Type
-      } else {
-        throw new IllegalArgumentException("Unsupported data type for geotiff: " + dtype);
-      }
-      geotiff.addTag(new IFDEntry(Tag.SamplesPerPixel, FieldType.SHORT).setValue(1));
-
-      if (dtype.isFloatingPoint()) {
-        float min = (float) (dataMinMax.min);
-        float max = (float) (dataMinMax.max);
-        geotiff.addTag(new IFDEntry(Tag.SMinSampleValue, FieldType.FLOAT).setValue(min));
-        geotiff.addTag(new IFDEntry(Tag.SMaxSampleValue, FieldType.FLOAT).setValue(max));
-        geotiff.addTag(new IFDEntry(Tag.GDALNoData, FieldType.ASCII).setValue(String.valueOf(min - 1.f)));
-      } else if (dtype.isIntegral()) {
-        int min = (int) (dataMinMax.min);
-        int max = (int) (dataMinMax.max);
-        FieldType ftype;
-        DataType sdtype = dtype.withSignedness(DataType.Signedness.SIGNED);
-        if (sdtype == DataType.BYTE) {
-          ftype = dtype.isUnsigned() ? FieldType.BYTE : FieldType.SBYTE;
-        } else if (sdtype == DataType.SHORT) {
-          ftype = dtype.isUnsigned() ? FieldType.SHORT : FieldType.SSHORT;
-        } else if (sdtype == DataType.INT) {
-          // A geotiff LONG/SLONG is really a 4-byte regular integer
-          ftype = dtype.isUnsigned() ? FieldType.LONG : FieldType.SLONG;
-        } else {
-          throw new IllegalArgumentException("Unsupported dtype: " + dtype);
-        }
-        geotiff.addTag(new IFDEntry(Tag.SMinSampleValue, ftype).setValue(min));
-        geotiff.addTag(new IFDEntry(Tag.SMaxSampleValue, ftype).setValue(max));
-        // No GDALNoData tag is set as it is ambiguous what would be appropriate here.
-      }
+      geotiff.addTag(new IFDEntry(Tag.SMinSampleValue, ftype).setValue(min));
+      geotiff.addTag(new IFDEntry(Tag.SMaxSampleValue, ftype).setValue(max));
+      // No GDALNoData tag is set as it is ambiguous what would be appropriate here.
+    } else if (dtype.isFloatingPoint()) {
+      geotiff.addTag(new IFDEntry(Tag.SampleFormat, FieldType.SHORT).setValue(3)); // IEEE Floating Point Type
+      float min = (float) (dataMinMax.min);
+      float max = (float) (dataMinMax.max);
+      geotiff.addTag(new IFDEntry(Tag.SMinSampleValue, FieldType.FLOAT).setValue(min));
+      geotiff.addTag(new IFDEntry(Tag.SMaxSampleValue, FieldType.FLOAT).setValue(max));
+      geotiff.addTag(new IFDEntry(Tag.GDALNoData, FieldType.ASCII).setValue(String.valueOf(min - 1.f)));
     }
 
     /*
