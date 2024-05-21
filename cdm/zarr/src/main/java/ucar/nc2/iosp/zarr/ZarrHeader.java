@@ -255,22 +255,9 @@ public class ZarrHeader {
               dimNames[i] = (String) aod1.get(i);
             }
             hasNamedDimensions = true;
-            // logger.trace(" found _ARRAY_DIMENSIONS array {}", aod1);
           } catch (final Exception exc) {
             logger.debug("  Could not extract _ARRAY_DIMENSIONS for {}, {}", vname, exc.getMessage());
           }
-
-          //// Informational logging
-          // } else if ("coordinates".equals(attrName) || "standard_name".equals(attrName) || "units".equals(attrName))
-          //// {
-          // try {
-          // ArrayObject.D1 aod1 = (ArrayObject.D1) attr.getValues();
-          // String coordsStr = (String) aod1.get(0);
-          // logger.trace(" var {} has {} attr '{}'", vname, attrName, coordsStr);
-          // } catch (final Exception exc) {
-          // logger.debug(" Exception extracting {} attr value, {}", attrName, exc.getMessage());
-          // }
-
         }
       }
     }
