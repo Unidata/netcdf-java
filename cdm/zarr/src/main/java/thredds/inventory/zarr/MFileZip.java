@@ -22,6 +22,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 import ucar.nc2.util.IO;
+import ucar.unidata.io.RandomAccessFile;
 
 /**
  * Implements thredds.inventory.MFile for ZipFiles and ZipEntries
@@ -167,16 +168,14 @@ public class MFileZip implements MFile {
 
   @Override
   public void writeToStream(OutputStream outputStream) throws IOException {
-    for (ZipEntry entry : leafEntries) {
-      final File file = new File(entry.getName());
-      IO.copyFile(file, outputStream);
-    }
+    IO.copyFile(rootPath.toFile(), outputStream);
   }
 
   @Override
   public void writeToStream(OutputStream outputStream, long offset, long maxBytes) throws IOException {
-    throw new UnsupportedOperationException(
-        "Writing MFileZip with a byte range to stream not implemented. Filename: " + getName());
+    try (RandomAccessFile randomAccessFile = RandomAccessFile.acquire(rootPath.toString())) {
+      IO.copyRafB(randomAccessFile, offset, maxBytes, outputStream);
+    }
   }
 
   @Override
