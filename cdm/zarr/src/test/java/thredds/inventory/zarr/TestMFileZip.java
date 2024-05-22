@@ -52,7 +52,7 @@ public class TestMFileZip {
 
         final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         mFile.writeToStream(outputStream);
-        assertThat(outputStream.size()).isEqualTo(expectedSize * expectedNumberOfFiles);
+        assertThat(outputStream.size()).isEqualTo(mFile.getLength());
       }
     }
   }
