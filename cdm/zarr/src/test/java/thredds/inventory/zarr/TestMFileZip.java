@@ -63,6 +63,24 @@ public class TestMFileZip {
       final MFileZip mFile = new MFileZip(zipFile.getName());
       assertThat(mFile.exists()).isEqualTo(true);
     }
+
+    @Test
+    public void shouldGetLastModified() throws IOException {
+      try (ZipFile zipFile = createTemporaryZipFile(20, 1)) {
+        final MFileZip mFile = new MFileZip(zipFile.getName());
+        assertThat(mFile.getLastModified()).isGreaterThan(0);
+        assertThat(mFile.getLastModified()).isEqualTo(new File(zipFile.getName()).lastModified());
+      }
+    }
+
+    @Test
+    public void shouldGetLengthForZipFile() throws IOException {
+      try (ZipFile zipFile = createTemporaryZipFile(30, 1)) {
+        final MFileZip mFile = new MFileZip(zipFile.getName());
+        assertThat(mFile.getLength()).isGreaterThan(30);
+        assertThat(mFile.getLength()).isEqualTo(new File(zipFile.getName()).length());
+      }
+    }
   }
 
   private static ZipFile createTemporaryZipFile(int size, int numberOfFiles) throws IOException {

@@ -101,12 +101,12 @@ public class MFileZip implements MFile {
 
   @Override
   public long getLastModified() {
-    return this.entry == null ? 0 : this.entry.getLastModifiedTime().toMillis();
+    return this.entry == null ? rootPath.toFile().lastModified() : this.entry.getLastModifiedTime().toMillis();
   }
 
   @Override
   public long getLength() {
-    return this.entry == null ? 0 : this.entry.getSize();
+    return this.entry == null ? rootPath.toFile().length() : this.entry.getSize();
   }
 
   @Override
