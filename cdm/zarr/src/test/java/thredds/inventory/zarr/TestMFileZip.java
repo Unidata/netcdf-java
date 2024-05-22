@@ -55,6 +55,25 @@ public class TestMFileZip {
         assertThat(outputStream.size()).isEqualTo(mFile.getLength());
       }
     }
+
+    @Test
+    public void shouldWritePartialZipToStream() throws IOException {
+      try (ZipFile zipFile = createTemporaryZipFile("TestWritePartialZip", entrySize, numberOfEntries)) {
+        final MFileZip mFile = new MFileZip(zipFile.getName());
+        final int length = (int) mFile.getLength();
+
+        final int offset = 1;
+        final int maxBytes = 100;
+
+        final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+
+        final int startPosition = Math.min(offset, length);
+        final int endPosition = Math.min(offset + maxBytes, length);
+
+        mFile.writeToStream(outputStream, offset, maxBytes);
+        assertThat(outputStream.size()).isEqualTo(Math.max(0, endPosition - startPosition));
+      }
+    }
   }
 
   public static class TestMFileZipNonParameterized {
