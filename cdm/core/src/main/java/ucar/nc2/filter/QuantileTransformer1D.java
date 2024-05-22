@@ -33,7 +33,7 @@ public class QuantileTransformer1D {
 
   public static void main(String[] args) {
     // Example usage
-    double[] data = {1.8, 2, 2.3, 2.4, 10, 11, 2, 5};
+    double[] data = {1.8, 2,2.3, 2.4, 5, 10, 11};
     Arrays.sort(data);
     double[] transformedData = QuantileTransformer1D.transform(data);
     System.out.println(Arrays.toString(transformedData));
