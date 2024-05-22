@@ -47,21 +47,23 @@ public class TestMFileZip {
 
     @Test
     public void shouldWriteZipToStream() throws IOException {
-      final ZipFile zipFile = createTemporaryZipFile(expectedSize, expectedNumberOfFiles);
-      final MFileZip mFile = new MFileZip(zipFile.getName());
+      try (ZipFile zipFile = createTemporaryZipFile(expectedSize, expectedNumberOfFiles)) {
+        final MFileZip mFile = new MFileZip(zipFile.getName());
 
-      final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-      mFile.writeToStream(outputStream);
-      assertThat(outputStream.size()).isEqualTo(expectedSize * expectedNumberOfFiles);
+        final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        mFile.writeToStream(outputStream);
+        assertThat(outputStream.size()).isEqualTo(expectedSize * expectedNumberOfFiles);
+      }
     }
   }
 
   public static class TestMFileZipNonParameterized {
     @Test
     public void shouldReturnTrueForExistingFile() throws IOException {
-      final ZipFile zipFile = createTemporaryZipFile(2, 0);
-      final MFileZip mFile = new MFileZip(zipFile.getName());
-      assertThat(mFile.exists()).isEqualTo(true);
+      try (ZipFile zipFile = createTemporaryZipFile(2, 0)) {
+        final MFileZip mFile = new MFileZip(zipFile.getName());
+        assertThat(mFile.exists()).isEqualTo(true);
+      }
     }
 
     @Test
