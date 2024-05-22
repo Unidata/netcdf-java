@@ -40,14 +40,14 @@ public class TestMFileZip {
     }
 
     @Parameterized.Parameter(0)
-    public int expectedSize;
+    public int entrySize;
 
     @Parameterized.Parameter(1)
-    public int expectedNumberOfFiles;
+    public int numberOfEntries;
 
     @Test
     public void shouldWriteZipToStream() throws IOException {
-      try (ZipFile zipFile = createTemporaryZipFile(expectedSize, expectedNumberOfFiles)) {
+      try (ZipFile zipFile = createTemporaryZipFile("TestWriteZip", entrySize, numberOfEntries)) {
         final MFileZip mFile = new MFileZip(zipFile.getName());
 
         final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
@@ -60,7 +60,7 @@ public class TestMFileZip {
   public static class TestMFileZipNonParameterized {
     @Test
     public void shouldReturnTrueForExistingFile() throws IOException {
-      try (ZipFile zipFile = createTemporaryZipFile(2, 0)) {
+      try (ZipFile zipFile = createTemporaryZipFile("TestExists", 2, 0)) {
         final MFileZip mFile = new MFileZip(zipFile.getName());
         assertThat(mFile.exists()).isEqualTo(true);
       }
@@ -68,7 +68,7 @@ public class TestMFileZip {
 
     @Test
     public void shouldGetLastModified() throws IOException {
-      try (ZipFile zipFile = createTemporaryZipFile(20, 1)) {
+      try (ZipFile zipFile = createTemporaryZipFile("TestLastModified", 20, 1)) {
         final MFileZip mFile = new MFileZip(zipFile.getName());
         assertThat(mFile.getLastModified()).isGreaterThan(0);
         assertThat(mFile.getLastModified()).isEqualTo(new File(zipFile.getName()).lastModified());
@@ -77,7 +77,7 @@ public class TestMFileZip {
 
     @Test
     public void shouldGetLengthForZipFile() throws IOException {
-      try (ZipFile zipFile = createTemporaryZipFile(30, 1)) {
+      try (ZipFile zipFile = createTemporaryZipFile("TestLength", 30, 1)) {
         final MFileZip mFile = new MFileZip(zipFile.getName());
         assertThat(mFile.getLength()).isGreaterThan(30);
         assertThat(mFile.getLength()).isEqualTo(new File(zipFile.getName()).length());
@@ -94,8 +94,8 @@ public class TestMFileZip {
     }
   }
 
-  private static ZipFile createTemporaryZipFile(int size, int numberOfFiles) throws IOException {
-    final File zipFile = tempFolder.newFile("TestMFileZip" + size + "-" + numberOfFiles + ".zip");
+  private static ZipFile createTemporaryZipFile(String name, int size, int numberOfFiles) throws IOException {
+    final File zipFile = tempFolder.newFile(name + "-" + size + "-" + numberOfFiles + ".zip");
 
     try (FileOutputStream fos = new FileOutputStream(zipFile.getPath());
         ZipOutputStream zipOS = new ZipOutputStream(fos)) {
