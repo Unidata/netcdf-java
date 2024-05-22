@@ -117,7 +117,7 @@ public class MFileZip implements MFile {
   @Override
   public boolean isReadable() {
     // readable if root is readable
-    return Files.isReadable(Paths.get(root.getName()));
+    return Files.isReadable(rootPath);
   }
 
   @Override
