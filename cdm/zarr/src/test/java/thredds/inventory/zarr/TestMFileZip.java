@@ -81,6 +81,15 @@ public class TestMFileZip {
         assertThat(mFile.getLength()).isEqualTo(new File(zipFile.getName()).length());
       }
     }
+
+    @Test
+    public void shouldProvideForZipExtensions() {
+      MFileZip.Provider provider = new MFileZip.Provider();
+      assertThat(provider.canProvide("foo.zip")).isTrue();
+      assertThat(provider.canProvide("foo.ZIP")).isTrue();
+      assertThat(provider.canProvide("foo.zip2")).isTrue();
+      assertThat(provider.canProvide("foo.txt")).isFalse();
+    }
   }
 
   private static ZipFile createTemporaryZipFile(int size, int numberOfFiles) throws IOException {

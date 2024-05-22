@@ -7,6 +7,7 @@ package thredds.inventory.zarr;
 
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Locale;
 import javax.annotation.Nonnull;
 import thredds.filesystem.MFileOS;
 import thredds.inventory.MFile;
@@ -206,7 +207,7 @@ public class MFileZip implements MFile {
 
     @Override
     public boolean canProvide(String location) {
-      return location != null && location.contains(ext);
+      return location != null && location.toLowerCase(Locale.ROOT).contains(ext);
     }
 
     @Nonnull
