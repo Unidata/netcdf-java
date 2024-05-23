@@ -49,7 +49,7 @@ import ucar.unidata.util.StringUtil2;
  * @since 10/3/2019.
  */
 public class NetcdfFiles {
-  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NetcdfFile.class);
+  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NetcdfFiles.class);
   private static final List<IOServiceProvider> registeredProviders = new ArrayList<>();
   private static final List<RandomAccessFileProvider> registeredRandomAccessFileProviders = new ArrayList<>();
   private static final int default_buffersize = 8092;
