@@ -40,33 +40,81 @@ public class TestMFileZip {
     }
 
     @Parameterized.Parameter(0)
-    public int expectedSize;
+    public int entrySize;
 
     @Parameterized.Parameter(1)
-    public int expectedNumberOfFiles;
+    public int numberOfEntries;
 
     @Test
     public void shouldWriteZipToStream() throws IOException {
-      final ZipFile zipFile = createTemporaryZipFile(expectedSize, expectedNumberOfFiles);
-      final MFileZip mFile = new MFileZip(zipFile.getName());
+      try (ZipFile zipFile = createTemporaryZipFile("TestWriteZip", entrySize, numberOfEntries)) {
+        final MFileZip mFile = new MFileZip(zipFile.getName());
 
-      final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-      mFile.writeToStream(outputStream);
-      assertThat(outputStream.size()).isEqualTo(expectedSize * expectedNumberOfFiles);
+        final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        mFile.writeToStream(outputStream);
+        assertThat(outputStream.size()).isEqualTo(mFile.getLength());
+      }
+    }
+
+    @Test
+    public void shouldWritePartialZipToStream() throws IOException {
+      try (ZipFile zipFile = createTemporaryZipFile("TestWritePartialZip", entrySize, numberOfEntries)) {
+        final MFileZip mFile = new MFileZip(zipFile.getName());
+        final int length = (int) mFile.getLength();
+
+        final int offset = 1;
+        final int maxBytes = 100;
+
+        final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+
+        final int startPosition = Math.min(offset, length);
+        final int endPosition = Math.min(offset + maxBytes, length);
+
+        mFile.writeToStream(outputStream, offset, maxBytes);
+        assertThat(outputStream.size()).isEqualTo(Math.max(0, endPosition - startPosition));
+      }
     }
   }
 
   public static class TestMFileZipNonParameterized {
     @Test
     public void shouldReturnTrueForExistingFile() throws IOException {
-      final ZipFile zipFile = createTemporaryZipFile(2, 0);
-      final MFileZip mFile = new MFileZip(zipFile.getName());
-      assertThat(mFile.exists()).isEqualTo(true);
+      try (ZipFile zipFile = createTemporaryZipFile("TestExists", 2, 0)) {
+        final MFileZip mFile = new MFileZip(zipFile.getName());
+        assertThat(mFile.exists()).isEqualTo(true);
+      }
+    }
+
+    @Test
+    public void shouldGetLastModified() throws IOException {
+      try (ZipFile zipFile = createTemporaryZipFile("TestLastModified", 20, 1)) {
+        final MFileZip mFile = new MFileZip(zipFile.getName());
+        assertThat(mFile.getLastModified()).isGreaterThan(0);
+        assertThat(mFile.getLastModified()).isEqualTo(new File(zipFile.getName()).lastModified());
+      }
+    }
+
+    @Test
+    public void shouldGetLengthForZipFile() throws IOException {
+      try (ZipFile zipFile = createTemporaryZipFile("TestLength", 30, 1)) {
+        final MFileZip mFile = new MFileZip(zipFile.getName());
+        assertThat(mFile.getLength()).isGreaterThan(30);
+        assertThat(mFile.getLength()).isEqualTo(new File(zipFile.getName()).length());
+      }
+    }
+
+    @Test
+    public void shouldProvideForZipExtensions() {
+      MFileZip.Provider provider = new MFileZip.Provider();
+      assertThat(provider.canProvide("foo.zip")).isTrue();
+      assertThat(provider.canProvide("foo.ZIP")).isTrue();
+      assertThat(provider.canProvide("foo.zip2")).isTrue();
+      assertThat(provider.canProvide("foo.txt")).isFalse();
     }
   }
 
-  private static ZipFile createTemporaryZipFile(int size, int numberOfFiles) throws IOException {
-    final File zipFile = tempFolder.newFile("TestMFileZip" + size + "-" + numberOfFiles + ".zip");
+  private static ZipFile createTemporaryZipFile(String name, int size, int numberOfFiles) throws IOException {
+    final File zipFile = tempFolder.newFile(name + "-" + size + "-" + numberOfFiles + ".zip");
 
     try (FileOutputStream fos = new FileOutputStream(zipFile.getPath());
         ZipOutputStream zipOS = new ZipOutputStream(fos)) {

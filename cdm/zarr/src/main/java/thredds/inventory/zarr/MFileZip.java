@@ -7,6 +7,7 @@ package thredds.inventory.zarr;
 
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Locale;
 import javax.annotation.Nonnull;
 import thredds.filesystem.MFileOS;
 import thredds.inventory.MFile;
@@ -22,6 +23,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 import ucar.nc2.util.IO;
+import ucar.unidata.io.RandomAccessFile;
 
 /**
  * Implements thredds.inventory.MFile for ZipFiles and ZipEntries
@@ -101,12 +103,12 @@ public class MFileZip implements MFile {
 
   @Override
   public long getLastModified() {
-    return this.entry == null ? 0 : this.entry.getLastModifiedTime().toMillis();
+    return this.entry == null ? rootPath.toFile().lastModified() : this.entry.getLastModifiedTime().toMillis();
   }
 
   @Override
   public long getLength() {
-    return this.entry == null ? 0 : this.entry.getSize();
+    return this.entry == null ? rootPath.toFile().length() : this.entry.getSize();
   }
 
   @Override
@@ -115,9 +117,14 @@ public class MFileZip implements MFile {
   }
 
   @Override
+  public boolean isZipFile() {
+    return true;
+  }
+
+  @Override
   public boolean isReadable() {
     // readable if root is readable
-    return Files.isReadable(Paths.get(root.getName()));
+    return Files.isReadable(rootPath);
   }
 
   @Override
@@ -162,16 +169,14 @@ public class MFileZip implements MFile {
 
   @Override
   public void writeToStream(OutputStream outputStream) throws IOException {
-    for (ZipEntry entry : leafEntries) {
-      final File file = new File(entry.getName());
-      IO.copyFile(file, outputStream);
-    }
+    IO.copyFile(rootPath.toFile(), outputStream);
   }
 
   @Override
   public void writeToStream(OutputStream outputStream, long offset, long maxBytes) throws IOException {
-    throw new UnsupportedOperationException(
-        "Writing MFileZip with a byte range to stream not implemented. Filename: " + getName());
+    try (RandomAccessFile randomAccessFile = RandomAccessFile.acquire(rootPath.toString())) {
+      IO.copyRafB(randomAccessFile, offset, maxBytes, outputStream);
+    }
   }
 
   @Override
@@ -202,7 +207,7 @@ public class MFileZip implements MFile {
 
     @Override
     public boolean canProvide(String location) {
-      return location != null && location.contains(ext);
+      return location != null && location.toLowerCase(Locale.ROOT).contains(ext);
     }
 
     @Nonnull

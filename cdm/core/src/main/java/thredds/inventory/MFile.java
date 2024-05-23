@@ -35,6 +35,15 @@ public interface MFile extends Comparable<MFile> {
 
   boolean isDirectory();
 
+  /**
+   * Check if this MFile is a zip file
+   * 
+   * @return true if the MFile is a zip file
+   */
+  default boolean isZipFile() {
+    return false;
+  }
+
   default boolean isReadable() {
     return true;
   }
