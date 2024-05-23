@@ -61,24 +61,24 @@ public class Shuffle extends Filter {
 
   @Override
   public byte[] decode(byte[] dataIn) {
-    if (dataIn.length % elemSize != 0 || elemSize <= 1) {
+    if (dataIn.length % this.elemSize == 0 && this.elemSize > 1) {
+      int nElems = dataIn.length / this.elemSize;
+      byte[] result = new byte[dataIn.length];
+
+      for (int j = 0; j < this.elemSize; ++j) {
+        int sourceIndex = j * nElems;
+        int destIndex = j;
+        for (int i = 0; i < nElems; ++i) {
+          result[destIndex] = dataIn[sourceIndex];
+          sourceIndex++;
+          destIndex += this.elemSize;
+        }
+      }
+
+      return result;
+    } else {
       return dataIn;
     }
-
-    int nElems = dataIn.length / elemSize;
-    int[] start = new int[elemSize];
-    for (int k = 0; k < elemSize; k++) {
-      start[k] = k * nElems;
-    }
-
-    byte[] result = new byte[dataIn.length];
-    for (int i = 0; i < nElems; i++) {
-      for (int j = 0; j < elemSize; j++) {
-        result[(i * elemSize) + j] = dataIn[i + start[j]];
-      }
-    }
-
-    return result;
   }
 
   public static class Provider implements FilterProvider {
