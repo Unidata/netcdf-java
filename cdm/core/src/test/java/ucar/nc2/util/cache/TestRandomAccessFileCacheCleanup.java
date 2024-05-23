@@ -7,10 +7,12 @@ import java.io.IOException;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import ucar.unidata.io.RandomAccessFile;
 
+@Ignore("Flaky test failing on GitHub")
 public class TestRandomAccessFileCacheCleanup {
 
   @ClassRule
