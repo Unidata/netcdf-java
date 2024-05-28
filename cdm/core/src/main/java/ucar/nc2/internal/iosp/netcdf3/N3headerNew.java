@@ -38,6 +38,9 @@ public class N3headerNew {
       case NETCDF3:
       case NETCDF3_64BIT_OFFSET:
         return true;
+      case NETCDF3_64BIT_DATA:
+        log.debug("NETCDF3_64BIT_DATA (CDF5) not supported");
+        return false;
       default:
         return false;
     }
