@@ -8,7 +8,7 @@ apply from: "$rootDir/gradle/any/protobuf.gradle"
 
 dependencies {
   api enforcedPlatform(project(':netcdf-java-platform'))
-  implementation 'commons-math:commons-math'
+  implementation 'org.apache.commons:commons-math3'
 
   testImplementation enforcedPlatform(project(':netcdf-java-testing-platform'))
 

@@ -37,7 +37,7 @@ dependencies {
     api 'com.beust:jcommander:1.78'
 
     // cdm-core
-    api 'commons-math:commons-math:1.2'
+    api 'org.apache.commons:commons-math3:3.6.1'
 
     // cdm-grib
     api 'edu.ucar:jj2000:5.4'
