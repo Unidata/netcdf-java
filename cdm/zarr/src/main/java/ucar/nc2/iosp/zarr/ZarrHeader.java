@@ -7,13 +7,10 @@ package ucar.nc2.iosp.zarr;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import ucar.ma2.Array;
 import ucar.ma2.ArrayObject;
-import ucar.ma2.ArrayString;
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
 import ucar.nc2.Group;
-import ucar.ma2.Index;
 import ucar.nc2.Variable;
 import ucar.nc2.filter.Filter;
 import ucar.unidata.io.RandomAccessFile;
