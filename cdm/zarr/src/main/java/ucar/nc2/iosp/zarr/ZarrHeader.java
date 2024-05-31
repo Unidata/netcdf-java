@@ -34,7 +34,7 @@ public class ZarrHeader {
   private final RandomAccessDirectory rootRaf;
   private final Group.Builder rootGroup;
   private final String rootLocation;
-  private static ObjectMapper objectMapper = new ObjectMapper();
+  private static final ObjectMapper objectMapper = new ObjectMapper();
 
   public ZarrHeader(RandomAccessDirectory raf, Group.Builder rootGroup) {
     this.rootRaf = raf;
