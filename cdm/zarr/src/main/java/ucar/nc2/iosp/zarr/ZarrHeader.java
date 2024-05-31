@@ -297,7 +297,7 @@ public class ZarrHeader {
     // Include some info from .zarray file in attributes for display when showing variable detail.
     // Possibly add to this fill_value if in .zarray but not .zattrs?
     if (attrs == null) {
-      attrs = new ArrayList<Attribute>();
+      attrs = new ArrayList<>();
     }
     final Filter compressor = zarray.getCompressor();
     if (compressor == null) {
