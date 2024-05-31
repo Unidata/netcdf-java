@@ -18,7 +18,6 @@ import ucar.nc2.Group;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFiles;
 import ucar.nc2.Variable;
-import ucar.nc2.filter.Filters;
 
 import java.io.IOException;
 import java.nio.ByteOrder;

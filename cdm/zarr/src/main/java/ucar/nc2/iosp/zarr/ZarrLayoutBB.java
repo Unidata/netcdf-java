@@ -14,7 +14,6 @@ import java.nio.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * A tiled layout for Zarr formats that accommodates uncompressing and filtering data before returning

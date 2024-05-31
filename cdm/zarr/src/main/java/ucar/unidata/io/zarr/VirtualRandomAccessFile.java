@@ -9,9 +9,6 @@ import ucar.nc2.NetcdfFiles;
 import ucar.unidata.io.RandomAccessFile;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.OptionalLong;
 
 /**
  * A wrapper for a RandomAccessFile that allows lazy loading
