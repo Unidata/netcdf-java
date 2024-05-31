@@ -331,9 +331,7 @@ public class ZarrHeader {
     }
 
     // add current attributes, if any exist
-    if (attrs != null) {
-      var.addAttributes(attrs);
-    }
+    var.addAttributes(attrs);
 
     // Add var to parent.
     parentGroup.addVariable(var);
