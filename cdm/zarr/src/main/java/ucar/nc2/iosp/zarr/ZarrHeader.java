@@ -223,7 +223,7 @@ public class ZarrHeader {
   private void makeVariable(RandomAccessDirectoryItem item, long dataOffset, ZArray zarray,
       Map<Integer, Long> initializedChunks, List<Attribute> attrs) throws ZarrFormatException {
     // make new Variable
-    Variable.Builder var = Variable.builder();
+    Variable.Builder<?> var = Variable.builder();
     String location = ZarrUtils.trimLocation(item.getLocation());
 
     // set var name
