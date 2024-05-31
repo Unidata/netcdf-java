@@ -39,9 +39,6 @@ public class ZarrHeader {
   private final String rootLocation;
   private static ObjectMapper objectMapper = new ObjectMapper();
 
-  /*
-   *
-   */
   public ZarrHeader(RandomAccessDirectory raf, Group.Builder rootGroup) {
     this.rootRaf = raf;
     this.rootGroup = rootGroup;
@@ -60,16 +57,10 @@ public class ZarrHeader {
     private List<Attribute> attrs; // list of variable attributes
     private long dataOffset; // byte position where data starts
 
-    /*
-     *
-     */
     void setAttrs(List<Attribute> attrs) {
       this.attrs = attrs;
     }
 
-    /*
-     *
-     */
     void setVar(RandomAccessDirectoryItem var) {
       this.var = var;
       this.attrs = null;
@@ -102,9 +93,6 @@ public class ZarrHeader {
       return ZarrUtils.getObjectNameFromPath(attrPath).equals(ZarrUtils.getObjectNameFromPath(varPath));
     }
 
-    /*
-     *
-     */
     void processItem(RandomAccessDirectoryItem item) {
       if (var == null) {
         return;
@@ -122,9 +110,6 @@ public class ZarrHeader {
       }
     }
 
-    /*
-     *
-     */
     void makeVar() {
       if (var == null) {
         return; // do nothing if no variable is in progress
@@ -187,9 +172,6 @@ public class ZarrHeader {
     delayedVarMaker.makeVar();
   }
 
-  /*
-   *
-   */
   private void makeGroup(RandomAccessDirectoryItem item, List<Attribute> attrs) {
     // make new Group
     Group.Builder group = Group.builder();
@@ -217,9 +199,6 @@ public class ZarrHeader {
     }
   }
 
-  /*
-   *
-   */
   private void makeVariable(RandomAccessDirectoryItem item, long dataOffset, ZArray zarray,
       Map<Integer, Long> initializedChunks, List<Attribute> attrs) throws ZarrFormatException {
     // make new Variable
@@ -337,9 +316,6 @@ public class ZarrHeader {
     parentGroup.addVariable(var);
   }
 
-  /*
-   *
-   */
   private List<Attribute> makeAttributes(RandomAccessDirectoryItem item) {
     // get RandomAccessFile for JSON parsing
     try {
