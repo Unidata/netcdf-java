@@ -40,15 +40,6 @@
         <values>1 2 3 4 5</values>
     </variable>
 
-    <variable name="intNegatives" shape="5" type="int">
-        <attribute name="classify"/>
-        <values>-1 -2 -3 -4 -5</values>
-    </variable>
-
-    <variable name="intMix" shape="5" type="int">
-        <attribute name="classify"/>
-        <values>1 -2 0 4 -5</values>
-    </variable>
 
 
 </netcdf>

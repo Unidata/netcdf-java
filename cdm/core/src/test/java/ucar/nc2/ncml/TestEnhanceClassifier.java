@@ -25,7 +25,7 @@ public class TestEnhanceClassifier {
   public static final int[] inttest = {1, 2, 3, 4, 5};
   public static final Array DATA_inttest = Array.makeFromJavaArray(inttest);
 
-
+  /** test on doubles, all positives, all negatives and a mixed array */
   @Test
   public void testEnhanceClassifier_doubles() throws IOException {
     try (NetcdfFile ncfile = NetcdfDatasets.openDataset(dataDir + "testClassifier.ncml", true, null)) {
@@ -55,6 +55,7 @@ public class TestEnhanceClassifier {
 
   }
 
+  /** test on floats, all positives, all negatives and a mixed array */
   @Test
   public void testEnhanceClassifier_floats() throws IOException {
     try (NetcdfFile ncfile = NetcdfDatasets.openDataset(dataDir + "testClassifier.ncml", true, null)) {
@@ -84,12 +85,12 @@ public class TestEnhanceClassifier {
 
   }
 
+  /** enhance is not applied to Integers, so we expect the same values after application */
   @Test
   public void testEnhanceClassifier_integers() throws IOException {
-    /** enhance is not applied to Integers.. */
+
     try (NetcdfFile ncfile = NetcdfDatasets.openDataset(dataDir + "testClassifier.ncml", true, null)) {
       Variable IntegerPositives = ncfile.findVariable("intPositives");
-      Array datafloatsz = IntegerPositives.read();
       assertThat((Object) IntegerPositives).isNotNull();
       assertThat(IntegerPositives.getDataType()).isEqualTo(DataType.INT);
       assertThat(IntegerPositives.attributes().hasAttribute("classify")).isTrue();
