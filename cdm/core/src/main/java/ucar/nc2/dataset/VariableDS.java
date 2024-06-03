@@ -289,6 +289,9 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
       if (enhancements.contains(Enhance.ApplyNormalizer) && normalizer != null) {
         toApply.add(normalizer);
       }
+      if (enhancements.contains(Enhance.ApplyClassifier) && classifier != null) {
+        toApply.add(classifier);
+      }
 
       double[] dataArray = (double[]) data.get1DJavaArray(DataType.DOUBLE);
 
@@ -865,6 +868,7 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
   private ScaleOffset scaleOffset;
   private Standardizer standardizer;
   private Normalizer normalizer;
+  private Classifier classifier;
   private ConvertMissing convertMissing;
   private Set<Enhance> enhanceMode = EnumSet.noneOf(Enhance.class); // The set of enhancements that were made.
 
@@ -938,6 +942,10 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
     Attribute normalizerAtt = findAttribute(CDM.NORMALIZE);
     if (normalizerAtt != null && this.enhanceMode.contains(Enhance.ApplyNormalizer) && dataType.isFloatingPoint()) {
       this.normalizer = Normalizer.createFromVariable(this);
+    }
+    Attribute classifierAtt = findAttribute(CDM.CLASSIFY);
+    if (classifierAtt != null && this.enhanceMode.contains(Enhance.ApplyClassifier) && dataType.isFloatingPoint()) {
+      this.classifier = Classifier.createFromVariable(this);
     }
   }
 
