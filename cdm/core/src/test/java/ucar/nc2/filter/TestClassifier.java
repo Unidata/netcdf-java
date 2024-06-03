@@ -18,6 +18,7 @@ public class TestClassifier {
     int[] expected = {1, 1, 1};
     assertArrayEquals(expected, classifier.classifyArray(input));
   }
+
   @Test
   public void testClassifyIntArray_AllNegative() throws InvalidValueException {
     Classifier classifier = new Classifier();
@@ -25,6 +26,7 @@ public class TestClassifier {
     int[] expected = {0, 0, 0};
     assertArrayEquals(expected, classifier.classifyArray(input));
   }
+
   @Test
   public void testClassifyIntArray_Mixed() throws InvalidValueException {
     Classifier classifier = new Classifier();
@@ -32,6 +34,7 @@ public class TestClassifier {
     int[] expected = {0, 1, 0, 1};
     assertArrayEquals(expected, classifier.classifyArray(input));
   }
+
   @Test
   public void testClassifyIntArray_WithZero() throws InvalidValueException {
     Classifier classifier = new Classifier();
@@ -39,6 +42,7 @@ public class TestClassifier {
     int[] expected = {1, 0, 1, 1, 1, 1};
     assertArrayEquals(expected, classifier.classifyArray(input));
   }
+
   /** test doubles */
   @Test
   public void testClassifyDoubleArray_AllPositive() throws InvalidValueException {
@@ -47,6 +51,7 @@ public class TestClassifier {
     int[] expected = {1, 1, 1};
     assertArrayEquals(expected, classifier.classifyArray(input));
   }
+
   @Test
   public void testClassifyDoubleArray_AllNegative() throws InvalidValueException {
     Classifier classifier = new Classifier();
@@ -54,6 +59,7 @@ public class TestClassifier {
     int[] expected = {0, 0, 0};
     assertArrayEquals(expected, classifier.classifyArray(input));
   }
+
   @Test
   public void testClassifyDoubleArray_Mixed() throws InvalidValueException {
     Classifier classifier = new Classifier();
@@ -61,6 +67,7 @@ public class TestClassifier {
     int[] expected = {0, 1, 0, 1};
     assertArrayEquals(expected, classifier.classifyArray(input));
   }
+
   @Test
   public void testClassifyDoubleArray_WithZero() throws InvalidValueException {
     Classifier classifier = new Classifier();
@@ -68,6 +75,7 @@ public class TestClassifier {
     int[] expected = {1, 0, 1, 1, 1, 1};
     assertArrayEquals(expected, classifier.classifyArray(input));
   }
+
   @Test(expected = InvalidValueException.class)
   public void testClassifyDoubleArray_WithNaN() throws InvalidValueException {
     Classifier classifier = new Classifier();
@@ -83,6 +91,7 @@ public class TestClassifier {
     int[] expected = {1, 1, 1};
     assertArrayEquals(expected, classifier.classifyArray(input));
   }
+
   @Test
   public void testClassifyFloatArray_AllNegative() throws InvalidValueException {
     Classifier classifier = new Classifier();
@@ -90,6 +99,7 @@ public class TestClassifier {
     int[] expected = {0, 0, 0};
     assertArrayEquals(expected, classifier.classifyArray(input));
   }
+
   @Test
   public void testClassifyFloatArray_Mixed() throws InvalidValueException {
     Classifier classifier = new Classifier();
@@ -97,6 +107,7 @@ public class TestClassifier {
     int[] expected = {0, 1, 0, 1};
     assertArrayEquals(expected, classifier.classifyArray(input));
   }
+
   @Test
   public void testClassifyFloatArray_WithZero() throws InvalidValueException {
     Classifier classifier = new Classifier();
@@ -104,6 +115,7 @@ public class TestClassifier {
     int[] expected = {1, 0, 1};
     assertArrayEquals(expected, classifier.classifyArray(input));
   }
+
   @Test(expected = InvalidValueException.class)
   public void testClassifyFloatArray_WithNaN() throws InvalidValueException {
     Classifier classifier = new Classifier();
