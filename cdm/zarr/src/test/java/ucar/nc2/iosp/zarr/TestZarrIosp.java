@@ -5,8 +5,11 @@
 
 package ucar.nc2.iosp.zarr;
 
+import java.nio.file.*;
 import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
@@ -15,7 +18,6 @@ import ucar.nc2.Group;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFiles;
 import ucar.nc2.Variable;
-import ucar.nc2.filter.Filters;
 
 import java.io.IOException;
 import java.nio.ByteOrder;
@@ -27,6 +29,9 @@ import static com.google.common.truth.Truth.assertThat;
  * Test class for Zarr IOSP
  */
 public class TestZarrIosp {
+
+  @ClassRule
+  public static TemporaryFolder tempFolder = new TemporaryFolder();
 
   // file names
   private static final String ZARR_FILENAME = "zarr_test_data.zarr/";
@@ -46,6 +51,8 @@ public class TestZarrIosp {
 
   // Non zarr zipped file
   private static final String NON_ZARR_DATA = ZarrTestsCommon.LOCAL_TEST_DATA_PATH + NON_ZARR_FILENAME;
+  // Copy to temp folder so unzipped file created when opened will get cleaned up after test
+  private static String TEMP_NON_ZARR_DATA;
 
   // fill values file
   private static final String FILL_VALUES_DATA = ZarrTestsCommon.LOCAL_TEST_DATA_PATH + FILL_VALUES_FILENAME;
@@ -53,11 +60,14 @@ public class TestZarrIosp {
   private static List<String> stores;
 
   @BeforeClass
-  public static void setUpTests() {
+  public static void setUpTests() throws IOException {
     stores = new ArrayList<>();
     stores.add(DIRECTORY_STORE_URI);
     stores.add(ZIP_STORE_URI);
     stores.add(OBJECT_STORE_ZARR_URI);
+
+    TEMP_NON_ZARR_DATA =
+        Files.copy(Paths.get(NON_ZARR_DATA), Paths.get(tempFolder.getRoot().toString(), NON_ZARR_FILENAME)).toString();
   }
 
   @Test
@@ -72,7 +82,7 @@ public class TestZarrIosp {
   @Test
   public void testNonZarrZipIsNotValid() throws IOException {
     ZarrIosp iosp = new ZarrIosp();
-    assertThat(iosp.isValidFile(NetcdfFiles.getRaf(NON_ZARR_DATA, -1))).isFalse();
+    assertThat(iosp.isValidFile(NetcdfFiles.getRaf(TEMP_NON_ZARR_DATA, -1))).isFalse();
   }
 
   //////////////////////////////////////////////////////
@@ -254,7 +264,7 @@ public class TestZarrIosp {
 
   @Test
   public void testReadNonZarrZipFile() throws IOException {
-    try (NetcdfFile ncfile = NetcdfFiles.open(NON_ZARR_DATA)) {
+    try (NetcdfFile ncfile = NetcdfFiles.open(TEMP_NON_ZARR_DATA)) {
       assertThat(ncfile).isNotNull();
       assertThat(ncfile.findDimension("x")).isNotNull();
     }

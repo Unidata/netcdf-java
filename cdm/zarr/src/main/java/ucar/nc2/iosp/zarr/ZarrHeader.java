@@ -7,13 +7,10 @@ package ucar.nc2.iosp.zarr;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import ucar.ma2.Array;
 import ucar.ma2.ArrayObject;
-import ucar.ma2.ArrayString;
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
 import ucar.nc2.Group;
-import ucar.ma2.Index;
 import ucar.nc2.Variable;
 import ucar.nc2.filter.Filter;
 import ucar.unidata.io.RandomAccessFile;
@@ -37,11 +34,8 @@ public class ZarrHeader {
   private final RandomAccessDirectory rootRaf;
   private final Group.Builder rootGroup;
   private final String rootLocation;
-  private static ObjectMapper objectMapper = new ObjectMapper();
+  private static final ObjectMapper objectMapper = new ObjectMapper();
 
-  /*
-   *
-   */
   public ZarrHeader(RandomAccessDirectory raf, Group.Builder rootGroup) {
     this.rootRaf = raf;
     this.rootGroup = rootGroup;
@@ -60,16 +54,10 @@ public class ZarrHeader {
     private List<Attribute> attrs; // list of variable attributes
     private long dataOffset; // byte position where data starts
 
-    /*
-     *
-     */
     void setAttrs(List<Attribute> attrs) {
       this.attrs = attrs;
     }
 
-    /*
-     *
-     */
     void setVar(RandomAccessDirectoryItem var) {
       this.var = var;
       this.attrs = null;
@@ -102,9 +90,6 @@ public class ZarrHeader {
       return ZarrUtils.getObjectNameFromPath(attrPath).equals(ZarrUtils.getObjectNameFromPath(varPath));
     }
 
-    /*
-     *
-     */
     void processItem(RandomAccessDirectoryItem item) {
       if (var == null) {
         return;
@@ -122,9 +107,6 @@ public class ZarrHeader {
       }
     }
 
-    /*
-     *
-     */
     void makeVar() {
       if (var == null) {
         return; // do nothing if no variable is in progress
@@ -187,9 +169,6 @@ public class ZarrHeader {
     delayedVarMaker.makeVar();
   }
 
-  /*
-   *
-   */
   private void makeGroup(RandomAccessDirectoryItem item, List<Attribute> attrs) {
     // make new Group
     Group.Builder group = Group.builder();
@@ -217,13 +196,10 @@ public class ZarrHeader {
     }
   }
 
-  /*
-   *
-   */
   private void makeVariable(RandomAccessDirectoryItem item, long dataOffset, ZArray zarray,
       Map<Integer, Long> initializedChunks, List<Attribute> attrs) throws ZarrFormatException {
     // make new Variable
-    Variable.Builder var = Variable.builder();
+    Variable.Builder<?> var = Variable.builder();
     String location = ZarrUtils.trimLocation(item.getLocation());
 
     // set var name
@@ -255,22 +231,9 @@ public class ZarrHeader {
               dimNames[i] = (String) aod1.get(i);
             }
             hasNamedDimensions = true;
-            // logger.trace(" found _ARRAY_DIMENSIONS array {}", aod1);
           } catch (final Exception exc) {
             logger.debug("  Could not extract _ARRAY_DIMENSIONS for {}, {}", vname, exc.getMessage());
           }
-
-          //// Informational logging
-          // } else if ("coordinates".equals(attrName) || "standard_name".equals(attrName) || "units".equals(attrName))
-          //// {
-          // try {
-          // ArrayObject.D1 aod1 = (ArrayObject.D1) attr.getValues();
-          // String coordsStr = (String) aod1.get(0);
-          // logger.trace(" var {} has {} attr '{}'", vname, attrName, coordsStr);
-          // } catch (final Exception exc) {
-          // logger.debug(" Exception extracting {} attr value, {}", attrName, exc.getMessage());
-          // }
-
         }
       }
     }
@@ -334,7 +297,7 @@ public class ZarrHeader {
     // Include some info from .zarray file in attributes for display when showing variable detail.
     // Possibly add to this fill_value if in .zarray but not .zattrs?
     if (attrs == null) {
-      attrs = new ArrayList<Attribute>();
+      attrs = new ArrayList<>();
     }
     final Filter compressor = zarray.getCompressor();
     if (compressor == null) {
@@ -344,17 +307,12 @@ public class ZarrHeader {
     }
 
     // add current attributes, if any exist
-    if (attrs != null) {
-      var.addAttributes(attrs);
-    }
+    var.addAttributes(attrs);
 
     // Add var to parent.
     parentGroup.addVariable(var);
   }
 
-  /*
-   *
-   */
   private List<Attribute> makeAttributes(RandomAccessDirectoryItem item) {
     // get RandomAccessFile for JSON parsing
     try {
