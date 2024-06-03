@@ -21,10 +21,7 @@ public class Classifier implements Enhancement {
     return new Classifier();
   }
 
-  @Override
-  public double convert(double val) {
-    return classifyArray(val);
-  }
+
 
   /** Custom exception for invalid values */
   public static class InvalidValueException extends Exception {
@@ -37,7 +34,7 @@ public class Classifier implements Enhancement {
   public int classifyArray(double val) {
     int classifiedVal;
     if (val >= 0) {
-      classifiedVal = 1;
+      classifiedVal = 10;
     } else {
       classifiedVal = 0;
     }
@@ -124,6 +121,18 @@ public class Classifier implements Enhancement {
     return classifiedArray;
   }
 
+  @Override
+  public double convert(double val) {
+    return classifyArray(val);
+  }
+
+  public double convert(float val) {
+    return classifyArray(val);
+  }
+
+  public double convert(int val) {
+    return classifyArray(val);
+  }
 }
 
 
