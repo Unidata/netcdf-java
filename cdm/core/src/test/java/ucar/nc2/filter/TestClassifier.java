@@ -1,18 +1,13 @@
 package ucar.nc2.filter;
 
-import static com.google.common.truth.Truth.assertThat;
-import static ucar.ma2.MAMath.nearlyEquals;
 import static org.junit.Assert.*;
 import org.junit.Test;
-import org.junit.Test;
-import ucar.ma2.Array;
-import ucar.ma2.DataType;
-import ucar.ma2.IndexIterator;
+
 import ucar.nc2.filter.Classifier.InvalidValueException;
 
 public class TestClassifier {
   @Test
-  public void testClassifyIntArray_AllPositive() throws InvalidValueException {
+  public void testClassifyIntArray_AllPositive() {
     Classifier classifier = new Classifier();
     int[] input = {1, 2, 3};
     int[] expected = {1, 1, 1};
@@ -20,7 +15,7 @@ public class TestClassifier {
   }
 
   @Test
-  public void testClassifyIntArray_AllNegative() throws InvalidValueException {
+  public void testClassifyIntArray_AllNegative() {
     Classifier classifier = new Classifier();
     int[] input = {-1, -2, -3};
     int[] expected = {0, 0, 0};
@@ -28,7 +23,7 @@ public class TestClassifier {
   }
 
   @Test
-  public void testClassifyIntArray_Mixed() throws InvalidValueException {
+  public void testClassifyIntArray_Mixed() {
     Classifier classifier = new Classifier();
     int[] input = {-1, 2, -3, 4};
     int[] expected = {0, 1, 0, 1};
@@ -36,7 +31,7 @@ public class TestClassifier {
   }
 
   @Test
-  public void testClassifyIntArray_WithZero() throws InvalidValueException {
+  public void testClassifyIntArray_WithZero() {
     Classifier classifier = new Classifier();
     int[] input = {0, -1, 1, 0, 0, 0};
     int[] expected = {1, 0, 1, 1, 1, 1};

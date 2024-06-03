@@ -34,7 +34,7 @@ public class Classifier implements Enhancement {
   public int classifyArray(double val) {
     int classifiedVal;
     if (val >= 0) {
-      classifiedVal = 10;
+      classifiedVal = 1;
     } else {
       classifiedVal = 0;
     }
@@ -72,7 +72,7 @@ public class Classifier implements Enhancement {
    */
 
   /** Classify integer array */
-  public int[] classifyArray(int[] inputArray) throws InvalidValueException {
+  public int[] classifyArray(int[] inputArray) {
     int[] classifiedArray = new int[inputArray.length];
 
     for (int i = 0; i < inputArray.length; i++) {
