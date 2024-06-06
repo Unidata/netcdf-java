@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) 1998-2023 University Corporation for Atmospheric Research/Unidata
+  ~  See LICENSE for license information.
+  -->
+
+<netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" enhance="all">
+
+    <variable name="doublePositives" shape="5" type="double">
+        <attribute name="classify"/>
+        <values>1.0 2.0 3.0 4.0 5.0</values>
+    </variable>
+
+    <variable name="doubleNegatives" shape="5" type="double">
+            <attribute name="classify"/>
+            <values>-1.0 -2.0 -3.0 -4.0 -5.0</values>
+    </variable>
+
+    <variable name="doubleMix" shape="5" type="double">
+        <attribute name="classify"/>
+        <values>1.0 -2.0 0.0 4.0 -5.0</values>
+    </variable>
+
+    <variable name="floatPositives" shape="5" type="float">
+        <attribute name="classify"/>
+        <values>1.0 2.0 3.0 4.0 5.0</values>
+    </variable>
+
+     <variable name="floatNegatives" shape="5" type="float">
+         <attribute name="classify"/>
+         <values>-1.0 -2.0 -3.0 -4.0 -5.0</values>
+     </variable>
+         <variable name="floatMix" shape="5" type="float">
+             <attribute name="classify"/>
+             <values>1.0 -2.0 0.0 4.0 -5.0</values>
+         </variable>
+
+    <variable name="intPositives" shape="5" type="int">
+        <attribute name="classify"/>
+        <values>1 2 3 4 5</values>
+    </variable>
+
+         <variable name="intNegatives" shape="5" type="int">
+             <attribute name="classify"/>
+             <values>-1.0 -2.0 -3.0 -4.0 -5.0</values>
+         </variable>
+             <variable name="intMix" shape="5" type="int">
+                 <attribute name="classify"/>
+                 <values>1.0 -2.0 0.0 4.0 -5.0</values>
+             </variable>
+
+
+
+</netcdf>
