@@ -22,8 +22,7 @@ public class TestEnhanceClassifier {
   public static final Array DATA_all_zeroes = Array.makeFromJavaArray(all_zeroes);
   public static final int[] mixNumbers = {1, 0, 1, 1, 0};
   public static final Array DATA_mixNumbers = Array.makeFromJavaArray(mixNumbers);
-  public static final int[] inttest = {1, 2, 3, 4, 5};
-  public static final Array DATA_inttest = Array.makeFromJavaArray(inttest);
+
 
   /** test on doubles, all positives, all negatives and a mixed array */
   @Test
@@ -59,8 +58,8 @@ public class TestEnhanceClassifier {
   @Test
   public void testEnhanceClassifier_floats() throws IOException {
     try (NetcdfFile ncfile = NetcdfDatasets.openDataset(dataDir + "testClassifier.ncml", true, null)) {
-      Variable floatPositives = ncfile.findVariable("floatPositives");
 
+      Variable floatPositives = ncfile.findVariable("floatPositives");
       assertThat((Object) floatPositives).isNotNull();
       assertThat(floatPositives.getDataType()).isEqualTo(DataType.FLOAT);
       assertThat(floatPositives.attributes().hasAttribute("classify")).isTrue();
@@ -95,9 +94,21 @@ public class TestEnhanceClassifier {
       assertThat(IntegerPositives.getDataType()).isEqualTo(DataType.INT);
       assertThat(IntegerPositives.attributes().hasAttribute("classify")).isTrue();
       Array dataIntegers = IntegerPositives.read();
-      assertThat(nearlyEquals(dataIntegers, DATA_inttest)).isTrue();
+      assertThat(nearlyEquals(dataIntegers, DATA_all_ones)).isTrue();
 
+      Variable intNegatives = ncfile.findVariable("intNegatives");
+      assertThat((Object) intNegatives).isNotNull();
+      assertThat(intNegatives.getDataType()).isEqualTo(DataType.INT);
+      assertThat(intNegatives.attributes().hasAttribute("classify")).isTrue();
+      Array dataintNegatives = intNegatives.read();
+      assertThat(nearlyEquals(dataintNegatives, DATA_all_zeroes)).isTrue();
 
+      Variable intMix = ncfile.findVariable("intMix");
+      assertThat((Object) intMix).isNotNull();
+      assertThat(intMix.getDataType()).isEqualTo(DataType.INT);
+      assertThat(intMix.attributes().hasAttribute("classify")).isTrue();
+      Array dataintMix = intMix.read();
+      assertThat(nearlyEquals(dataintMix, DATA_mixNumbers)).isTrue();
     }
 
   }

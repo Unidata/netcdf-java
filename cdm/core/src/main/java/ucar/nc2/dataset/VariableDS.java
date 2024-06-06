@@ -944,7 +944,7 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
       this.normalizer = Normalizer.createFromVariable(this);
     }
     Attribute classifierAtt = findAttribute(CDM.CLASSIFY);
-    if (classifierAtt != null && this.enhanceMode.contains(Enhance.ApplyClassifier) && dataType.isFloatingPoint()) {
+    if (classifierAtt != null && this.enhanceMode.contains(Enhance.ApplyClassifier) && dataType.isNumeric()) {
       this.classifier = Classifier.createFromVariable(this);
     }
   }
