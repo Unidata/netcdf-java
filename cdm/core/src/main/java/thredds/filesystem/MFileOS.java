@@ -88,9 +88,11 @@ public class MFileOS implements MFile {
     return file.getName();
   }
 
+  @Nullable
   @Override
   public MFile getParent() {
-    return new MFileOS(file.getParentFile());
+    File parent = file.getParentFile();
+    return parent == null ? null : new MFileOS(parent);
   }
 
   @Override
