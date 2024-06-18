@@ -112,4 +112,19 @@ public class TestEnhanceClassifier {
     }
 
   }
+  @Test
+  public void testEnhanceClassifier_classification() throws IOException {
+    try (NetcdfFile ncfile = NetcdfDatasets.openDataset(dataDir + "testAddToClassifier.ncml", true, null)) {
+
+      Variable class_specs = ncfile.findVariable("class_specs");
+      assertThat((Object) class_specs).isNotNull();
+      assertThat(!class_specs.attributes().isEmpty());
+      assertThat(class_specs.attributes().hasAttribute("habla"));
+      Array numbers_to_classify = class_specs.read();
+      /** So here we are, we want to read an array and apply the attribute classifications */
+//      assertThat(nearlyEquals(datafloats, DATA_all_ones)).isTrue();
+
+    }
+
+  }
 }

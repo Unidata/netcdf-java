@@ -40,6 +40,8 @@ public class CDM {
   public static final String VALID_RANGE = "valid_range";
   public static final String VALID_MIN = "valid_min";
   public static final String VALID_MAX = "valid_max";
+  public static final String RANGE_CAT = "range_cat";
+
 
   // staggering for _Coordinate.Stagger
   public static final String ARAKAWA_E = "Arakawa-E";
