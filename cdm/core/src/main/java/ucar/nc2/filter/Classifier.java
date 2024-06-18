@@ -55,20 +55,12 @@ public class Classifier implements Enhancement {
   public static Classifier createFromVariable(Variable var) {
     try {
       Array arr = var.read();
-      CatStart = arr.getInt(0);
-      CatEnd = arr.getInt(1);
-      CatLabel = arr.getInt(2);
-
       return emptyClassifier();
     } catch (IOException e) {
       return emptyClassifier();
     }
   }
 
-  public static Classifier ClassifierWithLabel(int CatStart, int CatEnd, int Label) {
-    specidifedClassifier = new Classifier();
-    return emptyClassifier;
-  }
 
   public static Classifier emptyClassifier() {
     emptyClassifier = new Classifier();
@@ -91,6 +83,9 @@ public class Classifier implements Enhancement {
       Number value = (Number) iterArr.getObjectNext();
       if (!Double.isNaN(value.doubleValue())) {
         classifiedArray[i] = classifyArrayAttribute(value.doubleValue(),this.rules);
+      }
+      else {
+        classifiedArray[i] = Integer.MIN_VALUE;
       }
       i++;
     }
@@ -157,11 +152,30 @@ public class Classifier implements Enhancement {
     int[] intArray = new int[stringArray.length]; // Create an array to hold the parsed integers
 
     for (int i = 0; i < stringArray.length; i++) {
-      intArray[i] = Integer.parseInt(stringArray[i]); // Parse each string to an integer
+      try {
+        double value = Double.parseDouble(stringArray[i]); // Parse each string to a double
+
+        if (Double.isNaN(value)) {
+          // Check if the entry is NaN and assign Integer.MIN_VALUE or Integer.MAX_VALUE based on the index
+          if (i == 0) {
+            intArray[i] = Integer.MIN_VALUE;
+          } else if (i == 1) {
+            intArray[i] = Integer.MAX_VALUE;
+          } else {
+            intArray[i] = -99999; // Default value for other indices if needed
+          }
+        } else {
+          intArray[i] = (int) value; // Convert the value to int if it is not NaN
+        }
+      } catch (NumberFormatException e) {
+        // Handle the case where the string cannot be parsed to a number
+        intArray[i] = 0; // Default value for invalid numbers
+      }
     }
 
     return intArray;
   }
+
   public static void main(String[] args) {
 
  String dataDir = "/Users/lmatak/Desktop/netCDF-Java/netcdf-java/cdm/core/src/test/data/ncml/enhance/";
