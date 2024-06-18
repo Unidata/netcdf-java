@@ -4,12 +4,16 @@ import static com.google.common.truth.Truth.assertThat;
 import static ucar.ma2.MAMath.nearlyEquals;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 import org.junit.Test;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
+import ucar.nc2.Attribute;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDatasets;
+import ucar.nc2.filter.Classifier;
 import ucar.unidata.util.test.TestDir;
 
 public class TestEnhanceClassifier {
@@ -22,7 +26,9 @@ public class TestEnhanceClassifier {
   public static final Array DATA_all_zeroes = Array.makeFromJavaArray(all_zeroes);
   public static final int[] mixNumbers = {1, 0, 1, 1, 0};
   public static final Array DATA_mixNumbers = Array.makeFromJavaArray(mixNumbers);
-
+  public static final int[] Classification_test =
+      {0, -2147483648, 0, 0, 10, 10, 10, 100, 100, 100, -2147483648, 100, 1000, 1000, 1000, 1000, 1000};
+  public static final Array CLASSIFICATION_TEST = Array.makeFromJavaArray(Classification_test);
 
   /** test on doubles, all positives, all negatives and a mixed array */
   @Test
@@ -112,18 +118,24 @@ public class TestEnhanceClassifier {
     }
 
   }
+
   @Test
   public void testEnhanceClassifier_classification() throws IOException {
+
     try (NetcdfFile ncfile = NetcdfDatasets.openDataset(dataDir + "testAddToClassifier.ncml", true, null)) {
 
-      Variable class_specs = ncfile.findVariable("class_specs");
-      assertThat((Object) class_specs).isNotNull();
-      assertThat(!class_specs.attributes().isEmpty());
-      assertThat(class_specs.attributes().hasAttribute("habla"));
-      Array numbers_to_classify = class_specs.read();
-      /** So here we are, we want to read an array and apply the attribute classifications */
-//      assertThat(nearlyEquals(datafloats, DATA_all_ones)).isTrue();
+      Variable Classify_Specsx = ncfile.findVariable("class_specs");
+      assertThat((Object) Classify_Specsx).isNotNull();
+      assertThat(!Classify_Specsx.attributes().isEmpty()).isTrue();
+      Array Data = Classify_Specsx.read();
+      List<Attribute> Whatever = Classify_Specsx.getAttributes();
+      Classifier classifier = new Classifier(Whatever);
+      int[] ClassifiedArray = classifier.classifyWithAttributes(Data);
+      assertThat(nearlyEquals(Array.makeFromJavaArray(ClassifiedArray), CLASSIFICATION_TEST)).isTrue();
 
+
+    } catch (IOException e) {
+      throw new RuntimeException(e);
     }
 
   }

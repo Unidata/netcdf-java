@@ -7,12 +7,12 @@
 
 <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" enhance="all">
 
-    <variable name="class_specs" shape="14" type="int">
-        <attribute name="Cat1" type="string"  value="-100 0 0" />
+    <variable name="class_specs" shape="14" type="double">
+        <attribute name="Cat1" type="string"  value="NaN 0 0" />
         <attribute name="Cat2" type="string"  value="0 10 10" />
         <attribute name="Cat3" type="string"  value="10 100 100" />
-        <attribute name="Cat4" type="string"  value="100 1000 -1000" />
-        <values>-5000 -20 -10 0 1 2 3 11 25 29 99 100 150 121 102</values>
+        <attribute name="Cat4" type="string"  value="100 NaN 1000" />
+        <values>-500000 NaN -10 0 1 2 3 11 25 29 NaN 100 150 121 102 199999 12211</values>
     </variable>
 
 
