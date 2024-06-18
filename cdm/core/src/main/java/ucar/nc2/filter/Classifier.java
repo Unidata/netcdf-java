@@ -130,14 +130,13 @@ public class Classifier implements Enhancement {
   }
 
   public int classifyArrayAttribute(double val, List<int[]> rules) {
-      for (int[] rule : rules) {
-        if (val > rule[0] && val <= rule[1]) {
-          val = rule[2];
-        }
-
+    for (int[] rule : rules) {
+      if (val > rule[0] && val <= rule[1]) {
+        return rule[2];  // Return the matched rule's value
+      }
     }
-    return (int) val;
-
+    // Return Integer.MIN_VALUE if no rule matches
+    return Integer.MIN_VALUE;
   }
 
   // Method to load classification rules from the attributes
