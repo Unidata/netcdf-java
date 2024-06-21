@@ -2,7 +2,6 @@ package ucar.nc2.ncml;
 
 import static com.google.common.truth.Truth.assertThat;
 import static ucar.ma2.MAMath.nearlyEquals;
-
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
@@ -139,4 +138,5 @@ public class TestEnhanceClassifier {
     }
 
   }
+  
 }

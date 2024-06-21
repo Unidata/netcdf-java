@@ -5,6 +5,8 @@
 
 package ucar.nc2.util;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import java.lang.invoke.MethodHandles;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -30,6 +32,14 @@ public class TestURLnaming {
     testResolve("file://test/me/", "file:/wanna", "file:/wanna");
     testResolve("file://test/me/", "C:/wanna", "C:/wanna");
     testResolve("http://test/me/", "file:wanna", "file:wanna");
+
+    testResolve("urlWithoutSlash", "file:///path/with/slash", "file:///path/with/slash");
+  }
+
+  @Test
+  public void testResolveFile() {
+    assertThat(URLnaming.resolveFile("urlWithoutSlash", "file:///path/with/slash"))
+        .isEqualTo("file:///path/with/slash");
   }
 
   private void testResolve(String base, String rel, String result) {

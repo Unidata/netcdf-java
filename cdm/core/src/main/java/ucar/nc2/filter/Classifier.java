@@ -28,7 +28,6 @@ public class Classifier implements Enhancement {
     }
   }
 
-
   public static Classifier emptyClassifier() {
     emptyClassifier = new Classifier();
     return emptyClassifier;
@@ -58,7 +57,6 @@ public class Classifier implements Enhancement {
     }
     return classifiedArray;
   }
-
 
   /** Classify double array */
   public int[] classifyDoubleArray(Array arr) {
@@ -136,7 +134,4 @@ public class Classifier implements Enhancement {
     return intArray;
   }
 
-
 }
-
-
