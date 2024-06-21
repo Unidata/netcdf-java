@@ -7,7 +7,7 @@
 
 <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" enhance="all">
 
-    <variable name="class_specs" shape="14" type="double">
+    <variable name="class_specs" shape="17" type="double">
         <attribute name="Cat1" type="string"  value="NaN 0 0" />
         <attribute name="Cat2" type="string"  value="0 10 10" />
         <attribute name="Cat3" type="string"  value="10 100 100" />
