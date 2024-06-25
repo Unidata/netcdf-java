@@ -83,6 +83,7 @@ public class TestEnhanceClassifier {
       assertThat(floatMix.getDataType()).isEqualTo(DataType.FLOAT);
       assertThat(floatMix.attributes().hasAttribute("classify")).isTrue();
       Array datafloatsMix = floatMix.read();
+      // assertThat(datafloatsMix).isEqualTo(DATA_mixNumbers);
       assertThat(nearlyEquals(datafloatsMix, DATA_mixNumbers)).isTrue();
 
     }
@@ -128,6 +129,8 @@ public class TestEnhanceClassifier {
       assertThat(!Classify_Specsx.attributes().isEmpty()).isTrue();
       Array Data = Classify_Specsx.read();
       Classifier classifier = Classifier.createFromVariable(Classify_Specsx);
+      // List<Attribute> Whatever = Classify_Specsx.getAttributes();
+      // Classifier classifier = new Classifier(Whatever);
       int[] ClassifiedArray = classifier.classifyWithAttributes(Data);
       assertThat(nearlyEquals(Array.makeFromJavaArray(ClassifiedArray), CLASSIFICATION_TEST)).isTrue();
 

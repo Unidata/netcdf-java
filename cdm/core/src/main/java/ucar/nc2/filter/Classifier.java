@@ -1,10 +1,12 @@
 package ucar.nc2.filter;
 
+import static ucar.ma2.MAMath.nearlyEquals;
 import ucar.ma2.Array;
 import ucar.ma2.IndexIterator;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.Attribute;
+import ucar.nc2.util.Misc;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -84,7 +86,7 @@ public class Classifier implements Enhancement {
 
   public int classifyArrayAttribute(double val) {
     for (int[] rule : rules) {
-      if (val > rule[0] && val <= rule[1]) {
+      if (val > rule[0] && val <= rule[1] + ucar.nc2.util.Misc.defaultMaxRelativeDiffFloat) {
         return rule[2]; // Return the matched rule's value
       }
     }
