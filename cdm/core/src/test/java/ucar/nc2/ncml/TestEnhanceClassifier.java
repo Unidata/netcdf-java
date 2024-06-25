@@ -127,8 +127,7 @@ public class TestEnhanceClassifier {
       assertThat((Object) Classify_Specsx).isNotNull();
       assertThat(!Classify_Specsx.attributes().isEmpty()).isTrue();
       Array Data = Classify_Specsx.read();
-      List<Attribute> Whatever = Classify_Specsx.getAttributes();
-      Classifier classifier = new Classifier(Whatever);
+      Classifier classifier = Classifier.createFromVariable(Classify_Specsx);
       int[] ClassifiedArray = classifier.classifyWithAttributes(Data);
       assertThat(nearlyEquals(Array.makeFromJavaArray(ClassifiedArray), CLASSIFICATION_TEST)).isTrue();
 

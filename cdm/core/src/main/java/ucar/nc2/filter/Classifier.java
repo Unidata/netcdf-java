@@ -1,46 +1,44 @@
 package ucar.nc2.filter;
 
-import java.io.IOException;
 import ucar.ma2.Array;
 import ucar.ma2.IndexIterator;
-import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
-import ucar.nc2.dataset.NetcdfDatasets;
-import ucar.nc2.dataset.VariableDS;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.Attribute;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Arrays;
+
 
 public class Classifier implements Enhancement {
-  private Classifier classifier = null;
-  private static Classifier emptyClassifier;
   private int classifiedVal;
   private List<Attribute> AttCat;
   private List<int[]> rules = new ArrayList<>();
 
-  public static Classifier createFromVariable(VariableDS var) {
-    try {
-      Array arr = var.read();
-      return emptyClassifier();
-    } catch (IOException e) {
-      return emptyClassifier();
-    }
+  // Constructor with no arguments
+  public Classifier() {
+    this.AttCat = new ArrayList<>();
+    this.rules = new ArrayList<>();
   }
 
-  public static Classifier emptyClassifier() {
-    emptyClassifier = new Classifier();
-    return emptyClassifier;
-  }
-
-  /** Enough of a constructor */
-  public Classifier() {}
-
+  // Constructor with attributes
   public Classifier(List<Attribute> AttCat) {
     this.AttCat = AttCat;
     this.rules = loadClassificationRules();
+  }
+
+  // Factory method to create a Classifier from a Variable
+  public static Classifier createFromVariable(Variable var) {
+
+    List<Attribute> attributes = var.getAttributes();
+
+    if (var.attributes().hasAttribute(CDM.RANGE_CAT)) {
+      return new Classifier(attributes);
+    } else {
+      return new Classifier();
+    }
 
   }
+
 
   public int[] classifyWithAttributes(Array arr) {
     int[] classifiedArray = new int[(int) arr.getSize()];
@@ -95,7 +93,7 @@ public class Classifier implements Enhancement {
   }
 
   // Method to load classification rules from the attributes
-  public List<int[]> loadClassificationRules() {
+  private List<int[]> loadClassificationRules() {
     for (Attribute attribute : this.AttCat) {
       int[] rule = stringToIntArray(attribute.getStringValue());
       this.rules.add(rule);
@@ -105,7 +103,7 @@ public class Classifier implements Enhancement {
 
   @Override
   public double convert(double val) {
-    return emptyClassifier.classifyArray(val);
+    return classifyArray(val);
   }
 
   public static int[] stringToIntArray(String str) {
