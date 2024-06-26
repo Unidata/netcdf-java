@@ -943,10 +943,18 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
     if (normalizerAtt != null && this.enhanceMode.contains(Enhance.ApplyNormalizer) && dataType.isFloatingPoint()) {
       this.normalizer = Normalizer.createFromVariable(this);
     }
-    Attribute classifierAtt = findAttribute(CDM.CLASSIFY);
-    if (classifierAtt != null && this.enhanceMode.contains(Enhance.ApplyClassifier) && dataType.isNumeric()) {
-      this.classifier = Classifier.createFromVariable(this);
-    }
+    // I need to comment this one out, otherwise it applies the
+    // @Override
+    // public double convert(double val) {
+    // return classifyArray(val);
+    // }
+    // so for now I just turn it off. How else could we do this?
+
+
+    // Attribute classifierAtt = findAttribute(CDM.CLASSIFY);
+    // if (classifierAtt != null && this.enhanceMode.contains(Enhance.ApplyClassifier) && dataType.isNumeric()) {
+    // this.classifier = Classifier.createFromVariable(this);
+    // }
   }
 
   public Builder<?> toBuilder() {

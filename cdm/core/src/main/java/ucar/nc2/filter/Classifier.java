@@ -1,6 +1,6 @@
 package ucar.nc2.filter;
 
-import static ucar.ma2.MAMath.nearlyEquals;
+
 import ucar.ma2.Array;
 import ucar.ma2.IndexIterator;
 import ucar.nc2.Variable;
@@ -13,33 +13,40 @@ import java.util.List;
 
 public class Classifier implements Enhancement {
   private int classifiedVal;
-  private List<Attribute> AttCat;
+  private String[] AttCat;
   private List<int[]> rules = new ArrayList<>();
 
-  // Constructor with no arguments
   public Classifier() {
-    this.AttCat = new ArrayList<>();
+    this.AttCat = new String[0];
     this.rules = new ArrayList<>();
   }
 
   // Constructor with attributes
-  public Classifier(List<Attribute> AttCat) {
+  public Classifier(String[] AttCat) {
     this.AttCat = AttCat;
     this.rules = loadClassificationRules();
   }
 
   // Factory method to create a Classifier from a Variable
   public static Classifier createFromVariable(Variable var) {
+    List<Attribute> attributes = var.attributes().getAttributes();
 
-    List<Attribute> attributes = var.getAttributes();
-
-    if (var.attributes().hasAttribute(CDM.RANGE_CAT)) {
-      return new Classifier(attributes);
-    } else {
-      return new Classifier();
+    for (Attribute attribute : attributes) {
+      // check like this, or something else?
+      if (attribute == var.attributes().findAttribute(CDM.CLASSIFY)) {
+        String[] sets = attribute.getStringValue().split(";");
+        for (int i = 0; i < sets.length; i++) {
+          // trim and clean so it's ready
+          sets[i] = sets[i].trim();
+        }
+        return new Classifier(sets);
+      }
     }
 
+    return new Classifier();
+
   }
+
 
 
   public int[] classifyWithAttributes(Array arr) {
@@ -86,7 +93,7 @@ public class Classifier implements Enhancement {
 
   public int classifyArrayAttribute(double val) {
     for (int[] rule : rules) {
-      if (val > rule[0] && val <= rule[1] + ucar.nc2.util.Misc.defaultMaxRelativeDiffFloat) {
+      if (val > rule[0] && val <= rule[1] + Misc.defaultMaxRelativeDiffFloat) {
         return rule[2]; // Return the matched rule's value
       }
     }
@@ -96,8 +103,9 @@ public class Classifier implements Enhancement {
 
   // Method to load classification rules from the attributes
   private List<int[]> loadClassificationRules() {
-    for (Attribute attribute : this.AttCat) {
-      int[] rule = stringToIntArray(attribute.getStringValue());
+    for (String rules : this.AttCat) {
+      System.out.println("RULEZ" + rules);
+      int[] rule = stringToIntArray(rules);
       this.rules.add(rule);
     }
     return rules;
