@@ -12,7 +12,6 @@ import java.util.List;
 
 
 public class Classifier implements Enhancement {
-  private int classifiedVal;
   private String[] AttCat;
   private List<int[]> rules = new ArrayList<>();
 
@@ -65,31 +64,7 @@ public class Classifier implements Enhancement {
     return classifiedArray;
   }
 
-  /** Classify double array */
-  public int[] classifyDoubleArray(Array arr) {
-    int[] classifiedArray = new int[(int) arr.getSize()];
-    int i = 0;
-    IndexIterator iterArr = arr.getIndexIterator();
-    while (iterArr.hasNext()) {
-      Number value = (Number) iterArr.getObjectNext();
-      if (!Double.isNaN(value.doubleValue())) {
 
-        classifiedArray[i] = classifyArray(value.doubleValue());
-      }
-      i++;
-    }
-    return classifiedArray;
-  }
-
-  /** for a single double */
-  public int classifyArray(double val) {
-    if (val >= 0) {
-      classifiedVal = 1;
-    } else {
-      classifiedVal = 0;
-    }
-    return classifiedVal;
-  }
 
   public int classifyArrayAttribute(double val) {
     for (int[] rule : rules) {
@@ -112,7 +87,7 @@ public class Classifier implements Enhancement {
 
   @Override
   public double convert(double val) {
-    return classifyArray(val);
+    return classifyArrayAttribute(val);
   }
 
   public static int[] stringToIntArray(String str) {

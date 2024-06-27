@@ -24,4 +24,14 @@
     ]]></notes>
     <cve>CVE-2023-35116</cve>
   </suppress>
+  <suppress>
+    <notes><![CDATA[
+   file name: uicdm-5.5.4-SNAPSHOT.tar: jfreechart-1.0.19.jar
+   reason: Disputed CVEs and we do not use the vulnerable components (BubbleXYItemLabelGenerator.java, /chart/annotations/CategoryLineAnnotation, setSeriesNeedle)
+   ]]></notes>
+    <packageUrl regex="true">^pkg:maven/org\.jfree/jfreechart@.*$</packageUrl>
+    <vulnerabilityName>CVE-2024-23076</vulnerabilityName>
+    <vulnerabilityName>CVE-2024-22949</vulnerabilityName>
+    <vulnerabilityName>CVE-2023-52070</vulnerabilityName>
+  </suppress>
 </suppressions>
