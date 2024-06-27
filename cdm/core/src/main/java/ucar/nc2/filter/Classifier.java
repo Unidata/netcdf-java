@@ -94,7 +94,7 @@ public class Classifier implements Enhancement {
   public int classifyArrayAttribute(double val) {
     for (int[] rule : rules) {
       if (val > rule[0] && val <= rule[1] + Misc.defaultMaxRelativeDiffFloat) {
-        return rule[2]; // Return the matched rule's value
+        return rule[2];
       }
     }
     // Return min possible int if no rule matches
@@ -104,7 +104,6 @@ public class Classifier implements Enhancement {
   // Method to load classification rules from the attributes
   private List<int[]> loadClassificationRules() {
     for (String rules : this.AttCat) {
-      System.out.println("RULEZ" + rules);
       int[] rule = stringToIntArray(rules);
       this.rules.add(rule);
     }

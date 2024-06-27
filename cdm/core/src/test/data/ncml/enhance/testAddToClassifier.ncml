@@ -12,6 +12,18 @@
         <values>-500000 NaN -10 0 1 2 3 11 25 29 NaN 100 150 121 102 199999 12211</values>
     </variable>
 
+    <variable name="classify_ints" shape="17" type="int">
+        <attribute name="classify" value="NaN 0 0; 0 NaN 1"/>
+        <values>1 -2 0 4 -5</values>
+    </variable>
+
+    <variable name="classify_floats" shape="17" type="float">
+        <attribute name="classify" value="NaN 0 0; 0 NaN 1"/>
+        <values>1.0 -2.0 0.0 4.0 -5.0</values>
+    </variable>
+
+
+
 
 
 </netcdf>

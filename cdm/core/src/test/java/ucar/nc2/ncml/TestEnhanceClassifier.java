@@ -18,12 +18,52 @@ import ucar.unidata.util.test.TestDir;
 public class TestEnhanceClassifier {
 
   private static String dataDir = TestDir.cdmLocalTestDataDir + "ncml/enhance/";
-
+  public static final int[] mixNumbers = {1, 0, 0, 1, 0};
+  public static final Array DATA_mixNumbers = Array.makeFromJavaArray(mixNumbers);
   public static final int[] Classification_test =
       {0, -2147483648, 0, 0, 10, 10, 10, 100, 100, 100, -2147483648, 100, 1000, 1000, 1000, 1000, 1000};
   public static final Array CLASSIFICATION_TEST = Array.makeFromJavaArray(Classification_test);
 
-  /** test on doubles, all positives, all negatives and a mixed array */
+  @Test
+  public void testEnhanceClassifier_Ints() throws IOException {
+
+    try (NetcdfFile ncfile = NetcdfDatasets.openDataset(dataDir + "testAddToClassifier.ncml", true, null)) {
+
+      Variable classifySpecs = ncfile.findVariable("classify_ints");
+      assertThat((Object) classifySpecs).isNotNull();
+      assertThat(!classifySpecs.attributes().isEmpty()).isTrue();
+      Array Data = classifySpecs.read();
+      Classifier classifier = Classifier.createFromVariable(classifySpecs);
+      int[] ClassifiedArray = classifier.classifyWithAttributes(Data);
+      assertThat(nearlyEquals(Array.makeFromJavaArray(ClassifiedArray), DATA_mixNumbers)).isTrue();
+
+
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+
+  }
+
+  @Test
+  public void testEnhanceClassifier_Floats() throws IOException {
+
+    try (NetcdfFile ncfile = NetcdfDatasets.openDataset(dataDir + "testAddToClassifier.ncml", true, null)) {
+
+      Variable classifySpecs = ncfile.findVariable("classify_floats");
+      assertThat((Object) classifySpecs).isNotNull();
+      assertThat(!classifySpecs.attributes().isEmpty()).isTrue();
+      Array Data = classifySpecs.read();
+      Classifier classifier = Classifier.createFromVariable(classifySpecs);
+      int[] ClassifiedArray = classifier.classifyWithAttributes(Data);
+      assertThat(nearlyEquals(Array.makeFromJavaArray(ClassifiedArray), DATA_mixNumbers)).isTrue();
+
+
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+
+  }
+
   @Test
   public void testEnhanceClassifier_classification() throws IOException {
 
