@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  ~ Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
+  ~  See LICENSE for license information.
+  -->
+
+<netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" enhance="all">
+
+    <variable name="class_specs" shape="17" type="double">
+        <attribute name="classify" value="NaN 0 0; 0 10 10; 10 100 100; 100 NaN 1000"/>
+        <values>-500000 NaN -10 0 1 2 3 11 25 29 NaN 100 150 121 102 199999 12211</values>
+    </variable>
+
+    <variable name="classify_ints" shape="5" type="int">
+        <attribute name="classify" value="NaN 0 0; 0 NaN 1"/>
+        <values>1 -2 0 4 -5</values>
+    </variable>
+
+    <variable name="classify_floats" shape="5" type="float">
+        <attribute name="classify" value="NaN 0 0; 0 NaN 1"/>
+        <values>1.0 -2.0 0.0 4.0 -5.0</values>
+    </variable>
+
+
+
+
+
+</netcdf>
