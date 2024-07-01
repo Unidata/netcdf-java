@@ -7,9 +7,14 @@ package ucar.nc2.geotiff;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.util.Map;
+import java.util.HashMap;
+import java.awt.Color;
 import ucar.ma2.Array;
 import ucar.ma2.ArrayByte;
+import ucar.ma2.ArrayInt;
 import ucar.ma2.ArrayFloat;
+import ucar.ma2.ArrayShort;
 import ucar.ma2.DataType;
 import ucar.ma2.Index;
 import ucar.ma2.IndexIterator;
@@ -42,6 +47,7 @@ public class GeotiffWriter implements Closeable {
 
   protected GeoTiff geotiff;
   protected short pageNumber = 1;
+  protected int[] colorTable;
 
   /**
    * Constructor
@@ -59,6 +65,10 @@ public class GeotiffWriter implements Closeable {
   /**
    * Write GridDatatype data to the geotiff file.
    *
+   * Greyscale mode will auto-normalize the data from 1 to 255 and save as unsigned bytes, with 0's used
+   * for missing data. A color table can be applied if specified via `setColorTable()`.
+   * Non-greyscale mode will save the data as floats, encoding missing data as the data minimum minus one.
+   *
    * @param dataset grid in contained in this dataset
    * @param grid data is in this grid
    * @param data 2D array in YX order
@@ -66,6 +76,39 @@ public class GeotiffWriter implements Closeable {
    * @throws IOException on i/o error
    */
   public void writeGrid(GridDataset dataset, GridDatatype grid, Array data, boolean greyScale) throws IOException {
+    writeGrid(dataset, grid, data, greyScale, greyScale ? DataType.UBYTE : DataType.FLOAT);
+  }
+
+  /**
+   * Write GridDatatype data to the geotiff file.
+   *
+   * Greyscale mode will auto-normalize the data from 1 to 255 and save as unsigned bytes, with 0's used
+   * for missing data.
+   * Non-greyscale mode with a floating point dtype will save the data as floats, encoding missing data
+   * as the data's minimum minus one. Any other dtype will save the data coerced to the specified dtype.
+   *
+   * A color table can be applied if specified via `setColorTable()` and the dtype is UBYTE.
+   *
+   * @param dataset grid in contained in this dataset
+   * @param grid data is in this grid
+   * @param data 2D array in YX order
+   * @param greyScale if true, write greyScale image, else dataSample.
+   * @param dtype DataType for the output. See other writeGrid() documentation for more details.
+   * @throws IOException on i/o error
+   * @throws IllegalArgumentException if above assumptions not valid
+   */
+  public void writeGrid(GridDataset dataset, GridDatatype grid, Array data, boolean greyScale, DataType dtype)
+      throws IOException, IllegalArgumentException {
+    // This check has to be *before* resolving the dtype so that we are only
+    // checking explicitly specified data types.
+    if (greyScale && dtype != DataType.UBYTE) {
+      throw new IllegalArgumentException("When greyScale is true, dtype must be UBYTE");
+    }
+
+    if (colorTable != null && colorTable.length > 0 && dtype != DataType.UBYTE) {
+      throw new IllegalArgumentException("When using the color table, dtype must be UBYTE");
+    }
+
     GridCoordSystem gcs = grid.getCoordinateSystem();
 
     if (!gcs.isRegularSpatial()) {
@@ -98,7 +141,7 @@ public class GeotiffWriter implements Closeable {
     }
 
     // write it out
-    writeGrid(grid, data, greyScale, xStart, yStart, xInc, yInc, pageNumber);
+    writeGrid(grid, data, greyScale, xStart, yStart, xInc, yInc, pageNumber, dtype);
     pageNumber++;
   }
 
@@ -112,19 +155,71 @@ public class GeotiffWriter implements Closeable {
    * <li>be equally spaced
    * </ol>
    *
+   * Greyscale mode will auto-normalize the data from 1 to 255 and save as unsigned bytes, with 0's used
+   * for missing data. A color table can be applied if specified via `setColorTable()`.
+   * Non-greyscale mode will save the data as floats, encoding missing data as the data minimum minus one.
+   *
    * @param grid original grid
    * @param data 2D array in YX order
-   * @param greyScale if true, write greyScale image, else dataSample.
+   * @param greyScale if true, normalize the data before writing, otherwise, only handle missing data.
    * @param xStart starting x coord
    * @param yStart starting y coord
    * @param xInc increment x coord
    * @param yInc increment y coord
    * @param imageNumber used to write multiple images
    * @throws IOException on i/o error
-   * @throws IllegalArgumentException if above assumptions not valid *
+   * @throws IllegalArgumentException if above assumptions not valid
    */
   void writeGrid(GridDatatype grid, Array data, boolean greyScale, double xStart, double yStart, double xInc,
       double yInc, int imageNumber) throws IOException {
+    writeGrid(grid, data, greyScale, xStart, yStart, xInc, yInc, imageNumber,
+        greyScale ? DataType.UBYTE : DataType.FLOAT);
+  }
+
+  /**
+   * Write Grid data to the geotiff file.
+   * Grid currently must:
+   * <ol>
+   * <li>have a 1D X and Y coordinate axes.
+   * <li>be lat/lon or Lambert Conformal Projection
+   * <li>be equally spaced
+   * </ol>
+   *
+   * Greyscale mode will auto-normalize the data from 1 to 255 and save as unsigned bytes, with 0's used
+   * for missing data.
+   * Non-greyscale mode with a floating point dtype will save the data as floats, encoding missing data
+   * as the data's minimum minus one. Any other dtype will save the data coerced to the specified dtype.
+   *
+   * A color table can be applied if specified via `setColorTable()` and the dtype is UBYTE.
+   *
+   * @param grid original grid
+   * @param data 2D array in YX order
+   * @param greyScale if true, normalize the data before writing, otherwise, only handle missing data.
+   * @param xStart starting x coord
+   * @param yStart starting y coord
+   * @param xInc increment x coord
+   * @param yInc increment y coord
+   * @param imageNumber used to write multiple images
+   * @param dtype if greyScale is false, then save the data in the given data type.
+   *        Currently, this is a bit hobbled in order to avoid back-compatibility breaks.
+   *        If dtype is DOUBLE, is is currenly downcasted to FLOAT.
+   *        When dtype is floating point, missing data is encoded as the data's minimum minus one.
+   *        If null, then use the datatype of the given array.
+   * @throws IOException on i/o error
+   * @throws IllegalArgumentException if above assumptions not valid
+   */
+  void writeGrid(GridDatatype grid, Array data, boolean greyScale, double xStart, double yStart, double xInc,
+      double yInc, int imageNumber, DataType dtype) throws IOException, IllegalArgumentException {
+
+    // This check has to be *before* resolving the dtype so that we are only
+    // checking explicitly specified data types.
+    if (greyScale && dtype != DataType.UBYTE) {
+      throw new IllegalArgumentException("When greyScale is true, dtype must be UBYTE");
+    }
+
+    if (colorTable != null && colorTable.length > 0 && dtype != DataType.UBYTE) {
+      throw new IllegalArgumentException("When using the color table, dtype must be UBYTE");
+    }
 
     int nextStart;
     GridCoordSystem gcs = grid.getCoordinateSystem();
@@ -138,14 +233,26 @@ public class GeotiffWriter implements Closeable {
       throw new IllegalArgumentException("Unsupported projection = " + gcs.getProjection().getClass().getName());
     }
 
+    if (dtype == null) {
+      dtype = data.getDataType();
+      // Need to cap at single precision floats because that's what gets written for floating points
+      if (dtype == DataType.DOUBLE) {
+        dtype = DataType.FLOAT;
+      }
+    }
+
     // write the data first
     MAMath.MinMax dataMinMax = grid.getMinMaxSkipMissingData(data);
     if (greyScale) {
-      ArrayByte result = replaceMissingValuesAndScale(grid, data, dataMinMax);
-      nextStart = geotiff.writeData((byte[]) result.getStorage(), imageNumber);
+      data = replaceMissingValuesAndScale(grid, data, dataMinMax);
+      nextStart = writeData(data, DataType.UBYTE);
+    } else if (dtype == DataType.FLOAT) {
+      // Backwards compatibility shim
+      data = replaceMissingValues(grid, data, dataMinMax);
+      nextStart = writeData(data, dtype);
     } else {
-      ArrayFloat result = replaceMissingValues(grid, data, dataMinMax);
-      nextStart = geotiff.writeData((float[]) result.getStorage(), imageNumber);
+      data = coerceData(data, dtype);
+      nextStart = writeData(data, dtype);
     }
 
     // set the width and the height
@@ -153,11 +260,26 @@ public class GeotiffWriter implements Closeable {
     int width = data.getShape()[1]; // X
 
     writeMetadata(greyScale, xStart, yStart, xInc, yInc, height, width, imageNumber, nextStart, dataMinMax,
-        gcs.getProjection());
+        gcs.getProjection(), dtype);
   }
 
   private void writeMetadata(boolean greyScale, double xStart, double yStart, double xInc, double yInc, int height,
-      int width, int imageNumber, int nextStart, MAMath.MinMax dataMinMax, Projection proj) throws IOException {
+      int width, int imageNumber, int nextStart, MAMath.MinMax dataMinMax, Projection proj, DataType dtype)
+      throws IOException {
+
+    if (dtype == null) {
+      throw new IllegalArgumentException("dtype can't be null in writeMetadata()");
+    }
+
+    if (greyScale && dtype != DataType.UBYTE) {
+      throw new IllegalArgumentException("When greyScale is true, dtype must be UBYTE");
+    }
+
+    if (colorTable != null && colorTable.length > 0 && dtype != DataType.UBYTE) {
+      throw new IllegalArgumentException("When using the color table, the dtype must be UBYTE");
+    }
+
+    int elemSize = dtype.getSize();
 
     geotiff.addTag(new IFDEntry(Tag.ImageWidth, FieldType.SHORT).setValue(width));
     geotiff.addTag(new IFDEntry(Tag.ImageLength, FieldType.SHORT).setValue(height));
@@ -181,8 +303,6 @@ public class GeotiffWriter implements Closeable {
      * geotiff.addTag( new IFDEntry(Tag.StripOffsets, FieldType.LONG).setValue(nextStart));
      */
 
-    int elemSize = greyScale ? 1 : 4;
-
     int[] soffset = new int[height];
     int[] sbytecount = new int[height];
     if (imageNumber == 1) {
@@ -201,24 +321,47 @@ public class GeotiffWriter implements Closeable {
     geotiff.addTag(new IFDEntry(Tag.Orientation, FieldType.SHORT).setValue(1));
     geotiff.addTag(new IFDEntry(Tag.Compression, FieldType.SHORT).setValue(1)); // no compression
     geotiff.addTag(new IFDEntry(Tag.Software, FieldType.ASCII).setValue("nc2geotiff"));
-    geotiff.addTag(new IFDEntry(Tag.PhotometricInterpretation, FieldType.SHORT).setValue(1)); // black is zero : not
-                                                                                              // used?
     geotiff.addTag(new IFDEntry(Tag.PlanarConfiguration, FieldType.SHORT).setValue(1));
 
-    if (greyScale) {
-      // standard tags for Greyscale images ( see TIFF spec, section 4)
-      geotiff.addTag(new IFDEntry(Tag.BitsPerSample, FieldType.SHORT).setValue(8)); // 8 bits per sample
-      geotiff.addTag(new IFDEntry(Tag.SamplesPerPixel, FieldType.SHORT).setValue(1));
+    // standard tags for Greyscale images ( see TIFF spec, section 4)
+    geotiff.addTag(new IFDEntry(Tag.BitsPerSample, FieldType.SHORT).setValue(elemSize * 8));
+    geotiff.addTag(new IFDEntry(Tag.SamplesPerPixel, FieldType.SHORT).setValue(1));
 
-      geotiff.addTag(new IFDEntry(Tag.XResolution, FieldType.RATIONAL).setValue(1, 1));
-      geotiff.addTag(new IFDEntry(Tag.YResolution, FieldType.RATIONAL).setValue(1, 1));
-      geotiff.addTag(new IFDEntry(Tag.ResolutionUnit, FieldType.SHORT).setValue(1));
+    geotiff.addTag(new IFDEntry(Tag.XResolution, FieldType.RATIONAL).setValue(1, 1));
+    geotiff.addTag(new IFDEntry(Tag.YResolution, FieldType.RATIONAL).setValue(1, 1));
+    geotiff.addTag(new IFDEntry(Tag.ResolutionUnit, FieldType.SHORT).setValue(1));
 
+    if (colorTable != null && colorTable.length > 0) {
+      // standard tags for Palette-color images ( see TIFF spec, section 5)
+      geotiff.addTag(new IFDEntry(Tag.PhotometricInterpretation, FieldType.SHORT).setValue(3));
+      geotiff.addTag(new IFDEntry(Tag.ColorMap, FieldType.SHORT, colorTable.length).setValue(colorTable));
     } else {
-      // standard tags for SampleFormat ( see TIFF spec, section 19)
-      geotiff.addTag(new IFDEntry(Tag.BitsPerSample, FieldType.SHORT).setValue(32)); // 32 bits per sample
-      geotiff.addTag(new IFDEntry(Tag.SampleFormat, FieldType.SHORT).setValue(3)); // Sample Format
-      geotiff.addTag(new IFDEntry(Tag.SamplesPerPixel, FieldType.SHORT).setValue(1));
+      geotiff.addTag(new IFDEntry(Tag.PhotometricInterpretation, FieldType.SHORT).setValue(1)); // black is zero
+    }
+
+    // standard tags for SampleFormat ( see TIFF spec, section 19)
+    if (dtype.isIntegral() && !greyScale) {
+      geotiff.addTag(new IFDEntry(Tag.SampleFormat, FieldType.SHORT).setValue(dtype.isUnsigned() ? 1 : 2)); // UINT or
+                                                                                                            // INT
+      int min = (int) (dataMinMax.min);
+      int max = (int) (dataMinMax.max);
+      FieldType ftype;
+      DataType sdtype = dtype.withSignedness(DataType.Signedness.SIGNED);
+      if (sdtype == DataType.BYTE) {
+        ftype = dtype.isUnsigned() ? FieldType.BYTE : FieldType.SBYTE;
+      } else if (sdtype == DataType.SHORT) {
+        ftype = dtype.isUnsigned() ? FieldType.SHORT : FieldType.SSHORT;
+      } else if (sdtype == DataType.INT) {
+        // A geotiff LONG/SLONG is really a 4-byte regular integer
+        ftype = dtype.isUnsigned() ? FieldType.LONG : FieldType.SLONG;
+      } else {
+        throw new IllegalArgumentException("Unsupported dtype: " + dtype);
+      }
+      geotiff.addTag(new IFDEntry(Tag.SMinSampleValue, ftype).setValue(min));
+      geotiff.addTag(new IFDEntry(Tag.SMaxSampleValue, ftype).setValue(max));
+      // No GDALNoData tag is set as it is ambiguous what would be appropriate here.
+    } else if (dtype.isFloatingPoint()) {
+      geotiff.addTag(new IFDEntry(Tag.SampleFormat, FieldType.SHORT).setValue(3)); // IEEE Floating Point Type
       float min = (float) (dataMinMax.min);
       float max = (float) (dataMinMax.max);
       geotiff.addTag(new IFDEntry(Tag.SMinSampleValue, FieldType.FLOAT).setValue(min));
@@ -262,6 +405,172 @@ public class GeotiffWriter implements Closeable {
   }
 
   /**
+   * Get a copy of the current colormap as a 1-D 3*256 element array (or null).
+   *
+   * All 256 red values first, then green, then blue.
+   *
+   * For these RGB triplets, 0 is minimum intensity, 65535 is maximum intensity (due to geotiff conventions).
+   * This function is intended for debugging and testing.
+   */
+  public int[] getColorTable() {
+    if (colorTable == null) {
+      return null;
+    } else {
+      return colorTable.clone();
+    }
+  }
+
+  /**
+   * Have the geotiff include a colormap in the form of a mapping of the pixel value to the rgb triplet.
+   * Assumes an RGB of {0, 0, 0} for any values not specified.
+   *
+   * Pass null to unset the colorTable.
+   *
+   * For these RGB triplets, 0 is minimum intensity, 255 is maximum intensity. Values outside that range will
+   * be floored/ceilinged to the [0, 255] range. The color table is also assumed to be for pixel values
+   * between 0 and 255.
+   *
+   * In order for the color table to be properly included in the geotiff, the output data type must be unsigned bytes.
+   * This works even for greyscale mode.
+   */
+  public void setColorTable(Map<Integer, Color> colorMap) {
+    setColorTable(colorMap, new Color(0, 0, 0));
+  }
+
+  /**
+   * Have the geotiff include a colormap in the form of a mapping of the pixel value to the rgb triplet.
+   * Provide a default RGB triplet for any values not specified.
+   *
+   * Pass null to unset the colorTable.
+   *
+   * For these RGB triplets, 0 is minimum intensity, 255 is maximum intensity. Values outside that range will
+   * be floored/ceilinged to the [0, 255] range. The color table is also assumed to be for pixel values
+   * between 0 and 255.
+   * In order for the color table to be properly included in the geotiff, the output data type must be unsigned bytes.
+   * This works even for greyscale mode.
+   */
+  public void setColorTable(Map<Integer, Color> colorMap, Color defaultRGB) {
+    if (colorMap == null) {
+      colorTable = null;
+      return;
+    }
+
+    // TIFF spec allows for 4 or 8 bits per sample (making for 16 or 256 entries).
+    // Since we don't support saving data as 4 bits per sample, we'll force it to 256.
+    colorTable = new int[3 * 256];
+    for (int i = 0; i < 256; i++) {
+      // Scale it up to [0, 65535], which is needed by the ColorMap tag.
+      // It seems like 0 should map to 255, 1 to 511, and so forth, as that
+      // seems to be the only way to get gdalinfo to report back the correct values.
+      colorTable[i] = (colorMap.getOrDefault(i, defaultRGB).getRed() + 1) * 256 - 1;
+      colorTable[256 + i] = (colorMap.getOrDefault(i, defaultRGB).getGreen() + 1) * 256 - 1;
+      colorTable[512 + i] = (colorMap.getOrDefault(i, defaultRGB).getBlue() + 1) * 256 - 1;
+    }
+  }
+
+  /**
+   * Creates a colormap in the form of a mapping of the pixel value to the rgb color.
+   *
+   * @param flag_values is an array of values for each categorical
+   * @param flag_colors is an array of octal strings (e.g., #00AAFF) of same length as flag_values.
+   * @return Map of the flag values to Color objects the RGB color values,
+   *         with 0 representing minimum intensity and 255 representing maximum intensity.
+   * @throws IllegalArgumentException if above assumptions not valid
+   * @throws NumberFormatException if a supplied color isn't parsable
+   */
+  public static HashMap<Integer, Color> createColorMap(int[] flag_values, String[] flag_colors)
+      throws IllegalArgumentException, NumberFormatException {
+    if (flag_values.length != flag_colors.length) {
+      throw new IllegalArgumentException("flag_values and flag_colors must be of equal length");
+    }
+    HashMap<Integer, Color> colorMap = new HashMap<Integer, Color>();
+    for (int i = 0; i < flag_values.length; i++) {
+      colorMap.put(flag_values[i], Color.decode(flag_colors[i]));
+    }
+    return colorMap;
+  }
+
+  /**
+   * Coerce a given data array into an array of bytes.
+   * Always returns a copy. No data safety check is performed.
+   *
+   * @param data input data array (of any data type)
+   * @param isUnsigned coerce to unsigned bytes
+   * @return byte data array
+   */
+  static ArrayByte coerceByte(Array data, boolean isUnsigned) {
+    ArrayByte array = (ArrayByte) Array.factory(isUnsigned ? DataType.UBYTE : DataType.BYTE, data.getShape());
+    IndexIterator dataIter = data.getIndexIterator();
+    IndexIterator resultIter = array.getIndexIterator();
+
+    while (dataIter.hasNext()) {
+      resultIter.setByteNext(dataIter.getByteNext());
+    }
+
+    return array;
+  }
+
+  /**
+   * Coerce a given data array into an array of 16-bit integers.
+   * Always returns a copy. No data safety check is performed.
+   *
+   * @param data input data array (of any data type)
+   * @param isUnsigned coerce to unsigned integers
+   * @return short integer data array
+   */
+  static ArrayShort coerceShort(Array data, boolean isUnsigned) {
+    ArrayShort array = (ArrayShort) Array.factory(isUnsigned ? DataType.USHORT : DataType.SHORT, data.getShape());
+    IndexIterator dataIter = data.getIndexIterator();
+    IndexIterator resultIter = array.getIndexIterator();
+
+    while (dataIter.hasNext()) {
+      resultIter.setShortNext(dataIter.getShortNext());
+    }
+
+    return array;
+  }
+
+
+  /**
+   * Coerce a given data array into an array of 32-bit integers.
+   * Always returns a copy. No data safety check is performed.
+   *
+   * @param data input data array (of any data type)
+   * @param isUnsigned coerce to unsigned integers
+   * @return 32-bit integer data array
+   */
+  static ArrayInt coerceInt(Array data, boolean isUnsigned) {
+    ArrayInt array = (ArrayInt) Array.factory(isUnsigned ? DataType.UINT : DataType.INT, data.getShape());
+    IndexIterator dataIter = data.getIndexIterator();
+    IndexIterator resultIter = array.getIndexIterator();
+
+    while (dataIter.hasNext()) {
+      resultIter.setIntNext(dataIter.getIntNext());
+    }
+
+    return array;
+  }
+
+  /**
+   * Coerce a given data array into an array of 32-bit floats.
+   * Always returns a copy. No data safety check is performed.
+   *
+   * @param data input data array (of any data type)
+   * @return float data array
+   */
+  static ArrayFloat coerceFloat(Array data) {
+    ArrayFloat array = (ArrayFloat) Array.factory(DataType.FLOAT, data.getShape());
+    IndexIterator dataIter = data.getIndexIterator();
+    IndexIterator resultIter = array.getIndexIterator();
+
+    while (dataIter.hasNext()) {
+      resultIter.setFloatNext(dataIter.getFloatNext());
+    }
+
+    return array;
+  }
+
+  /**
    * Replace missing values with dataMinMax.min - 1.0; return a floating point data array.
    *
    * @param grid GridDatatype
@@ -286,7 +595,7 @@ public class GeotiffWriter implements Closeable {
   }
 
   /**
-   * Replace missing values with 0; scale other values between 1 and 255, return a byte data array.
+   * Replace missing values with 0; scale other values between 1 and 255, return a ubyte data array.
    *
    * @param grid GridDatatype
    * @param data input data array
@@ -532,11 +841,51 @@ public class GeotiffWriter implements Closeable {
   /**
    * Write GridCoverage data to the geotiff file.
    *
+   * Greyscale mode will auto-normalize the data from 1 to 255 and save as unsigned bytes, with 0's used
+   * for missing data. A color table can be applied if specified via `setColorTable()`.
+   * Non-greyscale mode will save the data as floats, encoding missing data as the data minimum minus one.
+   *
    * @param array GeoReferencedArray array in YX order
    * @param greyScale if true, write greyScale image, else dataSample.
    * @throws IOException on i/o error
    */
   public void writeGrid(GeoReferencedArray array, boolean greyScale) throws IOException {
+    writeGrid(array, greyScale, greyScale ? DataType.UBYTE : DataType.FLOAT);
+  }
+
+  /**
+   * Write GridCoverage data to the geotiff file.
+   *
+   * Greyscale mode will auto-normalize the data from 1 to 255 and save as unsigned bytes, with 0's used
+   * for missing data.
+   * Non-greyscale mode with a floating point dtype will save the data as floats, encoding missing data
+   * as the data's minimum minus one. Any other dtype will save the data coerced to the specified dtype.
+   *
+   * A color table can be applied if specified via `setColorTable()` and the dtype is UBYTE.
+   *
+   * @param array GeoReferencedArray array in YX order
+   * @param greyScale if true, write greyScale image, else dataSample.
+   * @param dtype if greyScale is false, then save the data in the given data type.
+   *        Currently, this is a bit hobbled in order to avoid back-compatibility breaks.
+   *        If greyScale is true and this is not UBYTE, then an exception is thrown.
+   *        If dtype is DOUBLE, it downcasted to FLOAT instead.
+   *        If using the colorTable and this is not UBYTE, then an exception is thrown.
+   *        If null, then use the datatype of the given array.
+   * @throws IOException on i/o error
+   * @throws IllegalArgumentException if data isn't regular or if contradicting the greyScale argument.
+   */
+  public void writeGrid(GeoReferencedArray array, boolean greyScale, DataType dtype)
+      throws IOException, IllegalArgumentException {
+
+    // This check has to be *before* resolving the dtype so that we are only
+    // checking explicitly specified data types.
+    if (greyScale && dtype != DataType.UBYTE) {
+      throw new IllegalArgumentException("When greyScale is true, dtype must be UBYTE");
+    }
+
+    if (colorTable != null && colorTable.length > 0 && dtype != DataType.UBYTE) {
+      throw new IllegalArgumentException("When using the colorTable, the dtype must be UBYTE");
+    }
 
     CoverageCoordSys gcs = array.getCoordSysForData();
     if (!gcs.isRegularSpatial())
@@ -561,6 +910,14 @@ public class GeotiffWriter implements Closeable {
       yStart = yaxis.getCoordEdgeLast() * scaler;
     }
 
+    if (dtype == null) {
+      dtype = data.getDataType();
+      // Need to cap at single precision floats because that's what gets written for floating points
+      if (dtype == DataType.DOUBLE) {
+        dtype = DataType.FLOAT;
+      }
+    }
+
     /*
      * remove - i think unneeded, monotonic lon handled in CoordinateAxis1D. JC 3/18/2013
      * if (gcs.isLatLon()) {
@@ -579,19 +936,50 @@ public class GeotiffWriter implements Closeable {
     int nextStart;
     MAMath.MinMax dataMinMax = MAMath.getMinMaxSkipMissingData(data, array);
     if (greyScale) {
-      ArrayByte result = replaceMissingValuesAndScale(array, data, dataMinMax);
-      nextStart = geotiff.writeData((byte[]) result.getStorage(), pageNumber);
+      data = replaceMissingValuesAndScale(array, data, dataMinMax);
+      nextStart = writeData(data, DataType.UBYTE);
+    } else if (dtype == DataType.FLOAT) {
+      // Backwards compatibility shim
+      data = replaceMissingValues(array, data, dataMinMax);
+      nextStart = writeData(data, dtype);
     } else {
-      ArrayFloat result = replaceMissingValues(array, data, dataMinMax);
-      nextStart = geotiff.writeData((float[]) result.getStorage(), pageNumber);
+      data = coerceData(data, dtype);
+      nextStart = writeData(data, dtype);
     }
 
     // set the width and the height
     int height = data.getShape()[0]; // Y
     int width = data.getShape()[1]; // X
 
-    writeMetadata(greyScale, xStart, yStart, xInc, yInc, height, width, pageNumber, nextStart, dataMinMax, proj);
+    writeMetadata(greyScale, xStart, yStart, xInc, yInc, height, width, pageNumber, nextStart, dataMinMax, proj, dtype);
     pageNumber++;
+  }
+
+  static Array coerceData(Array data, DataType dtype) {
+    if (dtype == DataType.BYTE || dtype == DataType.UBYTE) {
+      data = coerceByte(data, dtype.isUnsigned());
+    } else if (dtype == DataType.SHORT || dtype == DataType.USHORT) {
+      data = coerceShort(data, dtype.isUnsigned());
+    } else if (dtype == DataType.INT || dtype == DataType.UINT) {
+      data = coerceInt(data, dtype.isUnsigned());
+    } else if (dtype.isFloatingPoint()) {
+      data = coerceFloat(data);
+    }
+    return data;
+  }
+
+  private int writeData(Array data, DataType dtype) throws IOException {
+    int nextStart;
+    if (dtype == DataType.BYTE || dtype == DataType.UBYTE) {
+      nextStart = geotiff.writeData((byte[]) data.getStorage(), pageNumber);
+    } else if (dtype == DataType.SHORT || dtype == DataType.USHORT) {
+      nextStart = geotiff.writeData((short[]) data.getStorage(), pageNumber);
+    } else if (dtype == DataType.INT || dtype == DataType.UINT) {
+      nextStart = geotiff.writeData((int[]) data.getStorage(), pageNumber);
+    } else {
+      nextStart = geotiff.writeData((float[]) data.getStorage(), pageNumber);
+    }
+    return nextStart;
   }
 }
 

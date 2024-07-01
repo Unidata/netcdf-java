@@ -14,6 +14,8 @@ import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
+import java.nio.ShortBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -187,6 +189,54 @@ public class GeoTiff implements Closeable {
       firstIFD = headerSize + data.length;
     else
       firstIFD = data.length + nextOverflowData;
+
+    return nextOverflowData;
+  }
+
+  int writeData(short[] data, int imageNumber) throws IOException {
+    if (file == null)
+      init();
+
+    if (imageNumber == 1)
+      channel.position(headerSize);
+    else
+      channel.position(nextOverflowData);
+
+    // no way around making a copy
+    ByteBuffer direct = ByteBuffer.allocateDirect(2 * data.length);
+    ShortBuffer buffer = direct.asShortBuffer();
+    buffer.put(data);
+    // buffer.flip();
+    channel.write(direct);
+
+    if (imageNumber == 1)
+      firstIFD = headerSize + 2 * data.length;
+    else
+      firstIFD = 2 * data.length + nextOverflowData;
+
+    return nextOverflowData;
+  }
+
+  int writeData(int[] data, int imageNumber) throws IOException {
+    if (file == null)
+      init();
+
+    if (imageNumber == 1)
+      channel.position(headerSize);
+    else
+      channel.position(nextOverflowData);
+
+    // no way around making a copy
+    ByteBuffer direct = ByteBuffer.allocateDirect(4 * data.length);
+    IntBuffer buffer = direct.asIntBuffer();
+    buffer.put(data);
+    // buffer.flip();
+    channel.write(direct);
+
+    if (imageNumber == 1)
+      firstIFD = headerSize + 4 * data.length;
+    else
+      firstIFD = 4 * data.length + nextOverflowData;
 
     return nextOverflowData;
   }
