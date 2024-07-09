@@ -39,7 +39,6 @@ import java.util.*;
  * <li>netcdf3: use indexed ragged array representation</li>
  * </ul>
  */
-@Deprecated
 public abstract class CFPointWriter implements Closeable {
   private static final Logger logger = LoggerFactory.getLogger(CFPointWriter.class);
   private static final String CF_VERSION = "CF-1.9";
@@ -861,6 +860,12 @@ public abstract class CFPointWriter implements Closeable {
       writer.updateAttribute(null, new Attribute(ACDD.LON_MIN, llbb.getLowerLeftPoint().getLongitude()));
       writer.updateAttribute(null, new Attribute(ACDD.LON_MAX, llbb.getUpperRightPoint().getLongitude()));
     }
+    if (minDate == null)
+      minDate = CalendarDate.present();
+    if (maxDate == null)
+      maxDate = CalendarDate.present();
+    writer.updateAttribute(null, new Attribute(ACDD.TIME_START, CalendarDateFormatter.toDateTimeStringISO(minDate)));
+    writer.updateAttribute(null, new Attribute(ACDD.TIME_END, CalendarDateFormatter.toDateTimeStringISO(maxDate)));
 
     writer.close();
   }

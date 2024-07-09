@@ -27,7 +27,7 @@ import ucar.unidata.geoloc.LatLonPoints;
 import ucar.unidata.util.StringUtil2;
 
 /**
- * Write DSG CF-1.6 file from a Coverage Dataset
+ * Write DSG CF-1.9 file from a Coverage Dataset
  *
  * @author caron
  * @since 7/8/2015

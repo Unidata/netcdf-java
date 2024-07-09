@@ -37,6 +37,8 @@ public class WriterCFPointCollection extends CFPointWriter {
   public WriterCFPointCollection(String fileOut, List<Attribute> globalAtts, List<VariableSimpleIF> dataVars,
       CalendarDateUnit timeUnit, String altUnits, CFPointWriterConfig config) throws IOException {
     super(fileOut, globalAtts, dataVars, timeUnit, altUnits, config);
+    writer.addGroupAttribute(null, new Attribute(CF.FEATURE_TYPE, CF.FeatureType.point.name()));
+    writer.addGroupAttribute(null, new Attribute(CF.DSG_REPRESENTATION, "Point Data, H.1"));
   }
 
   public WriterCFPointCollection(String fileOut, List<Attribute> globalAtts, List<VariableSimpleIF> dataVars,
