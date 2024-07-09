@@ -6,6 +6,9 @@
 package ucar.nc2.ft.point.standard;
 
 import java.io.IOException;
+import java.util.List;
+
+import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.ft.PointFeatureIterator;
 import ucar.nc2.ft.point.PointCollectionImpl;
 import ucar.nc2.time.CalendarDateUnit;
@@ -20,7 +23,13 @@ public class StandardPointCollectionImpl extends PointCollectionImpl {
   private NestedTable ft;
 
   StandardPointCollectionImpl(NestedTable ft, CalendarDateUnit timeUnit, String altUnits) {
-    super(ft.getName(), ft.getTimeName(), timeUnit, ft.getAltName(), altUnits);
+    super(ft.getName(), timeUnit, altUnits);
+    this.ft = ft;
+    this.extras = ft.getExtras();
+  }
+
+  StandardPointCollectionImpl(NestedTable ft, List<CoordinateAxis> coordVars) {
+    super(ft.getName(), coordVars);
     this.ft = ft;
     this.extras = ft.getExtras();
   }

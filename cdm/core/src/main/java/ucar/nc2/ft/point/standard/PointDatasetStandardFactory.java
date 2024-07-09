@@ -141,6 +141,10 @@ public class PointDatasetStandardFactory implements FeatureDatasetFactory {
         // create member variables
         dataVariables = new ArrayList<>(flatTable.getDataVariables());
 
+        // TODO: implement flatTable.getCoordinateVariables, use in FeatureCollection constructors
+        // once this is implemented, feature collections will have a full set of coordinate axes
+        // to use in the CFPointWriter implementations in place of default axis info
+
         featureType = flatTable.getFeatureType(); // hope they're all the same
         if (flatTable.getFeatureType() == FeatureType.POINT)
           featureCollections.add(new StandardPointCollectionImpl(flatTable, timeUnit, altUnits));

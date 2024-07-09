@@ -252,7 +252,7 @@ public class TestCoverageAsPoint {
 
   private void readCoverageAsProfile(List<String> varNames, SubsetParams params, double[] alt, double[] time,
       double[] expected) throws IOException {
-    readCoverageAsProfile(varNames, params, alt, time, expected, 0, "time", "z");
+    readCoverageAsProfile(varNames, params, alt, time, expected, 0, "time", "altitude");
   }
 
   private void readCoverageAsProfile(List<String> varNames, SubsetParams params, double[] alt, double[] time,

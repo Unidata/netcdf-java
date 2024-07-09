@@ -34,16 +34,15 @@ import java.io.IOException;
 import java.util.*;
 
 /**
- * Write Point Feature Collections into netcdf3/4 files in CF 1.6 point obs conventions.
+ * Write Point Feature Collections into netcdf3/4 files in CF 1.9 point obs conventions.
  * <ul>
  * <li>netcdf3: use indexed ragged array representation</li>
  * </ul>
- * 
- * @deprecated use writer2
  */
 @Deprecated
 public abstract class CFPointWriter implements Closeable {
   private static final Logger logger = LoggerFactory.getLogger(CFPointWriter.class);
+  private static final String CF_VERSION = "CF-1.9";
 
   public static final String recordName = "obs";
   public static final String recordDimName = "obs";
@@ -82,7 +81,7 @@ public abstract class CFPointWriter implements Closeable {
    * Write a FeatureDatasetPoint to a netcd3/4 file.
    *
    * @param fdpoint the FeatureDatasetPoint; do first FeatureCollection contained within.
-   * @param fileOut write to the is file
+   * @param fileOut write to this file
    * @param config configuration
    * @return count of number of pointFeatures written.
    */
@@ -119,6 +118,7 @@ public abstract class CFPointWriter implements Closeable {
   private static int writePointFeatureCollection(FeatureDatasetPoint fdpoint, PointFeatureCollection pfc,
       String fileOut, CFPointWriterConfig config) throws IOException {
 
+    // TODO: change to use pfc.getCoordinateVariables()
     try (WriterCFPointCollection pointWriter = new WriterCFPointCollection(fileOut, fdpoint.getGlobalAttributes(),
         fdpoint.getDataVariables(), pfc.getTimeUnit(), pfc.getAltUnits(), config)) {
 
@@ -144,6 +144,7 @@ public abstract class CFPointWriter implements Closeable {
       String fileOut, CFPointWriterConfig config) throws IOException {
     int count = 0;
 
+    // TODO: change to use fc.getCoordinateVariables()
     try (WriterCFStationCollection cfWriter = new WriterCFStationCollection(fileOut, dataset.getGlobalAttributes(),
         dataset.getDataVariables(), fc.getTimeUnit(), fc.getAltUnits(), config)) {
 
@@ -179,6 +180,7 @@ public abstract class CFPointWriter implements Closeable {
   private static int writeProfileFeatureCollection(FeatureDatasetPoint fdpoint, ProfileFeatureCollection fc,
       String fileOut, CFPointWriterConfig config) throws IOException {
 
+    // TODO: change to use fdPoint.getCoordinateVariables()
     try (WriterCFProfileCollection cfWriter = new WriterCFProfileCollection(fileOut, fdpoint.getGlobalAttributes(),
         fdpoint.getDataVariables(), fc.getTimeUnit(), fc.getAltUnits(), config)) {
       List<Variable> extraVariables = new ArrayList<>();
@@ -220,6 +222,7 @@ public abstract class CFPointWriter implements Closeable {
   private static int writeTrajectoryFeatureCollection(FeatureDatasetPoint fdpoint, TrajectoryFeatureCollection fc,
       String fileOut, CFPointWriterConfig config) throws IOException {
 
+    // TODO: change to use fdpoint.getCoordinateVariables()
     try (WriterCFTrajectoryCollection cfWriter = new WriterCFTrajectoryCollection(fileOut,
         fdpoint.getGlobalAttributes(), fdpoint.getDataVariables(), fc.getTimeUnit(), fc.getAltUnits(), config)) {
       List<Variable> extraVariables = new ArrayList<>();
@@ -258,6 +261,7 @@ public abstract class CFPointWriter implements Closeable {
   private static int writeStationProfileFeatureCollection(FeatureDatasetPoint dataset,
       StationProfileFeatureCollection fc, String fileOut, CFPointWriterConfig config) throws IOException {
 
+    // TODO: change to use fc.getCoordinateVariables()
     try (WriterCFStationProfileCollection cfWriter = new WriterCFStationProfileCollection(fileOut,
         dataset.getGlobalAttributes(), dataset.getDataVariables(), fc.getTimeUnit(), fc.getAltUnits(), config)) {
 
@@ -300,6 +304,7 @@ public abstract class CFPointWriter implements Closeable {
   private static int writeTrajectoryProfileFeatureCollection(FeatureDatasetPoint dataset,
       TrajectoryProfileFeatureCollection fc, String fileOut, CFPointWriterConfig config) throws IOException {
 
+    // TODO: change to use fc.getCoordinateVariables()
     try (WriterCFTrajectoryProfileCollection cfWriter = new WriterCFTrajectoryProfileCollection(fileOut,
         dataset.getGlobalAttributes(), dataset.getDataVariables(), fc.getTimeUnit(), fc.getAltUnits(), config)) {
       List<Variable> extraVariables = new ArrayList<>();
@@ -369,8 +374,6 @@ public abstract class CFPointWriter implements Closeable {
   protected String altUnits;
   protected String altitudeCoordinateName = altName;
 
-  protected final boolean noTimeCoverage;
-  protected final boolean noUnlimitedDimension; // experimental , netcdf-3
   protected final boolean isExtendedModel;
   protected boolean useAlt = true;
   protected int nfeatures, id_strlen;
@@ -380,6 +383,7 @@ public abstract class CFPointWriter implements Closeable {
   protected Dimension recordDim;
   protected Map<String, Variable> dataMap = new HashMap<>();
   protected List<VariableSimpleIF> dataVars;
+  protected List<CoordinateAxis> coordVars;
 
   private Map<String, Variable> extraMap; // added as variables just as they are
   protected List<Variable> extra = new ArrayList<>();
@@ -407,15 +411,25 @@ public abstract class CFPointWriter implements Closeable {
     this.timeUnit = timeUnit != null ? timeUnit : CalendarDateUnit.unixDateUnit;
     this.altUnits = altUnits;
     this.config = config;
-    this.noTimeCoverage = config.noTimeCoverage;
-    this.noUnlimitedDimension =
-        (writer.getVersion() == NetcdfFileWriter.Version.netcdf3) && config.recDimensionLength >= 0; // LOOK NOT USED
     this.isExtendedModel = writer.getVersion().isExtendedModel();
 
     addGlobalAtts(atts);
-    addNetcdf3UnknownAtts(noTimeCoverage);
+    addNetcdf3UnknownAtts();
   }
 
+  protected CFPointWriter(String fileOut, List<Attribute> atts, List<VariableSimpleIF> dataVars,
+      CFPointWriterConfig config, List<CoordinateAxis> coords) throws IOException {
+    createWriter(fileOut, config);
+    this.dataVars = dataVars;
+    this.config = config;
+    this.isExtendedModel = writer.getVersion().isExtendedModel();
+
+    this.coordVars = new ArrayList<>(coords);
+    this.coordVars.sort(new CoordinateAxis.AxisComparator());
+
+    addGlobalAtts(atts);
+    addNetcdf3UnknownAtts();
+  }
 
   public void setFeatureAuxInfo(int nfeatures, int id_strlen) {
     this.nfeatures = nfeatures;
@@ -435,7 +449,7 @@ public abstract class CFPointWriter implements Closeable {
   }
 
   private void addGlobalAtts(List<Attribute> atts) {
-    writer.addGroupAttribute(null, new Attribute(CDM.CONVENTIONS, isExtendedModel ? CDM.CF_EXTENDED : "CF-1.6"));
+    writer.addGroupAttribute(null, new Attribute(CDM.CONVENTIONS, isExtendedModel ? CDM.CF_EXTENDED : CF_VERSION));
     writer.addGroupAttribute(null, new Attribute(CDM.HISTORY, "Written by CFPointWriter"));
     for (Attribute att : atts) {
       if (!reservedGlobalAtts.contains(att.getShortName()))
@@ -445,13 +459,11 @@ public abstract class CFPointWriter implements Closeable {
 
   // netcdf3 has to add attributes up front, but we dont know values until the end.
   // so we have this updateAttribute hack; values set in finish()
-  private void addNetcdf3UnknownAtts(boolean noTimeCoverage) {
+  private void addNetcdf3UnknownAtts() {
     // dummy values, update in finish()
-    if (!noTimeCoverage) {
-      CalendarDate now = CalendarDate.of(new Date());
-      writer.addGroupAttribute(null, new Attribute(ACDD.TIME_START, CalendarDateFormatter.toDateTimeStringISO(now)));
-      writer.addGroupAttribute(null, new Attribute(ACDD.TIME_END, CalendarDateFormatter.toDateTimeStringISO(now)));
-    }
+    CalendarDate now = CalendarDate.of(new Date());
+    writer.addGroupAttribute(null, new Attribute(ACDD.TIME_START, CalendarDateFormatter.toDateTimeStringISO(now)));
+    writer.addGroupAttribute(null, new Attribute(ACDD.TIME_END, CalendarDateFormatter.toDateTimeStringISO(now)));
     writer.addGroupAttribute(null, new Attribute(ACDD.LAT_MIN, 0.0));
     writer.addGroupAttribute(null, new Attribute(ACDD.LAT_MAX, 0.0));
     writer.addGroupAttribute(null, new Attribute(ACDD.LON_MIN, 0.0));
@@ -848,15 +860,6 @@ public abstract class CFPointWriter implements Closeable {
       writer.updateAttribute(null, new Attribute(ACDD.LAT_MAX, llbb.getUpperRightPoint().getLatitude()));
       writer.updateAttribute(null, new Attribute(ACDD.LON_MIN, llbb.getLowerLeftPoint().getLongitude()));
       writer.updateAttribute(null, new Attribute(ACDD.LON_MAX, llbb.getUpperRightPoint().getLongitude()));
-    }
-
-    if (!noTimeCoverage) {
-      if (minDate == null)
-        minDate = CalendarDate.present();
-      if (maxDate == null)
-        maxDate = CalendarDate.present();
-      writer.updateAttribute(null, new Attribute(ACDD.TIME_START, CalendarDateFormatter.toDateTimeStringISO(minDate)));
-      writer.updateAttribute(null, new Attribute(ACDD.TIME_END, CalendarDateFormatter.toDateTimeStringISO(maxDate)));
     }
 
     writer.close();

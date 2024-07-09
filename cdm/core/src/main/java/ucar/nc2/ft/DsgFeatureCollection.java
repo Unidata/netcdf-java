@@ -7,6 +7,7 @@ package ucar.nc2.ft;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import ucar.nc2.Variable;
+import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.time.CalendarDateUnit;
 import java.util.List;
@@ -36,20 +37,20 @@ public interface DsgFeatureCollection {
   ucar.nc2.constants.FeatureType getCollectionFeatureType();
 
   /**
-   * The name of time unit.
+   * The name of time unit, if there is a time axis.
    *
-   * @return name of time unit string, may not be null
+   * @return name of time unit string, may be null
    */
-  @Nonnull
+  @Nullable
   String getTimeName();
 
 
   /**
-   * The time unit.
+   * The time unit, if there is a time axis.
    * 
-   * @return time unit, may not be null
+   * @return time unit, may be null
    */
-  @Nonnull
+  @Nullable
   CalendarDateUnit getTimeUnit();
 
   /**
@@ -67,6 +68,14 @@ public interface DsgFeatureCollection {
    */
   @Nullable
   String getAltUnits();
+
+  /**
+   * The list of coordinate variables in the collection
+   *
+   * @return the list of coordinate variables, may be empty but not null;
+   */
+  @Nonnull
+  List<CoordinateAxis> getCoordinateVariables();
 
   /*
    * Other variables needed for completeness, eg joined coordinate variables

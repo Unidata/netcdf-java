@@ -6,9 +6,11 @@
 package ucar.nc2.ft.point.standard;
 
 import java.io.IOException;
+import java.util.List;
 import javax.annotation.Nonnull;
 import ucar.ma2.StructureData;
 import ucar.ma2.StructureDataIterator;
+import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.ft.PointFeatureIterator;
 import ucar.nc2.ft.StationTimeSeriesFeature;
 import ucar.nc2.ft.point.StationFeature;
@@ -32,7 +34,13 @@ public class StandardStationCollectionImpl extends StationTimeSeriesCollectionIm
   private NestedTable ft;
 
   StandardStationCollectionImpl(NestedTable ft, CalendarDateUnit timeUnit, String altUnits) {
-    super(ft.getName(), ft.getTimeName(), timeUnit, ft.getAltName(), altUnits);
+    super(ft.getName(), timeUnit, altUnits);
+    this.ft = ft;
+    this.extras = ft.getExtras();
+  }
+
+  StandardStationCollectionImpl(NestedTable ft, List<CoordinateAxis> coordVars) {
+    super(ft.getName(), coordVars);
     this.ft = ft;
     this.extras = ft.getExtras();
   }
@@ -73,7 +81,7 @@ public class StandardStationCollectionImpl extends StationTimeSeriesCollectionIm
     StructureData stationData;
 
     StandardStationFeatureImpl(StationFeature s, CalendarDateUnit dateUnit, StructureData stationData, int recnum) {
-      super(s, ft.getTimeName(), dateUnit, ft.getAltName(), ft.getAltUnits(), -1);
+      super(s, dateUnit, ft.getAltUnits(), -1);
       this.recnum = recnum;
       this.stationData = stationData;
     }

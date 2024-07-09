@@ -5,6 +5,7 @@
 package ucar.nc2.ft.point;
 
 import ucar.nc2.Variable;
+import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.ft.DsgFeatureCollection;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.time.CalendarDateUnit;
@@ -27,6 +28,7 @@ public abstract class DsgCollectionImpl implements DsgFeatureCollection {
   protected String altName = "altitude";
   protected String altUnits;
   protected CollectionInfo info;
+  protected List<CoordinateAxis> coordVars;
   protected List<Variable> extras; // variables needed to make CF/DSG writing work
 
   protected DsgCollectionImpl(String name, CalendarDateUnit timeUnit, String altUnits) {
@@ -35,13 +37,19 @@ public abstract class DsgCollectionImpl implements DsgFeatureCollection {
     this.altUnits = altUnits;
   }
 
-  protected DsgCollectionImpl(String name, String timeName, CalendarDateUnit timeUnit, String altName,
-      String altUnits) {
+  protected DsgCollectionImpl(String name, List<CoordinateAxis> coordVars) {
     this.name = name;
-    this.timeName = timeName;
-    this.timeUnit = timeUnit;
-    this.altName = altName;
-    this.altUnits = altUnits;
+    this.coordVars = coordVars;
+
+    for (CoordinateAxis coord : coordVars) {
+      if (coord.getAxisType().isTime()) {
+        this.timeUnit = CalendarDateUnit.of(null, coord.getUnitsString());
+        this.timeName = coord.getShortName();
+      } else if (coord.getAxisType().isVert()) {
+        this.altUnits = coord.getUnitsString();
+        this.altName = coord.getShortName();
+      }
+    }
   }
 
   @Nonnull
@@ -50,13 +58,13 @@ public abstract class DsgCollectionImpl implements DsgFeatureCollection {
     return name;
   }
 
-  @Nonnull
+  @Nullable
   @Override
   public String getTimeName() {
     return timeName;
   }
 
-  @Nonnull
+  @Nullable
   @Override
   public CalendarDateUnit getTimeUnit() {
     return timeUnit;
@@ -72,6 +80,12 @@ public abstract class DsgCollectionImpl implements DsgFeatureCollection {
   @Override
   public String getAltUnits() {
     return altUnits;
+  }
+
+  @Nonnull
+  @Override
+  public List<CoordinateAxis> getCoordinateVariables() {
+    return this.coordVars;
   }
 
   @Nonnull

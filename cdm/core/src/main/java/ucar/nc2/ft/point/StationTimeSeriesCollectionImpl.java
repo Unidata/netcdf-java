@@ -10,6 +10,7 @@ import java.util.Iterator;
 import java.util.List;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.constants.FeatureType;
+import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.ft.PointFeature;
 import ucar.nc2.ft.PointFeatureCollection;
 import ucar.nc2.ft.PointFeatureCollectionIterator;
@@ -35,9 +36,8 @@ public abstract class StationTimeSeriesCollectionImpl extends PointFeatureCCImpl
     super(name, timeUnit, altUnits, FeatureType.STATION);
   }
 
-  public StationTimeSeriesCollectionImpl(String name, String timeName, CalendarDateUnit timeUnit, String altName,
-      String altUnits) {
-    super(name, timeName, timeUnit, altName, altUnits, FeatureType.STATION);
+  public StationTimeSeriesCollectionImpl(String name, List<CoordinateAxis> coordVars) {
+    super(name, coordVars, FeatureType.STATION);
   }
 
   // Double-check idiom for lazy initialization of instance fields. See Effective Java 2nd Ed, p. 283.
@@ -135,7 +135,7 @@ public abstract class StationTimeSeriesCollectionImpl extends PointFeatureCCImpl
     private final List<StationFeature> stations;
 
     StationSubset(StationTimeSeriesCollectionImpl from, List<StationFeature> stations) {
-      super(from.getName(), from.getTimeName(), from.getTimeUnit(), from.getAltName(), from.getAltUnits());
+      super(from.getName(), from.getTimeUnit(), from.getAltUnits());
       this.stations = stations;
     }
 
