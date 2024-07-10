@@ -10,6 +10,7 @@ import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
+import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.ft.*;
 import ucar.nc2.ft.point.StationFeature;
 import ucar.nc2.ft.point.StationPointFeature;
@@ -53,9 +54,17 @@ public class WriterCFStationCollection extends CFPointWriter {
   private int desc_strlen = 1, wmo_strlen = 1;
   private Map<String, Variable> featureVarMap = new HashMap<>();
 
-  public WriterCFStationCollection(String fileOut, List<Attribute> atts, List<VariableSimpleIF> dataVars,
+  public WriterCFStationCollection(String fileOut, List<Attribute> globalAtts, List<VariableSimpleIF> dataVars,
       CalendarDateUnit timeUnit, String altUnits, CFPointWriterConfig config) throws IOException {
-    super(fileOut, atts, dataVars, timeUnit, altUnits, config);
+    super(fileOut, globalAtts, dataVars, timeUnit, altUnits, config);
+    writer.addGroupAttribute(null, new Attribute(CF.FEATURE_TYPE, CF.FeatureType.timeSeries.name()));
+    writer.addGroupAttribute(null, new Attribute(CF.DSG_REPRESENTATION,
+        "Timeseries of station data in the indexed ragged array representation, H.2.5"));
+  }
+
+  public WriterCFStationCollection(String fileOut, List<Attribute> globalAtts, List<VariableSimpleIF> dataVars,
+      List<CoordinateAxis> coordVars, CFPointWriterConfig config) throws IOException {
+    super(fileOut, globalAtts, dataVars, config, coordVars);
     writer.addGroupAttribute(null, new Attribute(CF.FEATURE_TYPE, CF.FeatureType.timeSeries.name()));
     writer.addGroupAttribute(null, new Attribute(CF.DSG_REPRESENTATION,
         "Timeseries of station data in the indexed ragged array representation, H.2.5"));

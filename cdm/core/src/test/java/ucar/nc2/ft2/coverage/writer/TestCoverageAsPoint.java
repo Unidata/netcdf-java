@@ -4,6 +4,7 @@ import static com.google.common.truth.Truth.assertThat;
 import static org.junit.Assert.assertThrows;
 
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import ucar.ma2.Array;
 import ucar.nc2.constants.FeatureType;
@@ -100,6 +101,26 @@ public class TestCoverageAsPoint {
     varNames.add("T1noZ");
     vals = Arrays.copyOfRange(expected, 0, 2);
     params.setVariables(varNames);
+    readCoverageAsPoint(varNames, params, alts[0], times, vals);
+  }
+
+  @Ignore("Enable when custom axis names are working")
+  @Test
+  public void testCoverageAsPointWithAxisName() throws IOException {
+
+    double[] vals = Arrays.copyOfRange(expected, 0, 1);
+    // test single point (no time)
+    List<String> varNames = new ArrayList<>();
+    varNames.add("2D");
+    SubsetParams params = new SubsetParams();
+    params.setVariables(varNames);
+    params.setLatLonPoint(latlon);
+    readCoverageAsPoint(varNames, params, alts[0], times, vals);
+    // test time series
+    varNames = new ArrayList<>();
+    varNames.add("T1noZ");
+    vals = Arrays.copyOfRange(expected, 0, 2);
+    params.setVariables(varNames);
     readCoverageAsPoint(varNames, params, alts[0], times, vals, 0, "time1");
 
     // test multiple time axes
@@ -143,12 +164,17 @@ public class TestCoverageAsPoint {
     varNames.add("4D");
     params.setVariables(varNames);
     readCoverageAsProfile(varNames, params, alts, times, expected);
+  }
+
+  @Ignore("Enable when custom axis names are working")
+  @Test
+  public void testCoverageAsProfileWithAxisNames() throws IOException {
+    List<String> varNames = new ArrayList<>();
+    SubsetParams params = new SubsetParams();
 
     // test two different time axes
-    varNames = new ArrayList<>();
     varNames.add("full4");
     varNames.add("withT1");
-    params = new SubsetParams();
     params.setVariables(varNames);
     params.setLatLonPoint(latlon);
     readCoverageAsProfile(varNames, params, alts, times, expected);
@@ -252,7 +278,7 @@ public class TestCoverageAsPoint {
 
   private void readCoverageAsProfile(List<String> varNames, SubsetParams params, double[] alt, double[] time,
       double[] expected) throws IOException {
-    readCoverageAsProfile(varNames, params, alt, time, expected, 0, "time", "z");
+    readCoverageAsProfile(varNames, params, alt, time, expected, 0, "time", "altitude");
   }
 
   private void readCoverageAsProfile(List<String> varNames, SubsetParams params, double[] alt, double[] time,

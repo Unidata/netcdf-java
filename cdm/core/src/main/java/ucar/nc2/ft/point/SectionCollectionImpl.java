@@ -5,7 +5,10 @@
 package ucar.nc2.ft.point;
 
 import java.io.IOException;
+import java.util.List;
+
 import ucar.nc2.constants.FeatureType;
+import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.ft.PointFeatureCCIterator;
 import ucar.nc2.ft.TrajectoryProfileFeature;
 import ucar.nc2.ft.TrajectoryProfileFeatureCollection;
@@ -21,9 +24,12 @@ import ucar.nc2.time.CalendarDateUnit;
 
 public abstract class SectionCollectionImpl extends PointFeatureCCCImpl implements TrajectoryProfileFeatureCollection {
 
-  protected SectionCollectionImpl(String name, String timeName, CalendarDateUnit timeUnit, String altName,
-      String altUnits) {
-    super(name, timeName, timeUnit, altName, altUnits, FeatureType.TRAJECTORY_PROFILE);
+  protected SectionCollectionImpl(String name, CalendarDateUnit timeUnit, String altUnits) {
+    super(name, timeUnit, altUnits, FeatureType.TRAJECTORY_PROFILE);
+  }
+
+  protected SectionCollectionImpl(String name, List<CoordinateAxis> coords) {
+    super(name, coords, FeatureType.TRAJECTORY_PROFILE);
   }
 
   /////////////////////////////////////////////////////////////////////////////////////

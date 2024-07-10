@@ -7,9 +7,11 @@ package ucar.nc2.ft.point.standard;
 
 import java.io.IOException;
 import java.util.Iterator;
+import java.util.List;
 import javax.annotation.Nonnull;
 import ucar.ma2.StructureData;
 import ucar.ma2.StructureDataIterator;
+import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.ft.PointFeature;
 import ucar.nc2.ft.PointFeatureCC;
 import ucar.nc2.ft.PointFeatureCCIterator;
@@ -40,7 +42,13 @@ public class StandardSectionCollectionImpl extends SectionCollectionImpl {
   private NestedTable ft;
 
   StandardSectionCollectionImpl(NestedTable ft, CalendarDateUnit timeUnit, String altUnits) {
-    super(ft.getName(), ft.getTimeName(), timeUnit, ft.getAltName(), altUnits);
+    super(ft.getName(), timeUnit, altUnits);
+    this.ft = ft;
+    this.extras = ft.getExtras();
+  }
+
+  StandardSectionCollectionImpl(NestedTable ft, List<CoordinateAxis> coords) {
+    super(ft.getName(), coords);
     this.ft = ft;
     this.extras = ft.getExtras();
   }
@@ -122,8 +130,8 @@ public class StandardSectionCollectionImpl extends SectionCollectionImpl {
     StructureData sectionData;
 
     StandardSectionFeature(Cursor cursor, StructureData sectionData) {
-      super(ft.getFeatureName(cursor), ft.getTimeName(), StandardSectionCollectionImpl.this.getTimeUnit(),
-          ft.getAltName(), StandardSectionCollectionImpl.this.getAltUnits());
+      super(ft.getFeatureName(cursor), StandardSectionCollectionImpl.this.getTimeUnit(),
+          StandardSectionCollectionImpl.this.getAltUnits());
       this.cursor = cursor;
       this.sectionData = sectionData;
     }
@@ -201,8 +209,8 @@ public class StandardSectionCollectionImpl extends SectionCollectionImpl {
     StructureData profileData;
 
     StandardSectionProfileFeature(Cursor cursor, double time, StructureData profileData) {
-      super(ft.getFeatureName(cursor), ft.getTimeName(), ft.getTimeUnit(), ft.getAltName(), ft.getAltUnits(),
-          ft.getLatitude(cursor), ft.getLongitude(cursor), time, -1);
+      super(ft.getFeatureName(cursor), ft.getTimeUnit(), ft.getAltUnits(), ft.getLatitude(cursor),
+          ft.getLongitude(cursor), time, -1);
 
       this.cursor = cursor;
       this.profileData = profileData;

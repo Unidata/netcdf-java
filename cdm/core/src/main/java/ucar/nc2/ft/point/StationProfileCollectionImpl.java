@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import ucar.nc2.constants.FeatureType;
+import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.ft.PointFeatureCC;
 import ucar.nc2.ft.PointFeatureCCIterator;
 import ucar.nc2.ft.StationProfileFeature;
@@ -34,9 +35,8 @@ public abstract class StationProfileCollectionImpl extends PointFeatureCCCImpl
     super(name, timeUnit, altUnits, FeatureType.STATION_PROFILE);
   }
 
-  public StationProfileCollectionImpl(String name, String timeName, CalendarDateUnit timeUnit, String altName,
-      String altUnits) {
-    super(name, timeName, timeUnit, altName, altUnits, FeatureType.STATION_PROFILE);
+  public StationProfileCollectionImpl(String name, List<CoordinateAxis> coordVars) {
+    super(name, coordVars, FeatureType.STATION_PROFILE);
   }
 
   // Double-check idiom for lazy initialization of instance fields. See Effective Java 2nd Ed, p. 283.
@@ -135,7 +135,7 @@ public abstract class StationProfileCollectionImpl extends PointFeatureCCCImpl
     private final List<StationFeature> stations;
 
     StationProfileFeatureCollectionSubset(StationProfileCollectionImpl from, List<StationFeature> stations) {
-      super(from.getName(), from.getTimeName(), from.getTimeUnit(), from.getAltName(), from.getAltUnits());
+      super(from.getName(), from.getTimeUnit(), from.getAltUnits());
       this.from = from;
       this.stations = stations;
     }

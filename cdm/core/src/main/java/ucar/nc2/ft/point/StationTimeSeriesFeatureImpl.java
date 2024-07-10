@@ -5,9 +5,11 @@
 package ucar.nc2.ft.point;
 
 import java.io.IOException;
+import java.util.List;
 import javax.annotation.Nonnull;
 import ucar.ma2.StructureData;
 import ucar.nc2.constants.FeatureType;
+import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.ft.PointFeatureIterator;
 import ucar.nc2.ft.StationTimeSeriesFeature;
 import ucar.nc2.time.CalendarDateRange;
@@ -32,8 +34,8 @@ public abstract class StationTimeSeriesFeatureImpl extends PointCollectionImpl i
   }
 
   public StationTimeSeriesFeatureImpl(String name, String desc, String wmoId, double lat, double lon, double alt,
-      String timeName, CalendarDateUnit timeUnit, String altName, String altUnits, int npts, StructureData sdata) {
-    super(name, timeName, timeUnit, altName, altUnits);
+      List<CoordinateAxis> coords, int npts, StructureData sdata) {
+    super(name, coords);
     s = new StationFeatureImpl(name, desc, wmoId, lat, lon, alt, npts, sdata);
   }
 
@@ -46,9 +48,8 @@ public abstract class StationTimeSeriesFeatureImpl extends PointCollectionImpl i
     }
   }
 
-  public StationTimeSeriesFeatureImpl(StationFeature s, String timeName, CalendarDateUnit timeUnit, String altName,
-      String altUnits, int nfeatures) {
-    super(s.getName(), timeName, timeUnit, altName, altUnits);
+  public StationTimeSeriesFeatureImpl(StationFeature s, List<CoordinateAxis> coords, int nfeatures) {
+    super(s.getName(), coords);
     this.s = s;
     if (nfeatures >= 0) {
       getInfo(); // create the object

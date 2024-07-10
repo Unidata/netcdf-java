@@ -7,10 +7,12 @@ package ucar.nc2.ft.point.standard;
 
 import java.io.IOException;
 import java.util.Iterator;
+import java.util.List;
 import javax.annotation.Nonnull;
 import ucar.ma2.StructureData;
 import ucar.ma2.StructureDataIterator;
 import ucar.nc2.constants.FeatureType;
+import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.ft.PointFeatureCollection;
 import ucar.nc2.ft.PointFeatureCollectionIterator;
 import ucar.nc2.ft.PointFeatureIterator;
@@ -39,8 +41,18 @@ public class StandardTrajectoryCollectionImpl extends PointFeatureCCImpl impleme
     super(name, timeUnit, altUnits, FeatureType.TRAJECTORY);
   }
 
+  protected StandardTrajectoryCollectionImpl(String name, List<CoordinateAxis> coords) {
+    super(name, coords, FeatureType.TRAJECTORY);
+  }
+
   StandardTrajectoryCollectionImpl(NestedTable ft, CalendarDateUnit timeUnit, String altUnits) {
-    super(ft.getName(), ft.getTimeName(), timeUnit, ft.getAltName(), altUnits, FeatureType.TRAJECTORY);
+    super(ft.getName(), timeUnit, altUnits, FeatureType.TRAJECTORY);
+    this.ft = ft;
+    this.extras = ft.getExtras();
+  }
+
+  StandardTrajectoryCollectionImpl(NestedTable ft, List<CoordinateAxis> coords) {
+    super(ft.getName(), coords, FeatureType.TRAJECTORY);
     this.ft = ft;
     this.extras = ft.getExtras();
   }
@@ -57,8 +69,8 @@ public class StandardTrajectoryCollectionImpl extends PointFeatureCCImpl impleme
     StructureData trajData;
 
     StandardTrajectoryFeature(Cursor cursor, StructureData trajData) {
-      super(ft.getFeatureName(cursor), ft.getTimeName(), StandardTrajectoryCollectionImpl.this.getTimeUnit(),
-          ft.getAltName(), StandardTrajectoryCollectionImpl.this.getAltUnits(), -1);
+      super(ft.getFeatureName(cursor), StandardTrajectoryCollectionImpl.this.getTimeUnit(),
+          StandardTrajectoryCollectionImpl.this.getAltUnits(), -1);
       this.cursor = cursor;
       this.trajData = trajData;
     }

@@ -18,9 +18,6 @@ import ucar.nc2.write.Nc4ChunkingDefault;
 public class CFPointWriterConfig {
   public NetcdfFileWriter.Version version; // netcdf file version
   public Nc4Chunking chunking; // for netcdf-4
-  public boolean noTimeCoverage; // does not have a time dimension
-  public int recDimensionLength = -1; // do use unlimited dimension (for netcdf3), use fixed dimension of this length
-                                      // NOT USED
 
   public CFPointWriterConfig(NetcdfFileWriter.Version version) {
     this(version, new Nc4ChunkingDefault()); // The default chunker used in Nc4Iosp.
@@ -29,10 +26,5 @@ public class CFPointWriterConfig {
   public CFPointWriterConfig(NetcdfFileWriter.Version version, Nc4Chunking chunking) {
     this.version = version;
     this.chunking = chunking;
-  }
-
-  public CFPointWriterConfig setNoTimeCoverage(boolean noTimeCoverage) {
-    this.noTimeCoverage = noTimeCoverage;
-    return this;
   }
 }

@@ -11,6 +11,7 @@ import java.util.List;
 import javax.annotation.Nonnull;
 import ucar.ma2.StructureData;
 import ucar.ma2.StructureDataIterator;
+import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.ft.PointFeature;
 import ucar.nc2.ft.PointFeatureCC;
 import ucar.nc2.ft.PointFeatureCCIterator;
@@ -47,7 +48,13 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
   private NestedTable ft;
 
   StandardStationProfileCollectionImpl(NestedTable ft, CalendarDateUnit timeUnit, String altUnits) {
-    super(ft.getName(), ft.getTimeName(), timeUnit, ft.getAltName(), altUnits);
+    super(ft.getName(), timeUnit, altUnits);
+    this.ft = ft;
+  }
+
+
+  StandardStationProfileCollectionImpl(NestedTable ft, List<CoordinateAxis> coordVars) {
+    super(ft.getName(), coordVars);
     this.ft = ft;
   }
 
@@ -135,9 +142,7 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
     Cursor cursor;
 
     StandardStationProfileFeature(Station s, Cursor cursor, StructureData stationProfileData, int recnum) {
-      super(s, StandardStationProfileCollectionImpl.this.getTimeName(),
-          StandardStationProfileCollectionImpl.this.getTimeUnit(),
-          StandardStationProfileCollectionImpl.this.getAltName(),
+      super(s, StandardStationProfileCollectionImpl.this.getTimeUnit(),
           StandardStationProfileCollectionImpl.this.getAltUnits(), -1);
       this.cursor = cursor;
       // this.recnum = recnum;
@@ -249,8 +254,8 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
 
     StandardProfileFeature(Station s, String timeName, CalendarDateUnit timeUnit, String altName, String altUnits,
         double time, Cursor cursor, StructureData profileData) {
-      super(timeUnit.makeCalendarDate(time).toString(), timeName, timeUnit, altName, altUnits, s.getLatitude(),
-          s.getLongitude(), time, -1);
+      super(timeUnit.makeCalendarDate(time).toString(), timeUnit, altUnits, s.getLatitude(), s.getLongitude(), time,
+          -1);
       this.cursor = cursor;
       this.profileData = profileData;
 

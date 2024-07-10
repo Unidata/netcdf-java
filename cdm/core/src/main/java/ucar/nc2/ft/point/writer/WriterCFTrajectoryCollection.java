@@ -10,6 +10,7 @@ import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
+import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.conv.CF1Convention;
 import ucar.nc2.ft.*;
 import ucar.nc2.time.CalendarDateUnit;
@@ -33,6 +34,14 @@ public class WriterCFTrajectoryCollection extends CFPointWriter {
   public WriterCFTrajectoryCollection(String fileOut, List<Attribute> globalAtts, List<VariableSimpleIF> dataVars,
       CalendarDateUnit timeUnit, String altUnits, CFPointWriterConfig config) throws IOException {
     super(fileOut, globalAtts, dataVars, timeUnit, altUnits, config);
+    writer.addGroupAttribute(null, new Attribute(CF.FEATURE_TYPE, CF.FeatureType.trajectory.name()));
+    writer.addGroupAttribute(null,
+        new Attribute(CF.DSG_REPRESENTATION, "Contiguous ragged array representation of trajectories, H.4.3"));
+  }
+
+  public WriterCFTrajectoryCollection(String fileOut, List<Attribute> globalAtts, List<VariableSimpleIF> dataVars,
+      List<CoordinateAxis> coordVars, CFPointWriterConfig config) throws IOException {
+    super(fileOut, globalAtts, dataVars, config, coordVars);
     writer.addGroupAttribute(null, new Attribute(CF.FEATURE_TYPE, CF.FeatureType.trajectory.name()));
     writer.addGroupAttribute(null,
         new Attribute(CF.DSG_REPRESENTATION, "Contiguous ragged array representation of trajectories, H.4.3"));

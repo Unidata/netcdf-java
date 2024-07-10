@@ -161,8 +161,7 @@ public class StationCollectionStream extends StationTimeSeriesCollectionImpl {
     PointIteratorStream riter;
 
     StationFeatureStream(StationTimeSeriesFeature s, CalendarDateRange dateRange) {
-      super(s, s.getTimeName(), StationCollectionStream.this.getTimeUnit(), s.getAltName(),
-          StationCollectionStream.this.getAltUnits(), -1);
+      super(s, s.getCoordinateVariables(), -1);
       this.stnFeature = s;
       if (dateRange != null) {
         getInfo();

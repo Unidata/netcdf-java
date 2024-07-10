@@ -5,8 +5,10 @@
 package ucar.nc2.ft.point;
 
 import java.io.IOException;
+import java.util.List;
 import javax.annotation.Nonnull;
 import ucar.nc2.constants.FeatureType;
+import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.ft.PointFeatureCC;
 import ucar.nc2.ft.PointFeatureIterator;
 import ucar.nc2.time.CalendarDateRange;
@@ -29,9 +31,9 @@ public abstract class PointFeatureCCImpl extends DsgCollectionImpl implements Po
     this.collectionFeatureType = collectionFeatureType;
   }
 
-  protected PointFeatureCCImpl(String name, String timeName, CalendarDateUnit timeUnit, String altName, String altUnits,
-      FeatureType collectionFeatureType) {
-    super(name, timeName, timeUnit, altName, altUnits);
+
+  protected PointFeatureCCImpl(String name, List<CoordinateAxis> coords, FeatureType collectionFeatureType) {
+    super(name, coords);
     this.collectionFeatureType = collectionFeatureType;
   }
 

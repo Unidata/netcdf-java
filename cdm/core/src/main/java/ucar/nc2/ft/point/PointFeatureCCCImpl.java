@@ -4,10 +4,12 @@
  */
 package ucar.nc2.ft.point;
 
+import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.ft.*;
 import ucar.nc2.time.CalendarDateUnit;
 import ucar.nc2.constants.FeatureType;
 import javax.annotation.Nonnull;
+import java.util.List;
 
 /**
  * Abstract superclass for multiply nested NestedPointFeatureCollection
@@ -25,9 +27,8 @@ public abstract class PointFeatureCCCImpl extends DsgCollectionImpl implements P
     this.collectionFeatureType = collectionFeatureType;
   }
 
-  protected PointFeatureCCCImpl(String name, String timeName, CalendarDateUnit timeUnit, String altName,
-      String altUnits, FeatureType collectionFeatureType) {
-    super(name, timeName, timeUnit, altName, altUnits);
+  protected PointFeatureCCCImpl(String name, List<CoordinateAxis> coords, FeatureType collectionFeatureType) {
+    super(name, coords);
     this.collectionFeatureType = collectionFeatureType;
   }
 

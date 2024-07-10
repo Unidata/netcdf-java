@@ -126,7 +126,7 @@ abstract class WriterCFPointAbstract implements Closeable {
   }
 
   private void addGlobalAtts(AttributeContainer atts) {
-    writerb.addAttribute(new Attribute(CDM.CONVENTIONS, isExtendedModel ? CDM.CF_EXTENDED : "CF-1.6"));
+    writerb.addAttribute(new Attribute(CDM.CONVENTIONS, isExtendedModel ? CDM.CF_EXTENDED : CDM.CF_VERSION));
     writerb.addAttribute(new Attribute(CDM.HISTORY, "Written by CFPointWriter"));
     for (Attribute att : atts) {
       if (!reservedGlobalAtts.contains(att.getShortName()))

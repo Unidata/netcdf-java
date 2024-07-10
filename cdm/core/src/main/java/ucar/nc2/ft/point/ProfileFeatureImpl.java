@@ -6,9 +6,12 @@ package ucar.nc2.ft.point;
 
 import javax.annotation.Nonnull;
 import ucar.nc2.constants.FeatureType;
+import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.ft.ProfileFeature;
 import ucar.nc2.time.CalendarDateUnit;
 import ucar.unidata.geoloc.LatLonPoint;
+
+import java.util.List;
 
 /**
  * Abstract superclass for implementations of ProfileFeature.
@@ -31,9 +34,9 @@ public abstract class ProfileFeatureImpl extends PointCollectionImpl implements 
     }
   }
 
-  public ProfileFeatureImpl(String name, String timeName, CalendarDateUnit timeUnit, String altName, String altUnits,
-      double lat, double lon, double time, int nfeatures) {
-    super(name, timeName, timeUnit, altName, altUnits);
+  public ProfileFeatureImpl(String name, List<CoordinateAxis> coords, double lat, double lon, double time,
+      int nfeatures) {
+    super(name, coords);
     this.latlonPoint = LatLonPoint.create(lat, lon);
     this.time = time;
     if (nfeatures >= 0) {
