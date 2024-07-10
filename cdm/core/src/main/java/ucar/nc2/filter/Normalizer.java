@@ -15,7 +15,7 @@ public class Normalizer implements Enhancement {
   private final ScaleOffset scaleOffset;
   private final double minimum;
   private final double range; // maximum - minimum
-
+  private static String name = "Normalizer";
   public static Normalizer createFromVariable(VariableDS var) {
     try {
       Array arr = var.read();
@@ -71,5 +71,19 @@ public class Normalizer implements Enhancement {
   public double getRange() {
     return range;
   }
+
+//  public static class Provider implements EnhancementProvider {
+//
+//
+//    @Override
+//    public void doSomething(double val) {
+//      System.out.println("NORMALIZER ! "+val);
+//    }
+//
+//    @Override
+//    public String getName() {
+//      return name;
+//    }
+//  }
 
 }

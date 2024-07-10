@@ -15,6 +15,7 @@ public class Standardizer implements Enhancement {
   private final ScaleOffset scaleOffset;
   private final double mean;
   private final double stdDev;
+  private static String name = "Standardizer";
 
   public static Standardizer createFromVariable(VariableDS var) {
     try {
@@ -71,5 +72,21 @@ public class Standardizer implements Enhancement {
   public double getStdDev() {
     return stdDev;
   }
+
+
+
+//  public static class Provider implements EnhancementProvider {
+//
+//
+//    @Override
+//    public void doSomething(double val) {
+//      System.out.println("STANDARDIZER ! "+val);
+//    }
+//
+//    @Override
+//    public String getName() {
+//      return name;
+//    }
+//  }
 }
 

@@ -1,19 +1,29 @@
 package ucar.nc2.filter;
 
 
+import java.util.Map;
+import java.util.Set;
 import ucar.ma2.Array;
 import ucar.ma2.IndexIterator;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.Attribute;
+import ucar.nc2.dataset.NetcdfDataset.Enhance;
 import ucar.nc2.util.Misc;
 import java.util.ArrayList;
 import java.util.List;
+import ucar.unidata.io.spi.RandomAccessFileProvider;
 
 
 public class Classifier implements Enhancement {
+
+
   private String[] AttCat;
   private List<int[]> rules = new ArrayList<>();
+
+  private static String name = "Classifier";
+
+
 
   public Classifier() {
     this.AttCat = new String[0];
@@ -115,5 +125,30 @@ public class Classifier implements Enhancement {
 
     return intArray;
   }
+
+
+  public static class Provider implements EnhancementProvider {
+
+
+    @Override
+    public void doSomething(double val) {
+      System.out.println("CLASSIFIER ! "+val);
+    }
+
+    @Override
+    public String getName() {
+      return name;
+    }
+    @Override
+    public boolean canDo (Set<Enhance> enhancements){
+      if (enhancements.contains(Enhance.ApplyClassifier)) {
+        return true;
+      }
+      return false;
+          }
+
+  }
+
+
 
 }

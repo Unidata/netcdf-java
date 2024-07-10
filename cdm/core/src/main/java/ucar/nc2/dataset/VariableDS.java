@@ -32,7 +32,9 @@ import java.util.*;
  * @author caron
  * @see NetcdfDataset
  */
-public class VariableDS extends Variable implements VariableEnhanced, EnhanceScaleMissingUnsigned {
+public class VariableDS extends Variable implements VariableEnhanced, EnhanceScaleMissingUnsigned{
+
+
 
   /**
    * Constructor when there's no underlying variable.
@@ -269,8 +271,21 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
       // datatype of the result depends on what enhancements were applied
       DataType convertedType = data.getDataType();
 
+
       // TODO: change to a provider for extensible Enhancements
       List<Enhancement> toApply = new ArrayList<>();
+
+
+      for (EnhancementProvider service : ServiceLoader.load(EnhancementProvider.class)) {
+        /** but how do I return an object which is delcared as private here? */
+        if (service.canDo(enhancements)){
+          System.out.println(service.getName());
+//          toApply.add(service.ReturnObject());
+        }
+
+      }
+
+
       if (enhancements.contains(Enhance.ConvertUnsigned) && unsignedConversion != null) {
         toApply.add(unsignedConversion);
         convertedType = unsignedConversion.getOutType();
