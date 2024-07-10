@@ -27,6 +27,7 @@ public class CDM {
   public static final String ABBREV = "abbreviation";
   public static final String ADD_OFFSET = "add_offset";
   public static final String CONVENTIONS = "Conventions";
+  public static final String CF_VERSION = "CF-1.9";
   public static final String DESCRIPTION = "description";
   public static final String FILL_VALUE = "_FillValue";
   public static final String HISTORY = "history";

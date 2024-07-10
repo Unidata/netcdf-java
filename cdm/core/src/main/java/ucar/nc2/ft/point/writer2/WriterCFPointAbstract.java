@@ -40,8 +40,6 @@ import ucar.unidata.geoloc.LatLonRect;
 abstract class WriterCFPointAbstract implements Closeable {
   private static final Logger logger = LoggerFactory.getLogger(WriterCFPointAbstract.class);
 
-  private static final String CF_VERSION = "CF-1.9";
-
   static final String recordName = "obs";
   static final String recordDimName = "obs";
   static final String latName = "latitude";
@@ -128,7 +126,7 @@ abstract class WriterCFPointAbstract implements Closeable {
   }
 
   private void addGlobalAtts(AttributeContainer atts) {
-    writerb.addAttribute(new Attribute(CDM.CONVENTIONS, isExtendedModel ? CDM.CF_EXTENDED : CF_VERSION));
+    writerb.addAttribute(new Attribute(CDM.CONVENTIONS, isExtendedModel ? CDM.CF_EXTENDED : CDM.CF_VERSION));
     writerb.addAttribute(new Attribute(CDM.HISTORY, "Written by CFPointWriter"));
     for (Attribute att : atts) {
       if (!reservedGlobalAtts.contains(att.getShortName()))

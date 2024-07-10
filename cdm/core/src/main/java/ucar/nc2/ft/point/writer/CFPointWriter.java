@@ -41,7 +41,6 @@ import java.util.*;
  */
 public abstract class CFPointWriter implements Closeable {
   private static final Logger logger = LoggerFactory.getLogger(CFPointWriter.class);
-  private static final String CF_VERSION = "CF-1.9";
 
   public static final String recordName = "obs";
   public static final String recordDimName = "obs";
@@ -448,7 +447,7 @@ public abstract class CFPointWriter implements Closeable {
   }
 
   private void addGlobalAtts(List<Attribute> atts) {
-    writer.addGroupAttribute(null, new Attribute(CDM.CONVENTIONS, isExtendedModel ? CDM.CF_EXTENDED : CF_VERSION));
+    writer.addGroupAttribute(null, new Attribute(CDM.CONVENTIONS, isExtendedModel ? CDM.CF_EXTENDED : CDM.CF_VERSION));
     writer.addGroupAttribute(null, new Attribute(CDM.HISTORY, "Written by CFPointWriter"));
     for (Attribute att : atts) {
       if (!reservedGlobalAtts.contains(att.getShortName()))
