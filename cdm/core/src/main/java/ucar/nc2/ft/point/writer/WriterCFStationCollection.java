@@ -109,7 +109,7 @@ public class WriterCFStationCollection extends CFPointWriter {
 
     llbb = CFPointWriterUtils.getBoundingBox(stnList); // gets written in super.finish();
 
-    altitudeCoordinateName = stationAltName;
+    altitudeCoordinateName = altName;
     coords.add(VariableSimpleBuilder
         .makeScalar(stationIndexName, "station index for this observation record", null, DataType.INT)
         .addAttribute(CF.INSTANCE_DIMENSION, stationDimName).build());

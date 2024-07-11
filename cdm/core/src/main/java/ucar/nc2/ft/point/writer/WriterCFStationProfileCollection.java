@@ -173,9 +173,9 @@ public class WriterCFStationProfileCollection extends CFPointWriter {
     stnVars.add(VariableSimpleBuilder.makeScalar(lonName, "station longitude", CDM.LON_UNITS, DataType.DOUBLE).build());
 
     if (useAlt) {
-      stnVars.add(VariableSimpleBuilder.makeScalar(altitudeCoordinateName, "station", altUnits, DataType.DOUBLE)
+      stnVars.add(VariableSimpleBuilder.makeScalar(stationAltName, "station altitude", altUnits, DataType.DOUBLE)
           .addAttribute(CF.STANDARD_NAME, CF.STATION_ALTITUDE)
-          .addAttribute(CF.POSITIVE, CF1Convention.getZisPositive(altitudeCoordinateName, altUnits)).build());
+          .addAttribute(CF.POSITIVE, CF1Convention.getZisPositive(stationAltName, altUnits)).build());
     }
 
     stnVars.add(VariableSimpleBuilder.makeString(stationIdName, "station identifier", null, id_strlen)
@@ -212,7 +212,7 @@ public class WriterCFStationProfileCollection extends CFPointWriter {
     smb.addMemberScalar(latName, null, null, DataType.DOUBLE, stn.getLatLon().getLatitude());
     smb.addMemberScalar(lonName, null, null, DataType.DOUBLE, stn.getLatLon().getLongitude());
     if (useAlt)
-      smb.addMemberScalar(altitudeCoordinateName, null, null, DataType.DOUBLE, stn.getAltitude());
+      smb.addMemberScalar(stationAltName, null, null, DataType.DOUBLE, stn.getAltitude());
     smb.addMemberString(stationIdName, null, null, stn.getName().trim(), id_strlen);
     if (useDesc)
       smb.addMemberString(descName, null, null, stn.getDescription().trim(), desc_strlen);

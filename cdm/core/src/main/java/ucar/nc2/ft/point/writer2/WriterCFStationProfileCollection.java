@@ -118,7 +118,8 @@ class WriterCFStationProfileCollection extends WriterCFPointAbstract {
         coverageCollections.add(profile);
 
         obsCoords.add(VariableSimpleBuilder
-            .makeScalar(profile.getTimeName(), "time of measurement", timeUnit.toString(), DataType.DOUBLE).build());
+            .makeScalar(profile.getTimeName(), "nominal time of profile", timeUnit.toString(), DataType.DOUBLE)
+            .build());
 
         altitudeCoordinateName = profile.getAltName();
         obsCoords
