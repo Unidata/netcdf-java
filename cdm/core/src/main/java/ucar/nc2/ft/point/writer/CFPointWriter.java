@@ -522,8 +522,9 @@ public abstract class CFPointWriter implements Closeable {
           addDataVariablesExtended(pointFeat.getFeatureData(), coordNames.toString());
         }
         addDataVariablesClassic(recordDim, pointFeat.getFeatureData(), dataMap, coordNames.toString());
-
       }
+      // TODO: note if we iterate all stations, the data at the first station is changed to the data at the last station
+      break;
     }
 
     addCoordinatesClassic(recordDim, obsCoords, dataMap);

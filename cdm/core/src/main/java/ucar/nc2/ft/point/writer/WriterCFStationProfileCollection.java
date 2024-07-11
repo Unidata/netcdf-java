@@ -114,13 +114,13 @@ public class WriterCFStationProfileCollection extends CFPointWriter {
 
 
       obsCoords.add(VariableSimpleBuilder
-          .makeScalar(stationProfile.getTimeName(), "time of measurement", timeUnit.toString(), DataType.DOUBLE)
+          .makeScalar(stationProfile.getTimeName(), "nominal time of profile", timeUnit.toString(), DataType.DOUBLE)
           .build());
       if (altUnits != null) {
-        altitudeCoordinateName = stationProfile.getAltName();
+        altitudeCoordinateName = altName;
         obsCoords
             .add(VariableSimpleBuilder.makeScalar(altitudeCoordinateName, "obs altitude", altUnits, DataType.DOUBLE)
-                .addAttribute(CF.STANDARD_NAME, "altitude")
+                .addAttribute(CF.STANDARD_NAME, altitudeCoordinateName)
                 .addAttribute(CF.POSITIVE, CF1Convention.getZisPositive(altitudeCoordinateName, altUnits)).build());
       }
     }
@@ -173,9 +173,9 @@ public class WriterCFStationProfileCollection extends CFPointWriter {
     stnVars.add(VariableSimpleBuilder.makeScalar(lonName, "station longitude", CDM.LON_UNITS, DataType.DOUBLE).build());
 
     if (useAlt) {
-      stnVars.add(VariableSimpleBuilder.makeScalar(stationAltName, "station altitude", altUnits, DataType.DOUBLE)
+      stnVars.add(VariableSimpleBuilder.makeScalar(altitudeCoordinateName, "station", altUnits, DataType.DOUBLE)
           .addAttribute(CF.STANDARD_NAME, CF.STATION_ALTITUDE)
-          .addAttribute(CF.POSITIVE, CF1Convention.getZisPositive(stationAltName, altUnits)).build());
+          .addAttribute(CF.POSITIVE, CF1Convention.getZisPositive(altitudeCoordinateName, altUnits)).build());
     }
 
     stnVars.add(VariableSimpleBuilder.makeString(stationIdName, "station identifier", null, id_strlen)
@@ -212,7 +212,7 @@ public class WriterCFStationProfileCollection extends CFPointWriter {
     smb.addMemberScalar(latName, null, null, DataType.DOUBLE, stn.getLatLon().getLatitude());
     smb.addMemberScalar(lonName, null, null, DataType.DOUBLE, stn.getLatLon().getLongitude());
     if (useAlt)
-      smb.addMemberScalar(stationAltName, null, null, DataType.DOUBLE, stn.getAltitude());
+      smb.addMemberScalar(altitudeCoordinateName, null, null, DataType.DOUBLE, stn.getAltitude());
     smb.addMemberString(stationIdName, null, null, stn.getName().trim(), id_strlen);
     if (useDesc)
       smb.addMemberString(descName, null, null, stn.getDescription().trim(), desc_strlen);
