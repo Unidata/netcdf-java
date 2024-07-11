@@ -515,7 +515,6 @@ public abstract class CFPointWriter implements Closeable {
 
         Formatter coordNames = new Formatter().format("%s %s %s", stnFeature.getTimeName(), latName, lonName);
         if (!Double.isNaN(pointFeat.getLocation().getAltitude())) {
-          altitudeCoordinateName = stnFeature.getAltName();
           coordNames.format(" %s", altitudeCoordinateName);
         }
 
@@ -523,8 +522,9 @@ public abstract class CFPointWriter implements Closeable {
           addDataVariablesExtended(pointFeat.getFeatureData(), coordNames.toString());
         }
         addDataVariablesClassic(recordDim, pointFeat.getFeatureData(), dataMap, coordNames.toString());
-
       }
+      // TODO: note if we iterate all stations, the data at the first station is changed to the data at the last station
+      break;
     }
 
     addCoordinatesClassic(recordDim, obsCoords, dataMap);

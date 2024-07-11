@@ -114,13 +114,13 @@ public class WriterCFStationProfileCollection extends CFPointWriter {
 
 
       obsCoords.add(VariableSimpleBuilder
-          .makeScalar(stationProfile.getTimeName(), "time of measurement", timeUnit.toString(), DataType.DOUBLE)
+          .makeScalar(stationProfile.getTimeName(), "nominal time of profile", timeUnit.toString(), DataType.DOUBLE)
           .build());
       if (altUnits != null) {
-        altitudeCoordinateName = stationProfile.getAltName();
+        altitudeCoordinateName = altName;
         obsCoords
             .add(VariableSimpleBuilder.makeScalar(altitudeCoordinateName, "obs altitude", altUnits, DataType.DOUBLE)
-                .addAttribute(CF.STANDARD_NAME, "altitude")
+                .addAttribute(CF.STANDARD_NAME, altitudeCoordinateName)
                 .addAttribute(CF.POSITIVE, CF1Convention.getZisPositive(altitudeCoordinateName, altUnits)).build());
       }
     }

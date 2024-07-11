@@ -112,6 +112,7 @@ class WriterCFStationCollection extends WriterCFPointAbstract {
       }
     }
 
+    altitudeCoordinateName = stationAltName;
     llbb = ucar.nc2.ft.point.writer.CFPointWriterUtils.getBoundingBox(stnList); // gets written in super.finish();
     coords.add(VariableSimpleBuilder
         .makeScalar(stationIndexName, "station index for this observation record", null, DataType.INT)
