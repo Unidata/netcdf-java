@@ -6,7 +6,6 @@
 package ucar.nc2.ft.point.writer;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Iterables;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.*;
@@ -138,15 +137,6 @@ public class WriterCFStationProfileCollection extends CFPointWriter {
     for (StationFeature sf : stnList) {
       writeStationData(sf);
       stationIndexMap.put(sf.getName(), count);
-      // for (ProfileFeature p : (StationProfileFeature) sf) {
-      // int countPoints = 0;
-      // if (p.size() >= 0) {
-      // countPoints += p.size();
-      // } else {
-      // countPoints += Iterables.size(p);
-      // }
-      // writeProfileData(count, p, countPoints);
-      // }
       count++;
     }
   }

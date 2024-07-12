@@ -9,6 +9,7 @@ import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParameterDescription;
 import com.beust.jcommander.ParameterException;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.PeekingIterator;
 import org.slf4j.Logger;
@@ -266,26 +267,34 @@ public abstract class CFPointWriter implements Closeable {
       List<Variable> extraVariables = new ArrayList<>();
       List<StationFeature> flattenFeatures = new ArrayList<>();
 
+      int countProfiles = 0;
+      int name_strlen = 0;
       for (DsgFeatureCollection dsgFeatures : dataset.getPointFeatureCollectionList()) {
         extraVariables.addAll(dsgFeatures.getExtraVariables());
         flattenFeatures.addAll(((StationProfileFeatureCollection) dsgFeatures).getStationFeatures());
+        for (StationProfileFeature station : (StationProfileFeatureCollection) dsgFeatures) {
+          name_strlen = Math.max(name_strlen, station.getName().length());
+          for (ProfileFeature fp : station) {
+            countProfiles += Iterables.size((station));
+          }
+        }
       }
 
       cfWriter.setExtraVariables(extraVariables);
       cfWriter.setStations(flattenFeatures);
-      cfWriter.setFeatureAuxInfo(0, 0);
+      cfWriter.setFeatureAuxInfo(countProfiles, name_strlen);
       cfWriter.writeHeader(flattenFeatures);
 
       int count = 0;
       for (DsgFeatureCollection featureCollection : dataset.getPointFeatureCollectionList()) {
         cfWriter.resetObsIndex();
-        for (StationFeature station : ((StationProfileFeatureCollection) featureCollection).getStationFeatures()) {
-          StationProfileFeature spf = (StationProfileFeature) station;
+        for (StationProfileFeature station : (StationProfileFeatureCollection) featureCollection) {
           cfWriter.resetProfileIndex();
-          for (ProfileFeature pf : spf) {
+          station.resetIteration();
+          for (ProfileFeature pf : station) {
             if (pf.getTime() == null)
               continue; // assume this means its an "incomplete multidimensional"
-            count += cfWriter.writeProfile(spf, pf);
+            count += cfWriter.writeProfile(station, pf);
             if (debug && count % 100 == 0)
               logger.debug(String.format("%d ", count));
             if (debug && count % 1000 == 0)
