@@ -15,7 +15,23 @@ import java.util.List;
 import ucar.unidata.io.spi.RandomAccessFileProvider;
 
 
-public class Classifier implements Enhancement {
+
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Sets;
+import ucar.ma2.*;
+import ucar.nc2.*;
+import ucar.nc2.constants.CDM;
+import ucar.nc2.dataset.NetcdfDataset.Enhance;
+import ucar.nc2.filter.*;
+import ucar.nc2.internal.dataset.CoordinatesHelper;
+import ucar.nc2.util.CancelTask;
+import ucar.nc2.util.Misc;
+
+import javax.annotation.Nullable;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.*;
+public class Classifier implements Enhancement,EnhancementProvider {
 
 
   private String[] AttCat;
@@ -37,6 +53,7 @@ public class Classifier implements Enhancement {
   }
 
   // Factory method to create a Classifier from a Variable
+
   public static Classifier createFromVariable(Variable var) {
     List<Attribute> attributes = var.attributes().getAttributes();
 
@@ -127,7 +144,7 @@ public class Classifier implements Enhancement {
   }
 
 
-  public static class Provider implements EnhancementProvider {
+
 
 
     @Override
@@ -147,8 +164,21 @@ public class Classifier implements Enhancement {
       return false;
           }
 
+//    Attribute findAttribute(String attName);
+
+    @Override
+    public boolean appliesTo(Enhance enhance) {
+      return enhance == Enhance.ApplyClassifier;
+    }
+//    @Override
+//    public void applyEnhancement(Object instance) {
+//      Attribute classifierAtt = findAttribute(CDM.CLASSIFY);
+//      if (classifierAtt != null && instance.enhanceMode.contains(Enhance.ApplyClassifier) && instance.dataType.isNumeric()) {
+//        instance.classifier = Classifier.createFromVariable(instance);
+//      }
+
   }
 
 
 
-}
+

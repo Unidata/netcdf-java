@@ -32,9 +32,16 @@ public interface EnhancementProvider {
  /** just do something for now? */
  void doSomething(double val);
 
+
  String getName();
 
  boolean canDo (Set<ucar.nc2.dataset.NetcdfDataset.Enhance> enhancements);
+
+ boolean appliesTo(Enhance enhance);
+
+
+//  void applyEnhancement(Object instance);
+
 }
 
 
