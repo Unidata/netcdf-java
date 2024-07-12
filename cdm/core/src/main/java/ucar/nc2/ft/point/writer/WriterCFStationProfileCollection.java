@@ -244,10 +244,6 @@ public class WriterCFStationProfileCollection extends CFPointWriter {
 
   private int profileRecno;
 
-  protected void resetProfileIndex() {
-    profileRecno = 0;
-  }
-
   public void writeProfileData(int stnIndex, ProfileFeature profile, int nobs) throws IOException {
     trackBB(profile.getLatLon(), profile.getTime());
 
@@ -270,10 +266,6 @@ public class WriterCFStationProfileCollection extends CFPointWriter {
 
 
   private int obsRecno;
-
-  protected void resetObsIndex() {
-    obsRecno = 0;
-  }
 
   public void writeObsData(PointFeature pf) throws IOException {
     StructureMembers.Builder smb = StructureMembers.builder().setName("Coords");

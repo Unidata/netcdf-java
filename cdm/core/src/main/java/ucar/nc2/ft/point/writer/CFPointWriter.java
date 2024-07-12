@@ -275,7 +275,7 @@ public abstract class CFPointWriter implements Closeable {
         for (StationProfileFeature station : (StationProfileFeatureCollection) dsgFeatures) {
           name_strlen = Math.max(name_strlen, station.getName().length());
           for (ProfileFeature fp : station) {
-            countProfiles += Iterables.size((station));
+            countProfiles++;
           }
         }
       }
@@ -287,10 +287,7 @@ public abstract class CFPointWriter implements Closeable {
 
       int count = 0;
       for (DsgFeatureCollection featureCollection : dataset.getPointFeatureCollectionList()) {
-        cfWriter.resetObsIndex();
         for (StationProfileFeature station : (StationProfileFeatureCollection) featureCollection) {
-          cfWriter.resetProfileIndex();
-          station.resetIteration();
           for (ProfileFeature pf : station) {
             if (pf.getTime() == null)
               continue; // assume this means its an "incomplete multidimensional"
