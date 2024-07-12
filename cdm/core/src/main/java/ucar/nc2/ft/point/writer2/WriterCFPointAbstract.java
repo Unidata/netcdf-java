@@ -218,7 +218,7 @@ abstract class WriterCFPointAbstract implements Closeable {
 
         Formatter coordNames = new Formatter().format("%s %s %s", stnFeature.getTimeName(), latName, lonName);
         if (!Double.isNaN(pointFeat.getLocation().getAltitude())) {
-          coordNames.format(" %s", stnFeature.getAltName());
+          coordNames.format(" %s", altitudeCoordinateName);
         }
         if (isExtendedModel) {
           addDataVariablesExtended(recordb, obsData, coordNames.toString());

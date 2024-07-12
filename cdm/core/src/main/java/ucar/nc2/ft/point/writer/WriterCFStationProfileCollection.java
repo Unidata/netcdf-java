@@ -6,7 +6,6 @@
 package ucar.nc2.ft.point.writer;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Iterables;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.*;
@@ -94,11 +93,16 @@ public class WriterCFStationProfileCollection extends CFPointWriter {
       writeObsData(pf);
       count++;
     }
+    Integer stnIndex = stationIndexMap.get(spf.getName());
+    if (stnIndex == null) {
+      log.warn("BAD station {}", spf.getName());
+    } else {
+      writeProfileData(stnIndex, profile, count);
+    }
     return count;
   }
 
   public void writeHeader(List<StationFeature> stations) throws IOException {
-
     List<VariableSimpleIF> obsCoords = new ArrayList<>();
     List<PointFeatureCollection> flattenStations = new ArrayList<>();
     List<StructureData> featureData = new ArrayList<>();
@@ -133,33 +137,8 @@ public class WriterCFStationProfileCollection extends CFPointWriter {
     for (StationFeature sf : stnList) {
       writeStationData(sf);
       stationIndexMap.put(sf.getName(), count);
-      for (ProfileFeature p : (StationProfileFeature) sf) {
-        int countPoints = 0;
-        if (p.size() >= 0) {
-          countPoints += p.size();
-        } else {
-          countPoints += Iterables.size(p);
-        }
-        writeProfileData(count, p, countPoints);
-      }
       count++;
     }
-  }
-
-  @Override
-  public void setFeatureAuxInfo(int nfeatures, int id_strlen) {
-    int countProfiles = 0;
-    int name_strlen = 0;
-    for (StationFeature s : stnList) {
-      name_strlen = Math.max(name_strlen, s.getName().length());
-      if (((StationProfileFeature) s).size() >= 0)
-        countProfiles += ((StationProfileFeature) s).size();
-      else {
-        countProfiles += Iterables.size(((StationProfileFeature) s));
-      }
-    }
-    this.nfeatures = countProfiles;
-    this.id_strlen = name_strlen;
   }
 
   protected void makeFeatureVariables(List<StructureData> stnDataStructs, boolean isExtended) {
@@ -265,10 +244,6 @@ public class WriterCFStationProfileCollection extends CFPointWriter {
 
   private int profileRecno;
 
-  protected void resetProfileIndex() {
-    profileRecno = 0;
-  }
-
   public void writeProfileData(int stnIndex, ProfileFeature profile, int nobs) throws IOException {
     trackBB(profile.getLatLon(), profile.getTime());
 
@@ -291,10 +266,6 @@ public class WriterCFStationProfileCollection extends CFPointWriter {
 
 
   private int obsRecno;
-
-  protected void resetObsIndex() {
-    obsRecno = 0;
-  }
 
   public void writeObsData(PointFeature pf) throws IOException {
     StructureMembers.Builder smb = StructureMembers.builder().setName("Coords");

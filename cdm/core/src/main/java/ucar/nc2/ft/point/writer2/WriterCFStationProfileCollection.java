@@ -139,10 +139,8 @@ class WriterCFStationProfileCollection extends WriterCFPointAbstract {
       stationIndexMap.put(sf.getName(), count);
       for (ProfileFeature p : (StationProfileFeature) sf) {
         int countPoints = 0;
-        if (p.size() >= 0) {
-          countPoints += p.size();
-        } else {
-          countPoints += Iterables.size(p);
+        for (PointFeature pf : p) {
+          countPoints++;
         }
         writeProfileData(count, p, countPoints);
       }
