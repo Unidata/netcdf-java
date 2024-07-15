@@ -3,11 +3,15 @@ package ucar.nc2.filter;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-
+import ucar.nc2.constants.CDM;
+import java.util.Set;
 import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.ma2.IndexIterator;
+import ucar.nc2.AttributeContainer;
+import ucar.nc2.Variable;
+import ucar.nc2.dataset.NetcdfDataset.Enhance;
 import ucar.nc2.dataset.VariableDS;
 
 public class Normalizer implements Enhancement {
@@ -71,19 +75,31 @@ public class Normalizer implements Enhancement {
   public double getRange() {
     return range;
   }
+  public static class Provider implements EnhancementProvider {
 
-//  public static class Provider implements EnhancementProvider {
-//
-//
-//    @Override
-//    public void doSomething(double val) {
-//      System.out.println("NORMALIZER ! "+val);
-//    }
-//
-//    @Override
-//    public String getName() {
-//      return name;
-//    }
-//  }
+    @Override
+    public void Create(VariableDS var){
+      var.normalizer=Normalizer.createFromVariable(var);
+
+    }
+    @Override
+    public String getName() {
+      return name;
+    }
+    @Override
+    public boolean canDo (Set<Enhance> enhancements){
+      if (enhancements.contains(Enhance.ApplyNormalizer)) {
+        return true;
+      }
+      return false;
+    }
+
+    @Override
+    public boolean appliesTo(Enhance enhance, AttributeContainer attributes) {
+      return enhance == Enhance.ApplyNormalizer && attributes.findAttribute(CDM.NORMALIZE)!= null;
+    }
+
+
+  }
 
 }

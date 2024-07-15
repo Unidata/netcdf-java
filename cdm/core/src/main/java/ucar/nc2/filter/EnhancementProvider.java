@@ -14,6 +14,7 @@ import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.dataset.NetcdfDataset.Enhance;
+import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.filter.*;
 import ucar.nc2.internal.dataset.CoordinatesHelper;
 import ucar.nc2.util.CancelTask;
@@ -29,15 +30,13 @@ import java.util.*;
  */
 public interface EnhancementProvider {
 
- /** just do something for now? */
- void doSomething(double val);
-
-
  String getName();
 
  boolean canDo (Set<ucar.nc2.dataset.NetcdfDataset.Enhance> enhancements);
 
- boolean appliesTo(Enhance enhance);
+ boolean appliesTo(Enhance enhance, AttributeContainer attributes);
+
+ void Create(VariableDS var);
 
 
 //  void applyEnhancement(Object instance);

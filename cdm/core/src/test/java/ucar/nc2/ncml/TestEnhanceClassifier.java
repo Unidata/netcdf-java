@@ -12,6 +12,7 @@ import ucar.nc2.Attribute;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDatasets;
+import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.filter.Classifier;
 import ucar.unidata.util.test.TestDir;
 
@@ -33,7 +34,7 @@ public class TestEnhanceClassifier {
       assertThat((Object) classifySpecs).isNotNull();
       assertThat(!classifySpecs.attributes().isEmpty()).isTrue();
       Array Data = classifySpecs.read();
-      Classifier classifier = Classifier.createFromVariable(classifySpecs);
+      Classifier classifier = Classifier.createFromVariable((VariableDS) classifySpecs);
       int[] ClassifiedArray = classifier.classifyWithAttributes(Data);
       assertThat(nearlyEquals(Array.makeFromJavaArray(ClassifiedArray), DATA_mixNumbers)).isTrue();
 
@@ -53,7 +54,7 @@ public class TestEnhanceClassifier {
       assertThat((Object) classifySpecs).isNotNull();
       assertThat(!classifySpecs.attributes().isEmpty()).isTrue();
       Array Data = classifySpecs.read();
-      Classifier classifier = Classifier.createFromVariable(classifySpecs);
+      Classifier classifier = Classifier.createFromVariable((VariableDS) classifySpecs);
       int[] ClassifiedArray = classifier.classifyWithAttributes(Data);
       assertThat(nearlyEquals(Array.makeFromJavaArray(ClassifiedArray), DATA_mixNumbers)).isTrue();
 
@@ -73,7 +74,7 @@ public class TestEnhanceClassifier {
       assertThat((Object) classifySpecs).isNotNull();
       assertThat(!classifySpecs.attributes().isEmpty()).isTrue();
       Array Data = classifySpecs.read();
-      Classifier classifier = Classifier.createFromVariable(classifySpecs);
+      Classifier classifier = Classifier.createFromVariable((VariableDS) classifySpecs);
       int[] ClassifiedArray = classifier.classifyWithAttributes(Data);
       assertThat(nearlyEquals(Array.makeFromJavaArray(ClassifiedArray), CLASSIFICATION_TEST)).isTrue();
 

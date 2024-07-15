@@ -9,6 +9,7 @@ import ucar.nc2.Variable;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.Attribute;
 import ucar.nc2.dataset.NetcdfDataset.Enhance;
+import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.util.Misc;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,7 +32,7 @@ import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.*;
-public class Classifier implements Enhancement,EnhancementProvider {
+public class Classifier implements Enhancement {
 
 
   private String[] AttCat;
@@ -54,7 +55,7 @@ public class Classifier implements Enhancement,EnhancementProvider {
 
   // Factory method to create a Classifier from a Variable
 
-  public static Classifier createFromVariable(Variable var) {
+  public static Classifier createFromVariable(VariableDS var) {
     List<Attribute> attributes = var.attributes().getAttributes();
 
     for (Attribute attribute : attributes) {
@@ -143,14 +144,14 @@ public class Classifier implements Enhancement,EnhancementProvider {
     return intArray;
   }
 
-
-
-
+  public static class Provider implements EnhancementProvider {
 
     @Override
-    public void doSomething(double val) {
-      System.out.println("CLASSIFIER ! "+val);
+    public void Create(VariableDS var){
+      var.classifier=Classifier.createFromVariable(var);
     }
+
+
 
     @Override
     public String getName() {
@@ -162,13 +163,13 @@ public class Classifier implements Enhancement,EnhancementProvider {
         return true;
       }
       return false;
-          }
+    }
 
 //    Attribute findAttribute(String attName);
 
     @Override
-    public boolean appliesTo(Enhance enhance) {
-      return enhance == Enhance.ApplyClassifier;
+    public boolean appliesTo(Enhance enhance,  AttributeContainer attributes) {
+      return enhance == Enhance.ApplyClassifier && attributes.findAttribute(CDM.CLASSIFY)!= null;
     }
 //    @Override
 //    public void applyEnhancement(Object instance) {
@@ -176,6 +177,11 @@ public class Classifier implements Enhancement,EnhancementProvider {
 //      if (classifierAtt != null && instance.enhanceMode.contains(Enhance.ApplyClassifier) && instance.dataType.isNumeric()) {
 //        instance.classifier = Classifier.createFromVariable(instance);
 //      }
+
+  }
+
+
+
 
   }
 
