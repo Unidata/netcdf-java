@@ -17,6 +17,7 @@ buildscript {
       // only look for unidata plugin related artifacts from the unidata-all repo
       filter {
         includeModule 'edu.ucar.unidata', 'unidata-nexus-gradle'
+        includeModule 'com.burgstaller', 'okhttp-digest'
       }
     }
   }
