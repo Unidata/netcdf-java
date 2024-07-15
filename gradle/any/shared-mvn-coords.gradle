@@ -13,7 +13,7 @@ ext {
   buildPlugins.protobuf = 'com.google.protobuf:protobuf-gradle-plugin:0.8.18'
   buildPlugins.depcheck = 'org.owasp:dependency-check-gradle:8.2.1'
   buildPlugins.nexus = 'edu.ucar.unidata:unidata-nexus-gradle:0.0.1'
-  buildPlugins.jekyll = 'edu.ucar.unidata.site:jekyll-plugin:0.0.5'
+//  buildPlugins.jekyll = 'edu.ucar.unidata.site:jekyll-plugin:0.0.5'
 
   // slf4j version is declared in a place where we cannot use the tds-platform project to handle resolving versions
   // (e.g. gradle/any/dependencies.gradle, for transitive dependency replacement purposes)
