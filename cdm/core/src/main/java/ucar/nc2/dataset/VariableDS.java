@@ -275,10 +275,6 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
       // TODO: change to a provider for extensible Enhancements
       List<Enhancement> toApply = new ArrayList<>();
 
-
-
-
-
       if (enhancements.contains(Enhance.ConvertUnsigned) && unsignedConversion != null) {
         toApply.add(unsignedConversion);
         convertedType = unsignedConversion.getOutType();
@@ -291,15 +287,15 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
         toApply.add(scaleOffset);
         convertedType = scaleOffset.getScaledOffsetType();
       }
-      if (enhancements.contains(Enhance.ApplyStandardizer) && standardizer != null) {
-        toApply.add(standardizer);
+/**  this == variableDS */
+      for (Enhance enhance : enhancements) {
+        for (EnhancementProvider service : ServiceLoader.load(EnhancementProvider.class)) {
+          if (service.appliesTo(enhance, this)) {
+            toApply.add(service.returnObject(this));
+          }
+        }
       }
-      if (enhancements.contains(Enhance.ApplyNormalizer) && normalizer != null) {
-        toApply.add(normalizer);
-      }
-      if (enhancements.contains(Enhance.ApplyClassifier) && classifier != null) {
-        toApply.add(classifier);
-      }
+
 
       double[] dataArray = (double[]) data.get1DJavaArray(DataType.DOUBLE);
 

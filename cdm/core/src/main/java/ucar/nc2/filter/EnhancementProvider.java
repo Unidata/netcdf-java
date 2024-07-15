@@ -36,7 +36,10 @@ public interface EnhancementProvider {
 
  boolean appliesTo(Enhance enhance, AttributeContainer attributes);
 
+ boolean appliesTo(Enhance enhance, VariableDS var);
+
  void Create(VariableDS var);
+ Enhancement returnObject(VariableDS var);
 
 
 //  void applyEnhancement(Object instance);

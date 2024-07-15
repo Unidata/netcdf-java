@@ -171,12 +171,16 @@ public class Classifier implements Enhancement {
     public boolean appliesTo(Enhance enhance,  AttributeContainer attributes) {
       return enhance == Enhance.ApplyClassifier && attributes.findAttribute(CDM.CLASSIFY)!= null;
     }
-//    @Override
-//    public void applyEnhancement(Object instance) {
-//      Attribute classifierAtt = findAttribute(CDM.CLASSIFY);
-//      if (classifierAtt != null && instance.enhanceMode.contains(Enhance.ApplyClassifier) && instance.dataType.isNumeric()) {
-//        instance.classifier = Classifier.createFromVariable(instance);
-//      }
+    @Override
+    public boolean appliesTo(Enhance enhance,VariableDS var){
+      return enhance == Enhance.ApplyClassifier && var.classifier!=null;
+    }
+
+    public Classifier returnObject( VariableDS var){
+      return var.classifier;
+    }
+
+
 
   }
 

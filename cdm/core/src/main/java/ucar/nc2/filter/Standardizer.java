@@ -102,8 +102,15 @@ public class Standardizer implements Enhancement {
     public boolean appliesTo(Enhance enhance, AttributeContainer attributes) {
          return enhance == Enhance.ApplyStandardizer && attributes.findAttribute(CDM.STANDARDIZE)!= null;
     }
+    @Override
+    public boolean appliesTo(Enhance enhance,VariableDS var){
+      return enhance == Enhance.ApplyStandardizer && var.standardizer!= null;
+    }
 
-
+    @Override
+    public Standardizer returnObject( VariableDS var){
+      return var.standardizer;
+    }
   }
 }
 

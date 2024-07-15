@@ -98,6 +98,16 @@ public class Normalizer implements Enhancement {
     public boolean appliesTo(Enhance enhance, AttributeContainer attributes) {
       return enhance == Enhance.ApplyNormalizer && attributes.findAttribute(CDM.NORMALIZE)!= null;
     }
+    @Override
+    public boolean appliesTo(Enhance enhance,VariableDS var){
+      return enhance == Enhance.ApplyNormalizer && var.normalizer!= null;
+    }
+@Override
+    public Normalizer returnObject( VariableDS var){
+      return var.normalizer;
+    }
+
+
 
 
   }
