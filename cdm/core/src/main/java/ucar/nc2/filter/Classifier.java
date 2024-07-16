@@ -32,6 +32,7 @@ import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.*;
+
 public class Classifier implements Enhancement {
 
 
@@ -147,8 +148,8 @@ public class Classifier implements Enhancement {
   public static class Provider implements EnhancementProvider {
 
     @Override
-    public void Create(VariableDS var){
-      var.classifier=Classifier.createFromVariable(var);
+    public void Create(VariableDS var) {
+      var.classifier = Classifier.createFromVariable(var);
     }
 
 
@@ -157,26 +158,28 @@ public class Classifier implements Enhancement {
     public String getName() {
       return name;
     }
+
     @Override
-    public boolean canDo (Set<Enhance> enhancements){
+    public boolean canDo(Set<Enhance> enhancements) {
       if (enhancements.contains(Enhance.ApplyClassifier)) {
         return true;
       }
       return false;
     }
 
-//    Attribute findAttribute(String attName);
+    // Attribute findAttribute(String attName);
 
     @Override
-    public boolean appliesTo(Enhance enhance,  AttributeContainer attributes) {
-      return enhance == Enhance.ApplyClassifier && attributes.findAttribute(CDM.CLASSIFY)!= null;
-    }
-    @Override
-    public boolean appliesTo(Enhance enhance,VariableDS var){
-      return enhance == Enhance.ApplyClassifier && var.classifier!=null;
+    public boolean appliesTo(Enhance enhance, AttributeContainer attributes) {
+      return enhance == Enhance.ApplyClassifier && attributes.findAttribute(CDM.CLASSIFY) != null;
     }
 
-    public Classifier returnObject( VariableDS var){
+    @Override
+    public boolean appliesTo(Enhance enhance, VariableDS var) {
+      return enhance == Enhance.ApplyClassifier && var.classifier != null;
+    }
+
+    public Classifier returnObject(VariableDS var) {
       return var.classifier;
     }
 
@@ -186,9 +189,6 @@ public class Classifier implements Enhancement {
 
 
 
-
-  }
-
-
+}
 
 

@@ -32,7 +32,7 @@ import java.util.*;
  * @author caron
  * @see NetcdfDataset
  */
-public class VariableDS extends Variable implements VariableEnhanced, EnhanceScaleMissingUnsigned{
+public class VariableDS extends Variable implements VariableEnhanced, EnhanceScaleMissingUnsigned {
 
 
 
@@ -287,7 +287,7 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
         toApply.add(scaleOffset);
         convertedType = scaleOffset.getScaledOffsetType();
       }
-/**  this == variableDS */
+      /** this == variableDS */
       for (Enhance enhance : enhancements) {
         for (EnhancementProvider service : ServiceLoader.load(EnhancementProvider.class)) {
           if (service.appliesTo(enhance, this)) {
@@ -939,15 +939,15 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
       }
       this.dataType = scaleOffset != null ? scaleOffset.getScaledOffsetType() : this.dataType;
     }
-/** how oh how ??? */
+    /** how oh how ??? */
     for (Enhance enhance : this.enhanceMode) {
       for (EnhancementProvider service : ServiceLoader.load(EnhancementProvider.class)) {
         /** Stand and Norm require floatingpoint, buc classifier can do just numeric? */
-        if (service.appliesTo(enhance,this.attributes())&& dataType.isFloatingPoint()) {
+        if (service.appliesTo(enhance, this.attributes()) && dataType.isFloatingPoint()) {
           service.Create(this);
         }
-    }
       }
+    }
 
   }
 

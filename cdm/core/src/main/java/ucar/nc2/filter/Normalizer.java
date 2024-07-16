@@ -20,6 +20,7 @@ public class Normalizer implements Enhancement {
   private final double minimum;
   private final double range; // maximum - minimum
   private static String name = "Normalizer";
+
   public static Normalizer createFromVariable(VariableDS var) {
     try {
       Array arr = var.read();
@@ -75,19 +76,22 @@ public class Normalizer implements Enhancement {
   public double getRange() {
     return range;
   }
+
   public static class Provider implements EnhancementProvider {
 
     @Override
-    public void Create(VariableDS var){
-      var.normalizer=Normalizer.createFromVariable(var);
+    public void Create(VariableDS var) {
+      var.normalizer = Normalizer.createFromVariable(var);
 
     }
+
     @Override
     public String getName() {
       return name;
     }
+
     @Override
-    public boolean canDo (Set<Enhance> enhancements){
+    public boolean canDo(Set<Enhance> enhancements) {
       if (enhancements.contains(Enhance.ApplyNormalizer)) {
         return true;
       }
@@ -96,17 +100,18 @@ public class Normalizer implements Enhancement {
 
     @Override
     public boolean appliesTo(Enhance enhance, AttributeContainer attributes) {
-      return enhance == Enhance.ApplyNormalizer && attributes.findAttribute(CDM.NORMALIZE)!= null;
-    }
-    @Override
-    public boolean appliesTo(Enhance enhance,VariableDS var){
-      return enhance == Enhance.ApplyNormalizer && var.normalizer!= null;
-    }
-@Override
-    public Normalizer returnObject( VariableDS var){
-      return var.normalizer;
+      return enhance == Enhance.ApplyNormalizer && attributes.findAttribute(CDM.NORMALIZE) != null;
     }
 
+    @Override
+    public boolean appliesTo(Enhance enhance, VariableDS var) {
+      return enhance == Enhance.ApplyNormalizer && var.normalizer != null;
+    }
+
+    @Override
+    public Normalizer returnObject(VariableDS var) {
+      return var.normalizer;
+    }
 
 
 

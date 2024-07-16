@@ -274,7 +274,7 @@ public class ScaleOffset extends Filter implements Enhancement {
   }
 
 
-  public static class Provider implements FilterProvider{
+  public static class Provider implements FilterProvider {
 
     @Override
     public String getName() {
@@ -291,10 +291,10 @@ public class ScaleOffset extends Filter implements Enhancement {
       return new ScaleOffset(properties);
     }
 
-//    @Override
-//    public void doSomething(double val) {
-//      System.out.println("SCALEOFFSET ! "+val);
-//    }
+    // @Override
+    // public void doSomething(double val) {
+    // System.out.println("SCALEOFFSET ! "+val);
+    // }
 
 
   }

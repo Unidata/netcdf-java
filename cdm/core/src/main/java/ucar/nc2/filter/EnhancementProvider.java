@@ -6,7 +6,7 @@
 package ucar.nc2.filter;
 
 import java.util.Map;
-//package ucar.nc2.dataset;
+// package ucar.nc2.dataset;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
@@ -30,19 +30,20 @@ import java.util.*;
  */
 public interface EnhancementProvider {
 
- String getName();
+  String getName();
 
- boolean canDo (Set<ucar.nc2.dataset.NetcdfDataset.Enhance> enhancements);
+  boolean canDo(Set<ucar.nc2.dataset.NetcdfDataset.Enhance> enhancements);
 
- boolean appliesTo(Enhance enhance, AttributeContainer attributes);
+  boolean appliesTo(Enhance enhance, AttributeContainer attributes);
 
- boolean appliesTo(Enhance enhance, VariableDS var);
+  boolean appliesTo(Enhance enhance, VariableDS var);
 
- void Create(VariableDS var);
- Enhancement returnObject(VariableDS var);
+  void Create(VariableDS var);
+
+  Enhancement returnObject(VariableDS var);
 
 
-//  void applyEnhancement(Object instance);
+  // void applyEnhancement(Object instance);
 
 }
 
