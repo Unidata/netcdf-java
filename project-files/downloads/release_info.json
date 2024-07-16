@@ -3,62 +3,62 @@
   "packageName": "netCDF-Java",
   "releases": [
     {
-      "version": "5.5.3",
-      "releaseDate": "2022-06-30",
+      "version": "5.6.0",
+      "releaseDate": "2024-07-15",
       "status": "current",
       "description": "",
-      "baseURL": "https://artifacts.unidata.ucar.edu/repository/downloads-netcdf-java/5.5.3/",
+      "baseURL": "https://artifacts.unidata.ucar.edu/repository/downloads-netcdf-java/5.6.0/",
       "resources": {
         "netcdfAll": {
           "type" : "library",
-          "package": "netcdfAll-5.5.3.jar",
+          "package": "netcdfAll-5.6.0.jar",
           "name": "Jar file",
           "hash": {
-            "MD5": "netcdfAll-5.5.3.jar.md5",
-            "SHA1": "netcdfAll-5.5.3.jar.sha1",
-            "SHA256": "netcdfAll-5.5.3.jar.sha256"
+            "MD5": "netcdfAll-5.6.0.jar.md5",
+            "SHA1": "netcdfAll-5.6.0.jar.sha1",
+            "SHA256": "netcdfAll-5.6.0.jar.sha256"
           },
           "info": "The netCDF library implements the full CDM model, including all other jar dependencies."
         },
         "toolsUI": {
           "type": "library",
-          "package": "toolsUI-5.5.3.jar",
+          "package": "toolsUI-5.6.0.jar",
           "name": "Jar file",
           "hash": {
-            "MD5": "toolsUI-5.5.3.jar.md5",
-            "SHA1": "toolsUI-5.5.3.jar.sha1",
-            "SHA256": "toolsUI-5.5.3.jar.sha256"
+            "MD5": "toolsUI-5.6.0.jar.md5",
+            "SHA1": "toolsUI-5.6.0.jar.sha1",
+            "SHA256": "toolsUI-5.6.0.jar.sha256"
           },
           "info": "The toolsUI.jar contains everything to run the ToolsUI application directly from it. "
         }
       }
     },
     {
-      "version": "5.5.4",
-      "releaseDate": "2022-05-15",
+      "version": "5.6.1",
+      "releaseDate": "2024-07-15",
       "status": "beta",
-      "description": "This version contains several bug fixes compared to version 5.5.3.",
-      "baseURL": "https://artifacts.unidata.ucar.edu/repository/downloads-netcdf-java/5.5.4/",
+      "description": "This version contains several bug fixes compared to version 5.6.0.",
+      "baseURL": "https://artifacts.unidata.ucar.edu/repository/downloads-netcdf-java/5.6.1/",
       "resources": {
         "netcdfAll": {
           "type" : "library",
-          "package": "netcdfAll-5.5.4-SNAPSHOT.jar",
+          "package": "netcdfAll-5.6.1-SNAPSHOT.jar",
           "name": "Jar file",
           "hash": {
-            "MD5": "netcdfAll-5.5.4-SNAPSHOT.jar.md5",
-            "SHA1": "netcdfAll-5.5.4-SNAPSHOT.jar.sha1",
-            "SHA256": "netcdfAll-5.5.4-SNAPSHOT.jar.sha256"
+            "MD5": "netcdfAll-5.6.1-SNAPSHOT.jar.md5",
+            "SHA1": "netcdfAll-5.6.1-SNAPSHOT.jar.sha1",
+            "SHA256": "netcdfAll-5.6.1-SNAPSHOT.jar.sha256"
           },
           "info": "The netCDF library implements the full CDM model, including all other jar dependencies."
         },
         "toolsUI": {
           "type": "library",
-          "package": "toolsUI-5.5.4-SNAPSHOT.jar",
+          "package": "toolsUI-5.6.1-SNAPSHOT.jar",
           "name": "Jar file",
           "hash": {
-            "MD5": "toolsUI-5.5.4-SNAPSHOT.jar.md5",
-            "SHA1": "toolsUI-5.5.4-SNAPSHOT.jar.sha1",
-            "SHA256": "toolsUI-5.5.4-SNAPSHOT.jar.sha256"
+            "MD5": "toolsUI-5.6.1-SNAPSHOT.jar.md5",
+            "SHA1": "toolsUI-5.6.1-SNAPSHOT.jar.sha1",
+            "SHA256": "toolsUI-5.6.1-SNAPSHOT.jar.sha256"
           },
           "info": "The toolsUI.jar contains everything to run the ToolsUI application directly from it. "
         }
