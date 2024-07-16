@@ -15,33 +15,31 @@
 # users just like we do for commit author emails.
 # docs/*  docs@example.com
 
-* @haileyajohnson
+* @tdrwenski
 
 #####################
 # top level modules #
 #####################
 
-httpservices/** @DennisHeimbigner
-netcdf4/** @DennisHeimbigner
+httpservices/** @DennisHeimbigner @tdrwenski
+netcdf4/** @DennisHeimbigner @tdrwenski
 
 ###########################################
 # classpath / not module specific matches #
 ###########################################
 
-**/iosp/nids/** @dopplershift
+**/iosp/nids/** @dopplershift @tdrwenski
 
-**/opendap/** @DennisHeimbigner
-**/dap4/** @DennisHeimbigner
+**/opendap/** @DennisHeimbigner @tdrwenski
+**/dap4/** @DennisHeimbigner @tdrwenski
 
 ######################
 # general file types #
 ######################
 
 *.py @dopplershift
-**/test/**/*.py
+**/test/**/*.py @tdrwenski
 
 ####################
 # individual files #
 ####################
-
-gradle/any/dependencies.gradle @DennisHeimbigner @haileyajohnson
