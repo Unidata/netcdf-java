@@ -287,14 +287,8 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
         toApply.add(scaleOffset);
         convertedType = scaleOffset.getScaledOffsetType();
       }
-      /** this == variableDS */
-      for (Enhance enhance : enhancements) {
-        for (EnhancementProvider service : ServiceLoader.load(EnhancementProvider.class)) {
-          if (service.appliesTo(enhance, this)) {
-            toApply.add(service.returnObject(this));
-          }
-        }
-      }
+
+      toApply.addAll(loadedEnhancements);
 
 
       double[] dataArray = (double[]) data.get1DJavaArray(DataType.DOUBLE);
@@ -870,9 +864,8 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
   // TODO make immutable in version 6
   private UnsignedConversion unsignedConversion;
   private ScaleOffset scaleOffset;
-  public Standardizer standardizer;
-  public Normalizer normalizer;
-  public Classifier classifier;
+  private List<Enhancement> loadedEnhancements = new ArrayList<>();
+
   private ConvertMissing convertMissing;
   private Set<Enhance> enhanceMode = EnumSet.noneOf(Enhance.class); // The set of enhancements that were made.
 
@@ -943,8 +936,8 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
     for (Enhance enhance : this.enhanceMode) {
       for (EnhancementProvider service : ServiceLoader.load(EnhancementProvider.class)) {
         /** Stand and Norm require floatingpoint, buc classifier can do just numeric? */
-        if (service.appliesTo(enhance, this.attributes()) && dataType.isFloatingPoint()) {
-          service.Create(this);
+        if (service.appliesTo(enhance, this.attributes(), dataType)) {
+          loadedEnhancements.add(service.returnObject(this));
         }
       }
     }

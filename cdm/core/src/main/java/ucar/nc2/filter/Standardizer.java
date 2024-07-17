@@ -82,37 +82,20 @@ public class Standardizer implements Enhancement {
   public static class Provider implements EnhancementProvider {
 
     @Override
-    public void Create(VariableDS var) {
-      var.standardizer = Standardizer.createFromVariable(var);
-
-    }
-
-    @Override
     public String getName() {
       return name;
     }
 
-    @Override
-    public boolean canDo(Set<Enhance> enhancements) {
-      if (enhancements.contains(Enhance.ApplyStandardizer)) {
-        return true;
-      }
-      return false;
-    }
 
     @Override
-    public boolean appliesTo(Enhance enhance, AttributeContainer attributes) {
-      return enhance == Enhance.ApplyStandardizer && attributes.findAttribute(CDM.STANDARDIZE) != null;
-    }
-
-    @Override
-    public boolean appliesTo(Enhance enhance, VariableDS var) {
-      return enhance == Enhance.ApplyStandardizer && var.standardizer != null;
+    public boolean appliesTo(Enhance enhance, AttributeContainer attributes, DataType dt) {
+      return enhance == Enhance.ApplyStandardizer && attributes.findAttribute(CDM.STANDARDIZE) != null
+          && dt.isFloatingPoint();
     }
 
     @Override
     public Standardizer returnObject(VariableDS var) {
-      return var.standardizer;
+      return createFromVariable(var);
     }
   }
 }

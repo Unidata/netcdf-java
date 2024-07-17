@@ -32,13 +32,7 @@ public interface EnhancementProvider {
 
   String getName();
 
-  boolean canDo(Set<ucar.nc2.dataset.NetcdfDataset.Enhance> enhancements);
-
-  boolean appliesTo(Enhance enhance, AttributeContainer attributes);
-
-  boolean appliesTo(Enhance enhance, VariableDS var);
-
-  void Create(VariableDS var);
+  boolean appliesTo(Enhance enhance, AttributeContainer attributes, DataType dt);
 
   Enhancement returnObject(VariableDS var);
 

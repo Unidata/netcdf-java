@@ -80,37 +80,19 @@ public class Normalizer implements Enhancement {
   public static class Provider implements EnhancementProvider {
 
     @Override
-    public void Create(VariableDS var) {
-      var.normalizer = Normalizer.createFromVariable(var);
-
-    }
-
-    @Override
     public String getName() {
       return name;
     }
 
     @Override
-    public boolean canDo(Set<Enhance> enhancements) {
-      if (enhancements.contains(Enhance.ApplyNormalizer)) {
-        return true;
-      }
-      return false;
-    }
-
-    @Override
-    public boolean appliesTo(Enhance enhance, AttributeContainer attributes) {
-      return enhance == Enhance.ApplyNormalizer && attributes.findAttribute(CDM.NORMALIZE) != null;
-    }
-
-    @Override
-    public boolean appliesTo(Enhance enhance, VariableDS var) {
-      return enhance == Enhance.ApplyNormalizer && var.normalizer != null;
+    public boolean appliesTo(Enhance enhance, AttributeContainer attributes, DataType dt) {
+      return enhance == Enhance.ApplyNormalizer && attributes.findAttribute(CDM.NORMALIZE) != null
+          && dt.isFloatingPoint();
     }
 
     @Override
     public Normalizer returnObject(VariableDS var) {
-      return var.normalizer;
+      return Normalizer.createFromVariable(var);
     }
 
 

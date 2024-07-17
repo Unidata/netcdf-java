@@ -147,12 +147,6 @@ public class Classifier implements Enhancement {
 
   public static class Provider implements EnhancementProvider {
 
-    @Override
-    public void Create(VariableDS var) {
-      var.classifier = Classifier.createFromVariable(var);
-    }
-
-
 
     @Override
     public String getName() {
@@ -160,34 +154,14 @@ public class Classifier implements Enhancement {
     }
 
     @Override
-    public boolean canDo(Set<Enhance> enhancements) {
-      if (enhancements.contains(Enhance.ApplyClassifier)) {
-        return true;
-      }
-      return false;
-    }
-
-    // Attribute findAttribute(String attName);
-
-    @Override
-    public boolean appliesTo(Enhance enhance, AttributeContainer attributes) {
-      return enhance == Enhance.ApplyClassifier && attributes.findAttribute(CDM.CLASSIFY) != null;
-    }
-
-    @Override
-    public boolean appliesTo(Enhance enhance, VariableDS var) {
-      return enhance == Enhance.ApplyClassifier && var.classifier != null;
+    public boolean appliesTo(Enhance enhance, AttributeContainer attributes, DataType dt) {
+      return enhance == Enhance.ApplyClassifier && attributes.findAttribute(CDM.CLASSIFY) != null && dt.isNumeric();
     }
 
     public Classifier returnObject(VariableDS var) {
-      return var.classifier;
+      return createFromVariable(var);
     }
-
-
-
   }
-
-
 
 }
 
