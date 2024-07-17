@@ -291,12 +291,6 @@ public class ScaleOffset extends Filter implements Enhancement {
       return new ScaleOffset(properties);
     }
 
-    // @Override
-    // public void doSomething(double val) {
-    // System.out.println("SCALEOFFSET ! "+val);
-    // }
-
-
   }
 
 

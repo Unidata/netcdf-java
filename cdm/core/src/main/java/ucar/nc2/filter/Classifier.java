@@ -1,11 +1,7 @@
 package ucar.nc2.filter;
 
-
-import java.util.Map;
-import java.util.Set;
 import ucar.ma2.Array;
 import ucar.ma2.IndexIterator;
-import ucar.nc2.Variable;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.Attribute;
 import ucar.nc2.dataset.NetcdfDataset.Enhance;
@@ -13,25 +9,9 @@ import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.util.Misc;
 import java.util.ArrayList;
 import java.util.List;
-import ucar.unidata.io.spi.RandomAccessFileProvider;
-
-
-
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Sets;
 import ucar.ma2.*;
 import ucar.nc2.*;
-import ucar.nc2.constants.CDM;
-import ucar.nc2.dataset.NetcdfDataset.Enhance;
-import ucar.nc2.filter.*;
-import ucar.nc2.internal.dataset.CoordinatesHelper;
-import ucar.nc2.util.CancelTask;
-import ucar.nc2.util.Misc;
 
-import javax.annotation.Nullable;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.util.*;
 
 public class Classifier implements Enhancement {
 
@@ -148,17 +128,14 @@ public class Classifier implements Enhancement {
   public static class Provider implements EnhancementProvider {
 
 
-    @Override
-    public String getName() {
-      return name;
-    }
 
     @Override
     public boolean appliesTo(Enhance enhance, AttributeContainer attributes, DataType dt) {
       return enhance == Enhance.ApplyClassifier && attributes.findAttribute(CDM.CLASSIFY) != null && dt.isNumeric();
     }
 
-    public Classifier returnObject(VariableDS var) {
+    @Override
+    public Classifier Create(VariableDS var) {
       return createFromVariable(var);
     }
   }

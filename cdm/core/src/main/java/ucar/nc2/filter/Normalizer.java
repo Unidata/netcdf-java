@@ -79,10 +79,6 @@ public class Normalizer implements Enhancement {
 
   public static class Provider implements EnhancementProvider {
 
-    @Override
-    public String getName() {
-      return name;
-    }
 
     @Override
     public boolean appliesTo(Enhance enhance, AttributeContainer attributes, DataType dt) {
@@ -91,7 +87,7 @@ public class Normalizer implements Enhancement {
     }
 
     @Override
-    public Normalizer returnObject(VariableDS var) {
+    public Normalizer Create(VariableDS var) {
       return Normalizer.createFromVariable(var);
     }
 

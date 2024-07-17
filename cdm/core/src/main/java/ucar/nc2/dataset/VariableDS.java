@@ -932,12 +932,10 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
       }
       this.dataType = scaleOffset != null ? scaleOffset.getScaledOffsetType() : this.dataType;
     }
-    /** how oh how ??? */
     for (Enhance enhance : this.enhanceMode) {
       for (EnhancementProvider service : ServiceLoader.load(EnhancementProvider.class)) {
-        /** Stand and Norm require floatingpoint, buc classifier can do just numeric? */
         if (service.appliesTo(enhance, this.attributes(), dataType)) {
-          loadedEnhancements.add(service.returnObject(this));
+          loadedEnhancements.add(service.Create(this));
         }
       }
     }

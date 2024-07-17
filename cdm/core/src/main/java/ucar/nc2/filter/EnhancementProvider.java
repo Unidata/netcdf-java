@@ -5,39 +5,21 @@
 
 package ucar.nc2.filter;
 
-import java.util.Map;
-// package ucar.nc2.dataset;
-
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Sets;
 import ucar.ma2.*;
 import ucar.nc2.*;
-import ucar.nc2.constants.CDM;
 import ucar.nc2.dataset.NetcdfDataset.Enhance;
 import ucar.nc2.dataset.VariableDS;
-import ucar.nc2.filter.*;
-import ucar.nc2.internal.dataset.CoordinatesHelper;
-import ucar.nc2.util.CancelTask;
-import ucar.nc2.util.Misc;
 
-import javax.annotation.Nullable;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.util.*;
 
 /**
- * A Service Provider of {@link Filter}.
+ * A Service Provider of {@link Enhancement}.
  */
 public interface EnhancementProvider {
 
-  String getName();
-
   boolean appliesTo(Enhance enhance, AttributeContainer attributes, DataType dt);
 
-  Enhancement returnObject(VariableDS var);
+  Enhancement Create(VariableDS var);
 
-
-  // void applyEnhancement(Object instance);
 
 }
 
