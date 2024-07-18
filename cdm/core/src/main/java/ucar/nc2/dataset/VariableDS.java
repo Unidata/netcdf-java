@@ -935,7 +935,7 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
     for (Enhance enhance : this.enhanceMode) {
       for (EnhancementProvider service : ServiceLoader.load(EnhancementProvider.class)) {
         if (service.appliesTo(enhance, this.attributes(), dataType)) {
-          loadedEnhancements.add(service.Create(this));
+          loadedEnhancements.add(service.create(this));
         }
       }
     }
