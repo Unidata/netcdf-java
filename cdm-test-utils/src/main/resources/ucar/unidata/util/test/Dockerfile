@@ -4,10 +4,8 @@ MAINTAINER Unidata
 
 USER root
 
-# TODO use release version of d4ts
-#ENV D4TS_WAR_URL https://artifacts.unidata.ucar.edu/repository/unidata-releases/edu/ucar/d4ts/5.4/d4ts-5.4.war
-ENV D4TS_WAR_URL https://artifacts.unidata.ucar.edu/repository/unidata-snapshots/edu/ucar/d4ts/5.5-SNAPSHOT/d4ts-5.5-20240701.222741-216.war
-ENV DTS_WAR_URL https://artifacts.unidata.ucar.edu/repository/unidata-releases/edu/ucar/dtswar/5.4/dtswar-5.4.war
+ENV D4TS_WAR_URL https://artifacts.unidata.ucar.edu/repository/unidata-releases/edu/ucar/d4ts/5.5/d4ts-5.5.war
+ENV DTS_WAR_URL https://artifacts.unidata.ucar.edu/repository/unidata-releases/edu/ucar/dtswar/5.5/dtswar-5.5.war
 
 # Install necessary packages
 RUN apt-get update && \
