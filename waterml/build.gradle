@@ -10,24 +10,24 @@ dependencies {
 
   api project(':cdm:cdm-core')
 
-  compile('org.n52.sensorweb:52n-xml-waterML-v20') {
+  implementation('org.n52.sensorweb:52n-xml-waterML-v20') {
     exclude group: 'stax', module: 'stax-api'
   }
-  compile('org.n52.sensorweb:52n-xml-gml-v321') {
+  implementation('org.n52.sensorweb:52n-xml-gml-v321') {
     exclude group: 'stax', module: 'stax-api'
   }
-  compile('org.n52.sensorweb:52n-xml-sweCommon-v20') {
+  implementation('org.n52.sensorweb:52n-xml-sweCommon-v20') {
     exclude group: 'stax', module: 'stax-api'
   }
-  compile('org.n52.sensorweb:52n-xml-om-v20') {
+  implementation('org.n52.sensorweb:52n-xml-om-v20') {
     exclude group: 'stax', module: 'stax-api'
   }
-  compile('org.n52.sensorweb:52n-xml-sampling-v20') {
+  implementation('org.n52.sensorweb:52n-xml-sampling-v20') {
     exclude group: 'stax', module: 'stax-api'
   }
 
-  compile 'com.google.guava:guava'
-  compile 'org.slf4j:slf4j-api'
+  implementation 'com.google.guava:guava'
+  implementation 'org.slf4j:slf4j-api'
 
   testImplementation project(':cdm-test-utils')
 

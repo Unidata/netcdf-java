@@ -10,9 +10,10 @@ dependencies {
   api enforcedPlatform(project(':netcdf-java-platform'))
   testImplementation enforcedPlatform(project(':netcdf-java-testing-platform'))
 
-  compile project(':cdm:cdm-core')
-  compile 'net.java.dev.jna:jna'
-  compile 'org.slf4j:slf4j-api'
+  implementation project(':cdm:cdm-core')
+  implementation 'net.java.dev.jna:jna'
+  implementation 'org.slf4j:slf4j-api'
+  implementation 'com.google.guava:guava'
 
   testImplementation project(':cdm-test-utils')
 
@@ -28,7 +29,7 @@ dependencies {
 
 sourceSets {
   unloadedTest {
-    resources.srcDir file('src/unloadedTest/resources')
+    resources.srcDirs = [file('src/unloadedTest/resources')]
     compileClasspath += sourceSets.main.output + configurations.testCompileClasspath
     runtimeClasspath += output + sourceSets.main.output + configurations.testRuntimeClasspath
   }

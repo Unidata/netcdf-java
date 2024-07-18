@@ -10,13 +10,14 @@ dependencies {
 
   api project(':cdm:cdm-core')
 
-  compile project(':grib')
+  implementation project(':grib')
+  implementation project(':udunits')
 
-  compile 'edu.wisc.ssec:visad-mcidas-slim-ucar-ns'
-  compile 'com.google.guava:guava'
-  compile 'com.google.re2j:re2j'
+  implementation 'edu.wisc.ssec:visad-mcidas-slim-ucar-ns'
+  implementation 'com.google.guava:guava'
+  implementation 'com.google.re2j:re2j'
 
-  compile 'org.slf4j:slf4j-api'
+  implementation 'org.slf4j:slf4j-api'
 
   testImplementation project(':cdm-test-utils')
 

@@ -8,8 +8,8 @@ dependencies {
   api enforcedPlatform(project(':netcdf-java-platform'))
   testImplementation enforcedPlatform(project(':netcdf-java-testing-platform'))
 
-  compile project(':cdm:cdm-core')
-  compile 'org.slf4j:slf4j-api'
+  implementation project(':cdm:cdm-core')
+  implementation 'org.slf4j:slf4j-api'
 
   implementation('software.amazon.awssdk:s3') {
     // exclude netty nio client due to open CVEs. See
@@ -23,6 +23,8 @@ dependencies {
 
   implementation 'software.amazon.awssdk:apache-client'
   implementation 'com.google.code.findbugs:jsr305'
+  implementation 'com.google.guava:guava'
+  implementation 'com.google.re2j:re2j'
 
   runtimeOnly('software.amazon.awssdk:sts') {
     // see above comment about awssdk and netty-nio-client
