@@ -87,7 +87,7 @@ public class Normalizer implements Enhancement {
     }
 
     @Override
-    public Normalizer Create(VariableDS var) {
+    public Normalizer create(VariableDS var) {
       return Normalizer.createFromVariable(var);
     }
 

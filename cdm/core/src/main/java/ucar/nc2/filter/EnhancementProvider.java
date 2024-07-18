@@ -18,7 +18,7 @@ public interface EnhancementProvider {
 
   boolean appliesTo(Enhance enhance, AttributeContainer attributes, DataType dt);
 
-  Enhancement Create(VariableDS var);
+  Enhancement create(VariableDS var);
 
 
 }

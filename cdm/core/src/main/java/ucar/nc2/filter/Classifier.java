@@ -126,16 +126,13 @@ public class Classifier implements Enhancement {
   }
 
   public static class Provider implements EnhancementProvider {
-
-
-
     @Override
     public boolean appliesTo(Enhance enhance, AttributeContainer attributes, DataType dt) {
       return enhance == Enhance.ApplyClassifier && attributes.findAttribute(CDM.CLASSIFY) != null && dt.isNumeric();
     }
 
     @Override
-    public Classifier Create(VariableDS var) {
+    public Classifier create(VariableDS var) {
       return createFromVariable(var);
     }
   }

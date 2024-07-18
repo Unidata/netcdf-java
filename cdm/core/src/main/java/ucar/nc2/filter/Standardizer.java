@@ -89,7 +89,7 @@ public class Standardizer implements Enhancement {
     }
 
     @Override
-    public Standardizer Create(VariableDS var) {
+    public Standardizer create(VariableDS var) {
       return createFromVariable(var);
     }
   }
