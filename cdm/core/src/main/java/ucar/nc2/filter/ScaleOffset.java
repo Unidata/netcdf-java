@@ -290,5 +290,8 @@ public class ScaleOffset extends Filter implements Enhancement {
     public Filter create(Map<String, Object> properties) {
       return new ScaleOffset(properties);
     }
+
   }
+
+
 }

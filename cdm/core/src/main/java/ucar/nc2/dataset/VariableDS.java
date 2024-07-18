@@ -34,6 +34,8 @@ import java.util.*;
  */
 public class VariableDS extends Variable implements VariableEnhanced, EnhanceScaleMissingUnsigned {
 
+
+
   /**
    * Constructor when there's no underlying variable.
    * You must also set the values by doing one of:
@@ -269,8 +271,10 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
       // datatype of the result depends on what enhancements were applied
       DataType convertedType = data.getDataType();
 
+
       // TODO: change to a provider for extensible Enhancements
       List<Enhancement> toApply = new ArrayList<>();
+
       if (enhancements.contains(Enhance.ConvertUnsigned) && unsignedConversion != null) {
         toApply.add(unsignedConversion);
         convertedType = unsignedConversion.getOutType();
@@ -283,15 +287,9 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
         toApply.add(scaleOffset);
         convertedType = scaleOffset.getScaledOffsetType();
       }
-      if (enhancements.contains(Enhance.ApplyStandardizer) && standardizer != null) {
-        toApply.add(standardizer);
-      }
-      if (enhancements.contains(Enhance.ApplyNormalizer) && normalizer != null) {
-        toApply.add(normalizer);
-      }
-      if (enhancements.contains(Enhance.ApplyClassifier) && classifier != null) {
-        toApply.add(classifier);
-      }
+
+      toApply.addAll(loadedEnhancements);
+
 
       double[] dataArray = (double[]) data.get1DJavaArray(DataType.DOUBLE);
 
@@ -866,9 +864,8 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
   // TODO make immutable in version 6
   private UnsignedConversion unsignedConversion;
   private ScaleOffset scaleOffset;
-  private Standardizer standardizer;
-  private Normalizer normalizer;
-  private Classifier classifier;
+  private List<Enhancement> loadedEnhancements = new ArrayList<>();
+
   private ConvertMissing convertMissing;
   private Set<Enhance> enhanceMode = EnumSet.noneOf(Enhance.class); // The set of enhancements that were made.
 
@@ -935,18 +932,14 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
       }
       this.dataType = scaleOffset != null ? scaleOffset.getScaledOffsetType() : this.dataType;
     }
-    Attribute standardizerAtt = findAttribute(CDM.STANDARDIZE);
-    if (standardizerAtt != null && this.enhanceMode.contains(Enhance.ApplyStandardizer) && dataType.isFloatingPoint()) {
-      this.standardizer = Standardizer.createFromVariable(this);
+    for (Enhance enhance : this.enhanceMode) {
+      for (EnhancementProvider service : ServiceLoader.load(EnhancementProvider.class)) {
+        if (service.appliesTo(enhance, this.attributes(), dataType)) {
+          loadedEnhancements.add(service.create(this));
+        }
+      }
     }
-    Attribute normalizerAtt = findAttribute(CDM.NORMALIZE);
-    if (normalizerAtt != null && this.enhanceMode.contains(Enhance.ApplyNormalizer) && dataType.isFloatingPoint()) {
-      this.normalizer = Normalizer.createFromVariable(this);
-    }
-    Attribute classifierAtt = findAttribute(CDM.CLASSIFY);
-    if (classifierAtt != null && this.enhanceMode.contains(Enhance.ApplyClassifier) && dataType.isNumeric()) {
-      this.classifier = Classifier.createFromVariable(this);
-    }
+
   }
 
   public Builder<?> toBuilder() {

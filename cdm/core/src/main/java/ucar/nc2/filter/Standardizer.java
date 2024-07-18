@@ -3,11 +3,15 @@ package ucar.nc2.filter;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import ucar.nc2.constants.CDM;
 
-import org.apache.commons.math.stat.descriptive.SummaryStatistics;
+import java.util.Set;
+import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.ma2.IndexIterator;
+import ucar.nc2.AttributeContainer;
+import ucar.nc2.dataset.NetcdfDataset.Enhance;
 import ucar.nc2.dataset.VariableDS;
 
 public class Standardizer implements Enhancement {
@@ -15,6 +19,7 @@ public class Standardizer implements Enhancement {
   private final ScaleOffset scaleOffset;
   private final double mean;
   private final double stdDev;
+  private static String name = "Standardizer";
 
   public static Standardizer createFromVariable(VariableDS var) {
     try {
@@ -70,6 +75,23 @@ public class Standardizer implements Enhancement {
 
   public double getStdDev() {
     return stdDev;
+  }
+
+
+
+  public static class Provider implements EnhancementProvider {
+
+
+    @Override
+    public boolean appliesTo(Enhance enhance, AttributeContainer attributes, DataType dt) {
+      return enhance == Enhance.ApplyStandardizer && attributes.findAttribute(CDM.STANDARDIZE) != null
+          && dt.isFloatingPoint();
+    }
+
+    @Override
+    public Standardizer create(VariableDS var) {
+      return createFromVariable(var);
+    }
   }
 }
 

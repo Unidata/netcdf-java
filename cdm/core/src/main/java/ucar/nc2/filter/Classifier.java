@@ -1,19 +1,27 @@
 package ucar.nc2.filter;
 
-
 import ucar.ma2.Array;
 import ucar.ma2.IndexIterator;
-import ucar.nc2.Variable;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.Attribute;
+import ucar.nc2.dataset.NetcdfDataset.Enhance;
+import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.util.Misc;
 import java.util.ArrayList;
 import java.util.List;
+import ucar.ma2.*;
+import ucar.nc2.*;
 
 
 public class Classifier implements Enhancement {
+
+
   private String[] AttCat;
   private List<int[]> rules = new ArrayList<>();
+
+  private static String name = "Classifier";
+
+
 
   public Classifier() {
     this.AttCat = new String[0];
@@ -27,7 +35,8 @@ public class Classifier implements Enhancement {
   }
 
   // Factory method to create a Classifier from a Variable
-  public static Classifier createFromVariable(Variable var) {
+
+  public static Classifier createFromVariable(VariableDS var) {
     List<Attribute> attributes = var.attributes().getAttributes();
 
     for (Attribute attribute : attributes) {
@@ -116,4 +125,18 @@ public class Classifier implements Enhancement {
     return intArray;
   }
 
+  public static class Provider implements EnhancementProvider {
+    @Override
+    public boolean appliesTo(Enhance enhance, AttributeContainer attributes, DataType dt) {
+      return enhance == Enhance.ApplyClassifier && attributes.findAttribute(CDM.CLASSIFY) != null && dt.isNumeric();
+    }
+
+    @Override
+    public Classifier create(VariableDS var) {
+      return createFromVariable(var);
+    }
+  }
+
 }
+
+
