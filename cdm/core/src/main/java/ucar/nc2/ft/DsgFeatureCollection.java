@@ -77,7 +77,7 @@ public interface DsgFeatureCollection {
   @Nonnull
   List<CoordinateAxis> getCoordinateVariables();
 
-  /*
+  /**
    * Other variables needed for completeness, eg joined coordinate variables
    * 
    * @return list of extra variables, may be empty not null
