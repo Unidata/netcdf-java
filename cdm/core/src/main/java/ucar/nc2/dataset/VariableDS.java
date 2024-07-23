@@ -34,7 +34,7 @@ import java.util.*;
  */
 public class VariableDS extends Variable implements VariableEnhanced, EnhanceScaleMissingUnsigned {
 
-
+  static final ServiceLoader<EnhancementProvider> ENHANCEMENT_PROVIDERS = ServiceLoader.load(EnhancementProvider.class);
 
   /**
    * Constructor when there's no underlying variable.
@@ -933,7 +933,7 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
       this.dataType = scaleOffset != null ? scaleOffset.getScaledOffsetType() : this.dataType;
     }
     for (Enhance enhance : this.enhanceMode) {
-      for (EnhancementProvider service : ServiceLoader.load(EnhancementProvider.class)) {
+      for (EnhancementProvider service : ENHANCEMENT_PROVIDERS) {
         if (service.appliesTo(enhance, this.attributes(), dataType)) {
           loadedEnhancements.add(service.create(this));
         }
