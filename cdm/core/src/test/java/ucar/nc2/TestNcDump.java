@@ -4,7 +4,6 @@
  */
 package ucar.nc2;
 
-import com.google.common.base.Charsets;
 import com.google.common.io.Files;
 import org.junit.Assert;
 import org.junit.Test;
@@ -15,6 +14,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.lang.invoke.MethodHandles;
+import java.nio.charset.StandardCharsets;
 
 /** Test NcdumpW. */
 public class TestNcDump {
@@ -30,7 +30,7 @@ public class TestNcDump {
           null);
 
       File expectedOutputFile = new File(TestDir.cdmLocalTestDataDir, "testUnsignedFillValue.dump");
-      String expectedOutput = Files.toString(expectedOutputFile, Charsets.UTF_8);
+      String expectedOutput = Files.toString(expectedOutputFile, StandardCharsets.UTF_8);
 
       Assert.assertEquals(toUnixEOLs(expectedOutput), toUnixEOLs(sw.toString()));
     }
@@ -43,7 +43,7 @@ public class TestNcDump {
       NCdumpW.print(TestDir.cdmLocalTestDataDir + "testNestedGroups.ncml", sw, true, true, false, false, null, null);
 
       File expectedOutputFile = new File(TestDir.cdmLocalTestDataDir, "testNestedGroups.dump");
-      String expectedOutput = Files.toString(expectedOutputFile, Charsets.UTF_8);
+      String expectedOutput = Files.toString(expectedOutputFile, StandardCharsets.UTF_8);
 
       Assert.assertEquals(toUnixEOLs(expectedOutput), toUnixEOLs(sw.toString()));
     }
