@@ -45,7 +45,7 @@ To register your format/IOServiceProvider, or to send corrections and additions 
 | NLDN | National Lightning Detection Network | `cdm-misc` | <http://www.vaisala.com/weather/products/aboutnldn.html> |
 | NMCon29 | NMC Office Note 29 | `cdm-misc` | <http://www.emc.ncep.noaa.gov/mmb/data_processing/on29.htm/> |
 | OPeNDAP | Open-source Project for a Network Data Access Protocol | `opendap` | <http://opendap.org/> |
-| S3 | RandomAccessFile access to CDM datasets on object stores | `cdm-s3` | <https://docs.unidata.ucar.edu/netcdf-java/5.4/userguide/dataset_urls.html#object-stores>
+| S3 | RandomAccessFile access to CDM datasets on object stores | `cdm-s3` | <https://docs.unidata.ucar.edu/netcdf-java/{{site.docset_version}}/userguide/dataset_urls.html#object-stores>
 | SIGMET | SIGMET-IRIS weather radar | `cdm-radial` | <http://www.vaisala.com/en/defense/products/weatherradar/Pages/IRIS.aspx> |
 | UAMIV | CAMx UAM-IV formatted files | `cdm-radial` | <http://www.camx.com/> |
 | UniversalRadarFormat | Universal Radar Format | `cdm-radial` | <ftp://ftp.sigmet.com/outgoing/manuals/program/cuf.pdf> |

@@ -321,7 +321,7 @@ This can be more efficient than opening the dataset through the index-based serv
 
 ### Collection Datasets
 
-`FeatureDatasetFactoryManager` can open collections of datasets specified with a [collection specification string](https://docs.unidata.ucar.edu/tds/5.0/userguide/collection_spec_string_ref.html){:target="_blank"}.
+`FeatureDatasetFactoryManager` can open collections of datasets specified with a [collection specification string](https://docs.unidata.ucar.edu/tds/current/userguide/collection_spec_string_ref.html){:target="_blank"}.
 This has the form
 
 `collection:spec`
