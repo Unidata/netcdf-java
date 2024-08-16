@@ -241,5 +241,5 @@ the coordinate system information is parsed by a [CoordSysBuilder](coord_system_
 and Coordinate Transform objects are created and made available through the NetcdfDataset API. In some cases, new Variables, 
 Dimensions and Attributes may be created. Its very important that the IOSP writer follow an existing Convention and ensure that the 
 Coordinate System information is correctly interpreted, particularly if you want to take advantage of the capabilities of the CDM Scientific 
-Datatype Layer, such as serving the data through [WCS](https://docs.unidata.ucar.edu/tds/5.0/userguide/wcs_ref.html){:target="_blank"} or the 
+Datatype Layer, such as serving the data through [WCS](https://docs.unidata.ucar.edu/tds/current/userguide/wcs_ref.html){:target="_blank"} or the 
 Netcdf Subset Service.
