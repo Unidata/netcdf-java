@@ -11,6 +11,7 @@ import org.junit.Test;
 import ucar.unidata.io.RandomAccessFile;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
@@ -57,6 +58,27 @@ public class TestFilters {
     props.put("id", "shuffle");
     Filter filter = new Shuffle(props);
     testEncodeDecode(filter, "shuffle");
+  }
+
+  @Test
+  public void shouldShuffleDoublesAndLeaveIntAtEnd() throws IOException {
+    ByteBuffer bb = ByteBuffer.allocate(2 * 8 + 4);
+    bb.putDouble(-1.0);
+    bb.putDouble(1.0);
+    // to represent a checksum at the end of a chunk of doubles
+    bb.putInt(12345);
+    byte[] bytes = bb.array();
+
+    Map<String, Object> props = new HashMap<>();
+    props.put("id", "shuffle");
+    props.put("elementsize", 8);
+    Filter filter = new Shuffle(props);
+
+    byte[] expected = new byte[] {-65, 63, -16, -16, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 48, 57};
+    byte[] encoded = filter.encode(bytes);
+    assertThat(encoded).isEqualTo(expected);
+    byte[] decoded = filter.decode(encoded);
+    assertThat(decoded).isEqualTo(bytes);
   }
 
   @Test
