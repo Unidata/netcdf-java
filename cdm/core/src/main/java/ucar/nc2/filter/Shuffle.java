@@ -39,7 +39,7 @@ public class Shuffle extends Filter {
 
   @Override
   public byte[] encode(byte[] dataIn) {
-    if (dataIn.length % elemSize != 0 || elemSize <= 1) {
+    if (elemSize <= 1) {
       return dataIn;
     }
 
@@ -56,29 +56,35 @@ public class Shuffle extends Filter {
       }
     }
 
+    int leftoverBytes = dataIn.length % this.elemSize;
+    System.arraycopy(dataIn, dataIn.length - leftoverBytes, result, result.length - leftoverBytes, leftoverBytes);
+
     return result;
   }
 
   @Override
   public byte[] decode(byte[] dataIn) {
-    if (dataIn.length % this.elemSize == 0 && this.elemSize > 1) {
-      int nElems = dataIn.length / this.elemSize;
-      byte[] result = new byte[dataIn.length];
-
-      for (int j = 0; j < this.elemSize; ++j) {
-        int sourceIndex = j * nElems;
-        int destIndex = j;
-        for (int i = 0; i < nElems; ++i) {
-          result[destIndex] = dataIn[sourceIndex];
-          sourceIndex++;
-          destIndex += this.elemSize;
-        }
-      }
-
-      return result;
-    } else {
+    if (elemSize <= 1) {
       return dataIn;
     }
+
+    int nElems = dataIn.length / this.elemSize;
+    byte[] result = new byte[dataIn.length];
+
+    for (int j = 0; j < this.elemSize; ++j) {
+      int sourceIndex = j * nElems;
+      int destIndex = j;
+      for (int i = 0; i < nElems; ++i) {
+        result[destIndex] = dataIn[sourceIndex];
+        sourceIndex++;
+        destIndex += this.elemSize;
+      }
+    }
+
+    int leftoverBytes = dataIn.length % this.elemSize;
+    System.arraycopy(dataIn, dataIn.length - leftoverBytes, result, result.length - leftoverBytes, leftoverBytes);
+
+    return result;
   }
 
   public static class Provider implements FilterProvider {
