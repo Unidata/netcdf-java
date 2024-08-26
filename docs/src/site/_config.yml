@@ -30,19 +30,8 @@ port: 4005
 #exclude:
 #  - Gemfile.lock
 
-
-# used as a contact email and subject line for the Feedback link in the top navigation bar
-feedback_email: support-netcdf-java@unidata.ucar.edu
-feedback_subject_line: Documentation Feedback
-
-# if you uncomment the next line, the Feedback link gets removed
-# feedback_disable: true
-
-# if you uncomment the next line, it changes the Feedback text
-# feedback_text: "Need help?"
-
-# if you uncomment the next line, it changes where the feedback link points to
-# feedback_link: "http://helpy.io/"
+# used for the Feedback link in the top navigation bar
+feedback_link: "https://github.com/Unidata/netcdf-java/issues/new?title=Documentation%20feedback"
 
 # library used for syntax highlighting
 highlighter: rouge
