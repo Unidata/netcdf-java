@@ -19,7 +19,7 @@ To support this functionality, `getFileTypeId()`, `getFileTypeVersion()`, and `g
 You will need to add these methods to your IOServiceProvider implementations. To use an IOSP implementation, you must include its module in your netCDF-java build.
 For more information on including modules in your build, see [here](using_netcdf_java_artifacts.html).
 
-To register your format/IOServiceProvider, or to send corrections and additions to this table, please send email to <support-netcdf-java@unidata.ucar.edu>.
+To register your format/IOServiceProvider, or to send corrections and additions to this table, please open a [GitHub issue](https://github.com/Unidata/netcdf-java/issues/new?title=Documentation%20feedback).
 
 | Id | Description | Module | Reference URL
 | BUFR | WMO Binary Universal Form | `bufr` | <http://www.wmo.int/pages/prog/www/WMOCodes/OperationalCodes.html/> |

@@ -34,8 +34,8 @@ For information about how to subscribe, see the "Subscribe" link on this page
 For more general netCDF discussion, see the netcdfgroup@unidata.ucar.edu email list.
 
 We appreciate feedback from users of this package.
-Please send comments and suggestions to <support-netcdf-java@unidata.ucar.edu>.
-For bug reports, feel free to open an issue on this repository, or contact us at the address above.
+Open a GitHub issue or discussion if you have comments,
+suggestions, or bug reports.
 Please identify the version of the package as well as the version/vendor of Java you are using.
 For potential security issues, please contact security@unidata.ucar.edu directly.
 
