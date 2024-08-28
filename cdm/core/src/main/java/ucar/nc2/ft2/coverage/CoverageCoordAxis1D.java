@@ -100,7 +100,7 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis { // implements Itera
     switch (spacing) {
       case regularInterval:
       case regularPoint:
-        return getResolution() > 0;
+        return getResolution() >= 0;
 
       case irregularPoint:
         return values[0] <= values[ncoords - 1];
