@@ -26,7 +26,7 @@ jobs:
         run: ./gradlew buildJekyllSite
       - if: success()
         name: Upload a preview of the rendered html
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: documentation_${{ github.sha }}
           path: docs/build/site
