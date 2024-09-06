@@ -48,7 +48,7 @@ jobs:
           # run tds tests
           echo "Run the TDS tests"
           ./gradlew $SYSTEM_PROPS --info --stacktrace testAll
-      - uses: actions/upload-artifact@v1
+      - uses: actions/upload-artifact@v4
         if: failure()
         with:
           name: TDS_JUnit_Results_${{ github.sha }}
@@ -99,7 +99,7 @@ jobs:
           # run tds tests
           echo "Run the TDS tests"
           ./gradlew $SYSTEM_PROPS --info --stacktrace testAll --refresh-dependencies
-      - uses: actions/upload-artifact@v1
+      - uses: actions/upload-artifact@v4
         if: failure()
         with:
           name: TDS_JUnit_Results_${{ github.sha }}
