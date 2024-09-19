@@ -516,7 +516,42 @@ public class TestMFileS3 {
   @RunWith(Parameterized.class)
   public static class TestMFileS3Parameterized {
 
+    @Parameterized.Parameters(name = "{0}, {1}, {2}")
+    public static List<Object[]> getTestParameters() {
+      return Arrays.asList(new Object[][] {
 
+          {"cdms3:bucket?a/long/key/", "cdms3:bucket?a/long/", ""},
+          {"cdms3:bucket?a/long/key/#delimiter=/", "cdms3:otherBucket?a/long/#delimiter=/", ""},
+          {"cdms3:bucket?a/long/#delimiter=/", "cdms3:bucket?a/long/key", ""},
+          {"cdms3:bucket", "cdms3:bucket?a/long/key", ""}, {"cdms3:bucket?a/long/key", "cdms3:bucket", ""},
+
+          {"cdms3:bucket?a/long/#delimiter=/", "cdms3:bucket?a/long/key/#delimiter=/", "key"},
+          {"cdms3:bucket?a/long/#delimiter=/", "cdms3:bucket?a/long/key#delimiter=/", "key"},
+          {"cdms3:bucket?a/long#delimiter=/", "cdms3:bucket?a/long/key/#delimiter=/", "key"},
+          {"cdms3:bucket?a/long#delimiter=/", "cdms3:bucket?a/long/key#delimiter=/", "key"},
+
+          {"cdms3:bucket?a/long/key/#delimiter=/", "cdms3:bucket?a/long/key/#delimiter=/", ""},
+          {"cdms3:bucket?a/long/key#delimiter=/", "cdms3:bucket?a/long#delimiter=/", ".."},
+          {"cdms3:bucket?a/long#delimiter=/", "cdms3:bucket?a/long_key#delimiter=/", "../long_key"},
+
+      });
+    }
+
+    @Parameterized.Parameter(value = 0)
+    public String uri1;
+
+    @Parameterized.Parameter(value = 1)
+    public String uri2;
+
+    @Parameterized.Parameter(value = 2)
+    public String expectedRelativePath;
+
+    @Test
+    public void shouldRelativizeKey() throws URISyntaxException, IOException {
+      final MFile mFile = new MFileS3(uri1);
+      final MFile mFile2 = new MFileS3(uri2);
+      assertThat(mFile.relativize(mFile2)).isEqualTo(expectedRelativePath);
+    }
   }
 
 }
