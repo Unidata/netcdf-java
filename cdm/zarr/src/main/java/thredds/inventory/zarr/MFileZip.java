@@ -184,6 +184,11 @@ public class MFileZip implements MFile {
     throw new UnsupportedOperationException("MFileZip::getChild not implemented. Filename: " + getName());
   }
 
+  @Override
+  public String relativize(MFile other) {
+    throw new UnsupportedOperationException("MFileZip::relativize not implemented. Filename: " + getName());
+  }
+
   public Path getRootPath() {
     return rootPath;
   }

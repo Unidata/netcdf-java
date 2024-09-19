@@ -141,4 +141,9 @@ public class GcMFile implements thredds.inventory.MFile {
   public GcMFile getChild(String newFilename) {
     throw new UnsupportedOperationException("GcMFile::getChild not implemented. Filename: " + getName());
   }
+
+  @Override
+  public String relativize(MFile other) {
+    throw new UnsupportedOperationException("GcMFile::relativize not implemented. Filename: " + getName());
+  }
 }

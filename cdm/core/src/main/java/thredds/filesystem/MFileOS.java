@@ -146,4 +146,12 @@ public class MFileOS implements MFile {
   public MFileOS getChild(String newFilename) {
     return new MFileOS(new File(file, newFilename));
   }
+
+  @Override
+  public String relativize(MFile other) {
+    if (other instanceof MFileOS) {
+      return file.toPath().relativize(((MFileOS) other).getFile().toPath()).toString();
+    }
+    throw new IllegalArgumentException("Cannot relativize " + other + " against " + this);
+  }
 }
