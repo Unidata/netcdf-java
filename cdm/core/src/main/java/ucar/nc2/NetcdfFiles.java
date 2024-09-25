@@ -921,7 +921,7 @@ public class NetcdfFiles {
    * @param vname the name
    * @return escaped version of it
    */
-  private static String makeValidPathName(String vname) {
+  public static String makeValidPathName(String vname) {
     return EscapeStrings.backslashEscape(vname, reservedFullName);
   }
 
@@ -932,7 +932,7 @@ public class NetcdfFiles {
    * @param vname the name
    * @return escaped version of it
    */
-  static String makeValidSectionSpecName(String vname) {
+  public static String makeValidSectionSpecName(String vname) {
     return EscapeStrings.backslashEscape(vname, reservedSectionSpec);
   }
 
