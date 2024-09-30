@@ -7,6 +7,7 @@ package thredds.inventory.s3;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URISyntaxException;
+import java.nio.file.Paths;
 import java.util.Objects;
 import java.util.function.Supplier;
 import javax.annotation.Nonnull;
@@ -380,6 +381,31 @@ public class MFileS3 implements MFile {
     } catch (URISyntaxException e) {
       return null;
     }
+  }
+
+  /**
+   * Construct a relative key path (as if it were a file path) between this MFile and a given MFile.
+   * They must have same delimiter and bucket, otherwise the path returned is empty.
+   *
+   * @param other the MFile to relativize against this MFile's path
+   * @return the resulting relative path as a String, or an empty path if both paths are equal
+   */
+  @Override
+  public String relativize(MFile other) {
+    if (!(other instanceof MFileS3)) {
+      throw new IllegalArgumentException("Cannot relativize " + other + " against " + this);
+    }
+    final MFileS3 otherS3 = (MFileS3) other;
+
+    if (getDelimiter() != null && getDelimiter().equals("/") && getDelimiter().equals(otherS3.getDelimiter())
+        && cdmS3Uri.getBucket().equals(otherS3.cdmS3Uri.getBucket())) {
+      final String key = getKey();
+      final String otherKey = otherS3.getKey();
+      return key == null || otherKey == null ? ""
+          : Paths.get("/" + key).relativize(Paths.get("/" + otherKey)).toString();
+    }
+
+    return "";
   }
 
   public static class Provider implements MFileProvider {

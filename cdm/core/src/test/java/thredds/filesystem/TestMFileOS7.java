@@ -98,6 +98,14 @@ public class TestMFileOS7 {
         assertThat(inputStream.read()).isNotEqualTo(-1);
       }
     }
+
+    @Test
+    public void shouldGetRelativePath() throws IOException {
+      final MFileOS7 mFile = new MFileOS7(Paths.get("/an/absolute/path"), null);
+      final MFileOS7 mFile2 = new MFileOS7(Paths.get("/an/absolute/path/foo"), null);
+      assertThat(mFile.relativize(mFile2)).isEqualTo("foo");
+      assertThat(mFile2.relativize(mFile)).isEqualTo("..");
+    }
   }
 
   private static File createTemporaryFile(int size) throws IOException {

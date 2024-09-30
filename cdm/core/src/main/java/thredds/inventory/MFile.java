@@ -114,4 +114,12 @@ public interface MFile extends Comparable<MFile> {
    */
   @Nullable
   MFile getChild(String newFileName);
+
+  /**
+   * Construct a relative path between this MFile and a given MFile.
+   *
+   * @param other the MFile to relativize against this MFile's path
+   * @return the resulting relative path as a String, or an empty path if both paths are equal
+   */
+  String relativize(MFile other);
 }

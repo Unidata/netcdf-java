@@ -149,4 +149,12 @@ public class MFileOS7 implements MFile {
   public Path getNioPath() {
     return path;
   }
+
+  @Override
+  public String relativize(MFile other) {
+    if (other instanceof MFileOS7) {
+      return path.relativize(((MFileOS7) other).path).toString();
+    }
+    throw new IllegalArgumentException("Cannot relativize " + other + " against " + this);
+  }
 }

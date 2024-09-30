@@ -173,6 +173,11 @@ public class CollectionManagerCatalog extends CollectionManagerAbstract implemen
     public MFileRemote getChild(String newFilename) {
       throw new UnsupportedOperationException("MFileRemote::getChild not implemented. Filename: " + getName());
     }
+
+    @Override
+    public String relativize(MFile other) {
+      throw new UnsupportedOperationException("MFileRemote::relativize not implemented. Filename: " + getName());
+    }
   }
 
   ///////////////////////////////

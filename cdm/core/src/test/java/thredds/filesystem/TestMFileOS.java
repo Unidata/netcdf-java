@@ -100,6 +100,14 @@ public class TestMFileOS {
       assertThat(newMFile.getParent().getPath()).isEqualTo(mFile.getPath());
       assertThat(newMFile.getPath()).isEqualTo(Paths.get(mFile.getPath(), "newFile").toString());
     }
+
+    @Test
+    public void shouldGetRelativePath() {
+      final MFileOS mFile = new MFileOS("/an/absolute/path/a/");
+      final MFileOS mFile2 = new MFileOS("/an/absolute/path/foo/bar/");
+      assertThat(mFile.relativize(mFile2)).isEqualTo("../foo/bar");
+      assertThat(mFile2.relativize(mFile)).isEqualTo("../../a");
+    }
   }
 
   private static File createTemporaryFile(int size) throws IOException {
