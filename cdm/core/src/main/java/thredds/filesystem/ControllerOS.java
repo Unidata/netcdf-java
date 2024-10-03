@@ -35,6 +35,8 @@ package thredds.filesystem;
 import thredds.inventory.CollectionConfig;
 import thredds.inventory.MController;
 import thredds.inventory.MFile;
+
+import javax.annotation.Nullable;
 import javax.annotation.concurrent.ThreadSafe;
 import java.io.File;
 import java.util.*;
@@ -53,6 +55,7 @@ public class ControllerOS implements MController {
 
   ////////////////////////////////////////
 
+  @Nullable
   @Override
   public Iterator<MFile> getInventoryAll(CollectionConfig mc, boolean recheck) {
     String path = mc.getDirectoryName();
@@ -68,6 +71,7 @@ public class ControllerOS implements MController {
     return new FilteredIterator(mc, new MFileIteratorAll(cd), false);
   }
 
+  @Nullable
   @Override
   public Iterator<MFile> getInventoryTop(CollectionConfig mc, boolean recheck) {
     String path = mc.getDirectoryName();
@@ -83,6 +87,7 @@ public class ControllerOS implements MController {
     return new FilteredIterator(mc, new MFileIterator(cd), false); // removes subdirs
   }
 
+  @Nullable
   public Iterator<MFile> getSubdirs(CollectionConfig mc, boolean recheck) {
     String path = mc.getDirectoryName();
     if (path.startsWith("file:")) {
