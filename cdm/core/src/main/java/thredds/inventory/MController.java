@@ -5,6 +5,7 @@
 
 package thredds.inventory;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.Iterator;
 
@@ -23,6 +24,7 @@ public interface MController {
    * @param recheck if false, may use cached results. otherwise must sync with File OS
    * @return iterator over Mfiles, or null if collection does not exist
    */
+  @Nullable
   Iterator<MFile> getInventoryAll(CollectionConfig mc, boolean recheck);
 
   /**
@@ -32,6 +34,7 @@ public interface MController {
    * @param recheck if false, may use cached results. otherwise must sync with File OS
    * @return iterator over Mfiles, or null if collection does not exist
    */
+  @Nullable
   Iterator<MFile> getInventoryTop(CollectionConfig mc, boolean recheck) throws IOException;
 
   /**
@@ -41,6 +44,7 @@ public interface MController {
    * @param recheck if false, may use cached results. otherwise must sync with File OS
    * @return iterator over Mfiles, or null if collection does not exist
    */
+  @Nullable
   Iterator<MFile> getSubdirs(CollectionConfig mc, boolean recheck);
 
   void close();
