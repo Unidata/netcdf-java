@@ -399,10 +399,9 @@ public class MFileS3 implements MFile {
 
     if (getDelimiter() != null && getDelimiter().equals("/") && getDelimiter().equals(otherS3.getDelimiter())
         && cdmS3Uri.getBucket().equals(otherS3.cdmS3Uri.getBucket())) {
-      final String key = getKey();
-      final String otherKey = otherS3.getKey();
-      return key == null || otherKey == null ? ""
-          : Paths.get("/" + key).relativize(Paths.get("/" + otherKey)).toString();
+      final String key = getKey() == null ? "/" : "/" + getKey();
+      final String otherKey = otherS3.getKey() == null ? "/" : "/" + otherS3.getKey();
+      return Paths.get(key).relativize(Paths.get(otherKey)).toString();
     }
 
     return "";

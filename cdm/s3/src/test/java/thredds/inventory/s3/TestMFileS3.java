@@ -525,6 +525,9 @@ public class TestMFileS3 {
           {"cdms3:bucket?a/long/#delimiter=/", "cdms3:bucket?a/long/key", ""},
           {"cdms3:bucket", "cdms3:bucket?a/long/key", ""}, {"cdms3:bucket?a/long/key", "cdms3:bucket", ""},
 
+          {"cdms3:bucket#delimiter=/", "cdms3:bucket?/#delimiter=/", ""},
+          {"cdms3:bucket#delimiter=/", "cdms3:bucket?key/#delimiter=/", "key"},
+          {"cdms3:bucket?key#delimiter=/", "cdms3:bucket?#delimiter=/", ".."},
           {"cdms3:bucket?a/long/#delimiter=/", "cdms3:bucket?a/long/key/#delimiter=/", "key"},
           {"cdms3:bucket?a/long/#delimiter=/", "cdms3:bucket?a/long/key#delimiter=/", "key"},
           {"cdms3:bucket?a/long#delimiter=/", "cdms3:bucket?a/long/key/#delimiter=/", "key"},
