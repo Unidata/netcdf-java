@@ -79,11 +79,16 @@ public class Normalizer implements Enhancement {
 
   public static class Provider implements EnhancementProvider {
 
+    private static final String ATTRIBUTE_NAME = "normalize";
 
     @Override
-    public boolean appliesTo(Enhance enhance, AttributeContainer attributes, DataType dt) {
-      return enhance == Enhance.ApplyNormalizer && attributes.findAttribute(CDM.NORMALIZE) != null
-          && dt.isFloatingPoint();
+    public String getAttributeName() {
+      return ATTRIBUTE_NAME;
+    }
+
+    @Override
+    public boolean appliesTo(Set<Enhance> enhance, DataType dt) {
+      return enhance.contains(Enhance.ApplyNormalizer) && dt.isFloatingPoint();
     }
 
     @Override

@@ -9,6 +9,8 @@ import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.util.Misc;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+
 import ucar.ma2.*;
 import ucar.nc2.*;
 
@@ -20,8 +22,7 @@ public class Classifier implements Enhancement {
   private List<int[]> rules = new ArrayList<>();
 
   private static String name = "Classifier";
-
-
+  private static final String ATTRIBUTE_NAME = "classify";
 
   public Classifier() {
     this.AttCat = new String[0];
@@ -41,7 +42,7 @@ public class Classifier implements Enhancement {
 
     for (Attribute attribute : attributes) {
       // check like this, or something else?
-      if (attribute == var.attributes().findAttribute(CDM.CLASSIFY)) {
+      if (attribute == var.attributes().findAttribute(ATTRIBUTE_NAME)) {
         String[] sets = attribute.getStringValue().split(";");
         for (int i = 0; i < sets.length; i++) {
           // trim and clean so it's ready
@@ -126,9 +127,15 @@ public class Classifier implements Enhancement {
   }
 
   public static class Provider implements EnhancementProvider {
+
     @Override
-    public boolean appliesTo(Enhance enhance, AttributeContainer attributes, DataType dt) {
-      return enhance == Enhance.ApplyClassifier && attributes.findAttribute(CDM.CLASSIFY) != null && dt.isNumeric();
+    public String getAttributeName() {
+      return ATTRIBUTE_NAME;
+    }
+
+    @Override
+    public boolean appliesTo(Set<Enhance> enhance, DataType dt) {
+      return enhance.contains(Enhance.ApplyClassifier) && dt.isNumeric();
     }
 
     @Override

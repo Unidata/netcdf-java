@@ -130,11 +130,17 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
      * x<0 --> 0 x>0 --> 1
      */
     ApplyClassifier,
+    /**
+     * All other Enhancement implementations that are loaded by service provider
+     * This includes third party implementations found on the classpath and loaded at runtime.
+     */
+    ApplyRuntimeLoadedEnhancements,
   }
 
-  private static Set<Enhance> EnhanceAll = Collections.unmodifiableSet(
-      EnumSet.of(Enhance.ConvertEnums, Enhance.ConvertUnsigned, Enhance.ApplyScaleOffset, Enhance.ConvertMissing,
-          Enhance.CoordSystems, Enhance.ApplyStandardizer, Enhance.ApplyNormalizer, Enhance.ApplyClassifier));
+  private static Set<Enhance> EnhanceAll =
+      Collections.unmodifiableSet(EnumSet.of(Enhance.ConvertEnums, Enhance.ConvertUnsigned, Enhance.ApplyScaleOffset,
+          Enhance.ConvertMissing, Enhance.CoordSystems, Enhance.ApplyStandardizer, Enhance.ApplyNormalizer,
+          Enhance.ApplyClassifier, Enhance.ApplyRuntimeLoadedEnhancements));
   private static Set<Enhance> EnhanceNone = Collections.unmodifiableSet(EnumSet.noneOf(Enhance.class));
   private static Set<Enhance> defaultEnhanceMode = EnhanceAll;
 
