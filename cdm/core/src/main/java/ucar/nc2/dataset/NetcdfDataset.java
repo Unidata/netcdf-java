@@ -116,21 +116,6 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
      */
     IncompleteCoordSystems,
     /**
-     * Calculate mean and standard deviation and apply to data: (z-mean)/standard_deviation.
-     * If the enhanced data type is not {@code FLOAT} or {@code DOUBLE}, this has no effect.
-     */
-    ApplyStandardizer,
-    /**
-     * Calculate minimum value and range (maximum - minimum) and apply to data: (z - min)/range.
-     * If the enhanced data type is not {@code FLOAT} or {@code DOUBLE}, this has no effect.
-     */
-    ApplyNormalizer,
-    /**
-     * Classify doubles or floats based on positive/negative into 1 or 0 {@code}
-     * x<0 --> 0 x>0 --> 1
-     */
-    ApplyClassifier,
-    /**
      * All other Enhancement implementations that are loaded by service provider
      * This includes third party implementations found on the classpath and loaded at runtime.
      */
@@ -139,8 +124,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
 
   private static Set<Enhance> EnhanceAll =
       Collections.unmodifiableSet(EnumSet.of(Enhance.ConvertEnums, Enhance.ConvertUnsigned, Enhance.ApplyScaleOffset,
-          Enhance.ConvertMissing, Enhance.CoordSystems, Enhance.ApplyStandardizer, Enhance.ApplyNormalizer,
-          Enhance.ApplyClassifier, Enhance.ApplyRuntimeLoadedEnhancements));
+          Enhance.ConvertMissing, Enhance.CoordSystems, Enhance.ApplyRuntimeLoadedEnhancements));
   private static Set<Enhance> EnhanceNone = Collections.unmodifiableSet(EnumSet.noneOf(Enhance.class));
   private static Set<Enhance> defaultEnhanceMode = EnhanceAll;
 

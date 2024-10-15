@@ -88,15 +88,13 @@ public class Normalizer implements Enhancement {
 
     @Override
     public boolean appliesTo(Set<Enhance> enhance, DataType dt) {
-      return enhance.contains(Enhance.ApplyNormalizer) && dt.isFloatingPoint();
+      return dt.isFloatingPoint();
     }
 
     @Override
     public Normalizer create(VariableDS var) {
       return Normalizer.createFromVariable(var);
     }
-
-
 
   }
 

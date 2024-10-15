@@ -128,7 +128,7 @@ public class Classifier implements Enhancement {
 
     @Override
     public boolean appliesTo(Set<Enhance> enhance, DataType dt) {
-      return enhance.contains(Enhance.ApplyClassifier) && dt.isNumeric();
+      return dt.isNumeric();
     }
 
     @Override

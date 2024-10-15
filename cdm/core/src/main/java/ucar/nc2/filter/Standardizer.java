@@ -90,7 +90,7 @@ public class Standardizer implements Enhancement {
 
     @Override
     public boolean appliesTo(Set<Enhance> enhance, DataType dt) {
-      return enhance.contains(Enhance.ApplyStandardizer) && dt.isFloatingPoint();
+      return dt.isFloatingPoint();
     }
 
     @Override
