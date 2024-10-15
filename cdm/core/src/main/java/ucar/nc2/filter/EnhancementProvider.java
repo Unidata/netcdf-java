@@ -10,13 +10,16 @@ import ucar.nc2.*;
 import ucar.nc2.dataset.NetcdfDataset.Enhance;
 import ucar.nc2.dataset.VariableDS;
 
+import java.util.Set;
+
 
 /**
  * A Service Provider of {@link Enhancement}.
  */
 public interface EnhancementProvider {
+  String getAttributeName();
 
-  boolean appliesTo(Enhance enhance, AttributeContainer attributes, DataType dt);
+  boolean appliesTo(Set<Enhance> enhance, DataType dt);
 
   Enhancement create(VariableDS var);
 

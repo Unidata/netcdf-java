@@ -921,7 +921,7 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
 
     if (this.enhanceMode.contains(Enhance.ConvertUnsigned)) {
       this.unsignedConversion = UnsignedConversion.createFromVar(this);
-      this.dataType = unsignedConversion != null ? unsignedConversion.getOutType() : dataType;
+      this.dataType = unsignedConversion.getOutType();
     }
     if (this.enhanceMode.contains(Enhance.ConvertMissing)) {
       this.convertMissing = ConvertMissing.createFromVariable(this);
@@ -932,9 +932,11 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
       }
       this.dataType = scaleOffset != null ? scaleOffset.getScaledOffsetType() : this.dataType;
     }
-    for (Enhance enhance : this.enhanceMode) {
+
+    if (this.enhanceMode.contains(Enhance.ApplyRuntimeLoadedEnhancements)) {
       for (EnhancementProvider service : ENHANCEMENT_PROVIDERS) {
-        if (service.appliesTo(enhance, this.attributes(), dataType)) {
+        if (this.attributes().findAttribute(service.getAttributeName()) != null
+            && service.appliesTo(this.enhanceMode, dataType)) {
           loadedEnhancements.add(service.create(this));
         }
       }
