@@ -78,6 +78,9 @@ public class TestNcmlReadersCompare {
       // NcMLReader does not change variable to type int, so fails.
       if (name.contains("aggSynthetic.xml"))
         return false;
+      // Simulates a TDS datasetScan using NcML and does not fully define a dataset.
+      if (name.contains("modifyNestedGroups.xml"))
+        return false;
       // Bug in old reader
       if (name.contains("testStandaloneNoEnhance.ncml"))
         return false;
