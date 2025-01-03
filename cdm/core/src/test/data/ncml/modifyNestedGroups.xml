@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2"
+  location="nc/example.nc">
+	<group name="outer_group">
+	  <attribute name="new_outer_attr" value="new_outer_attr_value" />
+  	<variable name="lat">
+	  	<attribute name="new_lat_attr" value="new_lat_attr_value" />
+	  </variable>
+	  <group name="inner_group">
+  		<attribute name="new_inner_attr" value="new_inner_attr_value" />
+	  	<variable name="lon">
+		  	<attribute name="new_lon_attr" value="new_lon_attr_value" />
+	  	</variable>
+  	</group>
+	</group>
+</netcdf>

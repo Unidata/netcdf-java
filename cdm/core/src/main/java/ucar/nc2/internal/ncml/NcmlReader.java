@@ -288,7 +288,7 @@ public class NcmlReader {
 
     if (ncmlElem != null) {
       NcmlReader reader = new NcmlReader();
-      reader.readGroup(targetDS, null, null, ncmlElem);
+      reader.readGroup(targetDS, null, ref.getRootGroup(), ncmlElem);
     }
 
     setEnhanceMode(targetDS, ncmlElem, null);
@@ -574,9 +574,12 @@ public class NcmlReader {
     Group refGroup = null;
 
     if (parent == null) {
-      refGroup = this.refFile == null ? null : this.refFile.getRootGroup();
+      if (this.refFile != null) {
+        refGroup = this.refFile.getRootGroup();
+      } else if (refParent != null) {
+        refGroup = refParent;
+      }
       groupBuilder = builder.rootGroup;
-
     } else {
       String name = groupElem.getAttributeValue("name");
       if (name == null) {
