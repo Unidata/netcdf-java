@@ -21,6 +21,7 @@ Java WebStart has been deprecated as of [Java 9](https://www.oracle.com/technetw
 As such, we no longer utilize WebStart.
 
 ## Quick Navigation
+* [Summary of changes for v5.7.x](#netcdf-java-api-changes-57x)
 * [Summary of changes for v5.6.x](#netcdf-java-api-changes-56x)
 * [Summary of changes for v5.5.x](#netcdf-java-api-changes-55x)
 * [Summary of changes for v5.4.x](#netcdf-java-api-changes-54x)
@@ -28,6 +29,15 @@ As such, we no longer utilize WebStart.
 * [Summary of changes for v5.2.x](#netcdf-java-api-changes-52x)
 * [Summary of changes for v5.1.x](#netcdf-java-api-changes-51x)
 * [Summary of changes for v5.0.x](#netcdf-java-api-changes-50x)
+
+## netCDF-Java API Changes (5.7.x)
+
+Point release notes:
+* [5.7.0](https://github.com/Unidata/netcdf-java/releases/tag/v5.7.0){:target="_blank"} (_2025-01-06_)
+
+5.7.x adds support for a service provider interface for applying enhancements by NSF Unidata summer intern Leo Matak (see https://www.unidata.ucar.edu/blogs/developer/en/entry/extensible-ncml-for-ai-ml for more information!).
+BUFR support has been enhanced to include multi-category messages thanks to an external contribution from github user @Yaqiang!
+Please see the release notes on GitHub for more details on additions, enhancements, and bug fixes.
 
 ## netCDF-Java API Changes (5.6.x)
 
