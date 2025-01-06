@@ -45,10 +45,9 @@ allprojects {
   // Matches Maven's "project.version". Used in MANIFEST.MF for "Implementation-Version".
   // We try to follow semantic versioning, and thus we use <major>.<minor>.<patch>-<prerelease version>
   // <prerelease version> may be SNAPSHOT, alphax, betax, etc.
-  // Note - if bumping to a new major or minor version, be sure to update the docs (see step 1 in
-  // docs/src/private/internal/release.md for details)
-  version = '5.6.1-SNAPSHOT'
-  status = 'development'
+  // Note - if bumping to a new major or minor version, be sure to update the docs
+  version = '5.7.0'
+  status = 'release'
 }
 
 // Matches Maven's "project.description".
