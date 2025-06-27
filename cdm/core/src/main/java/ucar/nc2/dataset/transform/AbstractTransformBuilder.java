@@ -29,18 +29,6 @@ import java.util.Formatter;
 public abstract class AbstractTransformBuilder {
   private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(AbstractTransformBuilder.class);
 
-  /*
-   * from CF: false_easting(false_northing):
-   * The value added to all abscissa(ordinate) values in the rectangular coordinates for a map projection.
-   * This value frequently is assigned to eliminate negative numbers.
-   * Expressed in the unit of the coordinate variable identified by the standard name projection_x_coordinate
-   * (projection_y_coordinate).
-   */
-  public static double getFalseEastingScaleFactor(NetcdfDataset ds, AttributeContainer ctv) {
-    String units = getGeoCoordinateUnits(ds, ctv, ds.getCoordinateAxes());
-    return getFalseEastingScaleFactor(units);
-  }
-
   public static String getGeoCoordinateUnits(NetcdfDataset ds, AttributeContainer ctv) {
     return getGeoCoordinateUnits(ds, ctv, ds.getCoordinateAxes());
   }
@@ -73,18 +61,6 @@ public abstract class AbstractTransformBuilder {
     return units;
   }
 
-  public static double getFalseEastingScaleFactor(String geoCoordinateUnits) {
-    if (geoCoordinateUnits != null) {
-      try {
-        SimpleUnit unit = SimpleUnit.factoryWithExceptions(geoCoordinateUnits);
-        return unit.convertTo(1.0, SimpleUnit.kmUnit);
-      } catch (Exception e) {
-        log.warn(geoCoordinateUnits + " not convertible to km");
-      }
-    }
-    return 1.0;
-  }
-
   ///////////////////////////////////////////////////////////////////////////////////////////////////
   private Formatter errBuffer;
   protected double lat0, lon0, false_easting, false_northing, earth_radius;
@@ -104,12 +80,6 @@ public abstract class AbstractTransformBuilder {
     lat0 = readAttributeDouble(ctv, CF.LATITUDE_OF_PROJECTION_ORIGIN, Double.NaN);
     false_easting = readAttributeDouble(ctv, CF.FALSE_EASTING, 0.0);
     false_northing = readAttributeDouble(ctv, CF.FALSE_NORTHING, 0.0);
-
-    if ((false_easting != 0.0) || (false_northing != 0.0)) {
-      double scalef = getFalseEastingScaleFactor(units);
-      false_easting *= scalef;
-      false_northing *= scalef;
-    }
 
     double semi_major_axis = readAttributeDouble(ctv, CF.SEMI_MAJOR_AXIS, Double.NaN);
     double semi_minor_axis = readAttributeDouble(ctv, CF.SEMI_MINOR_AXIS, Double.NaN);

@@ -27,13 +27,6 @@ public class Stereographic extends AbstractTransformBuilder implements HorizTran
     double lat0 = readAttributeDouble(ctv, CF.LATITUDE_OF_PROJECTION_ORIGIN, 90.0);
     double false_easting = readAttributeDouble(ctv, CF.FALSE_EASTING, 0.0);
     double false_northing = readAttributeDouble(ctv, CF.FALSE_NORTHING, 0.0);
-
-    if ((false_easting != 0.0) || (false_northing != 0.0)) {
-      double scalef = getFalseEastingScaleFactor(geoCoordinateUnits); // conversion from axis-unit to km
-      false_easting *= scalef;
-      false_northing *= scalef;
-    }
-
     double earth_radius = getEarthRadiusInKm(ctv);
     double semi_major_axis = readAttributeDouble(ctv, CF.SEMI_MAJOR_AXIS, Double.NaN); // meters
     double semi_minor_axis = readAttributeDouble(ctv, CF.SEMI_MINOR_AXIS, Double.NaN);

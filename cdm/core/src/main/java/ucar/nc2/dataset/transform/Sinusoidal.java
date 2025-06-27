@@ -27,12 +27,6 @@ public class Sinusoidal extends AbstractTransformBuilder implements HorizTransfo
     double false_northing = readAttributeDouble(ctv, CF.FALSE_NORTHING, 0.0);
     double earth_radius = getEarthRadiusInKm(ctv);
 
-    if ((false_easting != 0.0) || (false_northing != 0.0)) {
-      double scalef = getFalseEastingScaleFactor(geoCoordinateUnits);
-      false_easting *= scalef;
-      false_northing *= scalef;
-    }
-
     ucar.unidata.geoloc.projection.Sinusoidal proj =
         new ucar.unidata.geoloc.projection.Sinusoidal(centralMeridian, false_easting, false_northing, earth_radius);
     return new ProjectionCT(ctv.getName(), "FGDC", proj);

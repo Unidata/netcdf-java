@@ -486,13 +486,6 @@ public class CFGridWriter {
     if ((null != att) && att.getStringValue().equals("Projection")) {
       Attribute east = ctv.findAttribute("false_easting");
       Attribute north = ctv.findAttribute("false_northing");
-      if ((null != east) || (null != north)) {
-        double scalef = AbstractTransformBuilder.getFalseEastingScaleFactor(ds, ctv);
-        if (scalef != 1.0) {
-          convertAttribute(ctv, east, scalef);
-          convertAttribute(ctv, north, scalef);
-        }
-      }
     }
   }
 
