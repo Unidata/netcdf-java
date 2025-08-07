@@ -58,7 +58,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
   public static final String TRANSLATE_NONE = "none";
   public static final String TRANSLATE_NC4 = "nc4";
 
-  private static Nc4prototypes nc4 = NetcdfClibrary.getForeignFunctionInterface();
+  private static Nc4prototypes nc4 = null;
 
   // TODO: These flags currently control debug messages that are printed to STDOUT. They ought to be logged to SLF4J.
   // We could use SLF4J markers to filter which debug-level messages are printed.
