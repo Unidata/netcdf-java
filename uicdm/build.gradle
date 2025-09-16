@@ -62,4 +62,5 @@ def genBuildInfo = tasks.register("generateBuildInfo", WriteProperties) {
     property("toolsui.buildTimestamp", project.buildTimestamp)  // Defined in root project.
 }
 
-processResources.dependsOn(genBuildInfo)
+processResources.finalizedBy(genBuildInfo)
+compileJava.dependsOn(genBuildInfo)
