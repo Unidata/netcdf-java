@@ -29,9 +29,9 @@ allprojects {
   // We try to follow semantic versioning, and thus we use <major>.<minor>.<patch>-<prerelease version>
   // <prerelease version> may be SNAPSHOT, alphax, betax, etc.
   // Note - if bumping to a new major or minor version, be sure to update the docs
-  version = '5.9.1'
-  //status = 'development'
-  status= 'release'
+  version = '5.9.1.1'
+  status = 'development'
+  //status= 'release'
 }
 
 // Matches Maven's "project.description".
@@ -61,7 +61,7 @@ ext {
   docVersionParts = cleanVersion.tokenize('.')
 
   // we should always have a major, minor, and patch value in our version
-  assert docVersionParts.size == 3
+  assert docVersionParts.size == 4
 
   // keep major and minor parts of the version and use those to version the docs
   docVersion = docVersionParts[0] + '.' + docVersionParts[1]
