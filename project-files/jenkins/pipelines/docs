@@ -8,7 +8,7 @@ pipeline {
                       -e DOCS_UID=$(id -u) \
                       -v .:/netcdf-java \
                       -v ./docs/build/site:/site \
-                      docker.io/unidata/unidata-jekyll-docs:0.0.6 build
+                      docker.io/unidata/unidata-jekyll-docs:0.1.0 build
                 '''
             }
         }
