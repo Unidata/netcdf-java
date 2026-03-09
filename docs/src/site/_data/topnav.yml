@@ -7,6 +7,9 @@ topnav_docvermenu:
         url:
         id: remove
 
+topnav:
+  - title:
+
 #Topnav dropdowns
 topnav_dropdowns:
   - title: Topnav dropdowns
