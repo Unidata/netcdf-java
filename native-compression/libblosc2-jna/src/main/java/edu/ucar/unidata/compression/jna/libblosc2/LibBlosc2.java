@@ -56,7 +56,8 @@ public final class LibBlosc2 {
             : "libblosc2 C library not found. To read this data, include the libblosc2-native jar in your classpath "
                 + "(edu.ucar:libblosc2-native) or install libblosc2 on your system.";
         log.error(message);
-        throw new RuntimeException(message, ule);
+        log.debug("Reason: ", ule);
+        throw new RuntimeException(message);
       }
     }
   }

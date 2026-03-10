@@ -51,7 +51,8 @@ public final class LibAec {
             : "libaec C library not found. To read this data, include the libaec-native jar in your classpath "
                 + "(edu.ucar:libaec-native) or install libaec on your system.";
         log.error(message);
-        throw new RuntimeException(message, ule);
+        log.debug("Reason: ", ule);
+        throw new RuntimeException(message);
       }
     }
   }
