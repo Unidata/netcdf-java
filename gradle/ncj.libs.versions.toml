@@ -111,10 +111,9 @@ pragmatists-junitparams = { module = "pl.pragmatists:JUnitParams", version.ref =
 logback-classic = { module = "ch.qos.logback:logback-classic", version.ref = "logback-classic" }
 
 [plugins]
-# versions = { id = "com.github.ben-manes.versions", version = "0.45.0" }
-cyclonedx-bom = { id = "org.cyclonedx.bom", version = "3.1.0" }
+cyclonedx-bom = { id = "org.cyclonedx.bom", version = "3.2.0" }
 execfork = { id = "com.github.psxpaul.execfork", version = "0.2.2"}
-javacc = { id = "org.javacc.javacc", version = "4.0.1" }
-protobuf = { id = "com.google.protobuf", version = "0.9.5" }
-shadow = { id = "com.gradleup.shadow", version = "9.3.1" }
-spotless = { id = "com.diffplug.spotless", version = "8.2.1" }
+javacc = { id = "org.javacc.javacc", version = "4.0.3" }
+protobuf = { id = "com.google.protobuf", version = "0.9.6" }
+shadow = { id = "com.gradleup.shadow", version = "9.3.2" }
+spotless = { id = "com.diffplug.spotless", version = "8.3.0" }

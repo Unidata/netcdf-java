@@ -14,8 +14,8 @@ description = "The Unidata netCDF-Java library (aka CDM)."
 // and run ./gradlew wrapper twice
 tasks.wrapper {
   distributionType = Wrapper.DistributionType.ALL
-  gradleVersion = "9.3.1"
-  distributionSha256Sum = "17f277867f6914d61b1aa02efab1ba7bb439ad652ca485cd8ca6842fccec6e43"
+  gradleVersion = "9.4.0"
+  distributionSha256Sum = "b21468753cb43c167738ee04f10c706c46459cf8f8ae6ea132dc9ce589a261f2"
 }
 
 spotless {
