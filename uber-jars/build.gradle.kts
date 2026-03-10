@@ -133,6 +133,7 @@ val netcdfAllSbom =
     includeConfigs = listOf("netcdfAll")
     xmlOutput = artifactOutputLocation.get().file("netcdfAll-${project.version}-sbom.xml")
     jsonOutput = artifactOutputLocation.get().file("netcdfAll-${project.version}-sbom.json")
+    dependsOn(buildNetcdfAll)
   }
 
 val ncIdvSbom =
@@ -142,6 +143,7 @@ val ncIdvSbom =
     includeConfigs = listOf("ncIdv")
     xmlOutput = artifactOutputLocation.get().file("ncIdv-${project.version}-sbom.xml")
     jsonOutput = artifactOutputLocation.get().file("ncIdv-${project.version}-sbom.json")
+    dependsOn(buildNcIdv)
   }
 
 val toolsUISbom =
@@ -151,6 +153,7 @@ val toolsUISbom =
     includeConfigs = listOf("toolsUI")
     xmlOutput = artifactOutputLocation.get().file("toolsUI-${project.version}-sbom.xml")
     jsonOutput = artifactOutputLocation.get().file("toolsUI-${project.version}-sbom.json")
+    dependsOn(buildToolsUi)
   }
 
 val buildSboms = tasks.register("buildSboms") { dependsOn(netcdfAllSbom, ncIdvSbom, toolsUISbom) }
