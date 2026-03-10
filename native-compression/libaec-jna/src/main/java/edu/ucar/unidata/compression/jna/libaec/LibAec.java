@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 2025-2026 University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 
@@ -34,13 +34,21 @@ public final class LibAec {
       File library = Native.extractFromResourcePath(libName);
       Native.register(library.getAbsolutePath());
       log.debug("Using libaec library from libaec-native.jar");
-    } catch (IOException e) {
+    } catch (IOException | UnsatisfiedLinkError e) {
+      boolean unusableNativeLib = false;
+      // The native jar wasn't found on the classpath, OR the native library
+      // shipped with the jar is not compatible with the current OS toolchain.
+      // Check for the library on the system path.
+      if (e instanceof UnsatisfiedLinkError) {
+        unusableNativeLib = true;
+        log.debug("Error loading libaec from native jar: {}", e.getMessage());
+      }
       try {
         Native.register(libName);
         log.debug("Using libaec library from system");
       } catch (UnsatisfiedLinkError ule) {
-        String message =
-            "libaec C library not present. To read this data, include the libaec-native jar in your classpath "
+        String message = unusableNativeLib ? "Usable libaec C library not found. Install libaec on your system."
+            : "libaec C library not found. To read this data, include the libaec-native jar in your classpath "
                 + "(edu.ucar:libaec-native) or install libaec on your system.";
         log.error(message);
         throw new RuntimeException(message, ule);
