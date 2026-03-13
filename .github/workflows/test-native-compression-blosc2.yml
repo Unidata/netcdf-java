@@ -2,11 +2,9 @@ on:
   workflow_dispatch:
   pull_request:
     paths:
-      - 'native-compression/libaec-jna/**'
-      - 'native-compression/libaec-native/**'
       - 'native-compression/libblosc2-jna/**'
       - 'native-compression/libblosc2-native/**'
-      - '.github/workflows/test-native-compression.yml'
+      - 'test-native-compression-blosc2.yml'
 
 permissions:
   contents: read
@@ -23,7 +21,7 @@ jobs:
           macos-15,
           macos-15-intel
         ]
-    name: netCDF-Java Native Compression Tests
+    name: netCDF-Java Native Compression Tests (blosc2)
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v6
@@ -50,16 +48,16 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
           restore-keys: |
             ${{ runner.os }}-gradle-
-      - name: Run libaec JNA tests
+      - name: Run libblosc2 JNA tests
         if: ${{ matrix.os == 'ubuntu-24.04' || matrix.os == 'macos-15-intel'  }}
-        run: ./gradlew -Dorg.gradle.java.installations.auto-detect=true clean :libaec-jna:test
+        run: ./gradlew -Dorg.gradle.java.installations.auto-detect=true clean :libblosc2-jna:test
         env:
           JDK8: /usr/thredds-test-environment/temurin8
-      - name: Run libaec JNA tests (JDK 21 tests)
+      - name: Run libblosc2 JNA tests (JDK 21 tests)
         if: ${{ matrix.os != 'ubuntu-24.04' && matrix.os != 'macos-15-intel' }}
-        run: ./gradlew clean :libaec-jna:test21
+        run: ./gradlew clean :libblosc2-jna:test21
       - uses: actions/upload-artifact@v6
         if: failure()
         with:
           name: NativeCompression_JUnit_Results_${{ github.sha }}_-${{ matrix.os }}
-          path: native-compression/libaec-jna/build/reports/tests
+          path: native-compression/libblosc2-jna/build/reports/tests
