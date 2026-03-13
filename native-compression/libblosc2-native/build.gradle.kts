@@ -14,7 +14,7 @@ plugins {
 
 group = "edu.ucar.unidata"
 
-var bloscVersion = "2.22.0"
+var bloscVersion = "2.23.1"
 var build = "0"
 
 version = "${bloscVersion}.${build}"
@@ -25,10 +25,10 @@ project.extra["project.title"] = "Native libraries for libblosc2."
 
 // zip file produced by GitHub workflow
 val libblosc2Native =
-  "libblosc2-native-${bloscVersion}-b4a818caa60bbf90bc92ec51ffd01ce3f293c8a4.zip"
+  "libblosc2-native-${bloscVersion}-c8d21a734aa58320135f5dfdc36e3d61e316e074.zip"
 
 // sha256 checksum from GitHub workflow output
-val expectedChecksum = "895226b29a314c0beae92de66a181b66833873e8c3a8a501d0b12193bde30610"
+val expectedChecksum = "6cfb464e7bc666509644d3d419ec6d5a43831178cbf9105d2ecb2dbc97ffdf88"
 
 val resourceZip = file("$rootDir/project-files/native/libblosc2/$libblosc2Native")
 val fetchNativeResources =
