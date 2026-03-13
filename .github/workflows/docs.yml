@@ -5,6 +5,9 @@ on:
       - 'docs/build.gradle'
       - 'gradle/**'
 
+permissions:
+  contents: read
+
 jobs:
   check-doc-build:
     name: netCDF-Java Documentation Build Check

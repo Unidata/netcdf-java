@@ -1,4 +1,8 @@
-on: [pull_request]
+on:
+  pull_request:
+
+permissions:
+  contents: read
 
 jobs:
   check-dependency-availability:

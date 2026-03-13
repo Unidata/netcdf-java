@@ -3,6 +3,9 @@ name: C-Blosc2 build using CMake on multiple platforms
 on:
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   build:
     strategy:

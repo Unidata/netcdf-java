@@ -7,6 +7,9 @@ on:
       - 'native-compression/build.gradle'
       - '.github/workflows/test-native-compression.yml'
 
+permissions:
+  contents: read
+
 jobs:
   tests:
     strategy:
