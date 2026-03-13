@@ -34,7 +34,7 @@ Note: we are looking to update the minimum version of the JVM we support for the
 Please consider taking a moment to participate in the [poll on GitHub](https://github.com/Unidata/netcdf-java/discussions/1468){:target="_blank"}.
 
 The 5.10.0 release adds support for reading blosc compressed data using the C-Blosc2 native library.
-The new artifact for JNA support is `edu.ucar.unidata:libblosc2-jna` (the current version is `2.22.0.0`).
+The new artifact for JNA support is `edu.ucar.unidata:libblosc2-jna` (the current version is `{{ site.cblosc2_version }}`).
 
 ### Native jar group name changes
 
