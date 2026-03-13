@@ -4,7 +4,8 @@ on:
     paths:
       - 'native-compression/libaec-jna/**'
       - 'native-compression/libaec-native/**'
-      - 'native-compression/build.gradle'
+      - 'native-compression/libblosc2-jna/**'
+      - 'native-compression/libblosc2-native/**'
       - '.github/workflows/test-native-compression.yml'
 
 permissions:
