@@ -379,7 +379,7 @@ public class NetcdfFiles {
     if (pos < 0)
       pos = uriString.lastIndexOf(':');
 
-    String tmp = System.getProperty("java.io.tmpdir");
+    String tmp = DiskCache.getRootDirectory();
     String filename = uriString.substring(pos + 1);
     String sep = File.separator;
 
