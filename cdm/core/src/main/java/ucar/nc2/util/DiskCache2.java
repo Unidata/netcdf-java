@@ -39,7 +39,7 @@ public class DiskCache2 {
   public static void exit() {
     if (timer != null) {
       timer.cancel();
-      cacheLog.info("DiskCache2.exit()%n");
+      cacheLog.info("DiskCache2.exit()");
     }
     timer = null;
   }

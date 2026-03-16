@@ -311,7 +311,7 @@ public class DiskCache {
    */
   public static void cleanCache(long maxBytes, Comparator<File> fileComparator, StringBuilder sbuff) {
     if (sbuff != null)
-      sbuff.append("DiskCache clean maxBytes= ").append(maxBytes).append("on dir ").append(root).append("\n");
+      sbuff.append("DiskCache clean maxBytes= ").append(maxBytes).append(" on dir ").append(root).append("\n");
 
     File dir = new File(root);
     long total = 0, total_delete = 0;
