@@ -24,10 +24,10 @@ jobs:
     name: netCDF-Java Native Compression Tests (blosc2)
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
       - name: Setup JDK 8, 17
         if: ${{ matrix.os == 'ubuntu-24.04' || matrix.os == 'macos-15-intel' }}
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5.2.0
         with:
           distribution: 'temurin'
           java-version: |
@@ -35,12 +35,12 @@ jobs:
             17
       - name: Setup JDK 21
         if: ${{ matrix.os != 'ubuntu-24.04' && matrix.os != 'macos-15-intel' }}
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5.2.0
         with:
           distribution: 'temurin'
           java-version: '21'
       - name: Cache Gradle packages
-        uses: actions/cache@v5
+        uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
         with:
           path: |
             ~/.gradle/caches
@@ -56,7 +56,7 @@ jobs:
       - name: Run libblosc2 JNA tests (JDK 21 tests)
         if: ${{ matrix.os != 'ubuntu-24.04' && matrix.os != 'macos-15-intel' }}
         run: ./gradlew clean :libblosc2-jna:test21
-      - uses: actions/upload-artifact@v6
+      - uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         if: failure()
         with:
           name: NativeCompression_JUnit_Results_${{ github.sha }}_-${{ matrix.os }}
