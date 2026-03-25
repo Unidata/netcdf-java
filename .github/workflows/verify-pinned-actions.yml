@@ -1,0 +1,14 @@
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  verify-pinned-actions:
+    name: Verify Pinned Actions
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: unidata/pinned-actions-verifier@f35d45122e5b5db9d5c1726cbf890d3d4d980568
+
