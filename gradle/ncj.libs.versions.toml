@@ -39,7 +39,7 @@ junit4 = "4.13.1"
 junit5 = "5.14.0"
 junitparams = "1.0.5"
 mockito-core = "2.28.2"
-testcontainers = "1.19.7"
+testcontainers = "1.21.4"
 truth = "1.0"
 
 # runtime only
