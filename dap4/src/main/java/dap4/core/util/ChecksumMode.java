@@ -1,6 +1,6 @@
 /*
- * Copyright 2012, UCAR/Unidata.
- * See the LICENSE file for more information.
+ * Copyright (c) 2012-2026 University Corporation for Atmospheric Research/Unidata
+ * See LICENSE for license information.
  */
 
 package dap4.core.util;
@@ -14,7 +14,7 @@ public enum ChecksumMode {
   FALSE, // => dap4.checksum=false
   TRUE; // => dap4.checksum=true
 
-  public static final ChecksumMode dfalt = TRUE; // Must be TRUE|FALSE
+  public static final ChecksumMode dfalt = FALSE; // Must be TRUE|FALSE
 
   static final String[] trues = new String[] {"true", "on", "yes", "1"};
   static final String[] falses = new String[] {"false", "off", "no", "0"};
