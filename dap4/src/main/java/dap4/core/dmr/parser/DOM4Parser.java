@@ -1,6 +1,6 @@
 /*
- * Copyright 2012, UCAR/Unidata.
- * See the LICENSE file for more information.
+ * Copyright (c) 2012-2026 University Corporation for Atmospheric Research/Unidata
+ * See LICENSE for license information.
  */
 
 package dap4.core.dmr.parser;
@@ -35,7 +35,8 @@ public class DOM4Parser implements Dap4Parser {
   // Constants
 
   static final float DAPVERSION = 4.0f;
-  static final float DMRVERSION = 1.0f;
+  static final float DMRVERSION_10 = 1.0f;
+  static final float DMRVERSION_20 = 2.0f;
 
   static final String DEFAULTATTRTYPE = "Int32";
 
@@ -461,9 +462,9 @@ public class DOM4Parser implements Dap4Parser {
       try {
         ndmrversion = Float.parseFloat(dmrversion);
       } catch (NumberFormatException nfe) {
-        ndmrversion = DMRVERSION;
+        ndmrversion = DMRVERSION_10;
       }
-    if (ndmrversion != DMRVERSION)
+    if (ndmrversion != DMRVERSION_10 && ndmrversion != DMRVERSION_20)
       throw new ParseException("Dataset dmrVersion mismatch: " + dmrversion);
     this.root = factory.newDataset(name);
     this.root.setDapVersion(Float.toString(ndapversion));
