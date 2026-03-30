@@ -1,6 +1,6 @@
 /*
- * Copyright 2012, UCAR/Unidata.
- * See the LICENSE file for more information.
+ * Copyright (c) 2012-2026 University Corporation for Atmospheric Research/Unidata
+ * See LICENSE for license information.
  */
 
 package dap4.test;
@@ -22,12 +22,6 @@ import java.util.ArrayList;
 import java.util.List;
 import ucar.unidata.util.test.category.NeedsExternalResource;
 
-/**
- * This Test uses the JUNIT Version 4 parameterized test mechanism.
- * The set of arguments for each test is encapsulated in a class
- * called TestCase. This allows for code re-use and for extending
- * tests by adding fields to the TestCase object.
- */
 
 /**
  * This test set reads DAP4 datasets (both constrained and not)
@@ -48,7 +42,8 @@ public class TestHyrax extends DapTestCommon implements Dap4ManifestIF {
 
   // Define the input set location(s)
   protected static final String INPUTEXT = "";
-  protected static final String INPUTQUERY = "?dap4.checksum=true";
+  // request checksums true, false, and default
+  protected static final String[] INPUTQUERY = new String[] {"?dap4.checksum=true", "?dap4.checksum=false", ""};
   protected static final String INPUTFRAG = "#dap4&hyrax";
 
   protected static final String BASELINEDIR = "/baselinehyrax";
@@ -112,14 +107,24 @@ public class TestHyrax extends DapTestCommon implements Dap4ManifestIF {
       String file = tuple[0];
       String prefix = tuple[1];
       String query = tuple[2]; // excluding leading '?'
-      // Unfortunately, The OPeNDAP test server does not appear to support https:
-      String url = server.getURL("http:") + "/" + prefix + "/" + file + INPUTEXT + INPUTQUERY;
-      if (query != null)
-        url += ("&" + DapConstants.CONSTRAINTTAG + "=" + query);
-      url += INPUTFRAG;
-      String baseline = resourceroot + BASELINEDIR + "/" + file + BASELINEEXT;
-      TestCase tc = new TestCase(file, url, baseline, query);
-      testcases.add(tc);
+      for (String IQ : INPUTQUERY) {
+        // Unfortunately, The OPeNDAP test server does not appear to support https:
+        String url = server.getURL("http:") + "/" + prefix + "/" + file + INPUTEXT + IQ;
+        System.out.println(url);
+        if (query != null) {
+          if (IQ.isEmpty()) {
+            url += ("?");
+          } else {
+            url += ("&");
+          }
+          url += (DapConstants.CONSTRAINTTAG + "=" + query);
+        }
+
+        url += INPUTFRAG;
+        String baseline = resourceroot + BASELINEDIR + "/" + file + BASELINEEXT;
+        TestCase tc = new TestCase(file, url, baseline, query);
+        testcases.add(tc);
+      }
     }
     return testcases;
   }
