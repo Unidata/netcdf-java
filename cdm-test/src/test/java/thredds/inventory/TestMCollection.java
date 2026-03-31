@@ -1,7 +1,8 @@
 /*
- * Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2026 University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
+
 package thredds.inventory;
 
 import org.junit.Test;
@@ -10,7 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.featurecollection.FeatureCollectionType;
-import thredds.inventory.filter.StreamFilter;
+import thredds.inventory.filter.RegExpMatch;
 import thredds.inventory.partition.DirectoryCollection;
 import thredds.inventory.partition.TimePartition;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
@@ -38,10 +39,10 @@ public class TestMCollection {
     Path rootPath = Paths.get(specp.getRootDir());
 
     try (DirectoryCollection dcm =
-        new DirectoryCollection(config.collectionName, rootPath, true, config.olderThan, logger)) {
+        new DirectoryCollection(config.collectionName, rootPath.toString(), true, config.olderThan, logger)) {
       dcm.putAuxInfo(FeatureCollectionConfig.AUX_CONFIG, config);
       if (specp.getFilter() != null)
-        dcm.setStreamFilter(new StreamFilter(specp.getFilter(), specp.getFilterOnName()));
+        dcm.setStreamFilter(new RegExpMatch(specp.getFilter(), specp.getFilterOnName()));
 
       int count = 0;
       for (MFile mfile : dcm.getFilesSorted()) {

@@ -1,14 +1,14 @@
 /*
- * Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2026 University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
+
 package thredds.inventory.partition;
 
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.*;
 import ucar.nc2.util.CloseableIterator;
 import java.io.IOException;
-import java.nio.file.Path;
 import java.util.*;
 
 /**
@@ -22,14 +22,14 @@ import java.util.*;
 public class DirectoryPartition extends CollectionAbstract implements PartitionManager {
 
   private final FeatureCollectionConfig config;
-  private final Path collectionDir; // directory for this collection
+  private final String collectionDir; // directory for this collection
   private final String topCollection; // config collection name,
   private final boolean isTop; // is this the top of the tree ?
   private final IndexReader indexReader;
   private final String suffix;
 
-  public DirectoryPartition(FeatureCollectionConfig config, Path collectionDir, boolean isTop, IndexReader indexReader,
-      String suffix, org.slf4j.Logger logger) {
+  public DirectoryPartition(FeatureCollectionConfig config, String collectionDir, boolean isTop,
+      IndexReader indexReader, String suffix, org.slf4j.Logger logger) {
     super(null, logger);
     this.config = config;
     this.collectionDir = collectionDir;
@@ -46,8 +46,7 @@ public class DirectoryPartition extends CollectionAbstract implements PartitionM
   public String getIndexFilename(String suffix) {
     if (isTop)
       return super.getIndexFilename(suffix);
-    Path indexPath = DirectoryCollection.makeCollectionIndexPath(topCollection, collectionDir, suffix);
-    return indexPath.toString();
+    return DirectoryCollection.makeCollectionIndexPath(topCollection, collectionDir, suffix);
   }
 
   @Override
@@ -55,7 +54,7 @@ public class DirectoryPartition extends CollectionAbstract implements PartitionM
     if (forceCollection == null)
       forceCollection = CollectionUpdateType.test;
 
-    DirectoryBuilder builder = new DirectoryBuilder(topCollection, collectionDir, null, suffix);
+    DirectoryBuilder builder = new DirectoryBuilder(topCollection, collectionDir, suffix);
     builder.constructChildren(indexReader, forceCollection);
 
     List<MCollection> result = new ArrayList<>();
@@ -94,7 +93,7 @@ public class DirectoryPartition extends CollectionAbstract implements PartitionM
 
   @Override
   public String getRoot() {
-    return collectionDir.toString();
+    return collectionDir;
   }
 
   // empty mfile list

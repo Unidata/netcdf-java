@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2019 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2026 University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 
@@ -370,7 +370,7 @@ public class DirectoryPartitionViewer extends JPanel {
         Formatter out = new Formatter();
         GribCdmIndex indexReader = new GribCdmIndex(logger);
         try (DirectoryPartition dpart =
-            new DirectoryPartition(config, node.dir, true, indexReader, GribCdmIndex.NCX_SUFFIX, logger)) {
+            new DirectoryPartition(config, node.dir.toString(), true, indexReader, GribCdmIndex.NCX_SUFFIX, logger)) {
           dpart.putAuxInfo(FeatureCollectionConfig.AUX_CONFIG, config);
 
           try (PartitionCollectionMutable tp = (PartitionCollectionMutable) GribCdmIndex
@@ -420,7 +420,7 @@ public class DirectoryPartitionViewer extends JPanel {
   private void cmdShowIndex(NodeInfo node) {
     try {
       // this opens the index file and constructs a GribCollection
-      Path index = node.part.getIndex();
+      String index = node.part.getIndex();
       if (index == null) {
         node.part.findIndex();
       }
@@ -463,7 +463,7 @@ public class DirectoryPartitionViewer extends JPanel {
       this.dir = dir;
 
       try {
-        part = new DirectoryBuilder(collectionName, dir, null, GribCdmIndex.NCX_SUFFIX);
+        part = new DirectoryBuilder(collectionName, dir.toString(), GribCdmIndex.NCX_SUFFIX);
         hasIndex = part.getIndex() != null;
 
       } catch (IOException e) {
@@ -473,7 +473,7 @@ public class DirectoryPartitionViewer extends JPanel {
 
     NodeInfo(DirectoryBuilder part) {
       this.part = part;
-      this.dir = part.getDir();
+      this.dir = Paths.get(part.getDir());
       this.hasIndex = part.getIndex() != null;
     }
 

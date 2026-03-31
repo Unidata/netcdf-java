@@ -1,17 +1,15 @@
 /*
- * Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2026 University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 
 package thredds.inventory;
 
 import org.slf4j.Logger;
-import thredds.filesystem.MFileOS;
 import ucar.nc2.util.CloseableIterator;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * MCollection that is initialized by specific list of MFiles.
@@ -35,10 +33,9 @@ public class CollectionList extends CollectionAbstract {
       String filename = s.trim();
       if (filename.isEmpty())
         continue;
-      Path p = Paths.get(filename);
-      if (Files.exists(p)) {
-        MFileOS mfile = new MFileOS(filename);
-        mfiles.add(new MFileOS(filename));
+      MFile mfile = MFiles.createIfExists(filename);
+      if (mfile != null) {
+        mfiles.add(mfile);
         lastModified = Math.max(lastModified, mfile.getLastModified());
       }
     }

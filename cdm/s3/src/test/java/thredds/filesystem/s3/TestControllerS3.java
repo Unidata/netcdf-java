@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 2020-2026 University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 
@@ -7,7 +7,9 @@ package thredds.filesystem.s3;
 
 import static com.google.common.truth.Truth.assertThat;
 
+import java.io.IOException;
 import java.net.URISyntaxException;
+import java.nio.file.DirectoryStream;
 import java.util.Iterator;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -66,18 +68,22 @@ public class TestControllerS3 {
   }
 
   @Test
-  public void shouldReturnSameValueFromHasNext() throws URISyntaxException {
+  public void shouldReturnSameValueFromHasNext() throws URISyntaxException, IOException {
     final CdmS3Uri uri = new CdmS3Uri("cdms3:thredds-test-data");
     final MFileFilter filter = new WildcardMatchOnName("testData.nc");
     final CollectionConfig collectionConfig = new CollectionConfig(uri.getBucket(), uri.toString(), true, filter, null);
-    final ControllerS3 controller = new ControllerS3();
-    final Iterator<MFile> iterator = controller.getInventoryTop(collectionConfig, false);
+    try (ControllerS3 controller = new ControllerS3()) {
+      try (DirectoryStream<MFile> stream = controller.getInventoryTop(collectionConfig, false)) {
+        assertThat(stream).isNotNull();
+        final Iterator<MFile> iterator = stream.iterator();
 
-    assertThat(iterator.hasNext()).isTrue();
-    assertThat(iterator.hasNext()).isTrue();
-    iterator.next();
-    assertThat(iterator.hasNext()).isFalse();
-    assertThat(iterator.hasNext()).isFalse();
+        assertThat(iterator.hasNext()).isTrue();
+        assertThat(iterator.hasNext()).isTrue();
+        iterator.next();
+        assertThat(iterator.hasNext()).isFalse();
+        assertThat(iterator.hasNext()).isFalse();
+      }
+    }
   }
 
   //////////////////////
@@ -364,10 +370,15 @@ public class TestControllerS3 {
   }
 
   private int topInventoryCount(CollectionConfig collectionConfig) {
-    ControllerS3 controller = new ControllerS3();
-    controller.limit = true;
-    Iterator<MFile> it = controller.getInventoryTop(collectionConfig, false);
-    return countObjects(it);
+    try (ControllerS3 controller = new ControllerS3()) {
+      controller.limit = true;
+      try (DirectoryStream<MFile> stream = controller.getInventoryTop(collectionConfig, false)) {
+        assertThat(stream).isNotNull();
+        return countObjects(stream.iterator());
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      }
+    }
   }
 
   private void checkInventoryAllCount(CdmS3Uri uri, int expectedCount) {
@@ -376,10 +387,15 @@ public class TestControllerS3 {
   }
 
   private void checkInventoryAllCount(CollectionConfig collectionConfig, int expectedCount) {
-    ControllerS3 controller = new ControllerS3();
-    controller.limit = true;
-    Iterator<MFile> it = controller.getInventoryAll(collectionConfig, false);
-    assertThat(countObjects(it)).isEqualTo(expectedCount);
+    try (ControllerS3 controller = new ControllerS3()) {
+      controller.limit = true;
+      try (DirectoryStream<MFile> stream = controller.getInventoryAll(collectionConfig, false)) {
+        assertThat(stream).isNotNull();
+        assertThat(countObjects(stream.iterator())).isEqualTo(expectedCount);
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      }
+    }
   }
 
   private void checkSubdirsCount(CdmS3Uri uri, int expectedCount) {
@@ -388,10 +404,15 @@ public class TestControllerS3 {
   }
 
   private void checkSubdirsCount(CollectionConfig collectionConfig, int expectedCount) {
-    ControllerS3 controller = new ControllerS3();
-    controller.limit = true;
-    Iterator<MFile> it = controller.getSubdirs(collectionConfig, false);
-    assertThat(countObjects(it)).isEqualTo(expectedCount);
+    try (ControllerS3 controller = new ControllerS3()) {
+      controller.limit = true;
+      try (DirectoryStream<MFile> stream = controller.getSubdirs(collectionConfig, false)) {
+        assertThat(stream).isNotNull();
+        assertThat(countObjects(stream.iterator())).isEqualTo(expectedCount);
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      }
+    }
   }
 
   private int countObjects(Iterator<MFile> it) {

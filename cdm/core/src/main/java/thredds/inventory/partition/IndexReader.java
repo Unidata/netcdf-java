@@ -1,12 +1,12 @@
 /*
- * Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2026 University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
+
 package thredds.inventory.partition;
 
 import thredds.inventory.MFile;
 import java.io.IOException;
-import java.nio.file.Path;
 import java.util.List;
 
 /**
@@ -25,7 +25,7 @@ public interface IndexReader {
    * @return true if indexFile is a partition collection
    * @throws IOException on bad things
    */
-  boolean readChildren(Path indexFile, AddChildCallback callback) throws IOException;
+  boolean readChildren(String indexFile, AddChildCallback callback) throws IOException;
 
   interface AddChildCallback {
     /**
@@ -46,7 +46,7 @@ public interface IndexReader {
    * @return true if its a partition type index
    * @throws IOException on bad
    */
-  boolean isPartition(Path indexFile) throws IOException;
+  boolean isPartition(String indexFile) throws IOException;
 
   /**
    * Read the MFiles from a GribCollection index file
@@ -55,7 +55,7 @@ public interface IndexReader {
    * @param result put results in this list
    * @return true if indexFile is a GribCollection collection, and read ok
    */
-  boolean readMFiles(Path indexFile, List<MFile> result) throws IOException;
+  boolean readMFiles(String indexFile, List<MFile> result) throws IOException;
 
 
 }

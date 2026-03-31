@@ -1,7 +1,8 @@
 /*
- * Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2026 University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
+
 package thredds.inventory.partition;
 
 import thredds.inventory.CollectionAbstract;
@@ -26,7 +27,7 @@ class DirectoryCollectionFromIndex extends CollectionAbstract {
       org.slf4j.Logger logger) {
     super(builder.getPartitionName(), logger);
     setDateExtractor(dateExtractor);
-    setRoot(builder.getDir().toString());
+    setRoot(builder.getDir());
     this.builder = builder;
     this.indexReader = indexReader;
   }
@@ -38,7 +39,7 @@ class DirectoryCollectionFromIndex extends CollectionAbstract {
 
   @Override
   public String getRoot() {
-    return builder.getDir().toString();
+    return builder.getDir();
   }
 
   @Override

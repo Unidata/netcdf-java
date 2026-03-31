@@ -1,16 +1,15 @@
 /*
- * Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2026 University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 
 package thredds.inventory;
 
 import org.slf4j.Logger;
-import thredds.filesystem.MFileOS7;
+import thredds.inventory.filter.WildcardMatchOnPath;
 import ucar.nc2.util.CloseableIterator;
 import java.io.IOException;
-import java.nio.file.*;
-import java.nio.file.attribute.BasicFileAttributes;
+import java.nio.file.DirectoryStream;
 import java.util.*;
 
 /**
@@ -47,14 +46,14 @@ import java.util.*;
  * @since 5/19/14
  */
 public class CollectionGlob extends CollectionAbstract {
-  PathMatcher matcher;
+  MFileFilter matcher;
   boolean debug;
   int depth;
 
   public CollectionGlob(String collectionName, String glob, Logger logger) {
     super(collectionName, logger);
 
-    matcher = FileSystems.getDefault().getPathMatcher("glob:" + glob);
+    matcher = new WildcardMatchOnPath(glob);
 
     // lets suppose the first "*" indicates the top dir
     int pos = glob.indexOf("*");
@@ -92,25 +91,16 @@ public class CollectionGlob extends CollectionAbstract {
     return new MyFileIterator(this.root);
   }
 
-  // from http://blog.eyallupu.com/2011/11/java-7-working-with-directories.html
-  public static DirectoryStream newDirectoryStream(Path dir, String glob) throws IOException {
-    FileSystem fs = dir.getFileSystem();
-    PathMatcher matcher = fs.getPathMatcher("glob:" + glob);
-    DirectoryStream.Filter<Path> filter = entry -> matcher.matches(entry.getFileName());
-    return fs.provider().newDirectoryStream(dir, filter);
-  }
-
   private class MyFileIterator implements CloseableIterator<MFile> {
-    DirectoryStream<Path> dirStream;
-    Iterator<Path> dirStreamIterator;
+    DirectoryStream<MFile> dirStream;
+    Iterator<MFile> dirStreamIterator;
     MFile nextMFile;
     int count, total;
-    Stack<Path> subdirs = new Stack<>();
+    Stack<MFile> subdirs = new Stack<>();
     int currDepth;
 
     MyFileIterator(String topDir) throws IOException {
-      Path topPath = Paths.get(topDir);
-      dirStream = Files.newDirectoryStream(topPath);
+      dirStream = MControllers.newDirectoryStream(topDir);
       dirStreamIterator = dirStream.iterator();
     }
 
@@ -125,31 +115,30 @@ public class CollectionGlob extends CollectionAbstract {
               return false;
             }
             currDepth++; // LOOK wrong
-            Path nextSubdir = subdirs.pop();
-            dirStream = Files.newDirectoryStream(nextSubdir);
+            MFile nextSubdir = subdirs.pop();
+            dirStream = MControllers.newDirectoryStream(nextSubdir.getPath());
             dirStreamIterator = dirStream.iterator();
           }
 
           total++;
-          Path nextPath = dirStreamIterator.next();
-          BasicFileAttributes attr = Files.readAttributes(nextPath, BasicFileAttributes.class);
-          if (attr.isDirectory()) {
+          MFile nextFile = dirStreamIterator.next();
+          if (nextFile.isDirectory()) {
             if (currDepth < depth)
-              subdirs.push(nextPath);
+              subdirs.push(nextFile);
             continue;
           }
 
-          if (!matcher.matches(nextPath)) {
+          // lOOK we need Path for PathMatcher. This is still local-only if it's using FileSystems.getDefault()
+          if (!matcher.accept(nextFile)) {
             continue;
           }
 
-          nextMFile = new MFileOS7(nextPath, attr);
+          nextMFile = nextFile;
           return true;
 
         } catch (IOException e) {
           throw new RuntimeException(e);
         }
-        // if (filter == null || filter.accept(nextMFile)) return true;
       }
     }
 

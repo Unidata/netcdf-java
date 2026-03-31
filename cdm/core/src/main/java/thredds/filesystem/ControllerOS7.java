@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2026 University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 
@@ -8,11 +8,13 @@ package thredds.filesystem;
 import thredds.inventory.CollectionConfig;
 import thredds.inventory.MController;
 import thredds.inventory.MFile;
+import thredds.inventory.MFileDirectoryStream;
 import javax.annotation.concurrent.ThreadSafe;
 import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 /**
  * Use Java 7 NIO for scanning the file system
@@ -27,12 +29,12 @@ public class ControllerOS7 implements MController {
   ////////////////////////////////////////
 
   @Override
-  public Iterator<MFile> getInventoryAll(CollectionConfig mc, boolean recheck) {
+  public DirectoryStream<MFile> getInventoryAll(CollectionConfig mc, boolean recheck) {
     return null;
   }
 
   @Override
-  public Iterator<MFile> getInventoryTop(CollectionConfig mc, boolean recheck) throws IOException {
+  public DirectoryStream<MFile> getInventoryTop(CollectionConfig mc, boolean recheck) {
     String path = mc.getDirectoryName();
     if (path.startsWith("file:")) {
       path = path.substring(5);
@@ -41,10 +43,17 @@ public class ControllerOS7 implements MController {
     Path cd = Paths.get(path);
     if (!Files.exists(cd))
       return null;
-    return new MFileIterator(cd, new CollectionFilter(mc)); // removes subdirs
+    MFileDirectoryStream mfileDirStream = null;
+    try {
+      mfileDirStream = new MFileDirectoryStream(new MFileIterator(cd, new CollectionFilter(mc))); // removes subdirs
+    } catch (IOException ioe) {
+      logger.warn(ioe.getMessage(), ioe);
+    }
+    return mfileDirStream;
   }
 
-  public Iterator<MFile> getSubdirs(CollectionConfig mc, boolean recheck) {
+  @Override
+  public DirectoryStream<MFile> getSubdirs(CollectionConfig mc, boolean recheck) {
     return null;
   }
 
@@ -68,31 +77,37 @@ public class ControllerOS7 implements MController {
   }
 
   // returns everything in the current directory
-  private static class MFileIterator implements Iterator<MFile> {
-    Iterator<Path> dirStream;
+  private static class MFileIterator implements Iterator<MFile>, AutoCloseable {
+    private final DirectoryStream<Path> dirStream;
+    private final Iterator<Path> pathIterator;
 
     MFileIterator(Path dir, DirectoryStream.Filter<Path> filter) throws IOException {
       if (filter != null)
-        dirStream = Files.newDirectoryStream(dir, filter).iterator();
+        dirStream = Files.newDirectoryStream(dir, filter);
       else
-        dirStream = Files.newDirectoryStream(dir).iterator();
+        dirStream = Files.newDirectoryStream(dir);
+      pathIterator = dirStream.iterator();
     }
 
     public boolean hasNext() {
-      return dirStream.hasNext();
+      return pathIterator.hasNext();
     }
 
     public MFile next() {
       try {
-        return new MFileOS7(dirStream.next());
+        return new MFileOS7(pathIterator.next());
       } catch (IOException e) {
-        e.printStackTrace(); // LOOK we should pass this exception up
-        throw new RuntimeException(e);
+        throw new NoSuchElementException(e.getMessage());
       }
     }
 
     public void remove() {
       throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void close() throws IOException {
+      dirStream.close();
     }
   }
 

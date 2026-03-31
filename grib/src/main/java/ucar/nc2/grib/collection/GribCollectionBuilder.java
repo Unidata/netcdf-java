@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2018 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2026 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 
@@ -64,7 +64,8 @@ abstract class GribCollectionBuilder {
     if (ff == CollectionUpdateType.always)
       return true;
 
-    File collectionIndexFile = GribIndexCache.getExistingFileOrCache(dcm.getIndexFilename(GribCdmIndex.NCX_SUFFIX));
+    String indexFilename = dcm.getIndexFilename(GribCdmIndex.NCX_SUFFIX);
+    File collectionIndexFile = GribIndexCache.getExistingFileOrCache(indexFilename);
     if (collectionIndexFile == null)
       return true;
 
@@ -93,7 +94,7 @@ abstract class GribCollectionBuilder {
     // now see if any files were deleted, by reading the index and comparing to the files there
     GribCdmIndex reader = new GribCdmIndex(logger);
     List<MFile> oldFiles = new ArrayList<>();
-    reader.readMFiles(collectionIndexFile.toPath(), oldFiles);
+    reader.readMFiles(collectionIndexFile.getPath(), oldFiles);
     Set<String> oldFileSet = new HashSet<>();
     for (MFile oldFile : oldFiles) {
       if (!newFileSet.contains(oldFile.getPath()))

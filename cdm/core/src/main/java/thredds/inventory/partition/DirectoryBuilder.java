@@ -1,29 +1,26 @@
 /*
- * Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2026 University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
+
 package thredds.inventory.partition;
 
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.CollectionUpdateType;
 import thredds.inventory.MCollection;
+import thredds.inventory.MControllers;
 import thredds.inventory.MFile;
+import thredds.inventory.MFiles;
 import ucar.nc2.util.Indent;
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.attribute.BasicFileAttributes;
-import java.nio.file.attribute.FileTime;
 import java.util.ArrayList;
 import java.util.Formatter;
-import java.util.Iterator;
 import java.util.List;
 
 /**
  * A Builder of DirectoryPartitions and DirectoryCollections.
- * Each DirectoryBuilder is associated with one directory, and one ncx index.
+ * Each DirectoryBuilder is associated with one directory and one ncx index.
  * This may contain collections of files (MFiles in a DirectoryCollection), or subdirectories (MCollections in a
  * DirectoryPartition).
  *
@@ -33,9 +30,9 @@ import java.util.List;
 public class DirectoryBuilder {
 
   // returns a DirectoryPartition or DirectoryCollection
-  public static MCollection factory(FeatureCollectionConfig config, Path topDir, boolean isTop, IndexReader indexReader,
-      String suffix, org.slf4j.Logger logger) throws IOException {
-    DirectoryBuilder builder = new DirectoryBuilder(config.collectionName, topDir.toString(), suffix);
+  public static MCollection factory(FeatureCollectionConfig config, String topDir, boolean isTop,
+      IndexReader indexReader, String suffix, org.slf4j.Logger logger) throws IOException {
+    DirectoryBuilder builder = new DirectoryBuilder(config.collectionName, topDir, suffix);
 
     DirectoryPartition dpart = new DirectoryPartition(config, topDir, isTop, indexReader, suffix, logger);
     if (!builder.isLeaf(indexReader)) { // its a partition
@@ -63,10 +60,10 @@ public class DirectoryBuilder {
   private final String suffix;
   private final String topCollectionName; // collection name
   private final String partitionName; // partition name
-  private final Path dir; // the directory
-  private final FileTime dirLastModified; // directory last modified
-  private Path index; // TimePartition index file (ncx2 with magic = TimePartition)
-  private FileTime indexLastModified; // index last modified
+  private final String dir; // the directory
+  private final long dirLastModified; // directory last modified
+  private String index; // TimePartition index file (ncx2 with magic = TimePartition)
+  private long indexLastModified; // index last modified
   private long indexSize; // index size
 
   private boolean childrenConstructed;
@@ -74,28 +71,24 @@ public class DirectoryBuilder {
   private PartitionStatus partitionStatus = PartitionStatus.unknown;
 
   public DirectoryBuilder(String topCollectionName, String dirFilename, String suffix) throws IOException {
-    this(topCollectionName, Paths.get(dirFilename), null, suffix);
+    this(topCollectionName, MControllers.create(dirFilename).getMFile(dirFilename), suffix);
   }
 
   /**
    * Create a DirectoryBuilder for the named directory
    * 
    * @param topCollectionName from config, name of the collection
-   * @param dir covers this directory
-   * @param attr file attributes, may be null
+   * @param mdir covers this directory
    */
-  public DirectoryBuilder(String topCollectionName, Path dir, BasicFileAttributes attr, String suffix)
-      throws IOException {
+  public DirectoryBuilder(String topCollectionName, MFile mdir, String suffix) throws IOException {
     this.topCollectionName = topCollectionName;
-    this.dir = dir;
+    this.dir = mdir.getPath();
     this.partitionName = DirectoryCollection.makeCollectionName(topCollectionName, dir);
     this.suffix = suffix;
 
-    if (attr == null)
-      attr = Files.readAttributes(this.dir, BasicFileAttributes.class);
-    if (!attr.isDirectory())
+    if (!mdir.isDirectory())
       throw new IllegalArgumentException("DirectoryPartitionBuilder needs a directory");
-    dirLastModified = attr.lastModifiedTime();
+    dirLastModified = mdir.getLastModified();
 
     // see if we can find the index
     findIndex();
@@ -109,12 +102,12 @@ public class DirectoryBuilder {
    * @return true if found
    */
   public boolean findIndex() throws IOException {
-    Path indexPath = Paths.get(dir.toString(), partitionName + suffix);
-    if (Files.exists(indexPath)) {
+    String indexPath = dir + "/" + partitionName + suffix;
+    MFile indexFile = MFiles.createIfExists(indexPath);
+    if (indexFile != null) {
       this.index = indexPath;
-      BasicFileAttributes attr = Files.readAttributes(indexPath, BasicFileAttributes.class);
-      this.indexLastModified = attr.lastModifiedTime();
-      this.indexSize = attr.size();
+      this.indexLastModified = indexFile.getLastModified();
+      this.indexSize = indexFile.getLength();
       return true;
     }
     return false;
@@ -130,12 +123,11 @@ public class DirectoryBuilder {
     if (partitionStatus == PartitionStatus.unknown) {
 
       int countDir = 0, countFile = 0, count = 0;
-      try (DirectoryStream<Path> dirStream = Files.newDirectoryStream(dir)) {
-        Iterator<Path> iterator = dirStream.iterator();
-        while (iterator.hasNext() && count++ < 100) {
-          Path p = iterator.next();
-          BasicFileAttributes attr = Files.readAttributes(p, BasicFileAttributes.class);
-          if (attr.isDirectory())
+      try (DirectoryStream<MFile> dirStream = MControllers.newDirectoryStream(dir)) {
+        for (MFile mfile : dirStream) {
+          if (count++ >= 100)
+            break;
+          if (mfile.isDirectory())
             countDir++;
           else
             countFile++;
@@ -188,11 +180,9 @@ public class DirectoryBuilder {
     return children;
   }
 
-  // add a child partition from the index file (callback from constructChildren)
-  // we dont know at this point if its another partition or a gribCollection
   private class AddChild implements IndexReader.AddChildCallback {
     public void addChild(String dirName, String indexFilename, long lastModified) throws IOException {
-      Path indexPath = Paths.get(indexFilename);
+      String indexPath = dirName + "/" + indexFilename;
       DirectoryBuilder child = new DirectoryBuilder(topCollectionName, indexPath, lastModified, suffix);
       children.add(child);
     }
@@ -206,10 +196,13 @@ public class DirectoryBuilder {
     }
 
     public void addChild(String dirName, String indexFilename, long lastModified) throws IOException {
-      Path indexPath = Paths.get(dirName, indexFilename);
+      String indexPath = dirName + "/" + indexFilename;
       if (substituteParentDir) {
-        Path parent = index.getParent();
-        indexPath = parent.resolve(indexFilename);
+        int pos = index.lastIndexOf('/');
+        if (pos < 0)
+          pos = index.lastIndexOf('\\');
+        String parent = (pos >= 0) ? index.substring(0, pos) : ".";
+        indexPath = parent + "/" + indexFilename;
       }
       DirectoryBuilder child = new DirectoryBuilder(topCollectionName, indexPath, lastModified, suffix);
       children.add(child);
@@ -217,21 +210,25 @@ public class DirectoryBuilder {
   }
 
   // coming in from the index reader
-  private DirectoryBuilder(String topCollectionName, Path indexFile, long indexLastModified, String suffix)
+  private DirectoryBuilder(String topCollectionName, String indexFile, long lastModified, String suffix)
       throws IOException {
     this.topCollectionName = topCollectionName;
-    if (Files.exists(indexFile)) {
+    MFile mIndexFile = MFiles.createIfExists(indexFile);
+    if (mIndexFile != null) {
       this.index = indexFile;
-      this.indexLastModified = FileTime.fromMillis(indexLastModified);
+      this.indexLastModified = mIndexFile.getLastModified();
     }
 
-    this.dir = indexFile.getParent();
+    int pos = indexFile.lastIndexOf('/');
+    if (pos < 0)
+      pos = indexFile.lastIndexOf('\\');
+    this.dir = (pos >= 0) ? indexFile.substring(0, pos) : ".";
     this.partitionName = DirectoryCollection.makeCollectionName(topCollectionName, dir);
 
-    BasicFileAttributes attr = Files.readAttributes(this.dir, BasicFileAttributes.class);
-    if (!attr.isDirectory())
+    MFile mdir = MFiles.create(this.dir);
+    if (!mdir.isDirectory())
       throw new IllegalArgumentException("DirectoryPartition needs a directory");
-    dirLastModified = attr.lastModifiedTime();
+    dirLastModified = mdir.getLastModified();
 
     this.suffix = suffix;
   }
@@ -244,14 +241,11 @@ public class DirectoryBuilder {
       System.out.printf("DirectoryBuilder.scanForChildren on %s ", dir);
 
     int count = 0;
-    try (DirectoryStream<Path> ds = Files.newDirectoryStream(dir)) {
-      for (Path p : ds) {
-        BasicFileAttributes attr = Files.readAttributes(p, BasicFileAttributes.class);
-        if (attr.isDirectory()) {
-          children.add(new DirectoryBuilder(topCollectionName, p, attr, suffix));
-          if (debug && (++count % 10 == 0))
-            System.out.printf("%d ", count);
-        }
+    try (DirectoryStream<MFile> ds = MControllers.newSubdirStream(dir)) {
+      for (MFile mfile : ds) {
+        children.add(new DirectoryBuilder(topCollectionName, mfile, suffix));
+        if (debug && (++count % 10 == 0))
+          System.out.printf("%d ", count);
       }
     } catch (IOException e) {
       e.printStackTrace();
@@ -280,7 +274,7 @@ public class DirectoryBuilder {
    * 
    * @return directory
    */
-  public Path getDir() {
+  public String getDir() {
     return dir;
   }
 
@@ -289,7 +283,7 @@ public class DirectoryBuilder {
    * 
    * @return ncx2 file path
    */
-  public Path getIndex() {
+  public String getIndex() {
     return index;
   }
 

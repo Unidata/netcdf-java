@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2018 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2026 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 
@@ -37,6 +37,7 @@ import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.List;
 
@@ -774,11 +775,11 @@ public class CdmIndexPanel extends JPanel {
   Collection<MFile> gcFiles;
   FeatureCollectionConfig config = new FeatureCollectionConfig();
 
-  public void setIndexFile(Path indexFile, FeatureCollectionConfig config) throws IOException {
+  public void setIndexFile(String indexFile, FeatureCollectionConfig config) throws IOException {
     if (gc != null)
       gc.close();
 
-    this.indexFile = indexFile;
+    this.indexFile = Paths.get(indexFile);
     this.config = config;
     gc = GribCdmIndex.openCdmIndex(indexFile.toString(), config, false, logger);
     if (gc == null)

@@ -1,16 +1,16 @@
 /*
- * Copyright (c) 1998-2022 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2026 University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
+
 package thredds.inventory;
 
 import com.google.re2j.Matcher;
 import com.google.re2j.Pattern;
 import ucar.unidata.util.StringUtil2;
 import javax.annotation.concurrent.ThreadSafe;
-import java.nio.file.FileSystems;
-import java.nio.file.Path;
-import java.nio.file.PathMatcher;
+import thredds.inventory.filter.RegExpMatch;
+import thredds.inventory.filter.WildcardMatchOnPath;
 import java.util.Formatter;
 
 /**
@@ -137,18 +137,20 @@ public abstract class CollectionSpecParserAbstract {
     }
   }
 
-  public PathMatcher getPathMatcher() {
-    if (spec.startsWith("regex:") || spec.startsWith("glob:")) { // experimental
-      return FileSystems.getDefault().getPathMatcher(spec);
+  public MFileFilter getMFileFilter() {
+    if (spec.startsWith("regex:")) {
+      return new RegExpMatch(Pattern.compile(spec.substring("regex:".length())), false);
+    } else if (spec.startsWith("glob:")) {
+      return new WildcardMatchOnPath(spec.substring("glob:".length()));
     } else {
       return new BySpecp();
     }
   }
 
-  private class BySpecp implements java.nio.file.PathMatcher {
+  private class BySpecp implements MFileFilter {
     @Override
-    public boolean matches(Path path) {
-      Matcher matcher = filter.matcher(path.getFileName().toString());
+    public boolean accept(MFile path) {
+      Matcher matcher = filter.matcher(path.getName());
       return matcher.matches();
     }
   }
