@@ -2,6 +2,7 @@
  * Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
+
 package thredds.inventory.filter;
 
 import com.google.re2j.Matcher;
@@ -15,7 +16,9 @@ import java.nio.file.Path;
  *
  * @author John
  * @since 1/28/14
+ * @deprecated use {@link RegExpMatch} which works on {@link thredds.inventory.MFile}
  */
+@Deprecated
 public class StreamFilter implements DirectoryStream.Filter<Path> {
   private Pattern pattern;
   private boolean nameOnly;

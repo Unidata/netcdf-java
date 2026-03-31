@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2020 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2026 University Corporation for Atmospheric Research/Unidata
  * See LICENSE.txt for license information.
  */
 
@@ -546,21 +546,19 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
       long start = System.currentTimeMillis();
 
       // lOOK: are there any circumstances where we dont need to recheck against OS, ie always use cached values?
-      Iterator<MFile> iter =
-          (mc.wantSubdirs()) ? controller.getInventoryAll(mc, true) : controller.getInventoryTop(mc, true); /// NCDC
-                                                                                                            /// wants
-                                                                                                            /// subdir
-                                                                                                            /// /global/nomads/nexus/gfsanl/**/gfsanl_3_.*\.grb$
-      if (iter == null) {
-        logger.error(collectionName + ": Invalid collection= " + mc);
-        continue;
-      }
+      try (java.nio.file.DirectoryStream<MFile> stream =
+          (mc.wantSubdirs()) ? controller.getInventoryAll(mc, true) : controller.getInventoryTop(mc, true)) {
 
-      while (iter.hasNext()) {
-        MFile mfile = iter.next();
-        mfile.setAuxInfo(mc.getAuxInfo());
-        map.put(mfile.getPath(), mfile);
-        count++;
+        if (stream == null) {
+          logger.error(collectionName + ": Invalid collection= " + mc);
+          continue;
+        }
+
+        for (MFile mfile : stream) {
+          mfile.setAuxInfo(mc.getAuxInfo());
+          map.put(mfile.getPath(), mfile);
+          count++;
+        }
       }
 
       if (logger.isDebugEnabled()) {

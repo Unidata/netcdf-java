@@ -1,21 +1,19 @@
 /*
- * Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2026 University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 
 package thredds.inventory.partition;
 
-import thredds.filesystem.MFileOS7;
 import thredds.inventory.CollectionAbstract;
+import thredds.inventory.CollectionConfig;
+import thredds.inventory.MController;
+import thredds.inventory.MControllers;
 import thredds.inventory.MFile;
+import thredds.inventory.MFileFilter;
 import ucar.nc2.util.CloseableIterator;
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.attribute.BasicFileAttributes;
-import java.nio.file.attribute.FileTime;
 import java.util.*;
 
 /**
@@ -35,10 +33,11 @@ public class DirectoryCollection extends CollectionAbstract {
    * @param dir directory for this
    * @return standard collection name, to name the index file
    */
-  public static String makeCollectionName(String topCollectionName, Path dir) {
-    int last = dir.getNameCount() - 1;
-    Path lastDir = dir.getName(last);
-    String lastDirName = lastDir.toString();
+  public static String makeCollectionName(String topCollectionName, String dir) {
+    int pos = dir.lastIndexOf('/');
+    if (pos < 0)
+      pos = dir.lastIndexOf('\\');
+    String lastDirName = (pos >= 0) ? dir.substring(pos + 1) : dir;
     return topCollectionName + "-" + lastDirName;
   }
 
@@ -49,28 +48,23 @@ public class DirectoryCollection extends CollectionAbstract {
    * @param dir directory for this
    * @return standard collection name, to name the index file
    */
-  public static Path makeCollectionIndexPath(String topCollectionName, Path dir, String suffix) {
+  public static String makeCollectionIndexPath(String topCollectionName, String dir, String suffix) {
     String collectionName = makeCollectionName(topCollectionName, dir);
-    return Paths.get(dir.toString(), collectionName + suffix);
+    return dir + "/" + collectionName + suffix;
   }
 
   ///////////////////////////////////////////////////////////////////////////////////
 
   final String topCollection;
-  final Path collectionDir; // directory for this collection
+  final String collectionDir; // directory for this collection
   final long olderThanMillis;
   final boolean isTop;
 
   public DirectoryCollection(String topCollectionName, String topDirS, boolean isTop, String olderThan,
       org.slf4j.Logger logger) {
-    this(topCollectionName, Paths.get(topDirS), isTop, olderThan, logger);
-  }
-
-  public DirectoryCollection(String topCollectionName, Path collectionDir, boolean isTop, String olderThan,
-      org.slf4j.Logger logger) {
     super(null, logger);
     this.topCollection = cleanName(topCollectionName);
-    this.collectionDir = collectionDir;
+    this.collectionDir = topDirS;
     this.collectionName = isTop ? this.topCollection : makeCollectionName(topCollection, collectionDir);
     this.isTop = isTop;
 
@@ -81,15 +75,14 @@ public class DirectoryCollection extends CollectionAbstract {
 
   @Override
   public String getRoot() {
-    return collectionDir.toString();
+    return collectionDir;
   }
 
   @Override
   public String getIndexFilename(String suffix) {
     if (isTop)
       return super.getIndexFilename(suffix);
-    Path indexPath = DirectoryCollection.makeCollectionIndexPath(topCollection, collectionDir, suffix);
-    return indexPath.toString();
+    return DirectoryCollection.makeCollectionIndexPath(topCollection, collectionDir, suffix);
   }
 
   @Override
@@ -111,22 +104,20 @@ public class DirectoryCollection extends CollectionAbstract {
   // returns everything in the current directory, subject to sfilter
   private class MyFileIterator implements CloseableIterator<MFile> {
     int debugNum;
-    DirectoryStream<Path> dirStream;
-    Iterator<Path> dirStreamIterator;
+    DirectoryStream<MFile> dirStream;
+    Iterator<MFile> dirStreamIterator;
     MFile nextMFile;
     int count;
 
-    MyFileIterator(Path dir) throws IOException {
+    MyFileIterator(String dir) {
       if (debug) {
         debugNum = debugCount++;
         System.out.printf(" MyFileIterator %s (%d)", dir, debugNum);
       }
-      try {
-        dirStream = Files.newDirectoryStream(dir, new MyStreamFilter());
+      try (MController controller = MControllers.create(dir)) {
+        CollectionConfig config = new CollectionConfig(collectionName, dir, false, (MFileFilter) sfilter, null);
+        dirStream = controller.getInventoryTop(config, true);
         dirStreamIterator = dirStream.iterator();
-      } catch (IOException ioe) {
-        logger.error("Files.newDirectoryStream failed to open directory " + dir.getFileName(), ioe);
-        throw ioe;
       }
     }
 
@@ -141,18 +132,17 @@ public class DirectoryCollection extends CollectionAbstract {
 
         long now = System.currentTimeMillis();
         try {
-          Path nextPath = dirStreamIterator.next();
-          BasicFileAttributes attr = Files.readAttributes(nextPath, BasicFileAttributes.class);
-          if (attr.isDirectory())
+          MFile nextFile = dirStreamIterator.next();
+          if (nextFile.isDirectory())
             continue;
-          FileTime last = attr.lastModifiedTime();
-          long millisSinceModified = now - last.toMillis();
+          long last = nextFile.getLastModified();
+          long millisSinceModified = now - last;
           if (millisSinceModified < olderThanMillis)
             continue;
-          nextMFile = new MFileOS7(nextPath, attr);
+          nextMFile = nextFile;
           return true;
 
-        } catch (IOException e) {
+        } catch (Exception e) {
           throw new RuntimeException(e);
         }
       }
@@ -181,24 +171,22 @@ public class DirectoryCollection extends CollectionAbstract {
   private static final boolean debug = false;
   private static int debugCount;
 
-  // this idiom keeps the iterator from escaping, so that we can use try-with-resource, and ensure DirectoryStream
+  // this idiom keeps the iterator from escaping so that we can use try-with-resource, and ensure DirectoryStream
   // closes. like++
-  public void iterateOverMFileCollection(Visitor visit) throws IOException {
+  public void iterateOverMFileCollection(Visitor visit) {
     if (debug)
       System.out.printf(" iterateOverMFileCollection %s ", collectionDir);
     int count = 0;
-    try (DirectoryStream<Path> ds = Files.newDirectoryStream(collectionDir, new MyStreamFilter())) {
-      for (Path p : ds) {
-        try {
-          BasicFileAttributes attr = Files.readAttributes(p, BasicFileAttributes.class);
-          if (!attr.isDirectory())
-            visit.consume(new MFileOS7(p));
-          if (debug)
-            System.out.printf("%d ", count++);
-        } catch (IOException ioe) {
-          // catch error and skip file
-          logger.error("Failed to read attributes from file found in Files.newDirectoryStream ", ioe);
-        }
+    MController controller = MControllers.create(collectionDir);
+    CollectionConfig config = new CollectionConfig(collectionName, collectionDir, false, (MFileFilter) sfilter, null);
+    DirectoryStream<MFile> ds = controller.getInventoryTop(config, true);
+    controller.close();
+    if (ds != null) {
+      for (MFile mfile : ds) {
+        if (!mfile.isDirectory())
+          visit.consume(mfile);
+        if (debug)
+          System.out.printf("%d ", count++);
       }
     }
     if (debug)

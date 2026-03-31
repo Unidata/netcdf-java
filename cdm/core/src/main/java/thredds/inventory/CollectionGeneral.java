@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2026 University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 
@@ -7,15 +7,9 @@ package thredds.inventory;
 
 import org.slf4j.Logger;
 import thredds.featurecollection.FeatureCollectionConfig;
-import thredds.filesystem.MFileOS7;
 import ucar.nc2.util.CloseableIterator;
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.attribute.BasicFileAttributes;
-import java.nio.file.attribute.FileTime;
 import java.util.*;
 
 /**
@@ -27,13 +21,12 @@ import java.util.*;
  */
 public class CollectionGeneral extends CollectionAbstract {
   private final long olderThanMillis;
-  private final Path rootPath;
 
   public CollectionGeneral(FeatureCollectionConfig config, CollectionSpecParser specp, Logger logger) {
     super(config.collectionName, logger);
     this.root = specp.getRootDir();
-    this.rootPath = Paths.get(this.root);
     this.olderThanMillis = parseOlderThanString(config.olderThan);
+    this.sfilter = specp.getMFileFilter();
   }
 
   @Override
@@ -46,18 +39,20 @@ public class CollectionGeneral extends CollectionAbstract {
 
   @Override
   public CloseableIterator<MFile> getFileIterator() throws IOException {
-    return new MyFileIterator(rootPath);
+    return new MyFileIterator(root);
   }
 
   // returns everything defined by specp, checking olderThanMillis
   private class MyFileIterator implements CloseableIterator<MFile> {
-    DirectoryStream<Path> dirStream;
-    Iterator<Path> dirStreamIterator;
+    DirectoryStream<MFile> dirStream;
+    Iterator<MFile> dirStreamIterator;
     MFile nextMFile;
     long now;
 
-    MyFileIterator(Path dir) throws IOException {
-      dirStream = Files.newDirectoryStream(dir, new MyStreamFilter());
+    MyFileIterator(String dir) throws IOException {
+      MController controller = MControllers.create(dir);
+      CollectionConfig config = new CollectionConfig(collectionName, dir, false, (MFileFilter) sfilter, null);
+      dirStream = controller.getInventoryTop(config, true);
       dirStreamIterator = dirStream.iterator();
       now = System.currentTimeMillis();
     }
@@ -71,19 +66,18 @@ public class CollectionGeneral extends CollectionAbstract {
         }
 
         try {
-          Path nextPath = dirStreamIterator.next();
-          BasicFileAttributes attr = Files.readAttributes(nextPath, BasicFileAttributes.class);
-          if (attr.isDirectory())
+          MFile nextFile = dirStreamIterator.next();
+          if (nextFile.isDirectory())
             continue; // LOOK fix this
 
-          FileTime last = attr.lastModifiedTime();
-          long millisSinceModified = now - last.toMillis();
+          long last = nextFile.getLastModified();
+          long millisSinceModified = now - last;
           if (millisSinceModified < olderThanMillis)
             continue;
-          nextMFile = new MFileOS7(nextPath, attr);
+          nextMFile = nextFile;
           return true;
 
-        } catch (IOException e) {
+        } catch (Exception e) {
           throw new RuntimeException(e);
         }
       }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2019 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2026 University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 
@@ -46,7 +46,7 @@ public class CdmIndexOpPanel extends OpPanel {
     boolean err = false;
 
     try {
-      indexPanel.setIndexFile(Paths.get(command), new FeatureCollectionConfig());
+      indexPanel.setIndexFile(command, new FeatureCollectionConfig());
     } catch (FileNotFoundException ioe) {
       JOptionPane.showMessageDialog(null, "GribCdmIndexPanel cannot open " + command + "\n" + ioe.getMessage());
       err = true;

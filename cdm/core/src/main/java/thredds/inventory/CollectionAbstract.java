@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2017 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2026 University Corporation for Atmospheric Research/Unidata
  * See LICENSE.txt for license information.
  */
 
@@ -14,8 +14,6 @@ import ucar.nc2.util.CloseableIterator;
 import ucar.unidata.util.StringUtil2;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.nio.file.DirectoryStream;
-import java.nio.file.Path;
 import java.util.*;
 
 /**
@@ -109,7 +107,7 @@ public abstract class CollectionAbstract implements MCollection {
   protected DateExtractor dateExtractor;
   protected CalendarDate startCollection;
   protected long lastModified;
-  protected DirectoryStream.Filter<Path> sfilter;
+  protected MFileFilter sfilter;
 
   protected CollectionAbstract(String collectionName, org.slf4j.Logger logger) {
     this.collectionName = cleanName(collectionName);
@@ -126,7 +124,7 @@ public abstract class CollectionAbstract implements MCollection {
     return getRoot() + "/" + collectionName + suffix;
   }
 
-  public void setStreamFilter(DirectoryStream.Filter<Path> filter) {
+  public void setStreamFilter(MFileFilter filter) {
     this.sfilter = filter;
   }
 
@@ -242,14 +240,6 @@ public abstract class CollectionAbstract implements MCollection {
     return result;
   }
 
-
-  /////////////////////////////////////////////////////////////////////////
-
-  public class MyStreamFilter implements DirectoryStream.Filter<Path> {
-    public boolean accept(Path entry) throws IOException {
-      return sfilter == null || sfilter.accept(entry);
-    }
-  }
 
   protected List<MFile> makeFileListSorted() throws IOException {
     List<MFile> list = new ArrayList<>(100);

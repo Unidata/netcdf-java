@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
+  ~ Copyright (c) 1998-2026 University Corporation for Atmospheric Research/Unidata
   ~ See LICENSE for license information.
   -->
 
@@ -11,9 +11,9 @@
 <body>
 <pre>
   NOT PUBLIC API - DO NOT USE: Abstractions for tracking dataset inventory using "managed files".
-  MFile - Abstraction of java.io.File
-  MCollection - An abstract description of a collection of MFile.
-  MController - Something that knows how to obtain the MFiles using a MCollection.
+  MFile - Filesystem-agnostic abstraction of portions of java.io.File and java.nio.file.Path
+  MCollection - An abstracttion of a collections of MFiles.
+  MController - An inventory management controller that knows how to discover and obtain the MFiles for an MCollection.
   Collection - Manages a collection of MFile objects.
   CollectionManager - Manages a dynamic collection of MFile objects. Allows storing key/value pairs on MFiles
   CollectionUpdater - singleton class for background updating of Collections.

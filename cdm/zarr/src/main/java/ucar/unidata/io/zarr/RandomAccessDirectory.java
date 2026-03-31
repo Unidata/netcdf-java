@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 2021-2026 University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 
@@ -14,6 +14,7 @@ import ucar.unidata.io.spi.RandomAccessFileProvider;
 
 import java.io.*;
 import java.nio.channels.WritableByteChannel;
+import java.nio.file.DirectoryStream;
 import java.util.*;
 
 /**
@@ -50,9 +51,15 @@ public class RandomAccessDirectory extends ucar.unidata.io.RandomAccessFile impl
 
     // build children list
     this.children = new ArrayList<>();
-    MController controller = MControllers.create(location);
-    CollectionConfig cc = new CollectionConfig("children", location, false, null, null);
-    List<MFile> files = sortIterator(controller.getInventoryAll(cc, false)); // standardize order
+    List<MFile> files = null;
+    try (MController controller = MControllers.create(location)) {
+      CollectionConfig cc = new CollectionConfig("children", location, false, null, null);
+      try (DirectoryStream<MFile> ds = controller.getInventoryAll(cc, false)) {
+        if (ds != null) {
+          files = sortIterator(ds.iterator()); // standardize order
+        }
+      }
+    }
     if (files == null) {
       return;
     }

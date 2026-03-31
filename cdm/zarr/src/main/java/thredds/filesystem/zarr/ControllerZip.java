@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 2021-2026 University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 
@@ -10,10 +10,12 @@ import thredds.inventory.CollectionConfig;
 import thredds.inventory.MController;
 import thredds.inventory.MControllerProvider;
 import thredds.inventory.MFile;
+import thredds.inventory.MFileDirectoryStream;
 import thredds.inventory.zarr.MFileZip;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.DirectoryStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
@@ -30,7 +32,7 @@ public class ControllerZip extends ControllerOS implements MController {
   private static final String prefix = "file:";
 
   @Override
-  public Iterator<MFile> getInventoryAll(CollectionConfig mc, boolean recheck) {
+  public DirectoryStream<MFile> getInventoryAll(CollectionConfig mc, boolean recheck) {
     String path = mc.getDirectoryName();
     if (path.startsWith(prefix)) {
       path = path.substring(prefix.length());
@@ -38,7 +40,7 @@ public class ControllerZip extends ControllerOS implements MController {
 
     try {
       MFileZip mfile = new MFileZip(path);
-      return new MFileIteratorLeaves(mfile);
+      return new MFileDirectoryStream(new MFileIteratorLeaves(mfile));
     } catch (IOException ioe) {
       logger.warn(ioe.getMessage(), ioe);
       return null;
@@ -46,7 +48,7 @@ public class ControllerZip extends ControllerOS implements MController {
   }
 
   @Override
-  public Iterator<MFile> getInventoryTop(CollectionConfig mc, boolean recheck) {
+  public DirectoryStream<MFile> getInventoryTop(CollectionConfig mc, boolean recheck) {
     String path = mc.getDirectoryName();
     if (path.startsWith(prefix)) {
       path = path.substring(prefix.length());
@@ -54,7 +56,7 @@ public class ControllerZip extends ControllerOS implements MController {
 
     try {
       MFileZip mfile = new MFileZip(path);
-      return new FilteredIterator(mfile, false);
+      return new MFileDirectoryStream(new FilteredIterator(mfile, false));
     } catch (IOException ioe) {
       logger.warn(ioe.getMessage(), ioe);
       return null;
@@ -62,7 +64,7 @@ public class ControllerZip extends ControllerOS implements MController {
   }
 
   @Override
-  public Iterator<MFile> getSubdirs(CollectionConfig mc, boolean recheck) {
+  public DirectoryStream<MFile> getSubdirs(CollectionConfig mc, boolean recheck) {
     String path = mc.getDirectoryName();
     if (path.startsWith(prefix)) {
       path = path.substring(prefix.length());
@@ -70,7 +72,7 @@ public class ControllerZip extends ControllerOS implements MController {
 
     try {
       MFileZip mfile = new MFileZip(path);
-      return new FilteredIterator(mfile, true);
+      return new MFileDirectoryStream(new FilteredIterator(mfile, true));
     } catch (IOException ioe) {
       logger.warn(ioe.getMessage(), ioe);
       return null;

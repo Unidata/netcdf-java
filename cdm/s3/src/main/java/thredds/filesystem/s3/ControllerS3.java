@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2020 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2026 University Corporation for Atmospheric Research/Unidata
  * See LICENSE.txt for license information.
  */
 
@@ -7,6 +7,7 @@ package thredds.filesystem.s3;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.nio.file.DirectoryStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -26,6 +27,7 @@ import thredds.inventory.CollectionConfig;
 import thredds.inventory.MController;
 import thredds.inventory.MControllerProvider;
 import thredds.inventory.MFile;
+import thredds.inventory.MFileDirectoryStream;
 import thredds.inventory.s3.MFileS3;
 import ucar.unidata.io.s3.CdmS3Client;
 import ucar.unidata.io.s3.CdmS3Uri;
@@ -71,7 +73,7 @@ public class ControllerS3 implements MController {
   }
 
   @Override
-  public Iterator<MFile> getInventoryAll(CollectionConfig mc, boolean recheck) {
+  public DirectoryStream<MFile> getInventoryAll(CollectionConfig mc, boolean recheck) {
     init(mc);
     String prefix = null;
     if (initialUri.getKey().isPresent()) {
@@ -79,21 +81,23 @@ public class ControllerS3 implements MController {
     }
     // to get all inventory, we need to make the listObject call in MFileS3Iterator without a delimiter.
     // but, we want the resulting MFile object to retain CdmS3Uri objects that continue to have a delimiter.
-    return new FilteredIterator(mc, new MFileS3Iterator(client, initialUri, prefix, limit, true), true, true);
+    return new MFileDirectoryStream(
+        new FilteredIterator(mc, new MFileS3Iterator(client, initialUri, prefix, limit, true), true, true));
   }
 
   @Override
-  public Iterator<MFile> getInventoryTop(CollectionConfig mc, boolean recheck) {
+  public DirectoryStream<MFile> getInventoryTop(CollectionConfig mc, boolean recheck) {
     init(mc);
     String prefix = null;
     if (initialUri.getKey().isPresent()) {
       prefix = initialUri.getKey().get();
     }
-    return new FilteredIterator(mc, new MFileS3Iterator(client, initialUri, prefix, limit, false), false);
+    return new MFileDirectoryStream(
+        new FilteredIterator(mc, new MFileS3Iterator(client, initialUri, prefix, limit, false), false));
   }
 
   @Override
-  public Iterator<MFile> getSubdirs(CollectionConfig mc, boolean recheck) {
+  public DirectoryStream<MFile> getSubdirs(CollectionConfig mc, boolean recheck) {
     init(mc);
     String prefix = null;
     if (initialUri.getKey().isPresent()) {
@@ -121,7 +125,7 @@ public class ControllerS3 implements MController {
         logger.error("Error creating MFile for {} bucket {}", commonPrefix, initialUri.getBucket(), e);
       }
     }
-    return new FilteredIterator(mc, mFiles.iterator(), true);
+    return new MFileDirectoryStream(new FilteredIterator(mc, mFiles.iterator(), true));
   }
 
   @Override

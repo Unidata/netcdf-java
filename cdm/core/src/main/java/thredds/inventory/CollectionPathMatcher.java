@@ -1,17 +1,15 @@
 /*
- * Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2026 University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
+
 package thredds.inventory;
 
 import org.slf4j.Logger;
 import thredds.featurecollection.FeatureCollectionConfig;
-import thredds.filesystem.MFileOS7;
 import ucar.nc2.util.CloseableIterator;
 import java.io.IOException;
-import java.nio.file.*;
-import java.nio.file.attribute.BasicFileAttributes;
-import java.nio.file.attribute.FileTime;
+import java.nio.file.DirectoryStream;
 import java.util.*;
 
 /**
@@ -25,8 +23,7 @@ public class CollectionPathMatcher extends CollectionAbstract {
   protected final FeatureCollectionConfig config;
   private final boolean wantSubdirs;
   private final long olderThanMillis;
-  private final Path rootPath;
-  private final PathMatcher matcher;
+  private final MFileFilter matcher;
 
   public CollectionPathMatcher(FeatureCollectionConfig config, CollectionSpecParserAbstract specp, Logger logger) {
     super(config.collectionName, logger);
@@ -38,9 +35,8 @@ public class CollectionPathMatcher extends CollectionAbstract {
       setDateExtractor(extract);
 
     putAuxInfo(FeatureCollectionConfig.AUX_CONFIG, config);
-    matcher = specp.getPathMatcher(); // LOOK still need to decide what you are matching on name, path, etc
+    matcher = specp.getMFileFilter(); // LOOK still need to decide what you are matching on name, path, etc
 
-    this.rootPath = Paths.get(this.root);
     this.olderThanMillis = parseOlderThanString(config.olderThan);
   }
 
@@ -64,7 +60,7 @@ public class CollectionPathMatcher extends CollectionAbstract {
     OneDirIterator current;
 
     AllFilesIterator() throws IOException {
-      current = new OneDirIterator(rootPath, subdirs);
+      current = new OneDirIterator(root, subdirs);
     }
 
     public boolean hasNext() {
@@ -99,15 +95,14 @@ public class CollectionPathMatcher extends CollectionAbstract {
 
   private class OneDirIterator implements CloseableIterator<MFile> {
     Queue<OneDirIterator> subdirs;
-    DirectoryStream<Path> dirStream;
-    Iterator<Path> dirStreamIterator;
+    DirectoryStream<MFile> dirStream;
+    Iterator<MFile> dirStreamIterator;
     MFile nextMFile;
     long now;
 
-    OneDirIterator(Path dir, Queue<OneDirIterator> subdirs) throws IOException {
+    OneDirIterator(String dir, Queue<OneDirIterator> subdirs) throws IOException {
       this.subdirs = subdirs;
-      dirStream = Files.newDirectoryStream(dir); // , new MyStreamFilter()); LOOK dont use the
-                                                 // DirectoryStream.Filter<Path>
+      dirStream = MControllers.newDirectoryStream(dir);
       dirStreamIterator = dirStream.iterator();
       now = System.currentTimeMillis();
     }
@@ -121,24 +116,23 @@ public class CollectionPathMatcher extends CollectionAbstract {
         }
 
         try {
-          Path nextPath = dirStreamIterator.next();
-          BasicFileAttributes attr = Files.readAttributes(nextPath, BasicFileAttributes.class);
+          MFile nextFile = dirStreamIterator.next();
 
-          if (wantSubdirs && attr.isDirectory()) { // dont filter subdirectories
-            subdirs.add(new OneDirIterator(nextPath, subdirs));
+          if (wantSubdirs && nextFile.isDirectory()) { // dont filter subdirectories
+            subdirs.add(new OneDirIterator(nextFile.getPath(), subdirs));
             continue;
           }
 
-          if (!matcher.matches(nextPath)) // otherwise apply the filter specified by the specp
+          if (!matcher.accept(nextFile)) // otherwise apply the filter specified by the specp
             continue;
 
           if (olderThanMillis > 0) {
-            FileTime last = attr.lastModifiedTime();
-            long millisSinceModified = now - last.toMillis();
+            long last = nextFile.getLastModified();
+            long millisSinceModified = now - last;
             if (millisSinceModified < olderThanMillis)
               continue;
           }
-          nextMFile = new MFileOS7(nextPath, attr);
+          nextMFile = nextFile;
           return true;
 
         } catch (IOException e) {

@@ -1,13 +1,13 @@
 /*
- * Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2026 University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
+
 package thredds.inventory.partition;
 
 import thredds.inventory.*;
 import ucar.nc2.util.CloseableIterator;
 import java.io.IOException;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,7 +21,7 @@ import java.util.List;
  */
 public class FilePartition extends DirectoryCollection implements PartitionManager {
 
-  public FilePartition(String topCollectionName, Path topDir, boolean isTop, String olderThan,
+  public FilePartition(String topCollectionName, String topDir, boolean isTop, String olderThan,
       org.slf4j.Logger logger) {
     super(topCollectionName, topDir, isTop, olderThan, logger);
   }
