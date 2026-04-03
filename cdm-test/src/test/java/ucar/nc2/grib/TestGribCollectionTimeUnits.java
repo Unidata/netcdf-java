@@ -1,7 +1,8 @@
 /*
- * Copyright (c) 1998-2022 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2026 University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
+
 package ucar.nc2.grib;
 
 import static com.google.common.truth.Truth.assertThat;
@@ -80,7 +81,7 @@ public class TestGribCollectionTimeUnits {
       String units, double[] values) throws IOException {
     final boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.always, logger);
     assertThat(changed).isTrue();
-    final String topLevelIndex = GribCdmIndex.getTopIndexFileFromConfig(config).getAbsolutePath();
+    final String topLevelIndex = GribCdmIndex.getTopIndexFileFromConfig(config).getPath();
 
     try (NetcdfDataset netcdfDataset = NetcdfDatasets.openDataset(topLevelIndex)) {
       final Variable variable =

@@ -31,8 +31,6 @@ import ucar.unidata.util.StringUtil2;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Formatter;
@@ -99,8 +97,8 @@ public class GribCdmIndex implements IndexReader {
 
   /////////////////////////////////////////////////////////////////////////////////////////////////
 
-  public static File getTopIndexFileFromConfig(FeatureCollectionConfig config) {
-    File indexFile = makeTopIndexFileFromConfig(config);
+  public static MFile getTopIndexFileFromConfig(FeatureCollectionConfig config) {
+    MFile indexFile = makeTopIndexFileFromConfig(config);
     return GribIndexCache.getExistingFileOrCache(indexFile.getPath());
   }
 
@@ -110,19 +108,19 @@ public class GribCdmIndex implements IndexReader {
    * @param config use this FeatureCollectionConfig
    * @return index File
    */
-  private static File makeTopIndexFileFromConfig(FeatureCollectionConfig config) {
+  private static MFile makeTopIndexFileFromConfig(FeatureCollectionConfig config) {
     Formatter errlog = new Formatter();
     CollectionSpecParserAbstract specp = config.getCollectionSpecParserAbstract(errlog);
 
     String name = StringUtil2.replace(config.collectionName, '\\', "/");
     // String cname = DirectoryCollection.makeCollectionName(name, Paths.get(specp.getRootDir()));
 
-    return makeIndexFile(name, new File(specp.getRootDir()));
+    return makeIndexFile(name, MFiles.create(specp.getRootDir()));
   }
 
-  static File makeIndexFile(String collectionName, File directory) {
+  static MFile makeIndexFile(String collectionName, MFile directory) {
     String nameNoBlanks = StringUtil2.replace(collectionName, ' ', "_");
-    return new File(directory, nameNoBlanks + NCX_SUFFIX);
+    return directory.getChild(nameNoBlanks + NCX_SUFFIX);
   }
 
   private static String makeNameFromIndexFilename(String idxPathname) {
@@ -177,7 +175,8 @@ public class GribCdmIndex implements IndexReader {
   @Nullable
   public static GribCollectionImmutable openCdmIndex(String indexFilename, FeatureCollectionConfig config,
       boolean useCache, Logger logger) throws IOException {
-    File indexFileInCache = useCache ? GribIndexCache.getExistingFileOrCache(indexFilename) : new File(indexFilename);
+    MFile indexFileInCache =
+        useCache ? GribIndexCache.getExistingFileOrCache(indexFilename) : MFiles.create(indexFilename);
     if (indexFileInCache == null)
       return null;
     String indexFilenameInCache = indexFileInCache.getPath();
@@ -209,8 +208,12 @@ public class GribCdmIndex implements IndexReader {
     } catch (Throwable t) {
       logger.warn("GribCdmIndex.openCdmIndex failed on " + indexFilenameInCache, t);
       RandomAccessFile.eject(indexFilenameInCache);
-      if (!indexFileInCache.delete())
-        logger.warn("failed to delete {}", indexFileInCache.getPath());
+      // We don't try to delete non-local files here if it failed to open
+      if (indexFileInCache instanceof MFileOS) {
+        File f = new File(indexFileInCache.getPath());
+        if (!f.delete())
+          logger.warn("failed to delete {}", indexFileInCache.getPath());
+      }
     }
 
     return result;
@@ -221,7 +224,8 @@ public class GribCdmIndex implements IndexReader {
   @Nullable
   public static GribCollectionMutable openMutableGCFromIndex(String indexFilename, FeatureCollectionConfig config,
       boolean dataOnly, boolean useCache, Logger logger) {
-    File indexFileInCache = useCache ? GribIndexCache.getExistingFileOrCache(indexFilename) : new File(indexFilename);
+    MFile indexFileInCache =
+        useCache ? GribIndexCache.getExistingFileOrCache(indexFilename) : MFiles.create(indexFilename);
     if (indexFileInCache == null) {
       return null;
     }
@@ -260,8 +264,11 @@ public class GribCdmIndex implements IndexReader {
 
     if (result == null) {
       RandomAccessFile.eject(indexFilenameInCache);
-      if (!indexFileInCache.delete())
-        logger.warn("failed to delete {}", indexFileInCache.getPath());
+      if (indexFileInCache instanceof MFileOS) {
+        File f = new File(indexFileInCache.getPath());
+        if (!f.delete())
+          logger.warn("failed to delete {}", indexFileInCache.getPath());
+      }
     }
 
     return result;
@@ -306,7 +313,7 @@ public class GribCdmIndex implements IndexReader {
 
     Formatter errlog = new Formatter();
     CollectionSpecParserAbstract specp = config.getCollectionSpecParserAbstract(errlog);
-    Path rootPath = Paths.get(specp.getRootDir());
+    String rootPath = specp.getRootDir();
     boolean isGrib1 = config.type == FeatureCollectionType.GRIB1;
 
     boolean changed;
@@ -377,12 +384,12 @@ public class GribCdmIndex implements IndexReader {
     boolean changed;
     if (isGrib1) {
       Grib1PartitionBuilder builder =
-          new Grib1PartitionBuilder(dcm.getCollectionName(), new File(dcm.getRoot()), dcm, logger);
+          new Grib1PartitionBuilder(dcm.getCollectionName(), MFiles.create(dcm.getRoot()), dcm, logger);
       changed = builder.updateNeeded(updateType) && builder.createPartitionedIndex(updateType, errlog);
 
     } else {
       Grib2PartitionBuilder builder =
-          new Grib2PartitionBuilder(dcm.getCollectionName(), new File(dcm.getRoot()), dcm, logger);
+          new Grib2PartitionBuilder(dcm.getCollectionName(), MFiles.create(dcm.getRoot()), dcm, logger);
       changed = builder.updateNeeded(updateType) && builder.createPartitionedIndex(updateType, errlog);
     }
     return changed || updateNeeded;
@@ -442,7 +449,7 @@ public class GribCdmIndex implements IndexReader {
 
     if (updateType == CollectionUpdateType.always)
       return true;
-    File collectionIndexFile = GribIndexCache.getExistingFileOrCache(idxFilenameOrg);
+    MFile collectionIndexFile = GribIndexCache.getExistingFileOrCache(idxFilenameOrg);
     if (collectionIndexFile != null) { // it exists
 
       boolean bad;
@@ -459,8 +466,11 @@ public class GribCdmIndex implements IndexReader {
 
       if (bad) { // delete the file and remove from cache if its in there
         RandomAccessFile.eject(collectionIndexFile.getPath());
-        if (!collectionIndexFile.delete())
-          logger.warn("failed to delete {}", collectionIndexFile.getPath());
+        if (collectionIndexFile instanceof MFileOS) {
+          File f = new File(collectionIndexFile.getPath());
+          if (!f.delete())
+            logger.warn("failed to delete {}", collectionIndexFile.getPath());
+        }
       }
     }
 
@@ -488,7 +498,7 @@ public class GribCdmIndex implements IndexReader {
                                                     // that - suckage
             changed = updateDirectoryCollectionRecurse(isGrib1, (DirectoryPartition) part, config, updateType, logger);
           } else {
-            Path partPath = Paths.get(part.getRoot());
+            String partPath = part.getRoot();
             changed = updateLeafCollection(isGrib1, config, updateType, false, logger, partPath); // LOOK why not using
                                                                                                   // part ??
           }
@@ -538,7 +548,7 @@ public class GribCdmIndex implements IndexReader {
    * @return true if collection was rewritten, exception on failure
    */
   private static boolean updateLeafCollection(boolean isGrib1, FeatureCollectionConfig config,
-      CollectionUpdateType updateType, boolean isTop, Logger logger, Path dirPath) throws IOException {
+      CollectionUpdateType updateType, boolean isTop, Logger logger, String dirPath) throws IOException {
 
     logger.debug("GribCdmIndex.updateLeafCollection {} {} ptype={}", dirPath, updateType, config.ptype);
     if (config.ptype == FeatureCollectionConfig.PartitionType.file) {
@@ -549,7 +559,7 @@ public class GribCdmIndex implements IndexReader {
       CollectionSpecParserAbstract specp = config.getCollectionSpecParserAbstract(errlog);
 
       try (DirectoryCollection dcm =
-          new DirectoryCollection(config.collectionName, dirPath.toString(), isTop, config.olderThan, logger)) {
+          new DirectoryCollection(config.collectionName, dirPath, isTop, config.olderThan, logger)) {
         dcm.putAuxInfo(FeatureCollectionConfig.AUX_CONFIG, config);
         if (specp.getFilter() != null)
           dcm.setStreamFilter(new RegExpMatch(specp.getFilter(), specp.getFilterOnName()));
@@ -574,14 +584,13 @@ public class GribCdmIndex implements IndexReader {
    * @return true if partition was rewritten, exception on failure
    */
   private static boolean updateFilePartition(boolean isGrib1, FeatureCollectionConfig config,
-      CollectionUpdateType updateType, boolean isTop, Logger logger, Path dirPath) throws IOException {
+      CollectionUpdateType updateType, boolean isTop, Logger logger, String dirPath) throws IOException {
     logger.debug("GribCdmIndex.updateFilePartition {} {}", dirPath, updateType);
     long start = System.currentTimeMillis();
     Formatter errlog = new Formatter();
     CollectionSpecParserAbstract specp = config.getCollectionSpecParserAbstract(errlog);
 
-    try (FilePartition partition =
-        new FilePartition(config.collectionName, dirPath.toString(), isTop, config.olderThan, logger)) {
+    try (FilePartition partition = new FilePartition(config.collectionName, dirPath, isTop, config.olderThan, logger)) {
       partition.putAuxInfo(FeatureCollectionConfig.AUX_CONFIG, config);
       if (specp.getFilter() != null)
         partition.setStreamFilter(new RegExpMatch(specp.getFilter(), specp.getFilterOnName()));
@@ -645,7 +654,7 @@ public class GribCdmIndex implements IndexReader {
 
 
   // DirectoryPartitionViewer
-  public static boolean makeIndex(FeatureCollectionConfig config, Formatter errlog, Path topPath) throws IOException {
+  public static boolean makeIndex(FeatureCollectionConfig config, Formatter errlog, String topPath) throws IOException {
     return false;
     /*
      * GribCdmIndex indexReader = new GribCdmIndex();
@@ -767,7 +776,7 @@ public class GribCdmIndex implements IndexReader {
     // update if needed
     boolean changed = updateGribCollection(config, updateType, logger);
 
-    File idxFile = makeTopIndexFileFromConfig(config);
+    MFile idxFile = makeTopIndexFileFromConfig(config);
 
     // If call to updateGribCollection shows a change happened, then collection changed.
     // If updateType is never (tds is in charge of updating, not TDM or some other external application),
@@ -947,7 +956,7 @@ public class GribCdmIndex implements IndexReader {
       // GribCollectionType type = getType(raf);
       // if (type == GribCollectionType.GRIB1 || type == GribCollectionType.GRIB2) {
       if (openIndex(raf, logger)) {
-        File protoDir = new File(gribCollectionIndex.getTopDir());
+        MFile protoDir = MFiles.create(gribCollectionIndex.getTopDir());
         int n = gribCollectionIndex.getMfilesCount();
         for (int i = 0; i < n; i++) {
           GribCollectionProto.MFile mfilep = gribCollectionIndex.getMfiles(i);

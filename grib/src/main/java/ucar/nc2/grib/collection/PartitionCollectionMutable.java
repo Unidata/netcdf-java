@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2018 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2026 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 
@@ -10,6 +10,8 @@ import javax.annotation.Nullable;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.DateExtractor;
 import thredds.inventory.MCollection;
+import thredds.inventory.MFile;
+import thredds.inventory.MFiles;
 import ucar.nc2.dataset.DatasetUrl;
 import ucar.nc2.grib.GribIndexCache;
 import ucar.nc2.time.CalendarDate;
@@ -198,15 +200,15 @@ public class PartitionCollectionMutable extends GribCollectionMutable {
 
     @Nullable
     String getIndexFilenameInCache() {
-      File file = new File(directory, filename);
-      File existingFile = GribIndexCache.getExistingFileOrCache(file.getPath());
+      MFile file = MFiles.create(directory).getChild(filename);
+      MFile existingFile = (file == null) ? null : GribIndexCache.getExistingFileOrCache(file.getPath());
       if (existingFile == null) {
         // try relative to index file
-        File parent = getIndexParentFile();
+        MFile parent = getIndexParentFile();
         if (parent == null)
           return null;
-        existingFile = new File(parent, filename);
-        if (!existingFile.exists())
+        existingFile = parent.getChild(filename);
+        if (existingFile == null || !existingFile.exists())
           return null;
       }
       return existingFile.getPath();
@@ -304,7 +306,7 @@ public class PartitionCollectionMutable extends GribCollectionMutable {
   protected boolean isPartitionOfPartitions;
   int[] run2part; // masterRuntime.length; which partition to use for masterRuntime i
 
-  protected PartitionCollectionMutable(String name, File directory, FeatureCollectionConfig config, boolean isGrib1,
+  protected PartitionCollectionMutable(String name, MFile directory, FeatureCollectionConfig config, boolean isGrib1,
       org.slf4j.Logger logger) {
     super(name, directory, config, isGrib1);
     this.logger = logger;

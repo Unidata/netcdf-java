@@ -438,7 +438,7 @@ public class DirectoryPartitionViewer extends JPanel {
     Formatter out = new Formatter();
     out.format("makeTimePartitionIndex %s%n%n", node);
     try {
-      boolean ok = GribCdmIndex.makeIndex(config, out, node.dir);
+      boolean ok = GribCdmIndex.makeIndex(config, out, node.dir.toAbsolutePath().toString());
       out.format("makeTimePartitionIndex success %s%n%n", ok);
       infoTA.setText(out.toString());
       infoTA.gotoTop();
@@ -1015,7 +1015,7 @@ public class DirectoryPartitionViewer extends JPanel {
 
     private void showFiles(GribCollectionMutable gc, GribCollectionMutable.GroupGC group) {
       Collection<MFile> files = (group == null) ? gc.getFiles() : group.getFiles();
-      File dir = (gc == null) ? null : gc.getDirectory();
+      MFile dir = (gc == null) ? null : gc.getDirectory();
       fileTable.setFiles(dir, files);
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2018 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2026 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 
@@ -28,7 +28,6 @@ import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.time.CalendarPeriod;
 import ucar.nc2.util.CloseableIterator;
-import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
@@ -216,7 +215,7 @@ class Grib2CollectionBuilder extends GribCollectionBuilder {
     for (Object g : groups)
       groups2.add((Grib2CollectionWriter.Group) g); // copy to change GribCollectionBuilder.Group ->
                                                     // Grib2CollectionWriter.Group
-    File indexFileInCache = GribIndexCache.getFileOrCache(indexFilepath);
+    MFile indexFileInCache = GribIndexCache.getFileOrCache(indexFilepath);
     return writer.writeIndex(name, indexFileInCache, masterRuntime, groups2, files, type, dateRange);
   }
 

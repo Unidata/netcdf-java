@@ -11,6 +11,7 @@ import thredds.inventory.CollectionManager;
 import thredds.inventory.CollectionUpdateType;
 import thredds.inventory.MCollection;
 import thredds.inventory.MFile;
+import thredds.inventory.MFiles;
 import thredds.inventory.partition.PartitionManager;
 import thredds.inventory.partition.PartitionManagerFromIndexList;
 import ucar.nc2.grib.coord.Coordinate;
@@ -23,7 +24,6 @@ import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.util.CloseableIterator;
 import ucar.unidata.util.StringUtil2;
-import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
@@ -41,7 +41,7 @@ abstract class GribCollectionBuilder {
   protected GribCollectionImmutable.Type type;
 
   protected final String name; // collection name
-  protected final File directory; // top directory
+  protected final MFile directory; // top directory
 
   protected abstract List<? extends Group> makeGroups(List<MFile> allFiles, boolean singleRuntime, Formatter errlog)
       throws IOException;
@@ -55,7 +55,7 @@ abstract class GribCollectionBuilder {
     this.isGrib1 = isGrib1;
 
     this.name = StringUtil2.replace(name, ' ', "_");
-    this.directory = new File(dcm.getRoot());
+    this.directory = MFiles.create(dcm.getRoot());
   }
 
   boolean updateNeeded(CollectionUpdateType ff) throws IOException {
@@ -65,7 +65,7 @@ abstract class GribCollectionBuilder {
       return true;
 
     String indexFilename = dcm.getIndexFilename(GribCdmIndex.NCX_SUFFIX);
-    File collectionIndexFile = GribIndexCache.getExistingFileOrCache(indexFilename);
+    MFile collectionIndexFile = GribIndexCache.getExistingFileOrCache(indexFilename);
     if (collectionIndexFile == null)
       return true;
 
@@ -75,8 +75,8 @@ abstract class GribCollectionBuilder {
     return needsUpdate(ff, collectionIndexFile);
   }
 
-  private boolean needsUpdate(CollectionUpdateType ff, File collectionIndexFile) throws IOException {
-    long collectionLastModified = collectionIndexFile.lastModified();
+  private boolean needsUpdate(CollectionUpdateType ff, MFile collectionIndexFile) throws IOException {
+    long collectionLastModified = collectionIndexFile.getLastModified();
     Set<String> newFileSet = new HashSet<>();
 
     CollectionManager.ChangeChecker cc = GribIndex.getChangeChecker();

@@ -12,6 +12,7 @@ import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.CollectionUpdateType;
 import thredds.inventory.MCollection;
 import thredds.inventory.MFile;
+import thredds.inventory.MFiles;
 import thredds.inventory.partition.PartitionManager;
 import ucar.nc2.grib.GribIndexCache;
 import ucar.nc2.grib.coord.CalendarDateFactory;
@@ -33,7 +34,6 @@ import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.StringUtil2;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Path;
 import java.util.*;
 
 /**
@@ -62,7 +62,7 @@ abstract class GribPartitionBuilder {
       return true;
 
     String indexFilename = partitionManager.getIndexFilename(GribCdmIndex.NCX_SUFFIX);
-    File collectionIndexFile = GribIndexCache.getExistingFileOrCache(indexFilename);
+    MFile collectionIndexFile = GribIndexCache.getExistingFileOrCache(indexFilename);
     if (collectionIndexFile == null)
       return true;
 
@@ -74,16 +74,16 @@ abstract class GribPartitionBuilder {
   }
 
   // LOOK need an option to only scan latest last partition or something
-  private boolean needsUpdate(CollectionUpdateType ff, File collectionIndexFile) throws IOException {
-    long collectionLastModified = collectionIndexFile.lastModified();
+  private boolean needsUpdate(CollectionUpdateType ff, MFile collectionIndexFile) throws IOException {
+    long collectionLastModified = collectionIndexFile.getLastModified();
     Set<String> newFileSet = new HashSet<>();
     for (MCollection dcm : partitionManager.makePartitions(CollectionUpdateType.test)) {
       String partitionIndexFilename = StringUtil2.replace(dcm.getIndexFilename(GribCdmIndex.NCX_SUFFIX), '\\', "/");
-      File partitionIndexFile = GribIndexCache.getExistingFileOrCache(partitionIndexFilename);
+      MFile partitionIndexFile = GribIndexCache.getExistingFileOrCache(partitionIndexFilename);
       if (partitionIndexFile == null) // make sure each partition has an index
         return true;
-      if (collectionLastModified < partitionIndexFile.lastModified()) // and the partition index is earlier than the
-                                                                      // collection index
+      if (collectionLastModified < partitionIndexFile.getLastModified()) // and the partition index is earlier than the
+        // collection index
         return true;
       newFileSet.add(partitionIndexFilename);
     }
@@ -493,11 +493,14 @@ abstract class GribPartitionBuilder {
    * GribCollectionIndex (sizeIndex bytes)
    */
   protected boolean writeIndex(PartitionCollectionMutable pc, Formatter f) throws IOException {
-    File idxFile = GribIndexCache.getFileOrCache(partitionManager.getIndexFilename(GribCdmIndex.NCX_SUFFIX));
+    MFile idxFile = GribIndexCache.getFileOrCache(partitionManager.getIndexFilename(GribCdmIndex.NCX_SUFFIX));
     if (idxFile.exists()) {
       RandomAccessFile.eject(idxFile.getPath());
-      if (!idxFile.delete())
-        logger.error("gc2tp cant delete " + idxFile.getPath());
+      if (idxFile instanceof thredds.filesystem.MFileOS) {
+        File f2 = new File(idxFile.getPath());
+        if (!f2.delete())
+          logger.error("gc2tp cant delete " + idxFile.getPath());
+      }
     }
 
     writer = new GribCollectionWriter(null, null);
@@ -542,8 +545,7 @@ abstract class GribPartitionBuilder {
 
       GribCollectionProto.GribCollection.Builder indexBuilder = GribCollectionProto.GribCollection.newBuilder();
       indexBuilder.setName(pc.getName());
-      Path topDir = pc.directory.toPath();
-      String pathS = StringUtil2.replace(topDir.toString(), '\\', "/");
+      String pathS = pc.getDirectory().getPath();
       indexBuilder.setTopDir(pathS);
 
       // mfiles are the partition indexes
@@ -597,10 +599,9 @@ abstract class GribPartitionBuilder {
   }
 
   private String makeRelativeFilename(PartitionCollectionMutable pc, PartitionCollectionMutable.Partition part) {
-    Path topDir = pc.directory.toPath();
-    Path partPath = new File(part.getDirectory(), part.getFilename()).toPath();
-    Path pathRelative = topDir.relativize(partPath);
-    return StringUtil2.replace(pathRelative.toString(), '\\', "/");
+    MFile topDir = pc.getDirectory();
+    MFile partFile = MFiles.create(part.getDirectory()).getChild(part.getFilename());
+    return topDir.relativize(partFile);
   }
 
   /*

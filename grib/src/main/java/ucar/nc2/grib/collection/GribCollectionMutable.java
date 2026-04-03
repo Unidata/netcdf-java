@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2018 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2026 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 
@@ -10,6 +10,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.MFile;
+import thredds.inventory.MFiles;
 import ucar.nc2.grib.GribIndexCache;
 import ucar.nc2.grib.GribTables;
 import ucar.nc2.grib.coord.Coordinate;
@@ -33,9 +34,7 @@ import ucar.unidata.util.Parameter;
 import ucar.unidata.util.StringUtil2;
 import javax.annotation.concurrent.Immutable;
 import java.io.Closeable;
-import java.io.File;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.io.IOException;
 import java.util.*;
 
 /**
@@ -51,7 +50,7 @@ public class GribCollectionMutable implements Closeable {
 
   //////////////////////////////////////////////////////////
 
-  static MFile makeIndexMFile(String collectionName, File directory) {
+  static MFile makeIndexMFile(String collectionName, MFile directory) {
     String nameNoBlanks = StringUtil2.replace(collectionName, ' ', "_");
     return new GcMFile(directory, nameNoBlanks + GribCdmIndex.NCX_SUFFIX, -1, -1, -1); // LOOK dont know lastMod, size.
                                                                                        // can it be added later?
@@ -69,7 +68,7 @@ public class GribCollectionMutable implements Closeable {
   protected final String name; // collection name; index filename must be directory/name.ncx2
   protected final FeatureCollectionConfig config;
   protected final boolean isGrib1;
-  protected File directory;
+  protected MFile directory;
   protected String orgDirectory;
 
   // set by the builder
@@ -98,7 +97,7 @@ public class GribCollectionMutable implements Closeable {
 
   private static int countGC;
 
-  protected GribCollectionMutable(String name, File directory, FeatureCollectionConfig config, boolean isGrib1) {
+  protected GribCollectionMutable(String name, MFile directory, FeatureCollectionConfig config, boolean isGrib1) {
     countGC++;
     this.name = name;
     this.directory = directory;
@@ -125,7 +124,7 @@ public class GribCollectionMutable implements Closeable {
     return name;
   }
 
-  public File getDirectory() {
+  public MFile getDirectory() {
     return directory;
   }
 
@@ -158,12 +157,15 @@ public class GribCollectionMutable implements Closeable {
   }
 
   @Nullable
-  File getIndexParentFile() {
+  MFile getIndexParentFile() {
     if (indexRaf == null)
       return null;
-    Path index = Paths.get(indexRaf.getLocation());
-    Path parent = index.getParent();
-    return parent.toFile();
+    MFile index = MFiles.create(indexRaf.getLocation());
+    try {
+      return index.getParent();
+    } catch (IOException e) {
+      return null;
+    }
   }
 
   public String getFilename(int fileno) {
@@ -210,19 +212,23 @@ public class GribCollectionMutable implements Closeable {
    * @return index filename; may not exist; may be in disk cache
    */
   private String getIndexFilepathInCache() {
-    File indexFile = GribCdmIndex.makeIndexFile(name, directory);
+    MFile indexFile = GribCdmIndex.makeIndexFile(name, directory);
     return GribIndexCache.getFileOrCache(indexFile.getPath()).getPath();
   }
 
   // set from GribCollectionBuilderFromIndex.readFromIndex()
-  File setOrgDirectory(String orgDirectory) {
+  MFile setOrgDirectory(String orgDirectory) {
     this.orgDirectory = orgDirectory;
-    directory = new File(orgDirectory);
+    directory = MFiles.create(orgDirectory);
     if (!directory.exists()) {
-      File indexFile = new File(indexFilename);
-      File parent = indexFile.getParentFile();
-      if (parent.exists())
-        directory = parent;
+      MFile indexFile = MFiles.create(indexFilename);
+      try {
+        MFile parent = indexFile.getParent();
+        if (parent != null && parent.exists())
+          directory = parent;
+      } catch (IOException e) {
+        // ignore
+      }
     }
     return directory;
   }

@@ -1,21 +1,18 @@
 /*
- * Copyright (c) 1998-2018 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2026 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 
 package ucar.nc2.grib.collection;
 
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStream;
 import javax.annotation.Nullable;
-import thredds.filesystem.MFileOS;
 import thredds.inventory.MFile;
 import ucar.nc2.util.IO;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.StringUtil2;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -28,7 +25,7 @@ import java.util.Set;
  */
 public class GcMFile implements thredds.inventory.MFile {
 
-  static List<GcMFile> makeFiles(File directory, List<MFile> files, Set<Integer> allFileSet) {
+  static List<GcMFile> makeFiles(MFile directory, List<MFile> files, Set<Integer> allFileSet) {
     List<GcMFile> result = new ArrayList<>(files.size());
     String dirPath = StringUtil2.replace(directory.getPath(), '\\', "/");
 
@@ -47,12 +44,12 @@ public class GcMFile implements thredds.inventory.MFile {
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////
-  public final File directory;
+  public final MFile directory;
   public final String name;
   public final long lastModified, length;
   public final int index;
 
-  GcMFile(File directory, String name, long lastModified, long length, int index) {
+  GcMFile(MFile directory, String name, long lastModified, long length, int index) {
     this.directory = directory;
     this.name = name;
     this.lastModified = lastModified;
@@ -77,8 +74,8 @@ public class GcMFile implements thredds.inventory.MFile {
 
   @Override
   public String getPath() {
-    String path = new File(directory, name).getPath();
-    return StringUtil2.replace(path, '\\', "/");
+    MFile file = directory.getChild(name);
+    return file == null ? null : file.getPath();
   }
 
   @Override
@@ -87,8 +84,8 @@ public class GcMFile implements thredds.inventory.MFile {
   }
 
   @Override
-  public MFile getParent() {
-    return new MFileOS(directory);
+  public MFile getParent() throws IOException {
+    return directory;
   }
 
   @Override
@@ -105,24 +102,28 @@ public class GcMFile implements thredds.inventory.MFile {
   @Override
   public void setAuxInfo(Object info) {}
 
-  public File getDirectory() {
+  public MFile getDirectory() {
     return directory;
   }
 
   @Override
   public String toString() {
-    return "GcMFile{" + "directory=" + directory + ", name='" + name + '\'' + ", lastModified=" + lastModified
+    return "GcMFile{" + "directory=" + directory.getPath() + ", name='" + name + '\'' + ", lastModified=" + lastModified
         + ", length=" + length + ", index=" + index + '}';
   }
 
   @Override
   public boolean exists() {
-    return new File(directory, name).exists();
+    MFile file = directory.getChild(name);
+    return file != null && file.exists();
   }
 
   @Override
-  public FileInputStream getInputStream() throws FileNotFoundException {
-    return new FileInputStream(new File(directory, name));
+  public java.io.InputStream getInputStream() throws FileNotFoundException {
+    MFile file = directory.getChild(name);
+    if (file == null)
+      throw new FileNotFoundException(name);
+    return file.getInputStream();
   }
 
   @Override

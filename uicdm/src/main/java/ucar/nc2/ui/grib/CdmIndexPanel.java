@@ -34,7 +34,6 @@ import ucar.ui.prefs.BeanTable;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -352,7 +351,7 @@ public class CdmIndexPanel extends JPanel {
   }
 
   private void showFileTable(GribCollectionImmutable gc, GribCollectionImmutable.GroupGC group) {
-    File dir = gc.getDirectory();
+    MFile dir = gc.getDirectory();
     Collection<MFile> files = (group == null) ? gc.getFiles() : group.getFiles();
     fileTable.setFiles(dir, files);
   }

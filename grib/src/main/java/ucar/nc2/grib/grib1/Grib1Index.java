@@ -1,20 +1,23 @@
 /*
- * Copyright (c) 1998-2018 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2026 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 
 package ucar.nc2.grib.grib1;
 
 import com.google.protobuf.ByteString;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import thredds.filesystem.MFileOS;
+import thredds.filesystem.MFileOS7;
 import thredds.inventory.CollectionUpdateType;
+import thredds.inventory.MFile;
 import ucar.nc2.NetcdfFiles;
 import ucar.nc2.grib.GribIndex;
 import ucar.nc2.grib.GribIndexCache;
 import ucar.nc2.stream.NcStream;
 import ucar.unidata.io.RandomAccessFile;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.*;
@@ -88,15 +91,15 @@ public class Grib1Index extends GribIndex {
     String idxPath = filename;
     if (!idxPath.endsWith(GBX9_IDX))
       idxPath += GBX9_IDX;
-    File idxFile = GribIndexCache.getExistingFileOrCache(idxPath);
+    MFile idxFile = GribIndexCache.getExistingFileOrCache(idxPath);
     if (idxFile == null)
       return false;
 
-    long idxModified = idxFile.lastModified();
+    long idxModified = idxFile.getLastModified();
     if ((force != CollectionUpdateType.nocheck) && (idxModified < gribLastModified))
       return false; // force new index if file was updated
 
-    try (FileInputStream fin = new FileInputStream(idxFile)) {
+    try (InputStream fin = idxFile.getInputStream()) {
       //// check header is ok
       if (!NcStream.readAndTest(fin, MAGIC_START.getBytes(StandardCharsets.UTF_8))) {
         logger.info("Bad magic number of grib index, on file = {}", idxFile);
@@ -169,8 +172,15 @@ public class Grib1Index extends GribIndex {
     String idxPath = filename;
     if (!idxPath.endsWith(GBX9_IDX))
       idxPath += GBX9_IDX;
-    File idxFile = GribIndexCache.getFileOrCache(idxPath);
-    File idxFileTmp = GribIndexCache.getFileOrCache(idxPath + ".tmp");
+    MFile idxMFile = GribIndexCache.getFileOrCache(idxPath);
+    MFile idxMFileTmp = GribIndexCache.getFileOrCache(idxPath + ".tmp");
+
+    if (!(idxMFile instanceof MFileOS || idxMFile instanceof MFileOS7)) {
+      throw new IllegalArgumentException("Only local file systems are supported for index creation");
+    }
+
+    File idxFile = new File(idxMFile.getPath());
+    File idxFileTmp = new File(idxMFileTmp.getPath());
 
     RandomAccessFile raf = null;
     try (FileOutputStream fout = new FileOutputStream(idxFileTmp)) {
