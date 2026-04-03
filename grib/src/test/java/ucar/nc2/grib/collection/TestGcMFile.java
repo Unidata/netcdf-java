@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2022-2026 University Corporation for Atmospheric Research/Unidata
+ * See LICENSE for license information.
+ */
+
 package ucar.nc2.grib.collection;
 
 import static com.google.common.truth.Truth.assertThat;
@@ -16,6 +21,7 @@ import org.junit.experimental.runners.Enclosed;
 import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import thredds.inventory.MFiles;
 
 @RunWith(Enclosed.class)
 public class TestGcMFile {
@@ -37,7 +43,8 @@ public class TestGcMFile {
     @Test
     public void shouldWriteFileToStream() throws IOException {
       final File file = createTemporaryFile(expectedSize);
-      final GcMFile mFile = new GcMFile(tempFolder.getRoot(), file.getName(), file.lastModified(), file.length(), 0);
+      final GcMFile mFile = new GcMFile(MFiles.create(tempFolder.getRoot().getPath()), file.getName(),
+          file.lastModified(), file.length(), 0);
 
       final long length = mFile.getLength();
       assertThat(length).isEqualTo(expectedSize);
@@ -51,7 +58,8 @@ public class TestGcMFile {
     @Test
     public void shouldWritePartialFileToStream() throws IOException {
       final File file = createTemporaryFile(expectedSize);
-      GcMFile mFile = new GcMFile(tempFolder.getRoot(), file.getName(), file.lastModified(), file.length(), 0);
+      GcMFile mFile = new GcMFile(MFiles.create(tempFolder.getRoot().getPath()), file.getName(), file.lastModified(),
+          file.length(), 0);
 
       final long length = mFile.getLength();
       assertThat(length).isEqualTo(expectedSize);
@@ -80,20 +88,22 @@ public class TestGcMFile {
     @Test
     public void shouldReturnTrueForExistingFile() throws IOException {
       final File file = createTemporaryFile(0);
-      final GcMFile mFile = new GcMFile(tempFolder.getRoot(), file.getName(), file.lastModified(), file.length(), 0);
+      final GcMFile mFile = new GcMFile(MFiles.create(tempFolder.getRoot().getPath()), file.getName(),
+          file.lastModified(), file.length(), 0);
       assertThat(mFile.exists()).isEqualTo(true);
     }
 
     @Test
     public void shouldReturnFalseForNonExistingFile() {
-      final GcMFile mFile = new GcMFile(tempFolder.getRoot(), "notARealFile", 0, 0, 0);
+      final GcMFile mFile = new GcMFile(MFiles.create(tempFolder.getRoot().getPath()), "notARealFile", 0, 0, 0);
       assertThat(mFile.exists()).isEqualTo(false);
     }
 
     @Test
     public void shouldGetInputStream() throws IOException {
       final File file = createTemporaryFile(1);
-      final GcMFile mFile = new GcMFile(tempFolder.getRoot(), file.getName(), file.lastModified(), file.length(), 0);
+      final GcMFile mFile = new GcMFile(MFiles.create(tempFolder.getRoot().getPath()), file.getName(),
+          file.lastModified(), file.length(), 0);
       try (final InputStream inputStream = mFile.getInputStream()) {
         assertThat(inputStream.read()).isNotEqualTo(-1);
       }

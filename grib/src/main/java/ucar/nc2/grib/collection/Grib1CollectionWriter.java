@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2018 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2026 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 
@@ -9,6 +9,7 @@ import com.google.protobuf.ByteString;
 import java.nio.charset.StandardCharsets;
 import thredds.inventory.MCollection;
 import thredds.inventory.MFile;
+import thredds.inventory.MFiles;
 import ucar.nc2.grib.coord.Coordinate;
 import ucar.nc2.grib.coord.CoordinateEns;
 import ucar.nc2.grib.coord.CoordinateRuntime;
@@ -90,15 +91,18 @@ class Grib1CollectionWriter extends GribCollectionWriter {
    */
 
   // indexFile is in the cache
-  boolean writeIndex(String name, File idxFile, CoordinateRuntime masterRuntime, List<Group> groups, List<MFile> files,
+  boolean writeIndex(String name, MFile idxFile, CoordinateRuntime masterRuntime, List<Group> groups, List<MFile> files,
       GribCollectionImmutable.Type type, CalendarDateRange dateRange) throws IOException {
     Grib1Record first = null; // take global metadata from here
     boolean deleteOnClose = false;
 
     if (idxFile.exists()) {
       RandomAccessFile.eject(idxFile.getPath());
-      if (!idxFile.delete()) {
-        logger.warn(" gc1 cant delete index file {}", idxFile.getPath());
+      if (idxFile instanceof thredds.filesystem.MFileOS) {
+        File f = new File(idxFile.getPath());
+        if (!f.delete()) {
+          logger.warn(" gc1 cant delete index file {}", idxFile.getPath());
+        }
       }
     }
     logger.debug(" createIndex for {}", idxFile.getPath());
@@ -186,7 +190,7 @@ class Grib1CollectionWriter extends GribCollectionWriter {
       indexBuilder.setVersion(currentVersion);
 
       // directory and mfile list
-      File directory = new File(dcm.getRoot());
+      MFile directory = MFiles.create(dcm.getRoot());
       List<GcMFile> gcmfiles = GcMFile.makeFiles(directory, files, allFileSet);
       for (GcMFile gcmfile : gcmfiles) {
         GribCollectionProto.MFile.Builder b = GribCollectionProto.MFile.newBuilder();
@@ -230,8 +234,10 @@ class Grib1CollectionWriter extends GribCollectionWriter {
     } finally {
 
       // remove it on failure
-      if (deleteOnClose && !idxFile.delete()) {
-        logger.error(" gc1 cant deleteOnClose index file {}", idxFile.getPath());
+      if (deleteOnClose && idxFile instanceof thredds.filesystem.MFileOS) {
+        File f = new File(idxFile.getPath());
+        if (!f.delete())
+          logger.error(" gc1 cant deleteOnClose index file {}", idxFile.getPath());
       }
     }
   }

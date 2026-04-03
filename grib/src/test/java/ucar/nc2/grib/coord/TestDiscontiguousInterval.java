@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2022-2026 University Corporation for Atmospheric Research/Unidata
+ * See LICENSE for license information.
+ */
+
 package ucar.nc2.grib.coord;
 
 import static com.google.common.truth.Truth.assertThat;
@@ -118,7 +123,7 @@ public class TestDiscontiguousInterval {
         FeatureCollectionType.GRIB1, spec, null, null, null, "file", null);
     final boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.always, null);
     assertThat(changed).isTrue();
-    final String topLevelIndex = GribCdmIndex.getTopIndexFileFromConfig(config).getAbsolutePath();
+    final String topLevelIndex = GribCdmIndex.getTopIndexFileFromConfig(config).getPath();
 
     final String varName = "Total_precipitation_surface_Mixed_intervals_Accumulation";
     checkTimeCoord2D_fromIntervals_isStrictlyMonotonicallyIncreasing(topLevelIndex, varName, "Best/");

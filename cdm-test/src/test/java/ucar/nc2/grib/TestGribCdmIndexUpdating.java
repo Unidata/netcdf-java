@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2021 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2026 University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 
@@ -77,7 +77,7 @@ public class TestGribCdmIndexUpdating {
   public static void after(String dataDir, String newModel, FeatureCollectionConfig config, String varName, int orgLen,
       int remLen) {
     // cleanup index files created during test for a given parameter input
-    cleanUpIndexFiles(GribCdmIndex.getTopIndexFileFromConfig(config).getParent());
+    cleanUpIndexFiles(GribCdmIndex.getTopIndexFileFromConfig(config).getPath());
   }
 
   ///////////////////////////////////////
@@ -98,7 +98,7 @@ public class TestGribCdmIndexUpdating {
     this.orgLen = orgLen;
     this.remLen = remLen;
     GribCdmIndex.updateGribCollection(config, CollectionUpdateType.always, logger);
-    this.indexFile = GribCdmIndex.getTopIndexFileFromConfig(config).getAbsolutePath();
+    this.indexFile = GribCdmIndex.getTopIndexFileFromConfig(config).getPath();
   }
 
   @Test

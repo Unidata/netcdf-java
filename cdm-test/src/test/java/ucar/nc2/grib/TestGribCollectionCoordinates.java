@@ -1,7 +1,8 @@
 /*
- * Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2026 University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
+
 package ucar.nc2.grib;
 
 import static com.google.common.truth.Truth.assertThat;
@@ -68,7 +69,7 @@ public class TestGribCollectionCoordinates {
     config.gribConfig.setExcludeZero(true); // no longer the default
 
     boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.always, logger);
-    String topLevelIndex = GribCdmIndex.getTopIndexFileFromConfig(config).getAbsolutePath();
+    String topLevelIndex = GribCdmIndex.getTopIndexFileFromConfig(config).getPath();
 
     logger.debug("changed = {}", changed);
 
@@ -126,7 +127,7 @@ public class TestGribCollectionCoordinates {
 
     boolean changed = GribCdmIndex.updateGribCollection(config, updateMode, logger);
     logger.debug("changed = {}", changed);
-    String topLevelIndex = GribCdmIndex.getTopIndexFileFromConfig(config).getAbsolutePath();
+    String topLevelIndex = GribCdmIndex.getTopIndexFileFromConfig(config).getPath();
     boolean ok = true;
 
     try (NetcdfDataset ds = NetcdfDatasets.openDataset(topLevelIndex)) {

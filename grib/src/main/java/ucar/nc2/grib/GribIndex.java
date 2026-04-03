@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2018 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2026 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 
@@ -12,7 +12,6 @@ import thredds.inventory.MFile;
 import ucar.nc2.grib.grib1.Grib1Index;
 import ucar.nc2.grib.grib2.Grib2Index;
 import ucar.unidata.io.RandomAccessFile;
-import java.io.File;
 import java.io.IOException;
 
 /**
@@ -33,11 +32,11 @@ public abstract class GribIndex {
       String idxPath = file.getPath();
       if (!idxPath.endsWith(GBX9_IDX))
         idxPath += GBX9_IDX;
-      File idxFile = GribIndexCache.getExistingFileOrCache(idxPath);
+      MFile idxFile = GribIndexCache.getExistingFileOrCache(idxPath);
       if (idxFile == null)
         return true;
 
-      long idxLastModified = idxFile.lastModified();
+      long idxLastModified = idxFile.getLastModified();
       if (idxLastModified < file.getLastModified())
         return true;
       return 0 < when && when < idxLastModified;
@@ -47,13 +46,13 @@ public abstract class GribIndex {
       String idxPath = file.getPath();
       if (!idxPath.endsWith(GBX9_IDX))
         idxPath += GBX9_IDX;
-      File idxFile = GribIndexCache.getExistingFileOrCache(idxPath);
+      MFile idxFile = GribIndexCache.getExistingFileOrCache(idxPath);
       if (idxFile == null)
         return true;
 
-      if (idxFile.lastModified() < file.getLastModified())
+      if (idxFile.getLastModified() < file.getLastModified())
         return true;
-      return 0 < when && idxFile.lastModified() < when;
+      return 0 < when && idxFile.getLastModified() < when;
     }
   };
   /////////////////////////////////////////////////////////////////////////

@@ -5,6 +5,8 @@
 
 package ucar.nc2.ui;
 
+import thredds.filesystem.MFileOS;
+import thredds.filesystem.MFileOS7;
 import thredds.inventory.MFile;
 import ucar.nc2.time.CalendarDateFormatter;
 import ucar.ui.widget.BAMutil;
@@ -97,6 +99,13 @@ public class MFileTable extends JPanel {
     fileTable.saveState(false);
     if (fileWindow != null)
       prefs.putBeanObject("FileWindowBounds", fileWindow.getBounds());
+  }
+
+  public void setFiles(MFile mdir, Collection<MFile> files) {
+    if (!(mdir instanceof MFileOS || mdir instanceof MFileOS7)) {
+      throw new IllegalArgumentException("Only local file systems are supported for index creation");
+    }
+    setFiles(new File(mdir.getPath()), files);
   }
 
   public void setFiles(File dir, Collection<MFile> files) {

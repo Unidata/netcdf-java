@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2018 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2026 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 
@@ -11,6 +11,7 @@ import javax.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import thredds.featurecollection.FeatureCollectionConfig;
+import thredds.inventory.MFile;
 import ucar.nc2.grib.coord.Coordinate;
 import ucar.nc2.grib.coord.CoordinateRuntime;
 import ucar.nc2.grib.coord.CoordinateTime2D;
@@ -28,7 +29,6 @@ import ucar.nc2.util.cache.FileFactory;
 import ucar.nc2.util.cache.SmartArrayInt;
 import ucar.unidata.io.RandomAccessFile;
 import javax.annotation.concurrent.Immutable;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -225,29 +225,12 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
     }
 
     public String getIndexFilenameInCache() throws FileNotFoundException {
-      File file = new File(directory, filename);
-      File existingFile = GribIndexCache.getExistingFileOrCache(file.getPath());
+      MFile file = directory.getChild(filename);
+      MFile existingFile = (file == null) ? null : GribIndexCache.getExistingFileOrCache(file.getPath());
 
       if (existingFile == null) {
-        throw new FileNotFoundException("No index filename for partition= " + this + " looking for " + file.getName());
+        throw new FileNotFoundException("No index filename for partition= " + this + " looking for " + filename);
       }
-
-      /*
-       * if (existingFile == null) {
-       * if (Grib.debugIndexOnly) { // we are running in debug mode where we only have the indices, not the data files
-       * // tricky: substitute the current root
-       * File orgParentDir = new File(directory);
-       * File currentFile = new File(PartitionCollectionImmutable.this.indexFilename);
-       * File currentParent = currentFile.getParentFile();
-       * File currentParentWithDir = new File(currentParent, orgParentDir.getName());
-       * File nestedIndex = isPartitionOfPartitions ? new File(currentParentWithDir, filename) : new File(currentParent,
-       * filename); // JMJ
-       * path = nestedIndex.getPath();
-       * 
-       * } else {
-       * throw new FileNotFoundException("No index filename for partition= " + this.toString());
-       * }
-       */
 
       return existingFile.getPath();
     }

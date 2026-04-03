@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2018 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2026 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 
@@ -7,6 +7,8 @@ package ucar.nc2.grib;
 
 import ucar.nc2.grib.collection.Grib;
 import ucar.nc2.util.DiskCache2;
+import thredds.inventory.MFile;
+import thredds.inventory.MFiles;
 import java.io.File;
 
 /**
@@ -35,11 +37,11 @@ public class GribIndexCache {
    * @param fileLocation full path of original index filename
    * @return File, possibly in cache, may or may not exist
    */
-  public static File getFileOrCache(String fileLocation) {
-    File result = getExistingFileOrCache(fileLocation);
+  public static MFile getFileOrCache(String fileLocation) {
+    MFile result = getExistingFileOrCache(fileLocation);
     if (result != null)
       return result;
-    return getDiskCache2().getFile(fileLocation);
+    return MFiles.create(getDiskCache2().getFile(fileLocation).getPath());
   }
 
   /**
@@ -48,7 +50,7 @@ public class GribIndexCache {
    * @param fileLocation full path of original index filename
    * @return existing file if you can find it, else null
    */
-  public static File getExistingFileOrCache(String fileLocation) {
+  public static MFile getExistingFileOrCache(String fileLocation) {
     File result = getDiskCache2().getExistingFileOrCache(fileLocation);
     if (result == null && Grib.debugGbxIndexOnly && fileLocation.endsWith(".gbx9.ncx4")) { // might create only from
                                                                                            // gbx9 for debugging
@@ -56,6 +58,6 @@ public class GribIndexCache {
       String maybeIndexAlreadyExists = fileLocation.substring(0, length - 10) + ".ncx4";
       result = getDiskCache2().getExistingFileOrCache(maybeIndexAlreadyExists);
     }
-    return result;
+    return result == null ? null : MFiles.create(result.getPath());
   }
 }

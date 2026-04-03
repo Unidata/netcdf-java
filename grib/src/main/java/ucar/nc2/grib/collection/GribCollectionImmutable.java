@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2018 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2026 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 
@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.MFile;
+import thredds.inventory.MFiles;
 import ucar.nc2.Attribute;
 import ucar.nc2.AttributeContainer;
 import ucar.nc2.AttributeContainerMutable;
@@ -44,13 +45,8 @@ import ucar.nc2.wmo.CommonCodeTable;
 import ucar.unidata.io.RandomAccessFile;
 import javax.annotation.concurrent.Immutable;
 import java.io.Closeable;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
 
 /**
@@ -95,7 +91,7 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
 
   ////////////////////////////////////////////////////////////////
   protected final String name; // collection name; index filename must be directory/name.ncx2
-  protected final File directory;
+  protected final MFile directory;
   protected final FeatureCollectionConfig config;
   public final boolean isGrib1;
   protected final Info info;
@@ -136,8 +132,8 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
       indexFilename = gc.indexFilename;
 
     } else {
-      File indexFile = GribCdmIndex.makeIndexFile(name, directory);
-      File indexFileInCache = GribIndexCache.getExistingFileOrCache(indexFile.getPath());
+      MFile indexFile = GribCdmIndex.makeIndexFile(name, directory);
+      MFile indexFileInCache = GribIndexCache.getExistingFileOrCache(indexFile.getPath());
       if (indexFileInCache == null)
         throw new IllegalStateException(indexFile.getPath() + " does not exist, nor in cache");
       indexFilename = indexFileInCache.getPath();
@@ -169,7 +165,7 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
     return name;
   }
 
-  public File getDirectory() {
+  public MFile getDirectory() {
     return directory;
   }
 
@@ -913,8 +909,8 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
 
   @Override
   public long getLastModified() {
-    File indexFile = new File(indexFilename);
-    return indexFile.lastModified();
+    MFile indexFile = MFiles.create(indexFilename);
+    return indexFile.getLastModified();
   }
 
   /** @deprecated do not use */
@@ -1014,13 +1010,9 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
     if (indexFilename == null)
       return;
     f.format("indexFile=%s%n", indexFilename);
-    try {
-      Path indexFile = Paths.get(indexFilename);
-      BasicFileAttributes attr = Files.readAttributes(indexFile, BasicFileAttributes.class);
-      f.format("  size=%d lastModifiedTime=%s lastAccessTime=%s creationTime=%s%n", attr.size(),
-          attr.lastModifiedTime(), attr.lastAccessTime(), attr.creationTime());
-    } catch (IOException e) {
-      e.printStackTrace();
+    MFile mfile = MFiles.create(indexFilename);
+    if (mfile.exists()) {
+      f.format("  size=%d lastModifiedTime=%s%n", mfile.getLength(), CalendarDate.of(mfile.getLastModified()));
     }
     f.format("%n");
   }
@@ -1064,8 +1056,8 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
   ////////////////////////////////////////
 
   public long getIndexFileSize() {
-    File indexFile = new File(indexFilename);
-    return indexFile.length();
+    MFile indexFile = MFiles.create(indexFilename);
+    return indexFile.getLength();
   }
 
   public MFile getFile(int fileno) {
@@ -1092,15 +1084,18 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
     // absolute location
     MFile mfile = fileMap.get(fileno);
     String filename = mfile.getPath();
-    File dataFile = new File(filename);
+    MFile dataFile = MFiles.create(filename);
 
     // if data file does not exist, check relative location - eg may be /upc/share instead of Q:
     if (!dataFile.exists()) {
+      MFile relativeFile;
       if (fileMap.size() == 1) {
-        dataFile = new File(directory, name); // single file case
+        relativeFile = directory.getChild(name); // single file case
       } else {
-        dataFile = new File(directory, dataFile.getName()); // must be in same directory as the ncx file
+        relativeFile = directory.getChild(dataFile.getName()); // must be in same directory as the ncx file
       }
+      if (relativeFile != null)
+        dataFile = relativeFile;
     }
 
     // data file not here
