@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 2025-2026 University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 
@@ -39,6 +39,7 @@ dependencies {
 
   testCompileOnly(ncjLibs.junit4)
 
+  testRuntimeOnly(project(":cdm-s3"))
   testRuntimeOnly(project(":libaec-native"))
 
   testRuntimeOnly(ncjLibs.junit5.platformLauncher)

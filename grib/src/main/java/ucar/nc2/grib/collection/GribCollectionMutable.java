@@ -51,9 +51,9 @@ public class GribCollectionMutable implements Closeable {
   //////////////////////////////////////////////////////////
 
   static MFile makeIndexMFile(String collectionName, MFile directory) {
-    String nameNoBlanks = StringUtil2.replace(collectionName, ' ', "_");
-    return new GcMFile(directory, nameNoBlanks + GribCdmIndex.NCX_SUFFIX, -1, -1, -1); // LOOK dont know lastMod, size.
-                                                                                       // can it be added later?
+    MFile nameNoBlanks = GribCdmIndex.makeIndexFile(collectionName, directory);
+    return new GcMFile(directory, nameNoBlanks.getName(), -1, -1, -1); // LOOK dont know lastMod, size.
+                                                                       // can it be added later?
   }
 
   private static final CalendarDateFormatter cf =

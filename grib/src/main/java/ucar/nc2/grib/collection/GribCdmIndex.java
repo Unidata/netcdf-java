@@ -19,6 +19,7 @@ import thredds.inventory.filter.RegExpMatch;
 import thredds.inventory.partition.*;
 import ucar.nc2.dataset.DatasetUrl;
 import ucar.nc2.grib.GribIndexCache;
+import ucar.nc2.grib.GribUtils;
 import ucar.nc2.grib.grib1.Grib1RecordScanner;
 import ucar.nc2.grib.grib2.Grib2RecordScanner;
 import ucar.nc2.stream.NcStream;
@@ -120,15 +121,25 @@ public class GribCdmIndex implements IndexReader {
 
   static MFile makeIndexFile(String collectionName, MFile directory) {
     String nameNoBlanks = StringUtil2.replace(collectionName, ' ', "_");
-    return directory.getChild(nameNoBlanks + NCX_SUFFIX);
+    String indexFileName = GribUtils.makeIndexFileName(nameNoBlanks, NCX_SUFFIX);
+    return directory.getChild(indexFileName);
   }
 
-  private static String makeNameFromIndexFilename(String idxPathname) {
-    idxPathname = StringUtil2.replace(idxPathname, '\\', "/");
-    int pos = idxPathname.lastIndexOf('/');
-    String idxFilename = (pos < 0) ? idxPathname : idxPathname.substring(pos + 1);
-    assert idxFilename.endsWith(NCX_SUFFIX) : idxFilename;
-    return idxFilename.substring(0, idxFilename.length() - NCX_SUFFIX.length());
+  static String makeNameFromIndexFilename(String idxPathname) {
+    String name;
+    if (!idxPathname.endsWith(NCX_SUFFIX)) {
+      MFile testIdxMFile = MFiles.create(idxPathname);
+      String idxName = testIdxMFile.getName();
+      assert idxName.endsWith(NCX_SUFFIX) : idxName;
+      name = idxName.substring(0, idxName.length() - NCX_SUFFIX.length());
+    } else {
+      idxPathname = StringUtil2.replace(idxPathname, '\\', "/");
+      int pos = idxPathname.lastIndexOf('/');
+      String idxFilename = (pos < 0) ? idxPathname : idxPathname.substring(pos + 1);
+      assert idxFilename.endsWith(NCX_SUFFIX) : idxFilename;
+      name = idxFilename.substring(0, idxFilename.length() - NCX_SUFFIX.length());
+    }
+    return name;
   }
 
   ///////////////////////////////////////////
@@ -338,7 +349,7 @@ public class GribCdmIndex implements IndexReader {
       if (specp.wantSubdirs()) { // its a partition
 
         try (DirectoryPartition dpart =
-            new DirectoryPartition(config, rootPath.toString(), true, new GribCdmIndex(logger), NCX_SUFFIX, logger)) {
+            new DirectoryPartition(config, rootPath, true, new GribCdmIndex(logger), NCX_SUFFIX, logger)) {
           dpart.putAuxInfo(FeatureCollectionConfig.AUX_CONFIG, config);
           changed = updateDirectoryCollectionRecurse(isGrib1, dpart, config, updateType, logger);
         }
@@ -834,9 +845,7 @@ public class GribCdmIndex implements IndexReader {
       throws IOException {
 
     String filename = dataRaf.getLocation();
-    File dataFile = new File(filename);
-
-    MFile mfile = new MFileOS(dataFile);
+    MFile mfile = MFiles.create(filename);
     return openGribCollectionFromDataFile(isGrib1, mfile, updateType, config, errlog, logger);
   }
 

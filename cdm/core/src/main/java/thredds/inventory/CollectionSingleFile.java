@@ -5,6 +5,8 @@
 
 package thredds.inventory;
 
+import ucar.nc2.util.DiskCache2;
+
 /**
  * A CollectionManager consisting of a single file
  *
@@ -18,9 +20,9 @@ public class CollectionSingleFile extends CollectionList {
     mfiles.add(file);
     try {
       MFile p = file.getParent();
-      this.root = p != null ? p.getPath() : System.getProperty("user.dir");
+      this.root = p != null ? p.getPath() : DiskCache2.getDefault().getRootDirectory();
     } catch (java.io.IOException e) {
-      this.root = System.getProperty("user.dir");
+      this.root = DiskCache2.getDefault().getRootDirectory();
     }
 
     this.lastModified = file.getLastModified();

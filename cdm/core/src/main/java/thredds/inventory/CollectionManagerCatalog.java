@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2026 University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 
@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Formatter;
 import java.util.List;
+import ucar.nc2.util.DiskCache2;
 
 /**
  * CollectionManager of datasets from a catalog.
@@ -45,7 +46,7 @@ public class CollectionManagerCatalog extends CollectionManagerAbstract implemen
     }
 
     this.catalogUrl = collectionSpec;
-    this.root = System.getProperty("user.dir");
+    this.root = DiskCache2.getDefault().getRootDirectory();
   }
 
   @Override

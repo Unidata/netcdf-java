@@ -42,7 +42,6 @@ public class CollectionList extends CollectionAbstract {
 
     Collections.sort(mfiles);
     this.lastModified = lastModified;
-    this.root = System.getProperty("user.dir");
   }
 
   public CollectionList(String collectionName, String root, List<MFile> mfiles, Logger logger) {

@@ -43,8 +43,7 @@ public class MControllers {
    */
   public static DirectoryStream<MFile> newDirectoryStream(String location) throws IOException {
     MController controller = create(location);
-    CollectionConfig config = new CollectionConfig(location, location, false, null, null);
-    DirectoryStream<MFile> stream = controller.getInventoryTop(config, true);
+    DirectoryStream<MFile> stream = controller.getFullInventoryAtLocation(location);
     controller.close();
     if (stream == null) {
       throw new IOException("Could not create DirectoryStream for " + location);

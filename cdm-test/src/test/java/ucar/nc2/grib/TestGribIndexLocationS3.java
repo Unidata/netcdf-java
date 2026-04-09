@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2023-2026 University Corporation for Atmospheric Research/Unidata
+ * See LICENSE for license information.
+ */
+
 package ucar.nc2.grib;
 
 import static com.google.common.truth.Truth.assertThat;
@@ -51,7 +56,7 @@ public class TestGribIndexLocationS3 {
 
   public TestGribIndexLocationS3(String filename, String fragment) {
     this.filename = filename + fragment;
-    this.indexFilename = filename + GribIndex.GBX9_IDX;
+    this.indexFilename = GribIndex.makeIndexFileName(filename);
     this.isGrib1 = filename.endsWith(".grib1");
   }
 
@@ -86,7 +91,7 @@ public class TestGribIndexLocationS3 {
     assertThat(index).isNotNull();
     assertThat(index.getNRecords()).isNotEqualTo(0);
 
-    assertThat(diskCache.getCacheFile(s3File.getPath() + GribIndex.GBX9_IDX).exists()).isTrue();
+    assertThat(diskCache.getCacheFile(GribIndex.makeIndexFileName(s3File.getPath())).exists()).isTrue();
   }
 
   @Test
@@ -98,13 +103,13 @@ public class TestGribIndexLocationS3 {
     final GribIndex index =
         GribIndex.readOrCreateIndexFromSingleFile(isGrib1, s3File, CollectionUpdateType.always, logger);
     assertThat(index).isNotNull();
-    assertThat(diskCache.getCacheFile(s3File.getPath() + GribIndex.GBX9_IDX).exists()).isTrue();
-    final long cacheLastModified = diskCache.getCacheFile(s3File.getPath() + GribIndex.GBX9_IDX).lastModified();
+    assertThat(diskCache.getCacheFile(GribIndex.makeIndexFileName(s3File.getPath())).exists()).isTrue();
+    final long cacheLastModified = diskCache.getCacheFile(GribIndex.makeIndexFileName(s3File.getPath())).lastModified();
 
     final GribIndex rereadIndex =
         GribIndex.readOrCreateIndexFromSingleFile(isGrib1, s3File, CollectionUpdateType.never, logger);
     assertThat(rereadIndex).isNotNull();
-    final File rereadCachedIndex = diskCache.getCacheFile(s3File.getPath() + GribIndex.GBX9_IDX);
+    final File rereadCachedIndex = diskCache.getCacheFile(GribIndex.makeIndexFileName(s3File.getPath()));
     assertThat(rereadCachedIndex.lastModified()).isEqualTo(cacheLastModified);
   }
 }

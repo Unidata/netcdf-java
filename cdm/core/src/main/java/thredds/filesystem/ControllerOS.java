@@ -78,6 +78,20 @@ public class ControllerOS implements MController {
     return new MFileDirectoryStream(new FilteredIterator(mc, new MFileIterator(cd), true)); // return only subdirs
   }
 
+  @Nullable
+  @Override
+  public DirectoryStream<MFile> getFullInventoryAtLocation(String location) {
+    if (location.startsWith("file:")) {
+      location = location.substring(5);
+    }
+
+    File cd = new File(location);
+    if (!cd.exists())
+      return null;
+    if (!cd.isDirectory())
+      return null;
+    return new MFileDirectoryStream(new MFileIterator(cd));
+  }
 
   public void close() {} // NOOP
 

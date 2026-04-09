@@ -48,15 +48,13 @@ public interface MController extends Closeable {
   DirectoryStream<MFile> getSubdirs(CollectionConfig mc, boolean recheck);
 
   /**
-   * Get an MFile for a specific location.
-   * 
-   * @param location the location
-   * @return MFile or null
+   * Returns all subdirectories and leaves in a given location, not recursing into subdirectories.
+   *
+   * @param location defines the location to scan
+   * @return DirectoryStream over Mfiles, or null if the location does not exist
    */
   @Nullable
-  default MFile getMFile(String location) {
-    return MFiles.create(location);
-  }
+  DirectoryStream<MFile> getFullInventoryAtLocation(String location);
 
   @Override
   void close();

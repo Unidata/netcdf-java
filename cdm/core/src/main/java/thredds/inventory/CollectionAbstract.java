@@ -121,7 +121,11 @@ public abstract class CollectionAbstract implements MCollection {
 
   @Override
   public String getIndexFilename(String suffix) {
-    return getRoot() + "/" + collectionName + suffix;
+    MFile rootMFile = MFiles.create(getRoot());
+    MFile mfile = rootMFile.getChild(collectionName + suffix);
+    if (mfile == null)
+      throw new IllegalStateException("Cannot determine location of collection index file");
+    return mfile.getPath();
   }
 
   public void setStreamFilter(MFileFilter filter) {

@@ -1,11 +1,13 @@
 /*
- * Copyright (c) 1998-2022 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2026 University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
+
 package thredds.inventory;
 
 import java.io.File;
 import java.util.Formatter;
+import ucar.nc2.util.DiskCache2;
 
 /**
  * Parses the collection specification string for local files.
@@ -39,7 +41,7 @@ import java.util.Formatter;
 public class CollectionSpecParser extends CollectionSpecParserAbstract {
   private final static String DELIMITER = "/";
   private final static String FRAGMENT = "";
-  private final static String DEFAULT_DIR = System.getProperty("user.dir");
+  private final static String DEFAULT_DIR = DiskCache2.getDefault().getRootDirectory();
 
   /**
    * Single spec : "/topdir/** /#dateFormatMark#regExp"
