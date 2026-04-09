@@ -5,6 +5,7 @@
 
 package thredds.filesystem;
 
+import javax.annotation.Nullable;
 import thredds.inventory.CollectionConfig;
 import thredds.inventory.MController;
 import thredds.inventory.MFile;
@@ -57,6 +58,27 @@ public class ControllerOS7 implements MController {
     return null;
   }
 
+  @Nullable
+  @Override
+  public DirectoryStream<MFile> getFullInventoryAtLocation(String location) {
+    if (location.startsWith("file:")) {
+      location = location.substring(5);
+    }
+
+    Path cd = Paths.get(location);
+    if (!Files.exists(cd))
+      return null;
+    if (!Files.isDirectory(cd))
+      return null;
+
+    MFileDirectoryStream stream = null;
+    try {
+      stream = new MFileDirectoryStream(new MFileIterator(cd, null));
+    } catch (IOException ioe) {
+      logger.warn(ioe.getMessage(), ioe);
+    }
+    return stream;
+  }
 
   public void close() {} // NOOP
 

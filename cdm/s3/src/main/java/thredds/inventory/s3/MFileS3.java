@@ -1,7 +1,8 @@
 /*
- * Copyright (c) 2020 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 2020-2026 University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
+
 package thredds.inventory.s3;
 
 import java.io.IOException;
@@ -218,9 +219,20 @@ public class MFileS3 implements MFile {
   @Nullable
   public MFile getParent() throws IOException {
     // In general, objects to do not have parents. However, if a delimiter is set, we have a pseudo path, and then
-    // the object can have a parent.
+    // the object can have a parent. If a delimiter is not set, but the key is not null, then the parent is
+    // the top of the bucket. If a delimiter is not set, and the key is null, then we are at the top of the bucket
+    // already, and then there is no parent.
     MFile parentMfile = null;
-    if (delimiter != null) {
+    if (delimiter == null) {
+      String key = getKey();
+      if (key != null && !key.isEmpty()) {
+        String uriString = getPath();
+        int queryIdx = uriString.indexOf("?");
+        if (queryIdx > 0) {
+          parentMfile = new MFileS3(uriString.substring(0, queryIdx));
+        }
+      }
+    } else {
       // get the full path
       String currentUri = getPath();
       String frag = "";

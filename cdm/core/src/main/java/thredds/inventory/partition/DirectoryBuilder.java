@@ -71,7 +71,7 @@ public class DirectoryBuilder {
   private PartitionStatus partitionStatus = PartitionStatus.unknown;
 
   public DirectoryBuilder(String topCollectionName, String dirFilename, String suffix) throws IOException {
-    this(topCollectionName, MControllers.create(dirFilename).getMFile(dirFilename), suffix);
+    this(topCollectionName, MFiles.create(dirFilename), suffix);
   }
 
   /**

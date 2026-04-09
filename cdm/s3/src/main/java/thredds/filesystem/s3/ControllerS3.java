@@ -51,11 +51,17 @@ public class ControllerS3 implements MController {
 
   private void init(CollectionConfig mc) {
     if (mc != null) {
+      init(mc.getDirectoryName());
+    }
+  }
+
+  private void init(String location) {
+    if (location != null) {
       try {
-        initUri(mc.getDirectoryName());
+        initUri(location);
         initClient();
       } catch (IOException e) {
-        logger.error("Error initializing ControllerS3 for {}.", mc.getDirectoryName(), e);
+        logger.error("Error initializing ControllerS3 for {}.", location, e);
       }
     }
   }
@@ -126,6 +132,16 @@ public class ControllerS3 implements MController {
       }
     }
     return new MFileDirectoryStream(new FilteredIterator(mc, mFiles.iterator(), true));
+  }
+
+  @Override
+  public DirectoryStream<MFile> getFullInventoryAtLocation(String location) {
+    init(location);
+    String prefix = null;
+    if (initialUri.getKey().isPresent()) {
+      prefix = initialUri.getKey().get();
+    }
+    return new MFileDirectoryStream(new MFileS3Iterator(client, initialUri, prefix, limit, false));
   }
 
   @Override

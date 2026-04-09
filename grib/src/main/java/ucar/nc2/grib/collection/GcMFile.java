@@ -33,7 +33,7 @@ public class GcMFile implements thredds.inventory.MFile {
       MFile file = files.get(index);
       String filename;
       if (file.getPath().startsWith(dirPath)) {
-        filename = file.getPath().substring(dirPath.length());
+        filename = file.getName();
         if (filename.startsWith("/"))
           filename = filename.substring(1);
       } else

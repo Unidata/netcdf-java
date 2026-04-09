@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 2020-2026 University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 
@@ -455,7 +455,8 @@ public class TestMFileS3 {
       if (delimiter != null) {
         assertThat(mFile.getParent()).isNotNull();
       } else {
-        assertThat(mFile.getParent()).isNull();
+        assertThat(mFile.getParent()).isNotNull();
+        assertThat(mFile.getParent().getPath()).isEqualTo(cdmS3Uri.split("\\?")[0]);
       }
       assertThat(mFile.isDirectory()).isFalse();
       assertThat(mFile.getLength()).isEqualTo(G16_OBJECT_1_SIZE);
@@ -468,8 +469,9 @@ public class TestMFileS3 {
       assertThat(mFile.getPath()).isEqualTo(cdmS3Uri);
       // Without a delimiter, the name is the key.
       assertThat(mFile.getName()).isEqualTo(expectedName);
-      // Without a delimiter, there is no parent.
-      assertThat(mFile.getParent()).isNull();
+      // Without a delimiter, the parent is the bucket.
+      assertThat(mFile.getParent()).isNotNull();
+      assertThat(mFile.getParent().getPath()).isEqualTo(cdmS3Uri.split("\\?")[0]);
       // Without a delimiter, there is no concept of a directory.
       assertThat(mFile.isDirectory()).isFalse();
     }

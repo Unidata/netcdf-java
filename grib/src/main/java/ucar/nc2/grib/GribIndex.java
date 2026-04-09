@@ -29,9 +29,7 @@ public abstract class GribIndex {
 
   private static final CollectionManager.ChangeChecker gribCC = new CollectionManager.ChangeChecker() {
     public boolean hasChangedSince(MFile file, long when) {
-      String idxPath = file.getPath();
-      if (!idxPath.endsWith(GBX9_IDX))
-        idxPath += GBX9_IDX;
+      String idxPath = makeIndexFileName(file.getPath());
       MFile idxFile = GribIndexCache.getExistingFileOrCache(idxPath);
       if (idxFile == null)
         return true;
@@ -43,9 +41,7 @@ public abstract class GribIndex {
     }
 
     public boolean hasntChangedSince(MFile file, long when) {
-      String idxPath = file.getPath();
-      if (!idxPath.endsWith(GBX9_IDX))
-        idxPath += GBX9_IDX;
+      String idxPath = makeIndexFileName(file.getPath());
       MFile idxFile = GribIndexCache.getExistingFileOrCache(idxPath);
       if (idxFile == null)
         return true;
@@ -91,12 +87,29 @@ public abstract class GribIndex {
     if (!index.readIndex(mfile.getPath(), mfile.getLastModified(), force)) { // heres where the index date is checked
                                                                              // against the data file
       index.makeIndex(mfile.getPath(), null);
-      logger.debug("  Index written: {} == {} records", mfile.getName() + GBX9_IDX, index.getNRecords());
+      logger.debug("  Index written: {} ({}) == {} records", mfile.getName(), GBX9_IDX, index.getNRecords());
     } else if (debug) {
-      logger.debug("  Index read: {} == {} records", mfile.getName() + GBX9_IDX, index.getNRecords());
+      logger.debug("  Index read: {} ({}) == {} records", mfile.getName(), GBX9_IDX, index.getNRecords());
     }
 
     return index;
+  }
+
+  /**
+   * Make the gbx9 index name from the grib file name.
+   *
+   * Handles special cases where the grib filename is not a file path.
+   * For example
+   * cdms3:thredds-test-data?test-grib-without-index/cosmo-eu.grib2#delimiter=/
+   *
+   * becomes
+   * cdms3:thredds-test-data?test-grib-without-index/cosmo-eu.grib2.gbx9#delimiter=/
+   *
+   * @param filename
+   * @return the gbx9 index file
+   */
+  public static String makeIndexFileName(String filename) {
+    return GribUtils.makeIndexFileName(filename, GBX9_IDX);
   }
 
   //////////////////////////////////////////

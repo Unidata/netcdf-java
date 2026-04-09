@@ -1,10 +1,12 @@
 /*
- * Copyright (c) 1998-2018 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2026 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 
 package ucar.nc2.grib;
 
+import thredds.inventory.MFile;
+import thredds.inventory.MFiles;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarPeriod;
 import ucar.unidata.util.StringUtil2;
@@ -194,4 +196,28 @@ public class GribUtils {
     return !GribNumbers.testGribBitIsSet(scanMode, 4);
   }
 
+  /**
+   * Make an index filename with the given suffix from the grib filename.
+   *
+   * Handles special cases where the grib filename is not a file path.
+   * For example,
+   * cdms3:thredds-test-data?test-grib-without-index/cosmo-eu.grib2#delimiter=/
+   *
+   * becomes
+   * cdms3:thredds-test-data?test-grib-without-index/cosmo-eu.grib2.gbx9#delimiter=/
+   *
+   * @param filename
+   * @return the index filename
+   */
+  public static String makeIndexFileName(String filename, String idxNameSuffix) {
+    String idxPath = filename;
+    if (!filename.endsWith(idxNameSuffix)) {
+      MFile testIdxMFile = MFiles.create(filename);
+      String mfileName = testIdxMFile.getName();
+      String idxName = testIdxMFile.getName() + idxNameSuffix;
+      int i = idxPath.lastIndexOf(mfileName);
+      idxPath = idxPath.substring(0, i) + idxName + idxPath.substring(i + mfileName.length(), filename.length());
+    }
+    return idxPath;
+  }
 }

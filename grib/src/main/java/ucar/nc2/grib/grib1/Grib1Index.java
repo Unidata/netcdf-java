@@ -15,6 +15,7 @@ import thredds.inventory.MFile;
 import ucar.nc2.NetcdfFiles;
 import ucar.nc2.grib.GribIndex;
 import ucar.nc2.grib.GribIndexCache;
+import ucar.nc2.grib.GribUtils;
 import ucar.nc2.stream.NcStream;
 import ucar.unidata.io.RandomAccessFile;
 import java.io.File;
@@ -88,9 +89,7 @@ public class Grib1Index extends GribIndex {
   }
 
   public boolean readIndex(String filename, long gribLastModified, CollectionUpdateType force) {
-    String idxPath = filename;
-    if (!idxPath.endsWith(GBX9_IDX))
-      idxPath += GBX9_IDX;
+    String idxPath = GribIndex.makeIndexFileName(filename);
     MFile idxFile = GribIndexCache.getExistingFileOrCache(idxPath);
     if (idxFile == null)
       return false;
@@ -169,11 +168,10 @@ public class Grib1Index extends GribIndex {
 
   // LOOK what about extending an index ??
   public boolean makeIndex(String filename, RandomAccessFile dataRaf) throws IOException {
-    String idxPath = filename;
-    if (!idxPath.endsWith(GBX9_IDX))
-      idxPath += GBX9_IDX;
+    String idxPath = GribIndex.makeIndexFileName(filename);
     MFile idxMFile = GribIndexCache.getFileOrCache(idxPath);
-    MFile idxMFileTmp = GribIndexCache.getFileOrCache(idxPath + ".tmp");
+    String idxPathTmp = GribUtils.makeIndexFileName(idxPath, ".tmp");
+    MFile idxMFileTmp = GribIndexCache.getFileOrCache(idxPathTmp);
 
     if (!(idxMFile instanceof MFileOS || idxMFile instanceof MFileOS7)) {
       throw new IllegalArgumentException("Only local file systems are supported for index creation");

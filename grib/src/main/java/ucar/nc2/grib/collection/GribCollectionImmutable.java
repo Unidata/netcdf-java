@@ -1082,9 +1082,7 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
 
   RandomAccessFile getDataRaf(int fileno) throws IOException {
     // absolute location
-    MFile mfile = fileMap.get(fileno);
-    String filename = mfile.getPath();
-    MFile dataFile = MFiles.create(filename);
+    MFile dataFile = fileMap.get(fileno);
 
     // if data file does not exist, check relative location - eg may be /upc/share instead of Q:
     if (!dataFile.exists()) {
@@ -1103,7 +1101,7 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
       throw new FileNotFoundException("data file not found = " + dataFile.getPath());
     }
 
-    RandomAccessFile want = RandomAccessFile.acquire(dataFile.getPath());
+    RandomAccessFile want = NetcdfFiles.getRaf(dataFile.getPath(), -1);
     want.order(RandomAccessFile.BIG_ENDIAN);
     return want;
   }

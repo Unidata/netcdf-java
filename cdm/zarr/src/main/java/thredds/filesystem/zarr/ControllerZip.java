@@ -80,6 +80,21 @@ public class ControllerZip extends ControllerOS implements MController {
   }
 
   @Override
+  public DirectoryStream<MFile> getFullInventoryAtLocation(String location) {
+    if (location.startsWith(prefix)) {
+      location = location.substring(prefix.length());
+    }
+
+    try {
+      MFileZip mfile = new MFileZip(location);
+      return new MFileDirectoryStream(new MFileIteratorLeaves(mfile));
+    } catch (IOException ioe) {
+      logger.warn(ioe.getMessage(), ioe);
+      return null;
+    }
+  }
+
+  @Override
   public void close() {} // NOOP
 
   protected static class MFileIterator implements Iterator<MFile> {

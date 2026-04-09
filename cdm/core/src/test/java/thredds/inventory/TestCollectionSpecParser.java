@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2019-2026 University Corporation for Atmospheric Research/Unidata
+ * See LICENSE for license information.
+ */
+
 package thredds.inventory;
 
 import static com.google.common.truth.Truth.assertThat;
@@ -12,6 +17,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ucar.nc2.util.DiskCache2;
 
 @RunWith(Parameterized.class)
 public class TestCollectionSpecParser {
@@ -67,11 +73,11 @@ public class TestCollectionSpecParser {
         {"/data/ldm/pub/decoded/netcdf/surface/metar/T*.T", "/data/ldm/pub/decoded/netcdf/surface/metar", false, "T*.T",
             null},
 
-        {"", System.getProperty("user.dir"), false, null, null},
+        {"", DiskCache2.getDefault().getRootDirectory(), false, null, null},
 
-        {".*grib1", System.getProperty("user.dir"), false, ".*grib1", null},
+        {".*grib1", DiskCache2.getDefault().getRootDirectory(), false, ".*grib1", null},
 
-        {".*\\.grib1", System.getProperty("user.dir"), false, ".*\\.grib1", null},
+        {".*\\.grib1", DiskCache2.getDefault().getRootDirectory(), false, ".*\\.grib1", null},
 
         {"dir/**/subdir/.*grib1", "dir", true, "subdir/.*grib1", null},});
   }
