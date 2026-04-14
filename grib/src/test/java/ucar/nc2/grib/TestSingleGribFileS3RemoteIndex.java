@@ -6,6 +6,7 @@
 package ucar.nc2.grib;
 
 import static com.google.common.truth.Truth.assertThat;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.fail;
 
 import java.io.IOException;
@@ -18,69 +19,82 @@ import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.util.CompareNetcdf2;
 import ucar.unidata.util.test.TestDir;
 
-public class TestSingleGribFileS3 {
+/**
+ * Tests reading single grib files from S3 when index files already exists in the bucket
+ */
+public class TestSingleGribFileS3RemoteIndex {
 
-  private static final String GRIB1_BUCKET_KEY = "thredds-test-data?test-grib-without-index/radar_national.grib1";
-  private static final String GRIB2_BUCKET_KEY = "thredds-test-data?test-grib-without-index/cosmo-eu.grib2";
+  private static final String GRIB1_BUCKET_KEY = "thredds-test-data?test-grib-index/radar_national.grib1";
+  private static final String GRIB2_BUCKET_KEY = "thredds-test-data?test-grib-index/cosmo-eu.grib2";
   private static final String GRIB1_LOCAL = TestDir.localTestDataDir + "radar_national.grib1";
   private static final String GRIB2_LOCAL = TestDir.localTestDataDir + "cosmo-eu.grib2";
 
   @Test
   public void testGrib1S3Full() throws IOException {
     String location = String.format("cdms3://s3.us-east-1.amazonaws.com/%s#delimiter=/", GRIB1_BUCKET_KEY);
-    basicDatasetValidation(location);
+    // .ncx4 object is older than .gbx9 object, so an update is required (which isn't supported)
+    assertThrows(IOException.class, () -> basicDatasetValidation(location));
   }
 
   @Test
   public void testGrib1S3Short() throws IOException {
     String location = String.format("cdms3:%s#delimiter=/", GRIB1_BUCKET_KEY);
-    basicDatasetValidation(location);
+    // .ncx4 object is older than .gbx9 object, so an update is required (which isn't supported)
+    assertThrows(IOException.class, () -> basicDatasetValidation(location));
   }
 
   @Test
   public void testGrib1SFullNoDelimiter() throws IOException {
     String location = String.format("cdms3://s3.us-east-1.amazonaws.com/%s", GRIB1_BUCKET_KEY);
-    basicDatasetValidation(location);
+    // .ncx4 object is older than .gbx9 object, so an update is required (which isn't supported)
+    assertThrows(IOException.class, () -> basicDatasetValidation(location));
   }
 
   @Test
   public void testGrib1S3ShortNoDelimiter() throws IOException {
     String location = String.format("cdms3:%s", GRIB1_BUCKET_KEY);
-    basicDatasetValidation(location);
+    // .ncx4 object is older than .gbx9 object, so an update is required (which isn't supported)
+    assertThrows(IOException.class, () -> basicDatasetValidation(location));
   }
 
   @Test
   public void testGrib2S3Full() throws IOException {
+    // .ncx4 is missing, so will be written locally and used successfully
     String location = String.format("cdms3://s3.us-east-1.amazonaws.com/%s#delimiter=/", GRIB2_BUCKET_KEY);
     basicDatasetValidation(location);
   }
 
   @Test
   public void testGrib2S3Short() throws IOException {
+    // .ncx4 is missing, so will be written locally and used successfully
     String location = String.format("cdms3:%s#delimiter=/", GRIB2_BUCKET_KEY);
     basicDatasetValidation(location);
   }
 
   @Test
   public void testGrib2SFullNoDelimiter() throws IOException {
+    // .ncx4 is missing, so will be written locally and used successfully
     String location = String.format("cdms3://s3.us-east-1.amazonaws.com/%s", GRIB2_BUCKET_KEY);
     basicDatasetValidation(location);
   }
 
   @Test
   public void testGrib2S3ShortNoDelimiter() throws IOException {
+    // .ncx4 is missing, so will be written locally and used successfully
     String location = String.format("cdms3:%s", GRIB2_BUCKET_KEY);
     basicDatasetValidation(location);
   }
 
   @Test
   public void compareGrib1() throws IOException {
+    // .ncx4 object is older than .gbx9 object, so an update is required (which isn't supported)
     String location = String.format("cdms3://s3.us-east-1.amazonaws.com/%s#delimiter=/", GRIB1_BUCKET_KEY);
-    compareWithLocal(location, GRIB1_LOCAL);
+    assertThrows(IOException.class, () -> compareWithLocal(location, GRIB1_LOCAL));
   }
 
   @Test
   public void compareGrib2() throws IOException {
+    // .ncx4 is missing, so will be written locally and used successfully
     String location = String.format("cdms3://s3.us-east-1.amazonaws.com/%s#delimiter=/", GRIB2_BUCKET_KEY);
     compareWithLocal(location, GRIB2_LOCAL);
   }

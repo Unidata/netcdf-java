@@ -92,23 +92,26 @@ class Grib2CollectionWriter extends GribCollectionWriter {
    * GribCollectionIndex (sizeIndex bytes)
    */
 
-  boolean writeIndex(String name, MFile idxFile, CoordinateRuntime masterRuntime, List<Group> groups, List<MFile> files,
-      GribCollectionImmutable.Type type, CalendarDateRange dateRange) throws IOException {
+  boolean writeIndex(String name, MFile idxMFile, CoordinateRuntime masterRuntime, List<Group> groups,
+      List<MFile> files, GribCollectionImmutable.Type type, CalendarDateRange dateRange) throws IOException {
+    if (!MFiles.isLocal(idxMFile)) {
+      throw new IllegalArgumentException("Only local file systems are supported for index creation");
+    }
     Grib2Record first = null; // take global metadata from here
     boolean deleteOnClose = false;
 
-    if (idxFile.exists()) {
-      RandomAccessFile.eject(idxFile.getPath());
-      if (idxFile instanceof thredds.filesystem.MFileOS) {
-        File f = new File(idxFile.getPath());
+    if (idxMFile.exists()) {
+      RandomAccessFile.eject(idxMFile.getPath());
+      if (idxMFile instanceof thredds.filesystem.MFileOS) {
+        File f = new File(idxMFile.getPath());
         if (!f.delete()) {
-          logger.error("gc2 cant delete index file {}", idxFile.getPath());
+          logger.error("gc2 cant delete index file {}", idxMFile.getPath());
         }
       }
     }
-    logger.debug(" createIndex for {}", idxFile.getPath());
+    logger.debug(" createIndex for {}", idxMFile.getPath());
 
-    try (RandomAccessFile raf = new RandomAccessFile(idxFile.getPath(), "rw")) {
+    try (RandomAccessFile raf = new RandomAccessFile(idxMFile.getPath(), "rw")) {
       //// header message
       raf.order(RandomAccessFile.BIG_ENDIAN);
       raf.write(MAGIC_START.getBytes(StandardCharsets.UTF_8));
@@ -230,10 +233,10 @@ class Grib2CollectionWriter extends GribCollectionWriter {
 
     } finally {
       // remove it on failure
-      if (deleteOnClose && idxFile instanceof thredds.filesystem.MFileOS) {
-        File f = new File(idxFile.getPath());
+      if (deleteOnClose && idxMFile instanceof thredds.filesystem.MFileOS) {
+        File f = new File(idxMFile.getPath());
         if (!f.delete())
-          logger.error(" gc2 cant deleteOnClose index file {}", idxFile.getPath());
+          logger.error(" gc2 cant deleteOnClose index file {}", idxMFile.getPath());
       }
     }
 

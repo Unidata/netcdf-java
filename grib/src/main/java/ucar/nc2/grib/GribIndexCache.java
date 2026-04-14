@@ -51,6 +51,17 @@ public class GribIndexCache {
    * @return existing file if you can find it, else null
    */
   public static MFile getExistingFileOrCache(String fileLocation) {
+    MFile idxMFile = MFiles.create(fileLocation);
+    if (!MFiles.isLocal(idxMFile)) {
+      // for remote file systems, check to see if the index file exists and, if so, use it
+      // note: the remote index file may require updating, which isn't support at this point,
+      // so opening the remote GRIB file may ultimately fail.
+      if (idxMFile.exists()) {
+        return idxMFile;
+      }
+    }
+    // if the GRIB index file is local OR the remote index does not exist, check
+    // the DiskCache.
     File result = getDiskCache2().getExistingFileOrCache(fileLocation);
     if (result == null && Grib.debugGbxIndexOnly && fileLocation.endsWith(".gbx9.ncx4")) { // might create only from
                                                                                            // gbx9 for debugging
