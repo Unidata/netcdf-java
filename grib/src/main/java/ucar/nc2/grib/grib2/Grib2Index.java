@@ -8,10 +8,9 @@ package ucar.nc2.grib.grib2;
 import com.google.protobuf.ByteString;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import thredds.filesystem.MFileOS;
-import thredds.filesystem.MFileOS7;
 import thredds.inventory.CollectionUpdateType;
 import thredds.inventory.MFile;
+import thredds.inventory.MFiles;
 import ucar.nc2.NetcdfFiles;
 import ucar.nc2.grib.GribIndex;
 import ucar.nc2.grib.GribIndexCache;
@@ -208,7 +207,7 @@ public class Grib2Index extends GribIndex {
     String idxPathTmp = GribUtils.makeIndexFileName(idxPath, ".tmp");
     MFile idxMFileTmp = GribIndexCache.getFileOrCache(idxPathTmp);
 
-    if (!(idxMFile instanceof MFileOS || idxMFile instanceof MFileOS7)) {
+    if (!MFiles.isLocal(idxMFile)) {
       throw new IllegalArgumentException("Only local file systems are supported for index creation");
     }
 

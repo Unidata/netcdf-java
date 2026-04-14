@@ -1,13 +1,12 @@
 /*
- * Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2026 University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 
 package ucar.nc2.ui;
 
-import thredds.filesystem.MFileOS;
-import thredds.filesystem.MFileOS7;
 import thredds.inventory.MFile;
+import thredds.inventory.MFiles;
 import ucar.nc2.time.CalendarDateFormatter;
 import ucar.ui.widget.BAMutil;
 import ucar.ui.widget.IndependentWindow;
@@ -102,7 +101,7 @@ public class MFileTable extends JPanel {
   }
 
   public void setFiles(MFile mdir, Collection<MFile> files) {
-    if (!(mdir instanceof MFileOS || mdir instanceof MFileOS7)) {
+    if (!MFiles.isLocal(mdir)) {
       throw new IllegalArgumentException("Only local file systems are supported for index creation");
     }
     setFiles(new File(mdir.getPath()), files);

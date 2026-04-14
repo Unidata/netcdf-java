@@ -12,6 +12,7 @@ import javax.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import thredds.filesystem.MFileOS;
+import thredds.filesystem.MFileOS7;
 import ucar.nc2.internal.ncml.NcmlReader;
 
 /**
@@ -65,5 +66,15 @@ public class MFiles {
 
     final MFile mFile = create(location);
     return mFile.exists() ? mFile : null;
+  }
+
+  /**
+   * Checks if MFile represents a file stored on a local filesystem
+   *
+   * @param mfile MFile to check
+   * @return true if MFile is a local filesystem
+   */
+  public static boolean isLocal(MFile mfile) {
+    return mfile instanceof MFileOS || mfile instanceof MFileOS7;
   }
 }
