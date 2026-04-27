@@ -368,10 +368,10 @@ public class GribCdmIndex implements IndexReader {
   public static boolean updateGribCollection(boolean isGrib1, MCollection dcm, CollectionUpdateType updateType,
       FeatureCollectionConfig.PartitionType ptype, Logger logger, Formatter errlog) throws IOException {
 
-    boolean updateNeeded = isUpdateNeeded(dcm.getIndexFilename(NCX_SUFFIX), updateType,
-        (isGrib1 ? GribCollectionType.GRIB1 : GribCollectionType.GRIB2), logger);
-    logger.debug("GribCdmIndex.updateGribCollection (mcoll) {} {} updateNeeded={}", dcm.getCollectionName(), updateType,
-        updateNeeded);
+    logger.debug("GribCdmIndex.updateGribCollection {} {}", dcm.getCollectionName(), updateType);
+    if (!isUpdateNeeded(dcm.getIndexFilename(NCX_SUFFIX), updateType,
+        (isGrib1 ? GribCollectionType.GRIB1 : GribCollectionType.GRIB2), logger))
+      return false;
 
     boolean changed;
     if (isGrib1) { // existing case handles correctly - make separate index for each runtime (OR) partition == runtime
@@ -381,17 +381,12 @@ public class GribCdmIndex implements IndexReader {
       Grib2CollectionBuilder builder = new Grib2CollectionBuilder(dcm.getCollectionName(), dcm, logger);
       changed = builder.updateNeeded(updateType) && builder.createIndex(ptype, errlog);
     }
-    return changed || updateNeeded;
+    return changed;
   }
 
   // return true if changed, exception on failure
   private static boolean updatePartition(boolean isGrib1, PartitionManager dcm, CollectionUpdateType updateType,
       Logger logger, Formatter errlog) throws IOException {
-    boolean updateNeeded = isUpdateNeeded(dcm.getIndexFilename(NCX_SUFFIX), updateType,
-        (isGrib1 ? GribCollectionType.Partition1 : GribCollectionType.Partition2), logger);
-    logger.debug("GribCdmIndex.updatePartition {} {} updateNeeded={}", dcm.getCollectionName(), updateType,
-        updateNeeded);
-
     boolean changed;
     if (isGrib1) {
       Grib1PartitionBuilder builder =
@@ -403,7 +398,7 @@ public class GribCdmIndex implements IndexReader {
           new Grib2PartitionBuilder(dcm.getCollectionName(), MFiles.create(dcm.getRoot()), dcm, logger);
       changed = builder.updateNeeded(updateType) && builder.createPartitionedIndex(updateType, errlog);
     }
-    return changed || updateNeeded;
+    return changed;
   }
 
 
@@ -491,30 +486,25 @@ public class GribCdmIndex implements IndexReader {
   private static boolean updateDirectoryCollectionRecurse(boolean isGrib1, DirectoryPartition dpart,
       FeatureCollectionConfig config, CollectionUpdateType updateType, Logger logger) throws IOException {
 
-    boolean updateNeeded = isUpdateNeeded(dpart.getIndexFilename(NCX_SUFFIX), updateType,
-        (isGrib1 ? GribCollectionType.Partition1 : GribCollectionType.Partition2), logger);
-    logger.debug("GribCdmIndex.updateDirectoryCollectionRecurse {} {} updateNeeded={}", dpart.getRoot(), updateType,
-        updateNeeded);
+    logger.debug("GribCdmIndex.updateDirectoryCollectionRecurse {} {}", dpart.getRoot(), updateType);
+    if (!isUpdateNeeded(dpart.getIndexFilename(NCX_SUFFIX), updateType,
+        (isGrib1 ? GribCollectionType.Partition1 : GribCollectionType.Partition2), logger))
+      return false;
 
     long start = System.currentTimeMillis();
-    AtomicBoolean anyChange = new AtomicBoolean(false);
 
     // check the children partitions first
     if (updateType != CollectionUpdateType.testIndexOnly) { // skip children on testIndexOnly
       for (MCollection part : dpart.makePartitions(updateType)) {
         part.putAuxInfo(FeatureCollectionConfig.AUX_CONFIG, config);
         try {
-          boolean changed;
           if (part instanceof DirectoryPartition) { // LOOK if child partition fails, the parent partition doesnt know
-                                                    // that - suckage
-            changed = updateDirectoryCollectionRecurse(isGrib1, (DirectoryPartition) part, config, updateType, logger);
+            // that - suckage
+            updateDirectoryCollectionRecurse(isGrib1, (DirectoryPartition) part, config, updateType, logger);
           } else {
             String partPath = part.getRoot();
-            changed = updateLeafCollection(isGrib1, config, updateType, false, logger, partPath); // LOOK why not using
-                                                                                                  // part ??
+            updateLeafCollection(isGrib1, config, updateType, false, logger, partPath); // LOOK why not using part ??
           }
-          if (changed)
-            anyChange.set(true);
         } catch (IllegalStateException t) {
           logger.warn("Error making partition {} '{}'", part.getRoot(), t.getMessage());
           dpart.removePartition(part); // keep on truckin; can happen if directory is empty
@@ -526,28 +516,24 @@ public class GribCdmIndex implements IndexReader {
       } // loop over partitions
     }
 
-    if (!updateNeeded && !anyChange.get())
-      return false;
-
     try {
       // update the partition
       Formatter errlog = new Formatter();
-      boolean recreated = updatePartition(isGrib1, dpart, updateType, logger, errlog);
+      boolean changed = updatePartition(isGrib1, dpart, updateType, logger, errlog);
 
-      boolean changed = recreated || anyChange.get();
       long took = System.currentTimeMillis() - start;
       errlog.format(" INFO updateDirectoryCollectionRecurse %s took %d msecs%n", dpart.getRoot(), took);
       logger.debug("GribCdmIndex.updateDirectoryCollectionRecurse complete ({}) on {} errlog={}", changed,
           dpart.getRoot(), errlog);
-      return changed || updateNeeded;
+      return changed;
 
     } catch (IllegalStateException t) {
       logger.warn("Error making partition {} '{}'", dpart.getRoot(), t.getMessage());
-      return updateNeeded;
+      return false;
 
     } catch (Throwable t) {
       logger.error("Error making partition " + dpart.getRoot(), t);
-      return updateNeeded;
+      return false;
     }
   }
 
