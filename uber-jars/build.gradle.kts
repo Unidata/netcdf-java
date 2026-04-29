@@ -1,10 +1,12 @@
 /*
- * Copyright (c) 2025 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 2025-2026 University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import java.security.MessageDigest
+import java.text.SimpleDateFormat
+import java.util.Date
 import org.cyclonedx.gradle.CyclonedxDirectTask
 
 plugins {
@@ -82,7 +84,13 @@ val buildNcIdv =
     exclude("nom/**")
     exclude("visad/**")
 
-    doFirst { manifest.attributes["Implementation-Title"] = "ncIdv jar" }
+    doFirst {
+      manifest.attributes(project(":cdm-core").tasks.jar.get().manifest.attributes)
+      manifest.attributes["Implementation-Title"] = "ncIdv jar"
+      manifest {
+        attributes["Built-On"] = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").format(Date())
+      }
+    }
   }
 
 val buildNetcdfAll =

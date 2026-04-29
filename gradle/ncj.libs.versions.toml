@@ -4,46 +4,48 @@ netcdf-java = "5.10.0-SNAPSHOT"
 unidata-doc-theme = "0.1.1"
 
 # 3rd party dependencies
-awssdk = "2.31.76"
-awssdkv1 = "1.12.649"
+awssdk = "2.43.0"
+awssdkv1 = "1.12.797"
 commons-math3 = "3.6.1"
 bounce = "0.18"
-grpc = "1.73.0"
-guava = "33.4.8-jre"
-httpcomponents = "4.5.13"
-jackson = "2.21.1"
-jcommander = "1.78"
+grpc = "1.80.0"
+guava = "33.6.0-jre"
+httpcomponents = "4.5.14"
+jackson = "2.21.3"
+jcommander = "1.82"
 jdom2 = "2.0.6.1"
-jfree-jcommon = "1.0.23"
+jfree-jcommon = "1.0.24"
 jfree-jfreechart = "1.0.19"
 jgoodies-forms = "1.6.0"
 jj2000 = "5.4"
-joda-time = "2.12.7"
+joda-time = "2.14.2"
 jsr305 = "3.0.2"
-jna = "5.17.0"
-lgooddatepicker = "10.3.1"
+jna = "5.18.1"
+lgooddatepicker = "11.2.1"
 mcidas = "20231121"
-protobuf = "4.31.1"
-re2j = "1.3"
+protobuf = "4.34.1"
+re2j = "1.8"
 sensorweb-waterml = "2.7.0"
 slf4j = "2.0.17"
 tomcat-annotations = "6.0.53"
-visad = "2.0-20130124"
+visad = "2.0-20191209"
 xmlbeans = "3.1.0"
 
 #testing only
-commons-compress = "1.12"
-commons-io = "2.5"
-jsoup = "1.11.2"
-junit4 = "4.13.1"
-junit5 = "5.14.0"
+commons-compress = "1.28.0"
+commons-io = "2.22.0"
+jsoup = "1.22.2"
+junit4 = "4.13.2"
+junit5 = "5.14.4"
 junitparams = "1.0.5"
 mockito-core = "2.28.2"
 testcontainers = "1.21.4"
-truth = "1.0"
+truth = "1.4.5"
 
 # runtime only
-logback-classic = "1.3.15"
+# locked to 1.3.x as this is the last version to support Java 8
+# used at runtime by gcdm, uicdm (i.e., toolsUI), used by most tests
+logback-classic = "1.3.16"
 
 [libraries]
 
@@ -111,9 +113,10 @@ pragmatists-junitparams = { module = "pl.pragmatists:JUnitParams", version.ref =
 logback-classic = { module = "ch.qos.logback:logback-classic", version.ref = "logback-classic" }
 
 [plugins]
-cyclonedx-bom = { id = "org.cyclonedx.bom", version = "3.2.0" }
+cyclonedx-bom = { id = "org.cyclonedx.bom", version = "3.2.4" }
 execfork = { id = "com.github.psxpaul.execfork", version = "0.2.2"}
 javacc = { id = "org.javacc.javacc", version = "4.0.3" }
-protobuf = { id = "com.google.protobuf", version = "0.9.6" }
-shadow = { id = "com.gradleup.shadow", version = "9.3.2" }
-spotless = { id = "com.diffplug.spotless", version = "8.3.0" }
+protobuf = { id = "com.google.protobuf", version = "0.10.0" }
+shadow = { id = "com.gradleup.shadow", version = "9.4.1" }
+spotless = { id = "com.diffplug.spotless", version = "8.4.0" }
+versions = { id = "com.github.ben-manes.versions", version = "0.54.0" }
