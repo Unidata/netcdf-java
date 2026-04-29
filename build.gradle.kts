@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 2025-2026 University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 
@@ -42,3 +42,7 @@ tasks.register("buildPublicArtifacts") {
   }
   dependsOn(":uber-jars:buildNetcdfAll", ":uber-jars:buildToolsUI", ":uber-jars:buildNcIdv")
 }
+
+// we need some things from ncj-java-base-conventions for the root project,
+// but not because we are making a jar
+tasks.jar { enabled = false }
