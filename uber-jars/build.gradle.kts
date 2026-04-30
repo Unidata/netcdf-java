@@ -86,7 +86,7 @@ val buildNcIdv =
 
     doFirst {
       manifest.attributes(project(":cdm-core").tasks.jar.get().manifest.attributes)
-      manifest.attributes["Implementation-Title"] = "ncIdv jar"
+      manifest.attributes["Implementation-Title"] = "CDM for the IDV (ncIdv)"
       manifest {
         attributes["Built-On"] = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").format(Date())
       }
