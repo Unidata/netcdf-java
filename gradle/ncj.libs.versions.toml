@@ -117,6 +117,6 @@ cyclonedx-bom = { id = "org.cyclonedx.bom", version = "3.2.4" }
 execfork = { id = "com.github.psxpaul.execfork", version = "0.2.2"}
 javacc = { id = "org.javacc.javacc", version = "4.0.3" }
 protobuf = { id = "com.google.protobuf", version = "0.10.0" }
-shadow = { id = "com.gradleup.shadow", version = "9.4.1" }
-spotless = { id = "com.diffplug.spotless", version = "8.4.0" }
+shadow = { id = "com.gradleup.shadow", version = "9.4.2" }
+spotless = { id = "com.diffplug.spotless", version = "8.6.0" }
 versions = { id = "com.github.ben-manes.versions", version = "0.54.0" }
