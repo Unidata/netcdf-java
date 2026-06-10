@@ -1,7 +1,8 @@
 /*
- * Copyright (c) 1998-2025 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2026 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
+
 package ucar.nc2.dataset;
 
 import com.google.common.collect.ImmutableList;
@@ -239,7 +240,11 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
     // So, we need to reset to default before we process this new set.
     // LOOK this seems bogus
     if (orgDataType != null) {
-      setDataType(orgDataType);
+      // only reset if original DataType and current DataType are compatible (both
+      // are numeric or both are not numeric).
+      if (orgDataType.isNumeric() == dataType.isNumeric()) {
+        setDataType(orgDataType);
+      }
     }
 
     createEnhancements();
