@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2018 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2026 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 
@@ -513,8 +513,11 @@ public class FractalHeap {
         long childIndirectAddress = h5.readOffset();
         if (debugDetail || debugFractalHeap)
           debugOut.println("  InDirectChild " + row + " address= " + childIndirectAddress);
-        if (childIndirectAddress >= 0)
+        if (childIndirectAddress >= 0) {
+          long savePos = raf.getFilePointer();
           readIndirectBlock(iblock2, childIndirectAddress, heapAddress, hasFilter);
+          raf.seek(savePos);
+        }
       }
     }
 
