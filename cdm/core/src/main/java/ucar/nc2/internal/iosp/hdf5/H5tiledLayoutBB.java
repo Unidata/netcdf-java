@@ -1,7 +1,8 @@
 /*
- * Copyright (c) 1998-2018 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2026 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
+
 package ucar.nc2.internal.iosp.hdf5;
 
 import com.google.common.primitives.Ints;
@@ -71,9 +72,27 @@ public class H5tiledLayoutBB implements LayoutBB {
    */
   public H5tiledLayoutBB(Variable v2, Section wantSection, RandomAccessFile raf, H5objects.Filter[] filterProps,
       ByteOrder byteOrder) throws InvalidRangeException, IOException {
-    wantSection = Section.fill(wantSection, v2.getShape());
+    this((H5headerNew.Vinfo) v2.getSPobject(), v2.getShape(), v2.getElementSize(), wantSection, raf, filterProps,
+        byteOrder);
+  }
 
-    H5headerNew.Vinfo vinfo = (H5headerNew.Vinfo) v2.getSPobject();
+  /**
+   * This constructor can be used when the Variable is not yet built.
+   *
+   * @param vinfo the data object
+   * @param varShape the variable's shape
+   * @param elemSize the variable's element size in bytes
+   * @param wantSection the wanted section of data, contains a List of Range objects. must be complete
+   * @param raf the RandomAccessFile
+   * @param filterProps set of filter properties from which filter object will be created
+   * @throws InvalidRangeException if section invalid for this variable
+   * @throws IOException on io error
+   */
+  H5tiledLayoutBB(H5headerNew.Vinfo vinfo, int[] varShape, int elemSize, Section wantSection, RandomAccessFile raf,
+      H5objects.Filter[] filterProps, ByteOrder byteOrder) throws InvalidRangeException, IOException {
+
+    wantSection = Section.fill(wantSection, varShape);
+
     assert vinfo.isChunked;
     assert vinfo.btree != null;
 
@@ -82,7 +101,7 @@ public class H5tiledLayoutBB implements LayoutBB {
     for (int i = 0; i < filterProps.length; i++) {
       // add var info to filter props
       Map<String, Object> props = filterProps[i].getProperties();
-      props.put(Filters.Keys.ELEM_SIZE, v2.getElementSize());
+      props.put(Filters.Keys.ELEM_SIZE, elemSize);
       // try to get filter by name or id, throw if not recognized filter
       try {
         filters[i] = Filters.getFilter(props);
@@ -95,7 +114,7 @@ public class H5tiledLayoutBB implements LayoutBB {
     // we have to translate the want section into the same rank as the storageSize, in order to be able to call
     // Section.intersect(). It appears that storageSize (actually msl.chunkSize) may have an extra dimension, relative
     // to the Variable.
-    DataType dtype = v2.getDataType();
+    DataType dtype = vinfo.getNCDataType();
     if ((dtype == DataType.CHAR) && (wantSection.getRank() < vinfo.storageSize.length)) {
       this.want = Section.builder().appendRanges(wantSection.getRanges()).appendRange(1).build();
     } else {

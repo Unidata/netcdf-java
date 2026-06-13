@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2026 University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 
@@ -25,6 +25,7 @@ import ucar.ma2.ArrayObject;
 import ucar.ma2.ArrayStructure;
 import ucar.ma2.ArrayStructureBB;
 import ucar.ma2.DataType;
+import ucar.ma2.Index;
 import ucar.ma2.IndexIterator;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Section;
@@ -59,6 +60,7 @@ import ucar.nc2.internal.iosp.hdf5.H5objects.StructureMember;
 import ucar.nc2.write.NetcdfFileFormat;
 import ucar.nc2.iosp.IospHelper;
 import ucar.nc2.iosp.Layout;
+import ucar.nc2.iosp.LayoutBB;
 import ucar.nc2.iosp.LayoutRegular;
 import ucar.nc2.iosp.hdf5.DataBTree;
 import ucar.nc2.iosp.hdf5.H5headerIF;
@@ -1957,6 +1959,29 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
     Array readArray() throws IOException {
       int[] shape = mds.dimLength;
       DataType dataType = typeInfo.dataType;
+
+      if (useFillValue) {
+        Object pa = IospHelper.makePrimitiveArray((int) Index.computeSize(shape), dataType, getFillValue());
+        if (dataType == DataType.CHAR)
+          pa = IospHelper.convertByteToChar((byte[]) pa);
+        return Array.factory(dataType, shape, pa);
+      }
+
+      // filtered, must read and decode by chunk
+      if (mfp != null) {
+        ByteOrder bo = (typeInfo.endian == 0) ? ByteOrder.BIG_ENDIAN : ByteOrder.LITTLE_ENDIAN;
+        LayoutBB layoutBB;
+        try {
+          layoutBB = new H5tiledLayoutBB(this, shape, dataType.getSize(), new Section(shape), getRandomAccessFile(),
+              mfp.getFilters(), bo);
+        } catch (InvalidRangeException e) {
+          // should not happen because we passed in the full shape
+          throw new IllegalStateException();
+        }
+        Object data = IospHelper.readDataFill(layoutBB, dataType, getFillValue());
+        return Array.factory(dataType, shape, data);
+      }
+
       Layout layout;
       try {
         if (isChunked) {
@@ -1977,6 +2002,15 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
     String readString() throws IOException {
       int[] shape = new int[] {mdt.byteSize};
       DataType dataType = typeInfo.dataType;
+
+      if (useFillValue) {
+        Object pa = IospHelper.makePrimitiveArray((int) Index.computeSize(shape), dataType, getFillValue());
+        if (dataType == DataType.CHAR)
+          pa = IospHelper.convertByteToChar((byte[]) pa);
+        Array dataArray = Array.factory(dataType, shape, pa);
+        return (dataArray instanceof ArrayChar.D1) ? ((ArrayChar) dataArray).getString() : "";
+      }
+
       Layout layout;
       try {
         if (isChunked) {
