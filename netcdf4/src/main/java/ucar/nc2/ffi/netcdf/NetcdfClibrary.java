@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2026 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 
@@ -32,6 +32,8 @@ public class NetcdfClibrary {
   // Track if already tested for library presence.
   private static Boolean isClibraryPresent;
 
+  private static boolean strictRead = false;
+
   /**
    * Set the path and name of the netcdf c library.
    * <p>
@@ -45,7 +47,25 @@ public class NetcdfClibrary {
    * @param lib_name library name, may be null. If null, will use "netcdf".
    */
   public static void setLibraryNameAndPath(@Nullable String jna_path, @Nullable String lib_name) {
+    setLibraryNameAndPath(jna_path, lib_name, false);
+  }
 
+  /**
+   * Set the path and name of the netcdf c library.
+   * <p>
+   * Must be called prior to calling {@link #isLibraryPresent() isLibraryPresent}
+   * or {@link #getForeignFunctionInterface() getForeignFunctionInterface}, as
+   * the C library can only be successfully loaded once.
+   *
+   * @param jna_path path to shared libraries, may be null. If null, will look for system property
+   *        "jna.library.path", then environment variable "JNA_PATH". If set, will set
+   *        the environment variable "JNA_PATH".
+   * @param lib_name library name, may be null. If null, will use "netcdf".
+   * @param strict if true, only attempt to read files through the netCDF-C library that are likely
+   *        netCDF-4 files, not just any HDF5 file.
+   *
+   */
+  public static void setLibraryNameAndPath(@Nullable String jna_path, @Nullable String lib_name, boolean strict) {
     if (nc4 != null) {
       log.warn("netCDF-C library already set, ignoring.");
       return;
@@ -72,6 +92,7 @@ public class NetcdfClibrary {
 
     libName = lib_name;
     jnaPath = jna_path;
+    strictRead = strict;
 
     if ((isClibraryPresent == null || !isClibraryPresent) && jnaPath != null) {
       // call load to retry loading, but this time with jnaPath set
@@ -143,6 +164,10 @@ public class NetcdfClibrary {
       lh.getNativeLibrary().close();
       nc4 = null;
     }
+  }
+
+  public static boolean isStrictRead() {
+    return strictRead;
   }
 
   private static Nc4prototypes load() {
