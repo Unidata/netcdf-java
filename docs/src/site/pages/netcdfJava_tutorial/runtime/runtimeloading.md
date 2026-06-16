@@ -1,6 +1,6 @@
 ---
 title: Runtime loading
-last_updated: 2025-08-15
+last_updated: 2026-06-16
 sidebar: netcdfJavaTutorial_sidebar
 permalink: runtime_loading.html
 toc: false
@@ -122,7 +122,7 @@ The configuration file looks like this:
   <Netcdf4Clibrary>{% raw %}{% annotation 9 %}{% endraw %}
     <libraryPath>/usr/local/lib</libraryPath>
     <libraryName>netcdf</libraryName>
-    <useForReading>false</useForReading>
+    <useForReading strict="false">false</useForReading>
   </Netcdf4Clibrary>
 </runtimeConfig>
 {% endhighlight_with_annotations %}
@@ -138,8 +138,10 @@ The configuration file looks like this:
 * {% annotation 9 %} Configure how the [NetCDF-4 C library](netcdf4_c_library.html) is discovered and used.
     * `libraryPath`: The directory in which the native library is installed.
     * `libraryName`: The name of the native library. This will be used to locate the proper `.DLL`, `.SO`, or `.DYLIB` file within the `libraryPath` directory.
-    * `useForReading`: By default, the native library is only used for writing NetCDF-4 files; a pure-Java layer is responsible for reading them. 
-    However, if this property is set to `true`, then it will be used for reading NetCDF-4 (and HDF5) files as well.
+    * `useForReading`: By default, the native library is only used for writing NetCDF-4 files; a pure-Java layer is responsible for reading them.
+    However, if this property is set to `true`, then the native library will be used for reading.
+    When enabled, all HDF5 files will be read by the native netCDF-C library.
+    However, if the strict attribute on the `useForReading` element is set to `true`, then the netCDF-C library will only be used to read in files that are highly likely to be netCDF-4 files (vanilla HDF5 files will still be read by the pure-Java layer).
     
 There are several ways pass the Runtime Configuration XML to the CDM library. From your application, you can pass a `java.io.InputStream` (or JDOM element) to 
 `ucar.nc2.util.xml.RuntimeConfigParser`, as in the following examples:

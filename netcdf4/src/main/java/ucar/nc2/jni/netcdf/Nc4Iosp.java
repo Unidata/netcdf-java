@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2025 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2026 University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 
@@ -132,6 +132,36 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
 
   public static void setDebugFlags(DebugFlags flags) {}
 
+  private static boolean isLikelyNetcdf4(RandomAccessFile raf) {
+    boolean likelyNc4 = false;
+    // Check if likely netCDF-4 file (to prevent reading vanilla HDF5 through the netCDF-C library)
+    // See https://github.com/Unidata/netcdf-c/discussions/3085
+    // Note: netCDF-4 files written outside the netCDF-C library may not pass these checks.
+    IntByReference test_ncid = new IntByReference();
+    int ret = nc4.nc_open(raf.getLocation(), NC_NOWRITE, test_ncid);
+    SizeTByReference lenp = new SizeTByReference();
+    // Does _NCProperties global attribute exist?
+    ret = nc4.nc_inq_attlen(test_ncid.getValue(), NC_GLOBAL, "_NCCCCC", lenp);
+    // ret = nc4.nc_inq_attlen(test_ncid.getValue(), NC_GLOBAL, CDM.NCPROPERTIES, lenp);
+    likelyNc4 = ret == NC_NOERR;
+    if (!likelyNc4) {
+      // Does _IsNetcdf4 global attribute exist, and is its value not 0?
+      // note: newer versions of netCDF-C include the _NCProperties check as part of determining
+      // the value of this attribute, but not all, so we need both checks.
+      lenp = new SizeTByReference();
+      ret = nc4.nc_inq_attlen(test_ncid.getValue(), NC_GLOBAL, CDM.ISNETCDF4, lenp);
+      if (ret == NC_NOERR && lenp.getValue().longValue() == 1) {
+        int[] isnc4 = new int[1];
+        ret = nc4.nc_get_att_int(test_ncid.getValue(), NC_GLOBAL, CDM.ISNETCDF4, isnc4);
+        likelyNc4 = ret == NC_NOERR && isnc4[0] != 0;
+      }
+    }
+    if (!likelyNc4) {
+      log.debug("May not be a netCDF-4 file: {}; falling back to HDF5 IOSP.", raf.getLocation());
+    }
+    return likelyNc4;
+  }
+
   //////////////////////////////////////////////////
   // Instance Variables
 
@@ -177,24 +207,32 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
   @Override
   public boolean isValidFile(RandomAccessFile raf) throws IOException {
     int format = NCheader.checkFileType(raf);
-    boolean valid = false;
+    boolean validCheck1 = false;
     switch (format) {
       case NCheader.NC_FORMAT_NETCDF4:
       case NCheader.NC_FORMAT_64BIT_DATA:
-        valid = true;
+        validCheck1 = true;
         break;
       default:
         break;// everything else is invalid
     }
-    if (valid) {
-      if (isClibraryPresent()) {
-        return true;
+
+    boolean validCheck2 = false;
+    if (!validCheck1) {
+      log.debug("File cannot be opened by Nc4Iosp: {}", raf.getLocation());
+    } else if (!isClibraryPresent()) {
+      log.debug("File appears to be valid but netCDF-C isn't installed: {}", raf.getLocation());
+    } else {
+      // file appears to be valid and netCDF-c is present
+      if (NetcdfClibrary.isStrictRead()) {
+        // strictly limit to reading files that are very likely netcdf4
+        validCheck2 = isLikelyNetcdf4(raf);
       } else {
-        log.debug("File is valid but the NetCDF-4 native library isn't installed: {}", raf.getLocation());
+        // try to read all HDF5 files through the netCDF-C library
+        validCheck2 = true;
       }
     }
-
-    return false;
+    return validCheck2;
   }
 
   // 2016-06-06 note: Once netcdf-c v4.4.1 is released, we should be able to return much better information from

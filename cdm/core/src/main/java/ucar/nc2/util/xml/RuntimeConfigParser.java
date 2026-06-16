@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2025 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2026 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 
@@ -282,20 +282,27 @@ public class RuntimeConfigParser {
           String name = elem.getChildText("libraryName");
           errlog.append(
               String.format("Netcdf4Clibrary from NJ22CONFIG: libraryPath = '%s', libraryName = '%s' \n", path, name));
+
+          Element useForReadingElm = elem.getChild("useForReading");
+          boolean useForReading = Boolean.parseBoolean(useForReadingElm.getText());
+          errlog.append(String.format("    useForReading = '%s' \n", useForReading));
+
+          boolean strict = Boolean.parseBoolean(useForReadingElm.getAttributeValue("strict"));
+          errlog.append(String.format("    strictReader = '%s' \n", strict));
+
           if (path != null && name != null) {
             // reflection is used to decouple optional jars
             try {
               Class<?> netcdfClibraryClass =
                   RuntimeConfigParser.class.getClassLoader().loadClass(netcdfClibraryClassName);
-              Method method = netcdfClibraryClass.getMethod("setLibraryNameAndPath", String.class, String.class);
-              method.invoke(null, path, name); // static method has null for object
+              Method method =
+                  netcdfClibraryClass.getMethod("setLibraryNameAndPath", String.class, String.class, boolean.class);
+              method.invoke(null, path, name, strict); // static method has null for object
             } catch (Throwable e) {
               errlog.append(netcdfClibraryClassName + " is not on classpath\n");
             }
           }
 
-          boolean useForReading = Boolean.parseBoolean(elem.getChildText("useForReading"));
-          errlog.append(String.format("    useForReading = '%s' \n", useForReading));
           if (useForReading) {
             try {
               // Registers Nc4Iosp in front of all the other IOSPs already registered in NetcdfFile.<clinit>().
