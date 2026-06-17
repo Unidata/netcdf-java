@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 2021-2026 University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 
@@ -53,7 +53,9 @@ public class TestZarrDataTypes {
   // string variable names
   private static final String CHAR = "/string_types/char_data";
   private static final String STRING = "/string_types/str_data";
+  private static final String STRING2 = "/string_types/str_data_2";
   private static final String UNICODE = "/string_types/unicode_data";
+  private static final String UNICODE2 = "/string_types/unicode_data_2";
 
   private static NetcdfFile ncfile;
 
@@ -205,7 +207,11 @@ public class TestZarrDataTypes {
     assertThat(var.read("2,4").getChar(0)).isEqualTo('a');
     var = ncfile.findVariable(STRING);
     assertThat(var.read("0,7").toString().trim()).isEqualTo("abcd");
+    var = ncfile.findVariable(STRING2);
+    assertThat(var.read("0,7").toString().trim()).isEqualTo("ab");
     var = ncfile.findVariable(UNICODE);
-    assertThat(var.read("5,3").toString().trim()).isEqualTo("d");
+    assertThat(var.read("5,3").toString().trim()).isEqualTo("abcd");
+    var = ncfile.findVariable(UNICODE2);
+    assertThat(var.read("5,3").toString().trim()).isEqualTo("ab");
   }
 }

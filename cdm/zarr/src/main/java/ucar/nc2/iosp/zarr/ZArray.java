@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-2026 University Corporation for Atmospheric Research/Unidata
+ * See LICENSE for license information.
+ */
+
 package ucar.nc2.iosp.zarr;
 
 import com.fasterxml.jackson.core.JsonParser;
@@ -16,6 +21,7 @@ import ucar.nc2.filter.UnknownFilterException;
 import java.io.IOException;
 import java.nio.ByteOrder;
 import java.util.*;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -35,6 +41,10 @@ public class ZArray {
 
   // maps zarr datatypes to CDM datatypes
   private static Map<String, DataType> dTypeMap;
+
+  // regex for matching numpy byteorder marks
+  // see https://numpy.org/doc/stable/reference/generated/numpy.dtype.byteorder.html#numpy-dtype-byteorder
+  private static final Pattern BYTE_ORDER_PATTERN = Pattern.compile("[><|=]");
 
   static {
     dTypeMap = new HashMap<>();
@@ -71,6 +81,8 @@ public class ZArray {
   private final Order order;
   private final List<Filter> filters;
   private final String separator;
+  private final int elementSize; // size of a single element on disk, in bytes
+  private final boolean unicodeString; // true for numpy U dtype fixed-length strings
 
   public ZArray(int[] shape, int[] chunks, Object fill_value, String dtype, Filter compressor, String order,
       List<Filter> filters, String separator) throws ZarrFormatException {
@@ -80,6 +92,8 @@ public class ZArray {
     this.dtype = dtype;
     this.datatype = parseDataType(this.dtype);
     this.byteOrder = parseByteOrder(this.dtype);
+    this.elementSize = parseElementSize(this.dtype);
+    this.unicodeString = stripByteOrder(this.dtype).charAt(0) == 'U';
     this.compressor = compressor;
     this.filters = filters;
     this.order = parseOrder(order);
@@ -126,15 +140,55 @@ public class ZArray {
     return this.byteOrder;
   }
 
+  /**
+   * The size, in bytes, of a single element of this array as stored on disk.
+   */
+  public int getElementSize() {
+    return this.elementSize;
+  }
+
+  /**
+   * True if this array holds numpy U dtype.
+   */
+  boolean isUnicodeString() {
+    return this.unicodeString;
+  }
+
+  private static String stripByteOrder(String dtype) {
+    return BYTE_ORDER_PATTERN.matcher(dtype).replaceAll("");
+  }
+
   private static DataType parseDataType(String dtype) throws ZarrFormatException {
-    dtype = dtype.replace(">", "");
-    dtype = dtype.replace("<", "");
-    dtype = dtype.replace("|", "");
+    dtype = stripByteOrder(dtype);
+    final char typeChar = dtype.charAt(0);
+    // S (fixed-length byte strings) and U (fixed-length unicode strings) do not follow the
+    // usual [type char][type size in bytes] pattern: the trailing integer is a fixed character
+    // count, not a byte size. See https://github.com/Unidata/netcdf-java/issues/1534
+    if (typeChar == 'S' || typeChar == 'U') {
+      final int nChars = parseLength(dtype);
+      // a single byte char maps to CDM CHAR, otherwise it is a fixed-length String
+      return (typeChar == 'S' && nChars == 1) ? DataType.CHAR : DataType.STRING;
+    }
     DataType dataType = dTypeMap.get(dtype);
     if (dataType == null) {
       throw new ZarrFormatException(ZarrKeys.DTYPE, dtype);
     }
     return dataType;
+  }
+
+  private static int parseElementSize(String dtype) throws ZarrFormatException {
+    dtype = stripByteOrder(dtype);
+    final char typeChar = dtype.charAt(0);
+    final int length = parseLength(dtype);
+    return (typeChar == 'U') ? 4 * length : length;
+  }
+
+  private static int parseLength(String dtype) throws ZarrFormatException {
+    try {
+      return Integer.parseInt(dtype.substring(1));
+    } catch (NumberFormatException | IndexOutOfBoundsException ex) {
+      throw new ZarrFormatException(ZarrKeys.DTYPE, dtype);
+    }
   }
 
   private static ByteOrder parseByteOrder(String dtype) throws ZarrFormatException {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 2021-2026 University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 
@@ -20,6 +20,10 @@ import ucar.unidata.io.zarr.RandomAccessDirectory;
 
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 /**
  * IOSP for reading/writing Zarr/NCZarr formats
@@ -83,8 +87,14 @@ public class ZarrIosp extends AbstractIOServiceProvider {
     Object fillValue = getFillValue(vinfo, dataType);
 
     // create layout object
-    Layout layout = new ZarrLayoutBB(v2, section, this.raf);
-    Object data = IospHelper.readDataFill((LayoutBB) layout, dataType, fillValue);
+    LayoutBB layout = new ZarrLayoutBB(v2, section, this.raf);
+    final Object data;
+    if (dataType == DataType.STRING) {
+      // fixed-length string types (S/U) need custom decoding (not handled by the generic IospHelper string reader).
+      data = readStringData(layout, vinfo, fillValue);
+    } else {
+      data = IospHelper.readDataFill(layout, dataType, fillValue);
+    }
 
     Array array = Array.factory(dataType, section.getShape(), data);
     if (vinfo.getOrder() == ZArray.Order.F) {
@@ -97,6 +107,56 @@ public class ZarrIosp extends AbstractIOServiceProvider {
     }
 
     return array;
+  }
+
+  /**
+   * Read fixed-length string data ('S' or 'U' dtypes) from the layout.
+   *
+   * <p>
+   * See https://github.com/Unidata/netcdf-java/issues/1534
+   */
+  private static String[] readStringData(LayoutBB layout, ZarrHeader.VInfo vinfo, Object fillValue) {
+    final int nelems = (int) layout.getTotalNelems();
+    final int recSize = layout.getElemSize();
+    final String[] pa = new String[nelems];
+    if (fillValue instanceof String) {
+      java.util.Arrays.fill(pa, (String) fillValue);
+    }
+
+    final Charset charset;
+    if (vinfo.isUnicodeString()) {
+      charset =
+          vinfo.getByteOrder() == ByteOrder.BIG_ENDIAN ? Charset.forName("UTF-32BE") : Charset.forName("UTF-32LE");
+    } else {
+      charset = StandardCharsets.UTF_8;
+    }
+
+    while (layout.hasNext()) {
+      LayoutBB.Chunk chunk = layout.next();
+      ByteBuffer bb = chunk.getByteBuffer();
+      // if chunk is empty, use fill value
+      if (!bb.hasRemaining()) {
+        continue;
+      }
+      bb.position(chunk.getSrcElem() * recSize);
+      int pos = (int) chunk.getDestElem();
+      final byte[] raw = new byte[recSize];
+      for (int i = 0; i < chunk.getNelems(); i++) {
+        bb.get(raw);
+        pa[pos++] = decodeFixedLengthString(raw, charset);
+      }
+    }
+    return pa;
+  }
+
+  private static String decodeFixedLengthString(byte[] raw, Charset charset) {
+    String s = new String(raw, charset);
+    // NumPy fixed-length strings are null-padded, so strip trailing NUL characters
+    int end = s.length();
+    while (end > 0 && s.charAt(end - 1) == '\0') {
+      end--;
+    }
+    return s.substring(0, end);
   }
 
   private Object getFillValue(ZarrHeader.VInfo vinfo, DataType dataType) {
