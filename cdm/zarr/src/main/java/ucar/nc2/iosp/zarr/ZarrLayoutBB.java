@@ -62,7 +62,7 @@ public class ZarrLayoutBB implements LayoutBB {
     for (int i = 0; i < ndims; i++) {
       Dimension dim = v2.getDimension(i);
       // round up nchunks if not evenly divisible by chunk size
-      this.nChunks[i] = (int) Math.ceil(dim.getLength() / this.chunkSize[i]);
+      this.nChunks[i] = (int) Math.ceil((double) dim.getLength() / this.chunkSize[i]);
       this.totalNChunks *= nChunks[i];
     }
 

@@ -397,7 +397,7 @@ public class ZarrHeader {
       int[] shape = zarray.getShape();
       int[] chunkSize = zarray.getChunks();
       for (int i = 0; i < nDims; i++) {
-        nChunks[i] = (int) Math.ceil(shape[i] / chunkSize[i]);
+        nChunks[i] = (int) Math.ceil((double) shape[i] / chunkSize[i]);
       }
       return ZarrUtils.subscriptsToIndex(subs, nChunks);
     } else {
