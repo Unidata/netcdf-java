@@ -447,7 +447,8 @@ public class TestZarrIosp {
     assertThat(var.getShape()).isEqualTo(new int[] {100, 100});
     // chunk size is 10 x 5
     // read first 10 values, which would be chunk 0.0 and 0.1
-    // does not trigger failure as seen in https://github.com/Unidata/netcdf-java/issues/1542 because chunks are same size
+    // does not trigger failure as seen in https://github.com/Unidata/netcdf-java/issues/1542 because chunks are same
+    // size
     Array data = var.read("0,0:9");
     assertThat(data).isNotNull();
     assertThat(data.get1DJavaArray(DataType.INT)).isEqualTo(new int[] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9});

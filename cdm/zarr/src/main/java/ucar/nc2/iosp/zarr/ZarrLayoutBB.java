@@ -122,7 +122,7 @@ public class ZarrLayoutBB implements LayoutBB {
     DataChunkIterator() {
       this.currChunk = new int[chunkSize.length];
       this.chunkNum = 0;
- this.currOffset = chunkStarts.getOrDefault(this.chunkNum, varOffset);
+      this.currOffset = chunkStarts.getOrDefault(this.chunkNum, varOffset);
     }
 
     public boolean hasNext() {
