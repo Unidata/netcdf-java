@@ -54,6 +54,7 @@ public class ZarrHeader {
     private RandomAccessDirectoryItem var;
     private ZArray zarray;
     private Map<Integer, Long> initializedChunks; // track any uninitialized chunks for var
+    private Map<Integer, Long> chunkStarts; // byte offset of each chunk within the store, keyed by chunk index
     private List<Attribute> attrs; // list of variable attributes
     private long dataOffset; // byte position where data starts
 
@@ -65,6 +66,7 @@ public class ZarrHeader {
       this.var = var;
       this.attrs = null;
       this.initializedChunks = new HashMap<>();
+      this.chunkStarts = new HashMap<>();
       this.dataOffset = -1;
       if (var != null) {
         try {
@@ -104,6 +106,11 @@ public class ZarrHeader {
         this.var = null; // skip rest of var is unrecognized files found
       }
       this.initializedChunks.put(index, item.length());
+      // Record the actual byte offset of this chunk within the store, keyed by its numeric chunk index.
+      // This avoids any dependency on the order in which the store lists files (which is lexicographic
+      // and would otherwise place e.g. chunk 0.10 before chunk 0.2, which is the root cause of
+      // https://github.com/Unidata/netcdf-java/issues/1542)
+      this.chunkStarts.put(index, item.startIndex());
       // if data offset is uninitialized, set here
       if (this.dataOffset < 0) {
         this.dataOffset = item.startIndex();
@@ -115,7 +122,7 @@ public class ZarrHeader {
         return; // do nothing if no variable is in progress
       }
       try {
-        makeVariable(var, dataOffset, zarray, initializedChunks, attrs);
+        makeVariable(var, dataOffset, zarray, initializedChunks, chunkStarts, attrs);
       } catch (ZarrFormatException ex) {
         logger.error(ex.getMessage());
       }
@@ -200,7 +207,8 @@ public class ZarrHeader {
   }
 
   private void makeVariable(RandomAccessDirectoryItem item, long dataOffset, ZArray zarray,
-      Map<Integer, Long> initializedChunks, List<Attribute> attrs) throws ZarrFormatException {
+      Map<Integer, Long> initializedChunks, Map<Integer, Long> chunkStarts, List<Attribute> attrs)
+      throws ZarrFormatException {
     // make new Variable
     Variable.Builder<?> var = Variable.builder();
     String location = ZarrUtils.trimLocation(item.getLocation());
@@ -303,7 +311,7 @@ public class ZarrHeader {
 
     // create VInfo
     VInfo vinfo = new VInfo(chunks, zarray.getFillValue(), zarray.getCompressor(), zarray.getByteOrder(),
-        zarray.getOrder(), zarray.getSeparator(), zarray.getFilters(), dataOffset, initializedChunks,
+        zarray.getOrder(), zarray.getSeparator(), zarray.getFilters(), dataOffset, initializedChunks, chunkStarts,
         zarray.getElementSize(), zarray.isUnicodeString());
     var.setSPobject(vinfo);
 
@@ -422,12 +430,13 @@ public class ZarrHeader {
     private final List<Filter> filters;
     private final long offset;
     private final Map<Integer, Long> initializedChunks;
+    private final Map<Integer, Long> chunkStarts;
     private final int elementSize;
     private final boolean unicodeString;
 
     VInfo(int[] chunks, Object fillValue, Filter compressor, ByteOrder byteOrder, ZArray.Order order, String separator,
-        List<Filter> filters, long offset, Map<Integer, Long> initializedChunks, int elementSize,
-        boolean unicodeString) {
+        List<Filter> filters, long offset, Map<Integer, Long> initializedChunks, Map<Integer, Long> chunkStarts,
+        int elementSize, boolean unicodeString) {
       this.chunks = chunks;
       this.fillValue = fillValue;
       this.byteOrder = byteOrder;
@@ -437,6 +446,7 @@ public class ZarrHeader {
       this.filters = filters;
       this.offset = offset;
       this.initializedChunks = initializedChunks;
+      this.chunkStarts = chunkStarts;
       this.elementSize = elementSize;
       this.unicodeString = unicodeString;
     }
@@ -475,6 +485,10 @@ public class ZarrHeader {
 
     public Map<Integer, Long> getInitializedChunks() {
       return this.initializedChunks;
+    }
+
+    public Map<Integer, Long> getChunkStarts() {
+      return this.chunkStarts;
     }
 
     int getElementSize() {

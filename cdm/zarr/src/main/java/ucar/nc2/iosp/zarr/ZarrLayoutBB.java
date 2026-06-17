@@ -38,6 +38,7 @@ public class ZarrLayoutBB implements LayoutBB {
   private int totalNChunks; // total number of chunks
   private boolean F_order = false; // F order storage?
   private Map<Integer, Long> initializedChunks; // set of chunks that exist as files and their compressed size
+  private Map<Integer, Long> chunkStarts; // byte offset of each existing chunk within the store, keyed by chunk index
   private Filter compressor;
   private List<Filter> filters;
 
@@ -55,6 +56,7 @@ public class ZarrLayoutBB implements LayoutBB {
     this.chunkSize = vinfo.getChunks();
     int ndims = this.chunkSize.length;
     this.initializedChunks = vinfo.getInitializedChunks();
+    this.chunkStarts = vinfo.getChunkStarts();
     this.nChunks = new int[ndims];
     this.totalNChunks = 1;
     for (int i = 0; i < ndims; i++) {
@@ -120,7 +122,7 @@ public class ZarrLayoutBB implements LayoutBB {
     DataChunkIterator() {
       this.currChunk = new int[chunkSize.length];
       this.chunkNum = 0;
-      this.currOffset = varOffset; // start at start of variable data
+ this.currOffset = chunkStarts.getOrDefault(this.chunkNum, varOffset);
     }
 
     public boolean hasNext() {
@@ -128,7 +130,8 @@ public class ZarrLayoutBB implements LayoutBB {
     }
 
     public LayoutBBTiled.DataChunk next() {
-      DataChunk chunk = new ZarrLayoutBB.DataChunk(this.currChunk, this.chunkNum, this.currOffset);
+      long offset = chunkStarts.getOrDefault(this.chunkNum, this.currOffset);
+      DataChunk chunk = new ZarrLayoutBB.DataChunk(this.currChunk, this.chunkNum, offset);
       incrementChunk();
       return chunk;
     }
@@ -142,7 +145,6 @@ public class ZarrLayoutBB implements LayoutBB {
           i--;
         }
         this.currChunk[i]++;
-        this.currOffset += initializedChunks.getOrDefault(this.chunkNum, (long) 0);
         this.chunkNum = ZarrUtils.subscriptsToIndex(this.currChunk, nChunks);
       } else {
         // scalar array
