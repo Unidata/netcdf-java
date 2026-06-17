@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2025 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 2021-2026 University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 
@@ -80,7 +80,10 @@ public class ZarrLayoutBB implements LayoutBB {
       this.want = wantSection;
     }
 
-    this.elemSize = v2.getDataType().getSize();
+    // Use the on-disk element byte width from the .zarray metadata. For most types this matches
+    // DataType.getSize(), but for fixed-length string types (S/U) it captures the true element
+    // width (N bytes for S, 4*N bytes for U).
+    this.elemSize = vinfo.getElementSize();
 
     // create delegate and chunk iterator
     ZarrLayoutBB.DataChunkIterator iter = new ZarrLayoutBB.DataChunkIterator();

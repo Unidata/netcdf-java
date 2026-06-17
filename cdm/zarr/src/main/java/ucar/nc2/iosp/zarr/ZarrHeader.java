@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2025 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 2021-2026 University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 
@@ -303,7 +303,8 @@ public class ZarrHeader {
 
     // create VInfo
     VInfo vinfo = new VInfo(chunks, zarray.getFillValue(), zarray.getCompressor(), zarray.getByteOrder(),
-        zarray.getOrder(), zarray.getSeparator(), zarray.getFilters(), dataOffset, initializedChunks);
+        zarray.getOrder(), zarray.getSeparator(), zarray.getFilters(), dataOffset, initializedChunks,
+        zarray.getElementSize(), zarray.isUnicodeString());
     var.setSPobject(vinfo);
 
     // Include some info from .zarray file in attributes for display when showing variable detail.
@@ -421,9 +422,12 @@ public class ZarrHeader {
     private final List<Filter> filters;
     private final long offset;
     private final Map<Integer, Long> initializedChunks;
+    private final int elementSize;
+    private final boolean unicodeString;
 
     VInfo(int[] chunks, Object fillValue, Filter compressor, ByteOrder byteOrder, ZArray.Order order, String separator,
-        List<Filter> filters, long offset, Map<Integer, Long> initializedChunks) {
+        List<Filter> filters, long offset, Map<Integer, Long> initializedChunks, int elementSize,
+        boolean unicodeString) {
       this.chunks = chunks;
       this.fillValue = fillValue;
       this.byteOrder = byteOrder;
@@ -433,6 +437,8 @@ public class ZarrHeader {
       this.filters = filters;
       this.offset = offset;
       this.initializedChunks = initializedChunks;
+      this.elementSize = elementSize;
+      this.unicodeString = unicodeString;
     }
 
     public int[] getChunks() {
@@ -469,6 +475,14 @@ public class ZarrHeader {
 
     public Map<Integer, Long> getInitializedChunks() {
       return this.initializedChunks;
+    }
+
+    int getElementSize() {
+      return this.elementSize;
+    }
+
+    boolean isUnicodeString() {
+      return this.unicodeString;
     }
 
   }

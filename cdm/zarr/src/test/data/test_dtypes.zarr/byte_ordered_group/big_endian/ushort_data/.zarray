@@ -1,16 +1,17 @@
 {
-    "chunks": [
-        2,
-        5
-    ],
-    "compressor": null,
-    "dtype": ">u2",
-    "fill_value": 0,
-    "filters": null,
-    "order": "C",
-    "shape": [
-        4,
-        5
-    ],
-    "zarr_format": 2
+  "shape": [
+    4,
+    5
+  ],
+  "chunks": [
+    2,
+    5
+  ],
+  "dtype": ">u2",
+  "fill_value": 0,
+  "order": "C",
+  "filters": null,
+  "dimension_separator": ".",
+  "compressor": null,
+  "zarr_format": 2
 }
