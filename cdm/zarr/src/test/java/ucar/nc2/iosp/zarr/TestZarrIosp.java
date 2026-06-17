@@ -42,6 +42,7 @@ public class TestZarrIosp {
   private static final String FILL_VALUES_FILENAME = "fill_values.zarr";
   private static final String SCALAR_GEOZARR_FILENAME = "geozarr/xyt-raster.zarr";
   private static final String BOOLEAN_ATTRIBUTE_FILENAME = "z0_atm.zip";
+  private static final String O10_MULTICHUNK_FILENAME = "test_o10_multichunk.zarr";
 
   // test store paths
   private static final String OBJECT_STORE_ZARR_URI = ZarrTestsCommon.S3_PREFIX + ZarrTestsCommon.AWS_BUCKET_NAME + "?"
@@ -62,6 +63,9 @@ public class TestZarrIosp {
 
   // scalar geozarr data
   private static final String SCALAR_GEOZARR_DATA = ZarrTestsCommon.LOCAL_TEST_DATA_PATH + SCALAR_GEOZARR_FILENAME;
+
+  // zarr array with O(10) chunks in each dimension
+  private static final String O10_MULTICHUNK_DATA = ZarrTestsCommon.LOCAL_TEST_DATA_PATH + O10_MULTICHUNK_FILENAME;
 
   // Boolean attribute data
   private static final String BOOLEAN_ATTRIBUTE_DATA =
@@ -421,4 +425,41 @@ public class TestZarrIosp {
     assertThat(mm.max).isWithin(1e-7).of(expectedMax);
   }
 
+  @Test
+  public void testChunkSortCompressed() throws IOException {
+    // ensure we get the chunk order correct when chunks are compressed
+    NetcdfFile ncfile = NetcdfFiles.open(O10_MULTICHUNK_DATA);
+    Variable var = ncfile.findVariable("ten_by_five_blosc");
+    assertThat(var != null).isTrue();
+    // triggers exact failure as seen in https://github.com/Unidata/netcdf-java/issues/1542
+    Array data = var.read();
+    assertThat(data).isNotNull();
+  }
+
+  @Test
+  public void testChunkSortNotCompressed() throws IOException, InvalidRangeException {
+    // ensure we get the chunk order correct when chunks are not compressed (all same size)
+    NetcdfFile ncfile = NetcdfFiles.open(O10_MULTICHUNK_DATA);
+    Variable var = ncfile.findVariable("ten_by_five");
+    assertThat(var != null).isTrue();
+    // shape of variable is 100 x 100
+
+    assertThat(var.getShape()).isEqualTo(new int[] {100, 100});
+    // chunk size is 10 x 5
+    // read first 10 values, which would be chunk 0.0 and 0.1
+    // does not trigger failure as seen in https://github.com/Unidata/netcdf-java/issues/1542 because chunks are same
+    // size
+    Array data = var.read("0,0:9");
+    assertThat(data).isNotNull();
+    assertThat(data.get1DJavaArray(DataType.INT)).isEqualTo(new int[] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9});
+    // but the issue underlying https://github.com/Unidata/netcdf-java/issues/1542 will cause this to fail
+    // because chunk order sorting is not correct.
+    // the next 10 values should come from chunks 0.2 and 0.3
+    data = var.read("0,10:19");
+    assertThat(data).isNotNull();
+    // unfortunately, this was failing because they were coming from chunks 0.10 and 0.11, which is out of
+    // order (and due to lexigraphic sorting of chunk files as opposed to numeric sorting of chunk files)
+    // note: values were [50, 59], not [10-19]
+    assertThat(data.get1DJavaArray(DataType.INT)).isEqualTo(new int[] {10, 11, 12, 13, 14, 15, 16, 17, 18, 19});
+  }
 }
