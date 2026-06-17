@@ -196,12 +196,13 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
   }
 
   /**
-   * Checks whether {@code raf} is a valid file NetCDF-4 file. Actually, it checks whether it is a valid HDF-5 file of
-   * any type. Furthermore, it checks whether the NetCDF C library is available on the system. If both conditions are
-   * satisfied, this method returns {@code true}; otherwise it returns {@code false}.
+   * Checks whether {@code raf} is a HDF-5 or CDF-5 file. Furthermore, it checks whether the netCDF-C library
+   * is available on the system. If {@link NetcdfClibrary#isStrictRead()} is {@code true}, it strictly limits
+   * reading to files that are likely netCDF-4, not just any HDF-5 file. If {@code false}, it will attempt to
+   * read any HDF-5 or CDF-5 file through the netCDF-C library.
    *
    * @param raf a file on disk.
-   * @return {@code true} if {@code raf} is a valid HDF-5 file and the NetCDF C library is available.
+   * @return {@code true} if {@code raf} is a valid HDF-5 or CDF-5 file and the netCDF-C library is available.
    * @throws IOException if an I/O error occurs.
    */
   @Override
@@ -223,12 +224,12 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     } else if (!isClibraryPresent()) {
       log.debug("File appears to be valid but netCDF-C isn't installed: {}", raf.getLocation());
     } else {
-      // file appears to be valid and netCDF-c is present
+      // file appears to be valid and netCDF-C is present
       if (NetcdfClibrary.isStrictRead()) {
-        // strictly limit to reading files that are very likely netcdf4
-        validCheck2 = isLikelyNetcdf4(raf);
+        // strictly limit to reading files that are very likely netCDF-4 or CDF-5
+        validCheck2 = format == NCheader.NC_FORMAT_64BIT_DATA || isLikelyNetcdf4(raf);
       } else {
-        // try to read all HDF5 files through the netCDF-C library
+        // try to read all HDF-5 and CDF-5 files through the netCDF-C library
         validCheck2 = true;
       }
     }
@@ -253,7 +254,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
 
   @Override
   public String getFileTypeVersion() {
-    // TODO this only works for files writtten by netcdf4 c library. what about plain hdf5?
+    // TODO this only works for files written by netcdf4 c library. what about plain hdf5?
     return ncfile.getRootGroup().findAttributeString(CDM.NCPROPERTIES, "N/A");
   }
 
