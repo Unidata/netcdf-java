@@ -139,25 +139,29 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     // Note: netCDF-4 files written outside the netCDF-C library may not pass these checks.
     IntByReference test_ncid = new IntByReference();
     int ret = nc4.nc_open(raf.getLocation(), NC_NOWRITE, test_ncid);
-    SizeTByReference lenp = new SizeTByReference();
-    // Does _NCProperties global attribute exist?
-    ret = nc4.nc_inq_attlen(test_ncid.getValue(), NC_GLOBAL, "_NCCCCC", lenp);
-    // ret = nc4.nc_inq_attlen(test_ncid.getValue(), NC_GLOBAL, CDM.NCPROPERTIES, lenp);
-    likelyNc4 = ret == NC_NOERR;
-    if (!likelyNc4) {
-      // Does _IsNetcdf4 global attribute exist, and is its value not 0?
-      // note: newer versions of netCDF-C include the _NCProperties check as part of determining
-      // the value of this attribute, but not all, so we need both checks.
-      lenp = new SizeTByReference();
-      ret = nc4.nc_inq_attlen(test_ncid.getValue(), NC_GLOBAL, CDM.ISNETCDF4, lenp);
-      if (ret == NC_NOERR && lenp.getValue().longValue() == 1) {
-        int[] isnc4 = new int[1];
-        ret = nc4.nc_get_att_int(test_ncid.getValue(), NC_GLOBAL, CDM.ISNETCDF4, isnc4);
-        likelyNc4 = ret == NC_NOERR && isnc4[0] != 0;
+    if (ret == NC_NOERR) {
+      // netCDF-C could open the file, now perform checks to see if file is likely netCDF-4.
+      SizeTByReference lenp = new SizeTByReference();
+      // Does _NCProperties global attribute exist?
+      ret = nc4.nc_inq_attlen(test_ncid.getValue(), NC_GLOBAL, CDM.NCPROPERTIES, lenp);
+      likelyNc4 = ret == NC_NOERR;
+      if (!likelyNc4) {
+        // _NCProperties global attribute not found.
+        // Does _IsNetcdf4 global attribute exist, and is its value not 0?
+        // note: newer versions of netCDF-C include the _NCProperties check as part of determining
+        // the value of this attribute, but not all, so we need both checks.
+        lenp = new SizeTByReference();
+        ret = nc4.nc_inq_attlen(test_ncid.getValue(), NC_GLOBAL, CDM.ISNETCDF4, lenp);
+        if (ret == NC_NOERR && lenp.getValue().longValue() == 1) {
+          int[] isnc4 = new int[1];
+          ret = nc4.nc_get_att_int(test_ncid.getValue(), NC_GLOBAL, CDM.ISNETCDF4, isnc4);
+          likelyNc4 = ret == NC_NOERR && isnc4[0] != 0;
+        }
       }
-    }
-    if (!likelyNc4) {
-      log.debug("May not be a netCDF-4 file: {}; falling back to HDF5 IOSP.", raf.getLocation());
+      if (!likelyNc4) {
+        log.debug("May not be a netCDF-4 file: {}; falling back to HDF5 IOSP.", raf.getLocation());
+      }
+      nc4.nc_close(test_ncid.getValue());
     }
     return likelyNc4;
   }
