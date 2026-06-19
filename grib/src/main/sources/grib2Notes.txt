@@ -441,3 +441,6 @@ download
 
 2025-02-14 sarms:
     - Upgraded ecmwf grib2 tables to eccodes-2.40.0.
+
+2026-06-24 sarms:
+    - Upgraded wmo grib2 tables to version 37 (https://github.com/wmo-im/GRIB2/releases/tag/v37).
