@@ -5,14 +5,16 @@
 
 package ucar.nc2.grib.grib2;
 
-import javax.annotation.Nullable;
 import ucar.nc2.grib.GribNumbers;
 import ucar.nc2.time.CalendarDate;
 import ucar.unidata.util.Format;
 import ucar.unidata.util.StringUtil2;
-import javax.annotation.concurrent.Immutable;
+
 import java.util.Formatter;
 import java.util.zip.CRC32;
+
+import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
 
 /**
  * Abstract superclass for GRIB2 PDS handling.
@@ -64,6 +66,8 @@ public abstract class Grib2Pds {
         return new Grib2Pds31(input);
       case 32:
         return new Grib2Pds32(input);
+      case 40:
+        return new Grib2Pds40(input);
       case 48:
         return new Grib2Pds48(input);
       case 60:
@@ -1573,6 +1577,122 @@ public abstract class Grib2Pds {
 
     public int templateLength() {
       return 24 + getNumSatelliteBands() * octetsPerBand;
+    }
+  }
+
+  ///////////////////////////////////////////////////////////////////////////////
+
+  /*
+   * Product definition template 4.40 – atmospheric constituents
+   * Octet No. Contents
+   * 10 Parameter category (see Code table 4.1)
+   * 11 Parameter number (see Code table 4.2)
+   * 12–13 Constituent Type (see Code Table 4.230)
+   * 14 Type of Generating Process (see Code table 4.3)
+   * 15 Background Process
+   * 16 Generating Process Identifier
+   * 17–18 Hours of observational data cut-off after reference time (see Note)
+   * 19 Minutes of observational data cut-off after reference time
+   * 20 Indicator of unit of time range (see Code table 4.4)
+   * 21-24 Forecast time in units defined by octet 18
+   * 25 Type of first fixed surface (see Code table 4.5)
+   * 26 Scale factor of first fixed surface
+   * 27–30 Scaled value of first fixed surface
+   * 31 Type of second fixed surface (see Code table 4.5)
+   * 32 Scale factor of second fixed surface
+   * 33-36 Scaled value of second fixed surface
+   * Note: Hours greater than 65534 will be coded as 65534.
+   */
+
+  private static class Grib2Pds40 extends Grib2Pds {
+
+    Grib2Pds40(byte[] input) {
+      super(input);
+    }
+
+    // 12–13 Constituent type (see Code Table 4.230)
+    public int getConstituentType() {
+      return GribNumbers.uint2(getOctet(12), getOctet(13));
+    }
+
+    // 14 Type of generating process (see Code table 4.3)
+    @Override
+    public int getGenProcessType() {
+      return getOctet(14);
+    }
+
+    // 15 Background generating process identifier (defined by originating centre)
+    @Override
+    public int getBackProcessId() {
+      return getOctet(15);
+    }
+
+    // 16 Analysis or forecast generating process identifier (defined by originating centre)
+    @Override
+    public int getGenProcessId() {
+      return getOctet(16);
+    }
+
+    // 17–18 Hours of observational data cut-off after reference time (see Note)
+    // Note: Hours greater than 65534 will be coded as 65534.
+    public int getHoursAfterCutoff() {
+      return GribNumbers.int2(getOctet(17), getOctet(18));
+    }
+
+    // 19 Minutes of observational data cut-off after reference time
+    public int getMinutesAfterCutoff() {
+      return getOctet(19);
+    }
+
+    // 20 Indicator of unit of time range (see Code table 4.4)
+    @Override
+    public int getTimeUnit() {
+      return getOctet(20);
+    }
+
+    // 21–24 Forecast time in units defined by octet 20
+    public int getForecastTime() {
+      return GribNumbers.int4(getOctet(21), getOctet(22), getOctet(23), getOctet(24));
+    }
+
+    // 25 Type of first fixed surface (see Code table 4.5)
+    @Override
+    public int getLevelType1() {
+      return getOctet(25);
+    }
+
+    // 26 Scale factor of first fixed surface
+    @Override
+    public int getLevelScale1() {
+      return getOctet(26);
+    }
+
+    // 27–30 Scaled value of first fixed surface
+    @Override
+    public double getLevelValue1() {
+      return getScaledValue(26);
+    }
+
+    // 31 Type of second fixed surface (see Code table 4.5)
+    @Override
+    public int getLevelType2() {
+      return getOctet(31);
+    }
+
+    // 32 Scale factor of second fixed surface
+    @Override
+    public int getLevelScale2() {
+      return getOctet(32);
+    }
+
+    // 33–36 Scaled value of second fixed surface
+    @Override
+    public double getLevelValue2() {
+      return getScaledValue(32);
+    }
+
+    public int templateLength() {
+      return 36;
     }
   }
 
