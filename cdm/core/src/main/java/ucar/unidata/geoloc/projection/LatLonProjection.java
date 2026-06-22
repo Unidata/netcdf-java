@@ -1,7 +1,8 @@
 /*
- * Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2026 University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
+
 package ucar.unidata.geoloc.projection;
 
 import ucar.nc2.constants.CF;
@@ -248,23 +249,59 @@ public class LatLonProjection extends ProjectionImpl {
 
 
   /**
-   * Set the center of the Longitude range. It is normalized to +/- 180.
+   * Set the center longitude of this projection, normalizing it into the range [-180, 180].
+   *
+   * <p>
    * The cylinder is cut at the "seam" = centerLon +- 180.
    * Use this to keep the Longitude values kept in the range [centerLon +-180], which
    * makes seam handling easier.
+   * {@link #latLonToProj} returns longitudes in the range
+   * [{@code centerLon} - 180, {@code centerLon} + 180], so the center longitude controls where the
+   * seam falls and therefore which longitude values are produced.
    *
-   * @param centerLon the center of the Longitude range.
-   * @return centerLon normalized to +/- 180.
+   * <p>
+   * This method always normalizes the supplied value to [-180, 180], which discards information
+   * about grids whose longitude coordinates legitimately lie outside that range. To preserve
+   * such information, use
+   * {@link #setCenterLon(double, boolean)} with {@code normalize = false}.
+   *
+   * @param centerLon the center of the longitude range, in degrees east.
+   * @return centerLon normalized to [-180, 180].
+   * @deprecated use {@link #setCenterLon(double, boolean)} with {@code normalize = true}
    */
+  @Deprecated
   public double setCenterLon(double centerLon) {
-    this.centerLon = LatLonPoints.lonNormal(centerLon);
+    return setCenterLon(centerLon, true);
+  }
+
+  /**
+   * Set the center longitude of this projection, optionally normalizing it into the range [-180, 180].
+   *
+   * <p>
+   * The center longitude controls the location of the projection "seam" (at {@code centerLon} +/- 180).
+   * This also means it controls the range of longitudes returned by the projection. When {@code normalize}
+   * is {@code false}, the supplied value is stored as given. This allows the projection to
+   * reproduce grid longitudes that lie outside [-180, 180].
+   *
+   * @param centerLon the center of the longitude range, in degrees east.
+   * @param normalize if {@code true}, normalize {@code centerLon} into [-180, 180]; if {@code false},
+   *        store it unchanged.
+   * @return the center longitude that was stored.
+   */
+  public double setCenterLon(double centerLon, boolean normalize) {
+    this.centerLon = normalize ? LatLonPoints.lonNormal(centerLon) : centerLon;
     return this.centerLon;
   }
 
   /**
-   * Get the center of the Longitude range. It is normalized to +/- 180.
+   * Get the center longitude of this projection, in degrees east.
    *
-   * @return the center longitude
+   * <p>
+   * Note that this value is normalized to [-180, 180] only if it was set via
+   * {@link #setCenterLon(double)} (or {@link #setCenterLon(double, boolean)} with
+   * {@code normalize = true}).
+   *
+   * @return the center longitude.
    */
   public double getCenterLon() {
     return centerLon;
