@@ -7,7 +7,14 @@ permalink: cdm_utility_programs.html
 ---
 
 Below are useful command-line utilities that can be called from the CDM library.
-The easiest way to use these is to grab the latest netcdfAll.jar file.
+One way to use these tools is to grab the latest netcdfAll.jar or toolsUI.jar file from the [Unidata downloads page](https://downloads.unidata.ucar.edu/netcdf-java/){:target="_blank"} or the [netCDF-Java GitHub releases page](https://github.com/Unidata/netcdf-java/releases){:target="_blank"}.
+However, a super handy [community-led effort](https://github.com/conda-forge/netcdf-java-feedstock){:target="_blank"} makes JAR management and a set of convenient wrapper scripts (`.sh` and `.bat`) available through `conda-forge`:
+
+```bash
+conda install -c conda-forge netcdf-java
+```
+
+## Utilities
 
 * [ncdump](#ncdump): prints the textual representation of a dataset to standard output
 * [nccopy](#nccopy): copies a CDM dataset to a netCDF-3 (default) or netCDF-4 file
@@ -17,7 +24,6 @@ The easiest way to use these is to grab the latest netcdfAll.jar file.
 * [CFPointWriter](#cfpointwriter): copies a CDM point feature dataset to CF/NetCDF format
 * [GribCdmIndex](#gribcdmindex): write GRIB Collection Indexes
 * [FeatureScan](#featurescan): scans a directory to find CDM datasets and determines their FeatureTypes
-* [NetcdfDataset](#netcdfdataset): copies a NetcdfFile object, or parts of one, to a netcdf-3 or netcdf-4 disk file
 * [ToolsUI](#toolsui): Netcdf Tools user interface
 
 ## ncdump
@@ -42,6 +48,7 @@ where:
 * `-v varName1;varName2;..`: show data for these variables, use variable’s full names (including groups if present)
 * `-v varName(0:1,:,12)`: show data for a section of this variable only, using FORTRAN 90 section specification
 
+The conda wrapper script is named `ncj-ncdump`.
 
 ## nccopy
 
@@ -88,6 +95,8 @@ java -Xmx1g -classpath netcdfAll-<version>.jar ucar.nc2.write.Nccopy [options]
        Default: false
 ~~~
 
+The conda wrapper script is named `ncj-nccopy`.
+
 ## nccompare
 
 Compares two [CDM files](file_types.html) for semantic equivalence.
@@ -103,6 +112,8 @@ where
 * `file1`: first file to compare
 * `file2`: second file to compare
 
+The conda wrapper script is named `ncj-nccompare`.
+
 ## BufrSplitter
 
 Copies a BUFR file\'s messages into separate output files, depending on message type.
@@ -115,6 +126,8 @@ java -Xmx1g -classpath netcdfAll-<version>.jar ucar.nc2.iosp.bufr.writer.BufrSpl
 where
 * `--fileSpec`: file to split
 * `--dirOut`: output directory of split operation
+
+The conda wrapper script is named `ncj-bufrsplitter`.
 
 ## CFPointWriter
 
@@ -150,6 +163,8 @@ java -Xmx1g -classpath netcdfAll-<version>.jar ucar.nc2.ft.point.writer.CFPointW
        Default: false
 ~~~
 
+The conda wrapper script is named `ncj-cfpointwriter`.
+
 ## GribCdmIndex
 
 Write GRIB Collection Indexes from an XML file containing a [GRIB `<featureCollection>`](grib_feature_collections_ref.html) XML element.
@@ -175,11 +190,13 @@ java -Xmx1g -classpath netcdfAll-<version>.jar ucar.nc2.grib.collection.GribCdmI
 
 Note that the output file is placed in the root directory of the collection, as specified by the [Collection Specification string](https://docs.unidata.ucar.edu/tds/current/userguide/collection_spec_string_ref.html){:target="_blank"} of the GRIB [`<featureCollection>`](grib_feature_collections_ref.html).
 
+The conda wrapper script is named `ncj-gribcdmindex`.
+
 ## FeatureScan
 
 Scans all the files in a directory to see if they are [CDM files](file_types.html) and can be identified as a particular feature type.
 
-~~~basj
+~~~bash
 java -Xmx1g -classpath netcdfAll-<version>.jar ucar.nc2.ft.scan.FeatureScan directory [-subdirs]
 ~~~
 
@@ -187,6 +204,8 @@ where
 
 * `directory`: scan this directory
 * `-subdirs`: recurse into subdirectories
+
+The conda wrapper script is named `ncj-featurescan`.
 
 ## CatalogCrawler
 
@@ -260,13 +279,12 @@ count fail = 3
 count failException = 0
 ~~~
 
-## NetcdfDataset
-
-Use [nccopy](#nccopy) instead.
+The conda wrapper script is named `ncj-catalogcrawler`.
 
 ## ToolsUI
 
 ~~~bash
-java -Xmx8g -jar netcdfAll-<version>.jar 
+java -Xmx8g -jar toolsUI-<version>.jar
 ~~~
 
+The conda wrapper script is named `ncj-toolsui`.
