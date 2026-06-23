@@ -68,6 +68,8 @@ public abstract class Grib2Pds {
         return new Grib2Pds32(input);
       case 40:
         return new Grib2Pds40(input);
+      case 41:
+        return new Grib2Pds41(input);
       case 48:
         return new Grib2Pds48(input);
       case 60:
@@ -1693,6 +1695,65 @@ public abstract class Grib2Pds {
 
     public int templateLength() {
       return 36;
+    }
+  }
+
+  ///////////////////////////////////////////////////////////////////////////////
+
+  /*
+   * Product definition template 4.41 – individual ensemble forecast, control and perturbed, for atmospheric
+   * constituents
+   * Octet No. Contents
+   * 10 Parameter category (see Code table 4.1)
+   * 11 Parameter number (see Code table 4.2)
+   * 12–13 Constituent Type (see Code Table 4.230)
+   * 14 Type of Generating Process (see Code table 4.3)
+   * 15 Background Process
+   * 16 Generating Process Identifier
+   * 17–18 Hours of observational data cut-off after reference time (see Note)
+   * 19 Minutes of observational data cut-off after reference time
+   * 20 Indicator of unit of time range (see Code table 4.4)
+   * 21-24 Forecast time in units defined by octet 18
+   * 25 Type of first fixed surface (see Code table 4.5)
+   * 26 Scale factor of first fixed surface
+   * 27–30 Scaled value of first fixed surface
+   * 31 Type of second fixed surface (see Code table 4.5)
+   * 32 Scale factor of second fixed surface
+   * 33-36 Scaled value of second fixed surface
+   * 37 Type of ensemble forecast (see Code table 4.6)
+   * 38 Perturbation number
+   * 39 Number of forecasts in ensemble
+   * Note: Hours greater than 65534 will be coded as 65534.
+   */
+
+  private static class Grib2Pds41 extends Grib2Pds40 implements PdsEnsemble {
+
+    Grib2Pds41(byte[] input) {
+      super(input);
+    }
+
+    public boolean isEnsemble() {
+      return true;
+    }
+
+    /* Type of ensemble forecast (see Code table 4.6) */
+    public int getPerturbationType() {
+      return getOctet(37);
+    }
+
+    /* Perturbation Ensemble Member Number */
+    public int getPerturbationNumber() {
+      return getOctet(38);
+    }
+
+    /* Number of forecasts in ensemble */
+    public int getNumberEnsembleForecasts() {
+      return getOctet(39);
+    }
+
+    @Override
+    public int templateLength() {
+      return 39;
     }
   }
 
