@@ -159,6 +159,10 @@ entries:
               url: /arraystructures_ref.html
               output: web, pdf
 
+            - title: CDM Section Specification
+              url: /section_specification_ref.html
+              output: web, pdf
+
             - title: CDM Calendar Date Handling
               url: /cdm_calendar_date_time_ref.html
               output: web, pdf

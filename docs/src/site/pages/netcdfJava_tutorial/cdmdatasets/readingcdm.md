@@ -54,6 +54,7 @@ Note that you can edit the `Variable`'s ranges (`T(0:30:10, 1, 0:3)` in this exa
 These are expressed with Fortran 90 array section syntax, using zero-based indexing.
 For example, `varName( 12:22 , 0:100:2, :, 17)` specifies an array section for a four dimensional variable.
 The first dimension includes all the elements from 12 to 22 inclusive, the second dimension includes the elements from 0 to 100 inclusive with a stride of 2, the third includes all the elements in that dimension, and the fourth includes just the 18th element.
+The [CDM section specification](section_specification_ref.html) describes the section string syntax in more detail.
 
 The following code to dump data from your program is equivalent to the above ToolsUI actions:
 
@@ -98,19 +99,21 @@ Or suppose you want to loop over all time steps, and make it general to handle a
 In this case, we call reduce(0), to reduce dimension 0, which we know has length one, but leave the other two dimensions alone.
 
 Note that `varShape` holds the total number of elements that can be read from the variable; `origin` is the starting index, and `size` is the number of elements to read.
-This is different from the Fortran 90 array syntax, which uses the starting and ending array indices (inclusive):
+This is different from the section (Fortran 90) array syntax, which uses the starting and ending array indices (inclusive):
 
 {% capture rmd %}
 {% includecodeblock netcdf-java&docs/src/test/java/examples/cdmdatasets/ReadingCdmTutorial.java&readSubset %}
 {% endcapture %}
 {{ rmd | markdownify }}
   
-If you want strided access, you can use the Fortran 90 string routine:
+If you want strided access, you can use the section string method:
 
 {% capture rmd %}
 {% includecodeblock netcdf-java&docs/src/test/java/examples/cdmdatasets/ReadingCdmTutorial.java&readByStride %}
 {% endcapture %}
 {{ rmd | markdownify }}
+
+The [CDM section specification](section_specification_ref.html) describes the section string syntax in more detail.
 
 #### Reading with Range Objects
 
