@@ -15,8 +15,8 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
 /**
- * Test data from github issue https://github.com/Unidata/netcdf-java/issues/41
- * Data was used to create a .gbx9 file for testing.
+ * Test data from Meteo Swiss CH2 https://data.geo.admin.ch/browser/#/collections/ch.meteoschweiz.ogd-forecasting-icon-ch2?.language=en
+ * Pollen Grasses Data (POACsnc parameter) was used to create a .gbx9 file for testing.
  * <p>
  * PDS (Secton 4) output from ecCodes grib_dump at the end of the file, uses as a basis for
  * testing PDS (Secton 4) parsing
