@@ -1,6 +1,6 @@
 ---
 title: Upgrading to netCDF-Java version 5.x
-last_updated: 2025-10-30
+last_updated: 2025-06-24
 sidebar: netcdfJavaTutorial_sidebar
 toc: false
 permalink: upgrade.html
