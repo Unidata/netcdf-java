@@ -77,7 +77,7 @@ publishing {
   repositories.clear()
   repositories {
     maven {
-      name = "releases"
+      name = "NativeReleases"
       url = uri("https://artifacts.unidata.ucar.edu/repository/unidata-releases/")
       credentials {
         username = extra.properties["artifacts.username"] as? String
@@ -98,4 +98,12 @@ publishing {
 
 tasks
   .matching { it.group == "publishing" }
-  .forEach { it.enabled = System.getProperty("unidata.native.publish")?.toBoolean() ?: false }
+  .forEach {
+    // always disable publish task from ncj-artifact-publishing-conventions plugin
+    if (it.name.contains("ToReleasesRepository")) {
+      it.enabled = false
+    } else {
+      // for everything else, decide what to do based on the system property
+      it.enabled = System.getProperty("unidata.native.publish")?.toBoolean() ?: false
+    }
+  }
