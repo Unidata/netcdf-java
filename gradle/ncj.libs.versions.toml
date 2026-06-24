@@ -4,11 +4,11 @@ netcdf-java = "5.10.0-SNAPSHOT"
 unidata-doc-theme = "0.1.1"
 
 # 3rd party dependencies
-awssdk = "2.46.5"
+awssdk = "2.46.17"
 awssdkv1 = "1.12.797"
 commons-math3 = "3.6.1"
 bounce = "0.18"
-grpc = "1.81.0"
+grpc = "1.82.1"
 guava = "33.6.0-jre"
 httpcomponents = "4.5.14"
 jackson = "2.22.0"
@@ -20,10 +20,10 @@ jgoodies-forms = "1.6.0"
 jj2000 = "5.4"
 joda-time = "2.14.2"
 jsr305 = "3.0.2"
-jna = "5.19.0"
+jna = "5.19.1"
 lgooddatepicker = "11.2.1"
 mcidas = "20231121"
-protobuf = "4.35.0"
+protobuf = "4.35.1"
 re2j = "1.8"
 sensorweb-waterml = "2.7.0"
 slf4j = "2.0.18"
@@ -118,5 +118,5 @@ execfork = { id = "com.github.psxpaul.execfork", version = "0.2.2"}
 javacc = { id = "org.javacc.javacc", version = "4.0.3" }
 protobuf = { id = "com.google.protobuf", version = "0.10.0" }
 shadow = { id = "com.gradleup.shadow", version = "9.4.2" }
-spotless = { id = "com.diffplug.spotless", version = "8.6.0" }
+spotless = { id = "com.diffplug.spotless", version = "8.7.0" }
 versions = { id = "com.github.ben-manes.versions", version = "0.54.0" }

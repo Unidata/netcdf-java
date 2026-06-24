@@ -25,5 +25,6 @@ spotless {
 
 // Helper function that transforms a plugin alias from the version catalog
 // into a valid dependency notation
-fun plugin(plugin: Provider<PluginDependency>) =
-  plugin.map { "${it.pluginId}:${it.pluginId}.gradle.plugin:${it.version}" }
+fun plugin(plugin: Provider<PluginDependency>) = plugin.map {
+  "${it.pluginId}:${it.pluginId}.gradle.plugin:${it.version}"
+}
