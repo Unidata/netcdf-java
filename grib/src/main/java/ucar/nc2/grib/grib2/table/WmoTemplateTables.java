@@ -1,7 +1,8 @@
 /*
- * Copyright (c) 1998-2018 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2026 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
+
 package ucar.nc2.grib.grib2.table;
 
 import com.google.common.collect.ImmutableList;
@@ -52,19 +53,19 @@ public class WmoTemplateTables {
     convertMap.put("Forecast generating process identifier (defined by originating centre)", "ProcessId");
   }
 
-  public static final Version standard = Version.GRIB2_22_0_0;
+  public static final Version standard = Version.GRIB2_37;
 
   public enum Version {
-    GRIB2_22_0_0;
+    GRIB2_37;
 
     String getResourceName() {
-      return "/resources/grib2/wmo/" + this.name() + "_Template_en.xml";
+      return "/resources/grib2/wmo/" + this.name() + "_Template.xml";
     }
 
     @Nullable
     String[] getElemNames() {
-      if (this == GRIB2_22_0_0) {
-        return new String[] {"GRIB2_22_0_0_Template_en", "Title_en", "Note_en", "Contents_en"};
+      if (this == GRIB2_37) {
+        return new String[] {"GRIB2_Template_en", "Title_en", "Note_en", "Contents_en"};
       }
       return null;
     }
@@ -86,7 +87,7 @@ public class WmoTemplateTables {
   }
 
   /*
-   * <GRIB2_22_0_0_Template_en>
+   * <GRIB2_Template_en>
    * <No>1451</No>
    * <Title_en>Product definition template 4.55 - spatio-temporal changing tiles at a horizontal level or horizontal
    * layer at a point in time</Title_en>
@@ -94,7 +95,7 @@ public class WmoTemplateTables {
    * <Contents_en>Type of second fixed surface</Contents_en>
    * <Note_en>(see Code table 4.5)</Note_en>
    * <Status>Operational</Status>
-   * </GRIB2_22_0_0_Template_en>
+   * </GRIB2_Template_en>
    */
 
   private void readXml(Version version) throws IOException {

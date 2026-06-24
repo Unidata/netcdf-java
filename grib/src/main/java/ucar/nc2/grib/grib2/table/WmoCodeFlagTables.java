@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2019-2026 John Caron and University Corporation for Atmospheric Research/Unidata
+ * See LICENSE for license information.
+ */
+
 package ucar.nc2.grib.grib2.table;
 
 import com.google.common.collect.ImmutableList;
@@ -21,20 +26,20 @@ import ucar.nc2.wmo.Util;
 public class WmoCodeFlagTables {
 
   private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(WmoCodeFlagTables.class);
-  public static final Version standard = Version.GRIB2_22_0_0;
+  public static final Version standard = Version.GRIB2_37;
 
   public enum Version {
-    GRIB2_22_0_0;
+    GRIB2_37;
 
     public String getResourceName() {
-      return "/resources/grib2/wmo/" + this.name() + "_CodeFlag_exp_en.xml";
+      return "/resources/grib2/wmo/" + this.name() + "_CodeFlag.xml";
     }
 
     @Nullable
     String[] getElemNames() {
-      if (this == GRIB2_22_0_0) {
-        return new String[] {"GRIB2_22_0_0_CodeFlag_exp_en", "Title_en", "SubTitle_en",
-            "MeaningParameterDescription_en", "UnitComments_en"};
+      if (this == GRIB2_37) {
+        return new String[] {"GRIB2_CodeFlag_en", "Title_en", "SubTitle_en", "MeaningParameterDescription_en",
+            "UnitComments_en"};
       }
 
       return null;
@@ -109,7 +114,7 @@ public class WmoCodeFlagTables {
 
   /*
    * Param Table:
-   * <GRIB2_22_0_0_CodeFlag_exp_en>
+   * <GRIB2_CodeFlag_exp_en>
    * <No>524</No>
    * <Title_en>Code table 4.2 - Parameter number by product discipline and parameter category</Title_en>
    * <SubTitle_en>Product discipline 0 - Meteorological products, parameter category 1: moisture</SubTitle_en>
@@ -118,19 +123,19 @@ public class WmoCodeFlagTables {
    * <UnitComments_en>kg-1</UnitComments_en>
    * <ElementDescription_en>Number of particles per unit mass of air</ElementDescription_en>
    * <Status>Operational</Status>
-   * </GRIB2_22_0_0_CodeFlag_exp_en>
+   * </GRIB2_CodeFlag_exp_en>
    * 
    * Code Table:
-   * <GRIB2_22_0_0_CodeFlag_exp_en>
+   * <GRIB2_CodeFlag_exp_en>
    * <No>2</No>
    * <Title_en>Code table 0.0 - Discipline of processed data in the GRIB message, number of GRIB Master table</Title_en>
    * <CodeFlag>1</CodeFlag>
    * <MeaningParameterDescription_en>Hydrological products</MeaningParameterDescription_en>
    * <Status>Operational</Status>
-   * </GRIB2_22_0_0_CodeFlag_exp_en>
+   * </GRIB2_CodeFlag_exp_en>
    * 
    * FlagTable:
-   * <GRIB2_22_0_0_CodeFlag_exp_en>
+   * <GRIB2_CodeFlag_exp_en>
    * <No>168</No>
    * <Title_en>Flag table 3.4 - Scanning mode</Title_en>
    * <CodeFlag>1</CodeFlag>
@@ -138,8 +143,8 @@ public class WmoCodeFlagTables {
    * <MeaningParameterDescription_en>Points of first row or column scan in the +i (+x)
    * direction</MeaningParameterDescription_en>
    * <Status>Operational</Status>
-   * </GRIB2_22_0_0_CodeFlag_exp_en>
-   * <GRIB2_22_0_0_CodeFlag_exp_en>
+   * </GRIB2_CodeFlag_exp_en>
+   * <GRIB2_CodeFlag_exp_en>
    * <No>169</No>
    * <Title_en>Flag table 3.4 - Scanning mode</Title_en>
    * <CodeFlag>1</CodeFlag>
@@ -147,7 +152,7 @@ public class WmoCodeFlagTables {
    * <MeaningParameterDescription_en>Points of first row or column scan in the -i (-x)
    * direction</MeaningParameterDescription_en>
    * <Status>Operational</Status>
-   * </GRIB2_22_0_0_CodeFlag_exp_en>
+   * </GRIB2_CodeFlag_exp_en>
    */
 
   private void readGribCodes(Version version) throws IOException {
@@ -175,8 +180,8 @@ public class WmoCodeFlagTables {
       Map<String, WmoTable> map = new HashMap<>();
 
       List<Element> featList = root.getChildren(elems[0]); // main element
+      int line = 0;
       for (Element elem : featList) {
-        String line = elem.getChildTextNormalize("No");
         String tableName = elem.getChildTextNormalize(elems[1]); // Title_en
         Element subtableElem = elem.getChild(elems[2]); // "SubTitle_en"
 
@@ -194,7 +199,7 @@ public class WmoCodeFlagTables {
           continue;
         }
 
-        if (subtableElem != null) {
+        if (subtableElem != null && !subtableElem.getTextNormalize().isEmpty()) {
           tableName = subtableElem.getTextNormalize();
         }
 
@@ -212,6 +217,7 @@ public class WmoCodeFlagTables {
         String status = (statusElem == null) ? null : statusElem.getTextNormalize();
 
         wmoTable.addEntry(line, code, value, meaning, unit, status);
+        line++;
       }
       ios.close();
 
@@ -283,7 +289,7 @@ public class WmoCodeFlagTables {
       }
     }
 
-    private WmoEntry addEntry(String line, String code, String value, String meaning, String unit, String status) {
+    private WmoEntry addEntry(int line, String code, String value, String meaning, String unit, String status) {
       WmoEntry entry = new WmoEntry(line, code, value, meaning, unit, status);
       boolean isRange = (entry.start != entry.stop);
       if (!isRange) {
@@ -327,8 +333,8 @@ public class WmoCodeFlagTables {
       private final int number, value;
       private final String code, meaning, name, unit, status;
 
-      WmoEntry(String line, String code, String valueS, String meaning, String unit, String status) {
-        this.line = Integer.parseInt(line);
+      WmoEntry(int line, String code, String valueS, String meaning, String unit, String status) {
+        this.line = line;
         this.code = code;
         this.meaning = meaning;
         this.status = status;
