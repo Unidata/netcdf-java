@@ -12,7 +12,7 @@ permalink: upgrade.html
 * Java {{ site.java_version_build }} is required to build the library.
 
 ## Quick Navigation
-* [Summary of changes for v5.10.x](#netcdf-java-api-changes-510x)
+* [Summary of changes for v5.10.x](#netcdf-java-changes-510x)
 * [Summary of changes for v5.9.x](#netcdf-java-api-changes-59x)
 * [Summary of changes for v5.8.x](#netcdf-java-api-changes-58x)
 * [Summary of changes for v5.7.x](#netcdf-java-api-changes-57x)
@@ -24,17 +24,29 @@ permalink: upgrade.html
 * [Summary of changes for v5.1.x](#netcdf-java-api-changes-51x)
 * [Summary of changes for v5.0.x](#netcdf-java-api-changes-50x)
 
-## netCDF-Java API Changes (5.10.x)
+## netCDF-Java Changes (5.10.x)
 
 Point release notes:
-* [5.10.0](https://github.com/Unidata/netcdf-java/releases/tag/v5.10.0){:target="_blank"} (_yyyy-mm-dd, unreleased_)
+* [5.10.0](https://github.com/Unidata/netcdf-java/releases/tag/v5.10.0){:target="_blank"} (_2026-06-24_)
 
 Starting with 5.10.0, the netCDF-Java library requires Java 17 to build (although the build will produce Java 8 bytecode, so the minimum supported version is still Java 8).
-Note: we are looking to update the minimum version of the JVM we support for the project.
-Please consider taking a moment to participate in the [poll on GitHub](https://github.com/Unidata/netcdf-java/discussions/1468){:target="_blank"}.
 
 The 5.10.0 release adds support for reading blosc compressed data using the C-Blosc2 native library.
-The new artifact for JNA support is `edu.ucar.unidata:libblosc2-jna` (the current version is `{{ site.cblosc2_version }}`).
+The new artifact for JNA support is `edu.ucar.unidata:libblosc2-jna`.
+The jar containing native libraries for C-Blosc2 is `edu.ucar.unidata:libblosc2-native:2.23.1.0` (v2.23.1 of C-Blosc2).
+Additionally, version 1.1.7.0 of the `libaec-native` artifact is available (v1.1.7 of libaec).
+More information regarding the use of the native jars can be found in the [using netCDF-java artifacts documentation](using_netcdf_java_artifacts.html#native-compression-code).
+
+The 5.10.x release extends support for GRIB1 and GRIB2 feature collections against by object storage.
+Much of the infrastructure backing other types of feature collections has also been extended to work against object storage.
+If GRIB index files exist in the object store, they will be used.
+If they do not exist, they will be created in the local cdm cache (default location is `~/.unidata/cache/`).
+
+For users of our uber jars (i.e. `netcdfAll`, `ncIdv`, `toolsUI`), we now produce Software Bill of Materials (SBOMs) following the CycloneDX standard (driven by the OWASP Foundation).
+These SBOMs detail all the dependencies included in the uber jars, including the transitive dependencies.
+The SBOMs are available on the [Unidata downloads site](https://downloads.unidata.ucar.edu/netcdf-java/){target="_blank"} as well as the [GitHub release page](https://github.com/Unidata/netcdf-java/releases){target="_blank"}.
+
+Full release notes, including a list of bug fixes and updated 3rd party dependencies, can be found on the [GitHub release page](https://github.com/Unidata/netcdf-java/releases){target="_blank"}.
 
 ### Native jar group name changes
 
