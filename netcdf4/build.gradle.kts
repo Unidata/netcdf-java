@@ -22,10 +22,9 @@ val unloadedTestSourceSet =
     runtimeClasspath += sourceSets.main.get().output
   }
 
-val unloadedTestImplementation by
-  configurations.getting {
-    extendsFrom(configurations.implementation.get(), configurations.testImplementation.get())
-  }
+val unloadedTestImplementation by configurations.getting {
+  extendsFrom(configurations.implementation.get(), configurations.testImplementation.get())
+}
 
 val unloadedTestRuntimeOnly by configurations.getting
 
