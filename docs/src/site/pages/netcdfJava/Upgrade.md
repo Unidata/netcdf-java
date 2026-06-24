@@ -12,6 +12,7 @@ permalink: upgrade.html
 * Java {{ site.java_version_build }} is required to build the library.
 
 ## Quick Navigation
+* [Summary of changes for v5.11.x](#netcdf-java-changes-511x)
 * [Summary of changes for v5.10.x](#netcdf-java-changes-510x)
 * [Summary of changes for v5.9.x](#netcdf-java-api-changes-59x)
 * [Summary of changes for v5.8.x](#netcdf-java-api-changes-58x)
@@ -23,6 +24,11 @@ permalink: upgrade.html
 * [Summary of changes for v5.2.x](#netcdf-java-api-changes-52x)
 * [Summary of changes for v5.1.x](#netcdf-java-api-changes-51x)
 * [Summary of changes for v5.0.x](#netcdf-java-api-changes-50x)
+
+## netCDF-Java Changes (5.11.x)
+
+Point release notes:
+* [5.11.0](https://github.com/Unidata/netcdf-java/releases/tag/v5.11.0){:target="_blank"} (_yyyy-mm-dd, unreleased_)
 
 ## netCDF-Java Changes (5.10.x)
 
