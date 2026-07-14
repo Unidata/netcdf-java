@@ -225,7 +225,7 @@ public class VerticalPerspectiveView extends ProjectionImpl {
    */
   @Deprecated
   public void setOriginLat(double lat) {
-    _lat0 = lat0;
+    _lat0 = lat;
     lat0 = Math.toRadians(lat);
     precalculate();
   }
