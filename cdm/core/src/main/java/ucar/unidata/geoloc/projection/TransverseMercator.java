@@ -179,7 +179,7 @@ public class TransverseMercator extends ProjectionImpl {
    */
   @Deprecated
   public void setOriginLat(double lat) {
-    _lat0 = lat0;
+    _lat0 = lat;
     lat0 = Math.toRadians(lat);
   }
 
@@ -190,7 +190,7 @@ public class TransverseMercator extends ProjectionImpl {
    */
   @Deprecated
   public void setTangentLon(double lon) {
-    _lon0 = lon0;
+    _lon0 = lon;
     lon0 = Math.toRadians(lon);
   }
 

@@ -302,7 +302,7 @@ public class AlbersEqualArea extends ProjectionImpl {
    */
   @Deprecated
   public void setOriginLon(double lon) {
-    _lon0 = lon0;
+    _lon0 = lon;
     lon0 = Math.toRadians(lon);
     precalculate();
   }
@@ -314,7 +314,7 @@ public class AlbersEqualArea extends ProjectionImpl {
    */
   @Deprecated
   public void setOriginLat(double lat) {
-    _lat0 = lat0;
+    _lat0 = lat;
     lat0 = Math.toRadians(lat);
     precalculate();
   }
