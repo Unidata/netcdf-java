@@ -75,7 +75,14 @@ public class DODSAttribute extends ucar.nc2.Attribute {
         data = Array.factory(ncType, new int[] {nvals});
         Index ima = data.getIndex();
         for (int i = 0; i < nvals; i++) {
-          double dval = Double.parseDouble(vals[i]);
+          double dval;
+          try {
+            dval = Double.parseDouble(vals[i]);
+          } catch (NumberFormatException e) {
+            // could be a python, rust (perhaps others) based server, in which case the string representation of NaN is
+            // nan
+            dval = Double.parseDouble(vals[i].replace("nan", "NaN"));
+          }
           data.setDouble(ima.set(i), dval);
         }
       } catch (NumberFormatException e) {
