@@ -331,6 +331,12 @@ public class ControllerS3 implements MController {
             // The response was truncated. Make a new request using the next continuation token to pick up where we
             // left off.
             String continuationToken = useV2 ? responseV2.nextContinuationToken() : responseV1.nextMarker();
+
+            // OpenStack Swift may omit NextMarker for a truncated V1 response.
+            // Continue from the final key returned in the current page.
+            if (!useV2 && continuationToken == null && responseV1.isTruncated() && !objects.isEmpty()) {
+              continuationToken = objects.get(objects.size() - 1).key();
+            }
             updateObjectList(continuationToken);
           }
         }
