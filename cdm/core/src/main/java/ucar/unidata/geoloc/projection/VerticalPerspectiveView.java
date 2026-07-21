@@ -78,6 +78,9 @@ public class VerticalPerspectiveView extends ProjectionImpl {
 
     super("VerticalPerspectiveView", false);
 
+    this._lat0 = lat0;
+    this._lon0 = lon0;
+
     this.lat0 = Math.toRadians(lat0);
     this.lon0 = Math.toRadians(lon0);
     R = earthRadius;
