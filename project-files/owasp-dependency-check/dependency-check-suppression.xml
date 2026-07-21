@@ -34,4 +34,24 @@
     <vulnerabilityName>CVE-2024-22949</vulnerabilityName>
     <vulnerabilityName>CVE-2023-52070</vulnerabilityName>
   </suppress>
+  <suppress>
+    <notes><![CDATA[
+      file name: httpcore-4.4.16.jar
+      reason: CVE-2026-54399, CVE-2026-54428 are only valid for org.apache.httpcomponents.core5:httpcore5,
+      not org.apache.httpcomponents:httpcore
+    ]]></notes>
+    <packageUrl regex="true">^pkg:maven/org\.apache\.httpcomponents/httpcore@.*$</packageUrl>
+    <cve>CVE-2026-54399</cve>
+    <cve>CVE-2026-54428</cve>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+      file name: httpcore5-h2-5.4.jar
+      reason: CVE-2026-54399, CVE-2026-54428 are only valid for org.apache.httpcomponents.core5:httpcore5,
+      not org.apache.httpcomponents.core5:httpcore5-h2
+    ]]></notes>
+    <packageUrl regex="true">^pkg:maven/org\.apache\.httpcomponents\.core5/httpcore5-h2@.*$</packageUrl>
+    <cve>CVE-2026-54399</cve>
+    <cve>CVE-2026-54428</cve>
+  </suppress>
 </suppressions>
