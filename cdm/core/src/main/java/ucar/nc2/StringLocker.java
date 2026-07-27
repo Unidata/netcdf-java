@@ -1,8 +1,7 @@
 package ucar.nc2;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.ConcurrentSkipListSet;
 
 /**
  * A list of strings that only allows one thread to use any given value at the same time.
@@ -13,13 +12,11 @@ import java.util.List;
 @Deprecated
 public class StringLocker {
 
-  private List<String> stringList = Collections.synchronizedList(new ArrayList<>());
-  private boolean waiting;
+  private final Set<String> stringSet = new ConcurrentSkipListSet<>();
 
   public synchronized void control(String item) {
     // If the string is in use by another thread then wait() for the other thread
-    waiting = stringList.contains(item);
-    while (waiting) {
+    while (stringSet.contains(item)) {
       try {
         wait();
       } catch (InterruptedException e) {
@@ -27,18 +24,17 @@ public class StringLocker {
       }
     }
     // Finished waiting so the thread can have the string
-    stringList.add(item);
+    stringSet.add(item);
   }
 
   public synchronized void release(String item) {
     // Tell StringLocker the thread is done with the string
-    stringList.remove(item);
-    waiting = false;
+    stringSet.remove(item);
     notifyAll();
   }
 
   public String toString() {
-    return stringList.toString();
+    return stringSet.toString();
   }
 
 }
