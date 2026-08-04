@@ -50,8 +50,10 @@ dependencies {
 
   // ncIdv specific
   ncIdv(project(":cdm-vis5d"))
+  ncIdv(project(":cdm-zarr"))
   ncIdv(project(":legacy"))
   ncIdv(project(":libaec-native"))
+  ncIdv(project(":libblosc2-native"))
   ncIdv(project(":cdm-s3"))
 
   // netcdfAll specific
