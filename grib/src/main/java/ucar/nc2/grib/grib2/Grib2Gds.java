@@ -52,6 +52,9 @@ public abstract class Grib2Gds {
       case 30:
         result = new LambertConformal(data, 30);
         break;
+      case 33:
+        result = new LambertConformalWithModellingSubdomains(data, 33);
+        break;
       case 31:
         result = new AlbersEqualArea(data);
         break;
@@ -1312,6 +1315,27 @@ public abstract class Grib2Gds {
       f.format("    end at latlon= %s%n", endLL);
     }
 
+  }
+
+  /*
+   * Template 3.33 (Grid definition template 3.33 - Lambert Conformal with Modelling Subdomains)
+   * 15-81: Same as grid definition template 3.30
+   * 82–85 (4): Nux – size of model forecast subdomain in x–direction (number of grid points)
+   * 86–89 (4): Ncx – width of coupling area within forecast domain in x–direction (number of grid points)
+   * 90–93 (4): Nuy – size of model forecast subdomain in y–direction (number of grid points)
+   * 94–97 (4): Ncy – width of coupling area within forecast domain in y–direction (number of grid points)
+   */
+  public static class LambertConformalWithModellingSubdomains extends LambertConformal {
+    final int nux, ncx, nuy, ncy;
+
+    LambertConformalWithModellingSubdomains(byte[] data, int template) {
+      super(data, template);
+
+      nux = getOctet4(82);
+      ncx = getOctet4(86);
+      nuy = getOctet4(90);
+      ncy = getOctet4(94);
+    }
   }
 
   /*
