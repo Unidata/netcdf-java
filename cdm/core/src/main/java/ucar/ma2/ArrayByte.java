@@ -1,7 +1,8 @@
 /*
- * Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2026 University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
+
 package ucar.ma2;
 
 import java.nio.ByteBuffer;
@@ -120,8 +121,11 @@ public class ArrayByte extends Array {
   }
 
   @Override
-  public ByteBuffer getDataAsByteBuffer(ByteOrder order) {// order irrelevant here
-    return ByteBuffer.wrap((byte[]) get1DJavaArray(getDataType()));
+  public ByteBuffer getDataAsByteBuffer(ByteOrder order) {
+    ByteBuffer bb = ByteBuffer.wrap((byte[]) get1DJavaArray(getDataType()));
+    if (order != null)
+      bb.order(order);
+    return bb;
   }
 
   /**
