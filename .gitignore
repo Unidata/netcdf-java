@@ -1,9 +1,3 @@
-# Ignore all target directories
-target/
-
-# Ignore possible THREDDS content directories
-tds/content/
-
 # Ignore unwanted IntelliJ IDEA project files
 /intelliJ/
 /intellij/
@@ -12,11 +6,8 @@ tds/content/
 *.iws
 .idea/
 atlassian-ide-plugin.xml
-
-# ignore intellij compile directories
-# `module`/out/ (i.e. tds/out)
+.junie
 */out/
-# `module`/`submodule`/out (i.e. dap4/d4core/out/)
 */*/out/
 
 # Ignore Dreamweaver balogna
@@ -45,7 +36,7 @@ build/
 # Ignore default content directory for mock servlets
 tds/src/content/
 
-#More testing stuff
+# More testing stuff
 opendap/src/test/data/test.*.*
 
 # OS generated files 
@@ -69,3 +60,6 @@ project-files/owasp-dependency-check/nvd
 
 # native binary distribution files
 project-files/native
+
+# JDK related files
+*.hprof
