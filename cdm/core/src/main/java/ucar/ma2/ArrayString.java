@@ -1,10 +1,12 @@
 /*
- * Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2026 University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
+
 package ucar.ma2;
 
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.CharBuffer;
 
 /**
@@ -122,15 +124,21 @@ public class ArrayString extends Array {
 
   @Override
   public ByteBuffer getDataAsByteBuffer() {
+    return getDataAsByteBuffer(null);
+  }
+
+  @Override
+  public ByteBuffer getDataAsByteBuffer(ByteOrder order) {
     // Store strings as null terminated character sequences
+    Object[] ja = (Object[]) get1DJavaArray(DataType.STRING);
     int totalsize = 0;
-    for (String aStorage : storage)
-      totalsize += (aStorage.length() + 1); // 1 for null terminator
-    ByteBuffer bb = ByteBuffer.allocate(2 * totalsize);
+    for (Object s : ja)
+      totalsize += (((String) s).length() + 1); // 1 for null terminator
+    ByteBuffer bb = super.getDataAsByteBuffer(2 * totalsize, order);
     CharBuffer cb = bb.asCharBuffer();
     // Concatenate
-    for (String s : storage) {
-      cb.append(s);
+    for (Object s : ja) {
+      cb.append((String) s);
       cb.append('\0');
     }
     return bb;

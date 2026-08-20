@@ -1,10 +1,12 @@
 /*
- * Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2026 University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
+
 package ucar.ma2;
 
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 
 /**
@@ -118,9 +120,14 @@ public class ArrayFloat extends Array {
 
   @Override
   public ByteBuffer getDataAsByteBuffer() {
-    ByteBuffer bb = ByteBuffer.allocate((int) (4 * getSize()));
+    return getDataAsByteBuffer(null);
+  }
+
+  @Override
+  public ByteBuffer getDataAsByteBuffer(ByteOrder order) {
+    ByteBuffer bb = super.getDataAsByteBuffer((int) (4 * getSize()), order);
     FloatBuffer ib = bb.asFloatBuffer();
-    ib.put((float[]) get1DJavaArray(DataType.FLOAT)); // make sure its in canonical order
+    ib.put((float[]) get1DJavaArray(DataType.FLOAT));
     return bb;
   }
 

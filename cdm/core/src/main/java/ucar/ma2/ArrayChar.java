@@ -1,10 +1,12 @@
 /*
- * Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2026 University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
+
 package ucar.ma2;
 
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.Iterator;
 
 /**
@@ -137,10 +139,16 @@ public class ArrayChar extends Array implements Iterable<String> {
    */
   @Override
   public ByteBuffer getDataAsByteBuffer() {
-    ByteBuffer bb = ByteBuffer.allocate((int) getSize());
-    resetLocalIterator();
-    while (hasNext())
-      bb.put(nextByte());
+    return getDataAsByteBuffer(null);
+  }
+
+  @Override
+  public ByteBuffer getDataAsByteBuffer(ByteOrder order) {
+    ByteBuffer bb = super.getDataAsByteBuffer((int) getSize(), order);
+    char[] ja = (char[]) get1DJavaArray(DataType.CHAR);
+    for (char c : ja) {
+      bb.put((byte) c);
+    }
     return bb;
   }
 
