@@ -18,13 +18,13 @@ import ucar.nc2.ft.radial.RadialDatasetStandardFactory;
 import ucar.nc2.ft.remote.CdmrFeatureDataset;
 import ucar.nc2.ft2.coverage.CoverageDatasetFactory;
 import ucar.nc2.ft2.coverage.FeatureDatasetCoverage;
+import ucar.nc2.util.NcServiceLoader;
 import ucar.nc2.util.Optional;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Formatter;
 import java.io.IOException;
 import java.lang.reflect.Method;
-import java.util.ServiceLoader;
 
 /**
  * Manager of factories for FeatureDatasets opened as NetcdfDatasets.
@@ -51,7 +51,7 @@ public class FeatureDatasetFactoryManager {
   // search in the order added
   static {
     // user can override
-    for (FeatureDatasetFactory csb : ServiceLoader.load(FeatureDatasetFactory.class)) {
+    for (FeatureDatasetFactory csb : NcServiceLoader.load(FeatureDatasetFactory.class)) {
       registerFactory(csb.getClass());
     }
 

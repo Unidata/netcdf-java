@@ -6,7 +6,6 @@
 package thredds.inventory;
 
 import java.io.IOException;
-import java.util.ServiceLoader;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import org.slf4j.Logger;
@@ -14,6 +13,9 @@ import org.slf4j.LoggerFactory;
 import thredds.filesystem.MFileOS;
 import thredds.filesystem.MFileOS7;
 import ucar.nc2.internal.ncml.NcmlReader;
+import ucar.nc2.util.NcServiceLoader;
+
+
 
 /**
  * Static helper methods for MFile objects.
@@ -34,7 +36,7 @@ public class MFiles {
     MFileProvider mFileProvider = null;
 
     // look for dynamically loaded MFileProviders
-    for (MFileProvider provider : ServiceLoader.load(MFileProvider.class)) {
+    for (MFileProvider provider : NcServiceLoader.load(MFileProvider.class)) {
       if (provider.canProvide(location)) {
         mFileProvider = provider;
         break;

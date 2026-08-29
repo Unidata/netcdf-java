@@ -5,8 +5,8 @@
 package thredds.inventory;
 
 import java.util.Formatter;
-import java.util.ServiceLoader;
 import javax.annotation.Nullable;
+import ucar.nc2.util.NcServiceLoader;
 
 /**
  * Static helper methods for CollectionSpecParserAbstract objects.
@@ -49,7 +49,7 @@ public class CollectionSpecParsers {
     CollectionSpecParserProvider collectionSpecParserProvider = null;
 
     // look for dynamically loaded CollectionSpecParserProvider
-    for (CollectionSpecParserProvider provider : ServiceLoader.load(CollectionSpecParserProvider.class)) {
+    for (CollectionSpecParserProvider provider : NcServiceLoader.load(CollectionSpecParserProvider.class)) {
       if (provider.canParse(spec)) {
         collectionSpecParserProvider = provider;
         break;
