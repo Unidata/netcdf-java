@@ -219,7 +219,10 @@ public class DDSXMLParser {
 
       // get a jdom parser to parse and validate the XML document.
       SAXBuilder parser = new SAXBuilder();
+      // this is the same as builder.setFeature("http://xml.org/sax/features/external-general-entities", false);
       parser.setExpandEntities(false);
+      parser.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+      parser.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
       // optionally turn on validation
       parser.setFeature("http://apache.org/xml/features/validation/schema", validation);
 
