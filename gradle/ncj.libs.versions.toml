@@ -4,29 +4,29 @@ netcdf-java = "5.11.0-SNAPSHOT"
 unidata-doc-theme = "0.1.1"
 
 # 3rd party dependencies
-awssdk = "2.48.4"
+awssdk = "2.54.17"
 awssdkv1 = "1.12.797"
 commons-math3 = "3.6.1"
 bounce = "0.18"
-grpc = "1.82.1"
-guava = "33.6.0-jre"
+grpc = "1.84.0"
+guava = "33.7.1-jre"
 httpcomponents = "4.5.14"
-jackson = "2.22.1"
+jackson = "2.22.2"
 jcommander = "1.82"
 jdom2 = "2.0.6.1"
 jfree-jcommon = "1.0.24"
 jfree-jfreechart = "1.0.19"
 jgoodies-forms = "1.6.0"
 jj2000 = "5.4"
-joda-time = "2.14.2"
+joda-time = "2.14.3"
 jsr305 = "3.0.2"
 jna = "5.19.1"
 lgooddatepicker = "11.2.1"
 mcidas = "20231121"
-protobuf = "4.35.1"
+protobuf = "4.36.1"
 re2j = "1.8"
 sensorweb-waterml = "2.7.0"
-slf4j = "2.0.18"
+slf4j = "2.0.19"
 tomcat-annotations = "6.0.53"
 visad = "2.0-20191209"
 xmlbeans = "3.1.0"
@@ -34,7 +34,7 @@ xmlbeans = "3.1.0"
 #testing only
 commons-compress = "1.28.0"
 commons-io = "2.22.0"
-jsoup = "1.22.2"
+jsoup = "1.23.2"
 junit4 = "4.13.2"
 junit5 = "5.14.4"
 junitparams = "1.0.5"
@@ -113,10 +113,10 @@ pragmatists-junitparams = { module = "pl.pragmatists:JUnitParams", version.ref =
 logback-classic = { module = "ch.qos.logback:logback-classic", version.ref = "logback-classic" }
 
 [plugins]
-cyclonedx-bom = { id = "org.cyclonedx.bom", version = "3.2.4" }
+cyclonedx-bom = { id = "org.cyclonedx.bom", version = "3.4.1" }
 execfork = { id = "com.github.psxpaul.execfork", version = "0.2.2"}
 javacc = { id = "org.javacc.javacc", version = "4.0.3" }
 protobuf = { id = "com.google.protobuf", version = "0.10.0" }
-shadow = { id = "com.gradleup.shadow", version = "9.4.2" }
-spotless = { id = "com.diffplug.spotless", version = "8.7.0" }
-versions = { id = "com.github.ben-manes.versions", version = "0.54.0" }
+shadow = { id = "com.gradleup.shadow", version = "9.6.1" }
+spotless = { id = "com.diffplug.spotless", version = "8.10.2" }
+versions = { id = "io.github.ben-manes.versions", version = "0.61.0" }
