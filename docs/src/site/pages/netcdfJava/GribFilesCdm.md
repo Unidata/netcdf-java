@@ -203,21 +203,22 @@ where:
 
 The GRIB-2 variable name is:
 
-`%paramName[_error][_%level][_layer][_%interval][_%statName][_%ensDerivedType][_probability_%probName]`
+`%paramName[_error][_%level][_layer][_%interval][_%statName][_%ensDerivedType][_probability_%probName][_%aerosolType]`
 
 where:
 * `%paramName` = parameter name from GRIB-2 table 4.2 (cleaned up). 
   If unknown, use `VAR_%d-%d-%d_FROM%d-%d` = `VAR_discipline-category-paramNo_FROM_center-subcenter`
 * `%level` = short form of level name from GRIB-2 table 4.5, if defined.
-* `_layer` = added if its a vertical layer (literal)
+* `_layer` = added if it's a vertical layer (literal)
 * `%timeInterval` = time interval name (eg \"12_hour\" or \"mixed\")
 * `%statName` = name of statistical type if applicable, from GRIB-2 table 4.10
 * `%ensDerivedType` = name of ensemble derived type if applicable, from GRIB-2 table 4.7
 * `%probName` = name of probability type if applicable
+* `%aerosolType` = type of aerosol if applicable (e.g. \"Particulate_organic_matter_dry_lt_2p5um\")
 
 The GRIB-2 variable id is:
 
-`VAR_%d-%d-%d[_error][_L%d][_layer][_I%s_S%d][_D%d][_Prob_%s]`
+`VAR_%d-%d-%d[_error][_L%d][_layer][_I%s_S%d][_D%d][_Prob_%s][_A%d_%s]`
 
 where:
 * `VAR_%d-%d-%d` = `discipline-category-paramNo`
@@ -226,6 +227,7 @@ where:
 * `S%d` = statistical type code if applicable
 * `D%d` = derived type code if applicable
 * `Prob_%s` = probability name if applicable
+* `A%d_%s` = aerosol type if applicable
 
 See `ucar.nc2.grib.grib1.Grib1Rectilyser.cdmVariableHash()` and `ucar.nc2.grib.grib2.Grib2Rectilyser.cdmVariableHash()` for complete details.
 
