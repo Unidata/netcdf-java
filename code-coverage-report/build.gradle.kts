@@ -29,7 +29,8 @@ dependencies {
 
 reporting {
   reports {
-    val testCodeCoverageReportAgg by
-      creating(JacocoCoverageReport::class) { testSuiteName = "test" }
+    create<JacocoCoverageReport>("testCodeCoverageReportAgg") {
+      testSuiteName = "test"
+    }
   }
 }

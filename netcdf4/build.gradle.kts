@@ -22,16 +22,22 @@ val unloadedTestSourceSet =
     runtimeClasspath += sourceSets.main.get().output
   }
 
-val unloadedTestImplementation by configurations.getting {
-  extendsFrom(configurations.implementation.get(), configurations.testImplementation.get())
+val unloadedTestImplementation =
+  configurations.named("unloadedTestImplementation") {
+    extendsFrom(
+      configurations.implementation.get(),
+      configurations.testImplementation.get(),
+    )
+  }
+
+val unloadedTestRuntimeOnly = configurations.named("unloadedTestRuntimeOnly")
+
+configurations.named("unloadedTestRuntimeOnly").configure {
+  extendsFrom(
+    configurations.runtimeOnly.get(),
+    configurations.testRuntimeOnly.get(),
+  )
 }
-
-val unloadedTestRuntimeOnly by configurations.getting
-
-configurations["unloadedTestRuntimeOnly"].extendsFrom(
-  configurations.runtimeOnly.get(),
-  configurations.testRuntimeOnly.get(),
-)
 
 dependencies {
   implementation(platform(project(":netcdf-java-platform")))
