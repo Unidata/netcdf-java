@@ -1406,29 +1406,29 @@ public class Grib2CollectionPanel extends JPanel {
       return ((Grib2Pds.PdsAerosol) pds).getAerosolType();
     }
 
-    public double getAerIntSizeType() {
+    public int getAerIntSizeType() {
       return ((Grib2Pds.PdsAerosol) pds).getAerosolIntervalSizeType();
     }
 
     public double getAerSize1() {
-      return ((Grib2Pds.PdsAerosol) pds).getAerosolSize1() * 10e6;
+      return ((Grib2Pds.PdsAerosol) pds).getAerosolSize1() * 1e6;
     } // microns
 
     public double getAerSize2() {
-      return ((Grib2Pds.PdsAerosol) pds).getAerosolSize2() * 10e6;
+      return ((Grib2Pds.PdsAerosol) pds).getAerosolSize2() * 1e6;
     } // microns
 
-    public double getAerIntWavelType() {
+    public int getAerIntWavelType() {
       return ((Grib2Pds.PdsAerosol) pds).getAerosolIntervalWavelengthType();
     }
 
     public double getAerWavel1() {
-      return ((Grib2Pds.PdsAerosol) pds).getAerosolWavelength1();
-    }
+      return ((Grib2Pds.PdsAerosol) pds).getAerosolWavelength1() * 1e9;
+    } // nanometers
 
     public double getAerWavel2() {
-      return ((Grib2Pds.PdsAerosol) pds).getAerosolWavelength2();
-    }
+      return ((Grib2Pds.PdsAerosol) pds).getAerosolWavelength2() * 1e9;
+    } // nanometers
 
     ///////////////////////////////
     // Ensembles

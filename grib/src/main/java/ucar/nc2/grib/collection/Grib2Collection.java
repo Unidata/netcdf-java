@@ -19,6 +19,7 @@ import ucar.nc2.ft2.coverage.CoverageCollection;
 import ucar.nc2.grib.GribNumbers;
 import ucar.nc2.grib.GribTables;
 import ucar.nc2.grib.coverage.GribCoverageDataset;
+import ucar.nc2.grib.grib2.Grib2Utils;
 import ucar.nc2.grib.grib2.table.Grib2Tables;
 import ucar.unidata.util.StringUtil2;
 import java.io.IOException;
@@ -166,11 +167,12 @@ public class Grib2Collection extends GribCollectionImmutable {
    * if variable name is duplicate of existing variable name (this should not normally occur):
    * _n (where n begins with 1 for first duplicate) (ex: TMAX_P8_L103_GCA0_6h_1)
    * 
-   * VAR_%d-%d-%d[_error][_L%d][_layer][_I%s_S%d][_D%d][_Prob_%s]
+   * VAR_%d-%d-%d[_error][_L%d][_layer][_I%s_S%d][_D%d][_Prob_%s][_A%d_%s]
    * %d-%d-%d = discipline-category-paramNo
    * L = level type
    * S = stat type
    * D = derived type
+   * A = aerosol type
    */
   @Override
   protected String makeVariableId(GribCollectionImmutable.VariableIndex vindex) {
@@ -213,6 +215,11 @@ public class Grib2Collection extends GribCollectionImmutable {
         f.format("_Prob_%s", s);
       }
 
+      if (vindex.getAerosolType() >= 0) {
+        f.format("_A%d", vindex.getAerosolType());
+        f.format("_%s", Grib2Utils.makeAerosolRangeSuffix(vindex.getAerosolRange()));
+      }
+
       return f.toString();
     }
   }
@@ -250,6 +257,12 @@ public class Grib2Collection extends GribCollectionImmutable {
     else if (vindex.getProbabilityName() != null && !vindex.getProbabilityName().isEmpty()) {
       v.addAttribute(new Attribute("Grib2_Probability_Type", vindex.getProbType()));
       v.addAttribute(new Attribute("Grib2_Probability_Name", vindex.getProbabilityName()));
+    }
+
+    if (vindex.getAerosolType() >= 0) {
+      v.addAttribute(new Attribute("Grib2_Aerosol_Type", vindex.getAerosolType()));
+      v.addAttribute(new Attribute("Grib2_Aerosol_Name", vindex.getAerosolName()));
+      v.addAttribute(new Attribute("Grib2_Aerosol_Range", vindex.getAerosolRange()));
     }
 
     if (vindex.getGenProcessType() >= 0) {
