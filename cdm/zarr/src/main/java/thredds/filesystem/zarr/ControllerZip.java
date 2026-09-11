@@ -123,11 +123,17 @@ public class ControllerZip extends ControllerOS implements MController {
       Path relativePath = file.getRelativePath();
 
       for (ZipEntry entry : entries) {
-        Path entryPath = Paths.get(File.separator + entry.getName());
-        if (!entryPath.startsWith(relativePath)) {
-          logger.warn(entryPath.toString() + " is not an entry in " + relativePath.toString());
+        // entry path (relative to zip file), normalized to remove
+        // segments like '.' and '..'
+        Path normEntryPath = Paths.get(entry.getName()).normalize();
+        // if normEntryPath starts with '..', it has tried to escape
+        // above its original starting level
+        if (normEntryPath.startsWith("..")) {
+          logger.warn(normEntryPath.toString() + " is not an entry in " + relativePath.toString());
           continue;
         }
+        // anchor entry path to root of zip file
+        Path entryPath = Paths.get(File.separator + entry.getName());
         // truncate path to one level below current path (i.e. direct child)
         Path childPath = entryPath.subpath(0, relativePath.getNameCount() + 1);
         fileNames.add(childPath);
@@ -155,7 +161,14 @@ public class ControllerZip extends ControllerOS implements MController {
       List<ZipEntry> entries = file.getLeafEntries();
       for (ZipEntry entry : entries) {
         try {
-          this.files.add(new MFileZip(file.getRootPath() + File.separator + entry.getName()));
+          File entryFile = new File(file.getRootPath() + File.separator + entry.getName());
+          if (entryFile.toPath().normalize().startsWith(file.getRootPath())) {
+            this.files.add(new MFileZip(entryFile.toString()));
+          } else {
+            // don't allow external references to escape the zip file
+            // (e.g., skip entries like ../path/outside/of/zip)
+            logger.warn("Zip entry references external entity in {}: {}. Skipping.", file.getPath(), entryFile);
+          }
         } catch (IOException ioe) {
           logger.error(ioe.getMessage(), ioe);
         }
