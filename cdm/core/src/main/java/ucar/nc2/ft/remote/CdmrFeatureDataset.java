@@ -118,7 +118,10 @@ public class CdmrFeatureDataset {
     org.jdom2.Document doc;
     try (InputStream in = CdmRemote.sendQuery(null, endpoint, "req=capabilities")) {
       SAXBuilder builder = new SAXBuilder();
+      // this is the same as builder.setFeature("http://xml.org/sax/features/external-general-entities", false);
       builder.setExpandEntities(false);
+      builder.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+      builder.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
       doc = builder.build(in); // LOOK closes in when done ??
 
     } catch (Throwable t) {

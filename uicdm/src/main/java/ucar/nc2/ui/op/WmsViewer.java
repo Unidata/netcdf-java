@@ -190,7 +190,10 @@ public class WmsViewer extends JPanel {
       }
 
       SAXBuilder builder = new SAXBuilder();
+      // this is the same as builder.setFeature("http://xml.org/sax/features/external-general-entities", false);
       builder.setExpandEntities(false);
+      builder.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+      builder.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
       Document tdoc = builder.build(method.getResponseAsStream());
       Element root = tdoc.getRootElement();
       parseGetCapabilities(root);
