@@ -154,6 +154,15 @@ public class Grib2Variable {
         return false;
     }
 
+    if (pds.isAerosol() != pds2.isAerosol())
+      return false;
+    if (pds.isAerosol()) {
+      Grib2Pds.PdsAerosol pdsAerosol = (Grib2Pds.PdsAerosol) pds;
+      Grib2Pds.PdsAerosol pdsAerosol2 = (Grib2Pds.PdsAerosol) pds2;
+      if (pdsAerosol.getAerosolHashcode() != pdsAerosol2.getAerosolHashcode())
+        return false;
+    }
+
     // if this uses any local tables, then we have to add the center id, and subcenter if present
     if ((pds2.getParameterCategory() > 191) || (pds2.getParameterNumber() > 191) || (pds2.getLevelType1() > 191)
         || (pds2.isTimeInterval() && pds2.getStatisticalProcessType() > 191) || (ensDerivedType > 191)
@@ -227,6 +236,11 @@ public class Grib2Variable {
     if (pds.isPercentile()) {
       Grib2Pds.PdsPercentile pdsPerc = (Grib2Pds.PdsPercentile) pds;
       result += result * 31 + pdsPerc.getPercentileValue();
+    }
+
+    if (pds.isAerosol()) {
+      Grib2Pds.PdsAerosol pdsAerosol = (Grib2Pds.PdsAerosol) pds;
+      result += result * 31 + pdsAerosol.getAerosolHashcode();
     }
 
     // if this uses any local tables, then we have to add the center id, and subcenter if present

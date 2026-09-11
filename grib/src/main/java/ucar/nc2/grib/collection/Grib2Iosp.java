@@ -84,6 +84,11 @@ public class Grib2Iosp extends GribIosp {
       if (vindex.getPercentileValue() >= 0) {
         f.format("_Percentile%2d", vindex.getPercentileValue());
       }
+
+      if (vindex.getAerosolType() >= 0) {
+        f.format("_%s", GribUtils.makeNameFromDescription(vindex.getAerosolName()));
+        f.format("_%s", Grib2Utils.makeAerosolRangeSuffix(vindex.getAerosolRange()));
+      }
       return f.toString();
     }
   }
@@ -142,6 +147,10 @@ public class Grib2Iosp extends GribIosp {
 
       if (vindex.getPercentileValue() >= 0) {
         f.format(" %d Percentile", vindex.getPercentileValue());
+      }
+
+      if (vindex.getAerosolName() != null && !vindex.getAerosolName().isEmpty()) {
+        f.format(" (%s %s)", vindex.getAerosolName(), vindex.getAerosolRange());
       }
 
       if (vindex.getLevelType() != GribNumbers.UNDEFINED) { // satellite data doesnt have a level

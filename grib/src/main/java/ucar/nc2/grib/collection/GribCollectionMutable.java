@@ -435,6 +435,9 @@ public class GribCollectionMutable implements Closeable {
     public final int category, parameter, levelType, intvType, ensDerivedType, probType, percentile;
     private String intvName; // eg "mixed intervals, 3 Hour, etc"
     public final String probabilityName;
+    public final int aerosolType;
+    public final String aerosolName;
+    public final String aerosolRange;
     public final boolean isLayer, isEnsemble;
     public final int genProcessType;
     public final int spatialStatType;
@@ -476,6 +479,9 @@ public class GribCollectionMutable implements Closeable {
         this.ensDerivedType = -1;
         this.probType = -1;
         this.probabilityName = null;
+        this.aerosolType = -1;
+        this.aerosolName = null;
+        this.aerosolRange = null;
         this.percentile = -1;
 
         this.genProcessType = pds.getGenProcess(); // LOOK process vs process type ??
@@ -515,6 +521,17 @@ public class GribCollectionMutable implements Closeable {
         } else {
           this.probType = -1;
           this.probabilityName = null;
+        }
+
+        if (pds.isAerosol()) {
+          Grib2Pds.PdsAerosol pdsAerosol = (Grib2Pds.PdsAerosol) pds;
+          this.aerosolType = pdsAerosol.getAerosolType();
+          this.aerosolName = pdsAerosol.getAerosolName();
+          this.aerosolRange = pdsAerosol.getAerosolRange();
+        } else {
+          this.aerosolType = -1;
+          this.aerosolName = null;
+          this.aerosolRange = null;
         }
 
         if (pds.isPercentile()) {
@@ -560,6 +577,9 @@ public class GribCollectionMutable implements Closeable {
       this.ensDerivedType = other.ensDerivedType;
       this.probabilityName = other.probabilityName;
       this.probType = other.probType;
+      this.aerosolType = other.aerosolType;
+      this.aerosolName = other.aerosolName;
+      this.aerosolRange = other.aerosolRange;
       this.genProcessType = other.genProcessType;
       this.spatialStatType = other.spatialStatType;
       this.isEnsemble = other.isEnsemble;
@@ -619,8 +639,9 @@ public class GribCollectionMutable implements Closeable {
       return MoreObjects.toStringHelper(this).add("tableVersion", tableVersion).add("discipline", discipline)
           .add("category", category).add("parameter", parameter).add("levelType", levelType).add("intvType", intvType)
           .add("ensDerivedType", ensDerivedType).add("probType", probType).add("intvName", intvName)
-          .add("probabilityName", probabilityName).add("isLayer", isLayer).add("genProcessType", genProcessType)
-          .add("cdmHash", gribVariable.hashCode()).toString();
+          .add("probabilityName", probabilityName).add("aerosolName", aerosolName).add("aerosolRange", aerosolRange)
+          .add("isLayer", isLayer).add("genProcessType", genProcessType).add("cdmHash", gribVariable.hashCode())
+          .toString();
     }
 
     public String toStringComplete() {
@@ -629,8 +650,9 @@ public class GribCollectionMutable implements Closeable {
           .add("recordsLen", recordsLen).add("gribVariable", gribVariable).add("coordIndex", coordIndex)
           .add("category", category).add("parameter", parameter).add("levelType", levelType).add("intvType", intvType)
           .add("ensDerivedType", ensDerivedType).add("probType", probType).add("intvName", intvName)
-          .add("probabilityName", probabilityName).add("isLayer", isLayer).add("isEnsemble", isEnsemble)
-          .add("genProcessType", genProcessType).add("spatialStatType", spatialStatType).toString();
+          .add("probabilityName", probabilityName).add("aerosolName", aerosolName).add("aerosolRange", aerosolRange)
+          .add("isLayer", isLayer).add("isEnsemble", isEnsemble).add("genProcessType", genProcessType)
+          .add("spatialStatType", spatialStatType).toString();
     }
 
     public String toStringShort() {
@@ -643,6 +665,9 @@ public class GribCollectionMutable implements Closeable {
         }
         if (probabilityName != null && !probabilityName.isEmpty()) {
           sb.format(" prob=%s", probabilityName);
+        }
+        if (aerosolName != null && !aerosolName.isEmpty()) {
+          sb.format(" aerosol=%s (%s)", aerosolName, aerosolRange);
         }
         sb.format(" cdmHash=%d}", gribVariable.hashCode());
         return sb.toString();

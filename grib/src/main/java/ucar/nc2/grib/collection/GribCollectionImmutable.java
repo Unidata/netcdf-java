@@ -706,6 +706,18 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
       return info.probabilityName;
     }
 
+    public int getAerosolType() {
+      return info.aerosolType;
+    }
+
+    public String getAerosolName() {
+      return info.aerosolName;
+    }
+
+    public String getAerosolRange() {
+      return info.aerosolRange;
+    }
+
     public boolean isLayer() {
       return info.isLayer;
     }
@@ -825,6 +837,9 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
       @Nullable
       final String intvName; // eg "mixed intervals, 3 Hour, etc"
       final String probabilityName;
+      final int aerosolType;
+      final String aerosolName;
+      final String aerosolRange;
       final boolean isLayer, isEnsemble;
       final int genProcessType;
       final int spatialStatType;
@@ -840,6 +855,9 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
         this.probType = gcVar.probType;
         this.intvName = gcVar.getTimeIntvName();
         this.probabilityName = gcVar.probabilityName;
+        this.aerosolType = gcVar.aerosolType;
+        this.aerosolName = gcVar.aerosolName;
+        this.aerosolRange = gcVar.aerosolRange;
         this.isLayer = gcVar.isLayer;
         this.isEnsemble = gcVar.isEnsemble;
         this.genProcessType = gcVar.genProcessType;

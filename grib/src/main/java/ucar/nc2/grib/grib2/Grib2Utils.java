@@ -5,7 +5,9 @@
 
 package ucar.nc2.grib.grib2;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.StringJoiner;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.grib.GribTables;
 import ucar.nc2.grib.grib2.table.WmoParamTable;
@@ -83,6 +85,109 @@ public class Grib2Utils {
       default:
         return null;
     }
+  }
+
+  /**
+   * <pre>
+   *   Code table 4.91 - Type of Interval
+   *   https://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_doc/grib2_table4-91.shtml
+   *
+   *      0  Smaller than first limit
+   *      1  Greater than second limit
+   *      2  Between first and second limit. The range includes the first limit but not the second limit.
+   *      3  Greater than first limit
+   *      4  Smaller than second limit
+   *      5  Smaller or equal first limit
+   *      6  Greater or equal second limit
+   *      7  Between first and second limit. The range includes the first limit and the second limit.
+   *      8  Greater or equal first limit
+   *      9  Smaller or equal second limit
+   *     10  Between first and second limit. The range includes the second limit but not the first limit.
+   *     11  Equal to first limit
+   * </pre>
+   * 
+   * @return the relational operator applied to the first limit of the interval, or null if not applicable
+   */
+  @Nullable
+  public static String getFirstLimitOperator(int intervalType) {
+    switch (intervalType) {
+      case 0:
+        return "<";
+      case 2:
+      case 7:
+      case 8:
+        return ">=";
+      case 3:
+      case 10:
+        return ">";
+      case 5:
+        return "<=";
+      case 11:
+        return ""; // No need to put "=" sign in front of the value. The value by itself is fine.
+      default:
+        return null;
+    }
+  }
+
+  /**
+   * See {@link #getFirstLimitOperator}.
+   * 
+   * @return the relational operator applied to the second limit of the interval, or null if not applicable
+   */
+  @Nullable
+  public static String getSecondLimitOperator(int intervalType) {
+    switch (intervalType) {
+      case 1:
+        return ">";
+      case 2:
+      case 4:
+        return "<";
+      case 6:
+        return ">=";
+      case 7:
+      case 9:
+      case 10:
+        return "<=";
+      default:
+        return null;
+    }
+  }
+
+  @Nullable
+  private static String rangeTermFor(String operator, double val, String unit) {
+    if (operator == null) {
+      return null;
+    }
+    String formattedValue = (int) val == val ? Integer.toString((int) val) : Double.toString(val);
+    return operator + formattedValue + unit;
+  }
+
+  /**
+   * Constructs a human-readable representation of an interval. Whether the first or second limit (or both) is used
+   * depends on the type of interval. Examples: ">2.5um", ">=2.5um,<10um"
+   *
+   * @param intervalType code from Code table 4.91
+   * @param firstLimit first limit of the interval
+   * @param secondLimit second limit of the interval
+   * @param unit the unit of the limits, applied as a suffix
+   */
+  @Nonnull
+  public static String intervalToRangeDescriptor(int intervalType, double firstLimit, double secondLimit, String unit) {
+    StringJoiner sj = new StringJoiner(",");
+    String firstTerm = rangeTermFor(getFirstLimitOperator(intervalType), firstLimit, unit);
+    if (firstTerm != null) {
+      sj.add(firstTerm);
+    }
+    String secondTerm = rangeTermFor(getSecondLimitOperator(intervalType), secondLimit, unit);
+    if (secondTerm != null) {
+      sj.add(secondTerm);
+    }
+    return sj.toString();
+  }
+
+  public static String makeAerosolRangeSuffix(String aerosolRange) {
+    return aerosolRange.replace('.', 'p').replace("<=", "le_").replace(">=", "ge_").replace("<", "lt_")
+        .replace(">", "gt_").replace(',', '_');
   }
 
   /**

@@ -7,14 +7,17 @@ package ucar.nc2.grib.grib2;
 
 import ucar.nc2.grib.GribNumbers;
 import ucar.nc2.time.CalendarDate;
+import ucar.nc2.wmo.CommonCodeTable;
 import ucar.unidata.util.Format;
 import ucar.unidata.util.StringUtil2;
 
+import javax.annotation.Nonnull;
+import javax.annotation.concurrent.Immutable;
 import java.util.Formatter;
+import java.util.StringJoiner;
 import java.util.zip.CRC32;
 
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.Immutable;
+import static ucar.nc2.grib.grib2.Grib2Utils.intervalToRangeDescriptor;
 
 /**
  * Abstract superclass for GRIB2 PDS handling.
@@ -33,9 +36,9 @@ public abstract class Grib2Pds {
    *
    * @param template pds template number
    * @param input raw bytes
-   * @return Grib2Pds or null on error
+   * @return Grib2Pds or exception on error
    */
-  @Nullable
+  @Nonnull
   public static Grib2Pds factory(int template, byte[] input) {
     switch (template) {
       case 0:
@@ -70,6 +73,8 @@ public abstract class Grib2Pds {
         return new Grib2Pds40(input);
       case 41:
         return new Grib2Pds41(input);
+      case 46:
+        return new Grib2Pds46(input);
       case 48:
         return new Grib2Pds48(input);
       case 60:
@@ -77,7 +82,6 @@ public abstract class Grib2Pds {
       case 61:
         return new Grib2Pds61(input);
       default:
-        log.warn("Missing template " + template);
         throw new UnsupportedOperationException("Product Definition " + template + " not yet implemented.");
     }
   }
@@ -221,7 +225,7 @@ public abstract class Grib2Pds {
   }
 
   public boolean isAerosol() {
-    return (template == 48);
+    return false;
   }
 
   public boolean isEnsemble() {
@@ -336,19 +340,81 @@ public abstract class Grib2Pds {
   //////////////////////////////////////////////////////////////////////////////////////////////
 
   public interface PdsAerosol {
+    /**
+     * @return Aerosol Type (see Code table 4.233)
+     */
     int getAerosolType();
 
-    double getAerosolIntervalSizeType();
+    /**
+     * @return Type of interval for first and second size (see Code table 4.91)
+     */
+    int getAerosolIntervalSizeType();
 
+    /**
+     * @return First aerosol size (in meters)
+     */
     double getAerosolSize1();
 
+    /**
+     * @return Second aerosol size (in meters)
+     */
     double getAerosolSize2();
 
-    double getAerosolIntervalWavelengthType();
+    /**
+     * @return Type of interval for first and second wavelength (see Code table 4.91)
+     */
+    int getAerosolIntervalWavelengthType();
 
+    /**
+     * @return First aerosol wavelength (in meters)
+     */
     double getAerosolWavelength1();
 
+    /**
+     * @return Second aerosol wavelength (in meters)
+     */
     double getAerosolWavelength2();
+
+    @Nonnull
+    default String getAerosolName() {
+      int code = getAerosolType();
+      String name = CommonCodeTable.getTableValue(14, code);
+      return name != null ? name : String.format("UnknownAerosolType%d", code);
+    }
+
+    /**
+     * @return The size and/or wavelength range of this aerosol product (examples: ">2.5um", ">=2.5um,<10um")
+     */
+    @Nonnull
+    default String getAerosolRange() {
+      StringJoiner sj = new StringJoiner(" ");
+
+      String sizeRange = intervalToRangeDescriptor(getAerosolIntervalSizeType(), getAerosolSize1() * 1e6,
+          getAerosolSize2() * 1e6, "um"); // microns
+      if (!sizeRange.isEmpty()) {
+        sj.add(sizeRange);
+      }
+
+      String wavelengthRange = intervalToRangeDescriptor(getAerosolIntervalWavelengthType(),
+          getAerosolWavelength1() * 1e9, getAerosolWavelength2() * 1e9, "nm"); // nanometers
+      if (!wavelengthRange.isEmpty()) {
+        sj.add(wavelengthRange);
+      }
+
+      return sj.toString();
+    }
+
+    default int getAerosolHashcode() {
+      int result = 17;
+      result = 31 * result + getAerosolType();
+      result = 31 * result + getAerosolIntervalSizeType();
+      result = 31 * result + Double.hashCode(getAerosolSize1());
+      result = 31 * result + Double.hashCode(getAerosolSize2());
+      result = 31 * result + getAerosolIntervalWavelengthType();
+      result = 31 * result + Double.hashCode(getAerosolWavelength1());
+      result = 31 * result + Double.hashCode(getAerosolWavelength2());
+      return result;
+    }
   }
 
   public interface PdsInterval {
@@ -1760,6 +1826,183 @@ public abstract class Grib2Pds {
   ///////////////////////////////////////////////////////////////////////////////
 
   /*
+   * Product definition template 4.46 – average, accumulation, and/or extreme values or other statistically-processed
+   * values at a horizontal level or in a horizontal layer in a continuous or non-continuous time interval for aerosol
+   * https://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_doc/grib2_temp4-46.shtml
+   */
+
+  private static class Grib2Pds46 extends Grib2Pds implements PdsAerosol, PdsInterval {
+
+    Grib2Pds46(byte[] input) {
+      super(input);
+    }
+
+    @Override
+    public boolean isAerosol() {
+      return true;
+    }
+
+    @Override
+    public boolean isTimeInterval() {
+      return true;
+    }
+
+    // 12–13 Aerosol type (see Code table 4.233)
+    public int getAerosolType() {
+      return GribNumbers.uint2(getOctet(12), getOctet(13));
+    }
+
+    // 14 Type of interval for first and second size (see Code table 4.91)
+    public int getAerosolIntervalSizeType() {
+      return getOctet(14);
+    }
+
+    // 15 Scale factor of first size
+    // 16–19 Scaled value of first size in meters
+    public double getAerosolSize1() {
+      return getScaledValue(15);
+    }
+
+    // 20 Scale factor of second size
+    // 21–24 Scaled value of second size in meters
+    public double getAerosolSize2() {
+      return getScaledValue(20);
+    }
+
+    // 25 Type of generating process (see Code table 4.3)
+    @Override
+    public int getGenProcessType() {
+      return getOctet(25);
+    }
+
+    // 26 Background generating process identifier (defined by originating center)
+    @Override
+    public int getBackProcessId() {
+      return getOctet(26);
+    }
+
+    // 27 Analysis or forecast generating process identifier (see Code ON388 Table A)
+    @Override
+    public int getGenProcessId() {
+      return getOctet(27);
+    }
+
+    // 28–29 Hours after reference time of data cutoff
+    public int getHoursAfterCutoff() {
+      return GribNumbers.int2(getOctet(28), getOctet(29));
+    }
+
+    // 30 Minutes after reference time of data cutoff
+    public int getMinutesAfterCutoff() {
+      return getOctet(30);
+    }
+
+    // 31 Indicator of unit of time range (see Code table 4.4)
+    @Override
+    public int getTimeUnit() {
+      return getOctet(31);
+    }
+
+    // 32–35 Forecast time in units defined by octet 31
+    @Override
+    public int getForecastTime() {
+      return GribNumbers.int4(getOctet(32), getOctet(33), getOctet(34), getOctet(35));
+    }
+
+    // 36 Type of first fixed surface (see Code table 4.5)
+    @Override
+    public int getLevelType1() {
+      return getOctet(36);
+    }
+
+    // 37 Scale factor of first fixed surface
+    @Override
+    public int getLevelScale1() {
+      return getOctet(37);
+    }
+
+    // 38–41 Scaled value of first fixed surface
+    @Override
+    public double getLevelValue1() {
+      return getScaledValue(37);
+    }
+
+    // 42 Type of second fixed surface (see Code table 4.5)
+    @Override
+    public int getLevelType2() {
+      return getOctet(42);
+    }
+
+    // 43 Scale factor of second fixed surface
+    @Override
+    public int getLevelScale2() {
+      return getOctet(43);
+    }
+
+    // 44–47 Scaled value of second fixed surface
+    @Override
+    public double getLevelValue2() {
+      return getScaledValue(43);
+    }
+
+    // 48–54 End of overall time interval
+    public CalendarDate getIntervalTimeEnd() {
+      return calcTime(48);
+    }
+
+    // 55 number of time ranges specifications describing the time intervals used to calculate the
+    // statistically-processed field
+    public int getNumberTimeRanges() {
+      return getOctet(55);
+    }
+
+    // 56–59 Total number of data values missing in the statistical process
+    public final int getNumberMissing() {
+      return GribNumbers.int4(getOctet(56), getOctet(57), getOctet(58), getOctet(59));
+    }
+
+    public TimeInterval[] getTimeIntervals() {
+      return readTimeIntervals(getNumberTimeRanges(), 60);
+    }
+
+    @Override
+    public int templateLength() {
+      return 59 + getNumberTimeRanges() * 12;
+    }
+
+    public long getIntervalHash() {
+      CRC32 crc32 = new CRC32();
+      crc32.update(input, 59, 12);
+      if (getNumberTimeRanges() > 1)
+        crc32.update(input, 71, 1);
+      return crc32.getValue();
+    }
+
+    public void show(Formatter f) {
+      super.show(f);
+      f.format("%n   Grib2Pds46: endInterval=%s%n", getIntervalTimeEnd());
+      for (TimeInterval ti : getTimeIntervals()) {
+        ti.show(f);
+      }
+    }
+
+    // template 4.46 has no wavelength fields
+    public int getAerosolIntervalWavelengthType() {
+      return GribNumbers.UNDEFINED;
+    }
+
+    public double getAerosolWavelength1() {
+      return GribNumbers.UNDEFINED;
+    }
+
+    public double getAerosolWavelength2() {
+      return GribNumbers.UNDEFINED;
+    }
+  }
+
+  ///////////////////////////////////////////////////////////////////////////////
+
+  /*
    * Product definition template 4.48 – analysis or forecast at a horizontal level or in a horizontal layer at a point
    * in time for optical properties of aerosol
    * Octet No. Contents
@@ -1798,13 +2041,18 @@ public abstract class Grib2Pds {
       super(input);
     }
 
+    @Override
+    public boolean isAerosol() {
+      return true;
+    }
+
     // 12–13 Aerosol type (see Common Code table C–14)
     public int getAerosolType() {
       return GribNumbers.uint2(getOctet(12), getOctet(13));
     }
 
     // 14 Type of interval for first and second size (see Code table 4.91)
-    public double getAerosolIntervalSizeType() {
+    public int getAerosolIntervalSizeType() {
       return getOctet(14);
     }
 
@@ -1821,7 +2069,7 @@ public abstract class Grib2Pds {
     }
 
     // 25 Type of interval for first and second wavelength (see Code table 4.91)
-    public double getAerosolIntervalWavelengthType() {
+    public int getAerosolIntervalWavelengthType() {
       return getOctet(25);
     }
 
