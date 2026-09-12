@@ -27,11 +27,12 @@ val artifactOutputLocation = rootProject.layout.buildDirectory.dir("distribution
 tasks.clean { delete(artifactOutputLocation) }
 
 // configurations for the uber-jars
-val toolsUI by configurations.creating { extendsFrom(configurations.implementation.get()) }
+val toolsUI = configurations.create("toolsUI") { extendsFrom(configurations.implementation.get()) }
 
-val ncIdv by configurations.creating { extendsFrom(configurations.implementation.get()) }
+val ncIdv = configurations.create("ncIdv") { extendsFrom(configurations.implementation.get()) }
 
-val netcdfAll by configurations.creating { extendsFrom(configurations.implementation.get()) }
+val netcdfAll =
+  configurations.create("netcdfAll") { extendsFrom(configurations.implementation.get()) }
 
 dependencies {
   implementation(platform(project(":netcdf-java-platform")))

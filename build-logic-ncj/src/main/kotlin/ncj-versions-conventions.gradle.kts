@@ -5,7 +5,7 @@
 
 import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
 
-plugins { id("com.github.ben-manes.versions") }
+plugins { id("io.github.ben-manes.versions") }
 
 // https://github.com/ben-manes/gradle-versions-plugin
 fun isNonStable(version: String): Boolean {
