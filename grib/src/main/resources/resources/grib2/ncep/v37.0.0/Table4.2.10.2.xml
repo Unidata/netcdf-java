@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<parameterMap>
+  <table>Table4.2.10.2</table>
+  <title>Ice</title>
+  <source>https://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_doc/grib2_table4-2-10-2.shtml</source>
+  <parameter code="0">
+    <shortName>ICEC</shortName>
+    <description>Ice Cover</description>
+    <units>Proportion</units>
+  </parameter>
+  <parameter code="1">
+    <shortName>ICETK</shortName>
+    <description>Ice Thickness</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="2">
+    <shortName>DICED</shortName>
+    <description>Direction of Ice Drift</description>
+    <units>degree True</units>
+  </parameter>
+  <parameter code="3">
+    <shortName>SICED</shortName>
+    <description>Speed of Ice Drift</description>
+    <units>m s-1</units>
+  </parameter>
+  <parameter code="4">
+    <shortName>UICE</shortName>
+    <description>U-Component of Ice Drift</description>
+    <units>m s-1</units>
+  </parameter>
+  <parameter code="5">
+    <shortName>VICE</shortName>
+    <description>V-Component of Ice Drift</description>
+    <units>m s-1</units>
+  </parameter>
+  <parameter code="6">
+    <shortName>ICEG</shortName>
+    <description>Ice Growth Rate</description>
+    <units>m s-1</units>
+  </parameter>
+  <parameter code="7">
+    <shortName>ICED</shortName>
+    <description>Ice Divergence</description>
+    <units>s-1</units>
+  </parameter>
+  <parameter code="8">
+    <shortName>ICETMP</shortName>
+    <description>Ice Temperature</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="9">
+    <shortName>ICEPRS</shortName>
+    <description>Module of Ice Internal Pressure (see Note 1)</description>
+    <units>Pa m</units>
+  </parameter>
+  <parameter code="10">
+    <shortName>ZVCICEP</shortName>
+    <description>Zonal Vector Component of Vertically Integrated Ice Internal Pressure</description>
+    <units>Pa m</units>
+  </parameter>
+  <parameter code="11">
+    <shortName>MVCICEP</shortName>
+    <description>Meridional Vector Component of Vertically Integrated Ice Internal Pressure</description>
+    <units>Pa m</units>
+  </parameter>
+  <parameter code="12">
+    <shortName>CICES</shortName>
+    <description>Compressive Ice Strength</description>
+    <units>N m-1</units>
+  </parameter>
+  <parameter code="13">
+    <shortName>SNOWTSI</shortName>
+    <description>Snow Temperature (over sea ice)</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="14">
+    <shortName>ALBDOICE</shortName>
+    <description>Albedo</description>
+    <units>Numeric</units>
+  </parameter>
+  <parameter code="15">
+    <shortName>SICEVOL</shortName>
+    <description>Sea Ice Volume per Unit Area</description>
+    <units>m3m-2</units>
+  </parameter>
+  <parameter code="16">
+    <shortName>SNVOLSI</shortName>
+    <description>Snow Volume Over Sea Ice per Unit Area</description>
+    <units>m3m-2</units>
+  </parameter>
+  <parameter code="17">
+    <shortName>SICEHC</shortName>
+    <description>Sea Ice Heat Content</description>
+    <units>J m-2</units>
+  </parameter>
+  <parameter code="18">
+    <shortName>SNCEHC</shortName>
+    <description>Snow over Sea Ice Heat Content</description>
+    <units>J m-2</units>
+  </parameter>
+  <parameter code="19">
+    <shortName>ICEFTHCK</shortName>
+    <description>Ice Freeboard Thickness</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="20">
+    <shortName>ICEMPF</shortName>
+    <description>Ice Melt Pond Fraction</description>
+    <units>fraction</units>
+  </parameter>
+  <parameter code="21">
+    <shortName>ICEMPD</shortName>
+    <description>Ice Melt Pond Depth</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="22">
+    <shortName>ICEMPV</shortName>
+    <description>Ice Melt Pond Volume per Unit Area</description>
+    <units>m3m-2</units>
+  </parameter>
+  <parameter code="23">
+    <shortName>SIFTP</shortName>
+    <description>Sea Ice Fraction Tendency due to Parameterization</description>
+    <units>s-1</units>
+  </parameter>
+  <parameter code="24">
+    <shortName>XICE</shortName>
+    <description>X-Component of Ice Drift</description>
+    <units>m s-1</units>
+  </parameter>
+  <parameter code="25">
+    <shortName>YICE</shortName>
+    <description>Y-Component of Ice Drift</description>
+    <units>m s-1</units>
+  </parameter>
+  <parameter code="26">
+    <shortName>SICESAL</shortName>
+    <description>Sea Ice Salinity</description>
+    <units>g kg-1</units>
+  </parameter>
+  <parameter code="27">
+    <shortName>FRZMLTPOT</shortName>
+    <description>Freezing/Melting Potential</description>
+    <units>W m-2</units>
+  </parameter>
+  <parameter code="28">
+    <shortName>MLTDATE</shortName>
+    <description>Melt Onset Date (see Note 2)</description>
+    <units>Numeric</units>
+  </parameter>
+  <parameter code="29">
+    <shortName>FRZDATE</shortName>
+    <description>Freeze Onset Date (see Note 3)</description>
+    <units>Numeric</units>
+  </parameter>
+  <parameter code="30">
+    <shortName>SICEBM</shortName>
+    <description>Sea Ice Breakup Memory (see Note 4)</description>
+    <units>Numeric</units>
+  </parameter>
+  <parameter code="31">
+    <shortName>DSWRFICE</shortName>
+    <description>Downward Shortwave Radiation Flux</description>
+    <units>W m-2</units>
+  </parameter>
+</parameterMap>

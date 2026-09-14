@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<parameterMap>
+  <table>Table4.2.2.4</table>
+  <title>Fire Weather Products</title>
+  <source>https://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_doc/grib2_table4-2-2-4.shtml</source>
+  <parameter code="0">
+    <shortName>FIREOLK</shortName>
+    <description>Fire Outlook</description>
+    <units>See Table 4.224</units>
+  </parameter>
+  <parameter code="1">
+    <shortName>FIREODT</shortName>
+    <description>Fire Outlook Due to Dry Thunderstorm</description>
+    <units>See Table 4.224</units>
+  </parameter>
+  <parameter code="2">
+    <shortName>HINDEX</shortName>
+    <description>Haines Index</description>
+    <units>Numeric</units>
+  </parameter>
+  <parameter code="3">
+    <shortName>FBAREA</shortName>
+    <description>Fire Burned Area</description>
+    <units>%</units>
+  </parameter>
+  <parameter code="4">
+    <shortName>FOSINDX</shortName>
+    <description>Fosberg Index (see Note 1)</description>
+    <units>Numeric</units>
+  </parameter>
+  <parameter code="5">
+    <shortName>FWINX</shortName>
+    <description>Forest Fire Weather Index (as defined by the Canadian Forest Service)</description>
+    <units>Numeric</units>
+  </parameter>
+  <parameter code="6">
+    <shortName>FFMCODE</shortName>
+    <description>Fine Fuel Moisture Code (as defined by the Canadian Forest Service)</description>
+    <units>Numeric</units>
+  </parameter>
+  <parameter code="7">
+    <shortName>DUFMCODE</shortName>
+    <description>Duff Moisture Code (as defined by the Canadian Forest Service)</description>
+    <units>Numeric</units>
+  </parameter>
+  <parameter code="8">
+    <shortName>DRTCODE</shortName>
+    <description>Drought Code (as defined by the Canadian Forest Service)</description>
+    <units>Numeric</units>
+  </parameter>
+  <parameter code="9">
+    <shortName>INFSINX</shortName>
+    <description>Initial Fire Spread Index (as defined by the Canadian Forest Service)</description>
+    <units>Numeric</units>
+  </parameter>
+  <parameter code="10">
+    <shortName>FBUPINX</shortName>
+    <description>Fire Buildup Index (as defined by the Canadian Forest Service)</description>
+    <units>Numeric</units>
+  </parameter>
+  <parameter code="11">
+    <shortName>FDSRTE</shortName>
+    <description>Fire Daily Severity Rating (as defined by the Canadian Forest Service)</description>
+    <units>Numeric</units>
+  </parameter>
+  <parameter code="12">
+    <shortName>KRIDX</shortName>
+    <description>Keetch-Byram Drought Index</description>
+    <units>Numeric</units>
+  </parameter>
+  <parameter code="13">
+    <shortName>DRFACT</shortName>
+    <description>Drought Factor (as defined by the Australian Forest Service)</description>
+    <units>Numeric</units>
+  </parameter>
+  <parameter code="14">
+    <shortName>RATESPRD</shortName>
+    <description>Rate of Spread (as defined by the Australian Forest Service)</description>
+    <units>m s-1</units>
+  </parameter>
+  <parameter code="15">
+    <shortName>FIREDIDX</shortName>
+    <description>Fire Danger index (as defined by the Australian Forest Service)</description>
+    <units>Numeric</units>
+  </parameter>
+  <parameter code="16">
+    <shortName>SPRDCOMP</shortName>
+    <description>Spread Component (as defined by the US Forest Service National Fire Danger Rating System)</description>
+    <units>Numeric</units>
+  </parameter>
+  <parameter code="17">
+    <shortName>BURNIDX</shortName>
+    <description>Burning Index (as defined by the US Forest Service National Fire Danger Rating System)</description>
+    <units>Numeric</units>
+  </parameter>
+  <parameter code="18">
+    <shortName>IGNCOMP</shortName>
+    <description>Ignition Component (as defined by the US Forest Service National Fire Danger Rating System)</description>
+    <units>%</units>
+  </parameter>
+  <parameter code="19">
+    <shortName>ENRELCOM</shortName>
+    <description>Energy Release Component (as defined by the US Forest Service National Fire Danger Rating System)</description>
+    <units>J m-2</units>
+  </parameter>
+  <parameter code="20">
+    <shortName>BURNAREA</shortName>
+    <description>Burning Area</description>
+    <units>%</units>
+  </parameter>
+  <parameter code="21">
+    <shortName>BURNABAREA</shortName>
+    <description>Burnable Area</description>
+    <units>%</units>
+  </parameter>
+  <parameter code="22">
+    <shortName>UNBURNAREA</shortName>
+    <description>Unburnable Area</description>
+    <units>%</units>
+  </parameter>
+  <parameter code="23">
+    <shortName>FUELLOAD</shortName>
+    <description>Fuel Load</description>
+    <units>kg m-2</units>
+  </parameter>
+  <parameter code="24">
+    <shortName>COMBCO</shortName>
+    <description>Combustion Completeness</description>
+    <units>%</units>
+  </parameter>
+  <parameter code="25">
+    <shortName>FUELMC</shortName>
+    <description>Fuel Moisture Content</description>
+    <units>kg kg-1</units>
+  </parameter>
+  <parameter code="26">
+    <shortName>WFIREPOT</shortName>
+    <description>Wildfire Potential (as defined by the US NOAA Global Systems Laboratory)</description>
+    <units>Numeric</units>
+  </parameter>
+  <parameter code="27">
+    <shortName>LLFL</shortName>
+    <description>Live Leaf Fuel Load</description>
+    <units>kg m-2</units>
+  </parameter>
+  <parameter code="28">
+    <shortName>LWFL</shortName>
+    <description>Live Wood Fuel Load</description>
+    <units>kg m-2</units>
+  </parameter>
+  <parameter code="29">
+    <shortName>DLFL</shortName>
+    <description>Dead Leaf Fuel Load</description>
+    <units>kg m-2</units>
+  </parameter>
+  <parameter code="30">
+    <shortName>DWFL</shortName>
+    <description>Dead Wood Fuel Load</description>
+    <units>kg m-2</units>
+  </parameter>
+  <parameter code="31">
+    <shortName>LFMC</shortName>
+    <description>Live Fuel Moisture Content</description>
+    <units>kg kg-1</units>
+  </parameter>
+  <parameter code="32">
+    <shortName>FDLMC</shortName>
+    <description>Fine Dead Leaf Moisture Content</description>
+    <units>kg kg-1</units>
+  </parameter>
+  <parameter code="33">
+    <shortName>DDLMC</shortName>
+    <description>Dense Dead Leaf Moisture Content</description>
+    <units>kg kg-1</units>
+  </parameter>
+  <parameter code="34">
+    <shortName>FDWMC</shortName>
+    <description>Fine Dead Wood Moisture Content</description>
+    <units>kg kg-1</units>
+  </parameter>
+  <parameter code="35">
+    <shortName>DDWMC</shortName>
+    <description>Dense Dead Wood Moisture Content</description>
+    <units>kg kg-1</units>
+  </parameter>
+  <parameter code="36">
+    <shortName>FRADPOW</shortName>
+    <description>Fire Radiative Power</description>
+    <units>W</units>
+  </parameter>
+  <parameter code="37">
+    <shortName>LFMCLV</shortName>
+    <description>Live Fuel Moisture Content in Low Vegetation</description>
+    <units>kg kg-1</units>
+  </parameter>
+  <parameter code="38">
+    <shortName>LFMCHV</shortName>
+    <description>Live Fuel Moisture Content in High Vegetation</description>
+    <units>kg kg-1</units>
+  </parameter>
+  <parameter code="39">
+    <shortName>MEANHGTINJ</shortName>
+    <description>Mean Height of Maximum Injection</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="40">
+    <shortName>HGTINJ</shortName>
+    <description>Injection Height</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="41">
+    <shortName>HGTPLUMEB</shortName>
+    <description>Plume Bottom Height</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="42">
+    <shortName>HGTPLUMET</shortName>
+    <description>Plume Top Height</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="43">
+    <shortName>FDPROB</shortName>
+    <description>Probability of Fire Detection (see Note 2)</description>
+    <units>%</units>
+  </parameter>
+  <parameter code="44">
+    <shortName>IGNLTNG</shortName>
+    <description>Probability of Ignition from Lightning (see Note 3)</description>
+    <units>%</units>
+  </parameter>
+</parameterMap>

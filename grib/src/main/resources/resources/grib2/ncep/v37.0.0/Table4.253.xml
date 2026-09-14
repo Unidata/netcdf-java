@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<codeTable>
+  <table>Table 4.253</table>
+  <title>Hazard Index</title>
+  <source>https://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_doc/grib2_table4-253.shtml</source>
+  <parameter code="0">
+    <description>Undefined</description>
+  </parameter>
+  <parameter code="65535">
+    <description>Missing</description>
+  </parameter>
+</codeTable>

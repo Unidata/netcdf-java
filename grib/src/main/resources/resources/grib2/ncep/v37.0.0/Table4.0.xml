@@ -1,0 +1,579 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<codeTable>
+  <table>Table 4.0</table>
+  <title>Product Definition Template Number</title>
+  <source>https://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_doc/grib2_table4-0.shtml</source>
+  <parameter code="0">
+    <description>Analysis or forecast at a horizontal level or in a horizontal layer at a point in time. (see Template 4.0)</description>
+  </parameter>
+  <parameter code="1">
+    <description>Individual ensemble forecast, control and perturbed, at a horizontal level or in a horizontal layer at a point in time. (see Template 4.1)</description>
+  </parameter>
+  <parameter code="2">
+    <description>Derived forecasts based on all ensemble members at a horizontal level or in a horizontal layer at a point in time. (see Template 4.2)</description>
+  </parameter>
+  <parameter code="3">
+    <description>Derived forecasts based on a cluster of ensemble members over a rectangular area at a horizontal level or in a horizontal layer at a point in time. (see Template 4.3)</description>
+  </parameter>
+  <parameter code="4">
+    <description>Derived forecasts based on a cluster of ensemble members over a circular area at a horizontal level or in a horizontal layer at a point in time. (see Template 4.4)</description>
+  </parameter>
+  <parameter code="5">
+    <description>Probability forecasts at a horizontal level or in a horizontal layer at a point in time. (see Template 4.5)</description>
+  </parameter>
+  <parameter code="6">
+    <description>Percentile forecasts at a horizontal level or in a horizontal layer at a point in time. (see Template 4.6)</description>
+  </parameter>
+  <parameter code="7">
+    <description>Analysis or forecast error at a horizontal level or in a horizontal layer at a point in time. (see Template 4.7)</description>
+  </parameter>
+  <parameter code="8">
+    <description>Average, accumulation, extreme values or other statistically processed values at a horizontal level or in a horizontal layer in a continuous or non-continuous time interval. (see Template 4.8)</description>
+  </parameter>
+  <parameter code="9">
+    <description>Probability forecasts at a horizontal level or in a horizontal layer in a continuous or non-continuous time interval. (see Template 4.9)</description>
+  </parameter>
+  <parameter code="10">
+    <description>Percentile forecasts at a horizontal level or in a horizontal layer in a continuous or non-continuous time interval. (see Template 4.10)</description>
+  </parameter>
+  <parameter code="11">
+    <description>Individual ensemble forecast, control and perturbed, at a horizontal level or in a horizontal layer, in a continuous or non-continuous time interval. (see Template 4.11)</description>
+  </parameter>
+  <parameter code="12">
+    <description>Derived forecasts based on all ensemble members at a horizontal level or in a horizontal layer, in a continuous or non-continuous time interval. (see Template 4.12)</description>
+  </parameter>
+  <parameter code="13">
+    <description>Derived forecasts based on a cluster of ensemble members over a rectangular area at a horizontal level or in a horizontal layer, in a continuous or non-continuous time interval. (see Template 4.13)</description>
+  </parameter>
+  <parameter code="14">
+    <description>Derived forecasts based on a cluster of ensemble members over a circular area at a horizontal level or in a horizontal layer, in a continuous or non-continuous time interval. (see Template 4.14)</description>
+  </parameter>
+  <parameter code="15">
+    <description>Average, accumulation, extreme values or other statistically-processed values over a spatial area at a horizontal level or in a horizontal layer at a point in time. (see Template 4.15)</description>
+  </parameter>
+  <parameter code="20">
+    <description>Radar product (see Template 4.20)</description>
+  </parameter>
+  <parameter code="30">
+    <description>Satellite product (deprecated) (see Template 4.30)</description>
+  </parameter>
+  <parameter code="31">
+    <description>Satellite product (see Template 4.31)</description>
+  </parameter>
+  <parameter code="32">
+    <description>Analysis or forecast at a horizontal level or in a horizontal layer at a point in time for simulate (synthetic) satellite data (see Template 4.32)</description>
+  </parameter>
+  <parameter code="33">
+    <description>Individual Ensemble Forecast, control and perturbed, at a horizontal level or in a horizontal layer at a point in time for simulated (synthetic) satellite data (see Template 4.33)</description>
+  </parameter>
+  <parameter code="34">
+    <description>Individual Ensemble Forecast, control and perturbed, at a horizontal level or in a horizontal layer, in a continuous or non-continuous interval for simulated (synthetic) satellite data(see Template 4.34)</description>
+  </parameter>
+  <parameter code="35">
+    <description>Satellite product with or without associated quality values (see Template 4.35)</description>
+  </parameter>
+  <parameter code="40">
+    <description>Analysis or forecast at a horizontal level or in a horizontal layer at a point in time for atmospheric chemical constituents. (see Template 4.40)</description>
+  </parameter>
+  <parameter code="41">
+    <description>Individual ensemble forecast, control and perturbed, at a horizontal level or in a horizontal layer at a point in time for atmospheric chemical constituents. (see Template 4.41)</description>
+  </parameter>
+  <parameter code="42">
+    <description>Average, accumulation, and/or extreme values or other statistically processed values at a horizontal level or in a horizontal layer in a continuous or non-continuous time interval for atmospheric chemical constituents. (see Template 4.42)</description>
+  </parameter>
+  <parameter code="43">
+    <description>Individual ensemble forecast, control and perturbed, at a horizontal level or in a horizontal layer, in a continuous or non-continuous time interval for atmospheric chemical constituents. (see Template 4.43)</description>
+  </parameter>
+  <parameter code="44">
+    <description>Analysis or forecast at a horizontal level or in a horizontal layer at a point in time for aerosol (deprecated) (see Template 4.44)</description>
+  </parameter>
+  <parameter code="45">
+    <description>Individual ensemble forecast, control and perturbed, at a horizontal level or in a horizontal layer, in a continuous or non-continuous time interval for aerosol. (see Template 4.45)</description>
+  </parameter>
+  <parameter code="46">
+    <description>Average, accumulation, and/or extreme values or other statistically processed values at a horizontal level or in a horizontal layer in a continuous or non-continuous time interval for aerosol. (see Template 4.46)</description>
+  </parameter>
+  <parameter code="47">
+    <description>Individual ensemble forecast, control and perturbed, at a horizontal level or in a horizontal layer, in a continuous or non-continuous time interval for aerosol. (see Template 4.47)</description>
+  </parameter>
+  <parameter code="48">
+    <description>Analysis or forecast at a horizontal level or in a horizontal layer at a point in time for optical properties of aerosol. (see Template 4.48)</description>
+  </parameter>
+  <parameter code="49">
+    <description>Individual ensemble forecast, control and perturbed, at a horizontal level or in a horizontal layer at a point in time for optical properties of aerosol. (see Template 4.49)</description>
+  </parameter>
+  <parameter code="50">
+    <description>Analysis or forecast at a horizontal level or in a horizontal layer at a point in time for aerosol. (see Template 4.50)</description>
+  </parameter>
+  <parameter code="51">
+    <description>Categorical forecast at a horizontal level or in a horizontal layer at a point in time. (see Template 4.51)</description>
+  </parameter>
+  <parameter code="53">
+    <description>Partitioned parameters at a horizontal level or horizontal layer at a point in time. (see Template 4.53)</description>
+  </parameter>
+  <parameter code="54">
+    <description>Individual ensemble forecast, control and perturbed, at a horizontal level or in a horizontal layer at a point in time for partitioned parameters. (see Template 4.54)</description>
+  </parameter>
+  <parameter code="55">
+    <description>Spatio-temporal changing tiles at a horizontal level or horizontal layer at a point in time (see Template 4.55)</description>
+  </parameter>
+  <parameter code="56">
+    <description>Individual ensemble forecast, control and perturbed, at a horizontal level or in a horizontal layer at a point in time for spatio-temporal changing tile parameters (deprecated) (see Template 4.56)</description>
+  </parameter>
+  <parameter code="57">
+    <description>Analysis or forecast at a horizontal level or in a horizontal layer at a point in time for atmospheric chemical constituents based on a distribution function (see Template 4.57)</description>
+  </parameter>
+  <parameter code="58">
+    <description>Individual Ensemble Forecast, Control and Perturbed, at a horizontal level or in a horizontal layer at a point in time interval for Atmospheric Chemical Constituents based on a distribution function (see Template 4.58)</description>
+  </parameter>
+  <parameter code="59">
+    <description>Individual ensemble forecast, control and perturbed, at a horizontal level or in a horizontal layer at a point in time for spatio-temporal changing tile parameters (corrected version of template 4.56 - See Template 4.59)</description>
+  </parameter>
+  <parameter code="60">
+    <description>Individual Ensemble Reforecast, control and perturbed, at a horizontal level or in a horizontal layer at a point in time. (see Template 4.60)</description>
+  </parameter>
+  <parameter code="61">
+    <description>Individual Ensemble Reforecast, control and perturbed, at a horizontal level or in a horizontal layer, in a continuous or non-continuous time interval (see Template 4.61)</description>
+  </parameter>
+  <parameter code="62">
+    <description>Average, Accumulation and/or Extreme values or other Statistically-processed values at a horizontal level or in a horizontal layer in a continuous or non-continuous time interval for spatio-temporal changing tiles at a horizontal level or horizontal layer at a point in time (see Template 4.62)</description>
+  </parameter>
+  <parameter code="63">
+    <description>Individual ensemble forecast, control and perturbed, at a horizontal level or in a horizontal layer in a continuous or non-continuous time interval for spatio-temporal changing tiles (see Template 4.63)</description>
+  </parameter>
+  <parameter code="67">
+    <description>Average, accumulation and/or extreme values or other statistically processed values at a horizontal level or in a horizontal layer in a continuous or non-continuous time interval for atmospheric chemical constituents based on a distribution function (see Template 4.67)</description>
+  </parameter>
+  <parameter code="68">
+    <description>Individual ensemble forecast, control and perturbed, at a horizontal level or in a horizontal layer in a continuous or non-continuous time interval for atmospheric chemical constituents based on a distribution function. (see Template 4.68)</description>
+  </parameter>
+  <parameter code="70">
+    <description>Post-processing analysis or forecast at a horizontal level or in a horizontal layer at a point in time. (see Template 4.70)</description>
+  </parameter>
+  <parameter code="71">
+    <description>Post-processing individual ensemble forecast, control and perturbed, at a horizontal level or in a horizontal layer at a point in time. (see Template 4.71)</description>
+  </parameter>
+  <parameter code="72">
+    <description>Post-processing average, accumulation, extreme values or other statistically processed values at a horizontal level or in a horizontal layer in a continuous or non-continuous time interval. (see Template 4.72)</description>
+  </parameter>
+  <parameter code="73">
+    <description>Post-processing individual ensemble forecast, control and perturbed, at a horizontal level or in a horizontal layer, in a continuous or non-continuous time interval. (see Template 4.73)</description>
+  </parameter>
+  <parameter code="76">
+    <description>Analysis or forecast at a horizontal level or in a horizontal layer at a point in time for atmospheric chemical constituents with source or sink. (see Template 4.76)</description>
+  </parameter>
+  <parameter code="77">
+    <description>Individual ensemble forecast, control and perturbed, at a horizontal level or in a horizontal layer at a point in time for atmospheric chemical constituents with source or sink. (see Template 4.77)</description>
+  </parameter>
+  <parameter code="78">
+    <description>Average, accumulation, and/or extreme values or other statistically processed values at a horizontal level or in a horizontal layer in a continuous or non-continuous time interval for atmospheric chemical constituents with source or sink. (see Template 4.78)</description>
+  </parameter>
+  <parameter code="79">
+    <description>Individual ensemble forecast, control and perturbed, at a horizontal level or in a horizontal layer in a continuous or non-continuous time interval for atmospheric chemical constituents with source or sink. (see Template 4.79)</description>
+  </parameter>
+  <parameter code="80">
+    <description>Analysis or forecast at a horizontal level or in a horizontal layer at a point in time for optical properties of aerosol with source or sink. (see Template 4.80)</description>
+  </parameter>
+  <parameter code="81">
+    <description>Individual ensemble forecast, control and perturbed, at a horizontal level or in a horizontal layer at a point in time for optical properties of aerosol with source or sink. (see Template 4.81)</description>
+  </parameter>
+  <parameter code="82">
+    <description>Average, accumulation, and/or extreme values or other statistically processed values at a horizontal level or in a horizontal layer in a continuous or non-continuous time interval for aerosol with source or sink. (see Template 4.82)</description>
+  </parameter>
+  <parameter code="83">
+    <description>Individual ensemble forecast, control and perturbed, at a horizontal level or in a horizontal layer in a continuous or non-continuous time interval for aerosol with source or sink. (see Template 4.83)</description>
+  </parameter>
+  <parameter code="84">
+    <description>Individual ensemble forecast, control and perturbed, at a horizontal level or in a horizontal layer in a continuous or non-continuous time interval for aerosol with source or sink. (see Template 4.84)</description>
+  </parameter>
+  <parameter code="85">
+    <description>Individual ensemble forecast, control and perturbed, at a horizontal level or in a horizontal layer in a continuous or non-continuous time interval for aerosol. (see Template 4.85)</description>
+  </parameter>
+  <parameter code="86">
+    <description>Quantile forecasts at a horizontal level or in a horizontal layer at a point in time. (see Template 4.86)</description>
+  </parameter>
+  <parameter code="87">
+    <description>Quantile forecasts at a horizontal level or in a horizontal layer in a continuous or non-continuous time interval. (see Template 4.87)</description>
+  </parameter>
+  <parameter code="88">
+    <description>Analysis or forecast at a horizontal level or in a horizontal layer at a specified local time. (see Template 4.88)</description>
+  </parameter>
+  <parameter code="89">
+    <description>Post-processed quantile forecasts at a horizontal level or in a horizontal layer at a point in time" (see Template 4.89)</description>
+  </parameter>
+  <parameter code="90">
+    <description>Post-processed quantile forecasts at a horizontal level or in a horizontal layer in a continuous or non-continuous time interval (see Template 4.90)</description>
+  </parameter>
+  <parameter code="91">
+    <description>Categorical forecast at a horizontal level or in a horizontal layer in a continuous or non-continuous time interval. (see Template 4.91)</description>
+  </parameter>
+  <parameter code="92">
+    <description>Individual ensemble forecast, control and perturbed, at a horizontal level or in a horizontal layer at a specified local time. (see Template 4.92)</description>
+  </parameter>
+  <parameter code="93">
+    <description>Post-processing analysis or forecast at a horizontal level or in a horizontal layer at a specified local time. (see Template 4.93)</description>
+  </parameter>
+  <parameter code="94">
+    <description>Post-processing individual ensemble forecast, control and perturbed, at a horizontal level or in a horizontal layer at a specified local time. (see Template 4.94)</description>
+  </parameter>
+  <parameter code="95">
+    <description>Average, accumulation, extreme values or other statiscally processed value at a horizontal level or in a horizontal layer at a specified local time. (see Template 4.95)</description>
+  </parameter>
+  <parameter code="96">
+    <description>Average, accumulation, extreme values or other statistically processed values of an individual ensemble forecast, control and perturbed, at a horizontal level or in a horizontal layer at a specified local time. (see Template 4.96)</description>
+  </parameter>
+  <parameter code="97">
+    <description>Average, accumulation, extreme values or other statistically processed values of post-processing analysis or forecast at a horizontal level or in a horizontal layer at a specified local time. (see Template 4.97)</description>
+  </parameter>
+  <parameter code="98">
+    <description>Average, accumulation, extreme values or other statistically processed values of a post-processing individual ensemble forecast, control and perturbed, at a horizontal level or in a horizontal layer at a specified local time. (see Template 4.98)</description>
+  </parameter>
+  <parameter code="99">
+    <description>Analysis or forecast at a horizontal level or in a horizontal layer at a point in time for wave 2D spectra with explicit list of frequencies and directions (see Template 4.99)</description>
+  </parameter>
+  <parameter code="100">
+    <description>Individual ensemble forecast, control and perturbed, at a horizontal level or in a horizontal layer at a point in time for wave 2D spectra with explicit list of frequencies and directions (see Template 4.100)</description>
+  </parameter>
+  <parameter code="101">
+    <description>Analysis or forecast at a horizontal level or in a horizontal layer at a point in time for wave 2D spectra with frequencies and directions defined by formulae (see Template 4.101)</description>
+  </parameter>
+  <parameter code="102">
+    <description>Individual ensemble forecast, control and perturbed, at a horizontal level or in a horizontal layer at a point in time for wave 2D spectra with frequencies and directions defined by formulae (see Template 4.102)</description>
+  </parameter>
+  <parameter code="103">
+    <description>Analysis or forecast at a horizontal level or in a horizontal layer at a point in time for waves selected by period range (see Template 4.103)</description>
+  </parameter>
+  <parameter code="104">
+    <description>Individual ensemble forecast, control and perturbed, at a horizontal level or in a horizontal layer at a point in time for waves selected by period range (see Template 4.104)</description>
+  </parameter>
+  <parameter code="105">
+    <description>Anomalies, significance and other derived products from an analysis or forecast in relation to a reference period at a horizontal level or in a horizontal layer in a continuous or non-continuous time interval (see Template 4.105)</description>
+  </parameter>
+  <parameter code="106">
+    <description>Anomalies, significance and other derived products from an individual ensemble forecast, control and perturbed in relation to a reference period at a horizontal level or in a horizontal layer in a continuous or non-continuous time interval (see Template 4.106)</description>
+  </parameter>
+  <parameter code="107">
+    <description>Anomalies, significance and other derived products from derived forecasts based on all ensemble members in relation to a reference period at a horizontal level or in a horizontal layer in a continuous or non-continuous time interval (see Template 4.107)</description>
+  </parameter>
+  <parameter code="108">
+    <description>Analysis or forecast at a horizontal level or in a horizontal layer at a point in time for generic optical products (see Template 4.108)</description>
+  </parameter>
+  <parameter code="109">
+    <description>Individual ensemble forecast, control and perturbed, at a horizontal level or in a horizontal layer at a point in time for generic optical products (see Template 4.109)</description>
+  </parameter>
+  <parameter code="110">
+    <description>Average, accumulation, extreme values or other statistically processed values at a horizontal level or in a horizontal layer in a continuous or non-continuous time interval for generic optical products (see Template 4.110)</description>
+  </parameter>
+  <parameter code="111">
+    <description>Individual ensemble forecast, control and perturbed, at a horizontal level or in a horizontal layer, in a continuous or non-continuous interval for generic optical products (see Template 4.111)</description>
+  </parameter>
+  <parameter code="112">
+    <description>Anomalies, significance and other derived products as probability forecasts in relation to a reference period at a horizontal level or in a horizontal layer in a continuous or non-continuous time interval (see Template 4.112)</description>
+  </parameter>
+  <parameter code="113">
+    <description>Generalized tiles at a horizontal level or horizontal layer at a point in time (see Template 4.113)</description>
+  </parameter>
+  <parameter code="114">
+    <description>Average, accumulation, and/or extreme values or other statistically processed values on generalized tiles at a horizontal level or in a horizontal layer in a continuous or non-continuous time interval (see Template 4.114)</description>
+  </parameter>
+  <parameter code="115">
+    <description>Individual ensemble forecast, control and perturbed on generalized tiles at a horizontal level or in a horizontal layer at a point in time (see Template 4.115)</description>
+  </parameter>
+  <parameter code="116">
+    <description>Individual ensemble forecast, control and perturbed on generalized tiles at a horizontal level or in a horizontal layer in a continuous or non-continuous time interval (see Template 4.116)</description>
+  </parameter>
+  <parameter code="117">
+    <description>Individual large ensemble forecast, control and perturbed, at a horizontal level or in a horizontal layer at a point in time (see Template 4.117)</description>
+  </parameter>
+  <parameter code="118">
+    <description>Individual large ensemble forecast, control and perturbed, at a horizontal level or in a horizontal layer, in a continuous or non-continuous interval (see Template 4.118)</description>
+  </parameter>
+  <parameter code="119">
+    <description>Probability forecasts from large ensembles at a horizontal level or in a horizontal layer at a point in time (see Template 4.119)</description>
+  </parameter>
+  <parameter code="120">
+    <description>Probability forecasts from large ensembles at a horizontal level or in a horizontal layer in a continuous or non-continuous time interval (see Template 4.120)</description>
+  </parameter>
+  <parameter code="121">
+    <description>Probability forecasts from large ensembles with spatiotemporal processing based on focal (moving window) statistics at a horizontal level or in a horizontal layer at a point in time (see Template 4.121)</description>
+  </parameter>
+  <parameter code="122">
+    <description>Probability forecasts from large ensembles with spatiotemporal processing based on focal (moving window) statistics at a horizontal level or in a horizontal layer in a continuous or non-continuous time interval (see Template 4.122)</description>
+  </parameter>
+  <parameter code="123">
+    <description>Probability forecasts from large ensembles with spatiotemporal processing based on focal (moving window) statistics in relation to a reference period at a horizontal level or in a horizontal layer in a continuous or non-continuous time interval (see Template 4.123)</description>
+  </parameter>
+  <parameter code="124">
+    <description>Analysis or forecast at a horizontal level or in a horizontal layer at a point in time for radionuclides (see Template 4.124)</description>
+  </parameter>
+  <parameter code="125">
+    <description>Individual ensemble forecast, control and perturbed, at a horizontal level or in a horizontal layer at a point in time for radionuclides (see Template 4.125)</description>
+  </parameter>
+  <parameter code="126">
+    <description>Average, accumulation, and/or extreme values or other statistically processed values at a horizontal level or in a horizontal layer in a continuous or non-continuous time interval for radionuclides (see Template 4.126)</description>
+  </parameter>
+  <parameter code="127">
+    <description>Individual ensemble forecast, control and perturbed, at a horizontal level or in a horizontal layer in a continuous or non-continuous time interval for radionuclides (see Template 4.127)</description>
+  </parameter>
+  <parameter code="128">
+    <description>Anomalies significance and other derived products from an analysis or forecast in relation to a reference period at a horizontal level or in a horizontal layer at a point in time (see Template 4.128)</description>
+  </parameter>
+  <parameter code="129">
+    <description>Anomalies significance and other derived products from an individual ensemble forecast, control and perturbed in relation to a reference period at a horizontal level or in a horizontal layer at a point in time (see Template 4.129)</description>
+  </parameter>
+  <parameter code="130">
+    <description>Anomalies significance and other derived products from derived forecasts based on all ensemble members in relation to a reference period at a horizontal level or in a horizontal layer at a point in time (see Template 4.130)</description>
+  </parameter>
+  <parameter code="131">
+    <description>Anomalies significance and other derived products as probability forecasts in relation to a reference period at a horizontal level or in a horizontal layer at a point in time (see Template 4.131)</description>
+  </parameter>
+  <parameter code="132">
+    <description>Quantile forecasts of anomalies, significance and other derived products in relation to a reference period at a horizontal level or in a horizontal layer at a point in time (see Template 4.132)</description>
+  </parameter>
+  <parameter code="133">
+    <description>Post-processed quantile forecasts of anomalies, significance and other derived products in relation to a reference period at a horizontal level or in a horizontal layer at a point in time (see Template 4.133)</description>
+  </parameter>
+  <parameter code="134">
+    <description>Quantile forecasts of anomalies, significance and other derived products in relation to a reference period at a horizontal level or in a horizontal layer in a continuous or non-continuous time interval (see Template 4.134)</description>
+  </parameter>
+  <parameter code="135">
+    <description>Post-processed quantile forecasts of anomalies, significance and other derived products in relation to a reference period at a horizontal level or in a horizontal layer in a continuous or non-continuous time interval (see Template 4.135)</description>
+  </parameter>
+  <parameter code="136">
+    <description>Probability forecasts of anomalies, significance and other derived products in relation to a reference period with spatiotemporal processing based on focal (moving window) statistics in relation to a reference period at a horizontal level or in at a point in time (see Template 4.136)</description>
+  </parameter>
+  <parameter code="137">
+    <description>Derived reforecast based on all ensemble members at a horizontal level or in a horizontal layer at a point in time (see Template 4.137)</description>
+  </parameter>
+  <parameter code="138">
+    <description>Derived reforecast based on all ensemble members at a horizontal level or in a horizontal layer in a continuous or non-continuous time interval (see Template 4.138)</description>
+  </parameter>
+  <parameter code="139">
+    <description>Reforecast at a horizontal level or in a horizontal layer at a point in time for waves selected by period range (see Template 4.139)</description>
+  </parameter>
+  <parameter code="140">
+    <description>Individual ensemble reforecast, control and perturbed, at a horizontal level or in a horizontal layer at a point in time for waves selected by period range (see Template 4.140)</description>
+  </parameter>
+  <parameter code="141">
+    <description>Reforecast at a horizontal level or in a horizontal layer at a point in time for wave 2D spectra with explicit list of frequencies and directions (see Template 4.141)</description>
+  </parameter>
+  <parameter code="142">
+    <description>Individual ensemble reforecast, control and perturbed, at a horizontal level or in a horizontal layer at a point in time for wave 2D spectra with explicit list of frequencies and directions (see Template 4.142)</description>
+  </parameter>
+  <parameter code="143">
+    <description>Random fields used in an ensemble forecast, at a horizontal level or in a horizontal layer at a point in time (see Template 4.143)</description>
+  </parameter>
+  <parameter code="144">
+    <description>Analysis or forecast at a horizontal level or in a horizontal layer in a continuous or non-continuous time interval for waves selected by period range (see Template 4.144)</description>
+  </parameter>
+  <parameter code="145">
+    <description>Individual ensemble forecast, control and perturbed, at a horizontal level or in a horizontal layer in a continuous or non-continuous time interval for waves selected by period range (see Template 4.145)</description>
+  </parameter>
+  <parameter code="146">
+    <description>Verification scores for analysis or forecast at a horizontal level or in a horizontal layer at a point in time (see Template 4.146)</description>
+  </parameter>
+  <parameter code="147">
+    <description>Verification scores for average, accumulation, and/or extreme values or other statistically processed values at a horizontal level or in a horizontal layer in a continuous or non-continuous time interval (see Template 4.147)</description>
+  </parameter>
+  <parameter code="148">
+    <description>Verification scores for individual ensemble forecast, control and perturbed, at a horizontal level or in a horizontal layer at a point in time (see Template 4.148)</description>
+  </parameter>
+  <parameter code="149">
+    <description>Verification scores for individual ensemble forecast, control and perturbed, at a horizontal level or in a horizontal layer in a continuous or non-continuous time interval (see Template 4.149)</description>
+  </parameter>
+  <parameter code="150">
+    <description>Verification scores for derived forecast based on all ensemble members at a horizontal level or in a horizontal layer at a point in time (see Template 4.150)</description>
+  </parameter>
+  <parameter code="151">
+    <description>Verification scores for derived forecasts based on all ensemble members at a horizontal level or in a horizontal layer in a continuous or non-continuous time interval (see Template 4.151)</description>
+  </parameter>
+  <parameter code="152">
+    <description>Individual large ensemble reforecast, control and perturbed, at a horizontal level or in a horizontal layer at a point in time for atmospheric chemical constituents (see Template 4.152)</description>
+  </parameter>
+  <parameter code="153">
+    <description>Individual large ensemble reforecast, control and perturbed, at a horizontal level or in a horizontal layer in a continuous or non-continuous time interval for atmospheric chemical constituents (see Template 4.153)</description>
+  </parameter>
+  <parameter code="154">
+    <description>Individual large ensemble reforecast, control and perturbed, at a horizontal level or in a horizontal layer at a point in time (see Template 4.154)</description>
+  </parameter>
+  <parameter code="155">
+    <description>Individual large ensemble reforecast, control and perturbed, at a horizontal level or in a horizontal layer in a continuous or non-continuous time interval (see Template 4.155)</description>
+  </parameter>
+  <parameter code="156">
+    <description>Average, accumulation, extreme values or other statistically processed values at a horizontal layer in a continuous or non-continuous time interval for optical properties of aerosol (see Template 4.156)</description>
+  </parameter>
+  <parameter code="157">
+    <description>Individual ensemble forecast, control and perturbed, at a horizontal level or in a horizontal layer in a continuous or non-continuous time interval for optical properties of aerosol (see Template 4.157)</description>
+  </parameter>
+  <parameter code="158">
+    <description>Analysis or forecast at a horizontal level or in a horizontal layer at a point in time for optical properties of aerosol with source or sink (see Template 4.158)</description>
+  </parameter>
+  <parameter code="159">
+    <description>Individual ensemble forecast, control and perturbed, at a horizontal level or in a horizontal layer in a continuous or non-continuous time interval for optical properties of aerosol with source or sink (see Template 4.159)</description>
+  </parameter>
+  <parameter code="160">
+    <description>Derived forecasts based on all ensemble members at a horizontal level or in a horizontal layer at a point in time for waves selected by period range (see Template 4.160)</description>
+  </parameter>
+  <parameter code="161">
+    <description>Derived forecasts based on all ensemble members at a horizontal level or in a horizontal layer in a continuous or non-continuous time interval for waves selected by period range (see Template 4.161)</description>
+  </parameter>
+  <parameter code="162">
+    <description>Probability forecasts at a horizontal level or in a horizontal layer at a point in time for waves selected by period range (see Template 4.162)</description>
+  </parameter>
+  <parameter code="163">
+    <description>Probability forecasts at a horizontal level or in a horizontal layer in a continuous or non-continuous time interval for waves selected by period range (see Template 4.163)</description>
+  </parameter>
+  <parameter code="164">
+    <description>Quantile forecasts at a horizontal level or in a horizontal layer at a point in time for waves selected by period range (see Template 4.164)</description>
+  </parameter>
+  <parameter code="165">
+    <description>Quantile forecasts at a horizontal level or in a horizontal layer in a continuous or non-continuous time interval for waves selected by period range (see Template 4.165)</description>
+  </parameter>
+  <parameter code="166">
+    <description>Derived forecasts based on all ensemble members at a horizontal level or in a horizontal layer at a point in time for atmospheric chemical constituents (see Template 4.166)</description>
+  </parameter>
+  <parameter code="167">
+    <description>Derived forecasts based on all ensemble members at a horizontal level or in a horizontal layer in a continuous or non-continuous time interval for atmospheric chemical constituents (see Template 4.167)</description>
+  </parameter>
+  <parameter code="168">
+    <description>Derived forecasts based on all ensemble members at a horizontal level or in a horizontal layer at a point in time for aerosol (see Template 4.168)</description>
+  </parameter>
+  <parameter code="169">
+    <description>Derived forecasts based on all ensemble members at a horizontal level or in a horizontal layer at a point in time for optical properties of aerosol (see Template 4.169)</description>
+  </parameter>
+  <parameter code="170">
+    <description>Derived forecasts based on all ensemble members at a horizontal level or in a horizontal layer at a point in time for atmospheric chemical constituents with source or sink (see Template 4.170)</description>
+  </parameter>
+  <parameter code="171">
+    <description>Derived forecasts based on all ensemble members at a horizontal level or in a horizontal layer in a continuous or non-continuous time interval for atmospheric chemical constituents with source or sink (see Template 4.171)</description>
+  </parameter>
+  <parameter code="172">
+    <description>Derived forecasts based on all ensemble members at a horizontal level or in a horizontal layer at a point in time for optical properties of aerosol with source or sink (see Template 4.172)</description>
+  </parameter>
+  <parameter code="173">
+    <description>Derived forecasts based on all ensemble members at a horizontal level or in a horizontal layer in a continuous or non-continuous time interval for aerosol with source or sink (see Template 4.173)</description>
+  </parameter>
+  <parameter code="174">
+    <description>Derived forecasts based on all ensemble members at a horizontal level or in a horizontal layer in a continuous or non-continuous time interval for aerosol (see Template 4.174)</description>
+  </parameter>
+  <parameter code="175">
+    <description>Derived forecasts based on all ensemble members at a horizontal level or in a horizontal layer in a continuous or non-continuous time interval for optical properties of aerosol (see Template 4.175)</description>
+  </parameter>
+  <parameter code="176">
+    <description>Derived forecasts based on all ensemble members at a horizontal level or in a horizontal layer in a continuous or non-continuous time interval for optical properties of aerosol with source or sink (see Template 4.176)</description>
+  </parameter>
+  <parameter code="177">
+    <description>Quantile forecasts at a horizontal level or in a horizontal layer at a point in time for atmospheric chemical constituents (see Template 4.177)</description>
+  </parameter>
+  <parameter code="178">
+    <description>Quantile forecasts at a horizontal level or in a horizontal layer in a continuous or non-continuous time interval for atmospheric chemical constituents (see Template 4.178)</description>
+  </parameter>
+  <parameter code="179">
+    <description>Quantile forecasts at a horizontal level or in a horizontal layer at a point in time for aerosol (see Template 4.179)</description>
+  </parameter>
+  <parameter code="180">
+    <description>Quantile forecasts at a horizontal level or in a horizontal layer at a point in time for optical properties of aerosol (see Template 4.180)</description>
+  </parameter>
+  <parameter code="181">
+    <description>Quantile forecasts at a horizontal level or in a horizontal layer at a point in time for atmospheric chemical constituents with source or sink (see Template 4.181)</description>
+  </parameter>
+  <parameter code="182">
+    <description>Quantile forecasts at a horizontal level or in a horizontal layer in a continuous or non-continuous time interval for atmospheric chemical constituents with source or sink (see Template 4.182)</description>
+  </parameter>
+  <parameter code="183">
+    <description>Quantile forecasts at a horizontal level or in a horizontal layer at a point in time for optical properties of aerosol with source or sink (see Template 4.183)</description>
+  </parameter>
+  <parameter code="184">
+    <description>Quantile forecasts at a horizontal level or in a horizontal layer in a continuous or non-continuous time interval for aerosol with source or sink (see Template 4.184)</description>
+  </parameter>
+  <parameter code="185">
+    <description>Quantile forecasts at a horizontal level or in a horizontal layer in a continuous or non-continuous time interval for aerosol (see Template 4.185)</description>
+  </parameter>
+  <parameter code="186">
+    <description>Quantile forecasts at a horizontal level or in a horizontal layer in a continuous or non-continuous time interval for optical properties of aerosol (see Template 4.186)</description>
+  </parameter>
+  <parameter code="187">
+    <description>Quantile forecasts at a horizontal level or in a horizontal layer in a continuous or non-continuous time interval for optical properties of aerosol with source or sink (see Template 4.187)</description>
+  </parameter>
+  <parameter code="188">
+    <description>Probability forecasts at a horizontal level or in a horizontal layer at a point in time for atmospheric chemical constituents (see Template 4.188)</description>
+  </parameter>
+  <parameter code="189">
+    <description>Probability forecasts at a horizontal level or in a horizontal layer in a continuous or non-continuous time interval for atmospheric chemical constituents (see Template 4.189)</description>
+  </parameter>
+  <parameter code="190">
+    <description>Probability forecasts at a horizontal level or in a horizontal layer at a point in time for aerosol (see Template 4.190)</description>
+  </parameter>
+  <parameter code="191">
+    <description>Probability forecasts at a horizontal level or in a horizontal layer at a point in time for optical properties of aerosol (see Template 4.191)</description>
+  </parameter>
+  <parameter code="192">
+    <description>Probability forecasts at a horizontal level or in a horizontal layer at a point in time for atmospheric chemical constituents with source or sink (see Template 4.192)</description>
+  </parameter>
+  <parameter code="193">
+    <description>Probability forecasts at a horizontal level or in a horizontal layer in a continuous or non-continuous time interval for atmospheric chemical constituents with source or sink (see Template 4.193)</description>
+  </parameter>
+  <parameter code="194">
+    <description>Probability forecasts at a horizontal level or in a horizontal layer at a point in time for optical properties of aerosol with source or sink (see Template 4.194)</description>
+  </parameter>
+  <parameter code="195">
+    <description>Probability forecasts at a horizontal level or in a horizontal layer in a continuous or non-continuous time interval for aerosol with source or sink (see Template 4.195)</description>
+  </parameter>
+  <parameter code="196">
+    <description>Probability forecasts at a horizontal level or in a horizontal layer in a continuous or non-continuous time interval for aerosol (see Template 4.196)</description>
+  </parameter>
+  <parameter code="197">
+    <description>Probability forecasts at a horizontal level or in a horizontal layer in a continuous or non-continuous time interval for optical properties of aerosol (see Template 4.197)</description>
+  </parameter>
+  <parameter code="198">
+    <description>Probability forecasts at a horizontal level or in a horizontal layer in a continuous or non-continuous time interval for optical properties of aerosol with source or sink (see Template 4.198)</description>
+  </parameter>
+  <parameter code="199">
+    <description>Derived products of post-processed forecasts based on all ensemble members at a horizontal level or in a horizontal layer at a point in time (see Template 4.199)</description>
+  </parameter>
+  <parameter code="200">
+    <description>Derived products of post-processed forecasts based on all ensemble members at a horizontal level or in a horizontal layer in a continuous or non-continuous time interval (see Template 4.200)</description>
+  </parameter>
+  <parameter code="201">
+    <description>Probability of post-processed forecast at a horizontal level or in a horizontal layer at a point in time (see Template 4.201)</description>
+  </parameter>
+  <parameter code="202">
+    <description>Probability of post-processed forecast at a horizontal level or in a horizontal layer in a continuous or non-continuous time interval (see Template 4.202)</description>
+  </parameter>
+  <parameter code="203">
+    <description>Satellite product with channel, bandwidth and polarization (see Template 4.203)</description>
+  </parameter>
+  <parameter code="204">
+    <description>Analysis or forecast at a horizontal level or in a horizontal layer at a point in time for simulated (synthetic) satellite data with channel, bandwidth and polarization (see Template 4.204)</description>
+  </parameter>
+  <parameter code="205">
+    <description>Individual ensemble forecast, control and perturbed, at a horizontal level or in a horizontal layer at a point in time for simulated (synthetic) satellite data with channel, bandwidth and polarization (see Template 4.205)</description>
+  </parameter>
+  <parameter code="206">
+    <description>Individual ensemble forecast, control and perturbed, at a horizontal level or in a horizontal layer in a continuous or non-continuous time interval for simulated (synthetic) satellite data with channel, bandwidth and polarization (see Template 4.206)</description>
+  </parameter>
+  <parameter code="207">
+    <description>Satellite product with or without associated quality values with channel, bandwidth and polarization (see Template 4.207)</description>
+  </parameter>
+  <parameter code="254">
+    <description>CCITT IA5 character string (see Template 4.254)</description>
+  </parameter>
+  <parameter code="1000">
+    <description>Cross-section of analysis and forecast at a point in time. (see Template 4.1000)</description>
+  </parameter>
+  <parameter code="1001">
+    <description>Cross-section of averaged or otherwise statistically processed analysis or forecast over a range of time. (see Template 4.1001)</description>
+  </parameter>
+  <parameter code="1002">
+    <description>Cross-section of analysis and forecast, averaged or otherwise statistically-processed over latitude or longitude. (see Template 4.1002)</description>
+  </parameter>
+  <parameter code="1100">
+    <description>Hovmoller-type grid with no averaging or other statistical processing (see Template 4.1100)</description>
+  </parameter>
+  <parameter code="1101">
+    <description>Hovmoller-type grid with averaging or other statistical processing (see Template 4.1101)</description>
+  </parameter>
+  <parameter code="65535">
+    <description>Missing</description>
+  </parameter>
+</codeTable>

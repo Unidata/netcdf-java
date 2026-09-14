@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<parameterMap>
+  <table>Table4.2.191.0</table>
+  <title>Stochastic Parameterizations</title>
+  <source>https://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_doc/grib2_table4-2-191-0.shtml</source>
+  <parameter code="0">
+    <shortName>SPPT</shortName>
+    <description>Stochastically Perturbed Parameterization Tendency (SPPT) (see Note 1)</description>
+    <units>Numeric</units>
+  </parameter>
+  <parameter code="1">
+    <shortName>SPP</shortName>
+    <description>Stochastically Perturbed Parameterizations (SPP) (see Note 2)</description>
+    <units>Numeric</units>
+  </parameter>
+  <parameter code="2">
+    <shortName>SKEB</shortName>
+    <description>Stochastic Kinetic Energy Backscatter (SKEB) (see Note 3)</description>
+    <units>Numeric</units>
+  </parameter>
+  <parameter code="3">
+    <shortName>STC</shortName>
+    <description>Stochastic Trigger of Convection (STC) (see Note 4)</description>
+    <units>Numeric</units>
+  </parameter>
+  <parameter code="4">
+    <shortName>SHUM</shortName>
+    <description>Stochastic boundary-layer Humidity (SHUM) (see Note 5)</description>
+    <units>Numeric</units>
+  </parameter>
+  <parameter code="5">
+    <shortName>STTP</shortName>
+    <description>Stochastic Total Tendency Perturbations (STTP) (see Note 6)</description>
+    <units>Numeric</units>
+  </parameter>
+</parameterMap>

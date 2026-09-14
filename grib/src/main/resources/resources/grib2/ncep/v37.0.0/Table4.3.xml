@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<codeTable>
+  <table>Table 4.3</table>
+  <title>Type of Generating Process</title>
+  <source>https://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_doc/grib2_table4-3.shtml</source>
+  <parameter code="0">
+    <description>Analysis</description>
+  </parameter>
+  <parameter code="1">
+    <description>Initialization</description>
+  </parameter>
+  <parameter code="2">
+    <description>Forecast</description>
+  </parameter>
+  <parameter code="3">
+    <description>Bias Corrected Forecast</description>
+  </parameter>
+  <parameter code="4">
+    <description>Ensemble Forecast</description>
+  </parameter>
+  <parameter code="5">
+    <description>Probability Forecast</description>
+  </parameter>
+  <parameter code="6">
+    <description>Forecast Error</description>
+  </parameter>
+  <parameter code="7">
+    <description>Analysis Error</description>
+  </parameter>
+  <parameter code="8">
+    <description>Observation</description>
+  </parameter>
+  <parameter code="9">
+    <description>Climatological</description>
+  </parameter>
+  <parameter code="10">
+    <description>Probability-Weighted Forecast</description>
+  </parameter>
+  <parameter code="11">
+    <description>Bias-Corrected Ensemble Forecast</description>
+  </parameter>
+  <parameter code="12">
+    <description>Post-Processed Analysis (see Note 1)</description>
+  </parameter>
+  <parameter code="13">
+    <description>Post-Processed Forecast (see Note 1)</description>
+  </parameter>
+  <parameter code="14">
+    <description>Nowcast</description>
+  </parameter>
+  <parameter code="15">
+    <description>Hindcast</description>
+  </parameter>
+  <parameter code="16">
+    <description>Physical Retrieval</description>
+  </parameter>
+  <parameter code="17">
+    <description>Regression Analysis</description>
+  </parameter>
+  <parameter code="18">
+    <description>Difference Between Two Forecasts</description>
+  </parameter>
+  <parameter code="19">
+    <description>First Guess</description>
+  </parameter>
+  <parameter code="20">
+    <description>Analysis Increment (see Note 2)</description>
+  </parameter>
+  <parameter code="21">
+    <description>Initialization Increment for Analysis (see Note 3)</description>
+  </parameter>
+  <parameter code="22">
+    <description>Blended Forecast (see Note 4)</description>
+  </parameter>
+  <parameter code="23">
+    <description>Anomaly (see Note 5)</description>
+  </parameter>
+  <parameter code="192">
+    <description>Forecast Confidence Indicator</description>
+  </parameter>
+  <parameter code="193">
+    <description>Probability-Matched Mean</description>
+  </parameter>
+  <parameter code="194">
+    <description>Neighborhood Probability</description>
+  </parameter>
+  <parameter code="195">
+    <description>Bias-Corrected and Downscaled Ensemble Forecast</description>
+  </parameter>
+  <parameter code="196">
+    <description>Perturbed Analysis for Ensemble Initialization</description>
+  </parameter>
+  <parameter code="197">
+    <description>Ensemble Agreement Scale Probability</description>
+  </parameter>
+  <parameter code="198">
+    <description>Post-Processed Deterministic-Expert-Weighted Forecast</description>
+  </parameter>
+  <parameter code="199">
+    <description>Ensemble Forecast Based on Counting</description>
+  </parameter>
+  <parameter code="200">
+    <description>Local Probability-Matched Mean</description>
+  </parameter>
+  <parameter code="255">
+    <description>Missing</description>
+  </parameter>
+</codeTable>

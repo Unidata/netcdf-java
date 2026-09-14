@@ -1,0 +1,276 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<parameterMap>
+  <table>Table4.2.10.3</table>
+  <title>Surface Properties</title>
+  <source>https://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_doc/grib2_table4-2-10-3.shtml</source>
+  <parameter code="0">
+    <shortName>WTMP</shortName>
+    <description>Water Temperature</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="1">
+    <shortName>DSLM</shortName>
+    <description>Deviation of Sea Level from Mean</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="2">
+    <shortName>CH</shortName>
+    <description>Heat Exchange Coefficient</description>
+    <units />
+  </parameter>
+  <parameter code="3">
+    <shortName>PRACTSAL</shortName>
+    <description>Practical Salinity</description>
+    <units>Numeric</units>
+  </parameter>
+  <parameter code="4">
+    <shortName>DWHFLUX</shortName>
+    <description>Downward Heat Flux</description>
+    <units>W m-2</units>
+  </parameter>
+  <parameter code="5">
+    <shortName>EASTWSS</shortName>
+    <description>Eastward Surface Stress</description>
+    <units>N m-2</units>
+  </parameter>
+  <parameter code="6">
+    <shortName>NORTHWSS</shortName>
+    <description>Northward surface stress</description>
+    <units>N m-2</units>
+  </parameter>
+  <parameter code="7">
+    <shortName>XCOMPSS</shortName>
+    <description>X-Component Surface Stress (see Note 1)</description>
+    <units>N m-2</units>
+  </parameter>
+  <parameter code="8">
+    <shortName>YCOMPSS</shortName>
+    <description>Y-Component Surface Stress (see Note 1)</description>
+    <units>N m-2</units>
+  </parameter>
+  <parameter code="9">
+    <shortName>THERCSSH</shortName>
+    <description>Thermosteric Change in Sea Surface Height</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="10">
+    <shortName>HALOCSSH</shortName>
+    <description>Halosteric Change in Sea Surface Height</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="11">
+    <shortName>STERCSSH</shortName>
+    <description>Steric Change in Sea Surface Height</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="12">
+    <shortName>SEASFLUX</shortName>
+    <description>Sea Salt Flux</description>
+    <units>kg m-2s-1</units>
+  </parameter>
+  <parameter code="13">
+    <shortName>NETUPWFLUX</shortName>
+    <description>Net upward water flux</description>
+    <units>kg m-2s-1</units>
+  </parameter>
+  <parameter code="14">
+    <shortName>ESURFWVEL</shortName>
+    <description>Eastward surface water velocity</description>
+    <units>m s-1</units>
+  </parameter>
+  <parameter code="15">
+    <shortName>NSURFWVEL</shortName>
+    <description>Northward surface water velocity</description>
+    <units>m s-1</units>
+  </parameter>
+  <parameter code="16">
+    <shortName>XSURFWVEL</shortName>
+    <description>x-component of surface water velocity</description>
+    <units>m s-1</units>
+  </parameter>
+  <parameter code="17">
+    <shortName>YSURFWVEL</shortName>
+    <description>y-component of surface water velocity</description>
+    <units>m s-1</units>
+  </parameter>
+  <parameter code="18">
+    <shortName>HFLUXCOR</shortName>
+    <description>Heat flux correction</description>
+    <units>W m-2</units>
+  </parameter>
+  <parameter code="19">
+    <shortName>SSHGTPARM</shortName>
+    <description>Sea surface height tendency due to parameterization</description>
+    <units>m s-1</units>
+  </parameter>
+  <parameter code="20">
+    <shortName>DSLIBARCOR</shortName>
+    <description>Deviation of sea level from mean with inverse barometer correction</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="21">
+    <shortName>SALINITY</shortName>
+    <description>Salinity</description>
+    <units>kg kg-1</units>
+  </parameter>
+  <parameter code="22">
+    <shortName>DSWRFSS</shortName>
+    <description>Downward Shortwave Radiation Flux</description>
+    <units>W m-2</units>
+  </parameter>
+  <parameter code="192">
+    <shortName>SURGE</shortName>
+    <description>Hurricane Storm Surge</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="193">
+    <shortName>ETSRG</shortName>
+    <description>Extra Tropical Storm Surge</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="194">
+    <shortName>ELEV</shortName>
+    <description>Ocean Surface Elevation Relative to Geoid</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="195">
+    <shortName>SSHG</shortName>
+    <description>Sea Surface Height Relative to Geoid</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="196">
+    <shortName>P2OMLT</shortName>
+    <description>Ocean Mixed Layer Potential Density (Reference 2000m)</description>
+    <units>kg m-3</units>
+  </parameter>
+  <parameter code="197">
+    <shortName>AOHFLX</shortName>
+    <description>Net Air-Ocean Heat Flux</description>
+    <units>W m-2</units>
+  </parameter>
+  <parameter code="198">
+    <shortName>ASHFL</shortName>
+    <description>Assimilative Heat Flux</description>
+    <units>W m-2</units>
+  </parameter>
+  <parameter code="199">
+    <shortName>SSTT</shortName>
+    <description>Surface Temperature Trend</description>
+    <units>degree per day</units>
+  </parameter>
+  <parameter code="200">
+    <shortName>SSST</shortName>
+    <description>Surface Salinity Trend</description>
+    <units>psu per day</units>
+  </parameter>
+  <parameter code="201">
+    <shortName>KENG</shortName>
+    <description>Kinetic Energy</description>
+    <units>J kg-1</units>
+  </parameter>
+  <parameter code="202">
+    <shortName>SLTFL</shortName>
+    <description>Salt Flux</description>
+    <units>kg m-2s-1</units>
+  </parameter>
+  <parameter code="203">
+    <shortName>LCH</shortName>
+    <description>Heat Exchange Coefficient</description>
+    <units />
+  </parameter>
+  <parameter code="204">
+    <shortName>FRZSPR</shortName>
+    <description>Freezing Spray</description>
+    <units />
+  </parameter>
+  <parameter code="205">
+    <shortName>TWLWAV</shortName>
+    <description>Total Water Level Accounting for Tide, Wind and Waves</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="206">
+    <shortName>RUNUP</shortName>
+    <description>Total Water Level Increase due to Waves</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="207">
+    <shortName>SETUP</shortName>
+    <description>Mean Increase in Water Level due to Waves</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="208">
+    <shortName>SWASH</shortName>
+    <description>Time-varying Increase in Water Level due to Waves</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="209">
+    <shortName>TWLDT</shortName>
+    <description>Total Water Level Above Dune Toe</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="210">
+    <shortName>TWLDC</shortName>
+    <description>Total Water Level Above Dune Crest</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="242">
+    <shortName>TCSRG20</shortName>
+    <description>20% Tropical Cyclone Storm Surge Exceedance</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="243">
+    <shortName>TCSRG30</shortName>
+    <description>30% Tropical Cyclone Storm Surge Exceedance</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="244">
+    <shortName>TCSRG40</shortName>
+    <description>40% Tropical Cyclone Storm Surge Exceedance</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="245">
+    <shortName>TCSRG50</shortName>
+    <description>50% Tropical Cyclone Storm Surge Exceedance</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="246">
+    <shortName>TCSRG60</shortName>
+    <description>60% Tropical Cyclone Storm Surge Exceedance</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="247">
+    <shortName>TCSRG70</shortName>
+    <description>70% Tropical Cyclone Storm Surge Exceedance</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="248">
+    <shortName>TCSRG80</shortName>
+    <description>80% Tropical Cyclone Storm Surge Exceedance</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="249">
+    <shortName>TCSRG90</shortName>
+    <description>90% Tropical Cyclone Storm Surge Exceedance</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="250">
+    <shortName>ETCWL</shortName>
+    <description>Extra Tropical Storm Surge Combined Surge and Tide</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="251">
+    <shortName>TIDE</shortName>
+    <description>Tide</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="252">
+    <shortName>EROSNP</shortName>
+    <description>Erosion Occurrence Probability</description>
+    <units>%</units>
+  </parameter>
+  <parameter code="253">
+    <shortName>OWASHP</shortName>
+    <description>Overwash Occurrence Probability</description>
+    <units>%</units>
+  </parameter>
+</parameterMap>

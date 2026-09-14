@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<parameterMap>
+  <table>Table4.2.2.6</table>
+  <title>Urban Areas Products</title>
+  <source>https://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_doc/grib2_table4-2-2-6.shtml</source>
+  <parameter code="0">
+    <shortName>URBCOVER</shortName>
+    <description>Urban Cover</description>
+    <units>Proportion</units>
+  </parameter>
+  <parameter code="1">
+    <shortName>ROADCOVER</shortName>
+    <description>Road Cover</description>
+    <units>Proportion</units>
+  </parameter>
+  <parameter code="2">
+    <shortName>BUILDCOVER</shortName>
+    <description>Building Cover</description>
+    <units>Proportion</units>
+  </parameter>
+  <parameter code="3">
+    <shortName>BUILDHGT</shortName>
+    <description>Building Height</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="4">
+    <shortName>VZAFRAC</shortName>
+    <description>Vertical-to-Horizontal Area Fraction</description>
+    <units>m2 m-2</units>
+  </parameter>
+  <parameter code="5">
+    <shortName>SDBUILDHGT</shortName>
+    <description>Standard Deviation of Building Height</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="6">
+    <shortName>DDROOF</shortName>
+    <description>Distance Downward from Roof Surface</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="7">
+    <shortName>DIOWALL</shortName>
+    <description>Distance Inward from Outer Wall Surface</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="8">
+    <shortName>DDROAD</shortName>
+    <description>Distance Downward from Road Surface</description>
+    <units>m</units>
+  </parameter>
+</parameterMap>

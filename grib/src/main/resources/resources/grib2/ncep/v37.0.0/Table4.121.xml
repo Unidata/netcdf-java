@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<codeTable>
+  <table>Table 4.121</table>
+  <title>Type of Reference Dataset for Verification</title>
+  <source>https://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_doc/grib2_table4-121.shtml</source>
+  <parameter code="0">
+    <description>Analysis Interpolated on Forecast Grid</description>
+  </parameter>
+  <parameter code="1">
+    <description>Analysis with Forecast Interpolated on Analysis Grid</description>
+  </parameter>
+  <parameter code="2">
+    <description>Analysis Interpolated on a Common Grid with the Forecast but Different to Original Grid</description>
+  </parameter>
+  <parameter code="3">
+    <description>Gridded Observation on Forecast Grid</description>
+  </parameter>
+  <parameter code="4">
+    <description>Gridded Observation wih Forecast Interpolated on Observation Grid</description>
+  </parameter>
+  <parameter code="255">
+    <description>Missing</description>
+  </parameter>
+</codeTable>

@@ -1,0 +1,316 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<parameterMap>
+  <table>Table4.2.10.4</table>
+  <title>Subsurface Properties</title>
+  <source>https://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_doc/grib2_table4-2-10-4.shtml</source>
+  <parameter code="0">
+    <shortName>MTHD</shortName>
+    <description>Main Thermocline Depth</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="1">
+    <shortName>MTHA</shortName>
+    <description>Main Thermocline Anomaly</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="2">
+    <shortName>TTHDP</shortName>
+    <description>Transient Thermocline Depth</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="3">
+    <shortName>SALTY</shortName>
+    <description>Salinity</description>
+    <units>kg kg-1</units>
+  </parameter>
+  <parameter code="4">
+    <shortName>OVHD</shortName>
+    <description>Ocean Vertical Heat Diffusivity</description>
+    <units>m2 s-1</units>
+  </parameter>
+  <parameter code="5">
+    <shortName>OVSD</shortName>
+    <description>Ocean Vertical Salt Diffusivity</description>
+    <units>m2 s-1</units>
+  </parameter>
+  <parameter code="6">
+    <shortName>OVMD</shortName>
+    <description>Ocean Vertical Momentum Diffusivity</description>
+    <units>m2 s-1</units>
+  </parameter>
+  <parameter code="7">
+    <shortName>BATHY</shortName>
+    <description>Bathymetry</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="11">
+    <shortName>SFSALP</shortName>
+    <description>Shape Factor With Respect To Salinity Profile</description>
+    <units />
+  </parameter>
+  <parameter code="12">
+    <shortName>SFTMPP</shortName>
+    <description>Shape Factor With Respect To Temperature Profile In Thermocline</description>
+    <units />
+  </parameter>
+  <parameter code="13">
+    <shortName>ACWSRD</shortName>
+    <description>Attenuation Coefficient Of Water With Respect to Solar Radiation</description>
+    <units>m-1</units>
+  </parameter>
+  <parameter code="14">
+    <shortName>WDEPTH</shortName>
+    <description>Water Depth</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="15">
+    <shortName>WTMPSS</shortName>
+    <description>Water Temperature</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="16">
+    <shortName>WATERDEN</shortName>
+    <description>Water Density ()</description>
+    <units>kg m-3</units>
+  </parameter>
+  <parameter code="17">
+    <shortName>WATDENA</shortName>
+    <description>Water Density Anomaly () (see Note 1)</description>
+    <units>kg m-3</units>
+  </parameter>
+  <parameter code="18">
+    <shortName>WATPTEMP</shortName>
+    <description>Water Potential Temperature ()</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="19">
+    <shortName>WATPDEN</shortName>
+    <description>Water Potential Density ( )</description>
+    <units>kg m-3</units>
+  </parameter>
+  <parameter code="20">
+    <shortName>WATPDENA</shortName>
+    <description>Water Potential Density Anomaly ( ) (see Note 1)</description>
+    <units>kg m-3</units>
+  </parameter>
+  <parameter code="21">
+    <shortName>PRTSAL</shortName>
+    <description>Practical Salinity</description>
+    <units>psu (numeric)</units>
+  </parameter>
+  <parameter code="22">
+    <shortName>WCHEATC</shortName>
+    <description>Water Column-integrated Heat Content</description>
+    <units>J m-2</units>
+  </parameter>
+  <parameter code="23">
+    <shortName>EASTWVEL</shortName>
+    <description>Eastward Water Velocity</description>
+    <units>m s-1</units>
+  </parameter>
+  <parameter code="24">
+    <shortName>NRTHWVEL</shortName>
+    <description>Northward Water Velocity</description>
+    <units>m s-1</units>
+  </parameter>
+  <parameter code="25">
+    <shortName>XCOMPWV</shortName>
+    <description>X-Component Water Velocity (see Note 2)</description>
+    <units>m s-1</units>
+  </parameter>
+  <parameter code="26">
+    <shortName>YCOMPWV</shortName>
+    <description>Y-Component Water Velocity (see Note 2)</description>
+    <units>m s-1</units>
+  </parameter>
+  <parameter code="27">
+    <shortName>UPWWVEL</shortName>
+    <description>Upward Water Velocity</description>
+    <units>m s-1</units>
+  </parameter>
+  <parameter code="28">
+    <shortName>VEDDYDIF</shortName>
+    <description>Vertical Eddy Diffusivity</description>
+    <units>m2 s-1</units>
+  </parameter>
+  <parameter code="29">
+    <shortName>BPEH</shortName>
+    <description>Bottom Pressure Equivalent Height</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="30">
+    <shortName>FWFSW</shortName>
+    <description>Fresh Water Flux into Sea Water from Rivers</description>
+    <units>kg m-2s-1</units>
+  </parameter>
+  <parameter code="31">
+    <shortName>FWFC</shortName>
+    <description>Fresh Water Flux Correction</description>
+    <units>kg m-2s-1</units>
+  </parameter>
+  <parameter code="32">
+    <shortName>VSFSW</shortName>
+    <description>Virtual Salt Flux into Sea Water</description>
+    <units>g kg-1 m-2s-1</units>
+  </parameter>
+  <parameter code="33">
+    <shortName>VSFC</shortName>
+    <description>Virtual Salt Flux Correction</description>
+    <units>g kg -1 m-2s-1</units>
+  </parameter>
+  <parameter code="34">
+    <shortName>SWTTNR</shortName>
+    <description>Sea Water Temperature Tendency due to Newtonian Relaxation</description>
+    <units>K s-1</units>
+  </parameter>
+  <parameter code="35">
+    <shortName>SWSTNR</shortName>
+    <description>Sea Water Salinity Tendency due to Newtonian Relaxation</description>
+    <units>g kg -1s-1</units>
+  </parameter>
+  <parameter code="36">
+    <shortName>SWTTP</shortName>
+    <description>Sea Water Temperature Tendency due to Parameterization</description>
+    <units>K s-1</units>
+  </parameter>
+  <parameter code="37">
+    <shortName>SWSTP</shortName>
+    <description>Sea Water Salinity Tendency due to Parameterization</description>
+    <units>g kg -1s-1</units>
+  </parameter>
+  <parameter code="38">
+    <shortName>ESWVP</shortName>
+    <description>Eastward Sea Water Velocity Tendency Due To Parameterization</description>
+    <units>m s-2</units>
+  </parameter>
+  <parameter code="39">
+    <shortName>NSWVP</shortName>
+    <description>Northward Sea Water Velocity Tendency Due To Parameterization</description>
+    <units>m s-2</units>
+  </parameter>
+  <parameter code="40">
+    <shortName>SWTTBC</shortName>
+    <description>Sea Water Temperature Tendency Due to Direct Bias Correction</description>
+    <units>K s-1</units>
+  </parameter>
+  <parameter code="41">
+    <shortName>SWSTBC</shortName>
+    <description>Sea Water Salinity Tendency due to Direct Bias Correction</description>
+    <units>g kg -1s-1</units>
+  </parameter>
+  <parameter code="42">
+    <shortName>SEAMVT</shortName>
+    <description>Sea water meridional volume transport</description>
+    <units>m 3 m -2 s -1</units>
+  </parameter>
+  <parameter code="43">
+    <shortName>SEAZVT</shortName>
+    <description>Sea water zonal volume transport</description>
+    <units>m 3 m -2 s -1</units>
+  </parameter>
+  <parameter code="44">
+    <shortName>SEACMVT</shortName>
+    <description>Sea water column integrated meridional volume transport</description>
+    <units>m 3 m -2 s -1</units>
+  </parameter>
+  <parameter code="45">
+    <shortName>SEACZVT</shortName>
+    <description>Sea water column integrated zonal volume transport</description>
+    <units>m 3 m -2 s -1</units>
+  </parameter>
+  <parameter code="46">
+    <shortName>SEAMMT</shortName>
+    <description>Sea water meridional mass transport</description>
+    <units>kg m -2 s -1</units>
+  </parameter>
+  <parameter code="47">
+    <shortName>SEAZMT</shortName>
+    <description>Sea water zonal mass transport</description>
+    <units>kg m -2 s -1</units>
+  </parameter>
+  <parameter code="48">
+    <shortName>SEACMMT</shortName>
+    <description>Sea water column integrated meridional mass transport</description>
+    <units>kg m -2 s -1</units>
+  </parameter>
+  <parameter code="49">
+    <shortName>SEACZMT</shortName>
+    <description>Sea water column integrated zonal mass transport</description>
+    <units>kg m -2 s -1</units>
+  </parameter>
+  <parameter code="50">
+    <shortName>SEACPSALT</shortName>
+    <description>Sea water column integrated practical salinity</description>
+    <units>g kg-1 m</units>
+  </parameter>
+  <parameter code="51">
+    <shortName>SEACSALT</shortName>
+    <description>Sea water column integrated salinity</description>
+    <units>kg kg-1 m</units>
+  </parameter>
+  <parameter code="52">
+    <shortName>MLD</shortName>
+    <description>Mixed Layer Depth</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="53">
+    <shortName>NCOMPWVEL</shortName>
+    <description>Normal Component of Water Velocity (see Note 3)</description>
+    <units>m s-1</units>
+  </parameter>
+  <parameter code="54">
+    <shortName>TCOMPWVEL</shortName>
+    <description>Tangential Component of Water Velocity (see Note 3)</description>
+    <units>m s-1</units>
+  </parameter>
+  <parameter code="55">
+    <shortName>SEAUVT</shortName>
+    <description>Sea Water Upward Volume Transport</description>
+    <units>m3 m-2 s-1</units>
+  </parameter>
+  <parameter code="56">
+    <shortName>SEAUMT</shortName>
+    <description>Sea Water Upward Mass Transport</description>
+    <units>kg m-2 s-1</units>
+  </parameter>
+  <parameter code="57">
+    <shortName>SEAAGE</shortName>
+    <description>Sea Water Age Since Surface Contact</description>
+    <units>s</units>
+  </parameter>
+  <parameter code="58">
+    <shortName>DSWRFSEA</shortName>
+    <description>Sea Water Downward Shortwave Radiation Flux</description>
+    <units>W m-2</units>
+  </parameter>
+  <parameter code="192">
+    <shortName>WTMPC</shortName>
+    <description>3-D Temperature</description>
+    <units>c</units>
+  </parameter>
+  <parameter code="193">
+    <shortName>SALIN</shortName>
+    <description>3-D Salinity</description>
+    <units>psu</units>
+  </parameter>
+  <parameter code="194">
+    <shortName>BKENG</shortName>
+    <description>Barotropic Kinetic Energy</description>
+    <units>J kg-1</units>
+  </parameter>
+  <parameter code="195">
+    <shortName>DBSS</shortName>
+    <description>Geometric Depth Below Sea Surface</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="196">
+    <shortName>INTFD</shortName>
+    <description>Interface Depths</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="197">
+    <shortName>OHC</shortName>
+    <description>Ocean Heat Content</description>
+    <units>J m-2</units>
+  </parameter>
+</parameterMap>

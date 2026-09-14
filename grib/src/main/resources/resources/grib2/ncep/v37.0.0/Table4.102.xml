@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<codeTable>
+  <table>Table 4.102</table>
+  <title>Statistical Processing of Reference Period</title>
+  <source>https://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_doc/grib2_table4-102.shtml</source>
+  <parameter code="0">
+    <description>Average</description>
+  </parameter>
+  <parameter code="1">
+    <description>Accumulation</description>
+  </parameter>
+  <parameter code="2">
+    <description>Maximum</description>
+  </parameter>
+  <parameter code="3">
+    <description>Minimum</description>
+  </parameter>
+  <parameter code="4">
+    <description>Median</description>
+  </parameter>
+  <parameter code="20">
+    <description>Model Climate</description>
+  </parameter>
+  <parameter code="21">
+    <description>Index based on normal distribution</description>
+  </parameter>
+  <parameter code="22">
+    <description>Index based on log-normal distribution</description>
+  </parameter>
+  <parameter code="23">
+    <description>Index based on generalized log-normal distribution</description>
+  </parameter>
+  <parameter code="24">
+    <description>Index based on gamma distribution</description>
+  </parameter>
+  <parameter code="25">
+    <description>Index based on logistic distribution</description>
+  </parameter>
+  <parameter code="26">
+    <description>Index based on log-logistic distribution</description>
+  </parameter>
+  <parameter code="27">
+    <description>Index based on generalized logistic distribution</description>
+  </parameter>
+  <parameter code="28">
+    <description>Index based on Weibull distribution</description>
+  </parameter>
+  <parameter code="29">
+    <description>Index based on generalized extreme value distribution</description>
+  </parameter>
+  <parameter code="30">
+    <description>Index based on Pearson III distribution</description>
+  </parameter>
+  <parameter code="31">
+    <description>Index based on empirical distribution</description>
+  </parameter>
+  <parameter code="255">
+    <description>Missing</description>
+  </parameter>
+</codeTable>

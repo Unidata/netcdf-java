@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<parameterMap>
+  <table>Table4.2.20.0</table>
+  <title>Health Indicators</title>
+  <source>https://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_doc/grib2_table4-2-20-0.shtml</source>
+  <parameter code="0">
+    <shortName>UTHCIDX</shortName>
+    <description>Universal Thermal Climate Index</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="1">
+    <shortName>MEANRTMP</shortName>
+    <description>Mean Radiant Temperature</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="2">
+    <shortName>WETBGTMP</shortName>
+    <description>Wet-Bulb Globe Temperature (see Note 1)</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="3">
+    <shortName>GLOBETMP</shortName>
+    <description>Globe Temperature</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="4">
+    <shortName>HUMIDX</shortName>
+    <description>Humidex</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="5">
+    <shortName>EFFTEMP</shortName>
+    <description>Effective Temperature</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="6">
+    <shortName>NOREFTMP</shortName>
+    <description>Normal Effective Temperature</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="7">
+    <shortName>STDEFTMP</shortName>
+    <description>Standard Effective Temperature</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="8">
+    <shortName>PEQUTMP</shortName>
+    <description>Physiological Equivalent Temperature</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="9">
+    <shortName>UVBED</shortName>
+    <description>UV Biologically Effective Dose</description>
+    <units>W m-2</units>
+  </parameter>
+  <parameter code="10">
+    <shortName>UVBEDCS</shortName>
+    <description>UV Biologically Effective Dose, Clear-Sky</description>
+    <units>W m-2</units>
+  </parameter>
+  <parameter code="11">
+    <shortName>EHF</shortName>
+    <description>Excess Heat Factor</description>
+    <units>K2</units>
+  </parameter>
+  <parameter code="12">
+    <shortName>ECF</shortName>
+    <description>Excess Cold Factor</description>
+    <units>K2</units>
+  </parameter>
+</parameterMap>

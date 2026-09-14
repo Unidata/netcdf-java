@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<parameterMap>
+  <table>Table4.2.0.5</table>
+  <title>Longwave Radiation</title>
+  <source>https://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_doc/grib2_table4-2-0-5.shtml</source>
+  <parameter code="0">
+    <shortName>NLWRS</shortName>
+    <description>Net Longwave Radiation Flux (Surface) (see Note 1)</description>
+    <units>W m-2</units>
+  </parameter>
+  <parameter code="1">
+    <shortName>NLWRT</shortName>
+    <description>Net Longwave Radiation Flux (Top of Atmosphere) (see Note 1)</description>
+    <units>W m-2</units>
+  </parameter>
+  <parameter code="2">
+    <shortName>LWAVR</shortName>
+    <description>Longwave Radiation Flux (see Note 1)</description>
+    <units>W m-2</units>
+  </parameter>
+  <parameter code="3">
+    <shortName>DLWRF</shortName>
+    <description>Downward Longwave Radiation Flux</description>
+    <units>W m-2</units>
+  </parameter>
+  <parameter code="4">
+    <shortName>ULWRF</shortName>
+    <description>Upward Longwave Radiation Flux</description>
+    <units>W m-2</units>
+  </parameter>
+  <parameter code="5">
+    <shortName>NLWRF</shortName>
+    <description>Net Longwave Radiation Flux</description>
+    <units>W m-2</units>
+  </parameter>
+  <parameter code="6">
+    <shortName>NLWRCS</shortName>
+    <description>Net Longwave Radiation Flux, Clear Sky</description>
+    <units>W m-2</units>
+  </parameter>
+  <parameter code="7">
+    <shortName>BRTEMP</shortName>
+    <description>Brightness Temperature</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="8">
+    <shortName>DLWRFCS</shortName>
+    <description>Downward Longwave Radiation Flux, Clear Sky</description>
+    <units>W m-2</units>
+  </parameter>
+  <parameter code="9">
+    <shortName>NIRALBDIF</shortName>
+    <description>Near IR albedo for diffuse radiation</description>
+    <units>%</units>
+  </parameter>
+  <parameter code="10">
+    <shortName>NIRALBDIR</shortName>
+    <description>Near IR albedo for direct radiation</description>
+    <units>%</units>
+  </parameter>
+  <parameter code="11">
+    <shortName>NIRALBDIRG</shortName>
+    <description>Near IR albedo for direct radiation, geometric component</description>
+    <units>%</units>
+  </parameter>
+  <parameter code="12">
+    <shortName>NIRALBDIRI</shortName>
+    <description>Near IR albedo for direct radiation, isotropic component</description>
+    <units>%</units>
+  </parameter>
+  <parameter code="13">
+    <shortName>NIRALBDIRV</shortName>
+    <description>Near IR albedo for direct radiation, volumetric component</description>
+    <units>%</units>
+  </parameter>
+  <parameter code="192">
+    <shortName>DLWRF</shortName>
+    <description>Downward Longwave Radiation Flux</description>
+    <units>W m-2</units>
+  </parameter>
+  <parameter code="193">
+    <shortName>ULWRF</shortName>
+    <description>Upward Longwave Radiation Flux</description>
+    <units>W m-2</units>
+  </parameter>
+  <parameter code="194">
+    <shortName>LWHR</shortName>
+    <description>Longwave Radiative Heating Rate</description>
+    <units>K s-1</units>
+  </parameter>
+  <parameter code="195">
+    <shortName>CSULF</shortName>
+    <description>Clear Sky Upward Longwave Flux</description>
+    <units>W m-2</units>
+  </parameter>
+  <parameter code="196">
+    <shortName>CSDLF</shortName>
+    <description>Clear Sky Downward Longwave Flux</description>
+    <units>W m-2</units>
+  </parameter>
+  <parameter code="197">
+    <shortName>CFNLF</shortName>
+    <description>Cloud Forcing Net Longwave Flux</description>
+    <units>W m-2</units>
+  </parameter>
+</parameterMap>

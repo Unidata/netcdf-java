@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<codeTable>
+  <table>Table 4.103</table>
+  <title>Spatial Vicinity Type</title>
+  <source>https://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_doc/grib2_table4-103.shtml</source>
+  <parameter code="0">
+    <description>Circle [m] (see Note 1)</description>
+  </parameter>
+  <parameter code="1">
+    <description>Rectangle [m,m] (see Note 1)</description>
+  </parameter>
+  <parameter code="2">
+    <description>Square [m] (see Note 1)</description>
+  </parameter>
+  <parameter code="3">
+    <description>Wedge [m, degree, degree] (see Note 1)</description>
+  </parameter>
+  <parameter code="4">
+    <description>Span of grid boxes centered around grid box i,j [x,y] (see Note 1)</description>
+  </parameter>
+  <parameter code="255">
+    <description>Missing</description>
+  </parameter>
+</codeTable>

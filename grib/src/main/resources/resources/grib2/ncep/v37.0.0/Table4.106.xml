@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<codeTable>
+  <table>Table 4.106</table>
+  <title>Radar Data Quality Flags</title>
+  <source>https://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_doc/grib2_table4-106.shtml</source>
+  <parameter code="0">
+    <description>Normal operating data</description>
+  </parameter>
+  <parameter code="1">
+    <description>No data (see Note 1)</description>
+  </parameter>
+  <parameter code="2">
+    <description>Undetected (see Note 2)</description>
+  </parameter>
+  <parameter code="3">
+    <description>Implausible data/outliers (see Note 3)</description>
+  </parameter>
+  <parameter code="4">
+    <description>Beam overshooting</description>
+  </parameter>
+  <parameter code="5">
+    <description>Beam blocking</description>
+  </parameter>
+  <parameter code="6">
+    <description>Ground clutter</description>
+  </parameter>
+  <parameter code="7">
+    <description>Sea clutter</description>
+  </parameter>
+  <parameter code="8">
+    <description>Beam attenuation</description>
+  </parameter>
+  <parameter code="9">
+    <description>Wet radome attenuation</description>
+  </parameter>
+  <parameter code="10">
+    <description>Wind turbines</description>
+  </parameter>
+  <parameter code="11">
+    <description>Insects/birds</description>
+  </parameter>
+  <parameter code="12">
+    <description>Ships/aircrafts</description>
+  </parameter>
+  <parameter code="255">
+    <description>Missing</description>
+  </parameter>
+</codeTable>

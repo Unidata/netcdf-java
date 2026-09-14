@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<parameterMap>
+  <table>Table4.2.0.16</table>
+  <title>Forecast Radar Imagery</title>
+  <source>https://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_doc/grib2_table4-2-0-16.shtml</source>
+  <parameter code="0">
+    <shortName>REFZR</shortName>
+    <description>Equivalent radar reflectivity factor for rain</description>
+    <units>m m6 m-3</units>
+  </parameter>
+  <parameter code="1">
+    <shortName>REFZI</shortName>
+    <description>Equivalent radar reflectivity factor for snow</description>
+    <units>m m6 m-3</units>
+  </parameter>
+  <parameter code="2">
+    <shortName>REFZC</shortName>
+    <description>Equivalent radar reflectivity factor for parameterized convection</description>
+    <units>m m6 m-3</units>
+  </parameter>
+  <parameter code="3">
+    <shortName>RETOP</shortName>
+    <description>Echo Top (See Note 1)</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="4">
+    <shortName>REFD</shortName>
+    <description>Reflectivity</description>
+    <units>dB</units>
+  </parameter>
+  <parameter code="5">
+    <shortName>REFC</shortName>
+    <description>Composite reflectivity</description>
+    <units>dB</units>
+  </parameter>
+  <parameter code="6">
+    <shortName>PRATEFRAD</shortName>
+    <description>Precipitation Rate</description>
+    <units>kg m-2 s-1</units>
+  </parameter>
+  <parameter code="7">
+    <shortName>LMAXPRATEF</shortName>
+    <description>Layer Maximum Precipitation Rate</description>
+    <units>kg m-2 s-1</units>
+  </parameter>
+  <parameter code="8">
+    <shortName>LMAXREF</shortName>
+    <description>Layer Maximum Reflectivity</description>
+    <units>dB</units>
+  </parameter>
+  <parameter code="192">
+    <shortName>REFZR</shortName>
+    <description>Equivalent radar reflectivity factor for rain</description>
+    <units>m m6 m-3</units>
+  </parameter>
+  <parameter code="193">
+    <shortName>REFZI</shortName>
+    <description>Equivalent radar reflectivity factor for snow</description>
+    <units>m m6 m-3</units>
+  </parameter>
+  <parameter code="194">
+    <shortName>REFZC</shortName>
+    <description>Equivalent radar reflectivity factor for parameterized convection</description>
+    <units>m m6 m-3</units>
+  </parameter>
+  <parameter code="195">
+    <shortName>REFD</shortName>
+    <description>Reflectivity</description>
+    <units>dB</units>
+  </parameter>
+  <parameter code="196">
+    <shortName>REFC</shortName>
+    <description>Composite reflectivity</description>
+    <units>dB</units>
+  </parameter>
+  <parameter code="197">
+    <shortName>RETOP</shortName>
+    <description>Echo Top (See Note 1)</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="198">
+    <shortName>MAXREF</shortName>
+    <description>Hourly Maximum of Simulated Reflectivity</description>
+    <units>dB</units>
+  </parameter>
+  <parameter code="199">
+    <shortName>MAXREFC</shortName>
+    <description>Hourly Maximum of Composite Reflectivity</description>
+    <units>dB</units>
+  </parameter>
+</parameterMap>
