@@ -69,7 +69,7 @@ public class Grib2JpegDecoder {
    * @throws IllegalArgumentException If 'argv' is empty
    * @see Grib2JpegDecoder#getExitCode
    */
-  Grib2JpegDecoder(int nbits, boolean debug) {
+  public Grib2JpegDecoder(int nbits, boolean debug) {
     this.rate = nbits;
     this.debug = debug;
 
