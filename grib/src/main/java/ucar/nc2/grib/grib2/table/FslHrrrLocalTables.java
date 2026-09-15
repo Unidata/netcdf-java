@@ -9,6 +9,8 @@ import com.google.common.collect.ImmutableList;
 import java.nio.charset.StandardCharsets;
 import ucar.nc2.grib.GribTables;
 import ucar.nc2.grib.grib2.Grib2Parameter;
+
+import javax.annotation.Nonnull;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -105,6 +107,7 @@ public class FslHrrrLocalTables extends NcepLocalTables {
     return super.getLevelName(id);
   }
 
+  @Nonnull
   public String getStatisticNameShort(int id) {
     if (id == 255) {
       return "Interval";

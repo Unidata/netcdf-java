@@ -6,6 +6,8 @@
 package ucar.nc2.grib.grib2.table;
 
 import com.google.common.collect.ImmutableList;
+
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
@@ -298,6 +300,7 @@ class NcepLocalTables extends LocalTables {
   //////////////////////////////////////////////////////////////
 
   @Override
+  @Nonnull
   public String getStatisticNameShort(int id) {
     switch (id) {
       case 192:
@@ -381,18 +384,17 @@ class NcepLocalTables extends LocalTables {
   private static Map<Integer, String> statName; // shared by all instances
 
   @Override
-  @Nullable
+  @Nonnull
   public String getStatisticName(int id) {
     if (id < 192)
       return super.getStatisticName(id);
     if (statName == null)
       statName = initTable410();
-    if (statName == null)
-      return null;
-    return statName.get(id);
+    String result = statName.get(id);
+    return result != null ? result : getStatisticNameShort(id);
   }
 
-  @Nullable
+  @Nonnull
   private Map<Integer, String> initTable410() {
     String path = config.getPath() + "Table4.10.xml";
     try (InputStream is = GribResourceReader.getInputStream(path)) {
@@ -412,7 +414,7 @@ class NcepLocalTables extends LocalTables {
 
     } catch (IOException | JDOMException ioe) {
       logger.error("Cant read  " + path, ioe);
-      return null;
+      return Collections.emptyMap();
     }
   }
 

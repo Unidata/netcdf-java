@@ -60,9 +60,7 @@ public class Grib2Iosp extends GribIosp {
 
       if (vindex.getIntvType() >= 0) {
         String statName = cust.getStatisticNameShort(vindex.getIntvType());
-        if (statName != null) {
-          f.format("_%s", statName);
-        }
+        f.format("_%s", statName);
       }
 
       if (vindex.getSpatialStatisticalProcessType() >= 0) {
@@ -109,20 +107,14 @@ public class Grib2Iosp extends GribIosp {
         f.format("%s", gp.getName());
       }
 
-      if (vindex.getIntvType() >= 0 && vindex.getIntvName() != null && !vindex.getIntvName().isEmpty()) {
-        String intvName = cust.getStatisticNameShort(vindex.getIntvType());
-        if (intvName == null || intvName.equalsIgnoreCase("Missing")) {
-          intvName = cust.getStatisticNameShort(vindex.getIntvType());
-        }
-        if (intvName == null) {
-          f.format(" (%s)", vindex.getIntvName());
+      if (vindex.getIntvType() >= 0) {
+        String intvName = vindex.getIntvName();
+        String statName = cust.getStatisticNameShort(vindex.getIntvType());
+        if (intvName != null && !intvName.isEmpty()) {
+          f.format(" (%s %s)", intvName, statName);
         } else {
-          f.format(" (%s %s)", vindex.getIntvName(), intvName);
+          f.format(" (%s)", statName);
         }
-
-      } else if (vindex.getIntvType() >= 0) {
-        String intvName = cust.getStatisticNameShort(vindex.getIntvType());
-        f.format(" (%s)", intvName);
       }
 
       if (vindex.getSpatialStatisticalProcessType() >= 0) {
