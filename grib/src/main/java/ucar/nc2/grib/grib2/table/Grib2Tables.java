@@ -6,6 +6,8 @@
 package ucar.nc2.grib.grib2.table;
 
 import com.google.common.collect.ImmutableList;
+
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import thredds.featurecollection.TimeUnitConverter;
 import ucar.nc2.grib.GribNumbers;
@@ -236,6 +238,7 @@ public class Grib2Tables implements ucar.nc2.grib.GribTables, TimeUnitConverter 
     return (entry == null) ? null : entry.getName();
   }
 
+  @Nonnull
   public String getStatisticName(int id) {
     String result = getCodeTableValue("4.10", id); // WMO
     if (result == null) {
@@ -244,9 +247,10 @@ public class Grib2Tables implements ucar.nc2.grib.GribTables, TimeUnitConverter 
     return result;
   }
 
+  @Nonnull
   public String getStatisticNameShort(int id) {
     GribStatType stat = GribStatType.getStatTypeFromGrib2(id);
-    return (stat == null) ? "UnknownStatType-" + id : stat.toString();
+    return (stat == null) ? String.format("UnknownStatType%d", id) : stat.toString();
   }
 
   @Override
