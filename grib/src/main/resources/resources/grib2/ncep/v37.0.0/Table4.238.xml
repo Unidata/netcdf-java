@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<codeTable>
+  <table>Table 4.238</table>
+  <title>Source or Sink</title>
+  <source>https://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_doc/grib2_table4-238.shtml</source>
+  <parameter code="1">
+    <description>Aviation</description>
+  </parameter>
+  <parameter code="2">
+    <description>Lightning</description>
+  </parameter>
+  <parameter code="3">
+    <description>Biogenic Sources</description>
+  </parameter>
+  <parameter code="4">
+    <description>Anthropogenic sources</description>
+  </parameter>
+  <parameter code="5">
+    <description>Wild fires</description>
+  </parameter>
+  <parameter code="6">
+    <description>Natural sources</description>
+  </parameter>
+  <parameter code="7">
+    <description>Bio-fuel</description>
+  </parameter>
+  <parameter code="8">
+    <description>Volcanoes</description>
+  </parameter>
+  <parameter code="9">
+    <description>Fossil-fuel</description>
+  </parameter>
+  <parameter code="10">
+    <description>Wetlands</description>
+  </parameter>
+  <parameter code="11">
+    <description>Oceans</description>
+  </parameter>
+  <parameter code="12">
+    <description>Elevated anthropogenic sources</description>
+  </parameter>
+  <parameter code="13">
+    <description>Surface anthropogenic sources</description>
+  </parameter>
+  <parameter code="14">
+    <description>Agriculture livestock</description>
+  </parameter>
+  <parameter code="15">
+    <description>Agriculture soils</description>
+  </parameter>
+  <parameter code="16">
+    <description>Agriculture waste burning</description>
+  </parameter>
+  <parameter code="17">
+    <description>Agriculture (all)</description>
+  </parameter>
+  <parameter code="18">
+    <description>Residential, commercial and other combustion</description>
+  </parameter>
+  <parameter code="19">
+    <description>Power generation</description>
+  </parameter>
+  <parameter code="20">
+    <description>Super power stations</description>
+  </parameter>
+  <parameter code="21">
+    <description>Fugitives</description>
+  </parameter>
+  <parameter code="22">
+    <description>Industrial process</description>
+  </parameter>
+  <parameter code="23">
+    <description>Solvents</description>
+  </parameter>
+  <parameter code="24">
+    <description>Ships</description>
+  </parameter>
+  <parameter code="25">
+    <description>Wastes</description>
+  </parameter>
+  <parameter code="26">
+    <description>Road transportation</description>
+  </parameter>
+  <parameter code="27">
+    <description>Off-road transportation</description>
+  </parameter>
+  <parameter code="28">
+    <description>Nuclear power plant</description>
+  </parameter>
+  <parameter code="29">
+    <description>Nuclear weapon</description>
+  </parameter>
+  <parameter code="30">
+    <description>Commercial Building Heating</description>
+  </parameter>
+  <parameter code="31">
+    <description>Residential Heating</description>
+  </parameter>
+  <parameter code="32">
+    <description>Oil Refineries and Transformation Industry</description>
+  </parameter>
+  <parameter code="33">
+    <description>Gas Production</description>
+  </parameter>
+  <parameter code="34">
+    <description>Vegetation</description>
+  </parameter>
+  <parameter code="35">
+    <description>Biomass Burning</description>
+  </parameter>
+  <parameter code="36">
+    <description>Settlements</description>
+  </parameter>
+  <parameter code="37">
+    <description>Soil</description>
+  </parameter>
+  <parameter code="38">
+    <description>Wild Animals</description>
+  </parameter>
+  <parameter code="39">
+    <description>Savannah</description>
+  </parameter>
+  <parameter code="40">
+    <description>Tropical Forest</description>
+  </parameter>
+  <parameter code="41">
+    <description>Boreal Forest</description>
+  </parameter>
+  <parameter code="42">
+    <description>Peatland</description>
+  </parameter>
+  <parameter code="43">
+    <description>Deforestation</description>
+  </parameter>
+  <parameter code="255">
+    <description>Missing</description>
+  </parameter>
+</codeTable>

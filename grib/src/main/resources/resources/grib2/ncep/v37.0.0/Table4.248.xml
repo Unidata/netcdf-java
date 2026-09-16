@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<codeTable>
+  <table>Table 4.248</table>
+  <title>Method Used to Derive Data Values for a Given Local Time</title>
+  <source>https://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_doc/grib2_table4-248.shtml</source>
+  <parameter code="0">
+    <description>Nearest forecast or analysis time to specified local time</description>
+  </parameter>
+  <parameter code="1">
+    <description>Interpolated to be valid at the specified local time</description>
+  </parameter>
+  <parameter code="255">
+    <description>Missing</description>
+  </parameter>
+</codeTable>

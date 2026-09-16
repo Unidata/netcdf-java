@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<codeTable>
+  <table>Table 4.250</table>
+  <title>Drainage Direction</title>
+  <source>https://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_doc/grib2_table4-250.shtml</source>
+  <parameter code="1">
+    <description>Southwest</description>
+  </parameter>
+  <parameter code="2">
+    <description>South</description>
+  </parameter>
+  <parameter code="3">
+    <description>Southeast</description>
+  </parameter>
+  <parameter code="4">
+    <description>West</description>
+  </parameter>
+  <parameter code="5">
+    <description>No Direction</description>
+  </parameter>
+  <parameter code="6">
+    <description>East</description>
+  </parameter>
+  <parameter code="7">
+    <description>Northwest</description>
+  </parameter>
+  <parameter code="8">
+    <description>North</description>
+  </parameter>
+  <parameter code="9">
+    <description>Northeast</description>
+  </parameter>
+  <parameter code="255">
+    <description>Missing</description>
+  </parameter>
+</codeTable>

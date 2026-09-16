@@ -86,7 +86,7 @@ public class TestDataTemplate {
   public void testPngBitmap() throws IOException {
     final String testfile = "../grib/src/test/data/HLYA10.grib2";
     try (NetcdfFile nc = NetcdfFiles.open(testfile)) {
-      Variable var = nc.findVariable("VAR0-19-223_FROM_7-212--1_isobaric");
+      Variable var = nc.findVariable("Tornado_Conditional_Intensity_Groups_isobaric");
       float[] data = (float[]) var.read().get1DJavaArray(DataType.FLOAT);
 
       Assert.assertEquals(0.36976, data[13], 1e-5);

@@ -1,0 +1,456 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<codeTable>
+  <table>Table 4.252</table>
+  <title>Tile Classes and Groupings</title>
+  <source>https://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_doc/grib2_table4-252.shtml</source>
+  <parameter code="0">
+    <description />
+  </parameter>
+  <parameter code="1">
+    <description>SEOC</description>
+  </parameter>
+  <parameter code="2">
+    <description>INWB</description>
+  </parameter>
+  <parameter code="3">
+    <description>BARE</description>
+  </parameter>
+  <parameter code="4">
+    <description>HIV</description>
+  </parameter>
+  <parameter code="5">
+    <description>LOV</description>
+  </parameter>
+  <parameter code="6">
+    <description>URBAN</description>
+  </parameter>
+  <parameter code="1001">
+    <description>SEAO</description>
+  </parameter>
+  <parameter code="1002">
+    <description>LAKE</description>
+  </parameter>
+  <parameter code="1003">
+    <description>RIVE</description>
+  </parameter>
+  <parameter code="1004">
+    <description>NO</description>
+  </parameter>
+  <parameter code="1005">
+    <description>ROCK</description>
+  </parameter>
+  <parameter code="1006">
+    <description>SNOW</description>
+  </parameter>
+  <parameter code="1007">
+    <description>BOBD</description>
+  </parameter>
+  <parameter code="1008">
+    <description>TEBD</description>
+  </parameter>
+  <parameter code="1009">
+    <description>TRBD</description>
+  </parameter>
+  <parameter code="1010">
+    <description>TEBE</description>
+  </parameter>
+  <parameter code="1011">
+    <description>TRBE</description>
+  </parameter>
+  <parameter code="1012">
+    <description>BONE</description>
+  </parameter>
+  <parameter code="1013">
+    <description>TENE</description>
+  </parameter>
+  <parameter code="1014">
+    <description>BOND</description>
+  </parameter>
+  <parameter code="1015">
+    <description>SHRB</description>
+  </parameter>
+  <parameter code="1016">
+    <description>BOGR</description>
+  </parameter>
+  <parameter code="1017">
+    <description>GRAS</description>
+  </parameter>
+  <parameter code="1018">
+    <description>TROG</description>
+  </parameter>
+  <parameter code="1019">
+    <description>C3W</description>
+  </parameter>
+  <parameter code="1020">
+    <description>C3S</description>
+  </parameter>
+  <parameter code="1021">
+    <description>C4</description>
+  </parameter>
+  <parameter code="1022">
+    <description>FLTR</description>
+  </parameter>
+  <parameter code="1023">
+    <description>FLGR</description>
+  </parameter>
+  <parameter code="1024">
+    <description>LCZ1</description>
+  </parameter>
+  <parameter code="1025">
+    <description>LCZ2</description>
+  </parameter>
+  <parameter code="1026">
+    <description>LCZ3</description>
+  </parameter>
+  <parameter code="1027">
+    <description>LCZ4</description>
+  </parameter>
+  <parameter code="1028">
+    <description>LCZ5</description>
+  </parameter>
+  <parameter code="1029">
+    <description>LCZ6</description>
+  </parameter>
+  <parameter code="1030">
+    <description>LCZ7</description>
+  </parameter>
+  <parameter code="1031">
+    <description>LCZ8</description>
+  </parameter>
+  <parameter code="1032">
+    <description>LCZ9</description>
+  </parameter>
+  <parameter code="1033">
+    <description>LCZ10</description>
+  </parameter>
+  <parameter code="1034">
+    <description>TEBDU</description>
+  </parameter>
+  <parameter code="1035">
+    <description>TRBDU</description>
+  </parameter>
+  <parameter code="1036">
+    <description>TEBEU</description>
+  </parameter>
+  <parameter code="1037">
+    <description>TRBEU</description>
+  </parameter>
+  <parameter code="1038">
+    <description>BONEU</description>
+  </parameter>
+  <parameter code="1039">
+    <description>TENEU</description>
+  </parameter>
+  <parameter code="1040">
+    <description>BONDU</description>
+  </parameter>
+  <parameter code="1501">
+    <description />
+  </parameter>
+  <parameter code="1502">
+    <description />
+  </parameter>
+  <parameter code="1503">
+    <description />
+  </parameter>
+  <parameter code="1504">
+    <description />
+  </parameter>
+  <parameter code="1505">
+    <description />
+  </parameter>
+  <parameter code="1506">
+    <description />
+  </parameter>
+  <parameter code="1507">
+    <description />
+  </parameter>
+  <parameter code="1508">
+    <description />
+  </parameter>
+  <parameter code="1509">
+    <description />
+  </parameter>
+  <parameter code="1510">
+    <description />
+  </parameter>
+  <parameter code="1511">
+    <description />
+  </parameter>
+  <parameter code="1512">
+    <description />
+  </parameter>
+  <parameter code="1513">
+    <description />
+  </parameter>
+  <parameter code="1514">
+    <description />
+  </parameter>
+  <parameter code="1515">
+    <description />
+  </parameter>
+  <parameter code="1516">
+    <description />
+  </parameter>
+  <parameter code="1517">
+    <description />
+  </parameter>
+  <parameter code="1518">
+    <description />
+  </parameter>
+  <parameter code="1519">
+    <description />
+  </parameter>
+  <parameter code="1520">
+    <description />
+  </parameter>
+  <parameter code="1521">
+    <description />
+  </parameter>
+  <parameter code="1522">
+    <description />
+  </parameter>
+  <parameter code="1523">
+    <description />
+  </parameter>
+  <parameter code="1524">
+    <description />
+  </parameter>
+  <parameter code="1525">
+    <description />
+  </parameter>
+  <parameter code="1526">
+    <description />
+  </parameter>
+  <parameter code="1527">
+    <description />
+  </parameter>
+  <parameter code="1528">
+    <description />
+  </parameter>
+  <parameter code="1529">
+    <description />
+  </parameter>
+  <parameter code="1530">
+    <description />
+  </parameter>
+  <parameter code="1531">
+    <description />
+  </parameter>
+  <parameter code="2001">
+    <description>CRMF</description>
+  </parameter>
+  <parameter code="2002">
+    <description>SHGR</description>
+  </parameter>
+  <parameter code="2003">
+    <description>EVNE</description>
+  </parameter>
+  <parameter code="2004">
+    <description>DENE</description>
+  </parameter>
+  <parameter code="2005">
+    <description>DEBR</description>
+  </parameter>
+  <parameter code="2006">
+    <description>EVBR</description>
+  </parameter>
+  <parameter code="2007">
+    <description>TAGR</description>
+  </parameter>
+  <parameter code="2008">
+    <description>DESE</description>
+  </parameter>
+  <parameter code="2009">
+    <description>TUND</description>
+  </parameter>
+  <parameter code="2010">
+    <description>IRCR</description>
+  </parameter>
+  <parameter code="2011">
+    <description>SEDE</description>
+  </parameter>
+  <parameter code="2012">
+    <description>ICGL</description>
+  </parameter>
+  <parameter code="2013">
+    <description>BOMA</description>
+  </parameter>
+  <parameter code="2014">
+    <description>INWA</description>
+  </parameter>
+  <parameter code="2015">
+    <description>OCEA</description>
+  </parameter>
+  <parameter code="2016">
+    <description>EVSH</description>
+  </parameter>
+  <parameter code="2017">
+    <description>DESH</description>
+  </parameter>
+  <parameter code="2018">
+    <description>MFWO</description>
+  </parameter>
+  <parameter code="2019">
+    <description>INFO</description>
+  </parameter>
+  <parameter code="2020">
+    <description>WLMI</description>
+  </parameter>
+  <parameter code="2021">
+    <description>BASO</description>
+  </parameter>
+  <parameter code="2022">
+    <description>URBA</description>
+  </parameter>
+  <parameter code="2023">
+    <description>LORI</description>
+  </parameter>
+  <parameter code="2024">
+    <description>HIRI</description>
+  </parameter>
+  <parameter code="2501">
+    <description />
+  </parameter>
+  <parameter code="2502">
+    <description />
+  </parameter>
+  <parameter code="3001">
+    <description>PFIC</description>
+  </parameter>
+  <parameter code="3002">
+    <description>RACR</description>
+  </parameter>
+  <parameter code="3003">
+    <description>MCVE</description>
+  </parameter>
+  <parameter code="3004">
+    <description>MVCR</description>
+  </parameter>
+  <parameter code="3005">
+    <description>COBS</description>
+  </parameter>
+  <parameter code="3006">
+    <description>CLBD</description>
+  </parameter>
+  <parameter code="3007">
+    <description>OPBD</description>
+  </parameter>
+  <parameter code="3008">
+    <description>CLNE</description>
+  </parameter>
+  <parameter code="3009">
+    <description>ONDE</description>
+  </parameter>
+  <parameter code="3010">
+    <description>COBN</description>
+  </parameter>
+  <parameter code="3011">
+    <description>MFSG</description>
+  </parameter>
+  <parameter code="3012">
+    <description>MGFS</description>
+  </parameter>
+  <parameter code="3013">
+    <description>COSH</description>
+  </parameter>
+  <parameter code="3014">
+    <description>COHV</description>
+  </parameter>
+  <parameter code="3015">
+    <description>SPVE</description>
+  </parameter>
+  <parameter code="3016">
+    <description>COBFF</description>
+  </parameter>
+  <parameter code="3017">
+    <description>CLBFF</description>
+  </parameter>
+  <parameter code="3018">
+    <description>COVEF</description>
+  </parameter>
+  <parameter code="3019">
+    <description>ASAA</description>
+  </parameter>
+  <parameter code="3020">
+    <description>BAAR</description>
+  </parameter>
+  <parameter code="3021">
+    <description>WABO</description>
+  </parameter>
+  <parameter code="3022">
+    <description>PESI</description>
+  </parameter>
+  <parameter code="3501">
+    <description />
+  </parameter>
+  <parameter code="4001">
+    <description>TBECO</description>
+  </parameter>
+  <parameter code="4002">
+    <description>TBDC</description>
+  </parameter>
+  <parameter code="4003">
+    <description>TBDO</description>
+  </parameter>
+  <parameter code="4004">
+    <description>TNECO</description>
+  </parameter>
+  <parameter code="4005">
+    <description>TNDCO</description>
+  </parameter>
+  <parameter code="4006">
+    <description>TMLCO</description>
+  </parameter>
+  <parameter code="4007">
+    <description>TCOFF</description>
+  </parameter>
+  <parameter code="4008">
+    <description>TCOFS</description>
+  </parameter>
+  <parameter code="4009">
+    <description>MTVG</description>
+  </parameter>
+  <parameter code="4010">
+    <description>TBURN</description>
+  </parameter>
+  <parameter code="4011">
+    <description>SCOE</description>
+  </parameter>
+  <parameter code="4012">
+    <description>SCOD</description>
+  </parameter>
+  <parameter code="4013">
+    <description>HCCO</description>
+  </parameter>
+  <parameter code="4014">
+    <description>SHSC</description>
+  </parameter>
+  <parameter code="4015">
+    <description>FSHCO</description>
+  </parameter>
+  <parameter code="4016">
+    <description>CROP</description>
+  </parameter>
+  <parameter code="4017">
+    <description>MCTNV</description>
+  </parameter>
+  <parameter code="4018">
+    <description>MCSH</description>
+  </parameter>
+  <parameter code="4019">
+    <description>BAARE</description>
+  </parameter>
+  <parameter code="4020">
+    <description>WBNA</description>
+  </parameter>
+  <parameter code="4021">
+    <description>SINA</description>
+  </parameter>
+  <parameter code="4022">
+    <description>URAR</description>
+  </parameter>
+  <parameter code="65535">
+    <description />
+  </parameter>
+</codeTable>

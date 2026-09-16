@@ -1,0 +1,1857 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<codeTable>
+  <table>Table 4.233</table>
+  <title>Aerosol Type</title>
+  <source>https://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_doc/grib2_table4-233.shtml</source>
+  <parameter code="0">
+    <description>Ozone</description>
+  </parameter>
+  <parameter code="1">
+    <description>Water Vapor</description>
+  </parameter>
+  <parameter code="2">
+    <description>Methane</description>
+  </parameter>
+  <parameter code="3">
+    <description>Carbon Dioxide</description>
+  </parameter>
+  <parameter code="4">
+    <description>Carbon Monoxide</description>
+  </parameter>
+  <parameter code="5">
+    <description>Nitrogen Dioxide</description>
+  </parameter>
+  <parameter code="6">
+    <description>Nitrous Oxide</description>
+  </parameter>
+  <parameter code="7">
+    <description>Formaldehyde</description>
+  </parameter>
+  <parameter code="8">
+    <description>Sulfur Dioxide</description>
+  </parameter>
+  <parameter code="9">
+    <description>Ammonia</description>
+  </parameter>
+  <parameter code="10">
+    <description>Ammonium Cation</description>
+  </parameter>
+  <parameter code="11">
+    <description>Nitrogen Monoxide</description>
+  </parameter>
+  <parameter code="12">
+    <description>Atomic Oxygen</description>
+  </parameter>
+  <parameter code="13">
+    <description>Nitrate Radical</description>
+  </parameter>
+  <parameter code="14">
+    <description>Hydroperoxyl Radical</description>
+  </parameter>
+  <parameter code="15">
+    <description>Dinitrogen Pentoxide</description>
+  </parameter>
+  <parameter code="16">
+    <description>Nitrous Acid</description>
+  </parameter>
+  <parameter code="17">
+    <description>Nitric Acid</description>
+  </parameter>
+  <parameter code="18">
+    <description>Peroxynitric Acid</description>
+  </parameter>
+  <parameter code="19">
+    <description>Hydrogen Peroxide</description>
+  </parameter>
+  <parameter code="20">
+    <description>Dihydrogen</description>
+  </parameter>
+  <parameter code="21">
+    <description>Atomic Nitrogen</description>
+  </parameter>
+  <parameter code="22">
+    <description>Sulfate Anion</description>
+  </parameter>
+  <parameter code="23">
+    <description>Atomic Radon</description>
+  </parameter>
+  <parameter code="24">
+    <description>Mercury Vapor</description>
+  </parameter>
+  <parameter code="25">
+    <description>Mercury(II) Cation</description>
+  </parameter>
+  <parameter code="26">
+    <description>Atomic Chlorine</description>
+  </parameter>
+  <parameter code="27">
+    <description>Chlorine Monoxide</description>
+  </parameter>
+  <parameter code="28">
+    <description>Dichlorine Peroxide</description>
+  </parameter>
+  <parameter code="29">
+    <description>Hypochlorous Acid</description>
+  </parameter>
+  <parameter code="30">
+    <description>Chlorine Nitrate</description>
+  </parameter>
+  <parameter code="31">
+    <description>Chlorine Dioxide</description>
+  </parameter>
+  <parameter code="32">
+    <description>Atomic Bromine</description>
+  </parameter>
+  <parameter code="33">
+    <description>Bromine Monoxide</description>
+  </parameter>
+  <parameter code="34">
+    <description>Bromine Chloride</description>
+  </parameter>
+  <parameter code="35">
+    <description>Hydrogen Bromide</description>
+  </parameter>
+  <parameter code="36">
+    <description>Hypobromous Acid</description>
+  </parameter>
+  <parameter code="37">
+    <description>Bromine Nitrate</description>
+  </parameter>
+  <parameter code="38">
+    <description>Dioxygen</description>
+  </parameter>
+  <parameter code="39">
+    <description>Nitryl Chloride</description>
+  </parameter>
+  <parameter code="40">
+    <description>Sulfuric Acid</description>
+  </parameter>
+  <parameter code="41">
+    <description>Hydrogen Sulfide</description>
+  </parameter>
+  <parameter code="42">
+    <description>Sulfur Trioxide</description>
+  </parameter>
+  <parameter code="43">
+    <description>Bromine</description>
+  </parameter>
+  <parameter code="44">
+    <description>Hydrofluoric Acid</description>
+  </parameter>
+  <parameter code="45">
+    <description>Sulfur Hexafluoride</description>
+  </parameter>
+  <parameter code="46">
+    <description>Chlorine</description>
+  </parameter>
+  <parameter code="10000">
+    <description>Hydroxyl Radical</description>
+  </parameter>
+  <parameter code="10001">
+    <description>Methyl Peroxy Radical</description>
+  </parameter>
+  <parameter code="10002">
+    <description>Methyl Hydroperoxide</description>
+  </parameter>
+  <parameter code="10004">
+    <description>Methanol</description>
+  </parameter>
+  <parameter code="10005">
+    <description>Formic Acid</description>
+  </parameter>
+  <parameter code="10006">
+    <description>Hydrogen Cyanide</description>
+  </parameter>
+  <parameter code="10007">
+    <description>Aceto Nitrile</description>
+  </parameter>
+  <parameter code="10008">
+    <description>Ethane</description>
+  </parameter>
+  <parameter code="10009">
+    <description>Ethene (= Ethylene)</description>
+  </parameter>
+  <parameter code="10010">
+    <description>Ethyne (= Acetylene)</description>
+  </parameter>
+  <parameter code="10011">
+    <description>Ethanol</description>
+  </parameter>
+  <parameter code="10012">
+    <description>Acetic Acid</description>
+  </parameter>
+  <parameter code="10013">
+    <description>Peroxyacetyl Nitrate</description>
+  </parameter>
+  <parameter code="10014">
+    <description>Propane</description>
+  </parameter>
+  <parameter code="10015">
+    <description>Propene</description>
+  </parameter>
+  <parameter code="10016">
+    <description>Butane (all isomers)</description>
+  </parameter>
+  <parameter code="10017">
+    <description>Isoprene</description>
+  </parameter>
+  <parameter code="10018">
+    <description>Alpha Pinene</description>
+  </parameter>
+  <parameter code="10019">
+    <description>Beta Pinene</description>
+  </parameter>
+  <parameter code="10020">
+    <description>Limonene</description>
+  </parameter>
+  <parameter code="10021">
+    <description>Benzene</description>
+  </parameter>
+  <parameter code="10022">
+    <description>Toluene</description>
+  </parameter>
+  <parameter code="10023">
+    <description>Xylene</description>
+  </parameter>
+  <parameter code="10024">
+    <description>Methanesulfonic Acid</description>
+  </parameter>
+  <parameter code="10025">
+    <description>Methylglyoxal (2-Oxopropanal)</description>
+  </parameter>
+  <parameter code="10026">
+    <description>Peroxyacetyl Radical</description>
+  </parameter>
+  <parameter code="10027">
+    <description>Methacrylic Acid (2-Methylprop-2-Enoic Acid)</description>
+  </parameter>
+  <parameter code="10028">
+    <description>Methacrolein (2-Methylprop-2-Enal)</description>
+  </parameter>
+  <parameter code="10029">
+    <description>Acetone (Propan-2-One)</description>
+  </parameter>
+  <parameter code="10030">
+    <description>Ethyl Dioxidanyl Radical</description>
+  </parameter>
+  <parameter code="10031">
+    <description>Butadiene (Buta-1,3-Diene)</description>
+  </parameter>
+  <parameter code="10032">
+    <description>Acetaldehyde (Ethanal)</description>
+  </parameter>
+  <parameter code="10033">
+    <description>Glycolaldehyde (Hydroxyethanal)</description>
+  </parameter>
+  <parameter code="10034">
+    <description>Cresol (Methylphenol), All Isomers</description>
+  </parameter>
+  <parameter code="10035">
+    <description>Peracetic Acid (Ethaneperoxoic Acid)</description>
+  </parameter>
+  <parameter code="10036">
+    <description>2-Hydroxyethyl Oxidanyl Radical</description>
+  </parameter>
+  <parameter code="10037">
+    <description>2-Hydroxyethyl Dioxidanyl Radical</description>
+  </parameter>
+  <parameter code="10038">
+    <description>Glyoxal (Oxaldehyde)</description>
+  </parameter>
+  <parameter code="10039">
+    <description>Isopropyl Dioxidanyl Radical</description>
+  </parameter>
+  <parameter code="10040">
+    <description>Isopropyl Hydroperoxide (2-Hydroperoxypropane)</description>
+  </parameter>
+  <parameter code="10041">
+    <description>Hydroxyacetone (1-Hydroxypropan-2-One)</description>
+  </parameter>
+  <parameter code="10042">
+    <description>Peroxyacetic Acid (Ethaneperoxoic Acid)</description>
+  </parameter>
+  <parameter code="10043">
+    <description>Methyl Vinyl Ketone (But-3-En-2-One)</description>
+  </parameter>
+  <parameter code="10044">
+    <description>Phenoxy Radical</description>
+  </parameter>
+  <parameter code="10045">
+    <description>Methyl Radical</description>
+  </parameter>
+  <parameter code="10046">
+    <description>Carbonyl Sulfide (Carbon Oxide Sulfide)</description>
+  </parameter>
+  <parameter code="10047">
+    <description>Dibromomethane</description>
+  </parameter>
+  <parameter code="10048">
+    <description>Methoxy Radical</description>
+  </parameter>
+  <parameter code="10049">
+    <description>Tribromomethane</description>
+  </parameter>
+  <parameter code="10050">
+    <description>Formyl Radical (Oxomethyl Radical)</description>
+  </parameter>
+  <parameter code="10051">
+    <description>Hydroxymethyl Dioxidanyl Radical</description>
+  </parameter>
+  <parameter code="10052">
+    <description>Ethyl Hydroperoxide</description>
+  </parameter>
+  <parameter code="10053">
+    <description>3-Hydroxypropyl Dioxidanyl Radical</description>
+  </parameter>
+  <parameter code="10054">
+    <description>3-Hydroxypropyl Hydroperoxide</description>
+  </parameter>
+  <parameter code="10055">
+    <description>Methyl-Peroxy-Nitrate (Nitroperoxy-Methane)</description>
+  </parameter>
+  <parameter code="10056">
+    <description>4-Hydroxy-3-Methyl-1-Butene-3-Ylperoxy Radical</description>
+  </parameter>
+  <parameter code="10057">
+    <description>2-Hydroxy-1-Isopropenylethylperoxy Radical</description>
+  </parameter>
+  <parameter code="10058">
+    <description>(Z)-4-Hydroperoxy-2-Methyl-2-Butenal</description>
+  </parameter>
+  <parameter code="10059">
+    <description>(Z)-4-Hydroperoxy-3-Methyl-2-Butenal</description>
+  </parameter>
+  <parameter code="10060">
+    <description>Butene</description>
+  </parameter>
+  <parameter code="10061">
+    <description>Pentene</description>
+  </parameter>
+  <parameter code="10062">
+    <description>Hexene</description>
+  </parameter>
+  <parameter code="10063">
+    <description>Heptene</description>
+  </parameter>
+  <parameter code="10064">
+    <description>Octene</description>
+  </parameter>
+  <parameter code="10065">
+    <description>Pentane</description>
+  </parameter>
+  <parameter code="10066">
+    <description>Hexane</description>
+  </parameter>
+  <parameter code="10067">
+    <description>Heptane</description>
+  </parameter>
+  <parameter code="10068">
+    <description>Octane</description>
+  </parameter>
+  <parameter code="10500">
+    <description>Dimethyl Sulfide</description>
+  </parameter>
+  <parameter code="10501">
+    <description>Dimethyl Sulfoxide</description>
+  </parameter>
+  <parameter code="20001">
+    <description>Hydrogen Chloride</description>
+  </parameter>
+  <parameter code="20002">
+    <description>CFC-11</description>
+  </parameter>
+  <parameter code="20003">
+    <description>CFC-12</description>
+  </parameter>
+  <parameter code="20004">
+    <description>CFC-113</description>
+  </parameter>
+  <parameter code="20005">
+    <description>CFC-113a</description>
+  </parameter>
+  <parameter code="20006">
+    <description>CFC-114</description>
+  </parameter>
+  <parameter code="20007">
+    <description>CFC-115</description>
+  </parameter>
+  <parameter code="20008">
+    <description>HCFC-22</description>
+  </parameter>
+  <parameter code="20009">
+    <description>HCFC-141b</description>
+  </parameter>
+  <parameter code="20010">
+    <description>HCFC-142b</description>
+  </parameter>
+  <parameter code="20011">
+    <description>Halon-1202</description>
+  </parameter>
+  <parameter code="20012">
+    <description>Halon-1211</description>
+  </parameter>
+  <parameter code="20013">
+    <description>Halon-1301</description>
+  </parameter>
+  <parameter code="20014">
+    <description>Halon-2402</description>
+  </parameter>
+  <parameter code="20015">
+    <description>Methyl Chloride (HCC-40)</description>
+  </parameter>
+  <parameter code="20016">
+    <description>Carbon Tetrachloride (HCC-10)</description>
+  </parameter>
+  <parameter code="20017">
+    <description>HCC-140a</description>
+  </parameter>
+  <parameter code="20018">
+    <description>Methyl Bromide (HBC-40B1)</description>
+  </parameter>
+  <parameter code="20019">
+    <description>Hexachlorocyclohexane (HCH)</description>
+  </parameter>
+  <parameter code="20020">
+    <description>Alpha Hexachlorocyclohexane</description>
+  </parameter>
+  <parameter code="20021">
+    <description>Hexachlorobiphenyl (PCB-153)</description>
+  </parameter>
+  <parameter code="20022">
+    <description>HCFC-141a</description>
+  </parameter>
+  <parameter code="30000">
+    <description>Radioactive Pollutant (Tracer, defined by originating centre)</description>
+  </parameter>
+  <parameter code="30010">
+    <description>Tritium (Hydrogen-3)</description>
+  </parameter>
+  <parameter code="30011">
+    <description>Tritium Organic Bonded</description>
+  </parameter>
+  <parameter code="30012">
+    <description>Tritium Inorganic</description>
+  </parameter>
+  <parameter code="30013">
+    <description>Beryllium 7</description>
+  </parameter>
+  <parameter code="30014">
+    <description>Beryllium 10</description>
+  </parameter>
+  <parameter code="30015">
+    <description>Carbon 14</description>
+  </parameter>
+  <parameter code="30016">
+    <description>Carbon 14 CO2</description>
+  </parameter>
+  <parameter code="30017">
+    <description>Carbon 14 Other Gases</description>
+  </parameter>
+  <parameter code="30018">
+    <description>Nitrogen 13</description>
+  </parameter>
+  <parameter code="30019">
+    <description>Nitrogen 16</description>
+  </parameter>
+  <parameter code="30020">
+    <description>Fluorine 18</description>
+  </parameter>
+  <parameter code="30021">
+    <description>Sodium 22</description>
+  </parameter>
+  <parameter code="30022">
+    <description>Phosphate 32</description>
+  </parameter>
+  <parameter code="30023">
+    <description>Phosphate 33</description>
+  </parameter>
+  <parameter code="30024">
+    <description>Sulfur 35</description>
+  </parameter>
+  <parameter code="30025">
+    <description>Chlorine 36</description>
+  </parameter>
+  <parameter code="30026">
+    <description>Potassium 40</description>
+  </parameter>
+  <parameter code="30027">
+    <description>Argon 41</description>
+  </parameter>
+  <parameter code="30028">
+    <description>Calcium 41</description>
+  </parameter>
+  <parameter code="30029">
+    <description>Calcium 45</description>
+  </parameter>
+  <parameter code="30030">
+    <description>Titanium 44</description>
+  </parameter>
+  <parameter code="30031">
+    <description>Scandium 46</description>
+  </parameter>
+  <parameter code="30032">
+    <description>Vanadium 48</description>
+  </parameter>
+  <parameter code="30033">
+    <description>Vanadium 49</description>
+  </parameter>
+  <parameter code="30034">
+    <description>Chrome 51</description>
+  </parameter>
+  <parameter code="30035">
+    <description>Manganese 52</description>
+  </parameter>
+  <parameter code="30036">
+    <description>Manganese 54</description>
+  </parameter>
+  <parameter code="30037">
+    <description>Iron 55</description>
+  </parameter>
+  <parameter code="30038">
+    <description>Iron 59</description>
+  </parameter>
+  <parameter code="30039">
+    <description>Cobalt 56</description>
+  </parameter>
+  <parameter code="30040">
+    <description>Cobalt 57</description>
+  </parameter>
+  <parameter code="30041">
+    <description>Cobalt 58</description>
+  </parameter>
+  <parameter code="30042">
+    <description>Cobalt 60</description>
+  </parameter>
+  <parameter code="30043">
+    <description>Nickel 59</description>
+  </parameter>
+  <parameter code="30044">
+    <description>Nickel 63</description>
+  </parameter>
+  <parameter code="30045">
+    <description>Zinc 65</description>
+  </parameter>
+  <parameter code="30046">
+    <description>Gallium 67</description>
+  </parameter>
+  <parameter code="30047">
+    <description>Gallium 68</description>
+  </parameter>
+  <parameter code="30048">
+    <description>Germanium 68</description>
+  </parameter>
+  <parameter code="30049">
+    <description>Germanium 69</description>
+  </parameter>
+  <parameter code="30050">
+    <description>Arsenic 73</description>
+  </parameter>
+  <parameter code="30051">
+    <description>Selenium 75</description>
+  </parameter>
+  <parameter code="30052">
+    <description>Selenium 79</description>
+  </parameter>
+  <parameter code="30053">
+    <description>Rubidium 81</description>
+  </parameter>
+  <parameter code="30054">
+    <description>Rubidium 83</description>
+  </parameter>
+  <parameter code="30055">
+    <description>Rubidium 84</description>
+  </parameter>
+  <parameter code="30056">
+    <description>Rubidium 86</description>
+  </parameter>
+  <parameter code="30057">
+    <description>Rubidium 87</description>
+  </parameter>
+  <parameter code="30058">
+    <description>Rubidium 88</description>
+  </parameter>
+  <parameter code="30059">
+    <description>Krypton 85</description>
+  </parameter>
+  <parameter code="30060">
+    <description>Krypton 85 metastable</description>
+  </parameter>
+  <parameter code="30061">
+    <description>Krypton 87</description>
+  </parameter>
+  <parameter code="30062">
+    <description>Krypton 88</description>
+  </parameter>
+  <parameter code="30063">
+    <description>Krypton 89</description>
+  </parameter>
+  <parameter code="30064">
+    <description>Strontium 85</description>
+  </parameter>
+  <parameter code="30065">
+    <description>Strontium 89</description>
+  </parameter>
+  <parameter code="30066">
+    <description>Strontium 89/90</description>
+  </parameter>
+  <parameter code="30067">
+    <description>Strontium 90</description>
+  </parameter>
+  <parameter code="30068">
+    <description>Strontium 91</description>
+  </parameter>
+  <parameter code="30069">
+    <description>Strontium 92</description>
+  </parameter>
+  <parameter code="30070">
+    <description>Yttrium 87</description>
+  </parameter>
+  <parameter code="30071">
+    <description>Yttrium 88</description>
+  </parameter>
+  <parameter code="30072">
+    <description>Yttrium 90</description>
+  </parameter>
+  <parameter code="30073">
+    <description>Yttrium 91</description>
+  </parameter>
+  <parameter code="30074">
+    <description>Yttrium 91 metastable</description>
+  </parameter>
+  <parameter code="30075">
+    <description>Yttrium 92</description>
+  </parameter>
+  <parameter code="30076">
+    <description>Yttrium 93</description>
+  </parameter>
+  <parameter code="30077">
+    <description>Zirconium 89</description>
+  </parameter>
+  <parameter code="30078">
+    <description>Zirconium 93</description>
+  </parameter>
+  <parameter code="30079">
+    <description>Zirconium 95</description>
+  </parameter>
+  <parameter code="30080">
+    <description>Zirconium 97</description>
+  </parameter>
+  <parameter code="30081">
+    <description>Niobium 93 metastable</description>
+  </parameter>
+  <parameter code="30082">
+    <description>Niobium 94</description>
+  </parameter>
+  <parameter code="30083">
+    <description>Niobium 95</description>
+  </parameter>
+  <parameter code="30084">
+    <description>Niobium 95 metastable</description>
+  </parameter>
+  <parameter code="30085">
+    <description>Niobium 97</description>
+  </parameter>
+  <parameter code="30086">
+    <description>Niobium 97 metastable</description>
+  </parameter>
+  <parameter code="30087">
+    <description>Molybdenum 93</description>
+  </parameter>
+  <parameter code="30088">
+    <description>Molybdenum 99</description>
+  </parameter>
+  <parameter code="30089">
+    <description>Technetium 95 metastable</description>
+  </parameter>
+  <parameter code="30090">
+    <description>Technetium 96</description>
+  </parameter>
+  <parameter code="30091">
+    <description>Technetium 99</description>
+  </parameter>
+  <parameter code="30092">
+    <description>Technetium 99 metastable</description>
+  </parameter>
+  <parameter code="30093">
+    <description>Rhodium 99</description>
+  </parameter>
+  <parameter code="30094">
+    <description>Rhodium 101</description>
+  </parameter>
+  <parameter code="30095">
+    <description>Rhodium 102 metastable</description>
+  </parameter>
+  <parameter code="30096">
+    <description>Rhodium 103 metastable</description>
+  </parameter>
+  <parameter code="30097">
+    <description>Rhodium 105</description>
+  </parameter>
+  <parameter code="30098">
+    <description>Rhodium 106</description>
+  </parameter>
+  <parameter code="30099">
+    <description>Palladium 100</description>
+  </parameter>
+  <parameter code="30100">
+    <description>Palladium 103</description>
+  </parameter>
+  <parameter code="30101">
+    <description>Palladium 107</description>
+  </parameter>
+  <parameter code="30102">
+    <description>Ruthenium 103</description>
+  </parameter>
+  <parameter code="30103">
+    <description>Ruthenium 105</description>
+  </parameter>
+  <parameter code="30104">
+    <description>Ruthenium 106</description>
+  </parameter>
+  <parameter code="30105">
+    <description>Silver 108 metastable</description>
+  </parameter>
+  <parameter code="30106">
+    <description>Silver 110 metastable</description>
+  </parameter>
+  <parameter code="30107">
+    <description>Cadmium 109</description>
+  </parameter>
+  <parameter code="30108">
+    <description>Cadmium 113 metastable</description>
+  </parameter>
+  <parameter code="30109">
+    <description>Cadmium 115 metastable</description>
+  </parameter>
+  <parameter code="30110">
+    <description>Indium 114 metastable</description>
+  </parameter>
+  <parameter code="30111">
+    <description>Tin 113</description>
+  </parameter>
+  <parameter code="30112">
+    <description>Tin 119 metastable</description>
+  </parameter>
+  <parameter code="30113">
+    <description>Tin 121 metastable</description>
+  </parameter>
+  <parameter code="30114">
+    <description>Tin 122</description>
+  </parameter>
+  <parameter code="30115">
+    <description>Tin 123</description>
+  </parameter>
+  <parameter code="30116">
+    <description>Tin 126</description>
+  </parameter>
+  <parameter code="30117">
+    <description>Antimony 124</description>
+  </parameter>
+  <parameter code="30118">
+    <description>Antimony 125</description>
+  </parameter>
+  <parameter code="30119">
+    <description>Antimony 126</description>
+  </parameter>
+  <parameter code="30120">
+    <description>Antimony 127</description>
+  </parameter>
+  <parameter code="30121">
+    <description>Antimony 129</description>
+  </parameter>
+  <parameter code="30122">
+    <description>Tellurium 123 metastable</description>
+  </parameter>
+  <parameter code="30123">
+    <description>Tellurium 125 metastable</description>
+  </parameter>
+  <parameter code="30124">
+    <description>Tellurium 127</description>
+  </parameter>
+  <parameter code="30125">
+    <description>Tellurium 127 metastable</description>
+  </parameter>
+  <parameter code="30126">
+    <description>Tellurium 129</description>
+  </parameter>
+  <parameter code="30127">
+    <description>Tellurium 129 metastable</description>
+  </parameter>
+  <parameter code="30128">
+    <description>Tellurium 131 metastable</description>
+  </parameter>
+  <parameter code="30129">
+    <description>Tellurium 132</description>
+  </parameter>
+  <parameter code="30130">
+    <description>Iodine 123</description>
+  </parameter>
+  <parameter code="30131">
+    <description>Iodine 124</description>
+  </parameter>
+  <parameter code="30132">
+    <description>Iodine 125</description>
+  </parameter>
+  <parameter code="30133">
+    <description>Iodine 126</description>
+  </parameter>
+  <parameter code="30133">
+    <description>Iodine 126</description>
+  </parameter>
+  <parameter code="30134">
+    <description>Iodine 129</description>
+  </parameter>
+  <parameter code="30135">
+    <description>Iodine 129 elementary gaseous</description>
+  </parameter>
+  <parameter code="30136">
+    <description>Iodine 129 organic bonded</description>
+  </parameter>
+  <parameter code="30137">
+    <description>Iodine 131</description>
+  </parameter>
+  <parameter code="30138">
+    <description>Iodine 131 elementary gaseous</description>
+  </parameter>
+  <parameter code="30139">
+    <description>Iodine 131 organic bonded</description>
+  </parameter>
+  <parameter code="30140">
+    <description>Iodine 131 elementary gaseous and organic bonded</description>
+  </parameter>
+  <parameter code="30141">
+    <description>Iodine 131 aerosol</description>
+  </parameter>
+  <parameter code="30142">
+    <description>Iodine 132</description>
+  </parameter>
+  <parameter code="30143">
+    <description>Iodine 132 elementary gaseous</description>
+  </parameter>
+  <parameter code="30144">
+    <description>Iodine 132 organic bonded</description>
+  </parameter>
+  <parameter code="30145">
+    <description>Iodine 132 elementary gaseous and organic bonded</description>
+  </parameter>
+  <parameter code="30146">
+    <description>Iodine 132 aerosol</description>
+  </parameter>
+  <parameter code="30147">
+    <description>Iodine 133</description>
+  </parameter>
+  <parameter code="30148">
+    <description>Iodine 133 elementary gaseous</description>
+  </parameter>
+  <parameter code="30149">
+    <description>Iodine 133 organic bonded</description>
+  </parameter>
+  <parameter code="30150">
+    <description>Iodine 133 elementary gaseous and organic bonded</description>
+  </parameter>
+  <parameter code="30151">
+    <description>Iodine 133 aerosol</description>
+  </parameter>
+  <parameter code="30152">
+    <description>Iodine 134</description>
+  </parameter>
+  <parameter code="30153">
+    <description>Iodine 134 elementary gaseous</description>
+  </parameter>
+  <parameter code="30154">
+    <description>Iodine 134 organic bonded</description>
+  </parameter>
+  <parameter code="30155">
+    <description>Iodine 135</description>
+  </parameter>
+  <parameter code="30156">
+    <description>Iodine 135 elementary gaseous</description>
+  </parameter>
+  <parameter code="30157">
+    <description>Iodine 135 organic bonded</description>
+  </parameter>
+  <parameter code="30158">
+    <description>Iodine 135 elementary gaseous and organic bonded</description>
+  </parameter>
+  <parameter code="30159">
+    <description>Iodine 135 aerosol</description>
+  </parameter>
+  <parameter code="30160">
+    <description>Xenon 131 metastable</description>
+  </parameter>
+  <parameter code="30161">
+    <description>Xenon 133</description>
+  </parameter>
+  <parameter code="30162">
+    <description>Xenon 133 metastable</description>
+  </parameter>
+  <parameter code="30163">
+    <description>Xenon 135</description>
+  </parameter>
+  <parameter code="30164">
+    <description>Xenon 135 metastable</description>
+  </parameter>
+  <parameter code="30165">
+    <description>Xenon 137</description>
+  </parameter>
+  <parameter code="30166">
+    <description>Xenon 138</description>
+  </parameter>
+  <parameter code="30167">
+    <description>Xenon sum of all Xenon isotopes</description>
+  </parameter>
+  <parameter code="30168">
+    <description>Caesium 131</description>
+  </parameter>
+  <parameter code="30169">
+    <description>Caesium 134</description>
+  </parameter>
+  <parameter code="30170">
+    <description>Caesium 135</description>
+  </parameter>
+  <parameter code="30171">
+    <description>Caesium 136</description>
+  </parameter>
+  <parameter code="30172">
+    <description>Caesium 137</description>
+  </parameter>
+  <parameter code="30173">
+    <description>Barium 133</description>
+  </parameter>
+  <parameter code="30174">
+    <description>Barium 137 metastable</description>
+  </parameter>
+  <parameter code="30175">
+    <description>Barium 140</description>
+  </parameter>
+  <parameter code="30176">
+    <description>Cerium 139</description>
+  </parameter>
+  <parameter code="30177">
+    <description>Cerium 141</description>
+  </parameter>
+  <parameter code="30178">
+    <description>Cerium 143</description>
+  </parameter>
+  <parameter code="30179">
+    <description>Cerium 144</description>
+  </parameter>
+  <parameter code="30180">
+    <description>Lanthanum 140</description>
+  </parameter>
+  <parameter code="30181">
+    <description>Lanthanum 141</description>
+  </parameter>
+  <parameter code="30182">
+    <description>Praseodymium 143</description>
+  </parameter>
+  <parameter code="30183">
+    <description>Praseodymium 144</description>
+  </parameter>
+  <parameter code="30184">
+    <description>Praseodymium 144 metastable</description>
+  </parameter>
+  <parameter code="30185">
+    <description>Samarium 145</description>
+  </parameter>
+  <parameter code="30186">
+    <description>Samarium 147</description>
+  </parameter>
+  <parameter code="30187">
+    <description>Samarium 151</description>
+  </parameter>
+  <parameter code="30188">
+    <description>Neodymium 147</description>
+  </parameter>
+  <parameter code="30189">
+    <description>Promethium 146</description>
+  </parameter>
+  <parameter code="30190">
+    <description>Promethium 147</description>
+  </parameter>
+  <parameter code="30191">
+    <description>Promethium 151</description>
+  </parameter>
+  <parameter code="30192">
+    <description>Europium 152</description>
+  </parameter>
+  <parameter code="30193">
+    <description>Europium 154</description>
+  </parameter>
+  <parameter code="30194">
+    <description>Europium 155</description>
+  </parameter>
+  <parameter code="30195">
+    <description>Gadolinium 153</description>
+  </parameter>
+  <parameter code="30196">
+    <description>Terbium 160</description>
+  </parameter>
+  <parameter code="30197">
+    <description>Holmium 166 metastable</description>
+  </parameter>
+  <parameter code="30198">
+    <description>Thulium 170</description>
+  </parameter>
+  <parameter code="30199">
+    <description>Ytterbium 169</description>
+  </parameter>
+  <parameter code="30200">
+    <description>Hafnium 175</description>
+  </parameter>
+  <parameter code="30201">
+    <description>Hafnium 181</description>
+  </parameter>
+  <parameter code="30202">
+    <description>Tantalum 179</description>
+  </parameter>
+  <parameter code="30203">
+    <description>Tantalum 182</description>
+  </parameter>
+  <parameter code="30204">
+    <description>Rhenium 184</description>
+  </parameter>
+  <parameter code="30205">
+    <description>Iridium 192</description>
+  </parameter>
+  <parameter code="30206">
+    <description>Mercury 203</description>
+  </parameter>
+  <parameter code="30207">
+    <description>Thallium 204</description>
+  </parameter>
+  <parameter code="30208">
+    <description>Thallium 207</description>
+  </parameter>
+  <parameter code="30209">
+    <description>Thallium 208</description>
+  </parameter>
+  <parameter code="30210">
+    <description>Thallium 209</description>
+  </parameter>
+  <parameter code="30211">
+    <description>Bismuth 205</description>
+  </parameter>
+  <parameter code="30212">
+    <description>Bismuth 207</description>
+  </parameter>
+  <parameter code="30213">
+    <description>Bismuth 210</description>
+  </parameter>
+  <parameter code="30214">
+    <description>Bismuth 211</description>
+  </parameter>
+  <parameter code="30215">
+    <description>Bismuth 212</description>
+  </parameter>
+  <parameter code="30216">
+    <description>Bismuth 213</description>
+  </parameter>
+  <parameter code="30217">
+    <description>Bismuth 214</description>
+  </parameter>
+  <parameter code="30218">
+    <description>Polonium 208</description>
+  </parameter>
+  <parameter code="30219">
+    <description>Polonium 210</description>
+  </parameter>
+  <parameter code="30220">
+    <description>Polonium 212</description>
+  </parameter>
+  <parameter code="30221">
+    <description>Polonium 213</description>
+  </parameter>
+  <parameter code="30222">
+    <description>Polonium 214</description>
+  </parameter>
+  <parameter code="30223">
+    <description>Polonium 215</description>
+  </parameter>
+  <parameter code="30224">
+    <description>Polonium 216</description>
+  </parameter>
+  <parameter code="30225">
+    <description>Polonium 218</description>
+  </parameter>
+  <parameter code="30226">
+    <description>Lead 209</description>
+  </parameter>
+  <parameter code="30227">
+    <description>Lead 210</description>
+  </parameter>
+  <parameter code="30228">
+    <description>Lead 211</description>
+  </parameter>
+  <parameter code="30229">
+    <description>Lead 212</description>
+  </parameter>
+  <parameter code="30230">
+    <description>Lead 214</description>
+  </parameter>
+  <parameter code="30231">
+    <description>Astatine 217</description>
+  </parameter>
+  <parameter code="30232">
+    <description>Radon 219</description>
+  </parameter>
+  <parameter code="30233">
+    <description>Radon 220</description>
+  </parameter>
+  <parameter code="30234">
+    <description>Radon 222</description>
+  </parameter>
+  <parameter code="30235">
+    <description>Francium 221</description>
+  </parameter>
+  <parameter code="30236">
+    <description>Francium 223</description>
+  </parameter>
+  <parameter code="30237">
+    <description>Radium 223</description>
+  </parameter>
+  <parameter code="30238">
+    <description>Radium 224</description>
+  </parameter>
+  <parameter code="30239">
+    <description>Radium 225</description>
+  </parameter>
+  <parameter code="30240">
+    <description>Radium 226</description>
+  </parameter>
+  <parameter code="30241">
+    <description>Radium 228</description>
+  </parameter>
+  <parameter code="30242">
+    <description>Actinium 225</description>
+  </parameter>
+  <parameter code="30243">
+    <description>Actinium 227</description>
+  </parameter>
+  <parameter code="30244">
+    <description>Actinium 228</description>
+  </parameter>
+  <parameter code="30245">
+    <description>Thorium 227</description>
+  </parameter>
+  <parameter code="30246">
+    <description>Thorium 228</description>
+  </parameter>
+  <parameter code="30247">
+    <description>Thorium 229</description>
+  </parameter>
+  <parameter code="30248">
+    <description>Thorium 230</description>
+  </parameter>
+  <parameter code="30249">
+    <description>Thorium 231</description>
+  </parameter>
+  <parameter code="30250">
+    <description>Thorium 232</description>
+  </parameter>
+  <parameter code="30251">
+    <description>Thorium 234</description>
+  </parameter>
+  <parameter code="30252">
+    <description>Protactinium 231</description>
+  </parameter>
+  <parameter code="30253">
+    <description>Protactinium 233</description>
+  </parameter>
+  <parameter code="30254">
+    <description>Protactinium 234 metastable</description>
+  </parameter>
+  <parameter code="30254">
+    <description>Protactinium 234 metastable</description>
+  </parameter>
+  <parameter code="30255">
+    <description>Uranium 232</description>
+  </parameter>
+  <parameter code="30256">
+    <description>Uranium 233</description>
+  </parameter>
+  <parameter code="30257">
+    <description>Uranium 234</description>
+  </parameter>
+  <parameter code="30258">
+    <description>Uranium 235</description>
+  </parameter>
+  <parameter code="30259">
+    <description>Uranium 236</description>
+  </parameter>
+  <parameter code="30260">
+    <description>Uranium 237</description>
+  </parameter>
+  <parameter code="30261">
+    <description>Uranium 238</description>
+  </parameter>
+  <parameter code="30262">
+    <description>Plutonium 236</description>
+  </parameter>
+  <parameter code="30263">
+    <description>Plutonium 238</description>
+  </parameter>
+  <parameter code="30264">
+    <description>Plutonium 239</description>
+  </parameter>
+  <parameter code="30265">
+    <description>Plutonium 240</description>
+  </parameter>
+  <parameter code="30266">
+    <description>Plutonium 241</description>
+  </parameter>
+  <parameter code="30267">
+    <description>Plutonium 242</description>
+  </parameter>
+  <parameter code="30268">
+    <description>Plutonium 244</description>
+  </parameter>
+  <parameter code="30269">
+    <description>Neptunium 237</description>
+  </parameter>
+  <parameter code="30270">
+    <description>Neptunium 238</description>
+  </parameter>
+  <parameter code="30271">
+    <description>Neptunium 239</description>
+  </parameter>
+  <parameter code="30272">
+    <description>Americium 241</description>
+  </parameter>
+  <parameter code="30273">
+    <description>Americium 242</description>
+  </parameter>
+  <parameter code="30274">
+    <description>Americium 242 metastable</description>
+  </parameter>
+  <parameter code="30275">
+    <description>Americium 243</description>
+  </parameter>
+  <parameter code="30276">
+    <description>Curium 242</description>
+  </parameter>
+  <parameter code="30277">
+    <description>Curium 243</description>
+  </parameter>
+  <parameter code="30278">
+    <description>Curium 244</description>
+  </parameter>
+  <parameter code="30279">
+    <description>Curium 245</description>
+  </parameter>
+  <parameter code="30280">
+    <description>Curium 246</description>
+  </parameter>
+  <parameter code="30281">
+    <description>Curium 247</description>
+  </parameter>
+  <parameter code="30282">
+    <description>Curium 248</description>
+  </parameter>
+  <parameter code="30283">
+    <description>Curium 243/244</description>
+  </parameter>
+  <parameter code="30284">
+    <description>Plutonium 238/Americium 241</description>
+  </parameter>
+  <parameter code="30285">
+    <description>Plutonium 239/240</description>
+  </parameter>
+  <parameter code="30286">
+    <description>Berkelium 249</description>
+  </parameter>
+  <parameter code="30287">
+    <description>Californium 249</description>
+  </parameter>
+  <parameter code="30288">
+    <description>Californium 250</description>
+  </parameter>
+  <parameter code="30289">
+    <description>Californium 252</description>
+  </parameter>
+  <parameter code="30290">
+    <description>Sum Aerosol Particulates</description>
+  </parameter>
+  <parameter code="30291">
+    <description>Sum Iodine</description>
+  </parameter>
+  <parameter code="30292">
+    <description>Sum Noble Gas</description>
+  </parameter>
+  <parameter code="30293">
+    <description>Activation Gas</description>
+  </parameter>
+  <parameter code="30294">
+    <description>Cs-137 Equivalent</description>
+  </parameter>
+  <parameter code="30295">
+    <description>Carbon-13</description>
+  </parameter>
+  <parameter code="30296">
+    <description>Lead</description>
+  </parameter>
+  <parameter code="30297">
+    <description>Tellurium 131</description>
+  </parameter>
+  <parameter code="30298">
+    <description>Neodymium 137</description>
+  </parameter>
+  <parameter code="30299">
+    <description>Pseudo Radionuclide</description>
+  </parameter>
+  <parameter code="30300">
+    <description>Silver 112</description>
+  </parameter>
+  <parameter code="30301">
+    <description>Silver 115</description>
+  </parameter>
+  <parameter code="30302">
+    <description>Barium 139</description>
+  </parameter>
+  <parameter code="30303">
+    <description>Barium 141</description>
+  </parameter>
+  <parameter code="30304">
+    <description>Barium 142</description>
+  </parameter>
+  <parameter code="30305">
+    <description>Bromine 84</description>
+  </parameter>
+  <parameter code="30306">
+    <description>Cadmium 115</description>
+  </parameter>
+  <parameter code="30307">
+    <description>Cadmium 117</description>
+  </parameter>
+  <parameter code="30308">
+    <description>Cadmium 117 metastable</description>
+  </parameter>
+  <parameter code="30309">
+    <description>Cerium 145</description>
+  </parameter>
+  <parameter code="30310">
+    <description>Cerium 146</description>
+  </parameter>
+  <parameter code="30311">
+    <description>Cobalt 58 metastable</description>
+  </parameter>
+  <parameter code="30312">
+    <description>Caesium 138</description>
+  </parameter>
+  <parameter code="30313">
+    <description>Caesium 139</description>
+  </parameter>
+  <parameter code="30314">
+    <description>Iodine 130 Aerosol</description>
+  </parameter>
+  <parameter code="30315">
+    <description>Iodine 130 Elementary Gaseous</description>
+  </parameter>
+  <parameter code="30316">
+    <description>Iodine 130 Organic Bonded</description>
+  </parameter>
+  <parameter code="30317">
+    <description>Iodine 132 Metastable</description>
+  </parameter>
+  <parameter code="30318">
+    <description>Iodine 134 Metastable</description>
+  </parameter>
+  <parameter code="30319">
+    <description>Indium 115 Metastable</description>
+  </parameter>
+  <parameter code="30320">
+    <description>Indium 117 Metastable</description>
+  </parameter>
+  <parameter code="30321">
+    <description>Krypton 83 Metastable</description>
+  </parameter>
+  <parameter code="30322">
+    <description>Lanthanum 142</description>
+  </parameter>
+  <parameter code="30323">
+    <description>Lanthanum 143</description>
+  </parameter>
+  <parameter code="30324">
+    <description>Manganese 56</description>
+  </parameter>
+  <parameter code="30325">
+    <description>Molybdenum 101</description>
+  </parameter>
+  <parameter code="30326">
+    <description>Molybdenum 102</description>
+  </parameter>
+  <parameter code="30327">
+    <description>Neodymium 149</description>
+  </parameter>
+  <parameter code="30328">
+    <description>Neodymium 151</description>
+  </parameter>
+  <parameter code="30329">
+    <description>Palladium 109</description>
+  </parameter>
+  <parameter code="30330">
+    <description>Palladium 112</description>
+  </parameter>
+  <parameter code="30331">
+    <description>Praseodymium 145</description>
+  </parameter>
+  <parameter code="30332">
+    <description>Praseodymium 146</description>
+  </parameter>
+  <parameter code="30333">
+    <description>Praseodymium 147</description>
+  </parameter>
+  <parameter code="30334">
+    <description>Rubidium 89</description>
+  </parameter>
+  <parameter code="30335">
+    <description>Rubidium 90</description>
+  </parameter>
+  <parameter code="30336">
+    <description>Rubidium 90 metastable</description>
+  </parameter>
+  <parameter code="30337">
+    <description>Rhodium 105 metastable</description>
+  </parameter>
+  <parameter code="30338">
+    <description>Rhodium 107</description>
+  </parameter>
+  <parameter code="30339">
+    <description>Antimony 128</description>
+  </parameter>
+  <parameter code="30340">
+    <description>Antimony 128 metastable</description>
+  </parameter>
+  <parameter code="30341">
+    <description>Antimony 129 metastable</description>
+  </parameter>
+  <parameter code="30342">
+    <description>Antimony 130</description>
+  </parameter>
+  <parameter code="30343">
+    <description>Antimony 130 metastable</description>
+  </parameter>
+  <parameter code="30344">
+    <description>Antimony 131</description>
+  </parameter>
+  <parameter code="30345">
+    <description>Antimony 132</description>
+  </parameter>
+  <parameter code="30346">
+    <description>Antimony 132 metastable</description>
+  </parameter>
+  <parameter code="30347">
+    <description>Antimony 133</description>
+  </parameter>
+  <parameter code="30348">
+    <description>Selenium 83</description>
+  </parameter>
+  <parameter code="30349">
+    <description>Tin 127</description>
+  </parameter>
+  <parameter code="30350">
+    <description>Tin 127 metastable</description>
+  </parameter>
+  <parameter code="30351">
+    <description>Tin 128</description>
+  </parameter>
+  <parameter code="30352">
+    <description>Tin 129 metastable</description>
+  </parameter>
+  <parameter code="30353">
+    <description>Tin 130</description>
+  </parameter>
+  <parameter code="30354">
+    <description>Strontium 93</description>
+  </parameter>
+  <parameter code="30355">
+    <description>Technetium 101</description>
+  </parameter>
+  <parameter code="30356">
+    <description>Technetium 102</description>
+  </parameter>
+  <parameter code="30357">
+    <description>Technetium 104</description>
+  </parameter>
+  <parameter code="30358">
+    <description>Technetium 105</description>
+  </parameter>
+  <parameter code="30359">
+    <description>Tellurium 133</description>
+  </parameter>
+  <parameter code="30360">
+    <description>Tellurium 133 metastable</description>
+  </parameter>
+  <parameter code="30361">
+    <description>Tellurium 134</description>
+  </parameter>
+  <parameter code="30362">
+    <description>Yttrium 93 metastable</description>
+  </parameter>
+  <parameter code="30363">
+    <description>Yttrium 94</description>
+  </parameter>
+  <parameter code="30364">
+    <description>Yttrium 95</description>
+  </parameter>
+  <parameter code="30365">
+    <description>Zirconium 96</description>
+  </parameter>
+  <parameter code="30366">
+    <description>Indium 117</description>
+  </parameter>
+  <parameter code="30367">
+    <description>Lead 203</description>
+  </parameter>
+  <parameter code="30368">
+    <description>Sodium 24</description>
+  </parameter>
+  <parameter code="30369">
+    <description>Ruthenium 107</description>
+  </parameter>
+  <parameter code="30370">
+    <description>Uranium 239</description>
+  </parameter>
+  <parameter code="40000">
+    <description>Singlet  Oxygen (Dioxygen ( Singlet))</description>
+  </parameter>
+  <parameter code="40001">
+    <description>Singlet  Oxygen (Dioxygen ( Singlet))</description>
+  </parameter>
+  <parameter code="40002">
+    <description>Singlet Excited Oxygen Atom</description>
+  </parameter>
+  <parameter code="40003">
+    <description>Triplet Ground State Oxygen Atom</description>
+  </parameter>
+  <parameter code="60000">
+    <description>HOx Radical (OH+HO2)</description>
+  </parameter>
+  <parameter code="60001">
+    <description>Total Inorganic and Organic Peroxy Radicals (HO2+RO2)</description>
+  </parameter>
+  <parameter code="60002">
+    <description>Passive Ozone</description>
+  </parameter>
+  <parameter code="60003">
+    <description>NOx Expressed As Nitrogen</description>
+  </parameter>
+  <parameter code="60004">
+    <description>All Nitrogen Oxides (NOy) Expressed As Nitrogen</description>
+  </parameter>
+  <parameter code="60005">
+    <description>Total Inorganic Chlorine</description>
+  </parameter>
+  <parameter code="60006">
+    <description>Total Inorganic Bromine</description>
+  </parameter>
+  <parameter code="60007">
+    <description>Total Inorganic Chlorine Except HCl, ClONO2: ClOx</description>
+  </parameter>
+  <parameter code="60008">
+    <description>Total Inorganic Bromine Except HBr, BrONO2:BrOx</description>
+  </parameter>
+  <parameter code="60009">
+    <description>Lumped Alkanes</description>
+  </parameter>
+  <parameter code="60010">
+    <description>Lumped Alkenes</description>
+  </parameter>
+  <parameter code="60011">
+    <description>Lumped Aromatic Coumpounds</description>
+  </parameter>
+  <parameter code="60012">
+    <description>Lumped Terpenes</description>
+  </parameter>
+  <parameter code="60013">
+    <description>Non-Methane Volatile Organic Compounds Expressed as Carbon</description>
+  </parameter>
+  <parameter code="60014">
+    <description>Anthropogenic Non-Methane Volatile Organic Compounds Expressed as Carbon</description>
+  </parameter>
+  <parameter code="60015">
+    <description>Biogenic Non-Methane Volatile Organic Compounds Expressed as Carbon</description>
+  </parameter>
+  <parameter code="60016">
+    <description>Lumped Oxygenated Hydrocarbons</description>
+  </parameter>
+  <parameter code="60017">
+    <description>NOx Expressed as Nirtogen Dioxide (NO2)</description>
+  </parameter>
+  <parameter code="60018">
+    <description>Organic Aldehydes</description>
+  </parameter>
+  <parameter code="60019">
+    <description>Organic Peroxides</description>
+  </parameter>
+  <parameter code="60020">
+    <description>Organic Nitrates</description>
+  </parameter>
+  <parameter code="60021">
+    <description>Ethers</description>
+  </parameter>
+  <parameter code="60022">
+    <description>Amines</description>
+  </parameter>
+  <parameter code="60023">
+    <description>Ketones</description>
+  </parameter>
+  <parameter code="60024">
+    <description>Dicarbonyls Unsaturated</description>
+  </parameter>
+  <parameter code="60025">
+    <description>Hydroxy Dicarbonyls Unsaturated</description>
+  </parameter>
+  <parameter code="60026">
+    <description>Hydroxy Ketones</description>
+  </parameter>
+  <parameter code="60027">
+    <description>Oxides</description>
+  </parameter>
+  <parameter code="60028">
+    <description>Peroxyacyl Nitrates</description>
+  </parameter>
+  <parameter code="60029">
+    <description>Aromatic Peroxide Radical (Aryl Dioxydanyl Radicals)</description>
+  </parameter>
+  <parameter code="60030">
+    <description>Biogenic Secondary Organic Compound</description>
+  </parameter>
+  <parameter code="60031">
+    <description>Anthropogenic Secondary Organic Compound</description>
+  </parameter>
+  <parameter code="60032">
+    <description>All Hydroxy-Peroxides Products of the Reaction of Hydroxy-Isoprene Adducts with O2</description>
+  </parameter>
+  <parameter code="60033">
+    <description>Anthropogenic Volatile Organic Compounds</description>
+  </parameter>
+  <parameter code="60034">
+    <description>Biomass Burning Volatile Organic Compounds</description>
+  </parameter>
+  <parameter code="60035">
+    <description>Gaseous Molecules</description>
+  </parameter>
+  <parameter code="62000">
+    <description>Total Aerosol</description>
+  </parameter>
+  <parameter code="62001">
+    <description>Dust Dry</description>
+  </parameter>
+  <parameter code="62002">
+    <description>Water in Ambient</description>
+  </parameter>
+  <parameter code="62003">
+    <description>Ammonium Dry</description>
+  </parameter>
+  <parameter code="62004">
+    <description>Nitrate Dry</description>
+  </parameter>
+  <parameter code="62005">
+    <description>Nitric Acid Trihydrate</description>
+  </parameter>
+  <parameter code="62006">
+    <description>Sulfate Dry</description>
+  </parameter>
+  <parameter code="62007">
+    <description>Mercury Dry</description>
+  </parameter>
+  <parameter code="62008">
+    <description>Sea Salt Dry</description>
+  </parameter>
+  <parameter code="62009">
+    <description>Black Carbon Dry</description>
+  </parameter>
+  <parameter code="62010">
+    <description>Particulate Organic Matter Dry</description>
+  </parameter>
+  <parameter code="62011">
+    <description>Primary Particulate Organic Matter Dry</description>
+  </parameter>
+  <parameter code="62012">
+    <description>Secondary Particulate Organic Matter Dry</description>
+  </parameter>
+  <parameter code="62013">
+    <description>Black Carbon Hydrophilic Dry</description>
+  </parameter>
+  <parameter code="62014">
+    <description>Black Carbon Hydrophobic Dry</description>
+  </parameter>
+  <parameter code="62015">
+    <description>Particulate Organic Matter Hydrophilic Dry</description>
+  </parameter>
+  <parameter code="62016">
+    <description>Particulate Organic Matter Hydrophobic Dry</description>
+  </parameter>
+  <parameter code="62017">
+    <description>Nitrate Hydrophilic Dry</description>
+  </parameter>
+  <parameter code="62018">
+    <description>Nitrate Hydrophobic Dry</description>
+  </parameter>
+  <parameter code="62020">
+    <description>Smoke - High Absorption</description>
+  </parameter>
+  <parameter code="62021">
+    <description>Smoke - Low Absorption</description>
+  </parameter>
+  <parameter code="62022">
+    <description>Aerosol - High Absorption</description>
+  </parameter>
+  <parameter code="62023">
+    <description>Aerosol - High Absorption</description>
+  </parameter>
+  <parameter code="62025">
+    <description>Volcanic Ash</description>
+  </parameter>
+  <parameter code="62026">
+    <description>Particulate Matter (PM)</description>
+  </parameter>
+  <parameter code="62028">
+    <description>Total Aerosol Hydrophilic</description>
+  </parameter>
+  <parameter code="62029">
+    <description>Total Aerosol Hydrophobic</description>
+  </parameter>
+  <parameter code="62030">
+    <description>Primary Particulate Inorganic Matter Dry</description>
+  </parameter>
+  <parameter code="62031">
+    <description>Secondary Particulate Inorganic Matter Dry</description>
+  </parameter>
+  <parameter code="62032">
+    <description>Biogenic Secondary Organic Aerosol</description>
+  </parameter>
+  <parameter code="62033">
+    <description>Anthropogenic Secondary Organic Aerosol</description>
+  </parameter>
+  <parameter code="62034">
+    <description>Rain Water</description>
+  </parameter>
+  <parameter code="62035">
+    <description>Cloud Water</description>
+  </parameter>
+  <parameter code="62036">
+    <description>Brown Carbon Dry</description>
+  </parameter>
+  <parameter code="62037">
+    <description>Sea Salt Wet at 80% Relative Humidity</description>
+  </parameter>
+  <parameter code="62100">
+    <description>Alnus (Alder) Pollen</description>
+  </parameter>
+  <parameter code="62101">
+    <description>Betula (Birch) Pollen</description>
+  </parameter>
+  <parameter code="62102">
+    <description>Castanea (Chestnut) Pollen</description>
+  </parameter>
+  <parameter code="62103">
+    <description>Carpinus (Hornbeam) Pollen</description>
+  </parameter>
+  <parameter code="62104">
+    <description>Corylus (Hazel) Pollen</description>
+  </parameter>
+  <parameter code="62105">
+    <description>Fagus (Beech) Pollen</description>
+  </parameter>
+  <parameter code="62106">
+    <description>Fraxinus (Ash) Pollen</description>
+  </parameter>
+  <parameter code="62107">
+    <description>Pinus (Pine) Pollen</description>
+  </parameter>
+  <parameter code="62108">
+    <description>Platanus (Plane) Pollen</description>
+  </parameter>
+  <parameter code="62109">
+    <description>Populus (Cottonwood, Poplar) Pollen</description>
+  </parameter>
+  <parameter code="62110">
+    <description>Quercus (Oak) Pollen</description>
+  </parameter>
+  <parameter code="62111">
+    <description>Salix (Willow) Pollen</description>
+  </parameter>
+  <parameter code="62112">
+    <description>Taxus (Yew) Pollen</description>
+  </parameter>
+  <parameter code="62113">
+    <description>Tilia (Lime, Linden) Pollen</description>
+  </parameter>
+  <parameter code="62114">
+    <description>Ulmus (Elm) Pollen</description>
+  </parameter>
+  <parameter code="62115">
+    <description>Olea (Olive) Pollen</description>
+  </parameter>
+  <parameter code="62200">
+    <description>Ambrosia (Ragweed, Burr-Ragweed) Pollen</description>
+  </parameter>
+  <parameter code="62201">
+    <description>Artemisia (Sagebrush, Wormwood, Mugwort) Pollen</description>
+  </parameter>
+  <parameter code="62201">
+    <description>Artemisia (Sagebrush, Wormwood, Mugwort) Pollen</description>
+  </parameter>
+  <parameter code="62202">
+    <description>Brassica (Rape, Broccoli, Brussel Sprouts, Cabbage, Cauliflower, Collards, Kale, Kohlrabi, Mustard, Rutabaga) Pollen</description>
+  </parameter>
+  <parameter code="62203">
+    <description>Plantago (Plantain) Pollen</description>
+  </parameter>
+  <parameter code="62204">
+    <description>Rumex (Dock, Sorrel) Pollen</description>
+  </parameter>
+  <parameter code="62205">
+    <description>Urtica (Nettle) Pollen</description>
+  </parameter>
+  <parameter code="62298">
+    <description>Lumped Pollen</description>
+  </parameter>
+  <parameter code="62299">
+    <description>Lumped Fungal Spores</description>
+  </parameter>
+  <parameter code="62300">
+    <description>Poaceae (Grass Family) Pollen</description>
+  </parameter>
+  <parameter code="62400">
+    <description>Calcite</description>
+  </parameter>
+  <parameter code="62401">
+    <description>Chlorite</description>
+  </parameter>
+  <parameter code="62402">
+    <description>Dolomite</description>
+  </parameter>
+  <parameter code="62403">
+    <description>Feldspar</description>
+  </parameter>
+  <parameter code="62404">
+    <description>Goethite</description>
+  </parameter>
+  <parameter code="62405">
+    <description>Gypsum</description>
+  </parameter>
+  <parameter code="62406">
+    <description>Hematite</description>
+  </parameter>
+  <parameter code="62407">
+    <description>Illite</description>
+  </parameter>
+  <parameter code="62408">
+    <description>Kaolinite</description>
+  </parameter>
+  <parameter code="62409">
+    <description>Montmorillonite</description>
+  </parameter>
+  <parameter code="62410">
+    <description>Quartz</description>
+  </parameter>
+  <parameter code="62411">
+    <description>Vermiculite</description>
+  </parameter>
+  <parameter code="65535">
+    <description>Missing</description>
+  </parameter>
+</codeTable>

@@ -1,0 +1,306 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<parameterMap>
+  <table>Table4.2.20.4</table>
+  <title>Meteorological and Hydrological Hazard Indices</title>
+  <source>https://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_doc/grib2_table4-2-20-4.shtml</source>
+  <parameter code="1">
+    <shortName>DBURSTHI</shortName>
+    <description>Downburst</description>
+    <units>See Table 4.253</units>
+  </parameter>
+  <parameter code="2">
+    <shortName>LTNGHI</shortName>
+    <description>Lightning (Electrical Storm)</description>
+    <units>See Table 4.253</units>
+  </parameter>
+  <parameter code="3">
+    <shortName>TSTMHI</shortName>
+    <description>Thunderstorm</description>
+    <units>See Table 4.253</units>
+  </parameter>
+  <parameter code="4">
+    <shortName>COASTFLDHI</shortName>
+    <description>Coastal Flood</description>
+    <units>See Table 4.253</units>
+  </parameter>
+  <parameter code="5">
+    <shortName>ESTFLDHI</shortName>
+    <description>Estuarine (Coastal) Flood</description>
+    <units>See Table 4.253</units>
+  </parameter>
+  <parameter code="6">
+    <shortName>FFLDHI</shortName>
+    <description>Flash Flood</description>
+    <units>See Table 4.253</units>
+  </parameter>
+  <parameter code="7">
+    <shortName>FLUVFLDHI</shortName>
+    <description>Fluvial (Riverine) Flood</description>
+    <units>See Table 4.253</units>
+  </parameter>
+  <parameter code="8">
+    <shortName>GFLDHI</shortName>
+    <description>Groundwater Flood</description>
+    <units>See Table 4.253</units>
+  </parameter>
+  <parameter code="9">
+    <shortName>IJFLDHI</shortName>
+    <description>Ice-Jam Flood Including Debris</description>
+    <units>See Table 4.253</units>
+  </parameter>
+  <parameter code="10">
+    <shortName>PFLDHI</shortName>
+    <description>Ponding (Drainage) Flood</description>
+    <units>See Table 4.253</units>
+  </parameter>
+  <parameter code="11">
+    <shortName>SMFLDHI</shortName>
+    <description>Snowmelt Flood</description>
+    <units>See Table 4.253</units>
+  </parameter>
+  <parameter code="12">
+    <shortName>SWFLDHI</shortName>
+    <description>Surface Water Flooding</description>
+    <units>See Table 4.253</units>
+  </parameter>
+  <parameter code="13">
+    <shortName>GLOFLDHI</shortName>
+    <description>Glacial Lake Outburst Flood</description>
+    <units>See Table 4.253</units>
+  </parameter>
+  <parameter code="14">
+    <shortName>BCHI</shortName>
+    <description>Black Carbon (Brown Clouds)</description>
+    <units>See Table 4.253</units>
+  </parameter>
+  <parameter code="15">
+    <shortName>DSTMHI</shortName>
+    <description>Dust Storm or Sandstorm</description>
+    <units>See Table 4.253</units>
+  </parameter>
+  <parameter code="16">
+    <shortName>FOGHI</shortName>
+    <description>Fog</description>
+    <units>See Table 4.253</units>
+  </parameter>
+  <parameter code="17">
+    <shortName>HZHI</shortName>
+    <description>Haze</description>
+    <units>See Table 4.253</units>
+  </parameter>
+  <parameter code="18">
+    <shortName>POLAIRHI</shortName>
+    <description>Polluted Air</description>
+    <units>See Table 4.253</units>
+  </parameter>
+  <parameter code="19">
+    <shortName>SAHZHI</shortName>
+    <description>Sand Haze</description>
+    <units>See Table 4.253</units>
+  </parameter>
+  <parameter code="20">
+    <shortName>SMOKEHI</shortName>
+    <description>Smoke</description>
+    <units>See Table 4.253</units>
+  </parameter>
+  <parameter code="21">
+    <shortName>OAHI</shortName>
+    <description>Ocean Acidification</description>
+    <units>See Table 4.253</units>
+  </parameter>
+  <parameter code="22">
+    <shortName>RWAVEHI</shortName>
+    <description>Rogue Wave</description>
+    <units>See Table 4.253</units>
+  </parameter>
+  <parameter code="23">
+    <shortName>SWIHI</shortName>
+    <description>Sea Water Intrusion</description>
+    <units>See Table 4.253</units>
+  </parameter>
+  <parameter code="24">
+    <shortName>SICEHI</shortName>
+    <description>Sea Ice (Icebergs)</description>
+    <units>See Table 4.253</units>
+  </parameter>
+  <parameter code="25">
+    <shortName>ICEFLOWHI</shortName>
+    <description>Ice Flow</description>
+    <units>See Table 4.253</units>
+  </parameter>
+  <parameter code="26">
+    <shortName>SEICHEHI</shortName>
+    <description>Seiche</description>
+    <units>See Table 4.253</units>
+  </parameter>
+  <parameter code="27">
+    <shortName>SURGEHI</shortName>
+    <description>Storm Surge</description>
+    <units>See Table 4.253</units>
+  </parameter>
+  <parameter code="28">
+    <shortName>STMTIDEHI</shortName>
+    <description>Storm Tides</description>
+    <units>See Table 4.253</units>
+  </parameter>
+  <parameter code="29">
+    <shortName>TSUNAMIHI</shortName>
+    <description>Tsunami</description>
+    <units>See Table 4.253</units>
+  </parameter>
+  <parameter code="30">
+    <shortName>DEPRESHI</shortName>
+    <description>Depression or Cyclone (Low Pressure Area) (Pressure-Related)</description>
+    <units>See Table 4.253</units>
+  </parameter>
+  <parameter code="31">
+    <shortName>ECPRESHI</shortName>
+    <description>Extra-Tropical Cyclone (Pressure-Related)</description>
+    <units>See Table 4.253</units>
+  </parameter>
+  <parameter code="32">
+    <shortName>SUBTCPRESHI</shortName>
+    <description>Sub-Tropical Cyclone (Pressure-Related)</description>
+    <units>See Table 4.253</units>
+  </parameter>
+  <parameter code="33">
+    <shortName>ACIDRAINHI</shortName>
+    <description>Acid Rain</description>
+    <units>See Table 4.253</units>
+  </parameter>
+  <parameter code="34">
+    <shortName>BLIZHI</shortName>
+    <description>Blizzard</description>
+    <units>See Table 4.253</units>
+  </parameter>
+  <parameter code="35">
+    <shortName>DRTHI</shortName>
+    <description>Drought</description>
+    <units>See Table 4.253</units>
+  </parameter>
+  <parameter code="36">
+    <shortName>HAILHI</shortName>
+    <description>Hail</description>
+    <units>See Table 4.253</units>
+  </parameter>
+  <parameter code="37">
+    <shortName>ICESTMHI</shortName>
+    <description>Ice Storm</description>
+    <units>See Table 4.253</units>
+  </parameter>
+  <parameter code="38">
+    <shortName>SNOWHI</shortName>
+    <description>Snow</description>
+    <units>See Table 4.253</units>
+  </parameter>
+  <parameter code="39">
+    <shortName>SNOWSTMHI</shortName>
+    <description>Snowstorm</description>
+    <units>See Table 4.253</units>
+  </parameter>
+  <parameter code="40">
+    <shortName>CWAVEHI</shortName>
+    <description>Cold Wave</description>
+    <units>See Table 4.253</units>
+  </parameter>
+  <parameter code="41">
+    <shortName>DZUDHI</shortName>
+    <description>Dzud</description>
+    <units>See Table 4.253</units>
+  </parameter>
+  <parameter code="42">
+    <shortName>FRZHI</shortName>
+    <description>Freeze</description>
+    <units>See Table 4.253</units>
+  </parameter>
+  <parameter code="43">
+    <shortName>FROSTHI</shortName>
+    <description>Frost (Hoar Frost)</description>
+    <units>See Table 4.253</units>
+  </parameter>
+  <parameter code="44">
+    <shortName>FRZRHI</shortName>
+    <description>Freezing Rain (Supercooled Rain)</description>
+    <units>See Table 4.253</units>
+  </parameter>
+  <parameter code="45">
+    <shortName>GLAZEHI</shortName>
+    <description>Glaze</description>
+    <units>See Table 4.253</units>
+  </parameter>
+  <parameter code="46">
+    <shortName>GFROSTHI</shortName>
+    <description>Ground Frost</description>
+    <units>See Table 4.253</units>
+  </parameter>
+  <parameter code="47">
+    <shortName>HWAVEHI</shortName>
+    <description>Heatwave</description>
+    <units>See Table 4.253</units>
+  </parameter>
+  <parameter code="48">
+    <shortName>ICINGHI</shortName>
+    <description>Icing (including Ice)</description>
+    <units>See Table 4.253</units>
+  </parameter>
+  <parameter code="49">
+    <shortName>THAWHI</shortName>
+    <description>Thaw</description>
+    <units>See Table 4.253</units>
+  </parameter>
+  <parameter code="50">
+    <shortName>AVALHI</shortName>
+    <description>Avalanche</description>
+    <units>See Table 4.253</units>
+  </parameter>
+  <parameter code="51">
+    <shortName>MUDFLOWHI</shortName>
+    <description>Mud Flow</description>
+    <units>See Table 4.253</units>
+  </parameter>
+  <parameter code="52">
+    <shortName>RSLIDEHI</shortName>
+    <description>Rock Slide</description>
+    <units>See Table 4.253</units>
+  </parameter>
+  <parameter code="53">
+    <shortName>DERECHOHI</shortName>
+    <description>Derecho</description>
+    <units>See Table 4.253</units>
+  </parameter>
+  <parameter code="54">
+    <shortName>GALEHI</shortName>
+    <description>Gale (Strong Gale)</description>
+    <units>See Table 4.253</units>
+  </parameter>
+  <parameter code="55">
+    <shortName>SQLNHI</shortName>
+    <description>Squall</description>
+    <units>See Table 4.253</units>
+  </parameter>
+  <parameter code="56">
+    <shortName>SSTMHI</shortName>
+    <description>Subtropical Storm</description>
+    <units>See Table 4.253</units>
+  </parameter>
+  <parameter code="57">
+    <shortName>TCWINDHI</shortName>
+    <description>Tropical Cyclone (Cyclonic Wind, Rain [Storm] Surge) (Wind-Related)</description>
+    <units>See Table 4.253</units>
+  </parameter>
+  <parameter code="58">
+    <shortName>TSWINDHI</shortName>
+    <description>Tropical Storm (Wind-Related)</description>
+    <units>See Table 4.253</units>
+  </parameter>
+  <parameter code="59">
+    <shortName>TORHI</shortName>
+    <description>Tornado</description>
+    <units>See Table 4.253</units>
+  </parameter>
+  <parameter code="60">
+    <shortName>WINDHI</shortName>
+    <description>Wind</description>
+    <units>See Table 4.253</units>
+  </parameter>
+</parameterMap>

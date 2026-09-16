@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<codeTable>
+  <table>Table 4.101</table>
+  <title>Type of Relationship to Reference Dataset</title>
+  <source>https://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_doc/grib2_table4-101.shtml</source>
+  <parameter code="0">
+    <description>Anomaly (see Note 1)</description>
+  </parameter>
+  <parameter code="1">
+    <description>Standardized Anomaly (see Note 1)</description>
+  </parameter>
+  <parameter code="2">
+    <description>Significance (Wilcoxon-Mann-Whitney) (see Note 2)</description>
+  </parameter>
+  <parameter code="3">
+    <description>Climatology</description>
+  </parameter>
+  <parameter code="20">
+    <description>Extreme Forecast Index (EFI) (see Note 3)</description>
+  </parameter>
+  <parameter code="21">
+    <description>Shift of Tails (SOT) (see Note 4)</description>
+  </parameter>
+  <parameter code="22">
+    <description>Anomaly of Probabilities (see Note 5)</description>
+  </parameter>
+  <parameter code="23">
+    <description>Standardized Drought Index (see Note 6)</description>
+  </parameter>
+  <parameter code="24">
+    <description>Crossing Point Forecast (CPF) (see Note 7)</description>
+  </parameter>
+  <parameter code="255">
+    <description>Missing</description>
+  </parameter>
+</codeTable>

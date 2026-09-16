@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<parameterMap>
+  <table>Table4.2.4.10</table>
+  <title>Space Weather Indices</title>
+  <source>https://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_doc/grib2_table4-2-4-10.shtml</source>
+  <parameter code="0">
+    <shortName>SCINIDX</shortName>
+    <description>Scintillation Index ( )</description>
+    <units>rad</units>
+  </parameter>
+  <parameter code="1">
+    <shortName>SCIDEXS4</shortName>
+    <description>Scintillation Index S4</description>
+    <units>Numeric</units>
+  </parameter>
+  <parameter code="2">
+    <shortName>ROTIDX</shortName>
+    <description>Rate of Change of TEC Index (ROTI)</description>
+    <units>TECU/min</units>
+  </parameter>
+  <parameter code="3">
+    <shortName>DIDXSG</shortName>
+    <description>Disturbance Ionosphere Index Spatial Gradient (DIXSG)</description>
+    <units>Numeric</units>
+  </parameter>
+  <parameter code="4">
+    <shortName>AATRATE</shortName>
+    <description>Along Arc TEC Rate (AATR)</description>
+    <units>TECU/min</units>
+  </parameter>
+  <parameter code="5">
+    <shortName>KP</shortName>
+    <description>Kp</description>
+    <units>Numeric</units>
+  </parameter>
+  <parameter code="6">
+    <shortName>EDISSTIX</shortName>
+    <description>Equatorial Disturbance Storm Time Index (Dst)</description>
+    <units>nT</units>
+  </parameter>
+  <parameter code="7">
+    <shortName>AURELEC</shortName>
+    <description>Auroral Electrojet (AE)</description>
+    <units>nT</units>
+  </parameter>
+</parameterMap>

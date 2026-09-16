@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<parameterMap>
+  <table>Table4.2.20.5</table>
+  <title>Environmental Hazard Indices</title>
+  <source>https://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_doc/grib2_table4-2-20-5.shtml</source>
+  <parameter code="1">
+    <shortName>HHAIRPOLHI</shortName>
+    <description>Household Air Pollution</description>
+    <units>See Table 4.253</units>
+  </parameter>
+  <parameter code="2">
+    <shortName>AIRPOLHI</shortName>
+    <description>Air Pollution (Point Source)</description>
+    <units>See Table 4.253</units>
+  </parameter>
+  <parameter code="3">
+    <shortName>AAIRPOLHI</shortName>
+    <description>Ambient (Outdoor) Air Pollution</description>
+    <units>See Table 4.253</units>
+  </parameter>
+  <parameter code="4">
+    <shortName>LANDDEGHI</shortName>
+    <description>Land Degradation</description>
+    <units>See Table 4.253</units>
+  </parameter>
+  <parameter code="5">
+    <shortName>SOILDEGHI</shortName>
+    <description>Soil Degradation</description>
+    <units>See Table 4.253</units>
+  </parameter>
+  <parameter code="6">
+    <shortName>RUNOFFHI</shortName>
+    <description>Runoff / Nonpoint Source Pollution</description>
+    <units>See Table 4.253</units>
+  </parameter>
+  <parameter code="7">
+    <shortName>SALTHI</shortName>
+    <description>Salinity</description>
+    <units>See Table 4.253</units>
+  </parameter>
+  <parameter code="8">
+    <shortName>BDLOSSHI</shortName>
+    <description>Biodiversity Loss</description>
+    <units>See Table 4.253</units>
+  </parameter>
+  <parameter code="9">
+    <shortName>DEFORESTHI</shortName>
+    <description>Deforestation</description>
+    <units>See Table 4.253</units>
+  </parameter>
+  <parameter code="10">
+    <shortName>FORESTDECHI</shortName>
+    <description>Forest Declines and Diebacks</description>
+    <units>See Table 4.253</units>
+  </parameter>
+  <parameter code="11">
+    <shortName>FORESTDISHI</shortName>
+    <description>Forest Disturbances</description>
+    <units>See Table 4.253</units>
+  </parameter>
+  <parameter code="12">
+    <shortName>FORESTINVHI</shortName>
+    <description>Forest Invasive Species</description>
+    <units>See Table 4.253</units>
+  </parameter>
+  <parameter code="13">
+    <shortName>WFIREHI</shortName>
+    <description>Wildfires</description>
+    <units>See Table 4.253</units>
+  </parameter>
+  <parameter code="14">
+    <shortName>DESERTHI</shortName>
+    <description>Desertification</description>
+    <units>See Table 4.253</units>
+  </parameter>
+  <parameter code="15">
+    <shortName>MANLOSSHI</shortName>
+    <description>Loss of Mangroves</description>
+    <units>See Table 4.253</units>
+  </parameter>
+  <parameter code="16">
+    <shortName>WETLOSSHI</shortName>
+    <description>Wetland Loss/Degradation</description>
+    <units>See Table 4.253</units>
+  </parameter>
+  <parameter code="17">
+    <shortName>CORALBHI</shortName>
+    <description>Coral Bleaching</description>
+    <units>See Table 4.253</units>
+  </parameter>
+  <parameter code="18">
+    <shortName>COMPSOILHI</shortName>
+    <description>Compressive Soils</description>
+    <units>See Table 4.253</units>
+  </parameter>
+  <parameter code="19">
+    <shortName>SOILEROHI</shortName>
+    <description>Soil Erosion</description>
+    <units>See Table 4.253</units>
+  </parameter>
+  <parameter code="20">
+    <shortName>COASTEROHI</shortName>
+    <description>Coastal Erosion and Shoreline Change</description>
+    <units>See Table 4.253</units>
+  </parameter>
+  <parameter code="21">
+    <shortName>PFLOSSHI</shortName>
+    <description>Permafrost Loss</description>
+    <units>See Table 4.253</units>
+  </parameter>
+  <parameter code="22">
+    <shortName>SAMINHI</shortName>
+    <description>Sand Mining</description>
+    <units>See Table 4.253</units>
+  </parameter>
+  <parameter code="23">
+    <shortName>SLRHI</shortName>
+    <description>Sea Level Rise</description>
+    <units>See Table 4.253</units>
+  </parameter>
+  <parameter code="24">
+    <shortName>EUTROPHI</shortName>
+    <description>Eutrophication</description>
+    <units>See Table 4.253</units>
+  </parameter>
+</parameterMap>

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<codeTable>
+  <table>Table 4.120</table>
+  <title>Verification Scores</title>
+  <source>https://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_doc/grib2_table4-120.shtml</source>
+  <parameter code="0">
+    <description>Mean Error</description>
+  </parameter>
+  <parameter code="1">
+    <description>Root Mean Squared Error</description>
+  </parameter>
+  <parameter code="2">
+    <description>Continuous Ranked Probability Score (CRPS)</description>
+  </parameter>
+  <parameter code="3">
+    <description>Fair Continuous Ranked Probability Score</description>
+  </parameter>
+  <parameter code="4">
+    <description>Continuous Logarithmic Ignorance Score</description>
+  </parameter>
+  <parameter code="5">
+    <description>Fair Continuous Logarithmic Ignorance Score</description>
+  </parameter>
+  <parameter code="6">
+    <description>Ranked Probability Score</description>
+  </parameter>
+  <parameter code="100">
+    <description>Contingency Table (Deterministic) - Hits</description>
+  </parameter>
+  <parameter code="101">
+    <description>Contingency Table (Deterministic) - False Alarms</description>
+  </parameter>
+  <parameter code="102">
+    <description>Contingency Table (Deterministic) - Misses</description>
+  </parameter>
+  <parameter code="103">
+    <description>Contingency Table (Deterministic) - Correct Negatives</description>
+  </parameter>
+  <parameter code="104">
+    <description>Contingency Table (Probabilistic) - Forecast-by-n-members and observed</description>
+  </parameter>
+  <parameter code="105">
+    <description>Contingency Table (Probabilistic) - Forecast-by-n-members and not observed</description>
+  </parameter>
+  <parameter code="65535">
+    <description>Missing</description>
+  </parameter>
+</codeTable>

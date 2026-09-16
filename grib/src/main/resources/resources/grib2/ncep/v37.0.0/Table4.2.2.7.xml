@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<parameterMap>
+  <table>Table4.2.2.7</table>
+  <title>Thermodynamic Properties</title>
+  <source>https://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_doc/grib2_table4-2-2-7.shtml</source>
+  <parameter code="0">
+    <shortName>HNETFLUX</shortName>
+    <description>Heat Net Flux (see Note 1)</description>
+    <units>W m-2</units>
+  </parameter>
+  <parameter code="1">
+    <shortName>LHTFLUX</shortName>
+    <description>Latent Heat Net Flux</description>
+    <units>W m-2</units>
+  </parameter>
+  <parameter code="2">
+    <shortName>SHTFLUX</shortName>
+    <description>Sensible Heat Net Flux</description>
+    <units>W m-2</units>
+  </parameter>
+</parameterMap>
