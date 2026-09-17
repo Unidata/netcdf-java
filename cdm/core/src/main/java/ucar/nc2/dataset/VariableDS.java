@@ -973,6 +973,9 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
       this.unsignedConversion = UnsignedConversion.createFromVar(this);
       this.dataType = unsignedConversion.getOutType();
     }
+    // this needs to be created before the scale/offset enhancement
+    // to properly handle the case where a variable is packed but the valid
+    // max/min values (or range) are not.
     if (this.enhanceMode.contains(Enhance.ConvertMissing)) {
       this.convertMissing = ConvertMissing.createFromVariable(this);
     }

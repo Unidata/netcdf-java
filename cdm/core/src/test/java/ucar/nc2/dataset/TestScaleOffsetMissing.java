@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2020 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 2020-2026 University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 
@@ -25,6 +25,13 @@ public class TestScaleOffsetMissing {
   private static final float[] expected = new float[] {NaN, 1.0f, 2.0f, NaN};
   private static final byte expectedValidMin = 1;
   private static final byte expectedValidMax = 2;
+
+  // Same thing as above, but for variable that is packed with an unpacked valid_range (min/max)
+  private static final float[] expectedMismatch = new float[] {NaN, 5.0f, 7.0f, 9.0f};
+  private static final int expectedValidMinMismatchUnpacked = 4;
+  private static final int expectedValidMaxMismatchUnpacked = 9;
+  private static final float expectedValidMinMismatchPacked = 1.5f;
+  private static final float expectedValidMaxMismatchPacked = 4;
 
   @Rule
   public TemporaryFolder tempFolder = new TemporaryFolder();
@@ -124,6 +131,37 @@ public class TestScaleOffsetMissing {
         } else {
           assertThat(actual[i]).isNotNaN();
           assertThat(actual[i]).isWithin(fpTol).of(-expected[i]);
+        }
+      }
+    }
+  }
+
+  @Test
+  public void testScaleOffsetValidRangeDiffTypes() throws URISyntaxException, IOException {
+    File testResource = new File(getClass().getResource("testScaleOffsetMissing.ncml").toURI());
+
+    try (NetcdfDataset ncd = NetcdfDatasets.openDataset(testResource.getAbsolutePath(), true, null)) {
+      // Same as scaleOffsetValidMaxMin, but uses valid_range attribute instead of valid_min and valid_max attributes.
+      VariableDS var = (VariableDS) ncd.findVariable("packedUnmatchedType");
+
+      // Packed value of valid min, max should only be used internally to ConvertMissing, so make sure it is
+      // not leaking through
+      assertThat(var.getValidMin()).isNotWithin(fpTol).of(expectedValidMinMismatchPacked);
+      assertThat(var.getValidMax()).isNotWithin(fpTol).of(expectedValidMaxMismatchPacked);
+      // Make sure unpacked values still make it through
+      assertThat(var.getValidMin()).isWithin(fpTol).of(expectedValidMinMismatchUnpacked);
+      assertThat(var.getValidMax()).isWithin(fpTol).of(expectedValidMaxMismatchUnpacked);
+
+      // This will only work if the unpacked values of valid min/max are used by
+      // ConvertMissing
+      float[] actual = (float[]) var.read().getStorage();
+      for (int i = 0; i < actual.length; i++) {
+        if (var.isInvalidData(actual[i])) {
+          assertThat(actual[i]).isNaN();
+          assertThat(expectedMismatch[i]).isNaN();
+        } else {
+          assertThat(actual[i]).isNotNaN();
+          assertThat(actual[i]).isWithin(fpTol).of(expectedMismatch[i]);
         }
       }
     }
