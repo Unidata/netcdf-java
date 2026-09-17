@@ -1,7 +1,13 @@
+/*
+ * Copyright (c) 2022-2026 University Corporation for Atmospheric Research/Unidata
+ * See LICENSE for license information.
+ */
+
 package ucar.nc2.filter;
 
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
+import ucar.ma2.DataType.Signedness;
 import ucar.ma2.IndexIterator;
 import ucar.nc2.Attribute;
 import ucar.nc2.constants.CDM;
@@ -14,6 +20,7 @@ import java.util.*;
 public class ConvertMissing implements Enhancement {
 
   private boolean hasValidMin, hasValidMax;
+  // If variable is packed and these must be packed values
   private double validMin, validMax;
 
   private boolean hasFillValue;
@@ -35,12 +42,14 @@ public class ConvertMissing implements Enhancement {
     // assume here its in units of unpacked data. correct this below
     Attribute validRangeAtt = var.findAttribute(CDM.VALID_RANGE);
     DataType validType = null;
+    boolean validRangeDifferentDataType = false;
     if (validRangeAtt != null && !validRangeAtt.isString() && validRangeAtt.getLength() > 1) {
       validType = FilterHelpers.getAttributeDataType(validRangeAtt, signedness);
       validMin = var.convertUnsigned(validRangeAtt.getNumericValue(0), validType).doubleValue();
       validMax = var.convertUnsigned(validRangeAtt.getNumericValue(1), validType).doubleValue();
       hasValidMin = true;
       hasValidMax = true;
+      validRangeDifferentDataType = !validType.equals(var.getDataType());
     }
 
     Attribute validMinAtt = var.findAttribute(CDM.VALID_MIN);
@@ -52,13 +61,25 @@ public class ConvertMissing implements Enhancement {
         validType = FilterHelpers.getAttributeDataType(validMinAtt, signedness);
         validMin = var.convertUnsigned(validMinAtt.getNumericValue(), validType).doubleValue();
         hasValidMin = true;
+        validRangeDifferentDataType = !validType.equals(var.getDataType());
       }
 
       if (validMaxAtt != null && !validMaxAtt.isString()) {
         validType = FilterHelpers.largestOf(validType, FilterHelpers.getAttributeDataType(validMaxAtt, signedness));
         validMax = var.convertUnsigned(validMaxAtt.getNumericValue(), validType).doubleValue();
         hasValidMax = true;
+        validRangeDifferentDataType = !validType.equals(var.getDataType());
       }
+    }
+
+    if (validRangeDifferentDataType && !signedness.equals(Signedness.UNSIGNED)) {
+      // Signal that valid range (or min/max) was specified in unpacked values, so we
+      // need to repack those values. Only applies when the DataTypes do not match because
+      // the variable is unsigned.
+      double scale = var.attributes().findAttributeDouble(CDM.SCALE_FACTOR, 1);
+      double offset = var.attributes().findAttributeDouble(CDM.ADD_OFFSET, 0);
+      validMin = (validMin - offset) / scale;
+      validMax = (validMax - offset) / scale;
     }
 
     if (validMin > validMax) {
@@ -113,6 +134,7 @@ public class ConvertMissing implements Enhancement {
     this.missingDataIsMissing = missingDataIsMissing;
     this.hasValidMin = hasValidMin;
     this.hasValidMax = hasValidMax;
+    // If variable data is packed, validMin, validMax must also be packed
     this.validMin = validMin;
     this.validMax = validMax;
     this.hasFillValue = hasFillValue;
@@ -150,14 +172,37 @@ public class ConvertMissing implements Enhancement {
     return hasValidMin || hasValidMax;
   }
 
+  /**
+   *
+   * Return the minimum valid value used to enhance a variable.
+   * <p>
+   * If the variable is packed, this value will also be packed.
+   *
+   * @return the minimum valid value as a double.
+   */
   public double getValidMin() {
     return validMin;
   }
 
+  /**
+   *
+   * Return the maximum valid value used to enhance a variable.
+   * <p>
+   * If the variable is packed, this value will also be packed.
+   *
+   * @return the maximum valid value as a double.
+   */
   public double getValidMax() {
     return validMax;
   }
 
+  /**
+   *
+   * Return true if the value is outside the valid range.
+   *
+   * @param val the value to test (must be packed if the variable is packed).
+   * @return true if the value is invalid.
+   */
   public boolean isInvalidData(double val) {
     if (Double.isNaN(val)) {
       return true;

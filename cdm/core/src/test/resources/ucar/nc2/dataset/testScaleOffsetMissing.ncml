@@ -26,4 +26,12 @@
     <attribute name="valid_range" type="byte" value="0 100" />
     <values>-1 0 100 101</values>
   </variable>
+  <variable name="packedUnmatchedType" type="int" shape="4">
+    <attribute name="scale_factor" type="float" value="2.0" />
+    <attribute name="add_offset" type="float" value="1.0" />
+    <attribute name="valid_range" type="float" value="4 9" />
+    <!-- When opening as a NetcdfDataset, the first value should be missing, where as the remaining
+         three values should be valid. -->
+    <values>1 2 3 4</values>
+  </variable>
 </netcdf>
