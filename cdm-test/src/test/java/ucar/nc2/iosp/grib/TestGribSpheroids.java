@@ -107,7 +107,7 @@ public class TestGribSpheroids {
     try (NetcdfFile ncfile = NetcdfFiles.open(filename, null)) {
       Variable v = ncfile.findVariable("LambertConformal_Projection");
       Attribute axis = v.findAttribute("semi_major_axis");
-      Assert.assertEquals(6377397., axis.getNumericValue().doubleValue(), 0.1);
+      Assert.assertEquals(6377397.16, axis.getNumericValue().doubleValue(), 0.1);
     }
   }
 }

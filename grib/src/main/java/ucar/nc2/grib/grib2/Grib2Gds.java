@@ -22,6 +22,8 @@ import java.util.Arrays;
 import java.util.Formatter;
 import java.util.UUID;
 
+import static ucar.nc2.grib.GribNumbers.decodeScaledValue;
+
 /**
  * Template-specific fields for Grib2SectionGridDefinition
  * LOOK hashCode not right, cant use approximate float compare
@@ -100,7 +102,7 @@ public abstract class Grib2Gds {
   public int numberOfDataPoints;
 
   public int center;
-  public float earthRadius, majorAxis, minorAxis; // in meters
+  public double earthRadius, majorAxis, minorAxis; // in meters
   protected int scanMode;
   public int earthShape;
 
@@ -296,13 +298,10 @@ public abstract class Grib2Gds {
     return GribNumbers.int4(getOctet(start), getOctet(start + 1), getOctet(start + 2), getOctet(start + 3));
   }
 
-  private float getScaledValue(int start) {
-    int scaleFactor = getOctetSigned(start);
-    int scaleValue = getOctet4(start + 1);
-    if (scaleFactor != 0)
-      return (float) (scaleValue / Math.pow(10, scaleFactor));
-    else
-      return (float) scaleValue;
+  private double getScaledValue(int index) {
+    int scaleFactor = getOctetSigned(index);
+    int scaledValue = getOctet4(index + 1);
+    return decodeScaledValue(scaledValue, scaleFactor);
   }
 
   /*
