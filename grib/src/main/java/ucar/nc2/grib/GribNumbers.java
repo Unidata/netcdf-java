@@ -268,7 +268,7 @@ public final class GribNumbers {
   }
 
   /**
-   * A signed byte has a sign bit then 1 15-bit value.
+   * A signed byte has a sign bit and a 7-bit value.
    * This is not twos complement (!)
    * 
    * @param v convert byte to signed int
@@ -280,8 +280,16 @@ public final class GribNumbers {
     return sign * value;
   }
 
-  public static int convertSignedByte2(byte v) {
-    return (v >= 0) ? (int) v : -(128 + v);
+  /**
+   * A scaled value is encoded with the formula: L * 10^F = V, where L is the original value, F is the scale factor and
+   * V is the scaled value. Therefore, to decode: L = V / 10^F.
+   * See: https://codes.ecmwf.int/grib/format/grib2/regulations/
+   */
+  public static double decodeScaledValue(int scaledValue, int scaleFactor) {
+    // Using p = 10^|F| ensures p is exactly representable. The result is then `L = V / p` or `L = V * p` based on the
+    // sign of F. This reduces float point rounding error.
+    double p = Math.pow(10, Math.abs(scaleFactor));
+    return scaleFactor <= 0 ? (scaledValue * p) : (scaledValue / p);
   }
 
   // count number of bits on in bitmap

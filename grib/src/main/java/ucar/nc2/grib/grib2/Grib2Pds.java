@@ -17,6 +17,7 @@ import java.util.Formatter;
 import java.util.StringJoiner;
 import java.util.zip.CRC32;
 
+import static ucar.nc2.grib.GribNumbers.decodeScaledValue;
 import static ucar.nc2.grib.grib2.Grib2Utils.intervalToRangeDescriptor;
 
 /**
@@ -318,11 +319,10 @@ public abstract class Grib2Pds {
     return input.length;
   }
 
-
-  protected double getScaledValue(int start) {
-    int scale = getOctetSigned(start++);
-    int value = GribNumbers.int4(getOctet(start++), getOctet(start++), getOctet(start++), getOctet(start++));
-    return applyScaleFactor(scale, value);
+  public final double getScaledValue(int index) {
+    int scaleFactor = getOctetSigned(index);
+    int scaledValue = getInt4StartingAtOctet(index + 1);
+    return decodeScaledValue(scaledValue, scaleFactor);
   }
 
   public int getStatisticalProcessType() {
@@ -1019,17 +1019,12 @@ public abstract class Grib2Pds {
     }
 
     public double getProbabilityLowerLimit() {
-      int scale = getOctetSigned(38);
-      int value = GribNumbers.int4(getOctet(39), getOctet(40), getOctet(41), getOctet(42));
-      return applyScaleFactor(scale, value);
+      return getScaledValue(38);
     }
 
     public double getProbabilityUpperLimit() {
-      int scale = getOctetSigned(43);
-      int value = GribNumbers.int4(getOctet(44), getOctet(45), getOctet(46), getOctet(47));
-      return applyScaleFactor(scale, value);
+      return getScaledValue(43);
     }
-
 
     @Override
     public int getProbabilityHashcode() {
@@ -1113,7 +1108,7 @@ public abstract class Grib2Pds {
             f.format("below_%s", Format.dfrac(getProbabilityUpperLimit(), scale2));
             break;
           default:
-            f.format("UknownProbType=%d", getProbabilityType());
+            f.format("UnknownProbType%d", getProbabilityType());
         }
         result = StringUtil2.removeFromEnd(f.toString(), '0');
       }
@@ -1479,9 +1474,7 @@ public abstract class Grib2Pds {
         sb.series = GribNumbers.int2(getOctet(pos), getOctet(pos + 1));
         sb.number = GribNumbers.int2(getOctet(pos + 2), getOctet(pos + 3));
         sb.instrumentType = getOctet(pos + 4);
-        int scaleFactor = getOctetSigned(pos + 5);
-        int svalue = GribNumbers.int4(getOctet(pos + 6), getOctet(pos + 7), getOctet(pos + 8), getOctet(pos + 9));
-        sb.value = applyScaleFactor(scaleFactor, svalue);
+        sb.value = getScaledValue(pos + 5);
         pos += 10;
         result[i] = sb;
       }
@@ -1557,9 +1550,7 @@ public abstract class Grib2Pds {
         sb.series = GribNumbers.int2(getOctet(pos), getOctet(pos + 1));
         sb.number = GribNumbers.int2(getOctet(pos + 2), getOctet(pos + 3));
         sb.instrumentType = GribNumbers.int2(getOctet(pos + 4), getOctet(pos + 5));
-        int scaleFactor = getOctetSigned(pos + 6);
-        int svalue = GribNumbers.int4(getOctet(pos + 7), getOctet(pos + 8), getOctet(pos + 9), getOctet(pos + 10));
-        sb.value = applyScaleFactor(scaleFactor, svalue);
+        sb.value = getScaledValue(pos + 6);
         pos += octetsPerBand;
         result[i] = sb;
       }
@@ -1634,9 +1625,7 @@ public abstract class Grib2Pds {
         sb.series = GribNumbers.int2(getOctet(pos), getOctet(pos + 1));
         sb.number = GribNumbers.int2(getOctet(pos + 2), getOctet(pos + 3));
         sb.instrumentType = GribNumbers.int2(getOctet(pos + 4), getOctet(pos + 5));
-        int scaleFactor = getOctetSigned(pos + 6);
-        int svalue = GribNumbers.int4(getOctet(pos + 7), getOctet(pos + 8), getOctet(pos + 9), getOctet(pos + 10));
-        sb.value = applyScaleFactor(scaleFactor, svalue);
+        sb.value = getScaledValue(pos + 6);
         pos += octetsPerBand;
         result[i] = sb;
       }
@@ -2189,17 +2178,6 @@ public abstract class Grib2Pds {
     }
 
     return CalendarDate.of(null, year, month, day, hour, minute, second);
-  }
-
-  /**
-   * Apply scale factor to value, return a double result.
-   *
-   * @param scale signed scale factor
-   * @param value apply to this value
-   * @return value ^ -scale
-   */
-  double applyScaleFactor(int scale, int value) {
-    return ((scale == 0) || (scale == 255) || (value == 0)) ? value : value * Math.pow(10, -scale);
   }
 
   TimeInterval[] readTimeIntervals(int n, int startIndex) {
