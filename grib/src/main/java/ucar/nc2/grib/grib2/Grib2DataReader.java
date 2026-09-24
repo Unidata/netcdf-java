@@ -11,6 +11,7 @@ import com.sun.jna.Memory;
 import edu.ucar.unidata.compression.jna.libaec.LibAec;
 import edu.ucar.unidata.compression.jna.libaec.LibAec.AecStream;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import javax.annotation.Nullable;
 import ucar.nc2.grib.GribNumbers;
 import ucar.nc2.grib.GribUtils;
@@ -1085,12 +1086,9 @@ public class Grib2DataReader {
   }
 
   private float[] getData42(RandomAccessFile raf, Grib2Drs.Type42 gdrs) throws IOException {
-    byte[] decodedData;
-
     // read CCSDS encoded stream from message
     int encodedLength = dataLength - 5;
-    byte[] inputData = new byte[encodedLength];
-    raf.readFully(inputData);
+    byte[] inputData = new byte[Math.min(encodedLength, 64 * 1024)];
 
     float[] data;
     if (encodedLength > 0) {
@@ -1103,8 +1101,13 @@ public class Grib2DataReader {
         AecStream aecStreamDecode = AecStream.create(gdrs.numberOfBits, gdrs.blockSize, gdrs.referenceSampleInterval,
             gdrs.compressionOptionsMask);
 
-        // load data from grib message into memory
-        inputMemory.write(0, inputData, 0, inputData.length);
+        // Fill native input memory with bounded Java scratch storage.
+        for (int offset = 0; offset < encodedLength;) {
+          int count = Math.min(inputData.length, encodedLength - offset);
+          raf.readFully(inputData, 0, count);
+          inputMemory.write(offset, inputData, 0, count);
+          offset += count;
+        }
 
         aecStreamDecode.setInputMemory(inputMemory);
         aecStreamDecode.setOutputMemory(outputMemory);
@@ -1115,32 +1118,27 @@ public class Grib2DataReader {
           System.out.printf("AEC Error: %s%n", ok);
         }
 
-        // read decoded data from native memory
-        decodedData = new byte[nbytesPerSample * totalNPoints];
-        outputMemory.read(0, decodedData, 0, decodedData.length);
-      }
+        // Keep the native output alive until conversion finishes; a byte-buffer view avoids a heap copy.
+        ByteBuffer bb = outputMemory.getByteBuffer(0, outputMemory.size()).order(ByteOrder.BIG_ENDIAN);
 
-      // will use this to read out a long value using nbytesPerSample bytes
-      // see long getNextLong(ByteBuffer bb, int numberOfBytes)
-      ByteBuffer bb = ByteBuffer.wrap(decodedData);
-
-      // decode following regulation 92.9.4, Note 4
-      int D = gdrs.decimalScaleFactor;
-      float DD = (float) Math.pow((double) 10, (double) D);
-      float R = gdrs.referenceValue;
-      int E = gdrs.binaryScaleFactor;
-      float EE = (float) Math.pow(2.0, (double) E);
-      data = new float[decodedData.length];
-      if (bitmap == null) {
-        for (int i = 0; i < totalNPoints; i++) {
-          data[i] = (R + getNextLong(bb, nbytesPerSample) * EE) / DD;
-        }
-      } else {
-        for (int i = 0; i < totalNPoints; i++) {
-          if (GribNumbers.testBitIsSet(bitmap[i / 8], i % 8)) {
+        // decode following regulation 92.9.4, Note 4
+        int D = gdrs.decimalScaleFactor;
+        float DD = (float) Math.pow((double) 10, (double) D);
+        float R = gdrs.referenceValue;
+        int E = gdrs.binaryScaleFactor;
+        float EE = (float) Math.pow(2.0, (double) E);
+        data = new float[totalNPoints];
+        if (bitmap == null) {
+          for (int i = 0; i < totalNPoints; i++) {
             data[i] = (R + getNextLong(bb, nbytesPerSample) * EE) / DD;
-          } else {
-            data[i] = staticMissingValue;
+          }
+        } else {
+          for (int i = 0; i < totalNPoints; i++) {
+            if (GribNumbers.testBitIsSet(bitmap[i / 8], i % 8)) {
+              data[i] = (R + getNextLong(bb, nbytesPerSample) * EE) / DD;
+            } else {
+              data[i] = staticMissingValue;
+            }
           }
         }
       }
