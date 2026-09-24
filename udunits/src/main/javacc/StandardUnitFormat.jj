@@ -1,6 +1,6 @@
 /*
- * Copyright 1999, 2009 University Corporation for Atmospheric Research/Unidata
- * See file LICENSE for legal details.
+ * Copyright (c) 1998-2026 University Corporation for Atmospheric Research/Unidata
+ * See LICENSE for license information.
  */
 
 options
@@ -560,18 +560,20 @@ Unit productExpr(UnitDB unitDB)
 {
     unit=powerExpr(unitDB)
     (
+        LOOKAHEAD(2)
+        (
             <DIVIDE>
             unit2 = powerExpr(unitDB)
             {
                 unit = unit.divideBy(unit2);
             }
         |       
-            LOOKAHEAD(2)
-            [ <PERIOD> | <STAR> | <SP> ]
+            [ LOOKAHEAD(2) ( <PERIOD> | <STAR> | <SP> ) ]
             unit2=powerExpr(unitDB) 
             {
                 unit = unit.multiplyBy(unit2);
             }
+        )
     )*
     {
         return unit;
@@ -592,6 +594,7 @@ Unit powerExpr(UnitDB unitDB)
 {
     unit=basicExpr(unitDB)
     [
+        LOOKAHEAD(2)
         [ <RAISE> ]
         exponent=integer()
         {

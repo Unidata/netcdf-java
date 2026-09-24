@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2026 University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 
@@ -310,6 +310,14 @@ public class TestUdunits {
             .multiplyBy(m.raiseTo(-1).multiplyBy(1e9)).multiplyBy(s.raiseTo(-1).multiplyBy(1e9).raiseTo(-1))
             .multiplyBy(m).divideBy(s));
     myAssert(parser, "m/km", m.divideBy(m.multiplyBy(1e3)));
+    myAssert(parser, "m+2", m.raiseTo(2));
+    myAssert(parser, "m^+2", m.raiseTo(2));
+    myAssert(parser, "m+1 s-2", m.raiseTo(1).multiplyBy(s.raiseTo(-2)));
+    myAssert(parser, "(m )", m);
+    myAssert(parser, "(m s )", m.multiplyBy(s));
+    myAssert(parser, "m   s", m.multiplyBy(s));
+    myAssert(parser, ".5 m", m.multiplyBy(0.5));
+    myAssert(parser, "m .5 s", m.multiplyBy(0.5).multiplyBy(s));
 
     LineNumberReader lineInput = new LineNumberReader(new InputStreamReader(System.in));
 
