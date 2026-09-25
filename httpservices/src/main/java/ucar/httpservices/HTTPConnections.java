@@ -16,8 +16,6 @@ import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import javax.annotation.concurrent.ThreadSafe;
 import java.util.HashMap;
 import java.util.Map;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Centralized management of the connections used by HTTPSession/HTTPMethod.
@@ -87,7 +85,7 @@ abstract class HTTPConnections {
 
   protected Registry<ConnectionSocketFactory> getRegistry() {
     if (this.protocolregistry == null) {
-      RegistryBuilder rb = RegistryBuilder.<ConnectionSocketFactory>create();
+      RegistryBuilder<ConnectionSocketFactory> rb = RegistryBuilder.create();
       for (HashMap.Entry<String, ConnectionSocketFactory> entry : protocols.entrySet()) {
         rb.register(entry.getKey(), entry.getValue());
       }

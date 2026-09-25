@@ -154,11 +154,11 @@ public class CompareNetcdf {
     }
 
     // nested groups
-    List groups = new ArrayList();
+    List<Group> groups = new ArrayList<>();
     ok &= checkAll(org.getGroups(), copy.getGroups(), groups, f);
     for (int i = 0; i < groups.size(); i += 2) {
-      Group orgGroup = (Group) groups.get(i);
-      Group ncmlGroup = (Group) groups.get(i + 1);
+      Group orgGroup = groups.get(i);
+      Group ncmlGroup = groups.get(i + 1);
       ok &= compareGroups(orgGroup, ncmlGroup, f);
     }
 
@@ -211,11 +211,11 @@ public class CompareNetcdf {
       Structure orgS = (Structure) org;
       Structure ncmlS = (Structure) copy;
 
-      List vars = new ArrayList();
+      List<Variable> vars = new ArrayList<>();
       ok &= checkAll(orgS.getVariables(), ncmlS.getVariables(), vars, f);
       for (int i = 0; i < vars.size(); i += 2) {
-        Variable orgV = (Variable) vars.get(i);
-        Variable ncmlV = (Variable) vars.get(i + 1);
+        Variable orgV = vars.get(i);
+        Variable ncmlV = vars.get(i + 1);
         ok &= compareVariables(orgV, ncmlV, false, f);
       }
     }
@@ -224,7 +224,7 @@ public class CompareNetcdf {
   }
 
   // make sure each object in wantList is contained in container, using equals().
-  public static boolean checkContains(List container, List wantList, Formatter f) {
+  public static boolean checkContains(List<?> container, List<?> wantList, Formatter f) {
     boolean ok = true;
 
     for (Object want1 : wantList) {
@@ -241,22 +241,21 @@ public class CompareNetcdf {
 
   // make sure each object in each list are in the other list, using equals().
   // return an arrayList of paired objects.
-  private boolean checkAll(List list1, List list2, List result, Formatter f) {
+  private <T> boolean checkAll(List<T> list1, List<T> list2, List<T> result, Formatter f) {
     boolean ok = true;
 
-    for (Object aList1 : list1) {
+    for (T aList1 : list1) {
       ok &= checkEach(aList1, "file1", list1, "file2", list2, result, f);
     }
 
-    for (Object aList2 : list2) {
+    for (T aList2 : list2) {
       ok &= checkEach(aList2, "file2", list2, "file1", list1, result, f);
     }
 
     return ok;
   }
 
-  // check that want is in both list1 and list2, using object.equals()
-  private boolean checkEach(Object want1, String name1, List list1, String name2, List list2, List result,
+  private <T> boolean checkEach(T want1, String name1, List<T> list1, String name2, List<T> list2, List<T> result,
       Formatter f) {
     boolean ok = true;
     try {
@@ -265,14 +264,13 @@ public class CompareNetcdf {
         f.format("  ** %s %s (%s) not in %s %n", want1.getClass().getName(), want1, name1, name2);
         ok = false;
       } else { // found it in second list
-        Object want2 = list2.get(index2);
+        T want2 = list2.get(index2);
         int index1 = list1.indexOf(want2);
         if (index1 < 0) { // can this happen ??
           f.format("  ** %s %s (%s) not in %s %n", want2.getClass().getName(), want2, name2, name1);
           ok = false;
-
         } else { // found it in both lists
-          Object want = list1.get(index1);
+          T want = list1.get(index1);
           if (want != want1) {
             f.format("  ** %s %s (%s) not equal to %s (%s) %n", want1.getClass().getName(), want1, name1, want2, name2);
             ok = false;
@@ -286,11 +284,9 @@ public class CompareNetcdf {
           }
         }
       }
-
     } catch (Throwable t) {
       f.format(" *** Throwable= %s %n", t.getMessage());
     }
-
     return ok;
   }
 

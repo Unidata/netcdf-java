@@ -7,6 +7,7 @@ package ucar.nc2.iosp.zarr;
 
 import static ucar.nc2.constants.CDM.ARRAYDIMENSIONS;
 
+import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import ucar.ma2.ArrayObject;
@@ -38,6 +39,8 @@ public class ZarrHeader {
   private final String rootLocation;
 
   private static final ObjectMapper objectMapper = new ObjectMapper();
+  private static final JavaType ATTR_MAP_TYPE =
+      objectMapper.getTypeFactory().constructMapType(HashMap.class, String.class, Object.class);
 
   public ZarrHeader(RandomAccessDirectory raf, Group.Builder rootGroup) {
     this.rootRaf = raf;
@@ -340,7 +343,7 @@ public class ZarrHeader {
       RandomAccessFile raf = item.getOrOpenRaf();
       // read attributes from file
       raf.seek(0);
-      Map<String, Object> attrMap = objectMapper.readValue(raf, HashMap.class);
+      Map<String, Object> attrMap = objectMapper.readValue(raf, ATTR_MAP_TYPE);
 
       // create Attribute objects
       List<Attribute> attrs = new ArrayList<>();
