@@ -100,13 +100,13 @@ class GribIospBuilder {
       g.addVariable(rlat);
       rlat.addAttribute(new Attribute(CF.STANDARD_NAME, CF.GRID_LATITUDE));
       rlat.addAttribute(new Attribute(CDM.UNITS, CDM.RLATLON_UNITS));
-      rlat.setCachedData(Array.makeArray(DataType.FLOAT, hcs.ny, hcs.starty, hcs.dy), false);
+      rlat.setProxyReader(new GribCoordinateReader(hcs.starty, hcs.dy));
       Variable.Builder<?> rlon = Variable.builder().setName("rlon").setDataType(DataType.FLOAT).setParentGroupBuilder(g)
           .setDimensionsByName("rlon");
       g.addVariable(rlon);
       rlon.addAttribute(new Attribute(CF.STANDARD_NAME, CF.GRID_LONGITUDE));
       rlon.addAttribute(new Attribute(CDM.UNITS, CDM.RLATLON_UNITS));
-      rlon.setCachedData(Array.makeArray(DataType.FLOAT, hcs.nx, hcs.startx, hcs.dx), false);
+      rlon.setProxyReader(new GribCoordinateReader(hcs.startx, hcs.dx));
     } else if (isLatLon2D) { // CurvilinearOrthogonal - lat and lon fields must be present in the file
       horizDims = "lat lon";
 
@@ -135,14 +135,14 @@ class GribIospBuilder {
         lat.setCachedData(hcs.getGaussianLats(), false);
         lat.addAttribute(new Attribute(CDM.GAUSSIAN, "true"));
       } else {
-        lat.setCachedData(Array.makeArray(DataType.FLOAT, hcs.ny, hcs.starty, hcs.dy), false);
+        lat.setProxyReader(new GribCoordinateReader(hcs.starty, hcs.dy));
       }
 
       Variable.Builder<?> lon = Variable.builder().setName("lon").setDataType(DataType.FLOAT).setParentGroupBuilder(g)
           .setDimensionsByName("lon");
       g.addVariable(lon);
       lon.addAttribute(new Attribute(CDM.UNITS, CDM.LON_UNITS));
-      lon.setCachedData(Array.makeArray(DataType.FLOAT, hcs.nx, hcs.startx, hcs.dx), false);
+      lon.setProxyReader(new GribCoordinateReader(hcs.startx, hcs.dx));
 
     } else {
       // make horiz coordsys coordinate variable
@@ -162,14 +162,14 @@ class GribIospBuilder {
       g.addVariable(xcv);
       xcv.addAttribute(new Attribute(CF.STANDARD_NAME, CF.PROJECTION_X_COORDINATE));
       xcv.addAttribute(new Attribute(CDM.UNITS, "km"));
-      xcv.setCachedData(Array.makeArray(DataType.FLOAT, hcs.nx, hcs.startx, hcs.dx), false);
+      xcv.setProxyReader(new GribCoordinateReader(hcs.startx, hcs.dx));
 
       Variable.Builder<?> ycv =
           Variable.builder().setName("y").setDataType(DataType.FLOAT).setParentGroupBuilder(g).setDimensionsByName("y");
       g.addVariable(ycv);
       ycv.addAttribute(new Attribute(CF.STANDARD_NAME, CF.PROJECTION_Y_COORDINATE));
       ycv.addAttribute(new Attribute(CDM.UNITS, "km"));
-      ycv.setCachedData(Array.makeArray(DataType.FLOAT, hcs.ny, hcs.starty, hcs.dy), false);
+      ycv.setProxyReader(new GribCoordinateReader(hcs.starty, hcs.dy));
     }
 
     for (Coordinate coord : group.coords) {
