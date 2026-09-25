@@ -76,7 +76,7 @@ public class CoordinateND<T> {
     }
 
     public CoordinateND<T> finish(List<T> records, Formatter info) {
-      for (CoordinateBuilder builder : builders) {
+      for (CoordinateBuilder<T> builder : builders) {
         Coordinate coord = builder.finish();
         if (coord.getType() == Coordinate.Type.time2D)
           coordb.add(((CoordinateTime2D) coord).getRuntimeCoordinate());
@@ -103,7 +103,8 @@ public class CoordinateND<T> {
         int count = 0;
         for (CoordinateBuilder<T> builder : builders) {
           if (builder instanceof CoordinateBuilder.TwoD) {
-            CoordinateBuilder.TwoD<T> builder2D = (CoordinateBuilder.TwoD) builder;
+            @SuppressWarnings("unchecked")
+            CoordinateBuilder.TwoD<T> builder2D = (CoordinateBuilder.TwoD<T>) builder;
             int[] coordsIdx = builder2D.getCoordIndices(gr);
             index[count++] = coordsIdx[0];
             index[count++] = coordsIdx[1];

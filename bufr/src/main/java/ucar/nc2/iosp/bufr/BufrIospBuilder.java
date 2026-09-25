@@ -30,7 +30,7 @@ class BufrIospBuilder {
   private static final boolean warnUnits = false;
 
   private final Group.Builder rootGroup;
-  private Sequence.Builder recordStructure;
+  private Sequence.Builder<?> recordStructure;
   private final Formatter coordinates = new Formatter();
 
   private int tempNo = 1; // fishy
@@ -69,7 +69,7 @@ class BufrIospBuilder {
 
     for (BufrConfig bufrConfig : bufrConfigs) {
       String varName = proto.getLookup().getCategoryName(bufrConfig.getMessage().ids.getCategory());
-      Sequence.Builder rs = Sequence.builder().setName(varName);
+      Sequence.Builder<?> rs = Sequence.builder().setName(varName);
       this.rootGroup.addVariable(rs);
       makeObsRecord(bufrConfig, rs);
       String coordS = coordinates.toString();
@@ -103,7 +103,7 @@ class BufrIospBuilder {
     }
   }
 
-  Sequence.Builder getObsStructure() {
+  Sequence.Builder<?> getObsStructure() {
     return recordStructure;
   }
 
@@ -129,7 +129,7 @@ class BufrIospBuilder {
             addDpiStructure(recordStructure, fld, subFld);
 
           } else if (subDds.replication == 1) { // one member not a replication
-            Variable.Builder v = addVariable(rootGroup, recordStructure, subFld, dkey.replication);
+            Variable.Builder<?> v = addVariable(rootGroup, recordStructure, subFld, dkey.replication);
             v.setSPobject(fld); // set the replicating field as SPI object
 
           } else { // one member is a replication (two replications in a row)
@@ -145,7 +145,7 @@ class BufrIospBuilder {
     }
   }
 
-  private void makeObsRecord(BufrConfig bufrConfig, Sequence.Builder rs) {
+  private void makeObsRecord(BufrConfig bufrConfig, Sequence.Builder<?> rs) {
     BufrConfig.FieldConverter root = bufrConfig.getRootConverter();
     for (BufrConfig.FieldConverter fld : root.flds) {
       DataDescriptor dkey = fld.dds;
@@ -167,7 +167,7 @@ class BufrIospBuilder {
             addDpiStructure(rs, fld, subFld);
 
           } else if (subDds.replication == 1) { // one member not a replication
-            Variable.Builder v = addVariable(rootGroup, rs, subFld, dkey.replication);
+            Variable.Builder<?> v = addVariable(rootGroup, rs, subFld, dkey.replication);
             v.setSPobject(fld); // set the replicating field as SPI object
 
           } else { // one member is a replication (two replications in a row)
@@ -183,12 +183,13 @@ class BufrIospBuilder {
     }
   }
 
-  private void addStructure(Group.Builder group, Structure.Builder parent, BufrConfig.FieldConverter fld, int count) {
+  private void addStructure(Group.Builder group, Structure.Builder<?> parent, BufrConfig.FieldConverter fld,
+      int count) {
     DataDescriptor dkey = fld.dds;
     String uname = findUniqueName(parent, fld.getName(), "struct");
     dkey.name = uname; // name may need to be changed for uniqueness
 
-    Structure.Builder struct = Structure.builder().setName(uname);
+    Structure.Builder<?> struct = Structure.builder().setName(uname);
     struct.setDimensionsAnonymous(new int[] {count}); // anon vector
     for (BufrConfig.FieldConverter subKey : fld.flds) {
       addMember(group, struct, subKey);
@@ -198,12 +199,12 @@ class BufrIospBuilder {
     struct.setSPobject(fld);
   }
 
-  private void addSequence(Group.Builder group, Structure.Builder parent, BufrConfig.FieldConverter fld) {
+  private void addSequence(Group.Builder group, Structure.Builder<?> parent, BufrConfig.FieldConverter fld) {
     DataDescriptor dkey = fld.dds;
     String uname = findUniqueName(parent, fld.getName(), "seq");
     dkey.name = uname; // name may need to be changed for uniqueness
 
-    Sequence.Builder seq = Sequence.builder().setName(uname);
+    Sequence.Builder<?> seq = Sequence.builder().setName(uname);
     for (BufrConfig.FieldConverter subKey : fld.flds) {
       addMember(group, seq, subKey);
     }
@@ -212,7 +213,7 @@ class BufrIospBuilder {
     seq.setSPobject(fld);
   }
 
-  private void addMember(Group.Builder group, Structure.Builder parent, BufrConfig.FieldConverter fld) {
+  private void addMember(Group.Builder group, Structure.Builder<?> parent, BufrConfig.FieldConverter fld) {
     DataDescriptor dkey = fld.dds;
 
     if (dkey.replication == 0) {
@@ -221,7 +222,7 @@ class BufrIospBuilder {
       List<DataDescriptor> subKeys = dkey.subKeys;
       if (subKeys.size() == 1) {
         BufrConfig.FieldConverter subFld = fld.flds.get(0);
-        Variable.Builder v = addVariable(group, parent, subFld, dkey.replication);
+        Variable.Builder<?> v = addVariable(group, parent, subFld, dkey.replication);
         v.setSPobject(fld); // set the replicating field as SPI object
 
       } else {
@@ -233,18 +234,18 @@ class BufrIospBuilder {
     }
   }
 
-  private void addDpiStructure(Structure.Builder parent, BufrConfig.FieldConverter parentFld,
+  private void addDpiStructure(Structure.Builder<?> parent, BufrConfig.FieldConverter parentFld,
       BufrConfig.FieldConverter dpiField) {
     DataDescriptor dpiKey = dpiField.dds;
     String uname = findUniqueName(parent, dpiField.getName(), "struct");
     dpiKey.name = uname; // name may need to be changed for uniqueness
 
-    Structure.Builder struct = Structure.builder().setName(uname);
+    Structure.Builder<?> struct = Structure.builder().setName(uname);
     parent.addMemberVariable(struct);
     int n = parentFld.dds.replication;
     struct.setDimensionsAnonymous(new int[] {n}); // anon vector
 
-    Variable.Builder v = Variable.builder().setName("name");
+    Variable.Builder<?> v = Variable.builder().setName("name");
     v.setDataType(DataType.STRING); // scalar
     struct.addMemberVariable(v);
 
@@ -255,11 +256,11 @@ class BufrIospBuilder {
     struct.setSPobject(dpiField); // ??
   }
 
-  private void addDpiSequence(Structure.Builder parent, BufrConfig.FieldConverter fld) {
-    Structure.Builder struct = Structure.builder().setName("statistics");
+  private void addDpiSequence(Structure.Builder<?> parent, BufrConfig.FieldConverter fld) {
+    Structure.Builder<?> struct = Structure.builder().setName("statistics");
     struct.setDimensionsAnonymous(new int[] {fld.dds.replication}); // scalar
 
-    Variable.Builder v = Variable.builder().setName("name");
+    Variable.Builder<?> v = Variable.builder().setName("name");
     v.setDataType(DataType.STRING); // scalar
     struct.addMemberVariable(v);
 
@@ -270,13 +271,13 @@ class BufrIospBuilder {
     parent.addMemberVariable(struct);
   }
 
-  private Variable.Builder addVariable(Group.Builder group, Structure.Builder struct, BufrConfig.FieldConverter fld,
-      int count) {
+  private Variable.Builder<?> addVariable(Group.Builder group, Structure.Builder<?> struct,
+      BufrConfig.FieldConverter fld, int count) {
     DataDescriptor dkey = fld.dds;
     String uname = findGloballyUniqueName(fld.getName(), "unknown");
     dkey.name = uname; // name may need to be changed for uniqueness
 
-    Variable.Builder v = Variable.builder().setName(uname);
+    Variable.Builder<?> v = Variable.builder().setName(uname);
     if (count > 1) {
       v.setDimensionsAnonymous(new int[] {count}); // anon vector
     }
@@ -287,7 +288,7 @@ class BufrIospBuilder {
 
     if (fld.getUnits() == null) {
       if (warnUnits) {
-        log.warn("dataDesc.units == null for " + uname);
+        log.warn("dataDesc.units == null for {}", uname);
       }
     } else {
       String units = fld.getUnits();
@@ -432,7 +433,7 @@ class BufrIospBuilder {
   }
 
 
-  private void annotate(Variable.Builder v, BufrConfig.FieldConverter fld) {
+  private void annotate(Variable.Builder<?> v, BufrConfig.FieldConverter fld) {
     if (fld.type == null) {
       return;
     }

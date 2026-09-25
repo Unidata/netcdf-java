@@ -20,20 +20,20 @@ public class TestCoordinateUniquify {
   @Test
   public void testCoordinateUnionizer() {
 
-    List<CoordinateND> coordNDs = new ArrayList<>();
+    List<CoordinateND<Short>> coordNDs = new ArrayList<>();
     for (int i = 5; i < 15; i += 2) {
       coordNDs.add(TestCoordinateND.makeCoordinateND(i));
     }
 
     CoordinateSharerBest unionizer = new CoordinateSharerBest();
-    for (CoordinateND coordND : coordNDs) {
+    for (CoordinateND<Short> coordND : coordNDs) {
       unionizer.addCoordinates(coordND.getCoordinates());
     }
     List<Coordinate> shared = unionizer.finish();
 
     Formatter f = new Formatter();
     f.format("Original%n");
-    for (CoordinateND coordND : coordNDs) {
+    for (CoordinateND<Short> coordND : coordNDs) {
       coordND.showInfo(f, null);
     }
 

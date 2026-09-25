@@ -25,7 +25,7 @@ public class HTTPFactory {
   // HTTPMethod, provide a static global
   // than can be set by a test program.
 
-  public static java.lang.Class MOCKMETHODCLASS = null;
+  public static Class<? extends HTTPMethod> MOCKMETHODCLASS = null;
 
   //////////////////////////////////////////////////////////////////////////
   // Static factory methods for creating HTTPSession instances
@@ -116,9 +116,9 @@ public class HTTPFactory {
     HTTPMethod meth = null;
     if (MOCKMETHODCLASS == null) { // do the normal case
       meth = new HTTPMethod(m, session, url);
-    } else {// (MOCKMETHODCLASS != null)
-      java.lang.Class methodcl = MOCKMETHODCLASS;
-      Constructor<HTTPMethod> cons = null;
+    } else { // (MOCKMETHODCLASS != null)
+      Class<? extends HTTPMethod> methodcl = MOCKMETHODCLASS;
+      Constructor<? extends HTTPMethod> cons;
       try {
         cons = methodcl.getConstructor(HTTPSession.Methods.class, HTTPSession.class, String.class);
       } catch (Exception e) {

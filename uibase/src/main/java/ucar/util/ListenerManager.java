@@ -82,9 +82,9 @@ public class ListenerManager {
   public ListenerManager(String listener_class, String event_class, String method_name) {
 
     try {
-      Class lc = Class.forName(listener_class);
-      Class ec = Class.forName(event_class);
-      Class[] params = new Class[1];
+      Class<?> lc = Class.forName(listener_class);
+      Class<?> ec = Class.forName(event_class);
+      Class<?>[] params = new Class[1];
       params[0] = ec;
       this.method = lc.getMethod(method_name, params);
 
@@ -147,7 +147,7 @@ public class ListenerManager {
     args[0] = event;
 
     // send event to all listeners
-    ListIterator iter = listeners.listIterator();
+    ListIterator<Object> iter = listeners.listIterator();
     while (iter.hasNext()) {
       Object client = iter.next();
       try {
