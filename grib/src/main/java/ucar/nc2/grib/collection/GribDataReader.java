@@ -369,6 +369,8 @@ public abstract class GribDataReader {
 
   public static class DataReceiver implements DataReceiverIF {
     private Array dataArray;
+    private final int[] shape;
+    private final int size;
     private final RangeIterator yRange;
     private final RangeIterator xRange;
     private final int horizSize;
@@ -384,33 +386,50 @@ public abstract class GribDataReader {
             Throwables.getStackTraceAsString(new Throwable()));
         throw new IllegalArgumentException("RequestTooLarge: Len greater that 100M ");
       }
-      float[] data = new float[(int) len];
-      Arrays.fill(data, Float.NaN); // prefill primitive array
-      dataArray = Array.factory(DataType.FLOAT, shape, data);
+      this.shape = shape.clone();
+      this.size = (int) len;
     }
 
     @Override
     public void addData(float[] data, int resultIndex, int nx) {
+      if (dataArray == null && resultIndex == 0 && size == horizSize && data.length == size && nx > 0
+          && isFullRange(xRange, nx) && isFullRange(yRange, data.length / nx)) {
+        // The decoder returns a fresh array. A single complete field can transfer its storage directly.
+        dataArray = Array.factory(DataType.FLOAT, shape, data);
+        return;
+      }
+
+      Array result = getArray();
       int start = resultIndex * horizSize;
       int count = 0;
       for (int y : yRange) {
         for (int x : xRange) {
           int dataIdx = y * nx + x;
-          dataArray.setFloat(start + count, data[dataIdx]);
+          result.setFloat(start + count, data[dataIdx]);
           count++;
         }
       }
     }
 
+    private static boolean isFullRange(RangeIterator range, int length) {
+      return range instanceof Range && range.length() == length && ((Range) range).first() == 0
+          && ((Range) range).stride() == 1;
+    }
+
     // optimization
     @Override
     public void setDataToZero() {
-      float[] data = (float[]) dataArray.get1DJavaArray(dataArray.getDataType());
+      float[] data = (float[]) getArray().getStorage();
       Arrays.fill(data, 0.0f);
     }
 
     @Override
     public Array getArray() {
+      if (dataArray == null) {
+        float[] data = new float[size];
+        Arrays.fill(data, Float.NaN);
+        dataArray = Array.factory(DataType.FLOAT, shape, data);
+      }
       return dataArray;
     }
   }
