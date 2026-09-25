@@ -17,7 +17,6 @@ import java.util.Date;
 import java.util.Formatter;
 import java.util.List;
 import java.util.Locale;
-import java.util.ServiceLoader;
 import java.util.StringTokenizer;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -38,6 +37,7 @@ import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateFormatter;
 import ucar.nc2.units.DateUnit;
+import ucar.nc2.util.NcServiceLoader;
 import ucar.nc2.constants._Coordinate;
 import org.jdom2.output.XMLOutputter;
 import org.jdom2.output.Format;
@@ -85,7 +85,7 @@ public class GridDatasetInv {
     // Persistence is needed for the TDS
     static {
       InventoryCacheProvider icp = null;
-      for (InventoryCacheProvider provider : ServiceLoader.load(InventoryCacheProvider.class)) {
+      for (InventoryCacheProvider provider : NcServiceLoader.load(InventoryCacheProvider.class)) {
         // first one wins
         icp = provider;
       }

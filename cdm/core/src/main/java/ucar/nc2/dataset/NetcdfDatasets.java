@@ -4,7 +4,6 @@ package ucar.nc2.dataset;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.EnumSet;
-import java.util.ServiceLoader;
 import java.util.Set;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFiles;
@@ -13,6 +12,7 @@ import ucar.nc2.dataset.spi.NetcdfFileProvider;
 import ucar.nc2.internal.dataset.DatasetEnhancer;
 import ucar.nc2.internal.ncml.NcmlReader;
 import ucar.nc2.util.CancelTask;
+import ucar.nc2.util.NcServiceLoader;
 import ucar.nc2.util.cache.FileCache;
 import ucar.nc2.util.cache.FileCacheIF;
 import ucar.nc2.util.cache.FileFactory;
@@ -426,14 +426,14 @@ public class NetcdfDatasets {
       Object spiObject) throws IOException {
 
     // look for dynamically loaded NetcdfFileProvider
-    for (NetcdfFileProvider provider : ServiceLoader.load(NetcdfFileProvider.class)) {
+    for (NetcdfFileProvider provider : NcServiceLoader.load(NetcdfFileProvider.class)) {
       if (provider.isOwnerOf(durl)) {
         return provider.open(durl.getTrueurl(), cancelTask);
       }
     }
 
     // look for providers who do not have an associated ServiceType.
-    for (NetcdfFileProvider provider : ServiceLoader.load(NetcdfFileProvider.class)) {
+    for (NetcdfFileProvider provider : NcServiceLoader.load(NetcdfFileProvider.class)) {
       if (provider.isOwnerOf(durl.getTrueurl())) {
         return provider.open(durl.getTrueurl(), cancelTask);
       }
