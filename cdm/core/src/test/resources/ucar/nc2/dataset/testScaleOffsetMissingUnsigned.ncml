@@ -53,4 +53,12 @@
         <attribute name="add_offset" type="byte" isUnsigned="true" value="-100" />  <!-- 156 -->
         <values>-50</values>
     </variable>
+    <variable name="packedUnmatchedType" type="ubyte" shape="4">
+      <attribute name="scale_factor" type="float" value="2.0" />
+      <attribute name="add_offset" type="float" value="1.0" />
+      <attribute name="valid_range" type="float" value="255 259" />
+      <!-- When opening as a NetcdfDataset, the first value should be missing, where as the remaining
+           three values should be valid. -->
+      <values>126 127 128 129</values>
+    </variable>
 </netcdf>
