@@ -49,7 +49,7 @@ public class ConvertMissing implements Enhancement {
       validMax = var.convertUnsigned(validRangeAtt.getNumericValue(1), validType).doubleValue();
       hasValidMin = true;
       hasValidMax = true;
-      validRangeDifferentDataType = !validType.equals(var.getDataType());
+      validRangeDifferentDataType = !validType.equals(var.getOriginalDataType());
     }
 
     Attribute validMinAtt = var.findAttribute(CDM.VALID_MIN);
@@ -72,7 +72,10 @@ public class ConvertMissing implements Enhancement {
       }
     }
 
-    if (validRangeDifferentDataType && !signedness.equals(Signedness.UNSIGNED)) {
+    boolean unsignedBecauseCdmAttr = var.attributes().findAttributeString(CDM.UNSIGNED, "false").equals("true");
+    // skip unscaling if signedness is UNSIGNED and the CDM _Unsigned attribute is true
+    boolean skipUnscale = signedness.equals(Signedness.UNSIGNED) && unsignedBecauseCdmAttr;
+    if (validRangeDifferentDataType && !skipUnscale) {
       // Signal that valid range (or min/max) was specified in unpacked values, so we
       // need to repack those values. Only applies when the DataTypes do not match because
       // the variable is unsigned.

@@ -5,6 +5,7 @@
 
 package ucar.nc2.dataset;
 
+import static com.google.common.truth.Truth.assertThat;
 import static java.lang.Float.NaN;
 
 import org.junit.Assert;
@@ -340,6 +341,70 @@ public class TestScaleOffsetMissingUnsigned {
       Assert.assertEquals(DataType.BYTE, var.getDataType()); // No change to data type.
 
       Assert.assertEquals(106, var.read().getByte(0)); // -50 + 156 == 106
+    }
+  }
+
+  @Test
+  public void testScaleOffsetValidRangeDiffTypesOldApi() throws URISyntaxException, IOException {
+    File testResource = new File(getClass().getResource("testScaleOffsetMissingUnsigned.ncml").toURI());
+
+    try (NetcdfDataset ncd = NetcdfDataset.openDataset(testResource.getAbsolutePath(), true, null)) {
+      // Same as scaleOffsetValidMaxMin, but uses valid_range attribute instead of valid_min and valid_max attributes.
+      VariableDS var = (VariableDS) ncd.findVariable("packedUnmatchedType");
+
+      // Packed value of valid min, max should only be used internally to ConvertMissing, so make sure it is
+      // not leaking through
+      assertThat(var.getValidMin()).isNotWithin(0.01).of(127);
+      assertThat(var.getValidMax()).isNotWithin(0.01).of(129);
+      // Make sure unpacked values still make it through
+      assertThat(var.getValidMin()).isWithin(0.01).of(255);
+      assertThat(var.getValidMax()).isWithin(0.01).of(259);
+
+      // This will only work if the unpacked values of valid min/max are used by
+      // ConvertMissing
+      float[] expected = new float[] {NaN, 255, 257, 259};
+      float[] actual = (float[]) var.read().getStorage();
+      for (int i = 0; i < actual.length; i++) {
+        if (var.isInvalidData(actual[i])) {
+          assertThat(actual[i]).isNaN();
+          assertThat(expected[i]).isNaN();
+        } else {
+          assertThat(actual[i]).isNotNaN();
+          assertThat(actual[i]).isWithin(0.01f).of(expected[i]);
+        }
+      }
+    }
+  }
+
+  @Test
+  public void testScaleOffsetValidRangeDiffTypes() throws URISyntaxException, IOException {
+    File testResource = new File(getClass().getResource("testScaleOffsetMissingUnsigned.ncml").toURI());
+
+    try (NetcdfDataset ncd = NetcdfDatasets.openDataset(testResource.getAbsolutePath(), true, null)) {
+      // Same as scaleOffsetValidMaxMin, but uses valid_range attribute instead of valid_min and valid_max attributes.
+      VariableDS var = (VariableDS) ncd.findVariable("packedUnmatchedType");
+
+      // Packed value of valid min, max should only be used internally to ConvertMissing, so make sure it is
+      // not leaking through
+      assertThat(var.getValidMin()).isNotWithin(0.01).of(127);
+      assertThat(var.getValidMax()).isNotWithin(0.01).of(129);
+      // Make sure unpacked values still make it through
+      assertThat(var.getValidMin()).isWithin(0.01).of(255);
+      assertThat(var.getValidMax()).isWithin(0.01).of(259);
+
+      // This will only work if the unpacked values of valid min/max are used by
+      // ConvertMissing
+      float[] expected = new float[] {NaN, 255, 257, 259};
+      float[] actual = (float[]) var.read().getStorage();
+      for (int i = 0; i < actual.length; i++) {
+        if (var.isInvalidData(actual[i])) {
+          assertThat(actual[i]).isNaN();
+          assertThat(expected[i]).isNaN();
+        } else {
+          assertThat(actual[i]).isNotNaN();
+          assertThat(actual[i]).isWithin(0.01f).of(expected[i]);
+        }
+      }
     }
   }
 }
