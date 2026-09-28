@@ -7,6 +7,8 @@ package ucar.nc2.dataset;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
@@ -34,6 +36,8 @@ import java.util.*;
  * @see NetcdfDataset
  */
 public class VariableDS extends Variable implements VariableEnhanced, EnhanceScaleMissingUnsigned {
+
+  private static final Logger logger = LoggerFactory.getLogger(VariableDS.class);
 
   static final List<EnhancementProvider> ENHANCEMENT_PROVIDERS;
 
@@ -261,6 +265,53 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
     Set<Enhance> enhancements = getEnhanceMode();
     return enhancements.contains(Enhance.ConvertEnums) || enhancements.contains(Enhance.ConvertUnsigned)
         || enhancements.contains(Enhance.ApplyScaleOffset) || enhancements.contains(Enhance.ConvertMissing);
+  }
+
+  /**
+   * Will this Variable modify the data values it reads, ie apply one of the data affecting enhancements?
+   * <p>
+   * Unlike {@link #needConvert()} this only considers the enhancements that this Variable applies itself,
+   * not those already applied by a wrapped Variable. Used by the aggregation proxy readers to decide if
+   * they must deliver the data as stored, so that an enhancement is not applied twice.
+   *
+   * @param v the Variable to test, may be null.
+   * @return true if v is a VariableDS that converts the data it reads.
+   */
+  public static boolean appliesDataEnhancements(Variable v) {
+    if (!(v instanceof VariableDS)) {
+      return false;
+    }
+    Set<Enhance> enhancements = ((VariableDS) v).enhanceMode;
+    return enhancements.contains(Enhance.ConvertEnums) || enhancements.contains(Enhance.ConvertUnsigned)
+        || enhancements.contains(Enhance.ApplyScaleOffset) || enhancements.contains(Enhance.ConvertMissing)
+        || enhancements.contains(Enhance.ApplyRuntimeLoadedEnhancements);
+  }
+
+  /**
+   * Find the Variable that an aggregation proxy should read from, so that the data affecting enhancements
+   * are applied exactly once.
+   * <p>
+   * If the aggregate Variable {@code mainV} will convert the data itself, and the member Variable
+   * {@code proxyV} has already applied its own enhancements, read the data as stored instead.
+   *
+   * @param proxyV the Variable found in the member (proxied) dataset.
+   * @param mainV the Variable in the aggregation that the data is being read for.
+   * @return the Variable to actually read from, never null if proxyV is not null.
+   */
+  public static Variable unenhancedProxy(Variable proxyV, Variable mainV) {
+    if (!(proxyV instanceof VariableDS) || !appliesDataEnhancements(mainV)) {
+      return proxyV;
+    }
+    VariableDS proxyDS = (VariableDS) proxyV;
+    Variable orgVar = proxyDS.getOriginalVariable();
+    if (orgVar == null || !appliesDataEnhancements(proxyDS)) {
+      return proxyV;
+    }
+    if (logger.isDebugEnabled() && !((VariableDS) mainV).enhanceMode.containsAll(proxyDS.enhanceMode)) {
+      logger.debug("Aggregation member {} applies enhancements {} not applied by the aggregation variable {}",
+          proxyV.getFullName(), proxyDS.enhanceMode, ((VariableDS) mainV).enhanceMode);
+    }
+    return orgVar;
   }
 
   Array convert(Array data) {
@@ -503,14 +554,36 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
     return convert(result);
   }
 
+  /**
+   * The data as stored by this VariableDS, ie without applying the enhancements that this Variable would apply.
+   * This is the array that {@link #_read()} passes to {@link #convert(Array)}.
+   */
+  Array readUnenhanced() throws IOException {
+    if (hasCachedData()) {
+      return super._read();
+    }
+    return proxyReader.reallyRead(this, null);
+  }
+
+  /** Section of {@link #readUnenhanced()}. */
+  Array readUnenhanced(Section section) throws IOException, InvalidRangeException {
+    if ((null == section) || section.computeSize() == getSize()) {
+      return readUnenhanced();
+    }
+    if (hasCachedData()) {
+      return super._read(section);
+    }
+    return proxyReader.reallyRead(this, section, null);
+  }
+
   // do not call directly
   @Override
   public Array reallyRead(Variable client, CancelTask cancelTask) throws IOException {
+    if (this.proxyReader != null && this.proxyReader instanceof ucar.nc2.ncml.Aggregation) {
+      return this.proxyReader.reallyRead(client, cancelTask);
+    }
+
     if (orgVar == null) {
-      // possible aggregation
-      if (this.proxyReader != null && this.proxyReader instanceof ucar.nc2.ncml.Aggregation) {
-        return this.proxyReader.reallyRead(client, cancelTask);
-      }
       return getMissingDataArray(shape);
     }
 
@@ -527,6 +600,11 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
       if (ucar.nc2.ncml.Aggregation.instanceOfDatasetProxyReader(this.proxyReader)) {
         return this.proxyReader.reallyRead(client, cancelTask);
       }
+      if (orgVar instanceof VariableDS) {
+        // orgVar has cached data. The cache holds the data as stored, so hand that to the client
+        // rather than letting orgVar convert it, otherwise enhancements get applied twice.
+        return ((VariableDS) orgVar).readUnenhanced();
+      }
     }
     return orgVar.read();
   }
@@ -539,11 +617,11 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
     if ((null == section) || section.computeSize() == getSize())
       return reallyRead(client, cancelTask);
 
+    if (this.proxyReader != null && this.proxyReader instanceof ucar.nc2.ncml.Aggregation) {
+      return this.proxyReader.reallyRead(client, section, cancelTask);
+    }
+
     if (orgVar == null) {
-      // possible aggregation
-      if (this.proxyReader != null && this.proxyReader instanceof ucar.nc2.ncml.Aggregation) {
-        return this.proxyReader.reallyRead(client, section, cancelTask);
-      }
       return getMissingDataArray(shape);
     }
 
@@ -559,6 +637,11 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
       // variable, so check to see if that's what we have and, if so, use it.
       if (ucar.nc2.ncml.Aggregation.instanceOfDatasetProxyReader(this.proxyReader)) {
         return this.proxyReader.reallyRead(client, section, cancelTask);
+      }
+      if (orgVar instanceof VariableDS) {
+        // orgVar has cached data. The cache holds the data as stored, so hand that to the client
+        // rather than letting orgVar convert it, otherwise enhancements get applied twice.
+        return ((VariableDS) orgVar).readUnenhanced(section);
       }
     }
     return orgVar.read(section);

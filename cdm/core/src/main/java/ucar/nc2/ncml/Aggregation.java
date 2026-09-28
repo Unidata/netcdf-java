@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2025 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2026 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE.txt for license information.
  */
 
@@ -22,6 +22,7 @@ import ucar.nc2.ProxyReader;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.DatasetUrl;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.dataset.VariableEnhanced;
 import ucar.nc2.units.DateFormatter;
 import ucar.nc2.util.CancelTask;
@@ -823,7 +824,7 @@ public abstract class Aggregation implements AggregationIF {
         ncfile = dataset.acquireFile(cancelTask);
         if ((cancelTask != null) && cancelTask.isCancel())
           return null;
-        Variable proxyV = findVariable(ncfile, mainV);
+        Variable proxyV = readTarget(ncfile, mainV);
         return proxyV.read();
       } finally {
         dataset.close(ncfile);
@@ -836,7 +837,7 @@ public abstract class Aggregation implements AggregationIF {
       NetcdfFile ncfile = null;
       try {
         ncfile = dataset.acquireFile(cancelTask);
-        Variable proxyV = findVariable(ncfile, mainV);
+        Variable proxyV = readTarget(ncfile, mainV);
         if ((cancelTask != null) && cancelTask.isCancel())
           return null;
         return proxyV.read(section);
@@ -845,6 +846,14 @@ public abstract class Aggregation implements AggregationIF {
         dataset.close(ncfile);
       }
     }
+  }
+
+  /**
+   * Find the Variable to read from the member dataset. If the member dataset was itself enhanced, and the
+   * aggregation variable will apply the same enhancements again, read the data as stored instead.
+   */
+  protected Variable readTarget(NetcdfFile ncfile, Variable mainV) {
+    return VariableDS.unenhancedProxy(findVariable(ncfile, mainV), mainV);
   }
 
   protected Variable findVariable(NetcdfFile ncfile, Variable mainV) {

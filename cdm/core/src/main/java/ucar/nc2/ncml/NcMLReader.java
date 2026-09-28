@@ -554,9 +554,9 @@ public class NcMLReader {
 
     // enhance means do scale/offset and/or add CoordSystems
     Set<NetcdfDataset.Enhance> mode = NetcdfDataset.parseEnhanceMode(netcdfElem.getAttributeValue("enhance"));
-    // if (mode == null)
-    // mode = NetcdfDataset.getEnhanceDefault();
-    targetDS.enhance(mode);
+    if (mode != null) {
+      targetDS.enhance(mode);
+    }
 
     // optionally add record structure to netcdf-3
     String addRecords = netcdfElem.getAttributeValue("addRecords");

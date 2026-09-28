@@ -117,6 +117,9 @@ class AggregationExisting extends AggregationOuter {
       VariableDS.Builder vagg = VariableDS.builder().setName(v.getShortName()).setDataType(v.getDataType())
           .setParentGroupBuilder(rootGroup).setDimensionsByName(v.getDimensionsString());
       vagg.setProxyReader(this);
+      if (v instanceof VariableDS) {
+        vagg.setOriginalVariable(v);
+      }
       BuilderHelper.transferAttributes(v, vagg.getAttributeContainer());
 
       rootGroup.replaceVariable(vagg);

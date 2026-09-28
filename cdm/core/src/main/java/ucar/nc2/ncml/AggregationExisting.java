@@ -111,6 +111,9 @@ public class AggregationExisting extends AggregationOuterDimension {
       VariableDS vagg = new VariableDS(ncDataset, newGroup, null, v.getShortName(), v.getDataType(),
           v.getDimensionsString(), null, null);
       vagg.setProxyReader(this);
+      if (v instanceof VariableDS) {
+        vagg.setOriginalVariable(v);
+      }
       DatasetConstructor.transferVariableAttributes(v, vagg);
 
       newGroup.removeVariable(v.getShortName());

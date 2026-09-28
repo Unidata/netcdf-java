@@ -554,7 +554,7 @@ public class NcmlReader {
     Set<NetcdfDataset.Enhance> mode = parseEnhanceMode(netcdfElem.getAttributeValue("enhance"));
     if (mode != null) {
       // cant just set enhance mode
-      if (DatasetEnhancer.enhanceNeeded(mode, null)) {
+      if (DatasetEnhancer.enhanceNeeded(mode, builder.getEnhanceMode())) {
         DatasetEnhancer enhancer = new DatasetEnhancer(builder, mode, cancelTask);
         enhancer.enhance();
         builder.setEnhanceMode(mode);

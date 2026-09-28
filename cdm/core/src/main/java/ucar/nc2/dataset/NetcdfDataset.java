@@ -889,7 +889,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     return enhanceMode;
   }
 
-  private void addEnhanceModes(Set<Enhance> addEnhanceModes) {
+  void addEnhanceModes(Set<Enhance> addEnhanceModes) {
     ImmutableSet.Builder<Enhance> result = new ImmutableSet.Builder<>();
     result.addAll(this.enhanceMode);
     result.addAll(addEnhanceModes);
@@ -1064,6 +1064,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     coordAxes = new ArrayList<>();
     coordTransforms = new ArrayList<>();
     convUsed = null;
+    this.enhanceMode = Collections.emptySet();
   }
 
   /** @deprecated do not use */
