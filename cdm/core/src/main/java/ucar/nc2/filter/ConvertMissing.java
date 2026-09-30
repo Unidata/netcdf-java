@@ -72,17 +72,22 @@ public class ConvertMissing implements Enhancement {
       }
     }
 
-    boolean unsignedBecauseCdmAttr = var.attributes().findAttributeString(CDM.UNSIGNED, "false").equals("true");
-    // skip unscaling if signedness is UNSIGNED and the CDM _Unsigned attribute is true
-    boolean skipUnscale = signedness.equals(Signedness.UNSIGNED) && unsignedBecauseCdmAttr;
-    if (validRangeDifferentDataType && !skipUnscale) {
-      // Signal that valid range (or min/max) was specified in unpacked values, so we
-      // need to repack those values. Only applies when the DataTypes do not match because
-      // the variable is unsigned.
-      double scale = var.attributes().findAttributeDouble(CDM.SCALE_FACTOR, 1);
-      double offset = var.attributes().findAttributeDouble(CDM.ADD_OFFSET, 0);
-      validMin = (validMin - offset) / scale;
-      validMax = (validMax - offset) / scale;
+    // only check if we found valid_range, valid_min, or valid_max
+    if (validType != null) {
+      boolean unsignedBecauseCdmAttr = var.attributes().findAttributeString(CDM.UNSIGNED, "false").equals("true");
+      // skip unscaling if signedness is UNSIGNED and the CDM _Unsigned attribute is true or if
+      // the valid_* type and the variable type are both integral
+      boolean skipUnscale = (signedness.equals(Signedness.UNSIGNED) && unsignedBecauseCdmAttr)
+          || (validType.isIntegral() && var.getOriginalDataType().isIntegral());
+      if (validRangeDifferentDataType && !skipUnscale) {
+        // Signal that valid range (or min/max) was specified in unpacked values, so we
+        // need to repack those values. Only applies when the DataTypes do not match because
+        // the variable is unsigned.
+        double scale = var.attributes().findAttributeDouble(CDM.SCALE_FACTOR, 1);
+        double offset = var.attributes().findAttributeDouble(CDM.ADD_OFFSET, 0);
+        validMin = (validMin - offset) / scale;
+        validMax = (validMax - offset) / scale;
+      }
     }
 
     if (validMin > validMax) {
