@@ -91,6 +91,9 @@ public class AggregationTiled extends Aggregation implements ProxyReader {
         VariableDS vagg = new VariableDS(ncDataset, newGroup, null, v.getShortName(), v.getDataType(),
             v.getDimensionsString(), null, null); // LOOK what about anon dimensions?
         vagg.setProxyReader(this); // do the reading here
+        if (v instanceof VariableDS) {
+          vagg.setOriginalVariable(v);
+        }
         DatasetConstructor.transferVariableAttributes(v, vagg);
 
         newGroup.removeVariable(v.getShortName());

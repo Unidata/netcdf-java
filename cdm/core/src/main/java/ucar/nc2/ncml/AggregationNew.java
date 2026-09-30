@@ -106,6 +106,10 @@ public class AggregationNew extends AggregationOuterDimension {
       VariableDS vagg = new VariableDS(ncDataset, newGroup, null, aggVar.getShortName(), aggVar.getDataType(),
           dimName + " " + aggVar.getDimensionsString(), null, null);
       vagg.setProxyReader(this);
+      if (aggVar instanceof VariableDS) {
+        VariableDS vds = (VariableDS) aggVar;
+        vagg.setOriginalVariable(vds.getOriginalVariable() != null ? vds.getOriginalVariable() : vds);
+      }
       DatasetConstructor.transferVariableAttributes(aggVar, vagg);
 
       // _CoordinateAxes if it exists must be modified

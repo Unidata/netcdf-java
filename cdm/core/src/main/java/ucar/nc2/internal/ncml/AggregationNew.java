@@ -115,6 +115,10 @@ public class AggregationNew extends AggregationOuter {
       VariableDS.Builder vagg = VariableDS.builder().setName(aggVar.shortName).setDataType(aggVar.dataType)
           .setParentGroupBuilder(root).setDimensionsByName(dimName + " " + aggVar.makeDimensionsString());
       vagg.setProxyReader(this);
+      if (aggVar instanceof VariableDS.Builder) {
+        VariableDS.Builder<?> vds = (VariableDS.Builder<?>) aggVar;
+        vagg.setOriginalVariable(vds.orgVar);
+      }
       BuilderHelper.transferAttributes(aggVar.getAttributeContainer(), vagg.getAttributeContainer());
 
       // _CoordinateAxes if it exists must be modified

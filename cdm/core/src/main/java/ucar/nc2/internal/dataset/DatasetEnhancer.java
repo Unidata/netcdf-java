@@ -175,7 +175,7 @@ public class DatasetEnhancer {
    * }
    */
 
-  private void enhanceVariable(VariableDS.Builder vb) {
+  private void enhanceVariable(VariableDS.Builder<?> vb) {
     Set<Enhance> varEnhance = EnumSet.copyOf(wantEnhance);
 
     // varEnhance will only contain enhancements not already applied to orgVar.
@@ -184,6 +184,9 @@ public class DatasetEnhancer {
         varEnhance.remove(orgVarEnhancement);
       }
     }
+
+    varEnhance.removeAll(vb.enhanceMode);
+    varEnhance.removeAll(dsBuilder.getEnhanceMode());
 
     // enhance() may have been called previously, with a different enhancement set.
     // So, we need to reset to default before we process this new set.

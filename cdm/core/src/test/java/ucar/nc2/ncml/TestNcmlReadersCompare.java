@@ -1,7 +1,8 @@
 /*
- * Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2026 University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
+
 package ucar.nc2.ncml;
 
 import static org.junit.Assert.fail;
@@ -83,6 +84,10 @@ public class TestNcmlReadersCompare {
         return false;
       // Bug in old reader
       if (name.contains("testStandaloneNoEnhance.ncml"))
+        return false;
+      // Bug in old reader: an aggregation of pre-enhanced datasets that is read without enhancement applies
+      // the enhancements of the members a second time, see TestEnhance.
+      if (name.contains("aggMemberEnhanced.ncml"))
         return false;
       if (name.contains("AggFmrc"))
         return false; // not implemented
