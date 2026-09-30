@@ -696,7 +696,7 @@ public class CoverageViewer extends JPanel {
     // heres what to do when the currentField changes
     ActionSourceListener fieldSource = new ActionSourceListener(actionName) {
       public void actionPerformed(ActionValueEvent e) {
-        if (setField(e.getValue())) {
+        if (setField(e.getValue().toString())) {
           if (e.getActionCommand().equals("redrawImmediate")) {
             draw(true);
             // colorScalePanel.paintImmediately(colorScalePanel.getBounds()); // kludgerino
