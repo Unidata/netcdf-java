@@ -1,6 +1,6 @@
 ---
 title: Upgrading to netCDF-Java version 5.x
-last_updated: 2025-06-24
+last_updated: 2026-09-30
 sidebar: netcdfJavaTutorial_sidebar
 toc: false
 permalink: upgrade.html
@@ -12,6 +12,7 @@ permalink: upgrade.html
 * Java {{ site.java_version_build }} is required to build the library.
 
 ## Quick Navigation
+* [Summary of changes for v5.12.x](#netcdf-java-changes-512x)
 * [Summary of changes for v5.11.x](#netcdf-java-changes-511x)
 * [Summary of changes for v5.10.x](#netcdf-java-changes-510x)
 * [Summary of changes for v5.9.x](#netcdf-java-api-changes-59x)
@@ -28,7 +29,17 @@ permalink: upgrade.html
 ## netCDF-Java Changes (5.11.x)
 
 Point release notes:
-* [5.11.0](https://github.com/Unidata/netcdf-java/releases/tag/v5.11.0){:target="_blank"} (_yyyy-mm-dd, unreleased_)
+* [5.12.0](https://github.com/Unidata/netcdf-java/releases/tag/v5.12.0){:target="_blank"} (_yyyy-mm-dd, unreleased_)
+
+## netCDF-Java Changes (5.11.x)
+
+Point release notes:
+* [5.11.0](https://github.com/Unidata/netcdf-java/releases/tag/v5.11.0){:target="_blank"} (_2026-09-30_)
+
+This release expands data capabilities by adding GRIB2 template 3.33 and RRFS aerosol product support, upgrading NCEP GRIB2 tables to v37.0.0, and improving xpublish DAP2 compatibility.
+It also optimizes GRIB decoding performance and memory efficiency through lazy coordinate generation, array reuse, and consolidated scaled value decoding, alongside Gradle and dependency updates.
+Key bug fixes resolve issues in projections and coordinate variable calculations, as well as NcML aggregation errors with pre-enhanced datasets.
+Additionally, the update addresses data parsing bugs involving unpacked min/max values and unsigned variables, as well as fixing the toolsUI Coverage selector.
 
 ## netCDF-Java Changes (5.10.x)
 
@@ -56,7 +67,7 @@ Full release notes, including a list of bug fixes and updated 3rd party dependen
 
 ### Native jar group name changes
 
-Going forard, all native jars will be published under the `edu.ucar.unidata` group.
+Going forward, all native jars will be published under the `edu.ucar.unidata` group.
 Their version will match the version of the native library that they contain, plus a build number.
 This is to help make clear which version of the native library is being used by the jar.
 Starting with this release, `libaec-native` will be published under the `edu.ucar.unidata` group as well.
