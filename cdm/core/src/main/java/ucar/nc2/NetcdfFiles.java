@@ -36,6 +36,7 @@ import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.DiskCache;
 import ucar.nc2.util.EscapeStrings;
 import ucar.nc2.util.IO;
+import ucar.nc2.util.NcServiceLoader;
 import ucar.nc2.util.rc.RC;
 import ucar.unidata.io.UncompressInputStream;
 import ucar.unidata.io.bzip2.CBZip2InputStream;
@@ -423,7 +424,7 @@ public class NetcdfFiles {
 
     if (raf == null) {
       // look for dynamically loaded RandomAccessFile Providers
-      for (RandomAccessFileProvider provider : ServiceLoader.load(RandomAccessFileProvider.class)) {
+      for (RandomAccessFileProvider provider : NcServiceLoader.load(RandomAccessFileProvider.class)) {
         if (provider.isOwnerOf(location)) {
           raf = provider.open(location, buffer_size);
           // might cause issues if the end of a resource location string
@@ -809,7 +810,7 @@ public class NetcdfFiles {
 
     } else {
       // look for dynamically loaded IOSPs, and sort before using
-      final ServiceLoader<IOServiceProvider> iosps = ServiceLoader.load(IOServiceProvider.class);
+      final ServiceLoader<IOServiceProvider> iosps = NcServiceLoader.load(IOServiceProvider.class);
       final List<IOServiceProvider> sortedIosps = Lists.newArrayList(iosps);
       Collections.sort(sortedIosps);
 
