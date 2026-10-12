@@ -90,7 +90,7 @@ public class URLnaming {
     }
 
     if (baseUri.startsWith("cdms3:")) {
-      if (relativeUri.startsWith("cdms3:")) {
+      if (relativeUri.startsWith("cdms3:") || isAbsoluteUri(relativeUri)) {
         return relativeUri;
       } else {
         MFile absoluteMFile;
@@ -121,11 +121,21 @@ public class URLnaming {
     }
   }
 
+  /**
+   * Resolve a dataset reference against a document or directory location.
+   * Absolute URIs are preserved when the base location uses cdms3.
+   *
+   * @param baseDir document or directory location, or null to return the reference unchanged
+   * @param filepath absolute URI or relative file or object name, or null
+   * @return resolved location, or null when the reference is null
+   */
   public static String resolveFile(String baseDir, String filepath) {
     if (baseDir == null)
       return filepath;
     if (filepath == null)
       return null;
+    if (baseDir.startsWith("cdms3:") && isAbsoluteUri(filepath))
+      return filepath;
     File file = new File(filepath);
     if (file.isAbsolute())
       return filepath;
@@ -145,6 +155,20 @@ public class URLnaming {
       return filepath;
     MFile absoluteFile = base.getChild(filepath);
     return absoluteFile == null ? filepath : absoluteFile.getPath();
+  }
+
+  /**
+   * Check whether a dataset reference has an absolute URI scheme.
+   *
+   * @param reference non-null dataset reference or object name
+   * @return true for an absolute URI, false for a relative reference or invalid URI syntax
+   */
+  private static boolean isAbsoluteUri(String reference) {
+    try {
+      return URI.create(reference).isAbsolute();
+    } catch (IllegalArgumentException e) {
+      return false;
+    }
   }
 
 }
