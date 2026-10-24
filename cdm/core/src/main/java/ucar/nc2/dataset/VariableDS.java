@@ -17,6 +17,7 @@ import ucar.nc2.filter.*;
 import ucar.nc2.internal.dataset.CoordinatesHelper;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.Misc;
+import ucar.nc2.util.NcServiceLoader;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
@@ -43,7 +44,7 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
 
   static {
     ENHANCEMENT_PROVIDERS = new ArrayList<>();
-    for (EnhancementProvider enhancementProvider : ServiceLoader.load(EnhancementProvider.class)) {
+    for (EnhancementProvider enhancementProvider : NcServiceLoader.load(EnhancementProvider.class)) {
       ENHANCEMENT_PROVIDERS.add(enhancementProvider);
     }
   }

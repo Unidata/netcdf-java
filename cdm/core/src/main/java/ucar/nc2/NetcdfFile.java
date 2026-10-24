@@ -56,6 +56,7 @@ import ucar.nc2.util.DiskCache;
 import ucar.nc2.util.EscapeStrings;
 import ucar.nc2.util.IO;
 import ucar.nc2.util.Indent;
+import ucar.nc2.util.NcServiceLoader;
 import ucar.nc2.util.cache.FileCacheIF;
 import ucar.nc2.util.cache.FileCacheable;
 import ucar.nc2.util.rc.RC;
@@ -422,7 +423,7 @@ public class NetcdfFile implements FileCacheable, Closeable {
     if (N3header.isValidFile(raf)) {
       return true;
     } else {
-      for (IOServiceProvider iosp : ServiceLoader.load(IOServiceProvider.class)) {
+      for (IOServiceProvider iosp : NcServiceLoader.load(IOServiceProvider.class)) {
         log.info("ServiceLoader IOServiceProvider {}", iosp.getClass().getName());
         System.out.printf("ServiceLoader IOServiceProvider found %s%n", iosp.getClass().getName());
         if (iosp.isValidFile(raf)) {
@@ -835,7 +836,7 @@ public class NetcdfFile implements FileCacheable, Closeable {
     } else {
 
       // look for dynamically loaded IOSPs
-      for (IOServiceProvider loadedSpi : ServiceLoader.load(IOServiceProvider.class)) {
+      for (IOServiceProvider loadedSpi : NcServiceLoader.load(IOServiceProvider.class)) {
         if (loadedSpi.isValidFile(raf)) {
           Class c = loadedSpi.getClass();
           try {

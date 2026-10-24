@@ -7,7 +7,7 @@ package ucar.nc2.filter;
 
 import com.google.common.collect.ImmutableList;
 import java.util.Map;
-import java.util.ServiceLoader;
+import ucar.nc2.util.NcServiceLoader;
 
 public class Filters {
 
@@ -16,7 +16,7 @@ public class Filters {
   // load filter service providers
   static {
     ImmutableList.Builder<FilterProvider> spFiltersBuilder = ImmutableList.builder();
-    for (FilterProvider fp : ServiceLoader.load(FilterProvider.class)) {
+    for (FilterProvider fp : NcServiceLoader.load(FilterProvider.class)) {
       spFiltersBuilder.add(fp);
     }
     spFilters = spFiltersBuilder.build();
