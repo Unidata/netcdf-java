@@ -12,7 +12,9 @@ jobs:
       matrix:
         # test against latest 8, 11, 17, 21 of zulu and temurin java
         java-version: [8, 11, 17, 21, 25]
-        java-vendor: ['temurin', 'corretto']
+        # disable corretto until artifacts cert is moved to new provider
+        #java-vendor: ['temurin', 'corretto']
+        java-vendor: ['temurin']
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
       - name: Build with ${{ matrix.java-vendor }} 17 and run tests with ${{ matrix.java-vendor }} 8
