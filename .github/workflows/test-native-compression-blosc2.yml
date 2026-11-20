@@ -17,9 +17,9 @@ jobs:
           ubuntu-24.04,
           ubuntu-24.04-arm,
           windows-2022,
-          macos-14,
           macos-15,
-          macos-15-intel
+          macos-15-intel,
+          macos-26
         ]
     name: netCDF-Java Native Compression Tests (blosc2)
     runs-on: ${{ matrix.os }}
