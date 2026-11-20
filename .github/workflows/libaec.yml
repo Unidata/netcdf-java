@@ -27,7 +27,7 @@ jobs:
           {os: ubuntu-24.04-arm, c_compiler: gcc, lib: 'src/libaec.so', jna_id: 'linux-aarch64'},
           {os: windows-2022, c_compiler: cl, lib: 'src\\Release\\aec.dll', jna_id: 'win32-x86-64'},
           {os: windows-11-arm, c_compiler: cl, lib: 'src\\Release\\aec.dll', jna_id: 'win32-aarch64'},
-          {os: macos-14, c_compiler: clang, lib: 'src/libaec.dylib', jna_id: 'darwin-aarch64'},
+          {os: macos-15, c_compiler: clang, lib: 'src/libaec.dylib', jna_id: 'darwin-aarch64'},
           {os: macos-15-intel, c_compiler: clang, lib: 'src/libaec.dylib', jna_id: 'darwin-x86-64'},
         ]
         build_type: [Release]
