@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2018 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2026 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 
@@ -81,10 +81,12 @@ class FmrcDataset {
   private static class State {
     NetcdfDataset proto; // once built, the proto doesnt change until setInventory is called with forceProto = true
     FmrcInvLite lite; // lightweight version of the FmrcInv
+    long lastModified; // most recent last-modified time of the files in the inventory
 
-    private State(NetcdfDataset proto, FmrcInvLite lite) {
+    private State(NetcdfDataset proto, FmrcInvLite lite, long lastModified) {
       this.proto = proto;
       this.lite = lite;
+      this.lastModified = lastModified;
     }
   }
 
@@ -169,7 +171,7 @@ class FmrcDataset {
     synchronized (lock) {
       localState = state;
     }
-    return buildDataset2D(result, localState.proto, localState.lite);
+    return buildDataset2D(result, localState.proto, localState.lite, localState.lastModified);
   }
 
   GridDataset getBest() throws IOException {
@@ -177,7 +179,8 @@ class FmrcDataset {
     synchronized (lock) {
       localState = state;
     }
-    return buildDataset1D(localState.proto, localState.lite, localState.lite.makeBestDatasetInventory());
+    return buildDataset1D(localState.proto, localState.lite, localState.lite.makeBestDatasetInventory(),
+        localState.lastModified);
   }
 
   GridDataset getBest(FeatureCollectionConfig.BestDataset bd) throws IOException {
@@ -185,7 +188,8 @@ class FmrcDataset {
     synchronized (lock) {
       localState = state;
     }
-    return buildDataset1D(localState.proto, localState.lite, localState.lite.makeBestDatasetInventory(bd));
+    return buildDataset1D(localState.proto, localState.lite, localState.lite.makeBestDatasetInventory(bd),
+        localState.lastModified);
   }
 
   GridDataset getRunTimeDataset(CalendarDate run) throws IOException {
@@ -193,7 +197,8 @@ class FmrcDataset {
     synchronized (lock) {
       localState = state;
     }
-    return buildDataset1D(localState.proto, localState.lite, localState.lite.makeRunTimeDatasetInventory(run));
+    return buildDataset1D(localState.proto, localState.lite, localState.lite.makeRunTimeDatasetInventory(run),
+        localState.lastModified);
   }
 
   GridDataset getConstantForecastDataset(CalendarDate run) throws IOException {
@@ -201,7 +206,8 @@ class FmrcDataset {
     synchronized (lock) {
       localState = state;
     }
-    return buildDataset1D(localState.proto, localState.lite, localState.lite.getConstantForecastDataset(run));
+    return buildDataset1D(localState.proto, localState.lite, localState.lite.getConstantForecastDataset(run),
+        localState.lastModified);
   }
 
   GridDataset getConstantOffsetDataset(double offset) throws IOException {
@@ -209,7 +215,8 @@ class FmrcDataset {
     synchronized (lock) {
       localState = state;
     }
-    return buildDataset1D(localState.proto, localState.lite, localState.lite.getConstantOffsetDataset(offset));
+    return buildDataset1D(localState.proto, localState.lite, localState.lite.getConstantOffsetDataset(offset),
+        localState.lastModified);
   }
 
   /**
@@ -232,7 +239,7 @@ class FmrcDataset {
     synchronized (lock) {
       if (protoLocal == null && state != null)
         protoLocal = state.proto;
-      state = new State(protoLocal, liteLocal);
+      state = new State(protoLocal, liteLocal, fmrcInv.getLastModified());
     }
   }
 
@@ -522,15 +529,17 @@ class FmrcDataset {
    * @param result place results in here, if null create a new one. must be threadsafe (immutable)
    * @param proto current proto dataset
    * @param lite current inventory
+   * @param lastModified last-modified time to report for the resulting dataset, if one is created here
    * @return resulting GridDataset
    * @throws IOException on read error
    */
-  private GridDataset buildDataset2D(NetcdfDataset result, NetcdfDataset proto, FmrcInvLite lite) throws IOException {
+  private GridDataset buildDataset2D(NetcdfDataset result, NetcdfDataset proto, FmrcInvLite lite, long lastModified)
+      throws IOException {
     if (lite == null)
       return null;
     // make a copy, so that this object can coexist with previous incarnations
     if (result == null)
-      result = new NetcdfDataset();
+      result = new FmrcNetcdfDataset(lastModified);
     result.setLocation(lite.collectionName);
     transferGroup(proto.getRootGroup(), result.getRootGroup(), result);
     result.finish();
@@ -744,14 +753,16 @@ class FmrcDataset {
    * @param proto current proto dataset
    * @param lite current inventory
    * @param timeInv use this to generate the time coordinates
+   * @param lastModified last-modified time to report for the resulting dataset
    * @return resulting GridDataset
    * @throws IOException on read error
    */
-  private GridDataset buildDataset1D(NetcdfDataset proto, FmrcInvLite lite, TimeInventory timeInv) throws IOException {
+  private GridDataset buildDataset1D(NetcdfDataset proto, FmrcInvLite lite, TimeInventory timeInv, long lastModified)
+      throws IOException {
     if (timeInv == null)
       return null;
-    NetcdfDataset result = new NetcdfDataset(); // make a copy, so that this object can coexist with previous
-                                                // incarnations
+    // make a copy, so that this object can coexist with previous incarnations
+    NetcdfDataset result = new FmrcNetcdfDataset(lastModified);
     result.setLocation(lite.collectionName);
     transferGroup(proto.getRootGroup(), result.getRootGroup(), result);
     result.finish();
