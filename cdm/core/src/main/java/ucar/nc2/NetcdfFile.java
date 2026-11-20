@@ -524,7 +524,8 @@ public class NetcdfFile implements FileCacheable, Closeable {
 
     } else if (uriString.startsWith("cdms3:")) {
       // object store access is provided by an S3 RandomAccessFileProvider, which only NetcdfFiles knows how to find.
-      // To support FMRC, delegate rather than duplicate that lookup here, since this API is deprecated in favor of NetcdfFiles.
+      // To support FMRC, delegate rather than duplicate that lookup here, since this API is deprecated in favor of
+      // NetcdfFiles.
       // TODO: update FMRC to use new builder API in 6.x
       raf = NetcdfFiles.getRaf(uriString, buffer_size);
     } else {
