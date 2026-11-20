@@ -17,7 +17,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * JNA access to C-Blosc2. Not a full implementation, just the functions
  * actually used for decoding (and testing). This is a partial transliteration
- * of the C-Blosc2 library file include/blosc2.h.
+ * of the C-Blosc2 library files include/blosc2.h and include/b2nd.h.
  *
  * @author sarms
  * @since 5.10.0
@@ -116,6 +116,86 @@ public final class LibBlosc2 {
     return decompressed.getByteArray(0, nbytes.getValue().intValue());
   }
 
+  /**
+   * Decode one chunk written by the HDF5 Blosc2 filter (id 32026, reference implementation
+   * {@code H5Zblosc2.c} in the HDF Group hdf5_plugins repository).
+   * <p>
+   * Each HDF5 chunk is stored as one Blosc2 contiguous frame. Chunks of rank 2 or more carry a b2nd
+   * metalayer and are padded to a multiple of the block shape, so they are decoded with
+   * {@code b2nd_to_cbuffer}, which removes the padding. Rank 1 chunks hold a single Blosc2 chunk and
+   * are decoded with {@code blosc2_schunk_decompress_chunk}. This follows the decompression branch of
+   * {@code H5Zblosc2.c}.
+   *
+   * @param frame the chunk bytes as stored in the file (a Blosc2 frame)
+   * @param nbytes the size of the decoded HDF5 chunk in bytes ({@code cd_values[3]} of the filter); the
+   *        uncompressed size in the frame header cannot be used because it may include padding
+   * @return the decoded chunk, exactly {@code nbytes} long
+   * @throws IOException if the frame is not a valid Blosc2 frame, is truncated or corrupt, or does not
+   *         decode to {@code nbytes} bytes
+   */
+  public static byte[] decodeFrame(byte[] frame, int nbytes) throws IOException {
+    if (frame == null || frame.length < FRAME_MAGIC_OFFSET + FRAME_MAGIC.length) {
+      throw new IOException("Blosc2 frame is too short: " + (frame == null ? "null" : frame.length + " bytes"));
+    }
+    for (int i = 0; i < FRAME_MAGIC.length; i++) {
+      if (frame[FRAME_MAGIC_OFFSET + i] != FRAME_MAGIC[i]) {
+        throw new IOException("Not a Blosc2 frame (missing \"b2frame\" magic)");
+      }
+    }
+    if (nbytes <= 0) {
+      throw new IOException("Invalid decoded chunk size: " + nbytes);
+    }
+    init();
+    // copy == false: the super-chunk refers to this memory, which must outlive it
+    try (Memory in = new Memory(frame.length);
+        Memory out = new Memory(nbytes);
+        Memory arrayRef = new Memory(Native.POINTER_SIZE)) {
+      in.write(0, frame, 0, frame.length);
+      Pointer schunk = blosc2_schunk_from_buffer(in, frame.length, (byte) 0);
+      if (schunk == null) {
+        throw new IOException(
+            "blosc2_schunk_from_buffer failed: corrupt or truncated frame (" + frame.length + " bytes)");
+      }
+      try {
+        arrayRef.setPointer(0, null);
+        if (b2nd_from_schunk(schunk, arrayRef) >= 0) {
+          // rank >= 2: the b2nd array takes ownership of the super-chunk
+          Pointer array = arrayRef.getPointer(0);
+          schunk = null;
+          if (array == null) {
+            throw new IOException("b2nd_from_schunk did not return an array");
+          }
+          try {
+            int rc = b2nd_to_cbuffer(array, out, nbytes);
+            if (rc < 0) {
+              throw new IOException("b2nd_to_cbuffer failed with error code " + rc);
+            }
+          } finally {
+            b2nd_free(array);
+          }
+        } else {
+          // rank 1: a single chunk
+          int written = blosc2_schunk_decompress_chunk(schunk, 0, out, nbytes);
+          if (written < 0) {
+            throw new IOException("blosc2_schunk_decompress_chunk failed with error code " + written);
+          }
+          if (written != nbytes) {
+            throw new IOException("Decoded " + written + " bytes, expected " + nbytes);
+          }
+        }
+      } finally {
+        if (schunk != null) {
+          blosc2_schunk_free(schunk);
+        }
+      }
+      return out.getByteArray(0, nbytes);
+    }
+  }
+
+  // A Blosc2 contiguous frame starts with a msgpack header whose third byte begins "b2frame\0"
+  private static final byte[] FRAME_MAGIC = {'b', '2', 'f', 'r', 'a', 'm', 'e', 0};
+  private static final int FRAME_MAGIC_OFFSET = 2;
+
   // BLOSC_EXPORT void blosc2_init(void);
   static native void blosc2_init();
 
@@ -134,5 +214,24 @@ public final class LibBlosc2 {
   // size_t* cbytes, size_t* blocksize);
   static native void blosc1_cbuffer_sizes(byte[] compressedData, NativeLongByReference nbytes,
       NativeLongByReference cbytes, NativeLongByReference blocksize);
+
+  // BLOSC_EXPORT blosc2_schunk* blosc2_schunk_from_buffer(uint8_t *cframe, int64_t len, bool copy);
+  static native Pointer blosc2_schunk_from_buffer(Pointer cframe, long len, byte copy);
+
+  // BLOSC_EXPORT int blosc2_schunk_free(blosc2_schunk *schunk);
+  static native int blosc2_schunk_free(Pointer schunk);
+
+  // BLOSC_EXPORT int blosc2_schunk_decompress_chunk(blosc2_schunk *schunk, int64_t nchunk, void *dest,
+  // int32_t nbytes);
+  static native int blosc2_schunk_decompress_chunk(Pointer schunk, long nchunk, Pointer dest, int nbytes);
+
+  // BLOSC_EXPORT int b2nd_from_schunk(blosc2_schunk *schunk, b2nd_array_t **array);
+  static native int b2nd_from_schunk(Pointer schunk, Pointer array);
+
+  // BLOSC_EXPORT int b2nd_to_cbuffer(const b2nd_array_t *array, void *buffer, int64_t buffersize);
+  static native int b2nd_to_cbuffer(Pointer array, Pointer buffer, long buffersize);
+
+  // BLOSC_EXPORT int b2nd_free(b2nd_array_t *array);
+  static native int b2nd_free(Pointer array);
 
 }

@@ -1,1 +1,2 @@
 edu.ucar.unidata.compression.jna.libblosc2.BloscFilter$Provider
+edu.ucar.unidata.compression.jna.libblosc2.Blosc2Filter$Provider

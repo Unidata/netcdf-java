@@ -146,6 +146,7 @@ Otherwise, libaec will need to be installed and reachable in your system library
 ### C-Blosc2
 
 netCDF-Java `>=v5.10.0` supports blosc compression using JNA to call the C-Blosc2 library.
+The `libblosc2-jna` module decodes data written with the HDF5 Blosc filter (id 32001) and the HDF5 Blosc2 filter (id 32026).
 To ease the use of this feature, we distribute a jar file containing the native libraries for the following platforms/architectures:
 
 |---
