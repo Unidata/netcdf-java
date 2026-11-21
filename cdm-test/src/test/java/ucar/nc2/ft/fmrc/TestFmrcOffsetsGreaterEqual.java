@@ -1,10 +1,12 @@
 /*
- * Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2026 University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 package ucar.nc2.ft.fmrc;
 
+import org.junit.AfterClass;
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
@@ -19,13 +21,28 @@ import ucar.nc2.time.CalendarDateUnit;
 import ucar.nc2.write.Ncdump;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
+import ucar.unidata.util.test.category.NeedsExternalResource;
+import ucar.unidata.util.test.category.Slow;
+
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.util.Formatter;
 
-@Category(NeedsCdmUnitTest.class)
 public class TestFmrcOffsetsGreaterEqual {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
+  private static final String AWS_REGION_PROP_NAME = "aws.region";
+  private static final String AWS_REGION = "us-east-1";
+
+  @BeforeClass
+  public static void setAwsRegion() {
+    System.setProperty(AWS_REGION_PROP_NAME, AWS_REGION);
+  }
+
+  @AfterClass
+  public static void clearAwsRegion() {
+    System.clearProperty(AWS_REGION_PROP_NAME);
+  }
 
   /*
    * <featureCollection name="espresso_2013_da_history_fmrc_with_Offset_in_filename" featureType="FMRC"
@@ -77,10 +94,26 @@ public class TestFmrcOffsetsGreaterEqual {
 
 
   @Test
+  @Category(NeedsCdmUnitTest.class)
   public void testBestOffsetGE() throws IOException {
-    FeatureCollectionConfig config = new FeatureCollectionConfig(
-        "espresso_2013_da_his_fmrc_offset_with_Offset_in_filename", "DavidRobertson", FeatureCollectionType.FMRC,
-        TestDir.cdmUnitTestDir + "ft/fmrc/espresso/.*.nc$", null, "#espresso_his_#yyyyMMdd_HHmm", null, null, null);
+    checkBestOffsetGE(TestDir.cdmUnitTestDir + "ft/fmrc/espresso/.*.nc$");
+  }
+
+  @Test
+  @Category({NeedsExternalResource.class, Slow.class})
+  public void testBestOffsetGEOnS3() throws IOException {
+    // annotated Slow because these files contain record (coordinate) variables, and each
+    // value is a call to the object.
+    // the same files found under TestDir.cdmUnitTestDir + "ft/fmrc/espresso/" are
+    // available in the thredds-test-data bucket on AWS S3
+    final String S3_SPEC = "cdms3:thredds-test-data?ft/fmrc/espresso/.*\\.nc$#delimiter=/";
+    checkBestOffsetGE(S3_SPEC);
+  }
+
+  private void checkBestOffsetGE(String spec) throws IOException {
+    FeatureCollectionConfig config =
+        new FeatureCollectionConfig("espresso_2013_da_his_fmrc_offset_with_Offset_in_filename", "DavidRobertson",
+            FeatureCollectionType.FMRC, spec, null, "#espresso_his_#yyyyMMdd_HHmm", null, null, null);
     config.fmrcConfig.regularize = false;
     config.fmrcConfig.addBestDataset("Best", 26);
 
@@ -102,6 +135,13 @@ public class TestFmrcOffsetsGreaterEqual {
 
       CalendarDateUnit cdu2 = CalendarDateUnit.of(null, runAxis.getUnitsString());
       Assert.assertEquals(expected, cdu2.getBaseCalendarDate());
+
+      // offsetsGreaterEqual=26 drops the earlier offsets, so the Best time coordinate must start at 26 hours
+      // (it would start at 0 if the offset filter were ignored)
+      Assert.assertEquals("first best time coord", 26.0, timeAxis.getCoordValue(0), 1.0e-8);
+
+      // both runs must contribute to the Best dataset, otherwise the run coord check below cannot see the second run
+      Assert.assertTrue("run axis size = " + runAxis.getSize(), runAxis.getSize() > 12);
 
       for (int i = 0; i < runAxis.getSize(); i++) {
         Assert.assertEquals("run coord", i < 12 ? 0 : 24, runAxis.getCoordValue(i), 1.0e-8);

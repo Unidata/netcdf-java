@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2018 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2026 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 
@@ -68,6 +68,9 @@ public class FmrcInv {
   // use on motherlode to regularize the missing inventory
   private final boolean regularize;
 
+  // most recent last-modified time (msecs since epoch) of the files in this inventory, or 0 if unknown
+  private final long lastModified;
+
   /////////////////////////////////////////////////////
 
   /**
@@ -76,10 +79,12 @@ public class FmrcInv {
    * @param name name of collection
    * @param fmrList the component runs FmrInv
    * @param regularize regularize time coords based on offset from 0Z
+   * @param lastModified most recent last-modified time (msecs since epoch) of the component files, or 0 if unknown
    */
-  FmrcInv(String name, List<FmrInv> fmrList, boolean regularize) {
+  FmrcInv(String name, List<FmrInv> fmrList, boolean regularize, long lastModified) {
     this.name = name;
     this.regularize = regularize;
+    this.lastModified = lastModified;
 
     this.fmrList = new ArrayList<>(fmrList);
     runTimeList = new ArrayList<>();
@@ -201,6 +206,15 @@ public class FmrcInv {
 
   public String getName() {
     return name;
+  }
+
+  /**
+   * The most recent last-modified time of the files that make up this inventory.
+   *
+   * @return msecs since epoch, or 0 if unknown
+   */
+  long getLastModified() {
+    return lastModified;
   }
 
   public List<RunSeq> getRunSeqs() {

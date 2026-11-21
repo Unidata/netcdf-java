@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2017 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2026 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE.txt for license information.
  */
 
@@ -262,6 +262,7 @@ public class Fmrc implements Closeable {
     try {
       Map<CalendarDate, FmrInv> fmrMap = new HashMap<>(); // all files are grouped by run date in an FmrInv
       List<FmrInv> fmrList = new ArrayList<>(); // an fmrc is a collection of fmr
+      long lastModified = 0; // most recent last-modified time of the files that make it into the inventory
 
       // get the inventory, sorted by path
       for (MFile f : manager.getFilesSorted()) {
@@ -290,6 +291,8 @@ public class Fmrc implements Closeable {
           continue; // skip
         }
 
+        lastModified = Math.max(lastModified, f.getLastModified());
+
         runDate = inv.getRunDate();
         if (debug != null)
           debug.format("  opened %s rundate = %s%n", f.getPath(), inv.getRunDateString());
@@ -315,7 +318,7 @@ public class Fmrc implements Closeable {
               + fmr.getFiles().size());
       }
 
-      return new FmrcInv("fmrc:" + manager.getCollectionName(), fmrList, config.fmrcConfig.regularize);
+      return new FmrcInv("fmrc:" + manager.getCollectionName(), fmrList, config.fmrcConfig.regularize, lastModified);
 
     } catch (Throwable t) {
       logger.error("makeFmrcInv", t);
