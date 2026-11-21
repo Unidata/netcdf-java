@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2025 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 2021-2026 University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 
@@ -31,7 +31,8 @@ public class Filters {
      */
     public static final String NAME = "id";
     /**
-     * key for a numeric id (e.g. HDF5 filters)
+     * key for a numeric id (e.g. HDF5 filters). HDF5 filter ids are unsigned 16-bit values: when the id is stored
+     * as a {@link Short}, ids above 32767 are negative and are read with {@link Short#toUnsignedInt(short)}.
      */
     public static final String ID = "nid";
     /**
@@ -81,7 +82,7 @@ public class Filters {
     }
 
     // try by id next
-    int id = ((Short) oid).intValue();
+    int id = (oid instanceof Short) ? Short.toUnsignedInt((Short) oid) : ((Number) oid).intValue();
     for (FilterProvider fp : spFilters) {
       if (fp.canProvide(id)) {
         return fp.create(properties);

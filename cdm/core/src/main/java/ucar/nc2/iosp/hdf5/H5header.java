@@ -3944,14 +3944,14 @@ public class H5header extends NCheader implements H5headerIF {
   private static final int KNOWN_FILTERS = 3;
 
   class Filter {
-    short id; // 1=deflate, 2=shuffle, 3=fletcher32, 4=szip, 5=nbit, 6=scaleoffset
+    int id; // 1=deflate, 2=shuffle, 3=fletcher32, 4=szip, 5=nbit, 6=scaleoffset (unsigned 16-bit)
     short flags;
     String name;
     short nValues;
     int[] data;
 
     Filter(byte version) throws IOException {
-      this.id = getRandomAccessFile().readShort();
+      this.id = getRandomAccessFile().readUnsignedShort();
       // if the filter id < 256 then this field is not stored
       short nameSize = ((version > 1) && (id < 256)) ? 0 : getRandomAccessFile().readShort();
       this.flags = getRandomAccessFile().readShort();
