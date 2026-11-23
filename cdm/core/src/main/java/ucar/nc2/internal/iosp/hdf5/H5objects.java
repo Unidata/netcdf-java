@@ -1707,8 +1707,8 @@ public class H5objects {
         // read filter description
         short id = getRandomAccessFile().readShort();
         props.put(Filters.Keys.ID, id);
-        // if the filter id < 256 then this field is not stored
-        short nameSize = ((version > 1) && (id < 256)) ? 0 : getRandomAccessFile().readShort();
+        // if the filter id < 256 then this field is not stored (filter ids are unsigned 16-bit values)
+        short nameSize = ((version > 1) && (Short.toUnsignedInt(id) < 256)) ? 0 : getRandomAccessFile().readShort();
         short flags = getRandomAccessFile().readShort();
         props.put(Filters.Keys.OPTIONAL, (flags != 0)); // save as boolean
         short nValues = getRandomAccessFile().readShort();
@@ -1774,7 +1774,7 @@ public class H5objects {
     }
 
     int getId() {
-      return ((Short) this.properties.get(Filters.Keys.ID)).intValue();
+      return Short.toUnsignedInt((Short) this.properties.get(Filters.Keys.ID));
     }
 
     Map<String, Object> getProperties() {
