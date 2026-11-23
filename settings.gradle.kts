@@ -50,6 +50,10 @@ include(":libblosc2-native")
 
 project(":libblosc2-native").projectDir = file("native-compression/libblosc2-native")
 
+include(":libzstd-native")
+
+project(":libzstd-native").projectDir = file("native-compression/libzstd-native")
+
 //
 // critical subprojects
 // tricky main/test interdependencies...not circular, however
