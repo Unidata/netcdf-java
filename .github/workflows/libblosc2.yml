@@ -1,3 +1,14 @@
+#
+# Build blosc-2 on windows (x86-64, aarch64), linux (x86-64, aarch64),
+# and mac (x86-64, aarch64) and combine into a single artifact for use
+# by netCDF-Java.
+#
+# The version of blosc-2 is used twice in this workflow - once in the
+# ref of the checkout, and once in the name of the final artifact.
+# Be sure to update both places if incrementing the version of
+# blosc-2 being used.
+#
+
 name: C-Blosc2 build using CMake on multiple platforms
 
 on:
@@ -31,7 +42,7 @@ jobs:
         run: |
           echo "build-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
 
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           repository: 'Blosc/c-blosc2'
           ref: "v2.23.1"
@@ -61,7 +72,7 @@ jobs:
           cp -L ${{ matrix.build_env.lib }} resources/${{ matrix.build_env.jna_id }}
 
       - name: Upload ${{ matrix.build_env.jna_id }} artifact
-        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: libblosc2-${{ matrix.build_env.jna_id }}
           path: ${{ steps.strings.outputs.build-dir }}/resources
@@ -72,7 +83,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           pattern: libblosc2-*
           path: native/resources/
@@ -82,7 +93,7 @@ jobs:
         run: find native/ -type f -exec ls -lh {} \;
 
       - name: Upload merged artifact
-        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: libblosc2-native-2.23.1-${{ github.sha }}
           path: native/
