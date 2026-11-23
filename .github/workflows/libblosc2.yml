@@ -1,3 +1,14 @@
+#
+# Build blosc-2 on windows (x86-64, aarch64), linux (x86-64, aarch64),
+# and mac (x86-64, aarch64) and combine into a single artifact for use
+# by netCDF-Java.
+#
+# The version of blosc-2 is used twice in this workflow - once in the
+# ref of the checkout, and once in the name of the final artifact.
+# Be sure to update both places if incrementing the version of
+# blosc-2 being used.
+#
+
 name: C-Blosc2 build using CMake on multiple platforms
 
 on:
