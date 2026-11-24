@@ -159,6 +159,21 @@ To ease the use of this feature, we distribute a jar file containing the native 
 If you are using on the of the supported platform/architecture combinations above, you may include the `edu.ucar.unidata:libblosc2-native:{{ site.cblosc2_version }}` artifact in your project to bypass the need to install C-Blosc2 on your system.
 Otherwise, C-Blosc2 will need to be installed and reachable in your system library path in order to read data compressed using blosc.
 
+### zstd
+
+netCDF-Java `>=v5.12.0` supports zstd compression using JNA to call the zstd library.
+To ease the use of this feature, we distribute a jar file containing the native libraries for the following platforms/architectures:
+
+|---
+| platform | x86-64 | aarch64
+|:-|:-:|:-:
+| Linux | <span class="glyphicon glyphicon-ok" style="color: green;"></span> | <span class="glyphicon glyphicon-ok" style="color: green;">
+| MacOS | <span class="glyphicon glyphicon-ok" style="color: green;"> | <span class="glyphicon glyphicon-ok" style="color: green;">
+| Windows | <span class="glyphicon glyphicon-ok" style="color: green;"> | <span class="glyphicon glyphicon-ok" style="color: green;">
+
+If you are using on the of the supported platform/architecture combinations above, you may include the `edu.ucar.unidata:libzstd-native:{{ site.zstd_version }}` artifact in your project to bypass the need to install zstd on your system.
+Otherwise, zstd will need to be installed and reachable in your system library path in order to read data compressed using zstd.
+
 ## Building with netcdfAll
 
 This is the appropriate option if you’re not using a dependency management tool like Maven or Gradle and you don’t care about jar size or compatibility with other libraries. Simply include netcdfAll-${netcdfJavaVersion}.jar on the classpath when you run your program.

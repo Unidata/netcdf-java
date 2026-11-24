@@ -80,3 +80,4 @@ java_version_build: 17
 java_version_runtime: 8
 libaec_version: 1.1.7.0
 cblosc2_version: 2.23.1.0
+zstd_version: 1.5.7.0
