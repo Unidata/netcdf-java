@@ -36,14 +36,21 @@ public class TestGcdmNetcdfFile {
           pathname -> pathname.getName().endsWith("nc") && !pathname.getName().startsWith("test_vlen3")
               && !pathname.getName().startsWith("test_vlen4") && !pathname.getName().startsWith("test_vlen5")
               && !pathname.getName().startsWith("test_vlen9") && !pathname.getName().startsWith("test_vlen10");
-      String skipStructuresWithVlens2 = "vlen/IntTimSciSamp.nc vlen/cdm_sea_soundings.nc4 2024060100_GTS_sn.0001.bufr";
 
       TestDir.actOnAllParameterized("../../dap4/src/test/data/resources/nctestfiles/", skipStructuresWithVlens, result,
           false);
 
-      TestDir.actOnAllParameterized(TestDir.cdmLocalTestDataDir, new SuffixFileFilter(".nc"), result, true);
+      // Test all .nc files in cdm/core test data except the files that use the test-only pass-through filter
+      // registered for id 40000
+      // See cdm/core/src/test/java/ucar/nc2/internal/iosp/hdf5/TestH5FilterIdUnsigned.java
+      FileFilter skipCustomHdf5Filter =
+          pathname -> pathname.getName().endsWith("nc") && !pathname.getName().startsWith("filter_id_40000_v");
 
+      TestDir.actOnAllParameterized(TestDir.cdmLocalTestDataDir, skipCustomHdf5Filter, result, true);
+
+      String skipStructuresWithVlens2 = "vlen/IntTimSciSamp.nc vlen/cdm_sea_soundings.nc4 2024060100_GTS_sn.0001.bufr";
       FileFilter ff = TestDir.FileFilterSkipSuffix(".cdl .ncml perverse.nc " + skipStructuresWithVlens2);
+
       TestDir.actOnAllParameterized(TestDir.cdmUnitTestDir + "formats/bufr/userExamples", ff, result, false);
       TestDir.actOnAllParameterized(TestDir.cdmUnitTestDir + "/formats/netcdf3", ff, result, true);
       TestDir.actOnAllParameterized(TestDir.cdmUnitTestDir + "formats/netcdf4", ff, result, false);
