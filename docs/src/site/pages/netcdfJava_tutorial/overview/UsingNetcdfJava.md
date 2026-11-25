@@ -162,6 +162,7 @@ Otherwise, C-Blosc2 will need to be installed and reachable in your system libra
 ### zstd
 
 netCDF-Java `>=v5.12.0` supports zstd compression using JNA to call the zstd library.
+The `libzstd-jna` module decodes data written with the HDF5 Zstandard filter (id 32015).
 To ease the use of this feature, we distribute a jar file containing the native libraries for the following platforms/architectures:
 
 |---

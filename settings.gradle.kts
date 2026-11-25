@@ -88,6 +88,10 @@ include(":libblosc2-jna")
 
 project(":libblosc2-jna").projectDir = file("native-compression/libblosc2-jna")
 
+include(":libzstd-jna")
+
+project(":libzstd-jna").projectDir = file("native-compression/libzstd-jna")
+
 include("netcdf4")
 
 include("opendap")

@@ -48,6 +48,8 @@ dependencies {
   runtimeOnly(project(":dap4"))
   runtimeOnly(project(":libaec-native"))
   runtimeOnly(project(":libblosc2-native"))
+  runtimeOnly(project(":libzstd-jna"))
+  runtimeOnly(project(":libzstd-native"))
 
   runtimeOnly(ncjLibs.logback.classic)
 
