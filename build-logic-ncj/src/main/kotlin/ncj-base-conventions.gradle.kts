@@ -51,6 +51,7 @@ val publicArtifacts =
     ":libblosc2-jna",
     ":libblosc2-native",
     ":libzstd-jna",
+    ":libzstd-native",
     ":netcdf4",
     ":opendap",
     ":udunits",
