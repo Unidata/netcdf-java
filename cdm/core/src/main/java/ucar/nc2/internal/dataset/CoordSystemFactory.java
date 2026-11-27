@@ -8,7 +8,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.ServiceLoader;
 import java.util.StringTokenizer;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -24,6 +23,7 @@ import ucar.nc2.internal.dataset.conv.DefaultConventions;
 import ucar.nc2.internal.dataset.spi.CFSubConventionProvider;
 import ucar.nc2.internal.ncml.NcmlReader;
 import ucar.nc2.util.CancelTask;
+import ucar.nc2.util.NcServiceLoader;
 import ucar.unidata.util.StringUtil2;
 
 /** Static methods for managing CoordSystemBuilderFactory classes */
@@ -55,7 +55,7 @@ public class CoordSystemFactory {
   // These get precedence
   static {
     registerConvention(_Coordinate.Convention, new CoordSystemBuilder.Factory());
-    for (CFSubConventionProvider provider : ServiceLoader.load(CFSubConventionProvider.class)) {
+    for (CFSubConventionProvider provider : NcServiceLoader.load(CFSubConventionProvider.class)) {
       registerConvention(provider.getConventionName(), provider);
     }
     registerConvention("CF-1.", new CF1Convention.Factory(), String::startsWith);
@@ -278,7 +278,7 @@ public class CoordSystemFactory {
     }
 
     // Use service loader mechanism isMine()
-    for (CoordSystemBuilderFactory csb : ServiceLoader.load(CoordSystemBuilderFactory.class)) {
+    for (CoordSystemBuilderFactory csb : NcServiceLoader.load(CoordSystemBuilderFactory.class)) {
       if (csb.isMine(orgFile)) {
         return csb;
       }
@@ -299,7 +299,7 @@ public class CoordSystemFactory {
     }
 
     // Use service loader mechanism isMine()
-    for (CFSubConventionProvider cfSubCon : ServiceLoader.load(CFSubConventionProvider.class)) {
+    for (CFSubConventionProvider cfSubCon : NcServiceLoader.load(CFSubConventionProvider.class)) {
       if (cfSubCon.isMine(orgFile) || cfSubCon.isMine(convs)) {
         return cfSubCon;
       }
@@ -356,7 +356,7 @@ public class CoordSystemFactory {
   @Nullable
   private static CoordSystemBuilderFactory findLoadedConventionByName(String convName) {
     // use service loader mechanism
-    for (CoordSystemBuilderFactory csb : ServiceLoader.load(CoordSystemBuilderFactory.class)) {
+    for (CoordSystemBuilderFactory csb : NcServiceLoader.load(CoordSystemBuilderFactory.class)) {
       if (convName.equals(csb.getConventionName())) {
         return csb;
       }

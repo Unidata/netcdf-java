@@ -7,8 +7,8 @@ package thredds.inventory;
 
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
-import java.util.ServiceLoader;
 import thredds.filesystem.ControllerOS;
+import ucar.nc2.util.NcServiceLoader;
 
 public class MControllers {
 
@@ -23,7 +23,7 @@ public class MControllers {
 
     // look for dynamically loaded MControllerProviders
     if (location != null) {
-      for (MControllerProvider provider : ServiceLoader.load(MControllerProvider.class)) {
+      for (MControllerProvider provider : NcServiceLoader.load(MControllerProvider.class)) {
         if (provider.canScan(location)) {
           mControllerProvider = provider;
           break;

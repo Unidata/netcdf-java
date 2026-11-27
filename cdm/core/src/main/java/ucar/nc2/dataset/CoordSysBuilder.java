@@ -16,6 +16,7 @@ import javax.annotation.Nonnull;
 import java.lang.reflect.Method;
 import java.io.IOException;
 import java.util.*;
+import ucar.nc2.util.NcServiceLoader;
 
 /**
  * Abstract class for implementing Convention-specific parsing of netCDF files.
@@ -401,7 +402,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
     // call static isMine() using reflection.
     CoordSysBuilderIF builder = null;
     if (convClass == null) {
-      for (CoordSysBuilderIF csb : ServiceLoader.load(CoordSysBuilderIF.class)) {
+      for (CoordSysBuilderIF csb : NcServiceLoader.load(CoordSysBuilderIF.class)) {
 
         Class c = csb.getClass();
         Method m;

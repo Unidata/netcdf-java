@@ -12,7 +12,6 @@ import java.util.Formatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.ServiceLoader;
 import java.util.Set;
 import ucar.nc2.Attribute;
 import ucar.nc2.AttributeContainer;
@@ -30,6 +29,7 @@ import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.units.DateRange;
+import ucar.nc2.util.NcServiceLoader;
 import ucar.nc2.util.cache.FileCacheIF;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.ProjectionRect;
@@ -116,7 +116,7 @@ public class GridDataset implements ucar.nc2.dt.GridDataset, FeatureDataset {
    */
   public static ucar.nc2.dt.GridDataset openIfce(String location, Set<NetcdfDataset.Enhance> enhanceMode)
       throws java.io.IOException {
-    for (GridDatasetProvider gdsProvider : ServiceLoader.load(GridDatasetProvider.class)) {
+    for (GridDatasetProvider gdsProvider : NcServiceLoader.load(GridDatasetProvider.class)) {
       if (gdsProvider.isMine(location, enhanceMode)) {
         return gdsProvider.open(location, enhanceMode);
       }

@@ -18,6 +18,7 @@ import ucar.nc2.internal.dataset.CoordinatesHelper;
 import ucar.nc2.iosp.IOServiceProvider;
 import ucar.nc2.ncml.NcMLReader;
 import ucar.nc2.util.CancelTask;
+import ucar.nc2.util.NcServiceLoader;
 import ucar.nc2.util.cache.FileCache;
 import ucar.nc2.util.cache.FileFactory;
 import java.io.IOException;
@@ -808,14 +809,14 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     }
 
     // look for dynamically loaded NetcdfFileProvider
-    for (NetcdfFileProvider provider : ServiceLoader.load(NetcdfFileProvider.class)) {
+    for (NetcdfFileProvider provider : NcServiceLoader.load(NetcdfFileProvider.class)) {
       if (provider.isOwnerOf(durl)) {
         return provider.open(durl.getTrueurl(), cancelTask);
       }
     }
 
     // look for providers who do not have an associated ServiceType.
-    for (NetcdfFileProvider provider : ServiceLoader.load(NetcdfFileProvider.class)) {
+    for (NetcdfFileProvider provider : NcServiceLoader.load(NetcdfFileProvider.class)) {
       if (provider.isOwnerOf(durl.getTrueurl())) {
         return provider.open(durl.getTrueurl(), cancelTask);
       }
